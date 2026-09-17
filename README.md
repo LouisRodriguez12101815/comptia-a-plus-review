@@ -6,7 +6,7 @@ Questions are written from class notes. They are not official CompTIA items.
 
 ## Classmates
 
-Open the deployed site (see **Live URL** below after Vercel finishes). Use Notes to read, Flashcards to drill, Quiz to test. Weak-area decks are linked from the home page.
+Open **https://comptia-a-plus-review.vercel.app** — no login. Use Notes to read, Flashcards to drill, Quiz to test. Weak-area decks are linked from the home page. Progress is saved only in that browser.
 
 ## Local development
 
@@ -33,4 +33,7 @@ This app is a standard Next.js project. Connect the GitHub repo to [Vercel](http
 
 ## Live URL
 
-_Pending first deploy — this README is updated when the production URL exists._
+- Site: https://comptia-a-plus-review.vercel.app
+- Repo: https://github.com/LouisRodriguez12101815/comptia-a-plus-review
+
+If later `git push` does not auto-deploy, connect this GitHub repo to the Vercel project in the Vercel dashboard (Git integration). The first production deploy was uploaded with the Vercel CLI.
