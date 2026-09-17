@@ -1,0 +1,634 @@
+[
+  {
+    "id": "q-01",
+    "topicId": "core1-ch2",
+    "prompt": "A technician is installing a high-end graphics card. Which slot should they use for the best bandwidth?",
+    "choices": ["PCI", "AGP", "PCIe x1", "PCIe x16"],
+    "answer": 3,
+    "explanation": "PCIe x16 is the standard high-bandwidth slot for discrete GPUs. AGP is obsolete and PCI is too slow.",
+    "weak": false
+  },
+  {
+    "id": "q-02",
+    "topicId": "core1-ch2",
+    "prompt": "Which statement about M.2 and NVMe is correct?",
+    "choices": [
+      "M.2 is a protocol; NVMe is a form factor",
+      "M.2 is a form factor; NVMe is a protocol",
+      "Both are voltages supplied by the PSU",
+      "NVMe only works on PATA cables"
+    ],
+    "answer": 1,
+    "explanation": "M.2 describes the physical card. NVMe is the high-speed protocol. An M.2 SSD might be NVMe or SATA.",
+    "weak": false
+  },
+  {
+    "id": "q-03",
+    "topicId": "core1-ch2",
+    "prompt": "Using this class ranking, which storage path is fastest?",
+    "choices": ["SATA 3 HDD", "PATA SSD", "NVMe on PCIe/M.2", "SATA 1 SSD"],
+    "answer": 2,
+    "explanation": "NVMe over PCIe/M.2 is far faster than any SATA or PATA generation in the notes.",
+    "weak": false
+  },
+  {
+    "id": "q-04",
+    "topicId": "core1-ch2",
+    "prompt": "A user needs to archive a 20 GB video on optical media. Which media from the notes actually has enough capacity as a single disc?",
+    "choices": ["CD-R (~700 MB)", "Single-layer DVD (~4.7 GB)", "Single-sided single-layer Blu-ray (~25 GB)", "Double-sided DVD (~9–10 GB)"],
+    "answer": 2,
+    "explanation": "Only single-layer Blu-ray (~25 GB) clears 20 GB. DVD formats in the notes are too small.",
+    "weak": false
+  },
+  {
+    "id": "q-05",
+    "topicId": "core1-ch2",
+    "prompt": "A PC power supply takes electricity from a wall outlet and feeds the motherboard. What conversion is happening?",
+    "choices": ["DC to AC", "AC to DC", "AC to AC at 110V only", "DC to DC at +110V"],
+    "answer": 1,
+    "explanation": "The wall is AC. Components need DC. The PSU converts AC → DC. Reversing this is a common miss.",
+    "weak": true
+  },
+  {
+    "id": "q-06",
+    "topicId": "core1-ch2",
+    "prompt": "Which voltage is a standard PC power-supply rail in this material?",
+    "choices": ["+4.3V DC", "+8V DC", "+12V DC", "+110V DC"],
+    "answer": 2,
+    "explanation": "Standard rails include +3.3V, +5V, +12V, and −12V. +4.3, +8, and +110 are distractors.",
+    "weak": true
+  },
+  {
+    "id": "q-07",
+    "topicId": "core1-ch2",
+    "prompt": "Why would a file server use a redundant power supply?",
+    "choices": [
+      "To convert DC back to AC for monitors",
+      "To keep the system powered if the primary PSU fails",
+      "To raise SATA 3 to NVMe speeds",
+      "To disable hot-swap bays"
+    ],
+    "answer": 1,
+    "explanation": "Redundant PSUs are a failover for uptime, especially on servers.",
+    "weak": false
+  },
+  {
+    "id": "q-08",
+    "topicId": "core1-ch2",
+    "prompt": "Which device is hot-swappable in the sense used here?",
+    "choices": [
+      "A USB flash drive removed while the OS is running, after proper eject",
+      "A CPU pulled while the PSU is on",
+      "RAM yanked at the POST beep",
+      "A soldered NVMe chip on a laptop board"
+    ],
+    "answer": 0,
+    "explanation": "Hot-swap means power can stay on. USB and some drive bays qualify; CPUs and RAM do not.",
+    "weak": false
+  },
+  {
+    "id": "q-09",
+    "topicId": "core1-ch2",
+    "prompt": "RAID 5 in these notes requires a minimum of how many drives?",
+    "choices": ["1", "2", "3", "4"],
+    "answer": 2,
+    "explanation": "RAID 5 needs at least three drives for striping with parity.",
+    "weak": false
+  },
+  {
+    "id": "q-10",
+    "topicId": "core2-ch1",
+    "prompt": "A PC has 8 GB RAM and a 256 GB SSD but cannot install Windows 11. Which missing item is the most likely blocker in this guide?",
+    "choices": ["A CD-ROM drive", "TPM 2.0", "32-bit UEFI", "FAT32 on C:"],
+    "answer": 1,
+    "explanation": "TPM 2.0 is mandatory and is called out as the frequent blocker.",
+    "weak": true
+  },
+  {
+    "id": "q-11",
+    "topicId": "core2-ch1",
+    "prompt": "Which Windows edition cannot join a domain and does not include BitLocker in this comparison?",
+    "choices": ["Pro", "Enterprise", "Home", "Education (treated like Pro-class)"],
+    "answer": 2,
+    "explanation": "Home is local-account oriented: no domain join and no BitLocker in the class table.",
+    "weak": false
+  },
+  {
+    "id": "q-12",
+    "topicId": "core2-ch1",
+    "prompt": "A shop wants to move a 32-bit Windows installation to 64-bit Windows. What is required?",
+    "choices": [
+      "An in-place upgrade wizard",
+      "Sysprep /audit only",
+      "A clean install",
+      "Changing the page file to exFAT"
+    ],
+    "answer": 2,
+    "explanation": "32→64 bit is clean install only. There is no supported in-place path.",
+    "weak": true
+  },
+  {
+    "id": "q-13",
+    "topicId": "core2-ch1",
+    "prompt": "Place the boot stages in the correct order.",
+    "choices": [
+      "Logon → POST → kernel → boot loader → desktop",
+      "POST → boot loader → kernel load → logon → shell/desktop",
+      "Kernel → POST → desktop → boot loader → logon",
+      "Boot loader → desktop → POST → logon → kernel"
+    ],
+    "answer": 1,
+    "explanation": "POST, then boot loader, kernel, logon, then the shell.",
+    "weak": false
+  },
+  {
+    "id": "q-14",
+    "topicId": "core2-ch1",
+    "prompt": "A 5 GB installer must go on a USB used with both Windows and macOS. Which file system is the best pick from the notes?",
+    "choices": ["FAT32", "exFAT", "ReFS only", "CDFS"],
+    "answer": 1,
+    "explanation": "FAT32 cannot store files over 4 GB. exFAT is the cross-platform USB choice.",
+    "weak": false
+  },
+  {
+    "id": "q-15",
+    "topicId": "core2-ch1",
+    "prompt": "A user has an Allow permission from a group and an explicit Deny on the same NTFS folder. What happens?",
+    "choices": ["Allow wins", "The user is prompted", "Deny wins", "Permissions average out"],
+    "answer": 2,
+    "explanation": "Explicit Deny overrides Allow.",
+    "weak": false
+  },
+  {
+    "id": "q-16",
+    "topicId": "core2-ch2",
+    "prompt": "A printer will not install because Windows cannot talk to the USB controller. Which tool is the right first hardware console?",
+    "choices": ["services.msc", "devmgmt.msc", "Indexing Options", "USMT"],
+    "answer": 1,
+    "explanation": "Device Manager (devmgmt.msc) is for hardware and drivers, not services or search indexing.",
+    "weak": false
+  },
+  {
+    "id": "q-17",
+    "topicId": "core2-ch2",
+    "prompt": "Failed interactive logon attempts are recorded primarily in which Event Viewer log?",
+    "choices": ["Application", "Setup", "Security", "Indexing"],
+    "answer": 2,
+    "explanation": "Security logs cover logon attempts and permission denials.",
+    "weak": false
+  },
+  {
+    "id": "q-18",
+    "topicId": "core2-ch2",
+    "prompt": "A new PC uses UEFI firmware. Which partition table is required?",
+    "choices": ["MBR", "GPT", "FAT16 only", "Dynamic disks are mandatory"],
+    "answer": 1,
+    "explanation": "UEFI requires GPT. MBR is the legacy scheme with a four-primary-partition limit.",
+    "weak": false
+  },
+  {
+    "id": "q-19",
+    "topicId": "core2-ch2",
+    "prompt": "A user wants maximum power savings overnight but will not use the PC until morning. Which state writes RAM to disk?",
+    "choices": ["Sleep", "Hibernate", "Lock screen", "Fast Startup only"],
+    "answer": 1,
+    "explanation": "Hibernate writes memory to disk and powers down further than sleep.",
+    "weak": false
+  },
+  {
+    "id": "q-20",
+    "topicId": "core2-ch2",
+    "prompt": "Which maintenance action is appropriate for a SATA SSD?",
+    "choices": ["Weekly defragmentation", "TRIM", "Convert to PATA", "Disable all indexing forever as the only fix"],
+    "answer": 1,
+    "explanation": "TRIM informs the SSD which blocks are free. Defrag is for HDDs.",
+    "weak": false
+  },
+  {
+    "id": "q-21",
+    "topicId": "core2-ch3",
+    "prompt": "Which item is NOT a Windows setup pass in this material?",
+    "choices": ["auditSystem", "generalize", "OOBE", "WinPE"],
+    "answer": 3,
+    "explanation": "WinPE is a boot environment, not a pass. Mixing that up is a chapter 3 trap.",
+    "weak": true
+  },
+  {
+    "id": "q-22",
+    "topicId": "core2-ch3",
+    "prompt": "You will capture a reference image that must run on different hardware. Which sysprep switch is essential?",
+    "choices": ["/quiet", "/generalize", "/unattend only with no generalize", "/noreboot to skip shutdown forever"],
+    "answer": 1,
+    "explanation": "/generalize strips SIDs and hardware-specific drivers before capture.",
+    "weak": true
+  },
+  {
+    "id": "q-23",
+    "topicId": "core2-ch3",
+    "prompt": "Select the correct order for the class deployment drill.",
+    "choices": [
+      "WDS deploy → capture → sysprep",
+      "Capture with ImageX → sysprep → WDS",
+      "sysprep /oobe /generalize /shutdown → capture with ImageX/DISM → WDS deploy",
+      "USMT → MAP toolkit → sysprep"
+    ],
+    "answer": 2,
+    "explanation": "Prepare (sysprep) first, then capture, then deploy. Reversing the order is the classic miss.",
+    "weak": true
+  },
+  {
+    "id": "q-24",
+    "topicId": "core2-ch3",
+    "prompt": "Match the tool to the job.",
+    "choices": [
+      "sysprep captures the .wim; DISM prepares the PC",
+      "WDS prepares SIDs; sysprep PXE-boots targets",
+      "sysprep prepares; ImageX/DISM captures; WDS deploys",
+      "USMT deploys the .wim over Fibre Channel"
+    ],
+    "answer": 2,
+    "explanation": "Three different tools, three different jobs: prepare, capture, deploy.",
+    "weak": true
+  },
+  {
+    "id": "q-25",
+    "topicId": "core2-ch3",
+    "prompt": "Which edition cannot use the Windows Insider Program in these notes?",
+    "choices": ["Pro", "Enterprise", "Home", "Education"],
+    "answer": 2,
+    "explanation": "Home is not supported for Insider in the study guide.",
+    "weak": false
+  },
+  {
+    "id": "q-26",
+    "topicId": "core2-ch3",
+    "prompt": "A question asks for the public, twice-yearly Windows update branch. Which name should you avoid as the trap answer?",
+    "choices": ["Semi-Annual Channel", "LTSC", "Insider Program", "General Availability"],
+    "answer": 3,
+    "explanation": "The notes flag “General Availability” as a common wrong branch name. Semi-Annual Channel is the regular public track.",
+    "weak": false
+  },
+  {
+    "id": "q-27",
+    "topicId": "core2-ch3",
+    "prompt": "On a UEFI PC, where is the BCD stored?",
+    "choices": ["C:\\boot", "The ESP (EFI System Partition)", "HKCU only", "Inside pagefile.sys"],
+    "answer": 1,
+    "explanation": "Legacy MBR systems used C:\\boot. UEFI stores BCD on the ESP.",
+    "weak": false
+  },
+  {
+    "id": "q-28",
+    "topicId": "core2-ch3",
+    "prompt": "How many concurrent inbound SMB connections can a Windows workstation accept in this material?",
+    "choices": ["Unlimited", "20", "25", "40"],
+    "answer": 1,
+    "explanation": "The cap is 20. 25/30/40 are distractors you are supposed to reject.",
+    "weak": true
+  },
+  {
+    "id": "q-29",
+    "topicId": "core2-ch7",
+    "prompt": "According to the 5-step method, what should you do first?",
+    "choices": [
+      "Reimage immediately",
+      "Identify the problem and gather symptoms",
+      "Disable the firewall",
+      "Run sysprep"
+    ],
+    "answer": 1,
+    "explanation": "Identify first. Ask questions before changing the system.",
+    "weak": false
+  },
+  {
+    "id": "q-30",
+    "topicId": "core2-ch7",
+    "prompt": "You need Safe Mode plus the network so you can download a driver. Which variant?",
+    "choices": [
+      "Safe Mode (minimal)",
+      "Safe Mode with Command Prompt only",
+      "Safe Mode with Networking",
+      "Hibernate"
+    ],
+    "answer": 2,
+    "explanation": "Networking mode loads drivers plus the network stack.",
+    "weak": false
+  },
+  {
+    "id": "q-31",
+    "topicId": "core2-ch7",
+    "prompt": "A PC fails to boot. Which recovery step is the least destructive first attempt in the class hierarchy?",
+    "choices": ["Reset this PC", "Reimage", "Startup Repair", "Delete the ESP"],
+    "answer": 2,
+    "explanation": "Startup Repair is first. Reset and reimage come last.",
+    "weak": false
+  },
+  {
+    "id": "q-32",
+    "topicId": "core2-ch7",
+    "prompt": "A BSOD shows DRIVER_IRQL_NOT_LESS_OR_EQUAL after a GPU driver update. What is the best early action?",
+    "choices": [
+      "Replace the PSU voltages with +8V",
+      "Boot Safe Mode and roll back the driver",
+      "Format as FAT32",
+      "Enable a rogue DHCP server"
+    ],
+    "answer": 1,
+    "explanation": "That stop code points at a bad driver. Roll it back.",
+    "weak": false
+  },
+  {
+    "id": "q-33",
+    "topicId": "core2-ch7",
+    "prompt": "You need to see which hop is dropping packets, not just the route. Which command?",
+    "choices": ["tracert", "pathping", "arp -a", "tasklist"],
+    "answer": 1,
+    "explanation": "tracert is path only. pathping adds loss measurement.",
+    "weak": true
+  },
+  {
+    "id": "q-34",
+    "topicId": "core2-ch7",
+    "prompt": "ping 8.8.8.8 works, but https://example.com fails in a browser. What do you test next?",
+    "choices": ["PSU wattage", "nslookup / DNS settings", "RAID 0 stripe size", "TPM 1.2"],
+    "answer": 1,
+    "explanation": "IP connectivity works, names do not → DNS.",
+    "weak": true
+  },
+  {
+    "id": "q-35",
+    "topicId": "core2-ch7",
+    "prompt": "Correct malware process from the notes?",
+    "choices": [
+      "Quarantine → identify → educate → remediate",
+      "Identify and verify → quarantine → remediate → educate",
+      "Remediate → skip identify → reconnect to the LAN",
+      "Educate first, then ignore symptoms"
+    ],
+    "answer": 1,
+    "explanation": "Do not quarantine before you have identified/verified. Then isolate, remove, teach.",
+    "weak": true
+  },
+  {
+    "id": "q-36",
+    "topicId": "core2-ch7",
+    "prompt": "How often should antivirus definitions update in this guide?",
+    "choices": ["Yearly", "Weekly", "Daily", "Only after a BSOD"],
+    "answer": 2,
+    "explanation": "Daily. Weekly leaves a multi-day gap while malware changes constantly.",
+    "weak": true
+  },
+  {
+    "id": "q-37",
+    "topicId": "core2-ch7",
+    "prompt": "System files are corrupt. Which tool is appropriate?",
+    "choices": ["regedit as the primary fix", "sfc /scannow", "msconfig to edit HKLM", "A Records in DNS"],
+    "answer": 1,
+    "explanation": "SFC repairs system files. regedit is for registry data, not that job.",
+    "weak": false
+  },
+  {
+    "id": "q-38",
+    "topicId": "core2-ch7",
+    "prompt": "Windows is not activated. What is actually restricted according to the notes?",
+    "choices": [
+      "Apps cannot launch",
+      "Windows Update is permanently off",
+      "Personalization such as wallpaper",
+      "The NIC is disabled"
+    ],
+    "answer": 2,
+    "explanation": "Cosmetic/personalization limits. Apps, browsing, and updates still work.",
+    "weak": false
+  },
+  {
+    "id": "q-39",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Which ports does DHCP use?",
+    "choices": ["TCP 80 and 443", "UDP 67 and 68", "TCP 25 and 587", "UDP 53 only"],
+    "answer": 1,
+    "explanation": "DHCP: UDP 67 server, 68 client. DNS is typically UDP/TCP 53.",
+    "weak": false
+  },
+  {
+    "id": "q-40",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "What does DORA stand for?",
+    "choices": [
+      "Deny, Offer, Route, Allow",
+      "Discover, Offer, Request, Acknowledge",
+      "DNS, OSPF, RIP, ARP",
+      "Disk, Optical, RAID, Array"
+    ],
+    "answer": 1,
+    "explanation": "DHCP handshake: Discover, Offer, Request, Acknowledge.",
+    "weak": false
+  },
+  {
+    "id": "q-41",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "ipconfig /all shows 169.254.32.10. What does that mean?",
+    "choices": [
+      "A valid DHCP lease from the router",
+      "APIPA — DHCP failed",
+      "A public IPv6 address",
+      "A successful WDS capture"
+    ],
+    "answer": 1,
+    "explanation": "169.254.x.x is APIPA. The client could not get a real DHCP address.",
+    "weak": true
+  },
+  {
+    "id": "q-42",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Which DNS record maps a name to an IPv6 address?",
+    "choices": ["A", "MX", "CNAME", "AAAA"],
+    "answer": 3,
+    "explanation": "A is IPv4. AAAA is IPv6. Four As for the larger address.",
+    "weak": true
+  },
+  {
+    "id": "q-43",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "A workstation can ping 8.8.8.8 but cannot open https://comptia.org. Which is the best theory?",
+    "choices": ["Failed PSU AC→DC", "DNS failure", "RAID 0 disk loss", "Missing TPM"],
+    "answer": 1,
+    "explanation": "IP works, name does not → DNS, not a general network blackout.",
+    "weak": true
+  },
+  {
+    "id": "q-44",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Ping to a public IP fails and the name also fails. Best first theory?",
+    "choices": [
+      "AAAA record typo only",
+      "Broader network/connectivity problem",
+      "exFAT vs NTFS",
+      "Insider Program not on Home"
+    ],
+    "answer": 1,
+    "explanation": "If neither IP nor name works, it is not a DNS-only symptom.",
+    "weak": true
+  },
+  {
+    "id": "q-45",
+    "topicId": "networking-storage",
+    "prompt": "Which RAID level has no fault tolerance?",
+    "choices": ["RAID 1", "RAID 5", "RAID 10", "RAID 0"],
+    "answer": 3,
+    "explanation": "RAID 0 only stripes. Any disk loss destroys the array.",
+    "weak": false
+  },
+  {
+    "id": "q-46",
+    "topicId": "networking-storage",
+    "prompt": "A RAID 5 array is rebuilding after a disk replace. Can users keep working on the volume, according to this guide?",
+    "choices": [
+      "Yes, RAID 5 is always online",
+      "No — access is blocked until rebuild completes",
+      "Only if it is RAID 0",
+      "Only over Fibre Channel"
+    ],
+    "answer": 1,
+    "explanation": "Class drill: RAID 5 is not accessible during rebuild. RAID 10 can stay up.",
+    "weak": true
+  },
+  {
+    "id": "q-47",
+    "topicId": "networking-storage",
+    "prompt": "A RAID 10 array is rebuilding. What does this guide say about access?",
+    "choices": [
+      "The volume remains accessible because of mirrored pairs",
+      "All I/O is forbidden until month-long rebuild ends",
+      "RAID 10 cannot rebuild",
+      "You must convert to FAT32 first"
+    ],
+    "answer": 0,
+    "explanation": "Mirrored pairs let RAID 10 stay online during rebuild in these notes.",
+    "weak": true
+  },
+  {
+    "id": "q-48",
+    "topicId": "networking-storage",
+    "prompt": "A small office wants shared folders over Ethernet without a Fibre Channel fabric. Which fit?",
+    "choices": ["SAN with LUNs only", "NAS", "AGP RAID", "APIPA DHCP"],
+    "answer": 1,
+    "explanation": "NAS is Ethernet file storage for home/SMB. SAN is the high-end fabric option.",
+    "weak": false
+  },
+  {
+    "id": "q-49",
+    "topicId": "networking-storage",
+    "prompt": "Which statement is true?",
+    "choices": [
+      "RAID replaces offsite backups",
+      "3-2-1 means 3 copies, 2 media types, 1 offsite",
+      "3-2-1 is a DHCP scope option",
+      "NAS cannot share files"
+    ],
+    "answer": 1,
+    "explanation": "RAID is local redundancy. Backups (3-2-1) are disaster recovery. You want both.",
+    "weak": false
+  },
+  {
+    "id": "q-50",
+    "topicId": "weak-areas",
+    "prompt": "Weak-area drill: after building a reference PC, what is the next command before capture?",
+    "choices": [
+      "imagex /capture immediately on a live domain SID",
+      "sysprep /oobe /generalize /shutdown",
+      "wdsutil to image a dirty gold PC",
+      "chkdsk /F as a substitute for generalize"
+    ],
+    "answer": 1,
+    "explanation": "sysprep with /generalize must happen before ImageX/DISM capture.",
+    "weak": true
+  },
+  {
+    "id": "q-51",
+    "topicId": "weak-areas",
+    "prompt": "Weak-area drill: an A record is to IPv4 as an AAAA record is to…",
+    "choices": ["MAC addresses", "IPv6", "MX mail only", "APIPA"],
+    "answer": 1,
+    "explanation": "AAAA = IPv6. Memory trick: more As, bigger address.",
+    "weak": true
+  },
+  {
+    "id": "q-52",
+    "topicId": "weak-areas",
+    "prompt": "Weak-area drill: wall power versus computer internals.",
+    "choices": [
+      "Wall is DC; PC needs AC",
+      "Wall is AC; PC needs DC; PSU converts AC→DC",
+      "Both are always +12V AC",
+      "The GPU converts 110V DC to SATA"
+    ],
+    "answer": 1,
+    "explanation": "Do not reverse AC and DC.",
+    "weak": true
+  },
+  {
+    "id": "q-53",
+    "topicId": "weak-areas",
+    "prompt": "Weak-area drill: a Windows 10 PC will not upgrade to 11 despite 8 GB RAM. What is the usual hardware miss?",
+    "choices": ["TPM 2.0", "A Blu-ray burner", "RAID 0", "Exactly 20 SMB shares"],
+    "answer": 0,
+    "explanation": "TPM 2.0 is mandatory and often missing on older boards.",
+    "weak": true
+  },
+  {
+    "id": "q-54",
+    "topicId": "quick-reference",
+    "prompt": "You need to encrypt the internal Windows system volume. Which combination matches the cheat sheet?",
+    "choices": ["FAT32 + BitLocker", "exFAT only", "NTFS + BitLocker", "CDFS + EFS on a DVD"],
+    "answer": 2,
+    "explanation": "Internal C: is NTFS; BitLocker is the encryption path in the notes.",
+    "weak": false
+  },
+  {
+    "id": "q-55",
+    "topicId": "core2-ch7",
+    "prompt": "Which Task Manager tab is the right place to stop an unnecessary program from launching at boot?",
+    "choices": ["App History", "Startup", "Performance graphs only", "Details without changing Startup"],
+    "answer": 1,
+    "explanation": "The Startup tab controls boot-launched apps.",
+    "weak": false
+  },
+  {
+    "id": "q-56",
+    "topicId": "core2-ch3",
+    "prompt": "Which tool migrates user profiles/data rather than capturing a machine image?",
+    "choices": ["WDS", "ImageX", "USMT", "bootrec /fixmbr"],
+    "answer": 2,
+    "explanation": "USMT is user-state migration. It is not the capture/deploy path.",
+    "weak": false
+  },
+  {
+    "id": "q-57",
+    "topicId": "core1-ch2",
+    "prompt": "A technician claims PCIe x128 is the fastest video slot. What is wrong?",
+    "choices": [
+      "Nothing — x128 is standard",
+      "PCIe x128 is not a real standard; use x16",
+      "They should have used PATA",
+      "They need RAID 5 for GPUs"
+    ],
+    "answer": 1,
+    "explanation": "x16 is the real high-end graphics slot. x128 is a distractor.",
+    "weak": false
+  },
+  {
+    "id": "q-58",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "What does a DNS forwarder do?",
+    "choices": [
+      "Converts AC to DC",
+      "Sends queries the local server cannot answer to another DNS server",
+      "Assigns 169.254 addresses",
+      "Captures WIM images"
+    ],
+    "answer": 1,
+    "explanation": "Forwarders handle unresolved lookups by sending them upstream.",
+    "weak": false
+  }
+]

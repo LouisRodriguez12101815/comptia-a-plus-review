@@ -1,0 +1,652 @@
+[
+  {
+    "id": "core1-ch2",
+    "group": "core1",
+    "title": "Expansion Cards, Storage, Power Supplies",
+    "chapter": "Core 1 · Chapter 2",
+    "summary": "PCIe, storage speeds, optical capacity, PSU voltages, hot-swap, RAID 5, and video cards.",
+    "sections": [
+      {
+        "id": "expansion-slots",
+        "title": "Expansion slots and interfaces",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "PCIe (PCI Express) is the standard for GPUs and other high-speed cards.",
+              "PCIe x16 provides the highest bandwidth for video cards.",
+              "PCIe is a serial bus and is faster than older parallel buses.",
+              "M.2 is a form factor for NVMe or SATA SSDs.",
+              "NVMe is the fastest storage protocol (about 3.5–4 GB/s).",
+              "SATA 3 is about 600 MB/s. PATA/IDE is legacy (40-pin, obsolete).",
+              "A NIC (Network Interface Card) connects a device to a network."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "storage-speeds",
+        "title": "Storage types and speed ranking",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Fastest to slowest: PCIe (~4.0 GB/s) → M.2/NVMe (~3.5 GB/s) → SATA 3 (600 MB/s) → SATA 2 (300 MB/s) → SATA 1 (150 MB/s) → PATA (legacy).",
+              "HDD = mechanical, slower. SSD = no moving parts, faster. NVMe = newest/fastest standard.",
+              "Optical drives (DVD, Blu-ray) are declining. Memory cards (SD, microSD, CompactFlash) are for cameras. USB flash drives are portable storage."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "optical",
+        "title": "Optical media capacity",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Single-sided, single-layer Blu-ray ≈ 25 GB.",
+              "Double-sided, single-layer DVD+R ≈ 9–10 GB.",
+              "DVD+R/DVD-R single-layer ≈ 4.7 GB.",
+              "CD ≈ 700 MB.",
+              "A 20 GB video file needs a larger format than single-layer DVD."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "power-supplies",
+        "title": "Power supplies",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Wall outlet is AC. The computer needs DC. The PSU converts AC → DC. Reversing input/output is a common exam mistake."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Standard PC voltages: +3.3V DC, +5V DC, +12V DC, −12V DC (rarely used).",
+              "Not standard: +4.3V, +8V, +110V as DC rail values.",
+              "Wattage varies (100W, 500W, 850W) and must match system needs. Voltage conversion stays AC→DC.",
+              "Redundant PSU = backup if the primary fails; critical on servers. Often one on / one standby."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hot-swap-hdd",
+        "title": "Hot-swap and hard drive install",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Hot-swappable: power does not need to be turned off before insert/remove (USB, many external drives, some bays).",
+              "Hot-swap is not the same as yanking a drive immediately after shutdown while it is still spinning/hot.",
+              "Modern internal HDDs do not need a separate external power source; the PSU has capacity.",
+              "Match form factor. Secure with at least two screws (one per side; preferably two each side). Do not block airflow with cables."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "raid5-video",
+        "title": "RAID 5 basics and video cards",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "RAID 5: minimum 3 drives, striping with parity, survives one drive failure.",
+              "Rebuild time can be hours to months in enterprise — a real operational challenge.",
+              "Discrete video: PCIe x16 is the standard. Can coexist with integrated video (may disable IGP in BIOS).",
+              "PCIe cards are usually auto-detected; still install the correct driver.",
+              "PCIe x128 is not a real standard. AGP is obsolete. Plain PCI is too slow for video."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-ch1",
+    "group": "core2",
+    "title": "Operating System Basics",
+    "chapter": "Core 2 · Chapter 1",
+    "summary": "Windows 11 requirements, editions, boot order, file systems, registry, and accounts.",
+    "sections": [
+      {
+        "id": "win11-reqs",
+        "title": "Windows 11 system requirements",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "TPM 2.0 is mandatory and is often the upgrade blocker — not just RAM or disk size."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Processor: 1.0 GHz or faster, 2 cores minimum.",
+              "RAM: 4 GB minimum (8 GB recommended).",
+              "Storage: 64 GB minimum (CompTIA spec; Microsoft marketing numbers can be lower).",
+              "Display: 720p, 9\" minimum. Firmware: UEFI with Secure Boot capable."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "editions-upgrade",
+        "title": "Editions and upgrade paths",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Home: local accounts only, no domain join, no BitLocker, no Remote Desktop host.",
+              "Pro: domain join, BitLocker, Remote Desktop, Group Policy.",
+              "Enterprise: domain-oriented, full feature set.",
+              "Windows 11 is 64-bit.",
+              "Same OS family and same bitness can upgrade. 32-bit → 64-bit requires a clean install.",
+              "Win10 Home → Win11 Pro can be an in-family upgrade path when licensing allows."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "boot-process",
+        "title": "Boot process (in order)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1. POST — BIOS/UEFI checks hardware.",
+              "2. Boot loader — locates OS files.",
+              "3. Kernel load — Windows core loads.",
+              "4. Logon — user authentication.",
+              "5. Shell/desktop — GUI loads.",
+              "Won't start at all → POST/hardware. BSOD during boot → driver/kernel. Stuck at logon → network/auth. Black screen → often display driver."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "file-systems",
+        "title": "File systems",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Feature", "FAT32", "NTFS", "exFAT"],
+            "rows": [
+              ["Max file size", "4 GB", "Huge (16 EB class)", "Huge (16 EB class)"],
+              ["Permissions", "No", "Yes", "No"],
+              ["Encryption / BitLocker", "No", "Yes", "No"],
+              ["Journaling", "No", "Yes", "Limited"],
+              ["Best for", "Legacy", "Internal Windows", "USB / cross-platform"]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Internal C: = NTFS. External USB / Mac+Windows = exFAT. Legacy only = FAT32.",
+              "A 5 GB file will not fit on FAT32."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "registry-accounts",
+        "title": "Registry and user accounts",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Registry is a hierarchical configuration database. Do not edit without a reason; bad edits can prevent boot.",
+              "HKLM = hardware, system, services. HKCU = current user settings. System Restore backs up registry.",
+              "Administrator = full access. Standard = apps, limited system changes. Guest = very restricted. Service accounts run background services, not interactive logon.",
+              "Explicit Deny beats Allow. Group Policy can lock settings company-wide. Use least privilege."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-ch2",
+    "group": "core2",
+    "title": "Windows Configuration",
+    "chapter": "Core 2 · Chapter 2",
+    "summary": "MMC snap-ins, Event Viewer, registry hives, GPT/MBR, power modes, TRIM vs defrag.",
+    "sections": [
+      {
+        "id": "mmc",
+        "title": "MMC snap-ins (.msc, not .exe)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "eventvwr.msc — Event Viewer",
+              "devmgmt.msc — Device Manager (hardware only)",
+              "diskmgmt.msc — Disk Management",
+              "services.msc — Services",
+              "compmgmt.msc — Computer Management",
+              "gpedit.msc — Group Policy Editor",
+              "msconfig — System Configuration (often launched as msconfig, not a typical .msc exam mix-up)."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Device Manager is hardware only: adapters, USB, sound. It is not for apps or services."
+          }
+        ]
+      },
+      {
+        "id": "event-index",
+        "title": "Event Viewer, indexing, Task Scheduler",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "System log: OS, drivers, reboots. Application: app crashes. Security: logons and permission denials. Setup: install events.",
+              "Indexing Options control what Windows Search indexes. File Explorer Options control view settings — different tools.",
+              "Task Scheduler runs maintenance, backups, and utilities on a schedule."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hives-partitions",
+        "title": "Registry hives and partitions",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Five main hives: HKLM, HKCU, HKCR (file associations), HKEY_USERS (all profiles), HKEY_CURRENT_CONFIG (hardware profile).",
+              "MBR: legacy, max 4 primary partitions. GPT: modern, many partitions. UEFI requires GPT.",
+              "Boot partition holds boot files. ESP (EFI System Partition) holds BCD on UEFI. WinRE is recovery."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "power-trim",
+        "title": "Power modes, defrag, TRIM",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Sleep/standby: RAM stays powered, fast wake. Hibernate: RAM written to disk, slower wake, less power. Shutdown: full power off.",
+              "Defragment HDDs. Use TRIM on SSDs (tells the drive which blocks are free). Do not defrag SSDs as a performance habit."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-ch3",
+    "group": "core2",
+    "title": "Windows Administration",
+    "chapter": "Core 2 · Chapter 3",
+    "summary": "Sysprep, ImageX/DISM, WDS, setup passes, updates, BCD, bootrec, 20 SMB connections.",
+    "weak": true,
+    "sections": [
+      {
+        "id": "setup-passes",
+        "title": "Setup passes (WinPE is not a pass)",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "WinPE is the environment you boot into. It is not a Windows setup pass."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "auditSystem — system-wide setup",
+              "generalize — strips hardware-specific drivers and SIDs",
+              "auditUser — user-specific setup",
+              "OOBE — Out-of-Box Experience for the first user"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "deploy-workflow",
+        "title": "Deployment workflow (correct order)",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "code",
+            "text": "1. Configure reference PC\n2. sysprep /oobe /generalize /shutdown   ← PREPARE first\n3. Boot WinPE\n4. imagex /capture  or  DISM /Capture-Image   ← CAPTURE\n5. Add image to WDS\n6. PXE-boot targets\n7. WDS deploys image   ← DEPLOY\n8. Each PC boots to OOBE"
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "sysprep MUST run before capture. /generalize removes hardware bindings so the image works on other PCs."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "sysprep = prepare. ImageX/DISM = capture .wim. WDS = deploy over the network.",
+              "USMT migrates user data. MAP toolkit assesses hardware. Different jobs."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "updates-arch",
+        "title": "Insider, update branches, 32→64",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Insider Program: not on Home. Supported on Pro, Education, Enterprise.",
+              "Do not pick “General Availability” as the branch name on this material. Semi-Annual Channel = regular public. LTSC = long-term enterprise. Insider = preview.",
+              "Security updates fix vulns (highest priority). Critical = major bugs. Feature updates bump version (21H2 → 22H2). Quality rollups = monthly cumulative. Optional = drivers/extras.",
+              "32-bit → 64-bit is clean install only. No in-place, no intermediate stepping stone."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bcd-bootrec-smb",
+        "title": "BCD, bootrec, concurrent connections",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "BCD location: legacy MBR → C:\\boot. UEFI → ESP.",
+              "bootrec /rebuildbcd — rebuild BCD. /fixmbr — MBR. /fixboot — boot sector. /scanos — find Windows installs.",
+              "Windows workstation SMB inbound connection limit is 20 — not 25, 30, or 40."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-ch7",
+    "group": "core2",
+    "title": "Troubleshooting OS and Security",
+    "chapter": "Core 2 · Chapter 7",
+    "summary": "Methodology, Safe Mode, BSOD, CLI tools, malware steps, Task Manager, mobile issues.",
+    "sections": [
+      {
+        "id": "method-safe",
+        "title": "Methodology and Safe Mode",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1 Identify → 2 theory → 3 test theory → 4 plan/implement → 5 verify and document.",
+              "Ask questions before changing things.",
+              "Safe Mode (minimal): drivers only. With networking: drivers + network. With Command Prompt: minimal + cmd.",
+              "Win10/11: Shift+Restart → Troubleshoot → Advanced → Startup Settings → F4/F5/F6."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "boot-bsod",
+        "title": "Boot recovery hierarchy and BSOD",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Order: Startup Repair → System Restore → bootrec → SFC → Reset this PC → reimage.",
+              "Note the stop code. Safe Mode → roll back driver → uninstall recent software → restore → memory diagnostic.",
+              "DRIVER_IRQL_NOT_LESS_OR_EQUAL → bad driver. PAGE_FAULT → RAM. SYSTEM_SERVICE_EXCEPTION → service crash."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cli-net",
+        "title": "CLI tools and network flow",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Tool", "Use"],
+            "rows": [
+              ["ipconfig /all", "IP, DHCP server, DNS"],
+              ["ipconfig /release && /renew", "New DHCP lease"],
+              ["ping", "Connectivity"],
+              ["nslookup", "DNS query"],
+              ["tracert", "Path only"],
+              ["pathping", "Path plus packet loss"],
+              ["netstat", "Connections and ports"],
+              ["arp -a", "MAC/IP cache"],
+              ["chkdsk /F", "Fix disk errors"],
+              ["sfc /scannow", "Repair system files"],
+              ["DISM ... RestoreHealth", "Repair Windows image"],
+              ["tasklist / taskkill", "List or end processes"]
+            ]
+          },
+          {
+            "type": "code",
+            "text": "ipconfig /all\n  169.254.x.x → DHCP failed → release/renew\nping 8.8.8.8 works, sites fail → DNS (nslookup)\nping 8.8.8.8 fails → network/firewall/ISP"
+          }
+        ]
+      },
+      {
+        "id": "malware-av-sfc",
+        "title": "Malware, AV, SFC vs regedit, activation",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Malware order: identify/verify first, then quarantine, remediate, educate. Do not skip identify."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Antivirus definitions: daily, not weekly. New malware is constant.",
+              "SFC repairs system files. regedit edits the registry. Do not use regedit to “fix” SFC-class corruption.",
+              "Unactivated Windows: personalization (wallpaper) limited. Apps, updates, and browsing still work."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "taskmgr-mobile",
+        "title": "Task Manager, performance, mobile",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Tabs: Processes, Performance, App History, Startup, Services, Details.",
+              "High CPU/RAM: identify in Processes, end or uninstall. 100% disk: check indexing, search, failing HDD, or missing TRIM on SSD. Network spike: identify the process.",
+              "Battery drain: limit background apps. Overheating can throttle or shut down. WWAN is cellular; Wi-Fi is local wireless. Auto-connect to open Wi-Fi is a risk."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "networking-dns-dhcp",
+    "group": "networking",
+    "title": "DNS and DHCP",
+    "chapter": "Networking",
+    "summary": "DORA, APIPA, ports, DNS records, forwarders, and failure symptoms.",
+    "sections": [
+      {
+        "id": "dhcp",
+        "title": "DHCP",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Ports: UDP 67 (server) and UDP 68 (client).",
+              "DORA: Discover, Offer, Request, Acknowledge.",
+              "APIPA 169.254.x.x means DHCP failed. It is not a usable routed address.",
+              "Leases expire; clients renew. Rogue DHCP is a security issue; DHCP snooping / authorized servers help.",
+              "3-2-1 backup is a backup rule, not a DHCP setting."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dns",
+        "title": "DNS",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "DNS maps names to IPs.",
+              "A = IPv4. AAAA = IPv6 (four As, larger address).",
+              "CNAME = alias. MX = mail. PTR = reverse. TXT = text/SPF-style records.",
+              "A forwarder sends unresolved queries to another DNS server.",
+              "Name fails but IP works → DNS. Both fail → network path."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "networking-storage",
+    "group": "networking",
+    "title": "RAID, NAS, SAN, backups",
+    "chapter": "Networking / storage",
+    "summary": "RAID 0/1/5/10, NAS vs SAN, and the 3-2-1 backup rule.",
+    "sections": [
+      {
+        "id": "raid",
+        "title": "RAID configurations",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Level", "Min disks", "Idea", "Fault tolerance", "Rebuild access"],
+            "rows": [
+              ["RAID 0", "2", "Stripe", "None", "N/A — any disk loss kills the array"],
+              ["RAID 1", "2", "Mirror", "1 disk", "Survives one failed mirror member"],
+              ["RAID 5", "3", "Stripe + parity", "1 disk", "Often cannot use volume until rebuild finishes"],
+              ["RAID 10", "4", "Mirror + stripe", "1 per mirror pair", "Can often stay online during rebuild"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "RAID 5: blocked during rebuild on this study guide. RAID 10: accessible during rebuild because of mirrored pairs."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Hardware RAID uses a controller card; software/virtual RAID is OS-based. Servers often have onboard RAID; desktops may need a card.",
+              "RAID presents disks as one logical drive. RAID is not a backup."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nas-san-backup",
+        "title": "NAS, SAN, 3-2-1",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "NAS: Ethernet (often 1–2.5 Gb), sometimes USB. File sharing and media for home/SMB. Ethernet can bottleneck. WD common; Synology can lock to vendor drives.",
+              "SAN: high-speed enterprise (Fibre Channel, LUNs). CapEx hardware vs cloud OpEx.",
+              "3-2-1: 3 copies, 2 media types, 1 offsite. RAID = local redundancy. Backups = disaster recovery. You want both."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "weak-areas",
+    "group": "weak",
+    "title": "Critical weak areas",
+    "chapter": "Must lock in",
+    "summary": "Ten high-miss items from class drills: sysprep, DNS records, RAID rebuild, TPM, AC/DC, and more.",
+    "weak": true,
+    "sections": [
+      {
+        "id": "weak-list",
+        "title": "Ten items to memorize",
+        "weak": true,
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1. sysprep first, then ImageX/DISM capture, then WDS deploy. /generalize is the key switch.",
+              "2. A = IPv4. AAAA = IPv6.",
+              "3. IP works, name fails = DNS. Neither works = network.",
+              "4. tracert = path. pathping = path + loss.",
+              "5. RAID 5 cannot be used during rebuild (this guide). RAID 10 can.",
+              "6. TPM 2.0 is mandatory for Windows 11.",
+              "7. Wall = AC, PC = DC, PSU converts AC→DC.",
+              "8. Workstation SMB cap = 20 connections.",
+              "9. 169.254.x.x = APIPA = DHCP failed.",
+              "10. Antivirus definitions update daily, not weekly."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quick-reference",
+    "group": "reference",
+    "title": "Quick reference",
+    "chapter": "Cheat sheets",
+    "summary": "File system picks, boot repair order, network diagnosis, and command map.",
+    "sections": [
+      {
+        "id": "fs-boot",
+        "title": "File systems and boot repair",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Scenario", "Answer"],
+            "rows": [
+              ["External USB, cross-platform", "exFAT"],
+              ["Internal C:", "NTFS"],
+              ["Encrypt the drive", "NTFS + BitLocker"],
+              ["Legacy only", "FAT32"],
+              ["5 GB file on USB", "exFAT or NTFS (not FAT32)"]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Boot hierarchy: Startup Repair → System Restore → bootrec → SFC → Reset this PC → reimage."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "net-commands",
+        "title": "Network diagnosis and commands",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Issue", "Command"],
+            "rows": [
+              ["DHCP failed", "ipconfig /release && /renew"],
+              ["Can't resolve names", "nslookup"],
+              ["Trace path", "tracert"],
+              ["Path + packet loss", "pathping"],
+              ["Ports / connections", "netstat -a"],
+              ["MAC mappings", "arp -a"],
+              ["Disk corruption", "chkdsk C: /F"],
+              ["System files", "sfc /scannow"],
+              ["List / kill process", "tasklist / taskkill /IM name.exe"]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
