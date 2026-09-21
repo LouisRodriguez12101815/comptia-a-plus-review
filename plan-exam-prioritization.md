@@ -26,4 +26,5 @@ Let each learner choose the certification track they need now, while retaining t
 - [x] Update project documentation.
 - [x] Run data validation, lint, production build, and browser interaction checks.
 - [x] Commit and push after verification.
-- [ ] Link the existing Vercel project to the GitHub repository, then verify the production deployment.
+- [x] Link the existing Vercel project to the GitHub repository.
+- [ ] Verify the production deployment.
