@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { getQuestions, topics } from "@/lib/content";
+import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
+import { useStudyFocus } from "@/app/components/useStudyFocus";
+import { getQuestions, getTopics } from "@/lib/content";
 import { recordQuiz } from "@/lib/progress";
-import type { Question } from "@/lib/types";
+import type { Question, StudyFocus } from "@/lib/types";
 
 function shuffle<T>(items: T[]) {
   const copy = [...items];
@@ -15,6 +17,7 @@ function shuffle<T>(items: T[]) {
 }
 
 export function QuizRunner({ initialTopic }: { initialTopic: string }) {
+  const [focus, setFocus] = useStudyFocus();
   const [topicId, setTopicId] = useState(initialTopic);
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
@@ -22,11 +25,17 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [done, setDone] = useState(false);
 
-  const pool = useMemo(() => getQuestions(topicId), [topicId]);
+  const pool = useMemo(() => getQuestions(topicId, focus), [topicId, focus]);
+  const topicOptions = getTopics(focus);
   const [quiz, setQuiz] = useState<Question[]>([]);
 
   const current = quiz[index];
   const correctCount = quiz.filter((question) => answers[question.id] === question.answer).length;
+
+  function changeFocus(nextFocus: StudyFocus) {
+    setFocus(nextFocus);
+    setTopicId("all");
+  }
 
   function start() {
     const deck = shuffle(pool).slice(0, Math.min(15, pool.length));
@@ -57,22 +66,25 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
 
   if (!started) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-5">
+        <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <ExamFocusPicker focus={focus} onChange={changeFocus} />
+        </section>
         <select
           value={topicId}
           onChange={(event) => setTopicId(event.target.value)}
           className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 sm:w-auto"
         >
-          <option value="all">Mixed (all topics)</option>
+          <option value="all">Mixed focused quiz</option>
           <option value="weak">Weak areas only</option>
-          {topics.map((topic) => (
+          {topicOptions.map((topic) => (
             <option key={topic.id} value={topic.id}>
               {topic.chapter}: {topic.title}
             </option>
           ))}
         </select>
         <p className="text-sm text-slate-400">
-          {pool.length} original practice questions in this pool. A sitting uses up to 15,
+          {pool.length} original practice questions in this focused pool. A sitting uses up to 15,
           shuffled. Scores stay on this device.
         </p>
         <button
@@ -156,9 +168,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
                   isPicked
                     ? "border-teal-400 bg-teal-950/50"
                     : "border-slate-700 bg-slate-900"
-                } ${
-                  showFeedback && isCorrect ? "ring-1 ring-teal-400" : ""
-                }`}
+                } ${showFeedback && isCorrect ? "ring-1 ring-teal-400" : ""}`}
               >
                 {choice}
               </button>

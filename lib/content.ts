@@ -1,7 +1,15 @@
 import flashcardsJson from "@/content/flashcards.json";
 import questionsJson from "@/content/questions.json";
 import topicsJson from "@/content/topics.json";
-import type { Flashcard, Question, Topic, TopicGroup } from "@/lib/types";
+import { examMatches } from "@/lib/exams";
+import type {
+  ExamCode,
+  Flashcard,
+  Question,
+  StudyFocus,
+  Topic,
+  TopicGroup,
+} from "@/lib/types";
 
 export const topics = topicsJson as Topic[];
 export const flashcards = flashcardsJson as Flashcard[];
@@ -19,19 +27,46 @@ export function getTopic(id: string): Topic | undefined {
   return topics.find((topic) => topic.id === id);
 }
 
-export function getFlashcards(topicId?: string): Flashcard[] {
-  if (!topicId || topicId === "all") return flashcards;
-  if (topicId === "weak") return flashcards.filter((card) => card.weak);
-  return flashcards.filter((card) => card.topicId === topicId);
+export function getTopics(focus: StudyFocus = "all"): Topic[] {
+  return topics.filter((topic) => examMatches(topic.examCodes, focus));
 }
 
-export function getQuestions(topicId?: string): Question[] {
-  if (!topicId || topicId === "all") return questions;
-  if (topicId === "weak") return questions.filter((question) => question.weak);
-  return questions.filter((question) => question.topicId === topicId);
+function itemExamCodes(item: Flashcard | Question): ExamCode[] {
+  return item.examCodes ?? getTopic(item.topicId)?.examCodes ?? [];
 }
 
-export function searchNotes(query: string): {
+function cardMatchesFocus(card: Flashcard, focus: StudyFocus): boolean {
+  return examMatches(itemExamCodes(card), focus);
+}
+
+function questionMatchesFocus(question: Question, focus: StudyFocus): boolean {
+  return examMatches(itemExamCodes(question), focus);
+}
+
+export function getFlashcards(
+  topicId: string = "all",
+  focus: StudyFocus = "all",
+): Flashcard[] {
+  const focused = flashcards.filter((card) => cardMatchesFocus(card, focus));
+  if (topicId === "all") return focused;
+  if (topicId === "weak") return focused.filter((card) => card.weak);
+  return focused.filter((card) => card.topicId === topicId);
+}
+
+export function getQuestions(
+  topicId: string = "all",
+  focus: StudyFocus = "all",
+): Question[] {
+  const focused = questions.filter((question) => questionMatchesFocus(question, focus));
+  if (topicId === "all") return focused;
+  if (topicId === "weak") return focused.filter((question) => question.weak);
+  return focused.filter((question) => question.topicId === topicId);
+}
+
+export function searchNotes(
+  query: string,
+  focus: StudyFocus = "all",
+): {
   topic: Topic;
   section: Topic["sections"][number];
   snippet: string;
@@ -42,7 +77,7 @@ export function searchNotes(query: string): {
   const hits: { topic: Topic; section: Topic["sections"][number]; snippet: string }[] =
     [];
 
-  for (const topic of topics) {
+  for (const topic of getTopics(focus)) {
     for (const section of topic.sections) {
       const haystack = [
         topic.title,

@@ -1,38 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { flashcards, questions, topics } from "@/lib/content";
-import { loadProgress, type Progress } from "@/lib/progress";
+import { useSyncExternalStore } from "react";
+import { getFlashcards, getQuestions, getTopics } from "@/lib/content";
+import { examShortLabel } from "@/lib/exams";
+import {
+  getProgressSnapshot,
+  getServerProgressSnapshot,
+  subscribeProgress,
+} from "@/lib/progress";
+import { useStudyFocus } from "@/app/components/useStudyFocus";
 
 export function ProgressDashboard() {
-  const [progress, setProgress] = useState<Progress | null>(null);
-
-  useEffect(() => {
-    setProgress(loadProgress());
-  }, []);
-
-  if (!progress) {
-    return <p className="text-sm text-slate-500">Loading progress from this browser…</p>;
-  }
-
-  const known = Object.keys(progress.knownCards).length;
-  const last = progress.quizAttempts[0];
+  const [focus] = useStudyFocus();
+  const progress = useSyncExternalStore(
+    subscribeProgress,
+    getProgressSnapshot,
+    getServerProgressSnapshot,
+  );
+  const cards = getFlashcards("all", focus);
+  const practiceQuestions = getQuestions("all", focus);
+  const focusedTopics = getTopics(focus);
+  const cardIds = new Set(cards.map((card) => card.id));
+  const known = Object.keys(progress.knownCards).filter((id) => cardIds.has(id)).length;
+  const last = progress.quizAttempts.find((attempt) => {
+    if (focus === "all") return true;
+    return getQuestions(attempt.topicId, focus).length > 0;
+  });
 
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      <Stat label="Flashcards marked known" value={`${known} / ${flashcards.length}`} />
-      <Stat label="Practice questions" value={`${questions.length}`} />
+      <Stat label={`${examShortLabel(focus)} cards known`} value={`${known} / ${cards.length}`} />
+      <Stat label="Practice questions" value={`${practiceQuestions.length}`} />
       <Stat
-        label="Last quiz on this device"
+        label="Latest matching quiz"
         value={
           last
             ? `${last.correct}/${last.total} (${Math.round((last.correct / last.total) * 100)}%)`
             : "Not taken yet"
         }
       />
-      <div className="sm:col-span-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 sm:col-span-3">
         <p className="text-sm text-slate-400">
-          {topics.length} note chapters · Progress is stored in this browser only (no accounts).
+          {focusedTopics.length} relevant note chapters · Progress and exam priority stay in this browser only.
         </p>
       </div>
     </div>
