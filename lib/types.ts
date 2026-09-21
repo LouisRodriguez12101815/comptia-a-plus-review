@@ -48,7 +48,7 @@ export type Question = {
   examCodes?: ExamCode[];
   prompt: string;
   choices: string[];
-  answer: number;
+  answer: number | number[];
   explanation: string;
   weak?: boolean;
 };

@@ -16,13 +16,38 @@ function shuffle<T>(items: T[]) {
   return copy;
 }
 
+function correctIndices(question: Question): number[] {
+  return Array.isArray(question.answer) ? question.answer : [question.answer];
+}
+
+function sameSet(a: number[], b: number[]) {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].sort((x, y) => x - y);
+  const sortedB = [...b].sort((x, y) => x - y);
+  return sortedA.every((value, i) => value === sortedB[i]);
+}
+
+function isCorrectPick(question: Question, pick: number | number[] | undefined) {
+  if (pick === undefined || pick === null) return false;
+  if (Array.isArray(question.answer)) {
+    return Array.isArray(pick) && sameSet(pick, question.answer);
+  }
+  return pick === question.answer;
+}
+
+function answerLabel(question: Question, pick: number | number[] | undefined) {
+  if (pick === undefined || pick === null) return "—";
+  const indices = Array.isArray(pick) ? pick : [pick];
+  return indices.map((i) => question.choices[i]).join(" · ");
+}
+
 export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   const [focus, setFocus] = useStudyFocus();
   const [topicId, setTopicId] = useState(initialTopic);
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [picked, setPicked] = useState<number[]>([]);
+  const [answers, setAnswers] = useState<Record<string, number | number[]>>({});
   const [done, setDone] = useState(false);
 
   const pool = useMemo(() => getQuestions(topicId, focus), [topicId, focus]);
@@ -30,7 +55,10 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   const [quiz, setQuiz] = useState<Question[]>([]);
 
   const current = quiz[index];
-  const correctCount = quiz.filter((question) => answers[question.id] === question.answer).length;
+  const multi = current !== undefined && Array.isArray(current.answer);
+  const correctCount = quiz.filter((question) =>
+    isCorrectPick(question, answers[question.id]),
+  ).length;
 
   function changeFocus(nextFocus: StudyFocus) {
     setFocus(nextFocus);
@@ -41,19 +69,28 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
     const deck = shuffle(pool).slice(0, Math.min(15, pool.length));
     setQuiz(deck);
     setIndex(0);
-    setSelected(null);
+    setPicked([]);
     setAnswers({});
     setDone(false);
     setStarted(true);
   }
 
+  function togglePick(choiceIndex: number) {
+    setPicked((prev) =>
+      prev.includes(choiceIndex)
+        ? prev.filter((i) => i !== choiceIndex)
+        : [...prev, choiceIndex],
+    );
+  }
+
   function submit() {
-    if (selected === null || !current) return;
-    const nextAnswers = { ...answers, [current.id]: selected };
+    if (!current || picked.length === 0) return;
+    const value = multi ? picked : picked[0];
+    const nextAnswers = { ...answers, [current.id]: value };
     setAnswers(nextAnswers);
     if (index + 1 >= quiz.length) {
       const missed = quiz
-        .filter((question) => nextAnswers[question.id] !== question.answer)
+        .filter((question) => !isCorrectPick(question, nextAnswers[question.id]))
         .map((question) => question.id);
       const correct = quiz.length - missed.length;
       recordQuiz({ topicId, correct, total: quiz.length, missedIds: missed });
@@ -61,7 +98,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
       return;
     }
     setIndex(index + 1);
-    setSelected(null);
+    setPicked([]);
   }
 
   if (!started) {
@@ -100,7 +137,9 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   }
 
   if (done) {
-    const missed = quiz.filter((question) => answers[question.id] !== question.answer);
+    const missed = quiz.filter(
+      (question) => !isCorrectPick(question, answers[question.id]),
+    );
     return (
       <div className="space-y-6">
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6">
@@ -122,10 +161,10 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
               >
                 <p className="font-medium text-white">{question.prompt}</p>
                 <p className="mt-2 text-sm text-red-300">
-                  Your answer: {question.choices[answers[question.id]]}
+                  Your answer: {answerLabel(question, answers[question.id])}
                 </p>
                 <p className="mt-1 text-sm text-teal-200">
-                  Correct: {question.choices[question.answer]}
+                  Correct: {answerLabel(question, question.answer)}
                 </p>
                 <p className="mt-2 text-sm text-slate-400">{question.explanation}</p>
               </article>
@@ -146,29 +185,38 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
     );
   }
 
+  const revealed = answers[current.id] !== undefined;
+
   return (
     <div className="space-y-5">
       <p className="text-sm text-slate-400">
         Question {index + 1} of {quiz.length}
         {current.weak ? " · Weak area" : ""}
+        {multi ? " · Select all that apply" : ""}
       </p>
       <h2 className="text-xl font-medium text-white">{current.prompt}</h2>
       <ul className="space-y-2">
         {current.choices.map((choice, choiceIndex) => {
-          const isPicked = selected === choiceIndex;
-          const revealed = answers[current.id] !== undefined;
-          const isCorrect = choiceIndex === current.answer;
-          const showFeedback = revealed && (isPicked || isCorrect);
+          const isPicked = picked.includes(choiceIndex);
+          const isRight = correctIndices(current).includes(choiceIndex);
+          const showFeedback = revealed && (isPicked || isRight);
+          const feedbackState = showFeedback
+            ? isRight
+              ? " ring-1 ring-teal-400"
+              : " ring-1 ring-red-400"
+            : "";
           return (
             <li key={choice}>
               <button
                 type="button"
-                onClick={() => setSelected(choiceIndex)}
+                onClick={() => {
+                  if (!revealed) togglePick(choiceIndex);
+                }}
                 className={`w-full rounded-xl border px-4 py-3 text-left ${
                   isPicked
                     ? "border-teal-400 bg-teal-950/50"
                     : "border-slate-700 bg-slate-900"
-                } ${showFeedback && isCorrect ? "ring-1 ring-teal-400" : ""}`}
+                }${feedbackState}`}
               >
                 {choice}
               </button>
@@ -176,7 +224,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           );
         })}
       </ul>
-      {answers[current.id] !== undefined && (
+      {revealed && (
         <p className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300">
           {current.explanation}
         </p>
@@ -184,20 +232,21 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
       <button
         type="button"
         onClick={() => {
-          if (answers[current.id] === undefined) {
-            if (selected === null) return;
-            setAnswers({ ...answers, [current.id]: selected });
+          if (!revealed) {
+            submit();
             return;
           }
-          submit();
+          if (index + 1 === quiz.length) {
+            setDone(true);
+            return;
+          }
+          setIndex(index + 1);
+          setPicked([]);
         }}
-        className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
+        disabled={!revealed && picked.length === 0}
+        className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400 disabled:opacity-40"
       >
-        {answers[current.id] === undefined
-          ? "Check answer"
-          : index + 1 === quiz.length
-            ? "Finish"
-            : "Next"}
+        {!revealed ? "Check answer" : index + 1 === quiz.length ? "Finish" : "Next"}
       </button>
     </div>
   );
