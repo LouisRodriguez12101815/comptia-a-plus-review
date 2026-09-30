@@ -537,5 +537,110 @@
     "front": "Q: What signal does VGA use?",
     "back": "ANALOG. HDMI and DisplayPort are digital; DVI can be analog (DVI-A), digital (DVI-D), or both (DVI-I).",
     "weak": true
+  },
+  {
+    "id": "fc-n1",
+    "topicId": "networking-devices",
+    "front": "Hub (aka repeater) — how does it forward traffic?",
+    "back": "Repeats every frame received on one port out of ALL other ports. One big collision domain; inefficient and insecure.",
+    "weak": false
+  },
+  {
+    "id": "fc-n2",
+    "topicId": "networking-devices",
+    "front": "Switch — why can it send one-to-one (unicast)?",
+    "back": "It has an ASIC chip with programming that builds a MAC address table (CAM table) mapping MAC+IP to each port; each port is its own collision domain.",
+    "weak": false
+  },
+  {
+    "id": "fc-n3",
+    "topicId": "networking-devices",
+    "front": "Router — what does it forward on, and what does it block?",
+    "back": "Forwards based on IP addresses and routing tables (route print). It does NOT forward broadcasts — every router interface is a broadcast domain boundary.",
+    "weak": false
+  },
+  {
+    "id": "fc-n4",
+    "topicId": "networking-devices",
+    "front": "MAC address: length, format, changeable?",
+    "back": "48-bit hexadecimal (0-9, A-F), burned into the NIC permanently. Spoofing only changes it in memory. First half = OUI (manufacturer), second half = serial.",
+    "weak": false
+  },
+  {
+    "id": "fc-n5",
+    "topicId": "networking-devices",
+    "front": "What does OUI stand for?",
+    "back": "Organizational Unique Identifier — the first half of a MAC address identifying the manufacturer (e.g., Intel). Exam expects you to know it cold.",
+    "weak": false
+  },
+  {
+    "id": "fc-n6",
+    "topicId": "networking-devices",
+    "front": "What is ARP and what does it do?",
+    "back": "Address Resolution Protocol — broadcasts to learn every device's IP and MAC; the switch stores answers in its MAC table. arp -a shows the cache. Also a security vector (ARP poisoning / MITM).",
+    "weak": false
+  },
+  {
+    "id": "fc-n7",
+    "topicId": "networking-devices",
+    "front": "What does a broadcast packet look like?",
+    "back": "Destination IP = all 255s (255.255.255.255); destination MAC = all Fs (FF:FF:FF:FF:FF:FF).",
+    "weak": false
+  },
+  {
+    "id": "fc-n8",
+    "topicId": "networking-devices",
+    "front": "TCP vs UDP — one-line each",
+    "back": "TCP: connection-oriented, reliable, 3-way handshake (SYN, SYN/ACK, ACK), resends unacknowledged packets. UDP: connectionless, no ACKs, used for streaming/VoIP where speed beats reliability.",
+    "weak": false
+  },
+  {
+    "id": "fc-n9",
+    "topicId": "networking-devices",
+    "front": "Total port count and the three port ranges",
+    "back": "65,536 TCP + 65,536 UDP = 131,072. Well-known 0-1023 (assigned protocols), registered (vendor apps, e.g. SQL 1433), high/dynamic (random client use).",
+    "weak": false
+  },
+  {
+    "id": "fc-n10",
+    "topicId": "networking-devices",
+    "front": "QoS vs COS",
+    "back": "Quality of Service on the LAN; Class of Service on the WAN — and only MPLS supported COS. Both prioritize voice/video traffic.",
+    "weak": false
+  },
+  {
+    "id": "fc-n11",
+    "topicId": "networking-devices",
+    "front": "MPLS is legacy — what replaced it?",
+    "back": "SD-WAN (software-defined WAN, configured on firewall/router, can still do QoS) or site-to-site VPNs over the internet. MPLS's unique feature was Class of Service.",
+    "weak": false
+  },
+  {
+    "id": "fc-n12",
+    "topicId": "networking-devices",
+    "front": "Network is 'converging' — what does that mean?",
+    "back": "After a switch boots, its MAC table is empty (volatile RAM); devices send ARP requests to learn each other. Fully converged = every device and the router knows all MACs and IPs.",
+    "weak": false
+  },
+  {
+    "id": "fc-n13",
+    "topicId": "networking-devices",
+    "front": "Workgroup vs domain — 2 traits each",
+    "back": "Workgroup (peer-to-peer): not scalable, hard to manage, less secure, profile tied to one PC. Domain (client-server): scalable, manageable, secure, log in anywhere via the domain controller.",
+    "weak": false
+  },
+  {
+    "id": "fc-n14",
+    "topicId": "networking-devices",
+    "front": "Network diagram symbols",
+    "back": "Circle with X (or 4 criss-cross arrows) = router. Rectangle with one arrow = hub. Rectangle with two opposing arrows = switch.",
+    "weak": false
+  },
+  {
+    "id": "fc-n15",
+    "topicId": "networking-devices",
+    "front": "PoE — what and why",
+    "back": "Power over Ethernet: switch delivers low-voltage (<48V) power over the data cable; VoIP phones ship without power bricks. No PoE switch? Use a PoE injector.",
+    "weak": false
   }
 ]

@@ -477,7 +477,7 @@
   {
     "id": "networking-dns-dhcp",
     "group": "networking",
-    "examCodes": ["220-1201", "N10-009"],
+    "examCodes": ["220-1201", "n10-009"],
     "title": "DNS and DHCP",
     "chapter": "Networking",
     "summary": "DORA, APIPA, ports, DNS records, forwarders, and failure symptoms.",
@@ -521,7 +521,7 @@
   {
     "id": "networking-storage",
     "group": "networking",
-    "examCodes": ["220-1201", "N10-009"],
+    "examCodes": ["220-1201", "n10-009"],
     "title": "RAID, NAS, SAN, backups",
     "chapter": "Networking / storage",
     "summary": "RAID 0/1/5/10, NAS vs SAN, and the 3-2-1 backup rule.",
@@ -574,7 +574,7 @@
   {
     "id": "weak-areas",
     "group": "weak",
-    "examCodes": ["220-1201", "220-1202", "N10-009"],
+    "examCodes": ["220-1201", "220-1202", "n10-009"],
     "title": "Critical weak areas",
     "chapter": "Must lock in",
     "summary": "Ten high-miss items from class drills: sysprep, DNS records, RAID rebuild, TPM, AC/DC, and more.",
@@ -607,7 +607,7 @@
   {
     "id": "quick-reference",
     "group": "reference",
-    "examCodes": ["220-1201", "220-1202", "N10-009"],
+    "examCodes": ["220-1201", "220-1202", "n10-009"],
     "title": "Quick reference",
     "chapter": "Cheat sheets",
     "summary": "File system picks, boot repair order, network diagnosis, and command map.",
@@ -663,7 +663,7 @@
   "group": "networking",
   "examCodes": [
     "220-1201",
-    "N10-009"
+    "n10-009"
   ],
   "title": "Cabling and Connectors",
   "chapter": "Core 1 · Chapter 6",
@@ -904,5 +904,145 @@
       ]
     }
   ]
-}
+},
+  {
+    "id": "networking-devices",
+    "group": "networking",
+    "examCodes": ["n10-009"],
+    "title": "Network Devices and Fundamentals",
+    "chapter": "Network+ · Week 1",
+    "summary": "Hub vs switch vs router, ARP and the MAC table, collision vs broadcast domains, TCP/UDP, ports, WAN links (MPLS/SD-WAN), and topologies.",
+    "sections": [
+      {
+        "id": "workgroup-vs-domain",
+        "title": "Workgroup vs. client-server domain",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Peer-to-peer = Microsoft workgroup: no central server, each profile is tied to one physical computer.",
+              "Workgroup traits: not scalable, difficult to manage, less secure.",
+              "Client-server = Microsoft domain: a domain controller (DC) centralizes accounts.",
+              "Domain benefit: log in on any device on the network with roaming profile; access can be restricted by device.",
+              "Domain traits: scalable, more manageable, more secure."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hub-switch-router",
+        "title": "Hub, bridge, switch, router",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Hub (aka repeater): repeats every received frame out of ALL other ports; one big collision domain; inefficient and insecure.",
+              "Network diagram symbols: circle with X (or four criss-cross arrows) = router; rectangle with ONE arrow = hub; rectangle with TWO arrows (opposite directions) = switch.",
+              "Bridge: transition-period device (hub era → switch era) that added MAC-table programming so hubs could behave like switches. On exam questions, replace 'bridge' with 'switch'.",
+              "Switch: has an ASIC (programming chip); builds a MAC address table (a.k.a. CAM table — Content Addressable Memory) so it can forward unicast one-to-one; each port is its own collision domain.",
+              "Router: forwards based on IP addresses and routing tables (view with 'route print' in Windows); connects two or more networks; every router interface is a broadcast domain boundary because routers do not forward broadcasts."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "arp-mac",
+        "title": "MAC addresses and ARP",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "MAC address: 48-bit hexadecimal (0-9, A-F), burned into the NIC — permanent; spoofing only changes it in memory, not the real burned-in address.",
+              "First half of a MAC = OUI (Organizational Unique Identifier, identifies the manufacturer, e.g. Intel); second half = serial. Know what OUI stands for — the exam expects it.",
+              "MAC is physical/hardware; IP is logical/software (changeable at the OS level). IPv4 = 32-bit decimal; MAC = 48-bit hex. IPv6 is hex like a MAC but works like IPv4.",
+              "ARP (Address Resolution Protocol) — both a command (arp -a) and a protocol: broadcasts to learn every device's IP and MAC; the switch captures the answers into its MAC table.",
+              "View the ARP cache with: ipconfig /all (shows your own MAC) and arp -a (shows learned IP↔MAC pairs). ARP poisoning enables man-in-the-middle attacks — ARP is also a security topic.",
+              "Broadcast packets: destination IP is all 255s (255.255.255.255) and MAC is all Fs (FF:FF:FF:FF:FF:FF)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "convergence-domains",
+        "title": "Convergence, collision and broadcast domains",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "After a switch boots or reboots, its MAC table is empty (volatile RAM) — devices ARP to relearn each other; the network is 'converging' until every device is known.",
+              "Fully converged = all devices (and the router) know each other's MAC and IP; only then do ping, printing, and internet access work.",
+              "Hub network = ONE giant collision domain (all devices compete; CSMA/CD protected against collisions there).",
+              "Switch = one collision domain PER PORT. Router = adds broadcast domains (broadcasts stop at the router).",
+              "A hub network is easy to sniff: any listener with Wireshark (packet analyzer) sees all traffic — a security weakness."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tcp-udp-ports",
+        "title": "TCP vs UDP and port numbers",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "TCP = Transmission Control Protocol: connection-oriented, reliable. Uses the 3-way handshake: SYN, SYN/ACK, ACK. Sends each packet and waits for an ACK; resends if no acknowledgement arrives.",
+              "UDP = User Datagram Protocol: connectionless, no handshake, no ACKs ('Hail Mary' pass). Used for streaming, music, VoIP, video calls — speed matters more than retransmission.",
+              "Real-world mix: the initial YouTube connection is TCP (secured), then the stream itself switches to UDP.",
+              "Port counts: 65,536 TCP + 65,536 UDP = 131,072 total.",
+              "Well-known/common ports: 0–1023 are assigned to protocols (20/21 FTP, 22 SSH, 23 Telnet, 25 SMTP, 53 DNS, 67/68 DHCP, 80 HTTP, 443 HTTPS, 3389 RDP).",
+              "Registered ports: software vendors register these (SQL 1433, QuickTime 1220, VLC 1234) so apps don't conflict. High/dynamic ports: used randomly for client connections (and security)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wan-mpls-sdwan",
+        "title": "WAN connections: MPLS → SD-WAN",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "MPLS (Multi-Protocol Label Switching) is now legacy. Expensive (~$2,000/month per circuit per site in the instructor's example, ×54 sites).",
+              "Why MPLS existed: private branch-to-branch lines for video conferencing and VoIP before Teams/Zoom; unique feature = Class of Service (COS) on the WAN — prioritizing voice/video traffic.",
+              "On the LAN the same idea is called Quality of Service (QoS). On the WAN it's Class of Service (COS), and only MPLS supported it.",
+              "Telephony used PRI circuits (like a T1) dedicated to voice before VoIP over the internet.",
+              "Today: MPLS replaced by SD-WAN (software-defined WAN, configured on a firewall/router, can still do QoS) or site-to-site VPNs over the internet (encrypted tunnels, port 443).",
+              "Jitter and packet loss affect voice traffic on any network type."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "topologies",
+        "title": "Network topologies",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Bus (legacy): thinnet/thicknet coax; one break takes down everything; slow.",
+              "Ring (legacy): token passing — a computer waits for the token before transmitting; slow. Still conceptually used for redundant fiber rings in infrastructure.",
+              "Mesh: everything connected to everything = redundancy, more expensive.",
+              "Star (modern): central switch; today's standard LAN layout ('hub and spoke').",
+              "Hybrid: mixes topologies (e.g., star LAN tied into a mesh backbone). Know all five for the exam: bus, ring, mesh, star, hybrid."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "poe",
+        "title": "Power over Ethernet (PoE)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "PoE = the switch delivers low-voltage power (under 48 V) through the data cable — VoIP phones usually ship without a power brick.",
+              "A PoE switch auto-detects whether a device needs power and shuts power off on ports that don't.",
+              "No PoE switch? Use a PoE injector — plugs into power and the data line, injecting power into the cable (cheaper than a power brick).",
+              "Opposite concept: Ethernet over power (data through the electrical grid) — works but the instructor does not recommend it."
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]
