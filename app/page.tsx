@@ -33,6 +33,12 @@ export default function Home() {
           >
             Weak-area quiz
           </Link>
+          <Link
+            href="/labs"
+            className="rounded-full border border-slate-600 px-5 py-2 hover:border-teal-400"
+          >
+            Networking labs
+          </Link>
         </div>
       </section>
 

@@ -52,3 +52,17 @@ export type Question = {
   explanation: string;
   weak?: boolean;
 };
+
+export type Lab = {
+  slug: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  repoUrl: string;
+  image: string;
+  imageAlt: string;
+  pktDownload: string;
+  skills: string[];
+  relatedTopicIds: string[];
+  sections: Section[];
+};

@@ -1,10 +1,12 @@
 import flashcardsJson from "@/content/flashcards.json";
+import labsJson from "@/content/labs.json";
 import questionsJson from "@/content/questions.json";
 import topicsJson from "@/content/topics.json";
 import { examMatches } from "@/lib/exams";
 import type {
   ExamCode,
   Flashcard,
+  Lab,
   Question,
   StudyFocus,
   Topic,
@@ -14,6 +16,7 @@ import type {
 export const topics = topicsJson as Topic[];
 export const flashcards = flashcardsJson as Flashcard[];
 export const questions = questionsJson as Question[];
+export const labs = labsJson as Lab[];
 
 export const groupLabels: Record<TopicGroup, string> = {
   core1: "Core 1",
@@ -29,6 +32,10 @@ export function getTopic(id: string): Topic | undefined {
 
 export function getTopics(focus: StudyFocus = "all"): Topic[] {
   return topics.filter((topic) => examMatches(topic.examCodes, focus));
+}
+
+export function getLab(slug: string): Lab | undefined {
+  return labs.find((lab) => lab.slug === slug);
 }
 
 function itemExamCodes(item: Flashcard | Question): ExamCode[] {

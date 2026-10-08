@@ -11,6 +11,7 @@ export function SiteHeader() {
     { href: `/notes?exam=${focus}`, label: "Notes" },
     { href: `/flashcards?exam=${focus}`, label: "Flashcards" },
     { href: `/quiz?exam=${focus}`, label: "Quiz" },
+    { href: "/labs", label: "Labs" },
   ];
 
   return (
