@@ -35,6 +35,19 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
             </p>
           );
         }
+        if (block.type === "image") {
+          return (
+            <figure
+              key={index}
+              className="overflow-hidden rounded-2xl border border-slate-800 bg-white"
+            >
+              <img src={block.src} alt={block.alt} className="w-full" />
+              <figcaption className="border-t border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-400">
+                {block.caption}
+              </figcaption>
+            </figure>
+          );
+        }
         if (block.type === "code") {
           return (
             <pre

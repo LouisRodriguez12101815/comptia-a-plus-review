@@ -13,7 +13,8 @@ export type Block =
   | { type: "bullets"; items: string[] }
   | { type: "table"; headers: string[]; rows: string[][] }
   | { type: "code"; text: string }
-  | { type: "callout"; kind: "critical" | "warning" | "tip"; text: string };
+  | { type: "callout"; kind: "critical" | "warning" | "tip"; text: string }
+  | { type: "image"; src: string; alt: string; caption: string };
 
 export type Section = {
   id: string;
@@ -58,10 +59,17 @@ export type Lab = {
   title: string;
   subtitle: string;
   summary: string;
-  repoUrl: string;
-  image: string;
-  imageAlt: string;
-  pktDownload: string;
+  /** Short status badge, e.g. "Part 1 of 2 · in progress". */
+  status?: string;
+  repoUrl?: string;
+  image?: string;
+  imageAlt?: string;
+  imageCaption?: string;
+  /** CSS object-position for the labs list card crop, e.g. "left 15%". */
+  imagePosition?: string;
+  /** Omit until a .pkt file is published; the download button is hidden without it. */
+  pktDownload?: string;
+  pktFilename?: string;
   skills: string[];
   relatedTopicIds: string[];
   sections: Section[];

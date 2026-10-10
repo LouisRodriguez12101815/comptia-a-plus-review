@@ -5,7 +5,7 @@ import { labs } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Networking labs | CompTIA A+ Review",
   description:
-    "Hands-on Packet Tracer labs: two-subnet office LAN, addressing, and break/fix.",
+    "Hands-on Packet Tracer labs: subnetting, static routing, DHCP relay, and break/fix.",
 };
 
 export default function LabsIndexPage() {
@@ -15,8 +15,9 @@ export default function LabsIndexPage() {
         <p className="text-sm uppercase tracking-wide text-teal-300">Portfolio</p>
         <h1 className="mt-1 text-3xl font-semibold text-white">Networking labs</h1>
         <p className="mt-2 text-slate-400">
-          Packet Tracer builds from the CompTIA A+ / Network+ study track. Download the
-          .pkt file and open it in Cisco Packet Tracer.
+          Packet Tracer builds from the CompTIA A+ / Network+ study track. Open a
+          lab for the topology, configs, and verification; labs with a .pkt file
+          can be downloaded and opened in Cisco Packet Tracer.
         </p>
       </div>
       <ul className="grid gap-4">
@@ -26,11 +27,14 @@ export default function LabsIndexPage() {
               href={`/labs/${lab.slug}`}
               className="block overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-teal-400"
             >
-              <img
-                src={lab.image}
-                alt={lab.imageAlt}
-                className="h-52 w-full object-cover object-left bg-white"
-              />
+              {lab.image ? (
+                <img
+                  src={lab.image}
+                  alt={lab.imageAlt ?? ""}
+                  className="h-52 w-full object-cover bg-white"
+                  style={{ objectPosition: lab.imagePosition ?? "left center" }}
+                />
+              ) : null}
               <div className="p-4">
                 <p className="text-xs uppercase tracking-wide text-teal-300">
                   {lab.subtitle}
