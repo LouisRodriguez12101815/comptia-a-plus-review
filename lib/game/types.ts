@@ -12,6 +12,7 @@ export type GamePhase =
 export type IncidentChoice = {
   id: string;
   label: string;
+  explanation: string;
 };
 
 export type IncidentStep = {
@@ -21,7 +22,7 @@ export type IncidentStep = {
   prompt: string;
   evidence?: string;
   choices: IncidentChoice[];
-  correctChoiceId: string;
+  correctAnswerId: string;
   hint: string;
   explanation: string;
 };

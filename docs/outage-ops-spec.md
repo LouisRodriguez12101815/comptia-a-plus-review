@@ -21,6 +21,15 @@ Outage Ops is a 2–8 player cooperative CompTIA incident-response game. Players
 
 The first scenario is based on Lab 03, “I Can’t Reach the Website.” The IP path works but PC1 points to a nonexistent DNS server. Players must scope the issue, test in layers, correct the setting, and repeat the failed test.
 
+## Guided answer handling
+
+- Each answer has a stable `id`; the question stores its separate `correctAnswerId`.
+- Shuffle a copy of the answers when entering each question or restarting a mission. Determine correctness by ID, never by display position.
+- Begin unanswered and wait for the player to choose. A choice submits the answer and locks the options until the player retries or continues.
+- Show answer-specific feedback and mentor reasoning immediately after submission. An incorrect answer also reveals the mentor hint.
+- **Try again** clears the selection without advancing or reordering the current answers. Keep hints and uptime penalties, and award points no more than once per question.
+- **Continue** is available only after submission and enters the next question unanswered.
+
 ## Multiplayer contract
 
 - 2–8 players, no login, separate devices.

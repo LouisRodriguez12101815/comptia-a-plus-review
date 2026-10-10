@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { cantReachWebsiteIncident } from "@/lib/game/incidents";
+import { shuffleAnswers } from "@/lib/game/answers";
+import type { IncidentChoice } from "@/lib/game/types";
 
 type Screen = "menu" | "guided" | "create" | "join" | "lobby";
 
@@ -32,6 +34,8 @@ export function OutageOps() {
   const [screen, setScreen] = useState<Screen>("menu");
   const [stepIndex, setStepIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<IncidentChoice[]>([]);
+  const [credited, setCredited] = useState(false);
   const [score, setScore] = useState(0);
   const [uptime, setUptime] = useState(100);
   const [hintVisible, setHintVisible] = useState(false);
@@ -40,7 +44,8 @@ export function OutageOps() {
   const [createdRoom, setCreatedRoom] = useState("");
 
   const step = incident.steps[stepIndex];
-  const isCorrect = selected === step?.correctChoiceId;
+  const selectedAnswer = step?.choices.find((answer) => answer.id === selected);
+  const isCorrect = selected !== null && selected === step?.correctAnswerId;
   const progress = useMemo(
     () => Math.round((stepIndex / incident.steps.length) * 100),
     [incident.steps.length, stepIndex],
@@ -49,6 +54,8 @@ export function OutageOps() {
   function resetGuidedDemo() {
     setStepIndex(0);
     setSelected(null);
+    setAnswers(shuffleAnswers(incident.steps[0].choices));
+    setCredited(false);
     setScore(0);
     setUptime(100);
     setHintVisible(false);
@@ -56,17 +63,30 @@ export function OutageOps() {
   }
 
   function choose(choiceId: string) {
-    if (selected) return;
+    if (selected !== null || !step || !step.choices.some((answer) => answer.id === choiceId)) return;
     setSelected(choiceId);
-    if (choiceId === step.correctChoiceId) {
-      setScore((value) => value + (hintVisible ? 75 : 100));
+    if (choiceId === step.correctAnswerId) {
+      if (!credited) {
+        setScore((value) => value + (hintVisible ? 75 : 100));
+        setCredited(true);
+      }
     } else {
       setUptime((value) => Math.max(0, value - 5));
+      setHintVisible(true);
     }
   }
 
-  function advance() {
+  function tryAgain() {
+    // Keep the hint, penalties, earned credit, and answer order for this question.
     setSelected(null);
+  }
+
+  function advance() {
+    if (selected === null || !step) return;
+    const nextStep = incident.steps[stepIndex + 1];
+    setAnswers(nextStep ? shuffleAnswers(nextStep.choices) : []);
+    setSelected(null);
+    setCredited(false);
     setHintVisible(false);
     setStepIndex((value) => value + 1);
   }
@@ -122,14 +142,16 @@ export function OutageOps() {
               {step.evidence && <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl border border-cyan-400/20 bg-slate-950 p-4 font-mono text-sm text-cyan-100">{step.evidence}</pre>}
               <h2 className="text-lg font-semibold text-white">{step.prompt}</h2>
               <div className="grid gap-3 sm:grid-cols-2">
-                {step.choices.map((choice) => {
+                {answers.map((choice) => {
                   const chosen = selected === choice.id;
-                  const correct = selected && choice.id === step.correctChoiceId;
+                  const correct = selected !== null && choice.id === step.correctAnswerId;
                   return (
                     <button
                       key={choice.id}
                       onClick={() => choose(choice.id)}
                       disabled={Boolean(selected)}
+                      aria-pressed={chosen}
+                      data-answer-id={choice.id}
                       className={`min-h-20 rounded-2xl border p-4 text-left transition ${correct ? "border-emerald-300 bg-emerald-400/15 text-emerald-50" : chosen ? "border-rose-300 bg-rose-400/15 text-rose-50" : "border-slate-700 bg-slate-950/60 text-slate-200 hover:border-cyan-300 hover:bg-cyan-300/10"}`}
                     >
                       {choice.label}
@@ -143,10 +165,15 @@ export function OutageOps() {
               )}
               {hintVisible && !selected && <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-50"><strong>Mentor:</strong> {step.hint}</div>}
               {selected && (
-                <div className={`rounded-2xl border p-5 ${isCorrect ? "border-emerald-300/30 bg-emerald-400/10" : "border-rose-300/30 bg-rose-400/10"}`}>
+                <div role="status" aria-live="polite" className={`rounded-2xl border p-5 ${isCorrect ? "border-emerald-300/30 bg-emerald-400/10" : "border-rose-300/30 bg-rose-400/10"}`}>
                   <p className="font-semibold text-white">{isCorrect ? "Correct diagnostic move" : "Not the best next move"}</p>
-                  <p className="mt-2 text-sm text-slate-200">{step.explanation}</p>
-                  <button onClick={advance} className="mt-4 rounded-full bg-white px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-100">Continue →</button>
+                  <p className="mt-2 text-sm text-slate-200">{selectedAnswer?.explanation}</p>
+                  <p className="mt-2 text-sm text-cyan-100"><strong>Mentor reasoning:</strong> {step.explanation}</p>
+                  {!isCorrect && <p className="mt-3 text-sm text-amber-100"><strong>Mentor hint:</strong> {step.hint}</p>}
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button onClick={tryAgain} className="rounded-full border border-cyan-300 px-5 py-2 font-semibold text-cyan-100 hover:bg-cyan-300/10">Try again</button>
+                    <button onClick={advance} className="rounded-full bg-white px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-100">Continue →</button>
+                  </div>
                 </div>
               )}
             </div>
