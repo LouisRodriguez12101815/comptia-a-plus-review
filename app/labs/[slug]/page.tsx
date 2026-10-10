@@ -39,6 +39,11 @@ export default async function LabPage({
     <article className="space-y-8">
       <div>
         <p className="text-sm uppercase tracking-wide text-teal-300">{lab.subtitle}</p>
+        {lab.status ? (
+          <p className="mt-2 inline-block rounded-full border border-amber-400/60 bg-amber-950/30 px-3 py-1 text-xs text-amber-100">
+            {lab.status}
+          </p>
+        ) : null}
         <h1 className="mt-1 text-3xl font-semibold text-white">{lab.title}</h1>
         <p className="mt-2 text-slate-400">{lab.summary}</p>
         <p className="mt-4 flex flex-wrap gap-2">
@@ -52,35 +57,44 @@ export default async function LabPage({
           ))}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <a
-            href={lab.pktDownload}
-            download
-            className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
-          >
-            Download Packet Tracer file
-          </a>
-          <a
-            href={lab.repoUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full border border-slate-600 px-5 py-2 hover:border-teal-400"
-          >
-            View on GitHub
-          </a>
+          {lab.pktDownload ? (
+            <a
+              href={lab.pktDownload}
+              download
+              className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
+            >
+              Download Packet Tracer file
+            </a>
+          ) : null}
+          {lab.repoUrl ? (
+            <a
+              href={lab.repoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-slate-600 px-5 py-2 hover:border-teal-400"
+            >
+              View on GitHub
+            </a>
+          ) : null}
         </div>
-        <p className="mt-3 text-sm text-slate-500">
-          Open{" "}
-          <code className="text-slate-300">lab01.pkt</code> in Cisco Packet Tracer
-          (NetAcad). The file is hosted on this site.
-        </p>
+        {lab.pktDownload && lab.pktFilename ? (
+          <p className="mt-3 text-sm text-slate-500">
+            Open <code className="text-slate-300">{lab.pktFilename}</code> in Cisco
+            Packet Tracer (NetAcad). The file is hosted on this site.
+          </p>
+        ) : null}
       </div>
 
-      <figure className="overflow-hidden rounded-2xl border border-slate-800 bg-white">
-        <img src={lab.image} alt={lab.imageAlt} className="w-full" />
-        <figcaption className="border-t border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-400">
-          Packet Tracer Logical workspace: Sales (SW1) and Ops (SW2) meet at R1.
-        </figcaption>
-      </figure>
+      {lab.image ? (
+        <figure className="overflow-hidden rounded-2xl border border-slate-800 bg-white">
+          <img src={lab.image} alt={lab.imageAlt ?? ""} className="w-full" />
+          {lab.imageCaption ? (
+            <figcaption className="border-t border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-400">
+              {lab.imageCaption}
+            </figcaption>
+          ) : null}
+        </figure>
+      ) : null}
 
       {lab.sections.map((section) => (
         <section key={section.id} className="space-y-3">
