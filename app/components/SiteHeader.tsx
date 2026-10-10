@@ -12,6 +12,7 @@ export function SiteHeader() {
     { href: `/flashcards?exam=${focus}`, label: "Flashcards" },
     { href: `/quiz?exam=${focus}`, label: "Quiz" },
     { href: "/labs", label: "Labs" },
+    { href: "/game", label: "Game" },
   ];
 
   return (
@@ -21,12 +22,16 @@ export function SiteHeader() {
           <Link href="/" className="text-lg font-semibold tracking-tight text-white">
             CompTIA Review
           </Link>
-          <nav className="flex flex-wrap gap-2 text-sm">
+          <nav className="flex flex-wrap gap-2 text-sm" aria-label="Primary navigation">
             {links.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="rounded-full border border-slate-700 px-3 py-1.5 text-slate-200 hover:border-teal-400 hover:text-white"
+                className={
+                  link.label === "Game"
+                    ? "rounded-full border border-amber-400/60 bg-amber-400/10 px-3 py-1.5 font-medium text-amber-100 hover:bg-amber-400/20"
+                    : "rounded-full border border-slate-700 px-3 py-1.5 text-slate-200 hover:border-teal-400 hover:text-white"
+                }
               >
                 {link.label}
               </Link>

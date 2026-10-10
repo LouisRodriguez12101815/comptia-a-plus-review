@@ -11,10 +11,16 @@ export default function Home() {
         </h1>
         <p className="max-w-2xl text-slate-300">
           Choose the certification you are preparing for, then use focused notes,
-          flashcards, and original practice questions. Switch tracks anytime for class
-          pacing or a retake. Scores stay in your browser.
+          flashcards, original practice questions, and incident-response missions.
+          Switch tracks anytime for class pacing or a retake.
         </p>
         <div className="flex flex-wrap gap-3">
+          <Link
+            href="/game"
+            className="rounded-full bg-amber-400 px-5 py-2 font-semibold text-slate-950 hover:bg-amber-300"
+          >
+            Play Outage Ops
+          </Link>
           <Link
             href="/notes"
             className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
