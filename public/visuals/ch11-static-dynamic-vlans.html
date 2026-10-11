@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Static vs Dynamic VLANs</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Static vs dynamic VLANs</h1>
+<p class="lede">With a static VLAN, an administrator assigns the port. With a dynamic VLAN, the switch asks a VLAN Membership Policy Server (VMPS) to look up the device's MAC address. Plug in a device to compare.</p>
+<div class="card">
+  <p class="lab">VLAN type</p>
+  <div class="ctrls" id="modes" role="group" aria-label="VLAN type">
+    <button type="button" id="m-st" aria-pressed="true">Static</button>
+    <button type="button" id="m-dy" aria-pressed="false">Dynamic</button>
+  </div>
+  <p class="lab">Plug a device into the switch port</p>
+  <div class="ctrls" id="devs" role="group" aria-label="Device">
+    <button type="button" id="d-known" aria-pressed="true">Laptop (MAC listed in VMPS)</button>
+    <button type="button" id="d-unknown" aria-pressed="false">Unknown laptop</button>
+  </div>
+  <div class="grid" id="steps" style="margin-top:10px"></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Review questions 9 and 11.</strong> Static VLAN nodes do not know which VLAN they are in. Dynamic VLANs use a VMPS keyed by MAC address. Dynamic VLANs are deprecated, and 802.1X is the recommended replacement.</p>
+</div>
+
+</div>
+<script>
+
+let mode='static',dev='known';
+const MAC={known:'AA:AA:AA:11:11:11',unknown:'EE:EE:EE:99:99:99'};
+function btn(id,on){document.getElementById(id).setAttribute('aria-pressed',String(on));}
+function draw(){
+  btn('m-st',mode==='static');btn('m-dy',mode==='dynamic');btn('d-known',dev==='known');btn('d-unknown',dev==='unknown');
+  const steps=[],mac=MAC[dev];
+  if(mode==='static'){
+    steps.push(['Device connects',mac+' plugs into port 5.']);
+    steps.push(['Port is already configured','An administrator set port 5 to VLAN 20 with the switchport access command.']);
+    steps.push(['Result','The device is placed in VLAN 20. It is not aware of the VLAN and cannot ask for a different one.']);
+  }else{
+    steps.push(['Device connects',mac+' plugs into port 5.']);
+    steps.push(['Switch asks the VMPS','The VMPS holds a table of MAC addresses and their VLANs.']);
+    if(dev==='known')steps.push(['Result','The MAC address is listed, so the port is switched into VLAN 10.']);
+    else steps.push(['Result','The MAC address is not listed, so the VMPS has no VLAN to assign.']);
+  }
+  const g=document.getElementById('steps');g.innerHTML='';
+  steps.forEach((s,i)=>{const d=document.createElement('div');d.className='cell'+(i===steps.length-1?(mode==='dynamic'&&dev==='unknown'?' bad':' good'):'');d.innerHTML='<div class="t">'+s[0]+'</div><div class="s">'+s[1]+'</div>';g.appendChild(d);});
+  document.getElementById('out').textContent=mode==='static'?'Static: the port decides the VLAN, so the device always lands in VLAN 20.':'Dynamic: the device\'s MAC address decides the VLAN.';
+}
+document.getElementById('m-st').addEventListener('click',()=>{mode='static';draw();});
+document.getElementById('m-dy').addEventListener('click',()=>{mode='dynamic';draw();});
+document.getElementById('d-known').addEventListener('click',()=>{dev='known';draw();});
+document.getElementById('d-unknown').addEventListener('click',()=>{dev='unknown';draw();});
+draw();
+
+</script>
+</body>
+</html>

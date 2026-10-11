@@ -2,6 +2,21 @@ import Link from "next/link";
 
 export const metadata = { title: "Network+ · CompTIA Review" };
 
+const chapters = [
+  {
+    href: "/network-plus/ch10",
+    label: "Chapter 10",
+    title: "Routing Protocols",
+    note: "Interactive visuals and summary",
+  },
+  {
+    href: "/network-plus/ch11",
+    label: "Chapter 11",
+    title: "Switching and Virtual LANs",
+    note: "Summary and key concepts",
+  },
+];
+
 export default function NetworkPlusIndex() {
   return (
     <div className="space-y-8">
@@ -13,16 +28,18 @@ export default function NetworkPlusIndex() {
         </p>
       </div>
       <ul className="space-y-3">
-        <li>
-          <Link
-            href="/network-plus/ch10"
-            className="block rounded-2xl border border-slate-800 bg-slate-900/50 p-4 hover:border-teal-400"
-          >
-            <p className="text-xs uppercase tracking-wide text-teal-300">Chapter 10</p>
-            <p className="mt-1 text-lg font-medium text-white">Routing Protocols</p>
-            <p className="mt-1 text-sm text-slate-400">Interactive visuals and summary</p>
-          </Link>
-        </li>
+        {chapters.map((c) => (
+          <li key={c.href}>
+            <Link
+              href={c.href}
+              className="block rounded-2xl border border-slate-800 bg-slate-900/50 p-4 hover:border-teal-400"
+            >
+              <p className="text-xs uppercase tracking-wide text-teal-300">{c.label}</p>
+              <p className="mt-1 text-lg font-medium text-white">{c.title}</p>
+              <p className="mt-1 text-sm text-slate-400">{c.note}</p>
+            </Link>
+          </li>
+        ))}
       </ul>
       <p>
         <Link href="/notes?exam=n10-009" className="text-teal-300 underline">
