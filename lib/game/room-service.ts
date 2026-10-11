@@ -4,9 +4,12 @@ import type { RoomSnapshot, RoomStore, StoredRoom } from "@/lib/game/room-types"
 import type { FailureDiagnostic } from "@/lib/game/provider-errors";
 import { emptyContributions, evidenceItemsFor, legacyDhcpIncident, HINT_PENALTY, learningFor, roleFor, roles } from "@/lib/game/cooperative";
 
+import { assignEvidence, evidenceModel, CONNECTION_WINDOW } from "@/lib/game/evidence-model";
+import { BUILD_COMMIT, ROOM_PROTOCOL_VERSION } from "@/lib/game/version";
+import { networkDiagramFor } from "@/lib/game/network-diagram";
+
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const ROOM_LIFETIME = 30 * 60 * 1000;
-const CONNECTION_WINDOW = 30_000;
 const HEARTBEAT_INTERVAL = 10_000;
 export const EVIDENCE_WAIT = 15_000;
 
@@ -117,13 +120,7 @@ export class RoomService {
 
   private prepareEvidence(room: StoredRoom, openedAt: number) {
     const items = evidenceItemsFor(this.incident(room), room.stepIndex);
-    // Sort by seat, then distribute every item; seat gaps cannot orphan a clue.
-    const players = [...room.players].sort((a, b) => a.seat - b.seat);
-    room.evidenceAssignments = players.map((p, index) => ({ playerId: p.id,
-      itemIds: items.filter((_, itemIndex) => itemIndex % players.length === index).map((i) => i.id) }));
-    for (const [index, assignment] of room.evidenceAssignments.entries()) {
-      if (!assignment.itemIds.length && items.length) assignment.itemIds = [items[index % items.length].id];
-    }
+    room.evidenceAssignments = assignEvidence(items, room.players);
     room.discoveredEvidenceIds = [];
     room.evidenceContinueAt = openedAt + EVIDENCE_WAIT;
     room.evidenceContinued = false;
@@ -131,52 +128,37 @@ export class RoomService {
 
   private legacyEvidenceReceipts(room: StoredRoom) {
     const valid = new Set(evidenceItemsFor(this.incident(room), room.stepIndex).map((i) => i.id));
-    return room.evidenceAssignments.filter((a) => room.evidenceDiscoveries.includes(a.playerId))
+    return room.evidenceAssignments.filter((a) => room.evidenceDiscoveries.includes(a?.playerId))
       .flatMap((a) => Array.isArray(a.itemIds) ? a.itemIds.filter((id) => valid.has(id)) : []);
   }
 
+  private evidenceModel(room: StoredRoom, now = this.now()) {
+    return evidenceModel(evidenceItemsFor(this.incident(room), room.stepIndex), room.players,
+      room.evidenceAssignments, room.discoveredEvidenceIds, now);
+  }
+
   private normalizeEvidence(room: StoredRoom) {
-    const items = evidenceItemsFor(this.incident(room), room.stepIndex);
-    const valid = new Set(items.map((i) => i.id));
-    // Migrate old receipts using only the original valid assignments. Never
-    // convert an invalid old discovery into discovery of a repaired item.
     room.discoveredEvidenceIds ??= this.legacyEvidenceReceipts(room);
-    room.discoveredEvidenceIds = [...new Set(room.discoveredEvidenceIds.filter((id) => valid.has(id)))];
-    const players = [...room.players].sort((a, b) => a.seat - b.seat);
-    room.evidenceAssignments = players.map((p) => {
-      const previous = room.evidenceAssignments.filter((a) => a.playerId === p.id).flatMap((a) => Array.isArray(a.itemIds) ? a.itemIds : []);
-      // Only retain assignments which project to an actionable card. Never
-      // substitute a different clue for a missing item in a running question.
-      const itemIds = [...new Set(previous.filter((id) => valid.has(id)))];
-      return { playerId: p.id, itemIds };
-    });
+    const model = this.evidenceModel(room);
+    room.evidenceAssignments = model.assignments;
+    room.discoveredEvidenceIds = model.discoveredIds;
   }
 
   private assignedEvidence(room: StoredRoom, playerId: string) {
-    const assignment = room.evidenceAssignments.find((a) => a.playerId === playerId);
-    return evidenceItemsFor(this.incident(room), room.stepIndex).filter((i) => assignment?.itemIds.includes(i.id));
+    return this.evidenceModel(room).forPlayer(playerId);
   }
 
   private evidenceComplete(room: StoredRoom, playerId: string) {
-    return this.assignedEvidence(room, playerId).every((i) => room.discoveredEvidenceIds.includes(i.id));
+    return this.evidenceModel(room).complete(playerId);
   }
 
   private evidenceGate(room: StoredRoom, viewerId: string, now: number): RoomSnapshot["evidenceGate"] {
     const active = room.status === "playing" && room.phase !== "briefing";
-    const items = evidenceItemsFor(this.incident(room), room.stepIndex).map((item) => {
-      const assigned = room.evidenceAssignments.filter((a) => a.itemIds.includes(item.id));
-      return { id: item.id, label: item.label,
-        required: active && !room.evidenceContinued && assigned.some((a) => room.players.some((p) => p.id === a.playerId && now - p.lastSeenAt < CONNECTION_WINDOW)),
-        discovered: room.discoveredEvidenceIds.includes(item.id),
-        owners: assigned.flatMap((a) => {
-          const p = room.players.find((p) => p.id === a.playerId);
-          return p ? [{ playerId: p.id, nickname: p.nickname, connected: now - p.lastSeenAt < CONNECTION_WINDOW,
-            discovered: room.discoveredEvidenceIds.includes(item.id) }] : [];
-        }) };
-    });
+    const model = this.evidenceModel(room, now);
+    const items = model.coverage.map((item) => ({ ...item, required: active && !room.evidenceContinued && item.required }));
     const decisions = room.selectedActions.filter((a) => a.stepIndex === room.stepIndex);
     const outstanding = room.players.filter((p) => now - p.lastSeenAt < CONNECTION_WINDOW && !decisions.some((a) => a.playerId === p.id));
-    return { items, canAnswer: active && (room.evidenceContinued || (this.evidenceComplete(room, viewerId) && items.every((i) => !i.required || i.discovered))),
+    return { items, canAnswer: active && (room.evidenceContinued || (model.complete(viewerId) && items.every((i) => !i.required || i.discovered))),
       canAdvance: active && decisions.some((a) => a.playerId === room.hostPlayerId) && (room.evidenceContinued || outstanding.length === 0),
       continueAvailableAt: room.evidenceContinueAt, continued: room.evidenceContinued,
       outstandingAnswers: outstanding.map((p) => p.nickname) };
@@ -454,6 +436,9 @@ export class RoomService {
     const role = roles.find((r) => r.id === viewer?.role) ?? roles[0];
     const learning = learningFor(incident);
     return {
+      protocolVersion: ROOM_PROTOCOL_VERSION, buildCommit: BUILD_COMMIT,
+      networkDiagram: room.status === "playing" && room.phase !== "briefing" ? networkDiagramFor(incident.id,
+        this.assignedEvidence(stored, viewerId).map((i) => ({ ...i, discovered: stored.discoveredEvidenceIds.includes(i.id), text: stored.discoveredEvidenceIds.includes(i.id) ? i.text : undefined })), learning.sources) : null,
       room: { ...room, uptimeScore: room.uptime * 10, streakMultiplier: Math.max(1, Math.min(3, room.streak)),
         selectedActions: selectedActions.map((action) => ({ ...action, explanation: incident.steps[action.stepIndex].choices.find((choice) => choice.id === action.answerId)!.explanation })),
         players: players.map((player) => {

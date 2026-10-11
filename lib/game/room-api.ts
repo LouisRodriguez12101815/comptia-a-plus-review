@@ -4,6 +4,7 @@ import twilio from "twilio";
 import { roomDocumentName, syncInfrastructure } from "@/lib/game/room-store";
 import { providerFailure, syncCall } from "@/lib/game/provider-errors";
 import { randomUUID } from "node:crypto";
+import { BUILD_COMMIT, ROOM_PROTOCOL_VERSION } from "@/lib/game/version";
 
 type Operation = "create" | "join" | "get" | "ready" | "start" | "answer" | "advance" | "leave" | "token" | "discover" | "hint" | "role-action" | "next" | "continue-evidence";
 const cookieName = (code: string) => `outage_ops_${code}`;
@@ -34,6 +35,8 @@ async function body(request: Request): Promise<Record<string, unknown>> {
 
 export async function roomRequest(request: Request, operation: Operation, codeInput = "", infrastructureFactory = syncInfrastructure): Promise<Response> {
   const headers = new Headers({ "Cache-Control": "no-store, private", Vary: "Cookie" });
+  headers.set("X-Outage-Ops-Protocol", String(ROOM_PROTOCOL_VERSION));
+  headers.set("X-Outage-Ops-Build", BUILD_COMMIT);
   const requestId = randomUUID();
   headers.set("X-Outage-Ops-Request-Id", requestId);
   if (operation !== "get") console.info("outage_ops_room_request", { requestId, operation, event: "started" });
@@ -42,6 +45,10 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
     return Response.json(value, { status, headers });
   };
   try {
+    const clientProtocol = request.headers.get("X-Outage-Ops-Protocol");
+    if (clientProtocol !== null && clientProtocol !== String(ROOM_PROTOCOL_VERSION)) {
+      return respond({ error: "The game client and API versions differ. Reload this page to load the current game.", diagnostic: { reason: "version_mismatch" } }, 409);
+    }
     const code = codeInput.trim().toUpperCase();
     const token = sessionToken(request, code);
     if (operation === "token" && request.method === "GET" && request.headers.get("sec-fetch-site") === "cross-site") throw new RoomError(403, "Use the room controls on this site.");
@@ -50,7 +57,6 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
     const rooms = new RoomService(infrastructure.store, multiplayerIncidents);
     if (operation === "create" || operation === "join") {
       const result = operation === "create" ? await rooms.create(payload.nickname) : await rooms.join(code, payload.nickname, token);
-      if (operation === "create" && typeof infrastructure.verifyService === "function") console.info("outage_ops_room_storage_verified", { requestId, requiredVariableCount: 7, accountMatches: true, apiKeyServiceRead: true, apiKeyDocumentCreate: true });
       const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
       headers.set("Set-Cookie", `${cookieName(result.snapshot.room.code)}=${result.token}; HttpOnly; SameSite=Lax; Path=/api/game/rooms/${result.snapshot.room.code}; Max-Age=1800${secure}`);
       return respond({ ...result.snapshot, storageAvailable: true }, operation === "create" ? 201 : 200);
@@ -62,7 +68,6 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
       if (!service.aclEnabled) throw new RoomError(503, "Multiplayer service requires read-only Sync ACL configuration.", { reason: "configuration_invalid", stage: "service.fetch" });
       await infrastructure.guard.assertActive();
       await syncCall("permissions.update", () => infrastructure.service.documents(roomDocumentName(code)).documentPermissions(snapshot.viewerId).update({ read: true, write: false, manage: false }));
-      console.info("outage_ops_room_token_permissions_verified", { requestId, aclEnabled: true, apiKeyPermissionWrite: true });
       const ttl = Math.max(1, Math.min(300, Math.floor((snapshot.room.expiresAt - Date.now()) / 1000)));
       const access = new twilio.jwt.AccessToken(infrastructure.accountSid, infrastructure.keySid, infrastructure.keySecret, { identity: snapshot.viewerId, ttl });
       access.addGrant(new twilio.jwt.AccessToken.SyncGrant({ serviceSid: infrastructure.serviceSid }));
@@ -89,7 +94,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
     return respond({ ...snapshot, storageAvailable: true });
   } catch (error) {
     const failure = providerFailure(error, "room.request");
-    if (failure.status >= 500) console.error("outage_ops_room_failure", { requestId, operation, httpStatus: failure.status, ...(failure.diagnostic ?? { reason: "unexpected_failure", stage: "room.request" }) });
+    if (failure.status >= 500) console.error("outage_ops_room_failure", { requestId, operation, httpStatus: failure.status, reason: failure.diagnostic?.reason ?? "unexpected_failure" });
     return respond({ error: failure.message, ...(failure.diagnostic ? { diagnostic: failure.diagnostic, requestId } : {}) }, failure.status);
   }
 }
