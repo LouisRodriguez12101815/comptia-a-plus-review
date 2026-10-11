@@ -1,3 +1,4 @@
+import { MissionReturnLink } from "@/app/components/practice/MissionReturnLink";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -37,6 +38,7 @@ export default async function LabPage({
 
   return (
     <article className="space-y-8">
+      {lab.slug === "two-subnet-lan" && <MissionReturnLink />}
       <div>
         <p className="text-sm uppercase tracking-wide text-teal-300">{lab.subtitle}</p>
         {lab.status ? (

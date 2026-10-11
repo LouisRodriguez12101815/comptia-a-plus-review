@@ -1,3 +1,4 @@
+import { MissionReturnLink } from "@/app/components/practice/MissionReturnLink";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SectionBlocks } from "@/app/components/SectionBlocks";
@@ -37,6 +38,7 @@ export default async function TopicPage({
           </Link>
         </div>
       </div>
+      {topic.id === "n10-ch9" && <MissionReturnLink />}
       <nav className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
         <p className="text-sm font-medium text-slate-300">On this page</p>
         <ul className="mt-2 space-y-1 text-sm">

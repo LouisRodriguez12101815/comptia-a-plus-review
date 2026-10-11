@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { NextPractice } from "@/app/components/practice/NextPractice";
 import { useEffect, useRef, useState } from "react";
 import { ComponentArt } from "@/app/components/practice/ComponentArt";
 import { PacketDiagram } from "@/app/components/practice/PacketDiagram";
@@ -46,7 +47,7 @@ export function ChallengePlayer({ challenge, sources }: { challenge: Challenge; 
       <details><summary className="cursor-pointer text-cyan-100">Learning objectives</summary><ul className="mt-2 space-y-2 text-sm">{challenge.rounds.map((r) => <li key={r.id}>{r.objective}</li>)}</ul></details>
     </section> : <>
       <section aria-label="Practice progress" className="space-y-2 rounded-2xl border border-slate-700 bg-slate-900 p-4">
-        <p>Score {summary?.points} · Completed {summary?.completed}/{challenge.rounds.length} · First-attempt accuracy {summary?.firstAttemptAccuracy === null ? "—" : `${summary?.firstAttemptAccuracy}%`} · Hints {summary?.hints}</p>
+        <p>Score {summary?.points} · Completed {summary?.completed}/{challenge.rounds.length} · First-attempt accuracy {summary?.firstAttemptAccuracy === null ? "—" : `${summary?.firstAttemptAccuracy}%`} · Hints {summary?.hints} · Retries {summary?.retries}</p>
         <progress aria-label="Challenge completion" value={summary?.completed} max={challenge.rounds.length} className="h-3 w-full accent-teal-400" />
       </section>
       {isComplete(session, challenge) ? <section className="space-y-5 rounded-2xl border border-teal-300/30 bg-slate-900 p-6" aria-label="Challenge debrief">
@@ -62,6 +63,7 @@ export function ChallengePlayer({ challenge, sources }: { challenge: Challenge; 
         <ul className="space-y-2 text-sm">{[...new Set(challenge.rounds.flatMap((r) => r.examMappings.map((m) => `${m.exam.toUpperCase()}: ${m.area}`)))].map((mapping) => <li key={mapping}>{mapping}</li>)}</ul>
         <p className="text-sm">{challenge.kind === "component" ? "Transfer: a replacement has the right connector but the wrong generation. What manual checks would prevent an incompatible purchase?" : "Transfer recap: warm ARP caches avoided new broadcasts, the /26 won over /24, the frame was rebuilt, and one routed hop reduced TTL to 63. Explain which fields would differ if NAT were introduced."}</p>
         <div>{reviewLinks(challenge.rounds.flatMap((r) => r.sourceIds))}</div>
+        {challenge.id === "follow-packet" && <NextPractice />}
         <button className={button} onClick={() => begin()}>Practice again</button>
       </section> : round && <section className="space-y-5 rounded-2xl border border-cyan-300/30 bg-slate-900 p-5 sm:p-7" data-round-id={round.id}>
         <h2 ref={heading} tabIndex={-1} className="text-2xl font-semibold">{round.title}</h2><p className="text-sm text-cyan-100"><strong>Objective:</strong> {round.objective}</p>

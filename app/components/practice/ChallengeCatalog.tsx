@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { NextPractice } from "@/app/components/practice/NextPractice";
 import { useState } from "react";
 import type { Challenge } from "@/lib/practice/types";
 export function ChallengeCatalog({ challenges }: { challenges: Challenge[] }) {
@@ -9,6 +10,7 @@ export function ChallengeCatalog({ challenges }: { challenges: Challenge[] }) {
   const visible = challenges.filter((c) => (certification === "all" || c.certification === certification) && (difficulty === "all" || c.difficulty === difficulty) && (topic === "all" || c.topic === topic));
   return <div className="space-y-6">
     <header className="space-y-3"><p className="text-sm text-cyan-100">Learn by making a decision</p><h1 className="text-4xl font-bold">Practice Games</h1><p className="max-w-2xl text-slate-300">Match a component or build a packet’s journey. Each solo challenge explains your decision, supports retries, and tracks first attempts separately from completion.</p></header>
+    <NextPractice />
     <div className="grid gap-3 rounded-2xl border border-slate-700 bg-slate-900 p-4 sm:grid-cols-3">{[
       { label: "Certification", value: certification, set: setCertification, options: challenges.map((c) => c.certification) },
       { label: "Topic", value: topic, set: setTopic, options: challenges.map((c) => c.topic) },
