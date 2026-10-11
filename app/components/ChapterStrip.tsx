@@ -14,7 +14,7 @@ export function ChapterStrip({ topicId, current }: { topicId: string; current: "
       <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {tools.map((tool) => {
           const here = tool.id === current;
-          const detail = tool.count === null ? "You are here" : `${tool.count} ${tool.unit}`;
+          const detail = tool.count === null ? "You are here" : `${tool.count} ${tool.count === 1 ? tool.unit.replace(/s$/, "") : tool.unit}`;
           const body = (
             <>
               <span className="block text-sm font-medium">{tool.label}</span>
