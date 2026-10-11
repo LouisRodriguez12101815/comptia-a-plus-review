@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Switch Learning and Flooding</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>How a switch learns and forwards</h1>
+<p class="lede">A switch learns from the source MAC address of each frame and forwards using the destination MAC address. If the destination is not in the table, it floods the frame to the other ports in the VLAN.</p>
+<div class="card">
+  <p class="lab">Sender</p>
+  <div class="ctrls" id="src" role="group" aria-label="Sender"></div>
+  <p class="lab">Destination</p>
+  <div class="ctrls" id="dst" role="group" aria-label="Destination"></div>
+  <div class="ctrls">
+    <button id="send" type="button">Send frame</button>
+    <button id="reset" type="button">Clear MAC table</button>
+  </div>
+  <p class="lab">Switch ports</p>
+  <div class="grid" id="ports" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))"></div>
+  <p class="lab">MAC address table</p>
+  <div class="tbl"><table><thead><tr><th>MAC address</th><th>Port</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  <div class="out" id="out" aria-live="polite">Choose a sender and destination, then send a frame.</div>
+  <p class="answer"><strong>Review questions 1, 2, and 8.</strong> A switch learns the source address, forwards by the destination address, and floods unknown destinations only within the same VLAN.</p>
+</div>
+
+</div>
+<script>
+
+const hosts=[{n:'A',mac:'AA:AA',port:1},{n:'B',mac:'BB:BB',port:2},{n:'C',mac:'CC:CC',port:3},{n:'D',mac:'DD:DD',port:4}];
+const unknown={n:'E (not connected)',mac:'EE:EE',port:null};
+let src=0,dst=2,table={},last=null;
+const srcEl=document.getElementById('src'),dstEl=document.getElementById('dst');
+function mk(parent,label,pressed,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(pressed));b.addEventListener('click',fn);parent.appendChild(b);}
+function controls(){
+  srcEl.innerHTML='';dstEl.innerHTML='';
+  hosts.forEach((h,i)=>mk(srcEl,'Host '+h.n,i===src,()=>{src=i;controls();}));
+  hosts.forEach((h,i)=>mk(dstEl,'Host '+h.n,i===dst,()=>{dst=i;controls();}));
+  mk(dstEl,'Host '+unknown.n,dst===4,()=>{dst=4;controls();});
+}
+function ports(){
+  const el=document.getElementById('ports');el.innerHTML='';
+  hosts.forEach(h=>{
+    const d=document.createElement('div');d.className='cell';
+    let tag='';
+    if(last){ if(last.from===h.port){d.className+=' src';tag='Sent the frame';} else if(last.rx.includes(h.port)){d.className+=' good';tag='Received the frame';} }
+    d.innerHTML='<div class="t">Port '+h.port+' · Host '+h.n+'</div><div class="s">'+h.mac+'</div><div class="s">'+tag+'</div>';
+    el.appendChild(d);
+  });
+}
+function tableDraw(){
+  const tb=document.getElementById('tbody');tb.innerHTML='';
+  const keys=Object.keys(table);
+  if(!keys.length){tb.innerHTML='<tr><td colspan="2">Empty</td></tr>';return;}
+  keys.forEach(k=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+k+'</td><td>'+table[k]+'</td>';tb.appendChild(tr);});
+}
+function out(html){document.getElementById('out').innerHTML=html;}
+document.getElementById('send').addEventListener('click',()=>{
+  const s=hosts[src],d=dst===4?unknown:hosts[dst];
+  if(d===s){out('Pick a different destination.');return;}
+  table[s.mac]=s.port;
+  let rx,msg='<strong>Learned</strong> '+s.mac+' on port '+s.port+'. ';
+  if(table[d.mac]!==undefined){rx=[table[d.mac]];msg+='<strong>Forwarded</strong> only to port '+rx[0]+', because '+d.mac+' is in the table.';}
+  else{rx=hosts.map(h=>h.port).filter(p=>p!==s.port);msg+='<strong>Flooded</strong> to ports '+rx.join(', ')+', because '+d.mac+' is not in the table.';}
+  last={from:s.port,rx:rx};ports();tableDraw();out(msg);
+});
+document.getElementById('reset').addEventListener('click',()=>{table={};last=null;ports();tableDraw();out('The MAC table is empty. Send a frame to watch the switch learn.');});
+controls();ports();tableDraw();
+
+</script>
+</body>
+</html>

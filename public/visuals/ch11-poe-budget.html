@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power over Ethernet budget</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Which PoE standard powers the device?</h1>
+<p class="lede">Power over Ethernet sends power over the data cable. Pick a standard, then pick a device to see whether that port's power budget covers it.</p>
+<div class="card">
+  <p class="lab">Standard</p>
+  <div class="ctrls" id="std" role="group" aria-label="PoE standard"></div>
+  <p class="lab">Device on the port</p>
+  <div class="ctrls" id="dev" role="group" aria-label="Device"></div>
+  <p class="lab">Power budget for this port (scaled to 25.5 W)</p>
+  <div style="height:22px;border-radius:999px;background:var(--line);overflow:hidden"><div id="bud" style="height:100%;background:var(--accent)"></div></div>
+  <div id="bl" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Written lab 5 (802.3at).</strong> 802.3at delivers 25.5 W to a PoE device, and 802.3af provides 15.4 W. The device power draws shown here are examples.</p>
+</div>
+
+</div>
+<script>
+
+const std={af:{n:'802.3af',w:15.4},at:{n:'802.3at',w:25.5}};
+const devs={phone:{n:'IP phone',w:6},ap:{n:'Wireless access point',w:13},cam:{n:'PTZ camera',w:22}};
+let s='af', d='phone';
+function btns(id,items,cur,fn){
+  const el=document.getElementById(id); el.innerHTML='';
+  items.forEach(function(it){
+    const x=document.createElement('button'); x.type='button'; x.textContent=it[1];
+    x.setAttribute('aria-pressed', String(it[0]===cur));
+    x.addEventListener('click',function(){ fn(it[0]); });
+    el.appendChild(x);
+  });
+}
+function draw(){
+  btns('std',Object.keys(std).map(function(k){ return [k,std[k].n]; }),s,function(k){ s=k; draw(); });
+  btns('dev',Object.keys(devs).map(function(k){ return [k,devs[k].n+' ('+devs[k].w+' W)']; }),d,function(k){ d=k; draw(); });
+  const budget=std[s].w, need=devs[d].w, ok=need<=budget;
+  document.getElementById('bud').style.width=(budget/25.5*100)+'%';
+  document.getElementById('bl').textContent='Budget: '+budget+' W. Device draw: '+need+' W.';
+  document.getElementById('out').innerHTML = ok
+    ? '<strong>'+devs[d].n+' fits the '+std[s].n+' budget.</strong> The port can supply '+budget+' W, which covers the '+need+' W draw.'
+    : '<strong>'+devs[d].n+' does not fit the '+std[s].n+' budget.</strong> It needs '+need+' W, but the port supplies '+budget+' W. Use 802.3at.';
+}
+draw();
+
+</script>
+</body>
+</html>
