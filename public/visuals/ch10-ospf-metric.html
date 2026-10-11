@@ -1,0 +1,89 @@
+<title>OSPF Cost Metric</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.formula {
+  font-size: 18px; font-weight: 600; padding: 12px 14px; border-radius: 10px;
+  background: var(--accent-soft); color: var(--ink); margin-bottom: 16px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.ctrls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.ctrls button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.ctrls button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.ctrls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.out { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.fact { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); min-width: 0; font-size: 14px; }
+.fact b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }
+.fact span { font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 600; }
+.cmp { margin-top: 18px; display: grid; gap: 10px; }
+.cmp div { font-size: 14px; color: var(--muted); }
+.cmp strong { color: var(--ink); }
+.answer { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>OSPF metric: cost from bandwidth</h1>
+  <p class="lede">OSPF's metric is cost. Cisco calculates it from the reference bandwidth (100 Mbps) divided by the interface bandwidth. Faster links have lower cost, so OSPF prefers them.</p>
+
+  <div class="card">
+    <div class="formula">Cost = 100 Mbps ÷ interface bandwidth</div>
+
+    <div class="ctrls" role="group" aria-label="Choose an interface speed">
+      <button type="button" data-mbps="10" aria-pressed="false">10 Mbps</button>
+      <button type="button" data-mbps="100" aria-pressed="true">100 Mbps</button>
+      <button type="button" data-mbps="1000" aria-pressed="false">1 Gbps</button>
+    </div>
+
+    <div class="out">
+      <div class="fact"><b>Interface bandwidth</b><span id="bw">100 Mbps</span></div>
+      <div class="fact"><b>OSPF cost</b><span id="cost">1</span></div>
+    </div>
+
+    <div class="cmp">
+      <div><strong>Metric for OSPF:</strong> the cost above, calculated from bandwidth. That is option D.</div>
+      <div><strong>Not OSPF:</strong> delay, bandwidth, reliability, and load are EIGRP's composite metric, option B.</div>
+    </div>
+
+    <p class="answer"><strong>Question 9 answer is D, Bandwidth.</strong> The cost is based only on bandwidth in this calculation. Since the cost is an integer, a 1 Gbps link (100 ÷ 1000 = 0.1) gets the minimum cost of 1.</p>
+  </div>
+</div>
+
+<script>
+const bw = document.getElementById('bw');
+const cost = document.getElementById('cost');
+const buttons = document.querySelectorAll('.ctrls button');
+function show(mbps) {
+  const c = Math.max(1, Math.round(100 / mbps));
+  bw.textContent = mbps >= 1000 ? (mbps / 1000) + ' Gbps' : mbps + ' Mbps';
+  cost.textContent = c;
+  buttons.forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.mbps) === mbps)));
+}
+buttons.forEach(b => b.addEventListener('click', () => show(Number(b.dataset.mbps))));
+show(100);
+</script>

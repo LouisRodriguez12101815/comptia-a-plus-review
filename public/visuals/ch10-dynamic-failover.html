@@ -1,0 +1,131 @@
+<title>Dynamic Routing Failover</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --bad: #9a3b2e; --bad-soft: #f3dcd8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --bad: #f0a494; --bad-soft: #3d2623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --bad: #f0a494; --bad-soft: #3d2623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ctrls button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.ctrls button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.ctrls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stage { overflow-x: auto; }
+svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.wire { stroke: var(--line); stroke-width: 2; }
+.live { stroke: var(--good); stroke-width: 3; }
+.dead { stroke: var(--bad); stroke-width: 3; stroke-dasharray: 6 5; }
+.lbl { fill: var(--ink); font: 600 13px "IBM Plex Sans", system-ui, sans-serif; }
+.sub { fill: var(--muted); font: 12px "IBM Plex Sans", system-ui, sans-serif; }
+.node { fill: var(--accent); }
+.node-txt { fill: var(--bg); font: 600 13px "IBM Plex Sans", system-ui, sans-serif; }
+.result { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); font-size: 14px; }
+.result strong { color: var(--ink); }
+.answer { margin-top: 14px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>Who fixes the route when a link fails?</h1>
+  <p class="lede">Choose a routing method, then break the link. Dynamic routing recalculates on its own. Static routing waits for an administrator.</p>
+
+  <div class="card">
+    <div class="ctrls" role="group" aria-label="Routing method">
+      <button id="m-dyn" type="button" aria-pressed="true">Dynamic routing</button>
+      <button id="m-static" type="button" aria-pressed="false">Static routing</button>
+    </div>
+
+    <div class="stage">
+      <svg viewBox="0 0 640 220" role="img" aria-label="Router 1 reaches Router 2 directly and through Router 3. The direct link can be broken.">
+        <line id="direct" x1="150" y1="90" x2="490" y2="90" class="live"/>
+        <line id="alt1" x1="150" y1="90" x2="320" y2="170" class="wire"/>
+        <line id="alt2" x1="320" y1="170" x2="490" y2="90" class="wire"/>
+        <g><circle cx="150" cy="90" r="34" class="node"/><text x="150" y="95" text-anchor="middle" class="node-txt">Router 1</text></g>
+        <g><circle cx="490" cy="90" r="34" class="node"/><text x="490" y="95" text-anchor="middle" class="node-txt">Router 2</text></g>
+        <g><circle cx="320" cy="170" r="22" class="node"/><text x="320" y="175" text-anchor="middle" class="node-txt">R3</text></g>
+        <text id="status" x="320" y="30" text-anchor="middle" class="lbl">Traffic flows directly to Router 2</text>
+      </svg>
+    </div>
+
+    <div class="ctrls">
+      <button id="fail" type="button">Break the link</button>
+      <button id="restore" type="button">Restore the link</button>
+    </div>
+
+    <div class="result" id="result"><strong>Dynamic:</strong> routers detect the failure and move traffic to the backup path with no administrator action.</div>
+
+    <p class="answer"><strong>Question 15 answer is A, dynamic routing.</strong> Static, default, and directly connected routes all need an administrator to change them when the path breaks.</p>
+  </div>
+</div>
+
+<script>
+let mode = 'dynamic';
+let broken = false;
+const status = document.getElementById('status');
+const result = document.getElementById('result');
+const direct = document.getElementById('direct');
+const alt1 = document.getElementById('alt1');
+const alt2 = document.getElementById('alt2');
+const mDyn = document.getElementById('m-dyn');
+const mStatic = document.getElementById('m-static');
+
+function draw() {
+  if (!broken) {
+    direct.setAttribute('class', 'live');
+    alt1.setAttribute('class', 'wire');
+    alt2.setAttribute('class', 'wire');
+    status.textContent = 'Traffic flows directly to Router 2';
+    result.innerHTML = mode === 'dynamic'
+      ? '<strong>Dynamic:</strong> routes are learned automatically and the direct path is in use.'
+      : '<strong>Static:</strong> the route was typed in by an administrator and points at the direct link.';
+    return;
+  }
+  direct.setAttribute('class', 'dead');
+  if (mode === 'dynamic') {
+    alt1.setAttribute('class', 'live');
+    alt2.setAttribute('class', 'live');
+    status.textContent = 'Traffic rerouted through Router 3';
+    result.innerHTML = '<strong>Dynamic:</strong> routers detect the failure and recalculate. Traffic moves to the backup path with no administrator action.';
+  } else {
+    alt1.setAttribute('class', 'wire');
+    alt2.setAttribute('class', 'wire');
+    status.textContent = 'Traffic is stuck on the dead link';
+    result.innerHTML = '<strong>Static:</strong> the route still points at the dead link. An administrator has to change it before traffic moves.';
+  }
+}
+function setMode(m) {
+  mode = m;
+  mDyn.setAttribute('aria-pressed', String(m === 'dynamic'));
+  mStatic.setAttribute('aria-pressed', String(m === 'static'));
+  draw();
+}
+mDyn.addEventListener('click', () => setMode('dynamic'));
+mStatic.addEventListener('click', () => setMode('static'));
+document.getElementById('fail').addEventListener('click', () => { broken = true; draw(); });
+document.getElementById('restore').addEventListener('click', () => { broken = false; draw(); });
+draw();
+</script>
