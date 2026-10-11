@@ -60,8 +60,8 @@ test("team scoring is independent of team size; contributions reward evidence, r
     for (let step = 0; step < 5; step++) {
       await f.discover(step);
       for (const [index, p] of f.members.entries()) {
-        await f.service().usefulAction("ABC234", p.token, step, roleFor(index, 0).actionId, 0);
         await f.answer(p, step);
+        await f.service().usefulAction("ABC234", p.token, step, roleFor(index, 0).actionId, 0);
       }
       await f.advance(step);
     }
@@ -126,12 +126,13 @@ test("role actions reject another role and duplicate submissions never earn poin
   await assert.rejects(f.service().usefulAction("ABC234", host.token, 0, roleFor(0, 0).actionId, 0), rejects(409));
   await f.discover(0);
   await assert.rejects(f.service().usefulAction("ABC234", host.token, 0, roleFor(1, 0).actionId, 0), rejects(400));
+  await f.answer(host, 0);
   const attempts = await Promise.allSettled([1, 2].map(() => f.service().usefulAction("ABC234", host.token, 0, roleFor(0, 0).actionId, 0)));
   assert.equal(attempts.filter((r) => r.status === "fulfilled").length, 1);
   await f.service().usefulAction("ABC234", guest.token, 0, "restart-shared-equipment", 0);
   const before = await f.view();
   await assert.rejects(f.service().usefulAction("ABC234", guest.token, 0, "restart-shared-equipment", 0), rejects(409));
-  for (const p of f.members) await f.answer(p, 0);
+  await f.answer(guest, 0);
   const submissions = await Promise.allSettled([1, 2].map(() => f.advance(0)));
   assert.equal(submissions.filter((r) => r.status === "fulfilled").length, 1);
   const after = await f.view();
@@ -201,7 +202,7 @@ test("timeout and all-wrong decisions produce honest debriefs; all cooperative w
   assert.equal(fail.room.result, "unresolved"); assert.equal(fail.debrief.teamOutcome, "unresolved");
   assert.equal(fail.room.players[0].contributions.resolution, 0);
   assert.ok(fail.debrief.reviewTopics.length);
-  const timed = await fixture(1); timed.tick(120000);
+  const timed = await fixture(1); timed.tick(600000);
   assert.equal((await timed.view()).room.result, "timeout");
   await assert.rejects(timed.service().hint("ABC234", timed.members[0].token, 0, 0), rejects(409));
   await assert.rejects(timed.service().nextIncident("ABC234", timed.members[0].token, 0), rejects(409));
@@ -233,12 +234,15 @@ test("HTTP cooperative controls authenticate cookies and return role-specific ev
   for (const operation of ["discover", "hint", "role-action", "next"]) assert.equal((await api(operation)).status, 401);
   assert.equal((await api("discover", f.members[0])).status, 200);
   assert.equal((await api("discover", f.members[1])).status, 200);
-  assert.equal((await api("role-action", f.members[0], { actionId: "compare-scope", points: 99999 })).status, 200);
+  assert.equal((await api("role-action", f.members[0], { actionId: "compare-scope", points: 99999 })).status, 409);
   assert.equal((await api("hint", f.members[0], { penalty: 0 })).status, 200);
   const answer = await api("answer", f.members[0], { answerId: multiplayerIncidents[0].steps[0].correctAnswerId, score: 99999 });
   const result = await answer.json();
   assert.equal(answer.status, 200); assert.equal(result.room.score, -25);
-  assert.equal(result.room.players[0].score, 130);
+  assert.equal(result.room.players[0].score, 110);
+  const publication = await api("role-action", f.members[0], { actionId: "compare-scope", points: 99999 });
+  assert.equal(publication.status, 200);
+  assert.equal((await publication.json()).room.players[0].score, 130);
   assert.equal((await api("answer", f.members[0], { answerId: multiplayerIncidents[0].steps[0].correctAnswerId })).status, 409);
 });
 
@@ -261,8 +265,8 @@ test("eight players complete both incidents through the Twilio store under its 1
       for (const p of f.members) await service.discover("ABC234", p.token, step, incident);
       await service.hint("ABC234", f.members[0].token, step, incident);
       for (const [index, p] of f.members.entries()) {
-        await service.usefulAction("ABC234", p.token, step, roleFor(index, incident).actionId, incident);
         await service.answer("ABC234", p.token, step, multiplayerIncidents[incident].steps[step].correctAnswerId, incident);
+        await service.usefulAction("ABC234", p.token, step, roleFor(index, incident).actionId, incident);
       }
       await service.advance("ABC234", f.members[0].token, step, incident);
     }
@@ -291,7 +295,7 @@ test("a departed contributor remains in the debrief and penalties can end the se
   assert.equal(done.room.departedPlayers[0].score, 135);
   assert.deepEqual(done.room.departedPlayers[0].contributions, { evidence: 10, answers: 100, actions: 0, resolution: 25 });
   assert.ok(!JSON.stringify(done.room.departedPlayers).includes("tokenHash"));
-  const timed = await fixture(1); await timed.discover(0); timed.tick(119000);
+  const timed = await fixture(1); await timed.discover(0); timed.tick(599000);
   const wrong = multiplayerIncidents[0].steps[0].choices.find((c) => c.id !== multiplayerIncidents[0].steps[0].correctAnswerId).id;
   const expired = await timed.answer(timed.members[0], 0, 0, wrong);
   assert.equal(expired.room.result, "timeout");

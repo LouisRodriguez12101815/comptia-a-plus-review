@@ -76,7 +76,7 @@ try {
   await b.clock.fastForward(2000);
   await b.waitForFunction(() => ![...document.querySelectorAll('[role="alert"]')].some((node) => node.textContent.includes('Evidence discovery failed')));
   await b.getByRole('button', { name: 'Discover assigned evidence', exact: true }).click();
-  await b.getByRole('button', { name: 'Review assigned evidence', exact: true }).waitFor();
+  await b.getByText('Evidence shared', { exact: true }).waitFor();
   await a.clock.fastForward(2000);
   await a.waitForFunction(() => !document.querySelector('[data-answer-id]').disabled);
   const correct = multiplayerIncidents[0].steps[0].correctAnswerId;

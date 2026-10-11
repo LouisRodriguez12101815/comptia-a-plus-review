@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ch9 from "@/content/network-plus/ch9.json";
 import ChapterViewer from "@/app/network-plus/ch10/ChapterViewer";
 
@@ -40,7 +41,7 @@ export default function Page() {
         <h1>{ch9.title}</h1>
         <p className="lede">{ch9.summary}</p>
         <p className="links">
-          <a href="/notes?exam=n10-009">Read the Chapter 9 notes in the Notes section</a>
+          <Link href="/notes?exam=n10-009">Read the Chapter 9 notes in the Notes section</Link>
         </p>
       </header>
 

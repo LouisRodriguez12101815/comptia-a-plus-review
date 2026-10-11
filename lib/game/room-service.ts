@@ -6,6 +6,7 @@ import { emptyContributions, evidenceItemsFor, legacyDhcpIncident, HINT_PENALTY,
 
 import { assignEvidence, evidenceModel, CONNECTION_WINDOW } from "@/lib/game/evidence-model";
 import { BUILD_COMMIT, ROOM_PROTOCOL_VERSION } from "@/lib/game/version";
+import { roundLearning, transferQuestion } from "@/lib/game/round-learning";
 import { networkDiagramFor } from "@/lib/game/network-diagram";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -69,7 +70,7 @@ export class RoomService {
       const room: StoredRoom = {
         code: normalizeCode(this.code()), version: 1, status: "lobby", phase: "lobby",
         hostPlayerId: player.id, players: [player], departedPlayers: [], incidentIndex: 0, incidentId: this.incidents[0].id,
-        stepIndex: 0, startsAt: null, endsAt: null, roundSeconds: 120,
+        stepIndex: 0, startsAt: null, endsAt: null, roundSeconds: 600,
         score: 0, uptime: 100, selectedActions: [], result: null,
         streak: 0, bestStreak: 0, hintPenalties: 0, hintsUsed: 0, hintUsed: false,
         evidenceDiscoveries: [], evidenceAssignments: [], discoveredEvidenceIds: [], evidenceContinueAt: null, evidenceContinued: false,
@@ -164,7 +165,18 @@ export class RoomService {
       outstandingAnswers: outstanding.map((p) => p.nickname) };
   }
 
+  private recordLearning(room: StoredRoom) {
+    if (!this.incident(room).steps[room.stepIndex]) return;
+    room.learningHistory ??= [];
+    if (room.learningHistory.some((r) => r.incidentId === room.incidentId && r.stepIndex === room.stepIndex)) return;
+    room.learningHistory.push({ incidentId: room.incidentId, stepIndex: room.stepIndex,
+      evidenceIds: [...room.discoveredEvidenceIds],
+      answerIds: [...new Set(room.selectedActions.filter((a) => a.stepIndex === room.stepIndex).flatMap((a) => a.attemptedAnswerIds ?? [a.answerId]))],
+      hint: room.hintUsed, continued: room.evidenceContinued });
+  }
+
   private finish(room: StoredRoom, result: NonNullable<StoredRoom["result"]>) {
+    this.recordLearning(room);
     room.status = "results"; room.phase = "debrief"; room.result = result;
     if (room.outcomes.length <= room.incidentIndex) {
       if (result === "resolved") {
@@ -368,6 +380,9 @@ export class RoomService {
       if (!this.evidenceComplete(room, player.id)) throw new RoomError(409, "Discover your evidence before acting.");
       if (room.usefulActions.some((a) => a.playerId === player.id)) throw new RoomError(409, "Your role action is already recorded for this question.");
       const useful = actionId === role.actionId;
+      if (useful && !room.selectedActions.some((a) => a.playerId === player.id && a.stepIndex === room.stepIndex && a.correct)) {
+        throw new RoomError(409, "Submit a justified diagnostic decision before publishing a role finding.");
+      }
       room.usefulActions.push({ playerId: player.id, actionId: actionId as string, useful });
       if (useful) { player.contributions.actions += 20; player.score += 20; }
       else this.penalize(room, now);
@@ -392,11 +407,14 @@ export class RoomService {
       const step = this.incident(room).steps[room.stepIndex];
       const choice = step.choices.find((answer) => answer.id === answerId);
       if (!choice) throw new RoomError(400, "Choose one of this question's answers.");
-      if (room.selectedActions.some((action) => action.stepIndex === room.stepIndex && action.playerId === player.id)) {
-        throw new RoomError(409, "You already answered this question.");
+      if (room.selectedActions.some((action) => action.stepIndex === room.stepIndex && action.playerId === player.id && (action.correct || (action.attemptedAnswerIds ?? [action.answerId]).includes(choice.id)))) {
+        throw new RoomError(409, "This decision is already recorded, or you have completed this question. Choose a different decision after reviewing feedback.");
       }
       const correct = choice.id === step.correctAnswerId;
-      room.selectedActions.push({ playerId: player.id, stepIndex: room.stepIndex, answerId: choice.id, correct, submittedAt: now });
+      const previous = room.selectedActions.find((a) => a.stepIndex === room.stepIndex && a.playerId === player.id);
+      const decision = { playerId: player.id, stepIndex: room.stepIndex, answerId: choice.id, correct, submittedAt: now };
+      if (previous) Object.assign(previous, decision, { attemptedAnswerIds: [...(previous.attemptedAnswerIds ?? [previous.answerId]), choice.id] });
+      else room.selectedActions.push(decision);
       player.lastSeenAt = now;
       if (correct) { player.score += 100; player.contributions.answers += 100; }
       else this.penalize(room, now);
@@ -412,9 +430,10 @@ export class RoomService {
       player.lastSeenAt = now;
       if (!this.evidenceGate(room, player.id, now).canAdvance) throw new RoomError(409, "The host must answer. Wait for connected responders, or continue with current evidence after the timeout.");
       const decisions = room.selectedActions.filter((a) => a.stepIndex === room.stepIndex);
-      const clean = decisions.length > 0 && decisions.every((a) => a.correct) && room.usefulActions.every((a) => a.useful);
+      const clean = decisions.length > 0 && decisions.every((a) => a.correct && (a.attemptedAnswerIds?.length ?? 1) === 1) && room.usefulActions.every((a) => a.useful);
       room.streak = clean ? room.streak + 1 : 0; room.bestStreak = Math.max(room.bestStreak, room.streak);
       room.score += clean ? 100 * Math.min(3, room.streak) : decisions.some((a) => a.correct) ? 50 : 0;
+      this.recordLearning(room);
       room.stepIndex += 1;
       if (room.stepIndex === this.incident(room).steps.length) {
         const resolved = this.incident(room).steps.every((_, index) => room.selectedActions.some((a) => a.stepIndex === index && a.correct));
@@ -449,6 +468,17 @@ export class RoomService {
             evidenceStatus: { state: !connected ? "disconnected" : !assigned.length ? "not-required" : discovered === assigned.length ? "complete" : room.evidenceContinued ? "waived" : "pending", assigned: assigned.length, discovered } };
         }) },
       viewerId, serverNow: now,
+      sharedFindings: evidenceItemsFor(incident, room.stepIndex).filter((i) => stored.discoveredEvidenceIds.includes(i.id)),
+      transferQuestion: transferQuestion(incident.id),
+      learningDebrief: room.status === "results" ? (room.learningHistory ?? []).map((record) => {
+        const source = this.incidents.find((i) => i.id === record.incidentId) ?? legacyDhcpIncident;
+        const step = source.steps[record.stepIndex];
+        const lesson = roundLearning(source, record.stepIndex);
+        return { title: step.title, goal: lesson.goal,
+          evidence: evidenceItemsFor(source, record.stepIndex).filter((i) => record.evidenceIds.includes(i.id)).map((i) => i.text),
+          decisions: record.answerIds.flatMap((id) => { const choice = step.choices.find((c) => c.id === id); return choice ? [{ label: choice.label, correct: id === step.correctAnswerId, explanation: choice.explanation }] : []; }),
+          learned: lesson.learned, alternative: lesson.competingExplanation, overridden: record.continued, hint: record.hint };
+      }) : [],
       evidenceGate: this.evidenceGate(stored, viewerId, now),
       incident: { title: incident.title, ticket: incident.ticket, objective: incident.objective, debrief: incident.debrief, count: this.incidents.length, ...learning },
       role: { name: role.name, responsibility: role.responsibility, actionId: role.actionId, action: role.action },
@@ -460,6 +490,10 @@ export class RoomService {
       } : null,
       step: room.status === "playing" && current ? {
         title: current.title, prompt: current.prompt,
+        learning: { ...roundLearning(incident, room.stepIndex),
+          result: "", learned: selectedActions.some((a) => a.stepIndex === room.stepIndex && a.playerId === viewerId && a.correct) ? roundLearning(incident, room.stepIndex).learned : "",
+          competingExplanation: selectedActions.some((a) => a.stepIndex === room.stepIndex && a.playerId === viewerId) ? roundLearning(incident, room.stepIndex).competingExplanation : "" },
+        consequence: selectedActions.some((a) => a.stepIndex === room.stepIndex && a.playerId === viewerId && a.correct) ? roundLearning(incident, room.stepIndex).result : null,
         evidence: this.assignedEvidence(stored, viewerId).filter((i) => stored.discoveredEvidenceIds.includes(i.id)).map((i) => i.text).join("\n") || undefined,
         assignedEvidence: this.assignedEvidence(stored, viewerId).map((i) => ({ id: i.id, label: i.label, discovered: stored.discoveredEvidenceIds.includes(i.id), text: stored.discoveredEvidenceIds.includes(i.id) ? i.text : undefined })),
         hint: room.hintUsed ? current.hint : null,

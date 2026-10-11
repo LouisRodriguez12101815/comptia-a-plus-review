@@ -198,7 +198,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   const countdown = room.startsAt ? Math.max(0, Math.ceil((room.startsAt - estimatedNow) / 1000)) : 0;
   const remaining = room.endsAt ? Math.max(0, Math.ceil((room.endsAt - estimatedNow) / 1000)) : room.roundSeconds;
   const actions = room.selectedActions.filter((action) => action.stepIndex === room.stepIndex);
-  const ownAction = actions.find((action) => action.playerId === viewerId);
+  const ownAction = actions.findLast((action) => action.playerId === viewerId);
   const allReady = room.players.length >= 1 && room.players.every((player) => player.ready);
   const foundEvidence = self.evidenceStatus.assigned === self.evidenceStatus.discovered;
   const evidenceWait = evidenceGate.continueAvailableAt === null ? 0 : Math.max(0, Math.ceil((evidenceGate.continueAvailableAt - estimatedNow) / 1000));
@@ -219,8 +219,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
       <p role="status" data-room-connection-status className="text-sm text-slate-300">Room storage: {connectionError ? "retrying shared state" : "responding"} · Live updates: {syncStatus}</p>
       {connectionError && <button onClick={() => requestRefresh.current?.()} className="text-cyan-200">Retry shared room and evidence</button>}
       {syncError && <p role="status" className="rounded-xl bg-amber-400/10 p-3 text-amber-200">{syncError}</p>}
-      <section aria-label="Live scoreboard" className="rounded-2xl border border-teal-300/25 bg-slate-900 p-5">
-        <h2 className="text-xl font-semibold">Team scoreboard</h2>
+      <details aria-label="Live scoreboard" className="rounded-2xl border border-teal-300/25 bg-slate-900 p-5">
+        <summary className="cursor-pointer text-xl font-semibold">Scoring and practice window</summary>
         <div className="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
           <p>Team points <strong className="block text-2xl text-cyan-200">{room.score}</strong></p>
           <p>Uptime score <strong className="block text-2xl text-emerald-200">{room.uptimeScore}/1000</strong></p>
@@ -229,8 +229,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         </div>
         <p className="mt-3 text-sm text-slate-300">Phase: {room.phase} · Hint penalties: −{room.hintPenalties} · Best streak: {room.bestStreak}</p>
         <p className="mt-2 text-sm">Your role: <strong>{role.name}</strong> — {role.responsibility}</p>
-        <p className="mt-3 text-xs text-slate-400">Team decisions score once when the host continues: 100 × streak (maximum ×3) for a clean decision; 50 if the team finds the correct answer with mistakes. Individual contributions are separate. Each mistake costs 5% uptime and 5 seconds. A shared hint costs 25 team points.</p>
-      </section>
+        <p className="mt-3 text-xs text-slate-400">Team decisions score once when the host continues: 100 × streak (maximum ×3) for a clean decision; 50 if the team finds the correct answer with mistakes. Individual contributions are separate. Each distinct incorrect decision costs 5% uptime and 5 seconds; you can recover by choosing a different decision. Correct decisions earn +100 once. No speed bonus. A shared hint costs 25 team points.</p>
+      </details>
       <section className="rounded-[2rem] border border-cyan-300/25 bg-slate-900/90 p-6">
         <h2 className="text-xl font-semibold">Incident team ({room.players.length}/8)</h2>
         <ul className="mt-4 space-y-2" aria-label="Players">
@@ -247,12 +247,14 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         </div>}
       </section>
 
-      {room.status === "lobby" && <section className="rounded-2xl border border-slate-700 p-6"><h1 className="text-2xl font-semibold">Response lobby</h1><p className="mt-3 text-slate-300">Share code {room.code}. Tackle {incident.count} incidents with a shared two-minute timer per incident. Roles rotate after each incident. A solo responder receives all evidence; teams receive complementary clues to discuss. Rooms expire 30 minutes after creation.</p></section>}
+      {room.status === "lobby" && <section className="rounded-2xl border border-slate-700 p-6"><h1 className="text-2xl font-semibold">Response lobby</h1><p className="mt-3 text-slate-300">Share code {room.code}. Tackle {incident.count} incidents with a ten-minute discussion window per incident. Roles rotate after each incident. A solo responder receives all evidence; teams receive complementary clues to discuss. Rooms expire 30 minutes after creation.</p></section>}
 
       {room.status === "playing" && <section className="space-y-5 rounded-[2rem] border border-cyan-300/25 bg-slate-900/90 p-6 sm:p-8">
         <div className="flex flex-wrap justify-between gap-3"><p className="text-cyan-300">Incident {room.incidentIndex + 1} · {room.phase}</p><p aria-label="Time remaining" className="font-mono">Time {remaining}s</p></div>
         <h1 className="text-3xl font-semibold">{room.phase === "briefing" ? incident.title : step?.title}</h1>
         {room.phase === "briefing" ? <><p>{incident.ticket}</p><p className="text-cyan-100">{incident.objective}</p><p role="status" className="text-xl font-semibold">Mission begins in {countdown}s</p></> : step && <>
+          <p className="text-cyan-100"><strong>Round objective:</strong> {step.learning.goal}</p>
+          <p className="text-sm text-slate-300">Observed symptom: {incident.ticket}</p>
           {isHost && !evidenceGate.continued && <aside aria-label="Host evidence fallback" className={`space-y-3 rounded-2xl border-2 p-5 ${evidenceWait === 0 ? "border-amber-300 bg-amber-300/15" : "border-slate-600 bg-slate-950"}`}>
             <h2 className="text-lg font-semibold">{evidenceWait === 0 ? "Continue the incident now" : "Evidence timeout"}</h2>
             <p>{evidenceWait > 0 ? `Continue with current evidence becomes available in ${evidenceWait}s.` : "The timeout has elapsed. Continue even if your evidence card or a teammate is missing; this unlocks answers for this question without awarding discovery points."}</p>
@@ -264,15 +266,20 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
             {step.assignedEvidence.length === 0 && <p role="status" className="text-cyan-100">Complete · 0/0. No evidence is assigned to you for this question. Your evidence requirement is complete; no discovery points are awarded.</p>}
             <ul className="space-y-3" aria-label="Your assigned evidence">{step.assignedEvidence.map((item) => <li key={item.id} className="rounded-xl bg-slate-950 p-4">
               <h3 className="font-semibold">{item.label}</h3>
-              <button data-evidence-id={item.id} disabled={disabled || remaining === 0} onClick={() => void command("evidence", { itemId: item.id })} className={buttonStyle}>{item.discovered ? "Review assigned evidence" : "Discover assigned evidence"}</button>
+              <span data-evidence-id={item.id}>{item.discovered ? <span role="status" className="text-sm text-emerald-200">Evidence shared</span> : <button disabled={disabled || remaining === 0} onClick={() => void command("evidence", { itemId: item.id })} className={buttonStyle}>Discover assigned evidence</button>}</span>
               {item.text && <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-sm text-cyan-100">{item.text}</pre>}
             </li>)}</ul>
-            {step.assignedEvidence.length > 0 && <p className="text-xs text-slate-300">Discovery contributes +10 once per question. Shared items already discovered by a teammate satisfy your requirement; you may still review your assigned item.</p>}
-            {foundEvidence && !ownRoleAction && <div className="flex flex-wrap gap-3">
-              <button disabled={disabled || remaining === 0} onClick={() => void command("role-action", { actionId: role.actionId })} className={buttonStyle}>{role.action} (+20)</button>
-              <button disabled={disabled || remaining === 0} onClick={() => void command("role-action", { actionId: "restart-shared-equipment" })} className="rounded-full border border-rose-400/50 px-4 py-2 text-sm text-rose-200">Restart shared equipment without checking (risky)</button>
+            {step.assignedEvidence.length > 0 && <p className="text-xs text-slate-300">Discovery contributes +10 once per question. Shared items already discovered by a teammate satisfy your requirement; read the finding below without another click.</p>}
+            {foundEvidence && ownAction?.correct && !ownRoleAction && <div className="flex flex-wrap gap-3">
+              <button disabled={disabled || remaining === 0} onClick={() => void command("role-action", { actionId: role.actionId })} className={buttonStyle}>Publish justified role finding (+20)</button>
             </div>}
-            {ownRoleAction && <p role="status" className="text-sm">{ownRoleAction.useful ? "Role contribution recorded: +20. Explain your finding to the team." : "Unsupported change: uptime −5%, timer −5s. Review the evidence before answering."}</p>}
+            {ownRoleAction && <p role="status" className="text-sm">{ownRoleAction.useful ? "Justified role finding published: +20. It is visible to the team below." : "Unsupported change: uptime −5%, timer −5s. Review the evidence before answering."}</p>}
+          </section>
+          <section aria-label="Shared findings" className="space-y-3 rounded-xl border border-cyan-300/30 p-4">
+            <h2 className="font-semibold">Shared findings</h2>
+            <p className="text-sm text-slate-300">{role.name}: {role.responsibility} Compare your clue with your teammate’s before deciding.</p>
+            {snapshot.sharedFindings.length ? snapshot.sharedFindings.map((finding) => <p key={finding.id} className="whitespace-pre-wrap text-sm"><strong>{finding.label}:</strong> {finding.text}</p>) : <p>No discoveries yet. Unopened clues stay private.</p>}
+            {room.usefulActions.filter((a) => a.useful).map((a) => <p key={a.playerId} className="text-sm text-emerald-100">{room.players.find((p) => p.id === a.playerId)?.nickname} published a justified finding: {actions.find((decision) => decision.playerId === a.playerId && decision.correct)?.explanation}</p>)}
           </section>
           <button disabled={disabled || room.hintUsed || remaining === 0} onClick={() => void command("hint")} className="rounded-full border border-amber-300/40 px-4 py-2 text-sm text-amber-200">{room.hintUsed ? "Shared hint unlocked" : "Ask for a shared hint (−25 team points)"}</button>
           {step.hint && <p role="status" className="rounded-xl bg-amber-400/10 p-4 text-amber-100">Mentor hint: {step.hint}</p>}
@@ -286,9 +293,9 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
               <p role="status" className="text-sm text-cyan-100">{evidenceWait > 0 ? `Host may continue with current evidence in ${evidenceWait}s.` : "Evidence timeout reached. The host may continue with current evidence."}</p>
             </>}
           </section>
-          <div className="grid gap-3 sm:grid-cols-2">{step.choices.map((choice) => <button key={choice.id} data-answer-id={choice.id} disabled={disabled || !evidenceGate.canAnswer || !!ownAction || remaining === 0} aria-pressed={ownAction?.answerId === choice.id} onClick={() => void command("actions", { answerId: choice.id })} className="min-h-20 rounded-xl border border-slate-600 bg-slate-950 p-4 text-left hover:border-cyan-300 disabled:opacity-60">{choice.label}</button>)}</div>
-          {ownAction && <div role="status" className={`rounded-xl p-4 ${ownAction.correct ? "bg-emerald-400/10 text-emerald-100" : "bg-rose-400/10 text-rose-100"}`}><p className="font-semibold">{ownAction.correct ? "Correct diagnostic move" : "Not the best next move"}</p><p className="mt-2">{ownAction.explanation}</p></div>}
-          <p className="text-sm text-slate-300">Answers received: {actions.length}/{room.players.filter((player) => player.connected).length} connected players</p>
+          <div className="grid gap-3 sm:grid-cols-2">{step.choices.map((choice) => <button key={choice.id} data-answer-id={choice.id} disabled={disabled || !evidenceGate.canAnswer || (ownAction?.correct || actions.some((a) => a.playerId === viewerId && (a.attemptedAnswerIds ?? [a.answerId]).includes(choice.id))) || remaining === 0} aria-pressed={ownAction?.answerId === choice.id} onClick={() => void command("actions", { answerId: choice.id })} className="min-h-20 rounded-xl border border-slate-600 bg-slate-950 p-4 text-left hover:border-cyan-300 disabled:opacity-60">{choice.label}</button>)}</div>
+          {ownAction && <div role="status" className={`rounded-xl p-4 ${ownAction.correct ? "bg-emerald-400/10 text-emerald-100" : "bg-rose-400/10 text-rose-100"}`}><p className="font-semibold">{ownAction.correct ? "Correct diagnostic move" : "Not the best next move"}</p><p className="mt-2">{ownAction.explanation}</p><p className="mt-2 text-sm">{step.learning.competingExplanation}</p>{ownAction.correct ? <><p className="mt-2"><strong>Consequence / next test:</strong> {step.consequence}</p><p className="mt-2"><strong>What we learned:</strong> {step.learning.learned}</p><p className="mt-2 text-sm">Correct decision: +100 individual points, once. Team points are awarded separately when the host continues.</p></> : <p className="mt-2 font-semibold">Uptime −5%, time −5s. Review the findings and choose a different decision above; the penalty remains.</p>}</div>}
+          <p className="text-sm text-slate-300">Answers received: {new Set(actions.map((a) => a.playerId)).size}/{room.players.filter((player) => player.connected).length} connected players</p>
           {evidenceGate.outstandingAnswers.length > 0 && <p className="text-sm text-amber-100">Answers outstanding: {evidenceGate.outstandingAnswers.join(", ")}{evidenceGate.continued ? " (host may proceed after answering)" : ""}</p>}
           {isHost ? <button disabled={disabled || !evidenceGate.canAdvance || remaining === 0} onClick={() => void command("advance", { stepIndex: room.stepIndex })} className={buttonStyle}>Continue mission</button> : <p className="text-sm text-cyan-200">The host continues after answering and receiving teammate answers, or after choosing to continue with current evidence.</p>}
         </>}
@@ -299,6 +306,18 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         <p className="text-xl">{room.result === "resolved" ? "Incident resolved" : room.result === "timeout" ? "Time expired" : room.result === "uptime" ? "Uptime exhausted" : "Incident needs further investigation"}</p>
         <p>Team outcome: {debrief?.teamOutcome === "resolved" ? "All completed incidents resolved" : "Review needed"} · Team score {room.score} · Uptime {room.uptime}% ({debrief?.uptimeScore}/1000) · Best streak {room.bestStreak} · Hints −{room.hintPenalties}</p>
         <ul className="space-y-2" aria-label="Incident outcomes">{room.outcomes.map((outcome) => <li key={outcome.incidentId}>{outcome.incidentId}: {outcome.result} · {outcome.score} team points · {outcome.mistakes} mistakes · {outcome.hints} hints</li>)}</ul>
+        <h2 className="text-xl font-semibold">Incident reconstruction</h2>
+        <p className="text-sm">Symptoms → evidence → hypothesis → test → repair → verification. Scores record contributions, not mastery.</p>
+        {snapshot.learningDebrief.map((round, index) => <article key={index} className="space-y-2 rounded-xl bg-slate-950 p-4">
+          <h3 className="font-semibold">{round.title}</h3><p className="text-sm">Goal: {round.goal}</p>
+          {round.evidence.map((text) => <p key={text} className="whitespace-pre-wrap text-sm text-cyan-100">{text}</p>)}
+          {!round.evidence.length && <p>No evidence was discovered for this decision.</p>}
+          {round.decisions.map((decision) => <p key={decision.label} className="text-sm"><strong>{decision.correct ? "Supported decision" : "Misconception to review"}:</strong> {decision.label}. {decision.explanation}</p>)}
+          <p className="text-sm"><strong>What we learned:</strong> {round.learned}</p>
+          {round.decisions.some((d) => !d.correct) && <p className="text-sm text-amber-100">Review: {round.alternative}</p>}
+          {(round.overridden || round.hint) && <p className="text-xs text-slate-300">{round.overridden ? "The host used the evidence fallback. " : ""}{round.hint ? "The team used a shared hint (−25 points)." : ""}</p>}
+        </article>)}
+        <p><strong>Transfer question:</strong> {snapshot.transferQuestion}</p>
         <h2 className="text-xl font-semibold">Individual contribution breakdown</h2>
         <ul className="space-y-2">{[...room.players, ...room.departedPlayers].map((player) => <li key={player.id}>{player.nickname}{room.departedPlayers.some((p) => p.id === player.id) ? " (left room)" : ""}: {player.score} total — evidence {player.contributions.evidence}, correct answers {player.contributions.answers}, useful actions {player.contributions.actions}, resolution {player.contributions.resolution}</li>)}</ul>
         <h3 className="text-lg font-semibold">Source notes and labs practiced</h3>
@@ -306,7 +325,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         <h2 className="text-xl font-semibold">CompTIA objectives practiced</h2>
         <ul className="space-y-2">{debrief?.objectives.map((objective) => <li key={objective}>{objective}</li>)}</ul>
         <h2 className="text-xl font-semibold">Recommended review topics</h2>
-        <ul className="space-y-2">{(debrief?.reviewTopics.length ? debrief.reviewTopics : incident.reviewTopics).map((topic) => <li key={topic}>{topic}</li>)}</ul>
+        <ul className="space-y-2">{(debrief?.reviewTopics ?? []).map((topic) => <li key={topic}>{topic}</li>)}</ul>
+        {!debrief?.reviewTopics.length && <p>No mistakes were recorded. Use the transfer question to check understanding.</p>}
         <ul className="space-y-2">{incident.debrief.map((line) => <li key={line}>{line}</li>)}</ul>
         {!finalIncident && (isHost ? <button disabled={disabled} onClick={() => void command("next")} className={buttonStyle}>Next incident · Rotate roles</button> : <p>The host starts the next incident and rotates roles.</p>)}
         {finalIncident && <p className="text-sm text-slate-300">Return to mission select to create another room or play Guided Demo.</p>}

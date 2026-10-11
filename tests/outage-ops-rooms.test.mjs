@@ -162,7 +162,7 @@ test("leave transfers host and revokes room membership; empty rooms expire", asy
 
 test("timer expiry is authoritative on every device", async () => {
   const f = fixture(); const { host, guest } = await players(f);
-  await start(f, host, guest); f.tick(125_000);
+  await start(f, host, guest); f.tick(605_000);
   const view = await f.service().get("ABC234", guest.token);
   assert.equal(view.room.result, "timeout");
   assert.equal(view.room.phase, "debrief");
