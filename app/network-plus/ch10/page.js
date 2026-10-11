@@ -58,7 +58,7 @@ const css = `
 
 export default function Page() {
   return (
-    <main className="ch10">
+    <section className="ch10" aria-label="Chapter 10 visuals">
       <style>{css}</style>
 
       <header>
@@ -98,6 +98,6 @@ export default function Page() {
         <p className="muted">Go through them in order with Next, or open the list and jump to any topic. Each visual is interactive.</p>
         <ChapterViewer visuals={ch10.visuals} />
       </section>
-    </main>
+    </section>
   );
 }

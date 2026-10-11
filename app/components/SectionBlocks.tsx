@@ -52,6 +52,8 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
           return (
             <pre
               key={index}
+              tabIndex={0}
+              aria-label="Code example"
               className="overflow-x-auto rounded-xl bg-slate-950 p-4 text-sm text-teal-100"
             >
               {block.text}
@@ -68,7 +70,7 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
                       key={header}
                       className="border-b border-slate-700 px-3 py-2 font-medium text-slate-300"
                     >
-                      {header}
+                      {header || <span className="sr-only">Item</span>}
                     </th>
                   ))}
                 </tr>

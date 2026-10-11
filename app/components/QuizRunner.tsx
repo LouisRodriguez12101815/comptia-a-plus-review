@@ -108,6 +108,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           <ExamFocusPicker focus={focus} onChange={changeFocus} />
         </section>
         <select
+          aria-label="Choose a quiz"
           value={topicId}
           onChange={(event) => setTopicId(event.target.value)}
           className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 sm:w-auto"

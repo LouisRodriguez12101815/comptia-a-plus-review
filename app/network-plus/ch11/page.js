@@ -33,7 +33,7 @@ const css = `
 export default function Page() {
   const hasVisuals = ch11.visuals && ch11.visuals.length > 0;
   return (
-    <main className="ch11">
+    <section className="ch11" aria-label="Chapter 11 visuals">
       <style>{css}</style>
 
       <header>
@@ -52,6 +52,6 @@ export default function Page() {
           <ChapterViewer visuals={ch11.visuals} />
         </section>
       ) : null}
-    </main>
+    </section>
   );
 }
