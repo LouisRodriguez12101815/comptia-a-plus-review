@@ -2892,5 +2892,229 @@
     "answer": 1,
     "explanation": "Tunneling encapsulates IPv6 inside IPv4. Dual stack runs both protocols side by side but does not carry one inside the other.",
     "weak": false
+  },
+  {
+    "id": "q-n10c7-01",
+    "topicId": "n10-ch7",
+    "prompt": "A technician is assigning a private Class C network to a small office. Which range is the Class C private range?",
+    "choices": [
+      "192.168.0.0 through 192.168.255.255",
+      "172.16.0.0 through 172.31.255.255",
+      "10.0.0.0 through 10.255.255.255",
+      "169.254.0.1 through 169.254.255.254"
+    ],
+    "answer": 0,
+    "explanation": "192.168.0.0 through 192.168.255.255 is the Class C private range. 172.16 to 172.31 is Class B private, 10.x is Class A private, and 169.254.x.x is APIPA, which is not a private range you assign.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-02",
+    "topicId": "n10-ch7",
+    "prompt": "A Windows client shows an address of 169.254.12.9 after it boots. Which technology assigned it?",
+    "choices": [
+      "DHCP relay",
+      "Stateless address autoconfiguration (SLAAC)",
+      "NAT64",
+      "Automatic Private IP Addressing (APIPA)"
+    ],
+    "answer": 3,
+    "explanation": "APIPA configures addresses that begin with 169.254 when a client cannot reach a DHCP server. SLAAC is IPv6 and NAT64 is a translation method.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-03",
+    "topicId": "n10-ch7",
+    "prompt": "A host has the address 200.15.4.9. Which class is it, and how does its first octet start in binary?",
+    "choices": [
+      "Class A, 0xxxxxxx",
+      "Class B, 10xxxxxx",
+      "Class C, 110xxxxx",
+      "Class D, 1110xxxx"
+    ],
+    "answer": 2,
+    "explanation": "The first octet 200 falls in 192 through 223, which is Class C and starts with 110xxxxx. Class A is 1 to 126, Class B is 128 to 191, and Class D is 224 to 239.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-04",
+    "topicId": "n10-ch7",
+    "prompt": "Which range is reserved for private Class B networks?",
+    "choices": [
+      "172.16.0.0 through 172.31.255.255",
+      "172.0.0.0 through 172.255.255.255",
+      "192.168.0.0 through 192.168.255.255",
+      "128.0.0.0 through 191.255.255.255"
+    ],
+    "answer": 0,
+    "explanation": "The Class B private range is 172.16.0.0 through 172.31.255.255. The whole 172 block is not private, and 128 through 191 is the Class B first-octet range for all Class B addresses, not just private ones.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-05",
+    "topicId": "n10-ch7",
+    "prompt": "A technician runs ping 127.0.0.1 on a workstation. What does that test?",
+    "choices": [
+      "The default gateway",
+      "The local TCP/IP stack on the same host, using the loopback address",
+      "The DHCP server",
+      "The DNS server"
+    ],
+    "answer": 1,
+    "explanation": "127.0.0.1 is the loopback address and points the host at itself, so it checks the local TCP/IP stack. The whole 127.0.0.1 through 127.255.255.254 range is loopback.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-06",
+    "topicId": "n10-ch7",
+    "prompt": "A customer reports that 172.32.0.10 should be private because it starts with 172. What is the correct response?",
+    "choices": [
+      "It is private because every 172 address is private",
+      "It is APIPA because it is outside Class B",
+      "It is public because the Class B private range ends at 172.31.255.255",
+      "It is loopback because it is a 172 address"
+    ],
+    "answer": 2,
+    "explanation": "Class B private addresses run from 172.16.0.0 through 172.31.255.255. 172.32.0.10 is just outside that range and is therefore a public address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-07",
+    "topicId": "n10-ch7",
+    "prompt": "What is the name for a 48-bit (6-byte) address physically assigned to a network interface such as a NIC?",
+    "choices": [
+      "MAC address",
+      "IPv4 address",
+      "IPv6 interface ID",
+      "APIPA address"
+    ],
+    "answer": 0,
+    "explanation": "A MAC address, also called a hardware address or a burned-in address, is 48 bits (6 bytes) and assigned to the interface. It is not an IP address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-08",
+    "topicId": "n10-ch7",
+    "prompt": "IPv6 addresses compare with IPv4 addresses in length by how many bits?",
+    "choices": [
+      "32 more bits",
+      "64 more bits",
+      "16 more bits",
+      "96 more bits"
+    ],
+    "answer": 3,
+    "explanation": "IPv6 uses 128-bit addresses and IPv4 uses 32-bit addresses, so IPv6 has 96 more bits.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-09",
+    "topicId": "n10-ch7",
+    "prompt": "Which statement best defines a unicast address?",
+    "choices": [
+      "One-to-many communication to a group",
+      "Delivery to the nearest of several interfaces",
+      "An address assigned to an interface for one-to-one communication",
+      "An address used to test the local stack"
+    ],
+    "answer": 2,
+    "explanation": "A unicast address is assigned to a single interface and gives one-to-one communication. One-to-many is multicast and one-to-nearest is anycast.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-10",
+    "topicId": "n10-ch7",
+    "prompt": "A packet is addressed so that it is delivered to multiple interfaces. Which address type is it?",
+    "choices": [
+      "Multicast",
+      "Unicast",
+      "Link-local",
+      "Loopback"
+    ],
+    "answer": 0,
+    "explanation": "Multicast is a one-to-many address delivered to multiple interfaces. Unicast goes to a single interface.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-11",
+    "topicId": "n10-ch7",
+    "prompt": "Which IPv6 address type is used just like a regular public routable IPv4 address?",
+    "choices": [
+      "Link-local",
+      "Unique local",
+      "Multicast",
+      "Global unicast"
+    ],
+    "answer": 3,
+    "explanation": "Global unicast addresses are the IPv6 equivalent of public routable IPv4 addresses. Link-local and unique local are not routed to the Internet.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-12",
+    "topicId": "n10-ch7",
+    "prompt": "Which IPv6 prefix does a link-local address always start with?",
+    "choices": [
+      "FC00::/7",
+      "FE80::/10",
+      "::1",
+      "FF00::/8"
+    ],
+    "answer": 1,
+    "explanation": "Link-local addresses always start with FE80::/10 and are not meant to be routed. FC00::/7 is unique local and ::1 is loopback.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-13",
+    "topicId": "n10-ch7",
+    "prompt": "Which IPv6 address type is not meant to be routed to the Internet but is still globally unique?",
+    "choices": [
+      "Global unicast",
+      "Link-local",
+      "Anycast",
+      "Unique local"
+    ],
+    "answer": 3,
+    "explanation": "Unique local addresses, which start with FC00::/7 and were once called site-local, are globally unique but not routed to the Internet. Global unicast addresses are routable.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-14",
+    "topicId": "n10-ch7",
+    "prompt": "Which addressing type is also referred to as one-to-nearest, delivering packets only to the first interface it finds?",
+    "choices": [
+      "Unicast",
+      "Multicast",
+      "Anycast",
+      "Link-local"
+    ],
+    "answer": 2,
+    "explanation": "Anycast identifies multiple interfaces but delivers only to the first, or nearest, one it finds. Multicast delivers to all members of the group.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-15",
+    "topicId": "n10-ch7",
+    "prompt": "What is the IPv6 loopback address?",
+    "choices": [
+      "::1",
+      "127.0.0.1",
+      "FE80::1",
+      "FC00::1"
+    ],
+    "answer": 0,
+    "explanation": "::1 is the IPv6 loopback address, the counterpart of IPv4 127.0.0.1.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-16",
+    "topicId": "n10-ch7",
+    "prompt": "A host with the MAC address 00:1A:2B:3C:4D:5E builds an EUI-64 interface ID. Which result is correct?",
+    "choices": [
+      "001A:2BFF:FE3C:4D5E",
+      "021A:2BFF:FE3C:4D5E",
+      "021A:2B3C:4D5E:FFFE",
+      "021A:2BFF:FF3C:4D5E"
+    ],
+    "answer": 1,
+    "explanation": "EUI-64 inserts FF:FE in the middle of the MAC address and inverts the 7th bit of the first byte, so 00 becomes 02: 021A:2BFF:FE3C:4D5E. Skipping the flip, inserting FF:FF, or appending FFFE at the end are all wrong.",
+    "weak": false
   }
 ]

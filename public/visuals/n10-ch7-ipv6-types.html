@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IPv6 address type sorter</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+input[type=text]{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;width:100%;max-width:420px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.fb{margin-top:8px;padding:10px 12px;border-radius:10px;font-size:14px}
+.fb.good{background:var(--good-soft);color:var(--ink);border:1px solid var(--good)}
+.fb.bad{background:var(--bad-soft);color:var(--ink);border:1px solid var(--bad)}
+.fb.hint{background:var(--accent-soft)}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--bg)}
+.q .t{font-weight:600;margin-bottom:6px}
+.score{font-weight:600;color:var(--accent)}
+.bytes{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.byte{font-family:ui-monospace,Menlo,monospace;font-size:16px;padding:8px 10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);min-width:48px;text-align:center}
+.byte.ins{border-color:var(--good);background:var(--good-soft)}
+.byte.flip{border-color:var(--warm);background:var(--warm-soft)}
+.bits{display:flex;gap:3px;margin:6px 0;flex-wrap:wrap}
+.bit{font-family:ui-monospace,Menlo,monospace;width:30px;height:34px;display:flex;align-items:center;justify-content:center;border:2px solid var(--line);border-radius:6px;background:var(--surface)}
+.bit.hot{border-color:var(--warm);background:var(--warm-soft);font-weight:700}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>IPv6 address type sorter</h1>
+<p class="lede">Read each situation and choose the IPv6 address type. You get the reason and the prefix every time.</p>
+<div class="card">
+<div class="row"><span class="score" id="score">Score 0 of 0</span><button type="button" id="shuf">Shuffle</button><button type="button" id="reset">Start over</button></div>
+<div class="q"><div class="lab" id="cnt"></div><div class="t" id="scen"></div>
+<div class="ctrls" id="types" role="group" aria-label="Choose the address type"></div>
+<div id="fb" aria-live="polite"></div>
+<div class="row"><button type="button" id="next" disabled>Next situation &rarr;</button></div></div>
+</div>
+<div class="card" style="margin-top:12px"><div class="lab">Cheat sheet</div><div class="tbl"><table><thead><tr><th>Type</th><th>Delivery</th><th>Prefix or value</th><th>Routed?</th></tr></thead><tbody id="sheet"></tbody></table></div></div>
+</div>
+<script>
+
+const TYPES=[
+ {k:'Unicast',d:'One to one: one interface',p:'Any address assigned to a single interface',r:'Depends on its kind'},
+ {k:'Global unicast',d:'One to one',p:'Used like a public IPv4 address',r:'Yes, on the Internet'},
+ {k:'Link-local',d:'One to one, local link only',p:'FE80::/10',r:'Never, not even inside the organization'},
+ {k:'Unique local',d:'One to one',p:'FC00::/7 (formerly called site-local)',r:'Inside the organization, not to the Internet; still globally unique'},
+ {k:'Multicast',d:'One to many: all interfaces in the group',p:'Group addresses',r:'As configured'},
+ {k:'Anycast',d:'One to nearest: the first address found',p:'Same address on several interfaces',r:'As configured'},
+ {k:'Loopback',d:'To itself',p:'::1',r:'Never leaves the host'}];
+const S=[
+ ['A packet is addressed to exactly one interface.','Unicast','Unicast is one-to-one: the packet is delivered to a single interface.'],
+ ['An address used just like a regular public routable IPv4 address.','Global unicast','Global unicast addresses are the public, Internet-routable type.'],
+ ['An address that is not meant to be routed at all.','Link-local','Link-local (FE80::/10) is valid on the local link only, the IPv6 cousin of APIPA.'],
+ ['An address that is not routed to the Internet but is still globally unique, and may be routed inside the company.','Unique local','Unique local (FC00::/7) is the IPv6 private address. It used to be called site-local.'],
+ ['A stream must reach several interfaces at once.','Multicast','Multicast is one-to-many: delivered to every interface in the group.'],
+ ['An address is shared by several servers, and the packet should go to only the first one found.','Anycast','Anycast identifies multiple interfaces, but delivery goes to the nearest. It is called one-to-nearest.'],
+ ['What is the IPv6 equivalent of IPv4 127.0.0.1?','Loopback','The IPv6 loopback address is ::1.'],
+ ['A host sets itself an address that starts with FE80.','Link-local','FE80::/10 always marks a link-local address.'],
+ ['An address range that starts with FC00::/7.','Unique local','FC00::/7 is the unique local range.'],
+ ['Which type is the IPv6 counterpart of APIPA, meaning it cannot be routed even inside the organization?','Link-local','Link-local is not routed at all. Unique local can be routed internally.'],
+ ['Which type is the IPv6 counterpart of a private RFC 1918 address?','Unique local','Both are for inside the organization. Unique local cannot go to the Internet but can be routed internally.']];
+let order=S.map((_,i)=>i),pos=0,right=0,done=0,answered=false;
+const types=document.getElementById('types'),fb=document.getElementById('fb'),next=document.getElementById('next');
+TYPES.forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t.k;b.onclick=()=>pick(t.k,b);types.appendChild(b)});
+const sheet=document.getElementById('sheet');
+TYPES.forEach(t=>{const tr=document.createElement('tr');['k','d','p','r'].forEach(c=>{const td=document.createElement('td');td.textContent=t[c];if(c==='p')td.className='mono';tr.appendChild(td)});sheet.appendChild(tr)});
+function show(){const s=S[order[pos]];answered=false;
+ document.getElementById('cnt').textContent='Situation '+(pos+1)+' of '+S.length;
+ document.getElementById('scen').textContent=s[0];fb.innerHTML='';next.disabled=true;
+ next.textContent=pos===S.length-1?'See result':'Next situation →';
+ [...types.children].forEach(b=>{b.disabled=false;b.setAttribute('aria-pressed','false')})}
+function pick(k,btn){if(answered)return;answered=true;const s=S[order[pos]];done++;
+ const ok=k===s[1];if(ok)right++;
+ btn.setAttribute('aria-pressed','true');
+ fb.innerHTML='<div class="fb '+(ok?'good':'bad')+'"><strong>'+(ok?'Correct. ':'Not quite. The answer is '+s[1]+'. ')+'</strong>'+s[2]+'</div>';
+ [...types.children].forEach(b=>b.disabled=true);
+ next.disabled=false;
+ document.getElementById('score').textContent='Score '+right+' of '+done}
+next.onclick=()=>{if(pos===S.length-1){fb.innerHTML='<div class="fb hint"><strong>Finished: '+right+' of '+S.length+'.</strong> Use Shuffle or Start over to run it again.</div>';next.disabled=true;[...types.children].forEach(b=>b.disabled=true);return}pos++;show()};
+document.getElementById('shuf').onclick=()=>{for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}pos=0;right=0;done=0;document.getElementById('score').textContent='Score 0 of 0';show()};
+document.getElementById('reset').onclick=()=>{order=S.map((_,i)=>i);pos=0;right=0;done=0;document.getElementById('score').textContent='Score 0 of 0';show()};
+show();
+
+</script>
+</body>
+</html>

@@ -7,7 +7,7 @@
     ],
     "title": "IP Addressing",
     "chapter": "Network+ · Chapter 7",
-    "summary": "Public and private IPv4 ranges, APIPA, address classes A to E, choosing a private range, IPv6 basics, tunneling and dual stack, SLAAC, and EUI-64.",
+    "summary": "Public and private IPv4 ranges, APIPA, address classes A to E, choosing a private range, IPv6 basics and address types, tunneling and dual stack, SLAAC, EUI-64, and the chapter written labs.",
     "sections": [
       {
         "id": "objectives",
@@ -137,6 +137,70 @@
         ]
       },
       {
+        "id": "ipv6-types",
+        "title": "IPv6 address types",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Delivery",
+              "What to remember"
+            ],
+            "rows": [
+              [
+                "Unicast",
+                "One-to-one: a packet goes to a single interface",
+                "An address assigned to one interface"
+              ],
+              [
+                "Global unicast",
+                "One-to-one",
+                "Used just like a regular public, routable IPv4 address"
+              ],
+              [
+                "Link-local",
+                "One-to-one on the local link",
+                "Always starts with FE80::/10. Not meant to be routed"
+              ],
+              [
+                "Unique local",
+                "One-to-one",
+                "Starts with FC00::/7. Not routed to the Internet but still globally unique. Used to be called site-local"
+              ],
+              [
+                "Multicast",
+                "One-to-many: delivered to multiple interfaces",
+                "Identifies a group of interfaces"
+              ],
+              [
+                "Anycast",
+                "One-to-nearest: identifies multiple interfaces, delivered only to the first one it finds",
+                "The nearest interface answers"
+              ],
+              [
+                "Loopback",
+                "The host itself",
+                "::1, the IPv6 version of 127.0.0.1"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "IPv6 has 128-bit addresses against 32-bit IPv4 addresses, so 96 more bits.",
+              "Benefits over IPv4 include more available addresses, a simpler header, and options for authentication and other security.",
+              "A MAC address is a 48-bit (6-byte) address physically assigned to a network interface such as a NIC. It is also called a hardware address or a burned-in address."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Match the phrase to the type: single interface is unicast, public-like is global unicast, not routed is link-local, not on the Internet but globally unique is unique local, multiple interfaces is multicast, nearest is anycast."
+          }
+        ]
+      },
+      {
         "id": "ipv6-compat",
         "title": "IPv6 compatibility: tunneling, dual stack, NAT64",
         "blocks": [
@@ -214,6 +278,133 @@
         ]
       },
       {
+        "id": "written-labs",
+        "title": "Written labs 7.1 and 7.2",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Cover the answer column and say each answer out loud before you check it. The Written labs visual lets you type answers and compare."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Lab",
+              "Question",
+              "Answer"
+            ],
+            "rows": [
+              [
+                "7.1",
+                "What is the valid range for a Class C private IP address?",
+                "192.168.0.0 through 192.168.255.255"
+              ],
+              [
+                "7.1",
+                "Name some benefits of IPv6 over IPv4.",
+                "More available addresses, a simpler header, and options for authentication and other security"
+              ],
+              [
+                "7.1",
+                "What auto configuration technology gives addresses that start with 169.254?",
+                "Automatic Private IP Addressing (APIPA)"
+              ],
+              [
+                "7.1",
+                "What defines a unicast address?",
+                "An IP address assigned to an interface: one-to-one communication"
+              ],
+              [
+                "7.1",
+                "What defines a multicast address?",
+                "A one-to-many address"
+              ],
+              [
+                "7.1",
+                "What is the 48-bit (6-byte) address physically assigned to a NIC?",
+                "A MAC address (hardware address, burned-in address)"
+              ],
+              [
+                "7.1",
+                "IPv6 has how many more bits than IPv4?",
+                "96 more: 128 bits against 32 bits"
+              ],
+              [
+                "7.1",
+                "What is the private address range for Class B?",
+                "172.16.0.0 through 172.31.255.255"
+              ],
+              [
+                "7.1",
+                "What is the Class C first-octet range, in decimal and binary?",
+                "192 through 223, and 110xxxxx"
+              ],
+              [
+                "7.1",
+                "What is 127.0.0.1 used for?",
+                "Loopback or diagnostics. The whole range 127.0.0.1 through 127.255.255.254 is loopback"
+              ],
+              [
+                "7.2",
+                "Which packet type goes to only a single interface?",
+                "Unicast"
+              ],
+              [
+                "7.2",
+                "Which address type works like a regular public routable IPv4 address?",
+                "Global unicast"
+              ],
+              [
+                "7.2",
+                "Which address type is not meant to be routed?",
+                "Link-local"
+              ],
+              [
+                "7.2",
+                "Which type is not routed to the Internet but is still globally unique?",
+                "Unique local (used to be called site-local)"
+              ],
+              [
+                "7.2",
+                "Which type is delivered to multiple interfaces?",
+                "Multicast"
+              ],
+              [
+                "7.2",
+                "Which type identifies multiple interfaces but delivers only to the first it finds?",
+                "Anycast"
+              ],
+              [
+                "7.2",
+                "Which addressing type is also called one-to-nearest?",
+                "Anycast"
+              ],
+              [
+                "7.2",
+                "What is the IPv6 loopback address?",
+                "::1"
+              ],
+              [
+                "7.2",
+                "What does a link-local address always start with?",
+                "FE80::/10"
+              ],
+              [
+                "7.2",
+                "What does a unique local range start with?",
+                "FC00::/7"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Lab 7.2 gives you the whole IPv6 type map: unicast, global unicast, link-local, unique local, multicast, anycast. Say the delivery phrase for each without looking."
+          }
+        ]
+      },
+      {
         "id": "exam-essentials",
         "title": "Exam essentials",
         "blocks": [
@@ -225,7 +416,9 @@
               "APIPA is 169.254.0.1 to 169.254.255.254 with mask 255.255.0.0.",
               "IPv6 exists because IPv4 addresses would run out. It is 128 bits, hexadecimal.",
               "Link-local cannot be routed at all. Unique local can be routed inside the organization.",
-              "Read an EUI-64 address: FF:FE is inserted in the middle of the MAC address and the 7th bit of the first byte is inverted."
+              "Read an EUI-64 address: FF:FE is inserted in the middle of the MAC address and the 7th bit of the first byte is inverted.",
+              "IPv6 types: unicast is one-to-one, multicast is one-to-many, anycast is one-to-nearest. Global unicast is the public-style address, link-local starts with FE80::/10, unique local starts with FC00::/7, and loopback is ::1.",
+              "The 127.0.0.1 loopback is for diagnostics. The whole 127.0.0.1 through 127.255.255.254 range is loopback."
             ]
           }
         ]
