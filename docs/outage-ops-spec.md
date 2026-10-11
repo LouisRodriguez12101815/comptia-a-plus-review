@@ -5,7 +5,7 @@ Outage Ops is a 2–8 player cooperative CompTIA incident-response game. Players
 ## Entry modes
 
 - **Guided Demo:** one learner and a deterministic mentor bot. No account or API key.
-- **Create Room:** a host creates a six-character code and configures a mission.
+- **Create Room:** a host creates a six-character code for the DNS mission.
 - **Join Room:** another player joins with the room code and a nickname.
 
 ## Visual direction
@@ -32,13 +32,19 @@ The first scenario is based on Lab 03, “I Can’t Reach the Website.” The IP
 
 ## Multiplayer contract
 
-- 2–8 players, no login, separate devices.
+- Up to 8 players, no login, separate devices; a ready host may start alone.
 - Six-character room codes excluding ambiguous characters.
 - Server-authoritative room state with versioned conditional updates.
 - All clients synchronize lobby, phase, timer, answers, uptime, and results.
 - Reconnect token restores the same player without duplication.
-- Host gets a 60-second reconnect window before automatic transfer.
-- Joining closes when the mission starts.
+- Explicit leave transfers hosting to the next player. A disconnected host retains hosting and can reconnect; automatic host failover is deferred.
+- Joining closes when the mission starts; existing authenticated players may reconnect.
+- One Twilio Sync Document per room, expiring 30 minutes after creation (activity never extends it).
+- Server-issued short-lived Sync tokens with read-only document permissions; service ACL must be enabled.
+- Players mark ready/unready; only the host starts after every player is ready. Shared start/end timestamps control the countdown and timer.
+- Each player explicitly submits one answer per question; server-side ID checks award 100 points for correct answers and penalize shared uptime by 5 for incorrect answers. Feedback does not advance the question. The host continues after connected players answer.
+- A signed daily usage webhook latches `MULTIPLAYER_PAUSED` in shared server storage at $5 and blocks room creation, joins, token issuance, and all room/permission writes until the next UTC day. Provider errors fail closed.
+- See [deployment and acceptance instructions](outage-ops-multiplayer.md). Live laptop/phone acceptance is pending.
 
 ## Submission milestones
 
