@@ -118,19 +118,20 @@ test("idle answer submission after complete evidence has a host escape and never
   await assert.rejects(f.answer(1), fails(409), "Late answers cannot score on the next question");
 });
 
-test("host override validates membership, role, deadline, discovery, phase, and indices; retries give no points", async () => {
+test("host override validates membership, role, deadline, phase, and indices; waives own discovery without points", async () => {
   const f = await fixture(); await f.discover(1);
   await assert.rejects(f.service().continueEvidence("ABC234", "invalid", 0, 0), fails(401));
   await assert.rejects(f.resume(1), fails(403));
+  await assert.rejects(f.resume(), fails(409), "The timeout still applies");
   f.tick(EVIDENCE_WAIT);
-  await assert.rejects(f.resume(), fails(409), "Host must discover first");
-  await f.discover();
   await assert.rejects(f.service().continueEvidence("ABC234", f.members[0].token, 0, 1), fails(409));
   const before = await f.view();
   await Promise.all([f.resume(), f.resume(), f.resume()]);
   const after = await f.view();
   assert.equal(after.room.score, before.room.score);
   assert.deepEqual(after.room.players.map((p) => p.contributions), before.room.players.map((p) => p.contributions));
+  assert.equal(after.evidenceGate.canAnswer, true);
+  assert.equal(after.room.players[0].evidenceStatus.state, "waived");
   await f.answer(); await f.advance();
   await assert.rejects(f.resume(), fails(409));
   await assert.rejects(f.resume(0, 1), fails(409), "Timeout is reset on the next phase");
@@ -148,7 +149,7 @@ test("leave makes the remaining player self-sufficient; reconnect keeps the over
   const rejoined = await other.service().join("ABC234", "Player 1", other.members[1].token);
   assert.equal(rejoined.snapshot.evidenceGate.continued, true);
   assert.equal(rejoined.snapshot.viewerId, other.members[1].snapshot.viewerId);
-  assert.equal(rejoined.snapshot.evidenceGate.canAnswer, false);
+  assert.equal(rejoined.snapshot.evidenceGate.canAnswer, true, "The current-question override also waives a reconnecting player's own discovery");
   await other.discover(1); await other.answer(1);
   await assert.rejects(other.answer(), fails(409));
   await other.advance();
@@ -260,7 +261,7 @@ test("a disconnected player's outstanding item stops blocking, and reconnect res
   assert.equal((await f.view()).room.score, 100);
 });
 
-test("regression: stale assignment plus an old discovery receipt must not hide Player B's repaired evidence", async () => {
+test("stale assignment plus an old receipt clears missing evidence without manufacturing a requirement or points", async () => {
   const f = await fixture(); await f.discover();
   const broken = JSON.parse(f.store.data);
   const bId = broken.players[1].id;
@@ -270,17 +271,15 @@ test("regression: stale assignment plus an old discovery receipt must not hide P
   delete broken.discoveredEvidenceIds;
   f.store.data = JSON.stringify(broken);
   const b = await f.view(1);
-  assert.equal(b.room.players[1].evidenceStatus.state, "pending");
-  assert.equal(b.step.assignedEvidence.length, 1);
-  assert.equal(b.step.assignedEvidence[0].discovered, false);
-  assert.ok(!b.step.assignedEvidence[0].id.includes("missing-item"));
-  assert.equal((await f.view()).evidenceGate.canAnswer, false);
-  const repaired = JSON.parse(f.store.data).evidenceAssignments;
-  await f.view(1); assert.deepEqual(JSON.parse(f.store.data).evidenceAssignments, repaired, "Repair persists and stays deterministic");
-  const result = await f.service().discover("ABC234", f.members[1].token, 0, 0, b.step.assignedEvidence[0].id);
-  assert.ok(result.step.assignedEvidence[0].text);
-  assert.equal(result.evidenceGate.canAnswer, true);
-  assert.equal(result.room.players[1].contributions.evidence, 10, "Old credit is preserved without awarding it again");
+  assert.equal(b.room.players[1].evidenceStatus.state, "not-required");
+  assert.equal(b.room.players[1].evidenceStatus.assigned, 0);
+  assert.deepEqual(b.step.assignedEvidence, []);
+  assert.equal(b.evidenceGate.canAnswer, true);
+  const normalized = JSON.parse(f.store.data).evidenceAssignments;
+  await f.view(1); assert.deepEqual(JSON.parse(f.store.data).evidenceAssignments, normalized);
+  await f.discover(1);
+  assert.equal((await f.view(1)).room.players[1].contributions.evidence, 10, "Old credit is preserved without awarding it again");
+  await assert.rejects(f.service().discover("ABC234", f.members[1].token, 0, 0, b.evidenceGate.items[0].id), fails(403));
   await f.answer(); await f.answer(1); await f.advance();
   assert.equal((await f.view()).room.score, 100);
 });
@@ -295,6 +294,11 @@ test("one valid evidence item never requires duplicate discovery, and a blank it
     if (evidence.trim()) {
       assert.equal(a.step.assignedEvidence[0].id, b.step.assignedEvidence[0].id);
       await f.service().discover("ABC234", f.members[0].token, 0, 0, a.step.assignedEvidence[0].id);
+      const shared = await f.view(1);
+      assert.equal(shared.room.players[1].evidenceStatus.state, "complete");
+      assert.equal(shared.room.players[1].evidenceStatus.discovered, 1);
+      assert.equal(shared.step.assignedEvidence[0].discovered, true);
+      assert.ok(shared.step.assignedEvidence[0].text);
     }
     assert.equal((await f.view(1)).evidenceGate.canAnswer, true);
     assert.equal((await f.view(1)).room.players[1].contributions.evidence, 0);
@@ -327,4 +331,49 @@ test("solo per-item discovery must complete all valid assigned items before answ
   assert.equal((await f.view()).room.players[0].contributions.evidence, 10);
   await f.answer(); await f.advance();
   assert.equal((await f.view()).room.score, 100);
+});
+
+
+test("production regression: sl complete 1/1 and Idj with no actionable item becomes complete 0/0; override unlocks and scores once", async () => {
+  const original = multiplayerIncidents[0];
+  const incident = { ...original, id: "single-valid-observation", steps: original.steps.map((step) => ({ ...step, evidence: "Lab observation: PC2 reaches the site and PC1 does not." })) };
+  const f = await fixture(2, [incident]);
+  const broken = JSON.parse(f.store.data);
+  broken.players[0].nickname = "Idj"; broken.players[1].nickname = "sl";
+  const validId = broken.evidenceAssignments[1].itemIds[0];
+  broken.evidenceAssignments[0].itemIds = ["missing:host-card"];
+  f.store.data = JSON.stringify(broken);
+  await f.service().discover("ABC234", f.members[1].token, 0, 0, validId);
+  const view = await f.view();
+  assert.deepEqual(view.step.assignedEvidence, []);
+  assert.deepEqual(view.room.players[0].evidenceStatus, { state: "not-required", assigned: 0, discovered: 0 });
+  assert.deepEqual(view.room.players[1].evidenceStatus, { state: "complete", assigned: 1, discovered: 1 });
+  assert.equal(view.evidenceGate.items.filter((item) => item.required && !item.discovered).length, 0);
+  assert.deepEqual(JSON.parse(f.store.data).evidenceAssignments[0].itemIds, []);
+  await assert.rejects(f.resume(), fails(409));
+  f.tick(EVIDENCE_WAIT);
+  const continued = await f.resume();
+  assert.equal(continued.evidenceGate.canAnswer, true);
+  assert.equal(continued.room.players[0].contributions.evidence, 0);
+  await Promise.all([f.resume(), f.resume()]);
+  const attempts = await Promise.allSettled([f.answer(), f.answer()]);
+  assert.equal(attempts.filter((result) => result.status === "fulfilled").length, 1);
+  await f.advance();
+  assert.equal((await f.view()).room.score, 100);
+  assert.equal((await f.view()).room.players[0].contributions.answers, 100);
+});
+
+test("host override unlocks an undiscovered own item immediately and waives connected missing teammate evidence", async () => {
+  const f = await fixture();
+  const before = await f.view();
+  assert.equal(before.evidenceGate.canAnswer, false);
+  f.tick(EVIDENCE_WAIT);
+  const continued = await f.resume();
+  assert.equal(continued.evidenceGate.canAnswer, true);
+  assert.ok(continued.room.players.every((player) => player.evidenceStatus.state === "waived"));
+  assert.ok(continued.evidenceGate.items.every((item) => !item.required));
+  assert.ok(continued.room.players.every((player) => player.contributions.evidence === 0));
+  await f.answer(); await f.advance();
+  assert.equal((await f.view()).room.score, 100);
+  assert.equal((await f.view()).room.players[1].score, 0);
 });
