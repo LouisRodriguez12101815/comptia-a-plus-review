@@ -125,7 +125,10 @@ test("HTTP two-player regression: stored assignments are actionable, discovery v
   assert.ok(discovered.step.assignedEvidence[0].text);
   assert.equal(discovered.evidenceGate.canAnswer, true);
   const token = await api("token", bCookie, {}, "GET"); assert.equal(token.status, 200);
-  assert.equal((await token.json()).document, `outage-ops-room-${code}`);
+  const granted = await token.json();
+  assert.equal(granted.document, `outage-ops-room-${code}`);
+  assert.equal(granted.viewerId, b.viewerId);
+  assert.equal(JSON.parse(Buffer.from(granted.token.split(".")[1], "base64url")).grants.identity, b.viewerId);
   assert.deepEqual(permissionWrites[0], { read: true, write: false, manage: false });
   assert.equal((await api("token", "", {}, "GET")).status, 401);
   const crossSite = await roomRequest(new Request("https://example.test/token", { headers: { "sec-fetch-site": "cross-site", Cookie: bCookie } }), "token", code, infra);

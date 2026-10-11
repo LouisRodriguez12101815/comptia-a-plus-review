@@ -1,26 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { RoomSnapshot } from "@/lib/game/room-types";
+import { createRoomClient, createRoomReconciler, RoomApiError, validateRoomSnapshot } from "@/lib/game/room-client";
 
 type TimedSnapshot = RoomSnapshot & { receivedAt: number };
-
-class RoomApiError extends Error {
-  status: number;
-  constructor(status: number, message: string) { super(message); this.status = status; }
-}
-
-async function roomApi<T = RoomSnapshot>(path: string, payload?: object, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(`/api/game/rooms${path}`, {
-    method: payload ? "POST" : "GET", credentials: "same-origin", cache: "no-store",
-    headers: payload ? { "Content-Type": "application/json" } : undefined,
-    body: payload ? JSON.stringify(payload) : undefined, signal: signal ?? AbortSignal.timeout(7000),
-  });
-  const data = await response.json();
-  if (!response.ok) throw new RoomApiError(response.status, data.error ?? "Could not update the room.");
-  return data;
-}
+const roomApi = createRoomClient();
 
 export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onBack: () => void }) {
   const [snapshot, setSnapshot] = useState<TimedSnapshot | null>(null);
@@ -30,23 +16,27 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   const [error, setError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState("connecting");
+  const requestRefresh = useRef<(() => void) | null>(null);
+  const transientActionError = useRef(false);
   const [clock, setClock] = useState(0);
   const code = snapshot?.room.code;
 
   function accept(value: RoomSnapshot) {
+    validateRoomSnapshot(value);
+    if (transientActionError.current) { transientActionError.current = false; setError(null); }
     const receivedAt = performance.now();
-    setSnapshot((previous) => !previous || previous.room.code !== value.room.code || value.room.version > previous.room.version || (value.room.version === previous.room.version && value.serverNow >= previous.serverNow)
+    setSnapshot((previous) => !previous || previous.viewerId !== value.viewerId || previous.room.code !== value.room.code || value.room.version > previous.room.version || (value.room.version === previous.room.version && value.serverNow >= previous.serverNow)
       ? { ...value, receivedAt } : previous);
     sessionStorage.setItem("outage-ops-room", value.room.code);
   }
 
+  const authenticatedViewerId = snapshot?.viewerId;
+
   useEffect(() => {
-    if (!code) return;
+    if (!code || !authenticatedViewerId) return;
     let stopped = false;
-    let refreshing = false;
-    let refreshAgain = false;
     let subscriptionTimer: ReturnType<typeof setTimeout>;
-    let timer: ReturnType<typeof setTimeout>;
     let controller: AbortController | null = null;
     let client: import("twilio-sync").SyncClient | undefined;
     let document: import("twilio-sync").SyncDocument | undefined;
@@ -56,7 +46,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
       if (stopped) return;
       if (cause instanceof RoomApiError && [401, 404, 410, 423].includes(cause.status)) {
         stopped = true;
-        clearTimeout(timer);
+        reconciler.stop();
         void client?.shutdown();
         setSnapshot(null);
         sessionStorage.removeItem("outage-ops-room");
@@ -65,31 +55,29 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         setSyncError(null);
       } else if (channel === "sync") {
         syncConnected = false;
-        setSyncError("Live updates are interrupted. Checking shared room state every two seconds; controls remain available when the room API is reachable.");
+        setSyncStatus("retrying");
+        reconciler.request();
+        const tokenStatus = cause instanceof RoomApiError ? `Token request: ${cause.httpStatus ? `HTTP ${cause.httpStatus}` : cause.status === 0 ? "network failure" : "response validation failed"}.` : "Sync subscription failed.";
+        setSyncError(tokenStatus + " Live updates are interrupted. Checking shared room state every two seconds; controls remain available when the room API is reachable.");
+        console.info("outage_ops_sync_status", { event: "failed", httpStatus: cause instanceof RoomApiError ? cause.httpStatus ?? null : null, reason: cause instanceof RoomApiError ? cause.reason ?? "request_rejected" : "subscription_failure" });
       } else setConnectionError(cause instanceof RoomApiError ? cause.message : "Connection interrupted. Retrying; room controls are paused.");
     }
 
     async function refresh() {
-      if (stopped) return;
-      if (refreshing) { refreshAgain = true; return; }
-      refreshing = true;
-      refreshAgain = false;
-      clearTimeout(timer);
       controller = new AbortController();
       try {
         const value = await roomApi(`/${code}`, undefined, AbortSignal.any([controller.signal, AbortSignal.timeout(7000)]));
         if (!stopped) { accept(value); setConnectionError(null); }
-      } catch (cause) { failure(cause); }
-      finally {
-        refreshing = false;
-        // Heartbeats and timer reconciliation supplement real-time Sync notifications.
-        if (!stopped) timer = setTimeout(refresh, refreshAgain ? 0 : syncConnected ? 10_000 : 2000);
-      }
+      } catch (cause) { if (!stopped) failure(cause); }
     }
+    // Entry/resume already returned a snapshot; don't immediately duplicate that GET.
+    const reconciler = createRoomReconciler(refresh, () => syncConnected ? 10_000 : 2000, { lastRequestAt: performance.now() });
+    requestRefresh.current = reconciler.request;
 
     async function subscribe() {
       try {
-        const credentials = await roomApi<{ token: string; document: string; renewable: boolean }>(`/${code}/token`, {});
+        const credentials = await roomApi<{ token: string; document: string; viewerId: string; renewable: boolean }>(`/${code}/token`, {});
+        if (credentials.viewerId !== authenticatedViewerId || credentials.document !== `outage-ops-room-${code}`) throw new RoomApiError(502, "Sync identity differs from the authenticated room member.", "token", "identity_mismatch");
         const { SyncClient } = await import("twilio-sync");
         if (stopped) return;
         client = new SyncClient(credentials.token);
@@ -97,8 +85,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         let canRenew = credentials.renewable;
         const renew = () => {
           if (!canRenew || stopped) return;
-          tokenRefresh ??= roomApi<{ token: string; renewable: boolean }>(`/${code}/token`, {})
-            .then(async (value) => { canRenew = value.renewable; if (!stopped) await client?.updateToken(value.token); })
+          tokenRefresh ??= roomApi<{ token: string; viewerId: string; renewable: boolean }>(`/${code}/token`, {})
+            .then(async (value) => { if (value.viewerId !== authenticatedViewerId) throw new RoomApiError(502, "Sync identity differs from the authenticated room member.", "token", "identity_mismatch"); canRenew = value.renewable; if (!stopped) await client?.updateToken(value.token); })
             .catch((cause) => failure(cause, "sync")).finally(() => { tokenRefresh = undefined; });
         };
         client.on("tokenAboutToExpire", renew);
@@ -108,14 +96,15 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         client.on("connectionStateChanged", (state: string) => {
           if (stopped) return;
           syncConnected = state === "connected";
-          if (syncConnected) { setSyncError(null); void refresh(); }
-          else setSyncError("Live updates are reconnecting. Checking shared room state every two seconds; controls remain available when the room API is reachable.");
+          if (syncConnected) { setSyncStatus("connected"); setSyncError(null); reconciler.request(); }
+          else { setSyncStatus("retrying"); reconciler.request(); setSyncError("Live updates are reconnecting. Checking shared room state every two seconds; controls remain available when the room API is reachable."); }
         });
         document = await client.document({ id: credentials.document, mode: "open_existing" });
         if (stopped) { document.close(); return; }
-        document.on("updated", () => void refresh());
+        document.on("updated", reconciler.request);
         document.on("removed", () => failure(new RoomApiError(410, "This room has expired. Create a new room.")));
-        void refresh();
+        setSyncStatus("subscribed");
+        reconciler.request();
       } catch (cause) {
         failure(cause, "sync");
         document?.close();
@@ -123,10 +112,10 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         if (!stopped) subscriptionTimer = setTimeout(subscribe, 5000);
       }
     }
-    void refresh();
+    reconciler.request();
     void subscribe();
-    return () => { stopped = true; clearTimeout(timer); clearTimeout(subscriptionTimer); controller?.abort(); document?.close(); void client?.shutdown(); };
-  }, [code]);
+    return () => { stopped = true; requestRefresh.current = null; reconciler.stop(); clearTimeout(subscriptionTimer); controller?.abort(); document?.close(); void client?.shutdown(); };
+  }, [code, authenticatedViewerId]);
 
   useEffect(() => {
     if (!code) return;
@@ -140,7 +129,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   useEffect(() => {
     if (!code || !phaseDeadline || !serverNow || connectionError) return;
     const timer = setTimeout(() => {
-      void roomApi(`/${code}`).then(accept).catch(() => setConnectionError("Connection interrupted. Retrying; room controls are paused."));
+      requestRefresh.current?.();
     }, Math.max(50, phaseDeadline - serverNow + 100));
     return () => clearTimeout(timer);
   }, [code, phaseDeadline, serverNow, connectionError]);
@@ -158,7 +147,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   }
 
   async function enter(resume = false) {
-    setBusy(true); setError(null);
+    setBusy(true); setError(null); setSyncStatus("connecting");
     try {
       const saved = resume ? sessionStorage.getItem("outage-ops-room") : null;
       if (resume && !saved) throw new Error("No previous room in this browser. Create or join one below.");
@@ -174,7 +163,11 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
     if (!code || busy || connectionError) return;
     setBusy(true); setError(null);
     try { accept(await roomApi(`/${code}/${action}`, { incidentIndex: snapshot?.room.incidentIndex, stepIndex: snapshot?.room.stepIndex, ...payload })); }
-    catch (cause) { setError(cause instanceof Error ? cause.message : "Could not update the room."); }
+    catch (cause) {
+      transientActionError.current = cause instanceof RoomApiError && (cause.status === 0 || cause.status >= 500);
+      const status = cause instanceof RoomApiError ? (cause.httpStatus ? `HTTP ${cause.httpStatus}` : cause.status === 0 ? "network failure" : "response validation failed") : "request failure";
+      setError(`${action === "evidence" ? "Evidence discovery" : "Room action"} failed (${status}). ${cause instanceof RoomApiError ? cause.message : "Please retry."}`);
+    }
     finally { setBusy(false); }
   }
 
@@ -221,6 +214,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
       </div>
       {error && <p role="alert" className="rounded-xl bg-rose-400/10 p-3 text-rose-200">{error}</p>}
       {connectionError && <p role="status" className="rounded-xl bg-amber-400/10 p-3 text-amber-200">{connectionError}</p>}
+      <p role="status" data-room-connection-status className="text-sm text-slate-300">Room storage: {connectionError ? "retrying shared state" : "responding"} · Live updates: {syncStatus}</p>
+      {connectionError && <button onClick={() => requestRefresh.current?.()} className="text-cyan-200">Retry shared room and evidence</button>}
       {syncError && <p role="status" className="rounded-xl bg-amber-400/10 p-3 text-amber-200">{syncError}</p>}
       <section aria-label="Live scoreboard" className="rounded-2xl border border-teal-300/25 bg-slate-900 p-5">
         <h2 className="text-xl font-semibold">Team scoreboard</h2>

@@ -36,6 +36,11 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
   const headers = new Headers({ "Cache-Control": "no-store, private", Vary: "Cookie" });
   const requestId = randomUUID();
   headers.set("X-Outage-Ops-Request-Id", requestId);
+  if (operation !== "get") console.info("outage_ops_room_request", { requestId, operation, event: "started" });
+  const respond = (value: unknown, status = 200) => {
+    if (operation !== "get") console.info("outage_ops_room_request", { requestId, operation, event: status < 400 ? "succeeded" : "failed", httpStatus: status });
+    return Response.json(value, { status, headers });
+  };
   try {
     const code = codeInput.trim().toUpperCase();
     const token = sessionToken(request, code);
@@ -48,7 +53,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
       if (operation === "create" && typeof infrastructure.verifyService === "function") console.info("outage_ops_room_storage_verified", { requestId, requiredVariableCount: 7, accountMatches: true, apiKeyServiceRead: true, apiKeyDocumentCreate: true });
       const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
       headers.set("Set-Cookie", `${cookieName(result.snapshot.room.code)}=${result.token}; HttpOnly; SameSite=Lax; Path=/api/game/rooms/${result.snapshot.room.code}; Max-Age=1800${secure}`);
-      return Response.json(result.snapshot, { status: operation === "create" ? 201 : 200, headers });
+      return respond({ ...result.snapshot, storageAvailable: true }, operation === "create" ? 201 : 200);
     }
     if (operation === "token") {
       const snapshot = await rooms.get(code, token);
@@ -61,7 +66,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
       const ttl = Math.max(1, Math.min(300, Math.floor((snapshot.room.expiresAt - Date.now()) / 1000)));
       const access = new twilio.jwt.AccessToken(infrastructure.accountSid, infrastructure.keySid, infrastructure.keySecret, { identity: snapshot.viewerId, ttl });
       access.addGrant(new twilio.jwt.AccessToken.SyncGrant({ serviceSid: infrastructure.serviceSid }));
-      return Response.json({ token: access.toJwt(), document: roomDocumentName(code), renewable: snapshot.room.expiresAt - Date.now() > 300_000 }, { headers });
+      return respond({ token: access.toJwt(), document: roomDocumentName(code), viewerId: snapshot.viewerId, renewable: snapshot.room.expiresAt - Date.now() > 300_000 });
     }
     if (operation === "leave") {
       const previous = await rooms.get(code, token);
@@ -69,7 +74,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
       await infrastructure.guard.assertActive();
       await syncCall("permissions.update", () => infrastructure.service.documents(roomDocumentName(code)).documentPermissions(previous.viewerId).update({ read: false, write: false, manage: false }));
       headers.set("Set-Cookie", `${cookieName(code)}=; HttpOnly; SameSite=Lax; Path=/api/game/rooms/${code}; Max-Age=0`);
-      return Response.json({ left: true }, { headers });
+      return respond({ left: true });
     }
     const snapshot = operation === "get" ? await rooms.get(code, token)
       : operation === "ready" ? await rooms.ready(code, token, payload.ready)
@@ -81,10 +86,10 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
       : operation === "role-action" ? await rooms.usefulAction(code, token, payload.stepIndex, payload.actionId, payload.incidentIndex)
       : operation === "next" ? await rooms.nextIncident(code, token, payload.incidentIndex)
       : await rooms.advance(code, token, payload.stepIndex, payload.incidentIndex);
-    return Response.json(snapshot, { headers });
+    return respond({ ...snapshot, storageAvailable: true });
   } catch (error) {
     const failure = providerFailure(error, "room.request");
     if (failure.status >= 500) console.error("outage_ops_room_failure", { requestId, operation, httpStatus: failure.status, ...(failure.diagnostic ?? { reason: "unexpected_failure", stage: "room.request" }) });
-    return Response.json({ error: failure.message, ...(failure.diagnostic ? { diagnostic: failure.diagnostic, requestId } : {}) }, { status: failure.status, headers });
+    return respond({ error: failure.message, ...(failure.diagnostic ? { diagnostic: failure.diagnostic, requestId } : {}) }, failure.status);
   }
 }
