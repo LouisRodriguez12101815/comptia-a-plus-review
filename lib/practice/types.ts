@@ -1,0 +1,9 @@
+export type Source = { id: string; title: string; path: string; sections: string[]; href: string };
+export type Artwork = "ram" | "psu" | "gpu" | "nic" | "ssd" | "hdd";
+export type Choice = { id: string; label: string; explanation: string; art?: Artwork };
+export type PacketEffect = { nodeId: string; ttl: number; frameSource: string | null; frameDestination: string | null };
+export type Scenario = { id: string; title: string; description: string; assumptions: string; sourceIp: string; destinationIp: string; nodes: { id: string; label: string; ip: string; mac: string; detail: string }[]; context: string[]; routes: string[] };
+export type Round = { id: string; title: string; prompt: string; objective: string; topic: string; choices: Choice[]; correctAnswerId: string; hint: string; sourceIds: string[]; examMappings: { exam: string; area: string }[]; success: string; art?: Artwork; scenarioId?: string; effect?: PacketEffect };
+export type Challenge = { id: string; version: number; title: string; certification: string; exam: string; topic: string; difficulty: string; kind: "component" | "packet"; description: string; rounds: Round[]; scenarios: Scenario[] };
+export type Receipt = { attemptedIds: string[]; hintUsed: boolean };
+export type Session = { challengeId: string; version: number; roundIndex: number; receipts: Record<string, Receipt> };

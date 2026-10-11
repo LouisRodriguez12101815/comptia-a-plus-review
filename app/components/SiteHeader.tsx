@@ -9,7 +9,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [focus] = useStudyFocus();
   const current = trackForPath(pathname, focus);
-  const onGame = pathname.startsWith("/game");
+  const onGame = pathname.startsWith("/game") || pathname.startsWith("/practice-games");
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
@@ -40,7 +40,7 @@ export function SiteHeader() {
             );
           })}
           <Link
-            href="/game"
+            href="/practice-games"
             aria-current={onGame ? "page" : undefined}
             className={`rounded-full border px-3 py-1.5 font-medium ${
               onGame
@@ -48,7 +48,7 @@ export function SiteHeader() {
                 : "border-amber-400/60 bg-amber-400/10 text-amber-100 hover:bg-amber-400/20"
             }`}
           >
-            Game
+            Practice Games
           </Link>
         </nav>
       </div>

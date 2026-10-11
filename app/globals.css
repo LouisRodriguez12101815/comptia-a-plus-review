@@ -108,3 +108,13 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Feedback moves only after a supported decision; no timer dependence. */
+@keyframes practice-packet-arrival {
+  from { opacity: 0.4; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.practice-packet-arrival { animation: practice-packet-arrival 650ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .practice-packet-arrival { animation: none; }
+}
