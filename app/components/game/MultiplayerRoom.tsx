@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { RoomSnapshot } from "@/lib/game/room-types";
 
 type TimedSnapshot = RoomSnapshot & { receivedAt: number };
@@ -161,7 +162,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
     finally { setBusy(false); }
   }
 
-  async function command(action: "ready" | "start" | "actions" | "advance" | "evidence" | "hint" | "role-action" | "next", payload: object = {}) {
+  async function command(action: "ready" | "start" | "actions" | "advance" | "evidence" | "hint" | "role-action" | "next" | "continue-evidence", payload: object = {}) {
     if (!code || busy || connectionError) return;
     setBusy(true); setError(null);
     try { accept(await roomApi(`/${code}/${action}`, { incidentIndex: snapshot?.room.incidentIndex, stepIndex: snapshot?.room.stepIndex, ...payload })); }
@@ -188,7 +189,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
     );
   }
 
-  const { room, viewerId, incident, step, role, debrief } = snapshot;
+  const { room, viewerId, incident, step, role, debrief, evidenceGate } = snapshot;
   const self = room.players.find((player) => player.id === viewerId)!;
   const isHost = room.hostPlayerId === viewerId;
   const estimatedNow = snapshot.serverNow + Math.max(0, clock - snapshot.receivedAt);
@@ -197,9 +198,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   const actions = room.selectedActions.filter((action) => action.stepIndex === room.stepIndex);
   const ownAction = actions.find((action) => action.playerId === viewerId);
   const allReady = room.players.length >= 1 && room.players.every((player) => player.ready);
-  const allAnswered = room.players.filter((player) => player.connected).every((player) => actions.some((action) => action.playerId === player.id));
   const foundEvidence = room.evidenceDiscoveries.includes(viewerId);
-  const allDiscovered = room.players.filter((player) => player.connected).every((player) => room.evidenceDiscoveries.includes(player.id));
+  const evidenceWait = evidenceGate.continueAvailableAt === null ? 0 : Math.max(0, Math.ceil((evidenceGate.continueAvailableAt - estimatedNow) / 1000));
   const ownRoleAction = room.usefulActions.find((action) => action.playerId === viewerId);
   const finalIncident = room.incidentIndex + 1 >= incident.count || room.result === "timeout" || room.result === "uptime";
   const disabled = busy || !!connectionError;
@@ -249,7 +249,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         {room.phase === "briefing" ? <><p>{incident.ticket}</p><p className="text-cyan-100">{incident.objective}</p><p role="status" className="text-xl font-semibold">Mission begins in {countdown}s</p></> : step && <>
           <section className="space-y-3 rounded-xl border border-teal-300/25 p-4" aria-label="Your evidence and responsibility">
             <h2 className="font-semibold">Discover and discuss your evidence</h2>
-            <p className="text-sm text-slate-300">Your teammates have other findings. Everyone connected must discover their evidence before answering. Compare what you found before making a decision.</p>
+            <p className="text-sm text-slate-300">Discover and discuss each required evidence item. Teammates with the same item can cover for one another. If someone is absent or idle, the host can continue after the 15-second timeout.</p>
             {!foundEvidence && <button disabled={disabled || remaining === 0} onClick={() => void command("evidence")} className={buttonStyle}>Discover my evidence (+10 contribution)</button>}
           {step.evidence && <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-4 text-sm text-cyan-100">{step.evidence}</pre>}
             {foundEvidence && !ownRoleAction && <div className="flex flex-wrap gap-3">
@@ -261,11 +261,20 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           <button disabled={disabled || room.hintUsed || remaining === 0} onClick={() => void command("hint")} className="rounded-full border border-amber-300/40 px-4 py-2 text-sm text-amber-200">{room.hintUsed ? "Shared hint unlocked" : "Ask for a shared hint (−25 team points)"}</button>
           {step.hint && <p role="status" className="rounded-xl bg-amber-400/10 p-4 text-amber-100">Mentor hint: {step.hint}</p>}
           <h2 className="text-lg font-semibold">{step.prompt}</h2>
-          {!allDiscovered && <p role="status" className="text-amber-100">Waiting for connected teammates to discover their evidence.</p>}
-          <div className="grid gap-3 sm:grid-cols-2">{step.choices.map((choice) => <button key={choice.id} data-answer-id={choice.id} disabled={disabled || !allDiscovered || !foundEvidence || !!ownAction || remaining === 0} aria-pressed={ownAction?.answerId === choice.id} onClick={() => void command("actions", { answerId: choice.id })} className="min-h-20 rounded-xl border border-slate-600 bg-slate-950 p-4 text-left hover:border-cyan-300 disabled:opacity-60">{choice.label}</button>)}</div>
+          <section className="space-y-2 rounded-xl bg-slate-950 p-4" aria-label="Evidence progress">
+            <h3 className="font-semibold">Required evidence</h3>
+            <ul className="space-y-2">{evidenceGate.items.map((item) => <li key={item.id}>{item.label}: {item.discovered ? "Discovered" : "Outstanding"} — {item.owners.length ? item.owners.map((owner) => `${owner.nickname} (${owner.discovered ? "discovered" : owner.connected ? "awaiting discovery" : "disconnected"})`).join(", ") : "Assigned responder left the room"}</li>)}</ul>
+            {!evidenceGate.canAnswer && !ownAction && <p role="status" className="text-amber-100">{!foundEvidence ? "Discover your evidence to submit an answer." : "Required evidence is outstanding. The host can continue when the timeout ends."}</p>}
+            {evidenceGate.continued ? <p role="status" className="text-amber-100">The host continued with current evidence. Missing responders can rejoin and discover their evidence; their points are not awarded automatically.</p> : <>
+              <p role="status" className="text-sm text-cyan-100">{evidenceWait > 0 ? `Host may continue with current evidence in ${evidenceWait}s.` : "Evidence timeout reached. The host may continue with current evidence."}</p>
+              {isHost && <button disabled={disabled || !foundEvidence || evidenceWait > 0 || remaining === 0} onClick={() => void command("continue-evidence")} className={buttonStyle}>Continue with current evidence</button>}
+            </>}
+          </section>
+          <div className="grid gap-3 sm:grid-cols-2">{step.choices.map((choice) => <button key={choice.id} data-answer-id={choice.id} disabled={disabled || !evidenceGate.canAnswer || !!ownAction || remaining === 0} aria-pressed={ownAction?.answerId === choice.id} onClick={() => void command("actions", { answerId: choice.id })} className="min-h-20 rounded-xl border border-slate-600 bg-slate-950 p-4 text-left hover:border-cyan-300 disabled:opacity-60">{choice.label}</button>)}</div>
           {ownAction && <div role="status" className={`rounded-xl p-4 ${ownAction.correct ? "bg-emerald-400/10 text-emerald-100" : "bg-rose-400/10 text-rose-100"}`}><p className="font-semibold">{ownAction.correct ? "Correct diagnostic move" : "Not the best next move"}</p><p className="mt-2">{ownAction.explanation}</p></div>}
           <p className="text-sm text-slate-300">Answers received: {actions.length}/{room.players.filter((player) => player.connected).length} connected players</p>
-          {isHost ? <button disabled={disabled || !allAnswered || remaining === 0} onClick={() => void command("advance", { stepIndex: room.stepIndex })} className={buttonStyle}>Continue mission</button> : <p className="text-sm text-cyan-200">The host continues when every connected responder has answered.</p>}
+          {evidenceGate.outstandingAnswers.length > 0 && <p className="text-sm text-amber-100">Answers outstanding: {evidenceGate.outstandingAnswers.join(", ")}{evidenceGate.continued ? " (host may proceed after answering)" : ""}</p>}
+          {isHost ? <button disabled={disabled || !evidenceGate.canAdvance || remaining === 0} onClick={() => void command("advance", { stepIndex: room.stepIndex })} className={buttonStyle}>Continue mission</button> : <p className="text-sm text-cyan-200">The host continues after answering and receiving teammate answers, or after choosing to continue with current evidence.</p>}
         </>}
       </section>}
 
@@ -276,6 +285,8 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         <ul className="space-y-2" aria-label="Incident outcomes">{room.outcomes.map((outcome) => <li key={outcome.incidentId}>{outcome.incidentId}: {outcome.result} · {outcome.score} team points · {outcome.mistakes} mistakes · {outcome.hints} hints</li>)}</ul>
         <h2 className="text-xl font-semibold">Individual contribution breakdown</h2>
         <ul className="space-y-2">{[...room.players, ...room.departedPlayers].map((player) => <li key={player.id}>{player.nickname}{room.departedPlayers.some((p) => p.id === player.id) ? " (left room)" : ""}: {player.score} total — evidence {player.contributions.evidence}, correct answers {player.contributions.answers}, useful actions {player.contributions.actions}, resolution {player.contributions.resolution}</li>)}</ul>
+        <h3 className="text-lg font-semibold">Source notes and labs practiced</h3>
+        <ul className="space-y-2">{debrief?.sources.map((source) => <li key={source.href}><Link href={source.href} className="text-cyan-200 underline">{source.title}</Link><span className="block text-xs text-slate-400">Practiced sections: {source.sections.join(", ")}</span></li>)}</ul>
         <h2 className="text-xl font-semibold">CompTIA objectives practiced</h2>
         <ul className="space-y-2">{debrief?.objectives.map((objective) => <li key={objective}>{objective}</li>)}</ul>
         <h2 className="text-xl font-semibold">Recommended review topics</h2>

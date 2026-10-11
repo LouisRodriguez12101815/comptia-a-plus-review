@@ -1,5 +1,8 @@
 import { cantReachWebsiteIncident } from "@/lib/game/incidents";
 import type { GuidedIncident } from "@/lib/game/types";
+import type { StudySource } from "@/lib/game/room-types";
+import labs from "../../content/labs.json" with { type: "json" };
+import topics from "../../content/topics.json" with { type: "json" };
 
 export const roles = [
   { id: "coordinator", name: "Incident coordinator", responsibility: "Establish scope and combine the team's findings.", actionId: "compare-scope", action: "Compare the affected and working users" },
@@ -46,7 +49,37 @@ const dhcp: GuidedIncident = {
   debrief: ["APIPA signals a missing lease.", "Use working-client comparisons to trace VLAN and DHCP paths.", "Verify the original symptom and document the approved change."],
 };
 
-export const multiplayerIncidents = [cantReachWebsiteIncident, dhcp];
+// Retained only for rooms already running the previous campaign at deployment.
+export const legacyDhcpIncident = dhcp;
+const relay: GuidedIncident = {
+  id: "dhcp-relay-route", title: "Miami cannot reach its DHCP server",
+  ticket: "Lab 02 reports that Miami cannot reach the DHCP server's subnet. Inspect the recorded routing fault before changing shared services.",
+  objective: "Explain DHCP relay, diagnose the lab's static-route typo, and verify the network path before testing leases.",
+  steps: [
+    { phase: "investigate", title: "Establish the relay path", prompt: "Why does Miami need a DHCP relay?", choices: [
+      { id: "relay", label: "The DHCP server is in the data center; the router relays the broadcast as unicast", explanation: "Lab 02 places Miami's server at 192.168.50.10. Routers do not forward the client's DHCP broadcast; ip helper-address relays it." },
+      { id: "dns", label: "DNS automatically forwards DHCP broadcasts between sites", explanation: "DNS resolves names. The branch router's DHCP relay forwards these requests." },
+    ], correctAnswerId: "relay", hint: "Compare the client LAN and the server location.", explanation: "Miami needs relay to reach the remote DHCP server." },
+    { phase: "investigate", title: "Read the routing evidence", prompt: "What is the documented mismatch?", choices: [
+      { id: "typo", label: "The static route uses 194.168.50.0 instead of the DC subnet 192.168.50.0", explanation: "The Lab 02 troubleshooting log records this exact octet typo as the root cause of Miami's unreachable server subnet." },
+      { id: "scope", label: "The evidence proves that every DHCP scope is exhausted", explanation: "The log identifies an incorrect network in the static route; it does not establish scope exhaustion." },
+    ], correctAnswerId: "typo", hint: "Read each octet of the route and the addressing plan.", explanation: "The route points to the wrong network." },
+    { phase: "interpret", title: "Explain the lease path", prompt: "What must work for a relayed lease to complete?", choices: [
+      { id: "both", label: "Routing from the branch to the server and a return route back to the relay", explanation: "Lab 02 warns that Discover can arrive while Offer is lost if the server's side has no return route." },
+      { id: "one", label: "Only the outbound Discover path; the Offer needs no route", explanation: "The DHCP exchange must return through the relay to the client." },
+    ], correctAnswerId: "both", hint: "A request and its response travel in opposite directions.", explanation: "Check routing in both directions before blaming DHCP." },
+    { phase: "repair", title: "Correct the documented fault", prompt: "Which repair matches the Lab 02 troubleshooting log?", choices: [
+      { id: "route", label: "Remove the incorrect route and add ip route 192.168.50.0 255.255.255.0 10.0.2.2", explanation: "This is the log's recorded Miami repair: the correct DC network and the MIA–DC next hop." },
+      { id: "restart", label: "Restart all DHCP servers before correcting the route", explanation: "A server restart does not correct the documented static-route typo." },
+    ], correctAnswerId: "route", hint: "Match the addressing plan and the logged correction.", explanation: "Correct the proven routing error rather than changing unrelated services." },
+    { phase: "verify", title: "Verify without overclaiming", prompt: "How should the team report the result?", choices: [
+      { id: "verify", label: "Verify the corrected route and connectivity, then test the relay lease and document the actual result", explanation: "The lab labels Miami's lease test in progress. A route correction alone does not prove a lease; verify the exchange before reporting success." },
+      { id: "claim", label: "Declare all leases successful because the route was edited", explanation: "The source does not establish completed Miami lease testing. Verify and record results instead of assuming them." },
+    ], correctAnswerId: "verify", hint: "Separate the recorded repair from the lease test still in progress.", explanation: "Verify, document, and distinguish proven recovery from pending tests." },
+  ].map((step, index) => ({ ...step, eyebrow: `Step ${index + 1}` })) as GuidedIncident["steps"],
+  debrief: ["A remote DHCP server requires a relay.", "Read network octets carefully and verify both routing directions.", "The source lab's Miami lease test remains in progress; do not claim an unperformed test passed."],
+};
+export const multiplayerIncidents = [cantReachWebsiteIncident, relay];
 const evidence: Record<string, string[][]> = {
   "cant-reach-website-dns": [
     ["PC1 cannot open instagram.com; the user reports no other change.", "PC2 opens instagram.com successfully on the same floor."],
@@ -62,16 +95,58 @@ const evidence: Record<string, string[][]> = {
     ["The approved desktop port template specifies access VLAN 10.", "After restoring the port configuration, release and renew the workstation's DHCP lease."],
     ["New lease: 192.168.10.57/24; gateway 192.168.10.1 replies.", "The intranet now opens. Record the VLAN correction and verification results."],
   ],
+  "dhcp-relay-route": [
+    ["Lab 02: Miami LAN 192.168.0.0/26; gateway 192.168.0.1.", "Miami DHCP server is in the DC LAN at 192.168.50.10; the branch router uses ip helper-address."],
+    ["Troubleshooting log: Miami static route was typed as 194.168.50.0.", "Addressing plan: DC LAN is 192.168.50.0/24; Miami could not reach the DHCP server's subnet."],
+    ["The relay sends Discover as unicast to the helper address with its LAN address in giaddr.", "Lab warning: Discover may arrive but Offer is lost without a return route."],
+    ["The documented fix removes the incorrect route and uses network 192.168.50.0, mask 255.255.255.0.", "MIA–DC link: 10.0.2.0/30; DC next hop 10.0.2.2. Logged command: ip route 192.168.50.0 255.255.255.0 10.0.2.2."],
+    ["The lab method is identify, theorize, test, fix, verify, and document; check the route and reachability again.", "Source status: Miami lease test in progress. Test the DHCP exchange before claiming a successful lease."],
+  ],
 };
+const evidenceLabels: Record<string, string[][]> = {
+  "cant-reach-website-dns": [
+    ["Reported symptom", "Working-client comparison"],
+    ["Physical link status", "IP configuration checklist"],
+    ["IP connectivity tests", "Hostname test"],
+    ["Client DNS setting", "Approved DNS baseline"],
+    ["Targeted repair", "Original tests to repeat"],
+  ],
+  "dhcp-relay-route": [
+    ["Branch addressing", "Server location and relay"],
+    ["Recorded static route", "DC addressing plan"],
+    ["Outbound relay path", "Return-path requirement"],
+    ["Correct destination network", "Next hop and repair command"],
+    ["Verification method", "Lease test status"],
+  ],
+};
+export function evidenceItemsFor(incident: GuidedIncident, stepIndex: number) {
+  const step = incident.steps[stepIndex];
+  if (!step) return [];
+  const clues = evidence[incident.id]?.[stepIndex] ?? [step.evidence ?? incident.ticket, step.prompt];
+  return clues.map((text, index) => ({ id: `${incident.id}:${stepIndex}:${index}`, label: evidenceLabels[incident.id]?.[stepIndex]?.[index] ?? `Evidence ${index + 1}`, text }));
+}
 export function evidenceFor(incident: GuidedIncident, stepIndex: number, seat: number, playerCount: number): string[] {
   const clues = evidence[incident.id]?.[stepIndex] ?? [incident.steps[stepIndex].evidence ?? incident.ticket, incident.steps[stepIndex].prompt];
   // A solo player covers both responsibilities. Teams must communicate their fragments.
   return playerCount === 1 ? clues : [clues[seat % clues.length]];
 }
 export function learningFor(incident: GuidedIncident) {
+  const labSlug = incident.id === "cant-reach-website-dns" ? "cant-reach-website" : "dhcp-relay-three-site";
+  const lab = labs.find((l) => l.slug === labSlug)!;
+  const note = topics.find((t) => t.id === "networking-dns-dhcp")!;
+  const sources: StudySource[] = [
+    { path: "content/topics.json", href: `/notes/${note.id}`, title: note.title, sections: [incident.id === "cant-reach-website-dns" ? "dns" : "dhcp"] },
+    ...(incident.id === legacyDhcpIncident.id
+      ? [{ path: "content/network-plus/ch11.json", href: "/network-plus/ch11", title: "Network+ Chapter 11: VLANs", sections: ["ch11-vlan-broadcast-domains.html", "ch11-static-dynamic-vlans.html"] }]
+      : [{ path: "content/labs.json", href: `/labs/${lab.slug}`, title: lab.title,
+        sections: incident.id === "cant-reach-website-dns" ? ["method", "step-1", "step-2", "step-3", "step-4", "step-5", "step-6"] : ["addressing", "how-it-works", "troubleshooting"] }]),
+  ];
   return {
+    sources,
     objectives: ["A+ Core 1: troubleshoot network connectivity and addressing", "A+ Core 2: use a structured troubleshooting process and document changes", "Network+: interpret diagnostic tools and verify network recovery"],
-    reviewTopics: incident.id === "missing-dhcp-lease"
+    reviewTopics: incident.id === "dhcp-relay-route"
+      ? ["DHCP relay and giaddr", "Static route network and next-hop validation", "Bidirectional routing and verified lease testing"]
+      : incident.id === "missing-dhcp-lease"
       ? ["DHCP leases and APIPA", "Access VLANs and DHCP paths", "Verification and change documentation"]
       : ["DNS configuration and name resolution", "IP connectivity versus hostname tests", "Scope, verification, and documentation"],
   };

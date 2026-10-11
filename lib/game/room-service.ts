@@ -1,12 +1,13 @@
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import type { GuidedIncident } from "@/lib/game/types";
 import type { RoomSnapshot, RoomStore, StoredRoom } from "@/lib/game/room-types";
-import { emptyContributions, evidenceFor, HINT_PENALTY, learningFor, roleFor, roles } from "@/lib/game/cooperative";
+import { emptyContributions, evidenceItemsFor, legacyDhcpIncident, HINT_PENALTY, learningFor, roleFor, roles } from "@/lib/game/cooperative";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const ROOM_LIFETIME = 30 * 60 * 1000;
 const CONNECTION_WINDOW = 30_000;
 const HEARTBEAT_INTERVAL = 10_000;
+export const EVIDENCE_WAIT = 15_000;
 
 export class RoomError extends Error {
   status: number;
@@ -65,7 +66,8 @@ export class RoomService {
         stepIndex: 0, startsAt: null, endsAt: null, roundSeconds: 120,
         score: 0, uptime: 100, selectedActions: [], result: null,
         streak: 0, bestStreak: 0, hintPenalties: 0, hintsUsed: 0, hintUsed: false,
-        evidenceDiscoveries: [], usefulActions: [], outcomes: [], incidentStartScore: 0, incidentStartHints: 0, incidentMistakes: 0,
+        evidenceDiscoveries: [], evidenceAssignments: [], evidenceContinueAt: null, evidenceContinued: false,
+        usefulActions: [], outcomes: [], incidentStartScore: 0, incidentStartHints: 0, incidentMistakes: 0,
         createdAt: now, updatedAt: now, expiresAt: now + ROOM_LIFETIME, answerOrders: [],
       };
       if (await this.store.create(room.code, JSON.stringify(room), ROOM_LIFETIME / 1000)) {
@@ -91,6 +93,9 @@ export class RoomService {
       p.seat ??= index; p.role ??= roleFor(p.seat, room.incidentIndex).id;
       p.contributions ??= { ...emptyContributions(), answers: p.score };
     });
+    if (!room.evidenceAssignments) this.prepareEvidence(room, Math.max(room.updatedAt, room.startsAt ?? 0));
+    room.evidenceContinued ??= false;
+    room.evidenceContinueAt ??= room.status === "playing" ? Math.max(room.updatedAt, room.startsAt ?? 0) + EVIDENCE_WAIT : null;
     if (room.status === "results" && room.result && !room.outcomes.length) {
       room.outcomes.push({ incidentId: room.incidentId, result: room.result, score: room.score,
         uptime: room.uptime, mistakes: room.incidentMistakes, hints: room.hintsUsed });
@@ -99,7 +104,36 @@ export class RoomService {
   }
 
   private incident(room: StoredRoom) {
-    return this.incidents[room.incidentIndex] ?? this.incidents[0];
+    if (room.incidentId === legacyDhcpIncident.id) return legacyDhcpIncident;
+    return this.incidents.find((i) => i.id === room.incidentId) ?? this.incidents[room.incidentIndex] ?? this.incidents[0];
+  }
+
+  private prepareEvidence(room: StoredRoom, openedAt: number) {
+    const items = evidenceItemsFor(this.incident(room), room.stepIndex);
+    room.evidenceAssignments = room.players.map((p) => ({ playerId: p.id,
+      itemIds: room.players.length === 1 || !items.length ? items.map((i) => i.id) : [items[p.seat % items.length].id] }));
+    room.evidenceContinueAt = openedAt + EVIDENCE_WAIT;
+    room.evidenceContinued = false;
+  }
+
+  private evidenceGate(room: StoredRoom, viewerId: string, now: number): RoomSnapshot["evidenceGate"] {
+    const items = evidenceItemsFor(this.incident(room), room.stepIndex).map((item) => {
+      const assigned = room.evidenceAssignments.filter((a) => a.itemIds.includes(item.id));
+      return { id: item.id, label: item.label,
+        discovered: assigned.some((a) => room.evidenceDiscoveries.includes(a.playerId)),
+        owners: assigned.flatMap((a) => {
+          const p = room.players.find((p) => p.id === a.playerId);
+          return p ? [{ playerId: p.id, nickname: p.nickname, connected: now - p.lastSeenAt < CONNECTION_WINDOW,
+            discovered: room.evidenceDiscoveries.includes(p.id) }] : [];
+        }) };
+    });
+    const decisions = room.selectedActions.filter((a) => a.stepIndex === room.stepIndex);
+    const outstanding = room.players.filter((p) => now - p.lastSeenAt < CONNECTION_WINDOW && !decisions.some((a) => a.playerId === p.id));
+    const active = room.status === "playing" && room.phase !== "briefing";
+    return { items, canAnswer: active && room.evidenceDiscoveries.includes(viewerId) && (room.evidenceContinued || items.every((i) => i.discovered)),
+      canAdvance: active && decisions.some((a) => a.playerId === room.hostPlayerId) && (room.evidenceContinued || outstanding.length === 0),
+      continueAvailableAt: room.evidenceContinueAt, continued: room.evidenceContinued,
+      outstandingAnswers: outstanding.map((p) => p.nickname) };
   }
 
   private finish(room: StoredRoom, result: NonNullable<StoredRoom["result"]>) {
@@ -192,6 +226,9 @@ export class RoomService {
           seat: player.seat, role: player.role, contributions: player.contributions, ready: false, connected: false, isHost: false });
       }
       room.players = room.players.filter((member) => member.id !== player.id);
+      if (room.players.length === 1 && room.status === "playing") {
+        room.evidenceAssignments = [{ playerId: room.players[0].id, itemIds: evidenceItemsFor(this.incident(room), room.stepIndex).map((i) => i.id) }];
+      }
       if (room.hostPlayerId === player.id) room.hostPlayerId = room.players[0]?.id ?? "";
       if (!room.players.length) room.expiresAt = this.now();
       return player.id;
@@ -225,9 +262,10 @@ export class RoomService {
 
   private beginIncident(room: StoredRoom, now: number) {
       room.status = "playing"; room.phase = "briefing"; room.result = null;
-      room.stepIndex = 0; room.incidentId = this.incident(room).id;
+      room.stepIndex = 0; room.incidentId = this.incidents[room.incidentIndex].id;
       room.startsAt = now + 5000; room.endsAt = room.startsAt + room.roundSeconds * 1000;
       room.selectedActions = []; room.evidenceDiscoveries = []; room.usefulActions = []; room.hintUsed = false;
+      this.prepareEvidence(room, room.startsAt);
       room.incidentStartScore = room.score; room.incidentStartHints = room.hintsUsed;
       room.incidentMistakes = 0;
       room.players.forEach((p) => { p.role = roleFor(p.seat, room.incidentIndex).id; });
@@ -280,6 +318,17 @@ export class RoomService {
     });
   }
 
+  async continueEvidence(code: string, token: string | null, stepIndex: unknown, incidentIndex: unknown = 0) {
+    return this.update(code, (room, now) => {
+      const player = this.authenticate(room, token); this.activeStep(room, stepIndex, incidentIndex);
+      if (player.id !== room.hostPlayerId) throw new RoomError(403, "Only the host can continue with current evidence.");
+      if (!room.evidenceDiscoveries.includes(player.id)) throw new RoomError(409, "Discover your evidence before continuing.");
+      if (room.evidenceContinueAt === null || now < room.evidenceContinueAt) throw new RoomError(409, "Wait for the visible evidence timeout before continuing.");
+      room.evidenceContinued = true; player.lastSeenAt = now;
+      return player.id;
+    });
+  }
+
   async usefulAction(code: string, token: string | null, stepIndex: unknown, actionId: unknown, incidentIndex: unknown = 0) {
     return this.update(code, (room, now) => {
       const player = this.authenticate(room, token); this.activeStep(room, stepIndex, incidentIndex);
@@ -307,10 +356,8 @@ export class RoomService {
     return this.update(code, (room, now) => {
       const player = this.authenticate(room, token);
       this.activeStep(room, stepIndex, incidentIndex);
-      if (!room.players.filter((p) => now - p.lastSeenAt < CONNECTION_WINDOW).every((p) => room.evidenceDiscoveries.includes(p.id))) {
-        throw new RoomError(409, "Wait for each connected teammate to discover evidence, then discuss your findings.");
-      }
       if (!room.evidenceDiscoveries.includes(player.id)) throw new RoomError(409, "Discover your evidence before answering.");
+      if (!this.evidenceGate(room, player.id, now).canAnswer) throw new RoomError(409, "Required evidence is still outstanding. Discover and share it, or ask the host to continue after the evidence timeout.");
       const step = this.incident(room).steps[room.stepIndex];
       const choice = step.choices.find((answer) => answer.id === answerId);
       if (!choice) throw new RoomError(400, "Choose one of this question's answers.");
@@ -332,10 +379,7 @@ export class RoomService {
       if (player.id !== room.hostPlayerId) throw new RoomError(403, "Only the host can continue the mission.");
       this.activeStep(room, stepIndex, incidentIndex);
       player.lastSeenAt = now;
-      const connected = room.players.filter((member) => now - member.lastSeenAt < CONNECTION_WINDOW);
-      if (!connected.every((member) => room.selectedActions.some((action) => action.stepIndex === room.stepIndex && action.playerId === member.id))) {
-        throw new RoomError(409, "Wait for every connected player to answer.");
-      }
+      if (!this.evidenceGate(room, player.id, now).canAdvance) throw new RoomError(409, "The host must answer. Wait for connected responders, or continue with current evidence after the timeout.");
       const decisions = room.selectedActions.filter((a) => a.stepIndex === room.stepIndex);
       const clean = decisions.length > 0 && decisions.every((a) => a.correct) && room.usefulActions.every((a) => a.useful);
       room.streak = clean ? room.streak + 1 : 0; room.bestStreak = Math.max(room.bestStreak, room.streak);
@@ -347,6 +391,7 @@ export class RoomService {
       } else {
         room.phase = this.incident(room).steps[room.stepIndex].phase;
         room.evidenceDiscoveries = []; room.usefulActions = []; room.hintUsed = false;
+        this.prepareEvidence(room, now);
       }
       return player.id;
     });
@@ -364,16 +409,18 @@ export class RoomService {
         selectedActions: selectedActions.map((action) => ({ ...action, explanation: incident.steps[action.stepIndex].choices.find((choice) => choice.id === action.answerId)!.explanation })),
         players: players.map((player) => ({ id: player.id, nickname: player.nickname, ready: player.ready, score: player.score, seat: player.seat, role: player.role, contributions: player.contributions, connected: now - player.lastSeenAt < CONNECTION_WINDOW, isHost: player.id === room.hostPlayerId })) },
       viewerId, serverNow: now,
+      evidenceGate: this.evidenceGate(stored, viewerId, now),
       incident: { title: incident.title, ticket: incident.ticket, objective: incident.objective, debrief: incident.debrief, count: this.incidents.length, ...learning },
       role: { name: role.name, responsibility: role.responsibility, actionId: role.actionId, action: role.action },
       debrief: room.status === "results" ? {
         teamOutcome: room.outcomes.every((o) => o.result === "resolved") ? "resolved" : "unresolved", uptimeScore: room.uptime * 10,
         objectives: [...new Set(this.incidents.slice(0, room.incidentIndex + 1).flatMap((i) => learningFor(i).objectives))],
         reviewTopics: [...new Set(room.outcomes.flatMap((o) => o.mistakes || o.hints || o.result !== "resolved" ? learningFor(this.incidents.find((i) => i.id === o.incidentId) ?? incident).reviewTopics : []))],
+        sources: [...new Map(room.outcomes.flatMap((o) => learningFor(o.incidentId === legacyDhcpIncident.id ? legacyDhcpIncident : this.incidents.find((i) => i.id === o.incidentId) ?? incident).sources).map((s) => [s.href, s])).values()],
       } : null,
       step: room.status === "playing" && current ? {
         title: current.title, prompt: current.prompt,
-        evidence: viewer && room.evidenceDiscoveries.includes(viewerId) ? evidenceFor(incident, room.stepIndex, viewer.seat, players.length).join("\n") : undefined,
+        evidence: viewer && room.evidenceDiscoveries.includes(viewerId) ? evidenceItemsFor(incident, room.stepIndex).filter((i) => room.evidenceAssignments.find((a) => a.playerId === viewerId)?.itemIds.includes(i.id)).map((i) => i.text).join("\n") : undefined,
         hint: room.hintUsed ? current.hint : null,
         choices: (answerOrders[room.stepIndex] ?? []).map((id) => {
           const choice = current.choices.find((answer) => answer.id === id)!;

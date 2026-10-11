@@ -3,7 +3,7 @@ import { RoomError, RoomService } from "@/lib/game/room-service";
 import twilio from "twilio";
 import { roomDocumentName, syncInfrastructure } from "@/lib/game/room-store";
 
-type Operation = "create" | "join" | "get" | "ready" | "start" | "answer" | "advance" | "leave" | "token" | "discover" | "hint" | "role-action" | "next";
+type Operation = "create" | "join" | "get" | "ready" | "start" | "answer" | "advance" | "leave" | "token" | "discover" | "hint" | "role-action" | "next" | "continue-evidence";
 const cookieName = (code: string) => `outage_ops_${code}`;
 
 function sessionToken(request: Request, code: string): string | null {
@@ -69,6 +69,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
       : operation === "start" ? await rooms.start(code, token)
       : operation === "answer" ? await rooms.answer(code, token, payload.stepIndex, payload.answerId, payload.incidentIndex)
       : operation === "discover" ? await rooms.discover(code, token, payload.stepIndex, payload.incidentIndex)
+      : operation === "continue-evidence" ? await rooms.continueEvidence(code, token, payload.stepIndex, payload.incidentIndex)
       : operation === "hint" ? await rooms.hint(code, token, payload.stepIndex, payload.incidentIndex)
       : operation === "role-action" ? await rooms.usefulAction(code, token, payload.stepIndex, payload.actionId, payload.incidentIndex)
       : operation === "next" ? await rooms.nextIncident(code, token, payload.incidentIndex)
