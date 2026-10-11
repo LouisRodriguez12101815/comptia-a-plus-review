@@ -107,6 +107,15 @@ export function ToolIcon({ id, ...props }: { id: ToolId } & IconProps) {
           <path d="M9 9h6M9 13h6" />
         </svg>
       );
+    case "visuals":
+      return (
+        <svg {...small} {...props}>
+          <circle cx="6" cy="7" r="2.2" />
+          <circle cx="18" cy="7" r="2.2" />
+          <circle cx="12" cy="18" r="2.2" />
+          <path d="M8 7h8M7.2 9l3.6 7M16.8 9l-3.6 7" />
+        </svg>
+      );
     case "flashcards":
       return (
         <svg {...small} {...props}>

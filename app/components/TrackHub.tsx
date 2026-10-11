@@ -63,7 +63,7 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
             );
             return (
               <li key={tool.id}>
-                {tool.state === "soon" ? (
+                {tool.state === "soon" && !tool.openable ? (
                   <div className={`${tileBase} border-dashed border-slate-700 bg-slate-900/30`}>
                     {inner}
                   </div>
@@ -71,7 +71,11 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
                   <TrackLink
                     href={tool.href}
                     focus={tool.focus}
-                    className={`${tileBase} border-slate-800 bg-slate-900 hover:border-teal-400`}
+                    className={`${tileBase} ${
+                      tool.state === "soon"
+                        ? "border-dashed border-slate-700 bg-slate-900/30 hover:border-teal-400"
+                        : "border-slate-800 bg-slate-900 hover:border-teal-400"
+                    }`}
                   >
                     {inner}
                   </TrackLink>
