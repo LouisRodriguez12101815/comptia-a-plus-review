@@ -2,18 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { cantReachWebsiteIncident } from "@/lib/game/incidents";
+import { MultiplayerRoom } from "@/app/components/game/MultiplayerRoom";
 import { shuffleAnswers } from "@/lib/game/answers";
 import type { IncidentChoice } from "@/lib/game/types";
 
-type Screen = "menu" | "guided" | "create" | "join" | "lobby";
-
-const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function makeRoomCode() {
-  return Array.from({ length: 6 }, () =>
-    ROOM_ALPHABET.charAt(Math.floor(Math.random() * ROOM_ALPHABET.length)),
-  ).join("");
-}
+type Screen = "menu" | "guided" | "create" | "join";
 
 function LowPolyNetwork() {
   return (
@@ -39,9 +32,6 @@ export function OutageOps() {
   const [score, setScore] = useState(0);
   const [uptime, setUptime] = useState(100);
   const [hintVisible, setHintVisible] = useState(false);
-  const [nickname, setNickname] = useState("");
-  const [roomCode, setRoomCode] = useState("");
-  const [createdRoom, setCreatedRoom] = useState("");
 
   const step = incident.steps[stepIndex];
   const selectedAnswer = step?.choices.find((answer) => answer.id === selected);
@@ -89,12 +79,6 @@ export function OutageOps() {
     setCredited(false);
     setHintVisible(false);
     setStepIndex((value) => value + 1);
-  }
-
-  function createRoom() {
-    if (nickname.trim().length < 2) return;
-    setCreatedRoom(makeRoomCode());
-    setScreen("lobby");
   }
 
   if (screen === "guided") {
@@ -183,55 +167,8 @@ export function OutageOps() {
     );
   }
 
-  if (screen === "create") {
-    return (
-      <RoomForm
-        title="Create a response room"
-        subtitle="Choose your call sign and mission focus. Live synchronization is the next implementation milestone."
-        nickname={nickname}
-        onNickname={setNickname}
-        onBack={() => setScreen("menu")}
-        actionLabel="Create room"
-        onSubmit={createRoom}
-      />
-    );
-  }
-
-  if (screen === "join") {
-    return (
-      <RoomForm
-        title="Join the incident team"
-        subtitle="Enter the six-character code shown on the host’s screen."
-        nickname={nickname}
-        onNickname={setNickname}
-        roomCode={roomCode}
-        onRoomCode={(value) => setRoomCode(value.toUpperCase().replace(/[^A-Z2-9]/g, "").slice(0, 6))}
-        onBack={() => setScreen("menu")}
-        actionLabel="Join room"
-        onSubmit={() => setScreen("lobby")}
-      />
-    );
-  }
-
-  if (screen === "lobby") {
-    const code = createdRoom || roomCode || "N7K4PX";
-    return (
-      <section className="mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-cyan-300/25 bg-slate-900/90 shadow-2xl shadow-cyan-950/40">
-        <div className="bg-gradient-to-r from-cyan-950 to-teal-900 p-7 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">Incident room</p>
-          <p className="mt-2 font-mono text-4xl font-bold tracking-[0.25em] text-white">{code}</p>
-        </div>
-        <div className="space-y-6 p-6 sm:p-8">
-          <div className="flex items-center justify-between rounded-2xl border border-emerald-300/25 bg-emerald-400/10 p-4">
-            <div><p className="font-semibold text-white">{nickname || "Responder"}</p><p className="text-sm text-emerald-100">Incident Lead · Host</p></div>
-            <span className="rounded-full bg-emerald-300 px-3 py-1 text-xs font-bold text-emerald-950">READY</span>
-          </div>
-          <div className="rounded-2xl border border-dashed border-slate-600 p-5 text-center text-sm text-slate-300">Waiting for another responder to join…</div>
-          <p className="text-sm text-amber-100">The lobby interface is ready. Cross-device synchronization and reconnect handling are the next submission milestone.</p>
-          <button onClick={() => setScreen("menu")} className="text-sm text-cyan-200 hover:text-white">← Leave room</button>
-        </div>
-      </section>
-    );
+  if (screen === "create" || screen === "join") {
+    return <MultiplayerRoom mode={screen} onBack={() => setScreen("menu")} />;
   }
 
   return (
@@ -252,7 +189,7 @@ export function OutageOps() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <ModeCard eyebrow="Start instantly" title="Guided Demo" description="Walk the DNS incident with a mentor bot and learn why each troubleshooting step matters." action="Begin training" accent="cyan" onClick={resetGuidedDemo} />
-        <ModeCard eyebrow="2–8 responders" title="Create Room" description="Choose the certification focus, share a room code, and lead the incident team." action="Create a room" accent="teal" onClick={() => setScreen("create")} />
+        <ModeCard eyebrow="2–8 responders" title="Create Room" description="Share a room code and lead a synchronized DNS incident with your team." action="Create a room" accent="teal" onClick={() => setScreen("create")} />
         <ModeCard eyebrow="Room code" title="Join Team" description="Enter the code from your host and join from any phone or laptop." action="Join a room" accent="amber" onClick={() => setScreen("join")} />
       </section>
 
@@ -277,21 +214,5 @@ function ModeCard({ eyebrow, title, description, action, accent, onClick }: { ey
       <p className="mt-3 flex-1 text-sm leading-6 text-slate-300">{description}</p>
       <button onClick={onClick} className="mt-6 rounded-full bg-white px-4 py-2.5 font-semibold text-slate-950 hover:bg-cyan-100">{action}</button>
     </article>
-  );
-}
-
-function RoomForm({ title, subtitle, nickname, onNickname, roomCode, onRoomCode, onBack, actionLabel, onSubmit }: { title: string; subtitle: string; nickname: string; onNickname: (value: string) => void; roomCode?: string; onRoomCode?: (value: string) => void; onBack: () => void; actionLabel: string; onSubmit: () => void }) {
-  return (
-    <section className="mx-auto max-w-xl rounded-[2rem] border border-cyan-300/25 bg-slate-900/90 p-6 shadow-2xl shadow-cyan-950/40 sm:p-8">
-      <button onClick={onBack} className="text-sm text-cyan-200 hover:text-white">← Mission select</button>
-      <h1 className="mt-5 text-3xl font-semibold text-white">{title}</h1>
-      <p className="mt-2 text-slate-300">{subtitle}</p>
-      <div className="mt-7 space-y-5">
-        {onRoomCode && <label className="block"><span className="text-sm font-medium text-slate-200">Room code</span><input value={roomCode} onChange={(event) => onRoomCode(event.target.value)} inputMode="text" autoCapitalize="characters" placeholder="N7K4PX" className="mt-2 w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 font-mono text-xl uppercase tracking-[0.25em] text-white outline-none focus:border-cyan-300" /></label>}
-        <label className="block"><span className="text-sm font-medium text-slate-200">Call sign</span><input value={nickname} onChange={(event) => onNickname(event.target.value.slice(0, 16))} placeholder="Your nickname" className="mt-2 w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-300" /></label>
-        {!onRoomCode && <label className="block"><span className="text-sm font-medium text-slate-200">Mission focus</span><select className="mt-2 w-full rounded-2xl border border-slate-600 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-300" defaultValue="mixed"><option value="mixed">Mixed CompTIA response</option><option value="core1">A+ Core 1</option><option value="core2">A+ Core 2</option><option value="network">Network+</option></select></label>}
-        <button onClick={onSubmit} disabled={nickname.trim().length < 2 || Boolean(onRoomCode && roomCode?.length !== 6)} className="w-full rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-40">{actionLabel}</button>
-      </div>
-    </section>
   );
 }

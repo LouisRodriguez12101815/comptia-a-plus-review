@@ -7,12 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:game": "node --test tests/outage-ops-answers.test.mjs"
+    "test:game": "node --import ./tests/register.mjs --test tests/outage-ops-*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:game"
   },
   "dependencies": {
     "next": "16.3.5",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "twilio": "6.1.2",
+    "twilio-sync": "4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
