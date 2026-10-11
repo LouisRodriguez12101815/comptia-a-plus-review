@@ -66,3 +66,9 @@ See [implementation and limitations](docs/practice-games.md) and [content source
 ## Focused topic mission
 
 `/practice-games/next-hop-mission` connects Lab 01 next-hop troubleshooting to notes and flashcards, then checks understanding in a new application. It tracks first attempts, hints, retries and completion separately; independent fresh applications earn explained, non-repeatable achievements. Its scoped reset clears only this browser’s mission record. See [the learning-loop review and sources](docs/next-hop-learning-loop.md). Run `npm run test:e2e:learning -- --browser /usr/bin/chromium` for the complete real-UI review/return/application walkthrough.
+
+## Subnet Architect
+
+`/practice-games/subnet-architect` adds solo Network+ IPv4 practice: **Subnet Detective** checks masks, boundaries, usable ranges and capacity; **VLSM Architect** allocates a gateway-inclusive four-LAN/three-link topology. Both support guided or independent runs, typed answers, retries, priced hints, saved drafts, specific debriefs and new transfer problems. Alternative valid VLSM layouts are accepted. Read [implementation and validation](docs/subnet-architect.md) and [source verification and unresolved handwriting](docs/subnet-source-verification.md).
+
+Run `npm run test:subnet` (requires Python 3 for the independent `ipaddress` oracle) and, after a production build, `npm run test:e2e:subnet -- --browser /usr/bin/chromium`. The game needs no accounts or service configuration. Only its latest run is stored in browser localStorage, with a scoped reset. It is solo practice; successful completion and software tests do not establish mastery or learning gains.

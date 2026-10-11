@@ -152,6 +152,8 @@ export function trackForPath(pathname: string, focus: StudyFocus): Track | undef
   );
   if (direct) return direct;
   if (pathname.startsWith("/practice-games/component-match")) return getTrack("core1");
+  if (pathname.startsWith("/practice-games/subnet-architect")) return getTrack("networking");
+  if (pathname.startsWith("/subnet-sources")) return getTrack("networking");
   if (pathname.startsWith("/practice-games/next-hop-mission")) return getTrack("networking");
   if (pathname.startsWith("/practice-games/follow-packet")) return getTrack("networking");
   if (pathname.startsWith("/network-plus")) return getTrack("networking");
