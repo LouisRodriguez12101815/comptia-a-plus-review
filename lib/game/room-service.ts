@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import type { GuidedIncident } from "@/lib/game/types";
 import type { RoomSnapshot, RoomStore, StoredRoom } from "@/lib/game/room-types";
+import type { FailureDiagnostic } from "@/lib/game/provider-errors";
 import { emptyContributions, evidenceItemsFor, legacyDhcpIncident, HINT_PENALTY, learningFor, roleFor, roles } from "@/lib/game/cooperative";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -11,9 +12,11 @@ export const EVIDENCE_WAIT = 15_000;
 
 export class RoomError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  diagnostic?: FailureDiagnostic;
+  constructor(status: number, message: string, diagnostic?: FailureDiagnostic) {
     super(message);
     this.status = status;
+    this.diagnostic = diagnostic;
   }
 }
 

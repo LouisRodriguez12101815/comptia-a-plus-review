@@ -29,6 +29,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [clock, setClock] = useState(0);
   const code = snapshot?.room.code;
 
@@ -49,8 +50,9 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
     let controller: AbortController | null = null;
     let client: import("twilio-sync").SyncClient | undefined;
     let document: import("twilio-sync").SyncDocument | undefined;
+    let syncConnected = false;
 
-    function failure(cause: unknown) {
+    function failure(cause: unknown, channel: "api" | "sync" = "api") {
       if (stopped) return;
       if (cause instanceof RoomApiError && [401, 404, 410, 423].includes(cause.status)) {
         stopped = true;
@@ -60,6 +62,10 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         sessionStorage.removeItem("outage-ops-room");
         setError(cause.message);
         setConnectionError(null);
+        setSyncError(null);
+      } else if (channel === "sync") {
+        syncConnected = false;
+        setSyncError("Live updates are interrupted. Checking shared room state every two seconds; controls remain available when the room API is reachable.");
       } else setConnectionError(cause instanceof RoomApiError ? cause.message : "Connection interrupted. Retrying; room controls are paused.");
     }
 
@@ -77,7 +83,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
       finally {
         refreshing = false;
         // Heartbeats and timer reconciliation supplement real-time Sync notifications.
-        if (!stopped) timer = setTimeout(refresh, refreshAgain ? 0 : 10_000);
+        if (!stopped) timer = setTimeout(refresh, refreshAgain ? 0 : syncConnected ? 10_000 : 2000);
       }
     }
 
@@ -93,7 +99,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           if (!canRenew || stopped) return;
           tokenRefresh ??= roomApi<{ token: string; renewable: boolean }>(`/${code}/token`, {})
             .then(async (value) => { canRenew = value.renewable; if (!stopped) await client?.updateToken(value.token); })
-            .catch(failure).finally(() => { tokenRefresh = undefined; });
+            .catch((cause) => failure(cause, "sync")).finally(() => { tokenRefresh = undefined; });
         };
         client.on("tokenAboutToExpire", renew);
         // A final token already covers the remaining room lifetime. Don't renew
@@ -101,8 +107,9 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         client.on("tokenExpired", () => canRenew ? renew() : failure(new RoomApiError(410, "This room has expired. Create a new room.")));
         client.on("connectionStateChanged", (state: string) => {
           if (stopped) return;
-          if (state === "connected") void refresh();
-          else setConnectionError("Reconnecting to multiplayer; room controls are paused.");
+          syncConnected = state === "connected";
+          if (syncConnected) { setSyncError(null); void refresh(); }
+          else setSyncError("Live updates are reconnecting. Checking shared room state every two seconds; controls remain available when the room API is reachable.");
         });
         document = await client.document({ id: credentials.document, mode: "open_existing" });
         if (stopped) { document.close(); return; }
@@ -110,7 +117,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         document.on("removed", () => failure(new RoomApiError(410, "This room has expired. Create a new room.")));
         void refresh();
       } catch (cause) {
-        failure(cause);
+        failure(cause, "sync");
         document?.close();
         void client?.shutdown();
         if (!stopped) subscriptionTimer = setTimeout(subscribe, 5000);
@@ -158,6 +165,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
       accept(resume ? await roomApi(`/${saved}`) : mode === "create"
         ? await roomApi("", { nickname }) : await roomApi(`/${roomCode}/join`, { nickname }));
       setConnectionError(null);
+      setSyncError(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not enter the room."); }
     finally { setBusy(false); }
   }
@@ -213,6 +221,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
       </div>
       {error && <p role="alert" className="rounded-xl bg-rose-400/10 p-3 text-rose-200">{error}</p>}
       {connectionError && <p role="status" className="rounded-xl bg-amber-400/10 p-3 text-amber-200">{connectionError}</p>}
+      {syncError && <p role="status" className="rounded-xl bg-amber-400/10 p-3 text-amber-200">{syncError}</p>}
       <section aria-label="Live scoreboard" className="rounded-2xl border border-teal-300/25 bg-slate-900 p-5">
         <h2 className="text-xl font-semibold">Team scoreboard</h2>
         <div className="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">

@@ -1,6 +1,7 @@
 import twilio from "twilio";
 import { RoomError } from "@/lib/game/room-service";
 import type { RoomStore } from "@/lib/game/room-types";
+import { syncCall } from "@/lib/game/provider-errors";
 
 export const PAUSED_MESSAGE = "Multiplayer paused for today. Guided Demo is still available.";
 export const roomDocumentName = (code: string) => `outage-ops-room-${code}`;
@@ -85,16 +86,29 @@ export function syncInfrastructure() {
     TWILIO_AUTH_TOKEN: authToken, TWILIO_USAGE_WEBHOOK_URL: webhookUrl,
     TWILIO_DAILY_USAGE_TRIGGER_SID: triggerSid } = process.env;
   if (!accountSid || !keySid || !keySecret || !serviceSid || !authToken || !webhookUrl || !triggerSid) {
-    throw new RoomError(503, "Multiplayer service not configured. Guided Demo is available.");
+    const variables = Object.entries({ TWILIO_ACCOUNT_SID: accountSid, TWILIO_API_KEY_SID: keySid, TWILIO_API_KEY_SECRET: keySecret, TWILIO_SYNC_SERVICE_SID: serviceSid, TWILIO_AUTH_TOKEN: authToken, TWILIO_USAGE_WEBHOOK_URL: webhookUrl, TWILIO_DAILY_USAGE_TRIGGER_SID: triggerSid }).filter(([, value]) => !value).map(([name]) => name);
+    throw new RoomError(503, "Multiplayer service not configured. Guided Demo is available.", { reason: "configuration_missing", stage: "configuration", variables });
   }
-  const client = twilio(keySid, keySecret, { accountSid });
+  const variables = Object.entries({ TWILIO_ACCOUNT_SID: [accountSid, /^AC[0-9a-f]{32}$/i], TWILIO_API_KEY_SID: [keySid, /^SK[0-9a-f]{32}$/i], TWILIO_SYNC_SERVICE_SID: [serviceSid, /^IS[0-9a-f]{32}$/i], TWILIO_DAILY_USAGE_TRIGGER_SID: [triggerSid, /^UT[0-9a-f]{32}$/i] } satisfies Record<string, [string, RegExp]>).filter(([, [value, pattern]]) => !pattern.test(value)).map(([name]) => name);
+  if (variables.length) throw new RoomError(503, "Multiplayer configuration contains an invalid resource identifier. The deployment administrator must verify configuration.", { reason: "configuration_invalid", stage: "configuration", variables });
+  const client = twilio(keySid, keySecret, { accountSid, logLevel: "error", timeout: 5000 });
   const service = client.sync.v1.services(serviceSid);
+  const verifyService = syncServiceVerifier(service, accountSid);
   const documents: SyncDocuments = {
-    fetch: (name) => service.documents(name).fetch(),
-    create: (name, data, ttl) => service.documents.create({ uniqueName: name, data, ttl }),
-    update: (name, data, revision, ttl) => service.documents(name).update({ data, ifMatch: revision, ttl }),
+    fetch: async (name) => { await verifyService(); return syncCall("documents.fetch", () => service.documents(name).fetch(), [404]); },
+    create: async (name, data, ttl) => { await verifyService(); return syncCall("documents.create", () => service.documents.create({ uniqueName: name, data, ttl }), [409]); },
+    update: async (name, data, revision, ttl) => { await verifyService(); return syncCall("documents.update", () => service.documents(name).update({ data, ifMatch: revision, ttl }), [409, 412]); },
   };
   const guard = new DailyUsageGuard(documents);
   return { client, service, documents, guard, store: new TwilioRoomStore(documents, guard),
-    accountSid, keySid, keySecret, serviceSid, authToken, webhookUrl, triggerSid };
+    verifyService, accountSid, keySid, keySecret, serviceSid, authToken, webhookUrl, triggerSid };
+}
+
+export function syncServiceVerifier<T extends { accountSid: string; aclEnabled: boolean }>(service: { fetch: () => Promise<T> }, accountSid: string) {
+  let verified: Promise<T> | undefined;
+  return () => verified ??= syncCall("service.fetch", async () => {
+    const result = await service.fetch();
+    if (result.accountSid !== accountSid) throw new RoomError(503, "The configured multiplayer Sync Service belongs to a different account.", { reason: "account_mismatch", stage: "service.fetch" });
+    return result;
+  });
 }
