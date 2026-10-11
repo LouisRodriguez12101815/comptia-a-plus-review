@@ -1,7 +1,7 @@
 import type { GamePhase, IncidentChoice, RoomPlayer } from "@/lib/game/types";
 import type { Contributions, RoleId } from "@/lib/game/cooperative";
 
-export type CooperativePlayer = RoomPlayer & { seat: number; role: RoleId; contributions: Contributions };
+export type CooperativePlayer = RoomPlayer & { excludedFromMission?: boolean; seat: number; role: RoleId; contributions: Contributions };
 export type IncidentOutcome = { incidentId: string; result: "resolved" | "unresolved" | "timeout" | "uptime"; score: number; uptime: number; mistakes: number; hints: number };
 
 export type RoomAction = {
@@ -56,6 +56,7 @@ export type SharedRoom = {
 };
 
 export type RoomSnapshot = {
+  lobbyGate: ReturnType<typeof import("@/lib/game/lobby-model").lobbyStartModel>;
   networkDiagram: import("@/lib/game/network-diagram").NetworkDiagram | null;
   protocolVersion: number;
   buildCommit: string;
