@@ -1,0 +1,114 @@
+<title>Administrative Distance Review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --bad: #9a3b2e; --bad-soft: #f3dcd8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --bad: #f0a494; --bad-soft: #3d2623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --bad: #f0a494; --bad-soft: #3d2623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 66ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ctrls button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.ctrls button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.ctrls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.routes { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.route {
+  border: 2px solid var(--line); border-radius: 10px; padding: 14px; background: var(--bg); min-width: 0;
+}
+.route.win { border-color: var(--good); background: var(--good-soft); }
+.route.lose { opacity: .7; }
+.route h2 { margin: 0 0 8px; font-size: 15px; }
+.route dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 14px; }
+.route dt { color: var(--muted); }
+.route dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+.badge { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
+.badge.win { background: var(--good); color: var(--bg); }
+.badge.lose { background: var(--bad-soft); color: var(--bad); }
+.rule { margin-top: 18px; padding: 14px; border-radius: 10px; background: var(--accent-soft); font-size: 14px; }
+.rule strong { color: var(--ink); }
+.answer { margin-top: 14px; font-size: 14px; color: var(--muted); max-width: 68ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>Administrative distance: which route the router trusts</h1>
+  <p class="lede">The same destination can be learned from more than one source. The router compares administrative distance (AD) first. Metrics only break ties between routes from the same protocol.</p>
+
+  <div class="card">
+    <div class="ctrls" role="group" aria-label="Choose a scenario">
+      <button id="s1" type="button" aria-pressed="true">Static route vs RIP</button>
+      <button id="s2" type="button" aria-pressed="false">OSPF vs RIP</button>
+    </div>
+
+    <div class="routes" id="routes"></div>
+
+    <div class="rule"><strong>Rule:</strong> lower AD wins, even when the other route has a better metric. The router installs only the winning route in its table.</div>
+
+    <p class="answer"><strong>Question 8 answer is B.</strong> ADs define the reliability of each routing source. They don't define standards, calculate shortest paths, or get set for path selection by the router itself.</p>
+  </div>
+</div>
+
+<script>
+const scenarios = {
+  s1: [
+    { name: 'Static route', ad: 1, metric: 'None (no metric)', via: '192.168.1.2' },
+    { name: 'RIP route', ad: 120, metric: '1 hop', via: '192.168.2.2' }
+  ],
+  s2: [
+    { name: 'OSPF route', ad: 110, metric: 'Cost 50', via: '10.1.1.2' },
+    { name: 'RIP route', ad: 120, metric: '2 hops', via: '10.1.2.2' }
+  ]
+};
+
+function render(key) {
+  const routes = scenarios[key];
+  const winner = routes.reduce((a, b) => (b.ad < a.ad ? b : a));
+  const box = document.getElementById('routes');
+  box.innerHTML = '';
+  routes.forEach(r => {
+    const won = r === winner;
+    const div = document.createElement('div');
+    div.className = 'route ' + (won ? 'win' : 'lose');
+    div.innerHTML =
+      '<h2></h2><dl><dt>AD</dt><dd></dd><dt>Metric</dt><dd></dd><dt>Next hop</dt><dd></dd></dl>' +
+      '<span class="badge ' + (won ? 'win' : 'lose') + '">' + (won ? 'Installed in routing table' : 'Not installed') + '</span>';
+    div.querySelector('h2').textContent = r.name;
+    const dd = div.querySelectorAll('dd');
+    dd[0].textContent = r.ad;
+    dd[1].textContent = r.metric;
+    dd[2].textContent = r.via;
+    box.appendChild(div);
+  });
+}
+
+['s1', 's2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    ['s1', 's2'].forEach(x => document.getElementById(x).setAttribute('aria-pressed', String(x === id)));
+    render(id);
+  });
+});
+render('s1');
+</script>

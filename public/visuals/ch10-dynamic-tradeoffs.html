@@ -1,0 +1,62 @@
+<title>Dynamic Routing Tradeoffs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --bad: #9a3b2e; --bad-soft: #f3dcd8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --bad: #f0a494; --bad-soft: #3d2623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --bad: #f0a494; --bad-soft: #3d2623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.cols { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.col { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--bg); min-width: 0; }
+.col h2 { margin: 0 0 10px; font-size: 15px; }
+.item { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 14px; margin-bottom: 8px; border: 1px solid var(--line); background: var(--surface); }
+.item.good { border-color: var(--good); background: var(--good-soft); }
+.item.cost { color: var(--muted); }
+.chip { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.item.good .chip { background: var(--good); color: var(--bg); }
+.answer { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>Dynamic routing: the advantage and the costs</h1>
+  <p class="lede">Dynamic routing protocols reroute around outages without help. That resiliency has a price: routers use more RAM, CPU, and bandwidth to keep their route information current.</p>
+
+  <div class="card">
+    <div class="cols">
+      <div class="col">
+        <h2>Advantage</h2>
+        <div class="item good"><span>Resiliency when routes become unavailable</span><span class="chip">Answer A</span></div>
+      </div>
+      <div class="col">
+        <h2>Costs (not advantages)</h2>
+        <div class="item cost"><span>Higher RAM use for route tables</span><span class="chip">B wrong</span></div>
+        <div class="item cost"><span>Higher CPU use for route calculations</span><span class="chip">C wrong</span></div>
+        <div class="item cost"><span>Higher bandwidth use for learning routes</span><span class="chip">D wrong</span></div>
+      </div>
+    </div>
+
+    <p class="answer"><strong>Question 16 answer is A.</strong> Dynamic protocols recalculate the best path around an outage, which is the resiliency advantage. RAM, CPU, and bandwidth use all go up, not down.</p>
+  </div>
+</div>

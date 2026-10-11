@@ -1,0 +1,86 @@
+<title>Static Route Default AD</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 66ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.scale { display: grid; gap: 8px; }
+.rung { display: grid; grid-template-columns: 150px 1fr 56px; align-items: center; gap: 12px; }
+.rung .name { font-size: 14px; }
+.rung .bar { height: 22px; border-radius: 6px; background: var(--bg); border: 1px solid var(--line); position: relative; }
+.rung .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--line); }
+.rung .val { font-variant-numeric: tabular-nums; text-align: right; font-size: 14px; color: var(--muted); }
+.rung.hit .name { font-weight: 600; }
+.rung.hit .bar i { background: var(--good); }
+.rung.hit .val { color: var(--good); font-weight: 600; }
+.axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin: 10px 0 0 162px; padding-right: 68px; font-variant-numeric: tabular-nums; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 16px; }
+.fact { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); min-width: 0; font-size: 14px; }
+.fact b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }
+.answer { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 68ch; }
+.answer strong { color: var(--ink); }
+@media (max-width: 560px) {
+  .rung { grid-template-columns: 110px 1fr 40px; }
+  .axis { margin-left: 122px; padding-right: 48px; }
+}
+</style>
+
+<div class="wrap">
+  <h1>Default AD of a static route</h1>
+  <p class="lede">Administrative distance (AD) ranks how much a router trusts each route source. An administrator creates a static route, so the router trusts it most, with an AD of 1.</p>
+
+  <div class="card">
+    <div class="scale" id="scale"></div>
+    <div class="axis"><span>0 most trusted</span><span>255 unknown</span></div>
+
+    <div class="facts">
+      <div class="fact"><b>Static route AD</b>1</div>
+      <div class="fact"><b>Connected interface AD</b>0</div>
+      <div class="fact"><b>Unknown source</b>255, never installed</div>
+    </div>
+
+    <p class="answer"><strong>Question 7 answer is A, AD of 1.</strong> AD 0 is for connected interfaces, and AD 2 doesn't map to a route source.</p>
+  </div>
+</div>
+
+<script>
+const sources = [
+  { name: 'Connected', ad: 0 },
+  { name: 'Static', ad: 1, hit: true },
+  { name: 'EIGRP (internal)', ad: 90 },
+  { name: 'IGRP', ad: 100 },
+  { name: 'OSPF', ad: 110 },
+  { name: 'RIP', ad: 120 },
+  { name: 'Unknown', ad: 255 }
+];
+const scale = document.getElementById('scale');
+sources.forEach(s => {
+  const r = document.createElement('div');
+  r.className = 'rung' + (s.hit ? ' hit' : '');
+  r.innerHTML = '<div class="name"></div><div class="bar"><i></i></div><div class="val"></div>';
+  r.querySelector('.name').textContent = s.name;
+  r.querySelector('i').style.width = Math.max(1.2, (s.ad / 255) * 100) + '%';
+  r.querySelector('.val').textContent = s.ad;
+  scale.appendChild(r);
+});
+</script>

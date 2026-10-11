@@ -1,0 +1,354 @@
+<title>Chapter 10 Concept Visuals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --bad: #9a3b2e; --bad-soft: #f3dcd8; --warm: #7a4e1d; --warm-soft: #f2e6d6;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --bad: #f0a494; --bad-soft: #3d2623; --warm: #e0b07a; --warm-soft: #3a2f22;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --bad: #f0a494; --bad-soft: #3d2623; --warm: #e0b07a; --warm-soft: #3a2f22;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 28px/1.2 "Source Serif 4", Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 64ch; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.tabs button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; min-width: 0; }
+.panel h2 { margin: 0 0 4px; font: 600 21px/1.25 "Source Serif 4", Georgia, serif; }
+.panel .why { margin: 0 0 16px; color: var(--muted); max-width: 66ch; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.box { flex: 1 1 180px; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--bg); }
+.box h3 { margin: 0 0 4px; font-size: 14px; }
+.box p { margin: 0; font-size: 13px; color: var(--muted); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 6px; }
+.t-good { background: var(--good-soft); color: var(--good); }
+.t-bad { background: var(--bad-soft); color: var(--bad); }
+.t-warm { background: var(--warm-soft); color: var(--warm); }
+.t-acc { background: var(--accent-soft); color: var(--accent); }
+.ladder { display: grid; gap: 8px; }
+.rung { display: grid; grid-template-columns: 110px 1fr 56px; align-items: center; gap: 12px; }
+.rung .name { font-weight: 600; font-size: 14px; }
+.bar { height: 22px; border-radius: 6px; background: var(--accent-soft); position: relative; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 6px; }
+.rung .val { font-variant-numeric: tabular-nums; font-size: 14px; text-align: right; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.ctrls button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.ctrls button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.ctrls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stage { overflow-x: auto; margin-top: 8px; }
+svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.lbl { fill: var(--ink); font: 600 13px "IBM Plex Sans", system-ui, sans-serif; }
+.sub { fill: var(--muted); font: 12px "IBM Plex Sans", system-ui, sans-serif; }
+.wire { stroke: var(--line); stroke-width: 2; }
+.wire-hot { stroke: var(--accent); stroke-width: 3; }
+.dead { stroke: var(--bad); stroke-width: 3; stroke-dasharray: 6 5; }
+.node { fill: var(--accent); }
+.node2 { fill: var(--warm); }
+.node-txt { fill: var(--bg); font: 600 13px "IBM Plex Sans", system-ui, sans-serif; }
+.pkt { fill: var(--bad); }
+.note { margin-top: 12px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.note strong { color: var(--ink); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; display: block; overflow-x: auto; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+td.hl { color: var(--good); font-weight: 600; }
+[hidden] { display: none !important; }
+</style>
+
+<div class="wrap">
+  <h1>Chapter 10 concepts, visualized</h1>
+  <p class="lede">Each tab shows one concept from the chapter. Use the controls inside a tab to step through it.</p>
+
+  <div class="tabs" role="tablist" aria-label="Concepts">
+    <button role="tab" id="t1" aria-controls="p1" aria-selected="true" data-tab="p1">Protocol families</button>
+    <button role="tab" id="t2" aria-controls="p2" aria-selected="false" data-tab="p2">Administrative distance</button>
+    <button role="tab" id="t3" aria-controls="p3" aria-selected="false" data-tab="p3">Metrics</button>
+    <button role="tab" id="t4" aria-controls="p4" aria-selected="false" data-tab="p4">RIPv1 vs RIPv2</button>
+    <button role="tab" id="t5" aria-controls="p5" aria-selected="false" data-tab="p5">Routing loops and TTL</button>
+    <button role="tab" id="t6" aria-controls="p6" aria-selected="false" data-tab="p6">Static, default, dynamic</button>
+    <button role="tab" id="t7" aria-controls="p7" aria-selected="false" data-tab="p7">IPv6 transition</button>
+  </div>
+
+  <!-- 1. Protocol families -->
+  <section class="panel" role="tabpanel" id="p1" aria-labelledby="t1">
+    <h2>Protocol families: what each router knows</h2>
+    <p class="why">The type decides how much a router knows about the network. Distance-vector routers only learn routes from neighbors. Link-state routers build a full map.</p>
+    <div class="row">
+      <div class="box">
+        <span class="tag t-warm">Distance-vector</span>
+        <h3>RIP, IGRP</h3>
+        <p>Sends its routing table to neighbors. Learns routes secondhand and never sees the whole network. No topology map.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-acc">Link-state</span>
+        <h3>OSPF, IS-IS</h3>
+        <p>Every router learns the state of every link. Each builds the same topology map, then runs Dijkstra for best paths.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-good">Hybrid</span>
+        <h3>EIGRP</h3>
+        <p>Distance-vector behavior with link-state features. Keeps a topology table of its own.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-bad">Path-vector</span>
+        <h3>BGP</h3>
+        <p>Routes between autonomous systems and tracks the path of AS numbers, not the internal topology.</p>
+      </div>
+    </div>
+    <p class="note"><strong>Why RIP is the answer to Q6:</strong> RIP has no topology table. It only trusts what its neighbors tell it. The number 15 is RIP's hop limit, not the number of routers it sends updates to.</p>
+  </section>
+
+  <!-- 2. Administrative distance -->
+  <section class="panel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+    <h2>Administrative distance: which source wins</h2>
+    <p class="why">When two sources offer the same route, the router picks the source with the lowest administrative distance (AD). The AD measures how much the router trusts that source.</p>
+    <div class="ladder" id="ladder"></div>
+    <div class="ctrls" id="ad-ctrls" role="group" aria-label="Choose two sources to compare"></div>
+    <p class="note" id="ad-note"><strong>Pick two sources</strong> to see which one the router installs.</p>
+  </section>
+
+  <!-- 3. Metrics -->
+  <section class="panel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+    <h2>Metrics: how each protocol measures a path</h2>
+    <p class="why">The metric is the protocol's own cost for a path. Protocols can't compare metrics with each other, which is why AD exists.</p>
+    <div class="row">
+      <div class="box">
+        <span class="tag t-warm">RIP</span>
+        <h3>Hop count</h3>
+        <p>Counts routers crossed. 1 to 15 is usable, 16 is unreachable.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-acc">OSPF</span>
+        <h3>Cost</h3>
+        <p>Reference bandwidth (100 Mbps) divided by the interface bandwidth. Faster links cost less.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-good">EIGRP</span>
+        <h3>Composite</h3>
+        <p>Combines delay, bandwidth, reliability, and load. K values weight each part.</p>
+      </div>
+    </div>
+    <p class="note"><strong>Remember:</strong> a metric only compares routes from the same protocol. AD compares routes from different protocols.</p>
+  </section>
+
+  <!-- 4. RIPv1 vs RIPv2 -->
+  <section class="panel" role="tabpanel" id="p4" aria-labelledby="t4" hidden>
+    <h2>RIPv1 vs RIPv2</h2>
+    <p class="why">Both versions send the full table every 30 seconds and share AD 120. The differences are in how they send updates and what the updates carry.</p>
+    <div class="stage">
+      <table>
+        <thead><tr><th>Feature</th><th>RIPv1</th><th>RIPv2</th></tr></thead>
+        <tbody>
+          <tr><td>Update method</td><td>Broadcast</td><td class="hl">Multicast 224.0.0.9</td></tr>
+          <tr><td>Interval</td><td>Every 30 seconds</td><td>Every 30 seconds</td></tr>
+          <tr><td>Administrative distance</td><td>120</td><td>120</td></tr>
+          <tr><td>Subnet masks in updates</td><td>No</td><td class="hl">Yes</td></tr>
+          <tr><td>Networks supported</td><td>Classful only</td><td class="hl">Classless and discontiguous</td></tr>
+          <tr><td>Authentication</td><td>No</td><td class="hl">Yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note"><strong>Q4 check:</strong> RIPv2 multicasts, it does not broadcast. Option B was wrong for that reason.</p>
+  </section>
+
+  <!-- 5. Routing loops and TTL -->
+  <section class="panel" role="tabpanel" id="p5" aria-labelledby="t5" hidden>
+    <h2>Routing loops and TTL</h2>
+    <p class="why">A loop forms when routers pass a packet back and forth and never deliver it. Each router decreases the TTL by one, and the packet is discarded when TTL reaches 0.</p>
+    <div class="stage">
+      <svg viewBox="0 0 640 260" role="img" aria-label="Three routers in a triangle. A packet moves from router A to B to C and back to A, while its TTL drops at each hop.">
+        <line x1="150" y1="60" x2="490" y2="60" class="wire" id="e-ab"/>
+        <line x1="490" y1="60" x2="320" y2="200" class="wire" id="e-bc"/>
+        <line x1="320" y1="200" x2="150" y2="60" class="wire" id="e-ca"/>
+        <g><circle cx="150" cy="60" r="34" class="node"/><text x="150" y="65" text-anchor="middle" class="node-txt">Router A</text></g>
+        <g><circle cx="490" cy="60" r="34" class="node"/><text x="490" y="65" text-anchor="middle" class="node-txt">Router B</text></g>
+        <g><circle cx="320" cy="200" r="34" class="node"/><text x="320" y="205" text-anchor="middle" class="node-txt">Router C</text></g>
+        <circle id="pkt" cx="150" cy="60" r="11" class="pkt"/>
+        <text id="ttl" x="320" y="128" text-anchor="middle" class="lbl">TTL = 5</text>
+        <text id="stepTxt" x="320" y="250" text-anchor="middle" class="sub">Packet at Router A</text>
+      </svg>
+    </div>
+    <div class="ctrls">
+      <button id="loop-step" type="button">Next hop</button>
+      <button id="loop-reset" type="button">Reset</button>
+    </div>
+    <p class="note"><strong>Symptom to look for:</strong> the packet keeps circling until its TTL expires. It never reaches the destination. Packets that take a long path or come back on a different interface are not loops.</p>
+  </section>
+
+  <!-- 6. Static, default, dynamic -->
+  <section class="panel" role="tabpanel" id="p6" aria-labelledby="t6" hidden>
+    <h2>Static, default, and dynamic routing: what happens on a failure</h2>
+    <p class="why">Pick a routing method, then break the link. Watch who has to fix the route.</p>
+    <div class="ctrls" role="group" aria-label="Routing method">
+      <button id="m-static" type="button" aria-pressed="false">Static</button>
+      <button id="m-dyn" type="button" aria-pressed="true">Dynamic</button>
+    </div>
+    <div class="stage">
+      <svg viewBox="0 0 640 200" role="img" aria-label="Router 1 connects to Router 2 and Router 3. The link from Router 1 to Router 2 can be failed.">
+        <line id="link-main" x1="150" y1="100" x2="490" y2="100" class="wire-hot"/>
+        <line id="link-alt" x1="150" y1="100" x2="320" y2="170" class="wire"/>
+        <line id="link-alt2" x1="320" y1="170" x2="490" y2="100" class="wire"/>
+        <g><circle cx="150" cy="100" r="34" class="node"/><text x="150" y="105" text-anchor="middle" class="node-txt">Router 1</text></g>
+        <g><circle cx="490" cy="100" r="34" class="node"/><text x="490" y="105" text-anchor="middle" class="node-txt">Router 2</text></g>
+        <g><circle cx="320" cy="170" r="22" class="node2"/><text x="320" y="175" text-anchor="middle" class="node-txt">R3</text></g>
+        <text id="msg" x="320" y="40" text-anchor="middle" class="lbl">Route goes through Router 2</text>
+      </svg>
+    </div>
+    <div class="ctrls">
+      <button id="fail" type="button">Break the main link</button>
+      <button id="restore" type="button">Restore link</button>
+    </div>
+    <p class="note" id="fail-note"><strong>Dynamic:</strong> routers recalculate and move traffic to the backup path on their own. <strong>Static:</strong> the route stays as typed until an administrator changes it. Default routes also need manual changes if they fail.</p>
+  </section>
+
+  <!-- 7. IPv6 transition -->
+  <section class="panel" role="tabpanel" id="p7" aria-labelledby="t7" hidden>
+    <h2>IPv6 discovery and transition</h2>
+    <p class="why">IPv6 uses NDP and router advertisements to find neighbors and the gateway. Transition methods let IPv6 and IPv4 coexist.</p>
+    <div class="row">
+      <div class="box">
+        <span class="tag t-acc">NDP</span>
+        <h3>Neighbor Discovery</h3>
+        <p>Finds neighboring devices and their information on an IPv6 network.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-acc">RA</span>
+        <h3>Router Advertisement</h3>
+        <p>Routers announce themselves so hosts can detect the gateway.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-good">Dual stack</span>
+        <h3>Both at once</h3>
+        <p>The device runs IPv4 and IPv6 side by side and uses whichever the destination supports.</p>
+      </div>
+      <div class="box">
+        <span class="tag t-warm">Tunneling</span>
+        <h3>IPv6 in IPv4</h3>
+        <p>IPv6 packets are wrapped inside IPv4 to cross an IPv4-only network. Teredo and ISATAP are tunneling methods.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// Tabs
+const tabs = document.querySelectorAll('[role="tab"]');
+const panels = document.querySelectorAll('[role="tabpanel"]');
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.setAttribute('aria-selected', 'false'));
+  panels.forEach(p => p.hidden = true);
+  t.setAttribute('aria-selected', 'true');
+  document.getElementById(t.dataset.tab).hidden = false;
+}));
+
+// Administrative distance ladder
+const AD = [
+  { name: 'Connected', ad: 0 },
+  { name: 'Static', ad: 1 },
+  { name: 'EIGRP (internal)', ad: 90 },
+  { name: 'IGRP', ad: 100 },
+  { name: 'OSPF', ad: 110 },
+  { name: 'RIP', ad: 120 }
+];
+const ladder = document.getElementById('ladder');
+const max = 120;
+AD.forEach(s => {
+  const r = document.createElement('div');
+  r.className = 'rung';
+  r.innerHTML = '<div class="name"></div><div class="bar"><i></i></div><div class="val"></div>';
+  r.querySelector('.name').textContent = s.name;
+  r.querySelector('i').style.width = Math.max(2, (s.ad / max) * 100) + '%';
+  r.querySelector('.val').textContent = s.ad;
+  ladder.appendChild(r);
+});
+
+const adCtrls = document.getElementById('ad-ctrls');
+let picked = [];
+AD.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = s.name;
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => {
+    const idx = picked.indexOf(i);
+    if (idx >= 0) picked.splice(idx, 1);
+    else { picked.push(i); if (picked.length > 2) picked.shift(); }
+    adCtrls.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', String(picked.includes(j))));
+    const note = document.getElementById('ad-note');
+    if (picked.length === 2) {
+      const [a, c] = picked.map(j => AD[j]).sort((x, y) => x.ad - y.ad);
+      note.innerHTML = '<strong>' + a.name + ' (AD ' + a.ad + ') wins</strong> over ' + c.name + ' (AD ' + c.ad + ') for the same route. Lower AD is more trusted.';
+    } else {
+      note.innerHTML = '<strong>Pick two sources</strong> to see which one the router installs.';
+    }
+  });
+  adCtrls.appendChild(b);
+});
+
+// Routing loop stepper
+const pkt = document.getElementById('pkt');
+const ttlTxt = document.getElementById('ttl');
+const stepTxt = document.getElementById('stepTxt');
+const pos = [[150,60],[490,60],[320,200]];
+const names = ['Router A','Router B','Router C'];
+let step = 0;
+function drawLoop() {
+  const p = pos[step % 3];
+  pkt.setAttribute('cx', p[0]); pkt.setAttribute('cy', p[1]);
+  const ttl = Math.max(0, 5 - step);
+  ttlTxt.textContent = 'TTL = ' + ttl;
+  if (ttl === 0) stepTxt.textContent = 'TTL reached 0, packet discarded';
+  else stepTxt.textContent = 'Packet at ' + names[step % 3];
+}
+document.getElementById('loop-step').addEventListener('click', () => { if (step < 5) step++; drawLoop(); });
+document.getElementById('loop-reset').addEventListener('click', () => { step = 0; drawLoop(); });
+drawLoop();
+
+// Static vs dynamic failure
+let mode = 'dynamic';
+let failed = false;
+const mStatic = document.getElementById('m-static');
+const mDyn = document.getElementById('m-dyn');
+const link = document.getElementById('link-main');
+const msg = document.getElementById('msg');
+function drawFail() {
+  if (!failed) {
+    link.setAttribute('class', 'wire-hot');
+    msg.textContent = 'Route goes through Router 2';
+  } else if (mode === 'dynamic') {
+    link.setAttribute('class', 'dead');
+    msg.textContent = 'Dynamic: rerouted through R3 automatically';
+  } else {
+    link.setAttribute('class', 'dead');
+    msg.textContent = 'Static: route still points at the dead link until an admin fixes it';
+  }
+}
+mStatic.addEventListener('click', () => { mode = 'static'; mStatic.setAttribute('aria-pressed','true'); mDyn.setAttribute('aria-pressed','false'); drawFail(); });
+mDyn.addEventListener('click', () => { mode = 'dynamic'; mDyn.setAttribute('aria-pressed','true'); mStatic.setAttribute('aria-pressed','false'); drawFail(); });
+document.getElementById('fail').addEventListener('click', () => { failed = true; drawFail(); });
+document.getElementById('restore').addEventListener('click', () => { failed = false; drawFail(); });
+drawFail();
+</script>

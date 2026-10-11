@@ -1,0 +1,67 @@
+<title>Link-State Identification</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --warm: #7a4e1d; --warm-soft: #f2e6d6;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --warm: #e0b07a; --warm-soft: #3a2f22;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --warm: #e0b07a; --warm-soft: #3a2f22;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.kind { border: 2px solid var(--line); border-radius: 10px; padding: 14px; background: var(--bg); min-width: 0; }
+.kind.hit { border-color: var(--good); background: var(--good-soft); }
+.kind h2 { margin: 0 0 4px; font-size: 15px; }
+.kind .tag { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.kind p { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+.kind .who { margin-top: 10px; font-size: 14px; font-weight: 600; }
+.answer { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>Which protocol is link-state?</h1>
+  <p class="lede">Link-state routers track the state of every link and build a full map of the network. The other types learn routes from their neighbors instead.</p>
+
+  <div class="card">
+    <div class="grid">
+      <div class="kind hit">
+        <div class="tag">Link-state</div>
+        <h2>OSPF</h2>
+        <p>Every router learns the state of every link, builds the same topology map, then runs Dijkstra to choose the shortest path.</p>
+        <div class="who">Answer A</div>
+      </div>
+      <div class="kind">
+        <div class="tag">Hybrid</div>
+        <h2>EIGRP</h2>
+        <p>Distance-vector behavior with some link-state features. This is why it is often mistaken for link-state.</p>
+      </div>
+      <div class="kind">
+        <div class="tag">Distance-vector</div>
+        <h2>RIP and IGRP</h2>
+        <p>Learn routes from neighbors and pass their tables along. No full topology map.</p>
+      </div>
+    </div>
+
+    <p class="answer"><strong>Question 14 answer is A, OSPF.</strong> EIGRP is hybrid, so C was wrong. IGRP is distance-vector, the same as RIP.</p>
+  </div>
+</div>
