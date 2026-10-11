@@ -672,5 +672,229 @@
     "front": "What should be verified and documented after a next-hop repair?",
     "back": "Test relevant local, gateway and previously failed remote reachability. Record configuration, source/destination, tests and results. A successful ping supports tested IP reachability, not proof that every application works.",
     "weak": false
+  },
+  {
+    "id": "fc-n10c9-01",
+    "topicId": "n10-ch9",
+    "front": "What does a router need to forward a packet?",
+    "back": "The destination network, matched against its route table. It does not need the host, the origin network, or the return path.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-02",
+    "topicId": "n10-ch9",
+    "front": "Which addresses change at each routed hop, and which stay put (no NAT)?",
+    "back": "MAC addresses are rebuilt at every hop. Source and destination IPs stay end to end; only TTL and the IPv4 checksum change.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-03",
+    "topicId": "n10-ch9",
+    "front": "Who does a host ARP for when the destination is remote?",
+    "back": "The default gateway. The destination MAC is the gateway's, but the destination IP is unchanged.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-04",
+    "topicId": "n10-ch9",
+    "front": "How do you view the ARP cache on a host vs a Cisco router?",
+    "back": "Host (Windows or Mac): arp -a. Cisco router or switch: show ip arp.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-05",
+    "topicId": "n10-ch9",
+    "front": "EtherType values to remember",
+    "back": "0x0800 = IPv4, 0x0806 = ARP. The FCS at the end of the frame is a 4-byte CRC that verifies the frame arrived intact.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-06",
+    "topicId": "n10-ch9",
+    "front": "What happens when a router has no matching route and no default route?",
+    "back": "It drops the packet and sends an ICMP destination unreachable to the sender. The original packet is not returned.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-07",
+    "topicId": "n10-ch9",
+    "front": "Static vs dynamic routing in one line each",
+    "back": "Static: an admin enters every route by hand and nothing updates itself. Dynamic: protocols share routes and tables update automatically.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-08",
+    "topicId": "n10-ch9",
+    "front": "What is an autonomous system, and which protocols go where?",
+    "back": "A set of networks under one administrative domain. IGPs (RIP, EIGRP, OSPF) run inside it; the EGP (BGP) runs between autonomous systems.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-09",
+    "topicId": "n10-ch9",
+    "front": "In what order does a router pick among competing routes?",
+    "back": "1) Longest matching prefix, 2) lowest administrative distance, 3) lowest metric.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c9-10",
+    "topicId": "n10-ch9",
+    "front": "Typical administrative distances, lowest to highest",
+    "back": "Connected 0, static 1, eBGP 20, EIGRP 90, OSPF 110, RIP 120. Lower is more trusted.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-01",
+    "topicId": "n10-ch10",
+    "front": "What are the usable RIP hop counts?",
+    "back": "1 to 15. A hop count of 16 or more is unreachable.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-02",
+    "topicId": "n10-ch10",
+    "front": "RIPv2 update method?",
+    "back": "Multicast to 224.0.0.9 every 30 seconds. It does not broadcast.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-03",
+    "topicId": "n10-ch10",
+    "front": "RIPv1 vs RIPv2: masks and authentication?",
+    "back": "RIPv1 has neither. RIPv2 sends subnet masks and supports authentication.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-04",
+    "topicId": "n10-ch10",
+    "front": "Order the AD values",
+    "back": "Connected 0, static 1, EIGRP internal 90, IGRP 100, OSPF 110, RIP 120.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-05",
+    "topicId": "n10-ch10",
+    "front": "How does AD relate to metrics?",
+    "back": "Lowest AD wins between sources. Metrics only break ties within the same protocol.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-06",
+    "topicId": "n10-ch10",
+    "front": "How is OSPF cost calculated?",
+    "back": "Reference bandwidth (100 Mbps) divided by interface bandwidth. Faster links cost less.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-07",
+    "topicId": "n10-ch10",
+    "front": "What is EIGRP's metric?",
+    "back": "A composite of delay, bandwidth, reliability, and load, weighted by K values.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-08",
+    "topicId": "n10-ch10",
+    "front": "Which protocols are link-state?",
+    "back": "OSPF and IS-IS. They build the same topology map and run Dijkstra.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-09",
+    "topicId": "n10-ch10",
+    "front": "What does TTL expiry mean in a routing loop?",
+    "back": "It is a symptom: packets circulate and never arrive, losing 1 TTL each hop until 0.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-10",
+    "topicId": "n10-ch10",
+    "front": "Static vs dynamic routing tradeoff?",
+    "back": "Static stays until an admin changes it. Dynamic reroutes on failure but costs more RAM, CPU, and bandwidth.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-01",
+    "topicId": "n10-ch11",
+    "front": "What does a switch learn from, source or destination MAC?",
+    "back": "The source MAC of incoming frames. The destination MAC decides where the frame is forwarded.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-02",
+    "topicId": "n10-ch11",
+    "front": "Unknown destination MAC arrives at a switch. What happens?",
+    "back": "It floods the frame to all ports in the same VLAN only.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-03",
+    "topicId": "n10-ch11",
+    "front": "Hub vs bridge vs switch",
+    "back": "Hub: multiport repeater, shared bandwidth. Bridge: software-based, slower. Switch: ASIC hardware, lowest latency.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-04",
+    "topicId": "n10-ch11",
+    "front": "Which VLANs are protected and cannot be deleted?",
+    "back": "VLAN 1 and VLANs 1002 to 1005. All ports start in VLAN 1.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-05",
+    "topicId": "n10-ch11",
+    "front": "Access port vs trunk port",
+    "back": "Access: one VLAN, tag removed before the frame leaves. Trunk: many VLANs, tags carried end to end.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-06",
+    "topicId": "n10-ch11",
+    "front": "Where does traffic go on a trunk with no tag?",
+    "back": "The native VLAN. Tagged traffic is not placed there.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-07",
+    "topicId": "n10-ch11",
+    "front": "802.1Q tag layout",
+    "back": "4 bytes between source MAC and type field: 16-bit TPID 0x8100, 3-bit CoS, 1-bit DEI, 12-bit VLAN ID.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-08",
+    "topicId": "n10-ch11",
+    "front": "STP root bridge and timing",
+    "back": "Lowest priority wins (lowest MAC on a tie). Default port state is blocking; 50 seconds to forwarding.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-09",
+    "topicId": "n10-ch11",
+    "front": "Steps to segment R&D with flexibility",
+    "back": "New VLAN, routed SVI, ACLs on the VLAN interface. Extended ACLs cannot go on layer 2 ports.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c11-10",
+    "topicId": "n10-ch11",
+    "front": "CoS vs ToS/DiffServ, PoE, VTP",
+    "back": "CoS: layer 2, 3 bits in the tag, 8 queues. ToS/DiffServ: layer 3. 802.3at: 25.5 W. VTP propagates the VLAN database.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-11",
+    "topicId": "n10-ch10",
+    "front": "What do NDP and router advertisements do in IPv6?",
+    "back": "NDP discovers neighboring devices. Router advertisements (RA) announce the gateway so hosts can find it.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c10-12",
+    "topicId": "n10-ch10",
+    "front": "Dual stack vs tunneling?",
+    "back": "Dual stack runs IPv4 and IPv6 side by side. Tunneling carries IPv6 inside IPv4 (Teredo, ISATAP).",
+    "weak": false
   }
 ]

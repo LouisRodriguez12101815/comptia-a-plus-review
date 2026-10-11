@@ -2108,5 +2108,789 @@
     "answer": 2,
     "explanation": "Mesh provides redundant connectivity (more expensive). Bus and ring are legacy (coax, token passing); star is today's standard LAN layout.",
     "weak": false
+  },
+  {
+    "id": "q-n10c9-01",
+    "topicId": "n10-ch9",
+    "prompt": "A router receives a packet from a LAN it has never seen before. Which piece of information does it actually need in order to forward the packet?",
+    "choices": [
+      "The network where the packet originated",
+      "The return path back to the sender",
+      "The packet's destination network",
+      "The exact interface the sending host uses"
+    ],
+    "answer": 2,
+    "explanation": "Routing is decided by matching the destination network against the route table. The originating network and return path are not needed for forwarding, and the sender's interface is irrelevant; those are the tempting extras but the router never consults them.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-02",
+    "topicId": "n10-ch9",
+    "prompt": "PC1 (10.1.1.20/24) sends a packet to a server at 10.2.2.5. Before it can build the frame, PC1 needs a MAC address. Whose MAC does it ARP for?",
+    "choices": [
+      "The default gateway router",
+      "The server at 10.2.2.5 directly",
+      "The next router beyond the gateway",
+      "The DNS server it last queried"
+    ],
+    "answer": 0,
+    "explanation": "The destination is on another network, so the frame's destination MAC is the default gateway while the IP destination stays 10.2.2.5. ARPing for the server fails because MAC addresses never cross a router interface, and the router beyond the gateway is not on PC1's LAN.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-03",
+    "topicId": "n10-ch9",
+    "prompt": "A packet travels from Host_A across two routers to a server with no NAT in use. Compared with when it left Host_A, what is true when it arrives?",
+    "choices": [
+      "The source IP is now that of the last router, TTL is the same",
+      "Both MAC addresses are unchanged, TTL is lower",
+      "The destination IP was replaced at each hop, TTL is the same",
+      "IPs are unchanged; only TTL is lower"
+    ],
+    "answer": 3,
+    "explanation": "Without NAT the IP endpoints are end to end, and each router decrements TTL and updates the IPv4 header checksum. Keeping the MACs fixed is the tempting mistake, but frames are rebuilt at every routed hop.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-04",
+    "topicId": "n10-ch9",
+    "prompt": "A capture shows a frame whose EtherType field is 0x0800. What does the frame carry?",
+    "choices": [
+      "An ARP request or reply",
+      "An IPv4 packet",
+      "The frame check sequence",
+      "A routing table update"
+    ],
+    "answer": 1,
+    "explanation": "0x0800 identifies IPv4 inside the frame. ARP is the tempting guess, but ARP uses 0x0806, and the FCS is a trailer at the end rather than a payload type.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-05",
+    "topicId": "n10-ch9",
+    "prompt": "A router holds routes to 10.0.0.0/8, 10.1.0.0/16, and 10.1.1.0/24, all reachable out different interfaces. A packet arrives for 10.1.1.9. Which route is used?",
+    "choices": [
+      "10.1.1.0/24, because it is the most specific match",
+      "10.0.0.0/8, because it was learned first",
+      "10.1.0.0/16, because it is the middle entry",
+      "None, because three routes match and the packet is dropped"
+    ],
+    "answer": 0,
+    "explanation": "The longest matching prefix wins because it is the most specific. The /16 also contains the address, but a shorter prefix loses to a longer one, and multiple matches do not cause a drop.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-06",
+    "topicId": "n10-ch9",
+    "prompt": "A router has no route to the destination network and no default route configured. What happens to a packet addressed there?",
+    "choices": [
+      "It is returned to the sender intact with an error",
+      "It is held until the router learns a route dynamically",
+      "It is dropped and ICMP unreachable is sent back",
+      "It is flooded out all interfaces except the one it arrived on"
+    ],
+    "answer": 2,
+    "explanation": "With no match the router discards the packet and tells the sender via ICMP destination unreachable. Returning the original packet is wrong because the packet is never sent back, and routers do not request updates when they meet an unknown network.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-07",
+    "topicId": "n10-ch9",
+    "prompt": "A company keeps opening new branch offices and wants routers to learn the new networks without an administrator touching every device. Which approach fits?",
+    "choices": [
+      "Static routing entered on each router",
+      "Reverse ARP on every branch router",
+      "DHCP scopes at each branch",
+      "Dynamic routing"
+    ],
+    "answer": 3,
+    "explanation": "Routing protocols learn and share routes automatically, so new locations are picked up and tables update as the network changes. Static routing is the tempting default but requires every route added by hand, and RARP and DHCP assign host addresses rather than build route tables.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-08",
+    "topicId": "n10-ch9",
+    "prompt": "An ISP exchanges routes with a customer network that runs its own separate administrative domain. Which kind of protocol carries those routes between the two?",
+    "choices": [
+      "An interior gateway protocol such as OSPF",
+      "An exterior gateway protocol such as BGP",
+      "A distance-vector protocol such as RIP only",
+      "A static default gateway on each host"
+    ],
+    "answer": 1,
+    "explanation": "Routing between autonomous systems is the job of an EGP, and BGP is the one used today. OSPF is an IGP meant for use inside a single AS, and RIP is also an IGP, so neither is the choice between domains.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-09",
+    "topicId": "n10-ch9",
+    "prompt": "A router learns the same /24 network from both OSPF and RIP, with equal prefix lengths. Using typical defaults, which route goes into the table?",
+    "choices": [
+      "The RIP route, since a higher distance means more trusted",
+      "Both, because ties are never broken",
+      "The OSPF route, with the lower distance",
+      "The RIP route, since it was probably learned first"
+    ],
+    "answer": 2,
+    "explanation": "With equal prefix lengths the lowest administrative distance wins, and OSPF at 110 beats RIP at 120. Believing a higher AD is more trusted reverses the rule, and the router does have a tie-breaker, so both are not kept as equals.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-10",
+    "topicId": "n10-ch9",
+    "prompt": "A router's table holds 172.16.20.0/27 out Fa0/0, 172.16.20.32/27 out Fa0/1, 172.16.20.64/27 out Fa0/2, and 172.16.20.128/27 out Fa0/3. Where does a packet for 172.16.20.40 exit?",
+    "choices": [
+      "FastEthernet 0/1",
+      "FastEthernet 0/0",
+      "FastEthernet 0/2",
+      "It is dropped, as nothing matches"
+    ],
+    "answer": 0,
+    "explanation": "The address falls in 172.16.20.32 to .63, which is the second /27. Fa0/0 covers only .0 to .31, and dropping applies to addresses like .100 that sit between blocks, not to .40.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-11",
+    "topicId": "n10-ch9",
+    "prompt": "In the Lab_A network, Host_C (172.16.30.2) pings Host_D (172.16.30.3) on the same segment. Whose MAC address does Host_C ARP for?",
+    "choices": [
+      "Interface e2 on Lab_A",
+      "Interface e0 on Lab_A",
+      "Host_A",
+      "Host_D"
+    ],
+    "answer": 3,
+    "explanation": "Both hosts share 172.16.30.0/24, so Host_C ARPs directly for the destination. The router interface e2 is the tempting answer, but it is only used when the destination is on a different network.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-12",
+    "topicId": "n10-ch9",
+    "prompt": "A network engineer wants to see the ARP cache on a Cisco router. Which command does it?",
+    "choices": [
+      "arp -a",
+      "show ip arp",
+      "show ip route",
+      "ipconfig /all"
+    ],
+    "answer": 1,
+    "explanation": "show ip arp lists a Cisco device's ARP cache. arp -a shows the cache on a Windows or Mac host rather than a router, and show ip route displays the route table, not MAC mappings.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-13",
+    "topicId": "n10-ch9",
+    "prompt": "A user pings a remote host and sees Request timed out. What does this indicate?",
+    "choices": [
+      "A router reported it has no route to the network",
+      "The destination MAC was missing from the ARP cache",
+      "The ping was lost somewhere along the way",
+      "The default gateway replied with a TTL value of zero"
+    ],
+    "answer": 2,
+    "explanation": "A lost ping appears as Request timed out. Destination unreachable is the message shown when a router lacks the route and answers the sender, which is why it is the tempting but different outcome.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-14",
+    "topicId": "n10-ch9",
+    "prompt": "Which field sits at the end of an Ethernet frame so the receiver can confirm the frame arrived intact?",
+    "choices": [
+      "The frame check sequence",
+      "The EtherType protocol field",
+      "The source MAC address field",
+      "The packet TTL counter value"
+    ],
+    "answer": 0,
+    "explanation": "The FCS is a 4-byte CRC the destination uses to verify integrity. The EtherType and MAC fields are covered by the calculation, but only the FCS tells the receiver the frame is intact.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-15",
+    "topicId": "n10-ch9",
+    "prompt": "What is the term for the state in which every router has finished updating its table after a change, as learned through a dynamic routing protocol?",
+    "choices": [
+      "Redistribution",
+      "Convergence",
+      "Encapsulation",
+      "Summarization"
+    ],
+    "answer": 1,
+    "explanation": "Convergence means all routes have been updated, and faster convergence is better. Redistribution is a different idea of sharing routes between protocols, and it does not describe all tables being current.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-16",
+    "topicId": "n10-ch9",
+    "prompt": "An analyst captures traffic on the destination LAN, two routers away from the sender. Which statement about the captured frame is correct?",
+    "choices": [
+      "Its source MAC is still the original sender's",
+      "Its destination MAC is the original sender's",
+      "It carries the same MAC addresses as the sender's LAN",
+      "Its source MAC is the last router interface"
+    ],
+    "answer": 3,
+    "explanation": "MAC addresses are local and never pass a router interface, so the frame was rebuilt at the final hop. The sender's MAC would appear only on the sender's own segment; the IP addresses, not the MACs, stay end to end.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-17",
+    "topicId": "n10-ch9",
+    "prompt": "A router has a /24 route learned through RIP and a /16 static route that both contain the destination. Which route does it use?",
+    "choices": [
+      "The /16 static route, since static has the lowest distance",
+      "The /16 static route, since it covers more addresses",
+      "The /24 RIP route, since prefix length is checked first",
+      "Whichever route has the lowest metric"
+    ],
+    "answer": 2,
+    "explanation": "Selection checks the longest prefix first, then administrative distance, then metric. The static route's AD of 1 is tempting, but AD only breaks ties between equal prefix lengths.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c9-18",
+    "topicId": "n10-ch9",
+    "prompt": "In a route table, an entry begins with the letter C. What does it tell you?",
+    "choices": [
+      "The route was learned from a dynamic protocol",
+      "The network is directly connected",
+      "The route is a manually entered static route",
+      "The route is the gateway of last resort"
+    ],
+    "answer": 1,
+    "explanation": "C marks a network configured on an interface, so it is directly connected. S is the code for a static route, which is the likelier mix-up, and the gateway of last resort is the default route, not a connected network.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-01",
+    "topicId": "n10-ch10",
+    "prompt": "A router running RIP receives an update for a remote network with a hop count of 16. How does the router treat that route?",
+    "choices": [
+      "It keeps it as a low-priority backup",
+      "It marks the network as unreachable",
+      "It installs it with the highest preference",
+      "It forwards traffic with a reduced TTL"
+    ],
+    "answer": 1,
+    "explanation": "RIP usable hop counts run 1 to 15, so 16 or more means unreachable. A backup entry is tempting, but RIP has no usable tier beyond 15.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-02",
+    "topicId": "n10-ch10",
+    "prompt": "A branch router must send RIP updates to 224.0.0.9 and include subnet masks in them. Which version does this?",
+    "choices": [
+      "RIPv1 with broadcast",
+      "IGRP with broadcast",
+      "OSPF with flooding",
+      "RIPv2"
+    ],
+    "answer": 3,
+    "explanation": "RIPv2 multicasts to 224.0.0.9 and carries subnet masks. RIPv1 is the tempting pick, but it broadcasts and sends no masks.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-03",
+    "topicId": "n10-ch10",
+    "prompt": "A static default route and a RIP default route both point at the ISP, and RIP shows the lower metric. Which route does the router install?",
+    "choices": [
+      "The static route, because its AD of 1 is lower",
+      "The RIP route, because its metric is lower",
+      "Both routes, sharing traffic evenly between them",
+      "Neither route, until the administrator picks one"
+    ],
+    "answer": 0,
+    "explanation": "AD is compared first and the lowest wins, so the static route at 1 beats RIP at 120. The lower RIP metric is tempting, but metrics only break ties within one protocol.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-04",
+    "topicId": "n10-ch10",
+    "prompt": "With a 100 Mbps reference bandwidth, an admin compares OSPF cost on a 10 Mbps link and a 100 Mbps link. What is true?",
+    "choices": [
+      "The 10 Mbps link costs less because it is slower to use",
+      "Both links cost the same under that reference",
+      "The 100 Mbps link costs less",
+      "The 100 Mbps link costs more because it carries more"
+    ],
+    "answer": 2,
+    "explanation": "OSPF cost is reference bandwidth divided by interface bandwidth, so faster links cost less. The slower link costing less is tempting, but the division makes it cost more.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-05",
+    "topicId": "n10-ch10",
+    "prompt": "Every router in an area floods its link information so that all of them hold an identical map of the topology and then run Dijkstra. Which category is this?",
+    "choices": [
+      "Distance-vector",
+      "Link-state",
+      "Hybrid",
+      "Path-vector"
+    ],
+    "answer": 1,
+    "explanation": "Link-state protocols such as OSPF and IS-IS share every link, build the same topology map, and run Dijkstra. Distance-vector is tempting, but it only passes routing tables to neighbors.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-06",
+    "topicId": "n10-ch10",
+    "prompt": "A tech notes that a router has no topology table and only trusts what its directly connected neighbors advertise. Which protocol fits?",
+    "choices": [
+      "RIP",
+      "OSPF",
+      "IS-IS",
+      "BGP"
+    ],
+    "answer": 0,
+    "explanation": "RIP is distance-vector, so it keeps no full topology map and relies on neighbors' tables. OSPF is tempting, but it builds a complete link-state map.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-07",
+    "topicId": "n10-ch10",
+    "prompt": "A design uses a protocol that behaves like distance-vector but borrows link-state features. Which protocol is this?",
+    "choices": [
+      "RIPv2",
+      "IGRP",
+      "IS-IS",
+      "EIGRP"
+    ],
+    "answer": 3,
+    "explanation": "EIGRP is the hybrid, combining distance-vector behavior with link-state features. IGRP is tempting, but it is plain distance-vector.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-08",
+    "topicId": "n10-ch10",
+    "prompt": "Packets bounce between Router A and Router B, losing TTL each hop until they are dropped. What does TTL reaching 0 indicate?",
+    "choices": [
+      "The loop has been fixed by TTL",
+      "The destination host is offline",
+      "A symptom of a routing loop",
+      "The link bandwidth is saturated"
+    ],
+    "answer": 2,
+    "explanation": "TTL expiry is a symptom of a loop, where packets circulate between routers and never arrive. Calling TTL the fix is tempting, but it only discards packets and does not remove the loop.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-09",
+    "topicId": "n10-ch10",
+    "prompt": "The only path to the ISP is a default route an administrator typed in, and the ISP link fails. What happens to the route?",
+    "choices": [
+      "It automatically moves to another ISP",
+      "It is learned again from neighbors in 30 seconds",
+      "It stays until an administrator changes it",
+      "It is converted to a RIP route"
+    ],
+    "answer": 2,
+    "explanation": "Default routes need an administrator to change them if they fail, so it stays in place. Automatic rerouting is tempting, but that is a dynamic routing behavior.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-10",
+    "topicId": "n10-ch10",
+    "prompt": "A small company weighs dynamic routing against static routes for a growing network. What is the tradeoff of choosing dynamic routing?",
+    "choices": [
+      "More RAM, CPU, and bandwidth in exchange for resiliency",
+      "Less CPU use in exchange for manual failover steps",
+      "No bandwidth use because updates are never sent at all",
+      "Faster failover but only if an admin edits the table"
+    ],
+    "answer": 0,
+    "explanation": "Dynamic routing costs more RAM, CPU, and bandwidth but reroutes around failures on its own. Manual failover with lower CPU is tempting, but that describes static routing.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-11",
+    "topicId": "n10-ch10",
+    "prompt": "A router learns the same remote network from both OSPF and RIP. Which route source does it trust more, and why?",
+    "choices": [
+      "RIP, because its AD of 120 is higher",
+      "OSPF, because its AD of 110 is lower",
+      "RIP, because it was learned first",
+      "OSPF, because its hop count is lower"
+    ],
+    "answer": 1,
+    "explanation": "The lowest AD wins, and OSPF at 110 beats RIP at 120. RIP having the higher number is tempting, but a higher AD means less trust.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-12",
+    "topicId": "n10-ch10",
+    "prompt": "A company has discontiguous subnets and needs routers to authenticate each other's updates. Which choice works?",
+    "choices": [
+      "RIPv1, since it handles classful networks only",
+      "RIPv1, with updates broadcast every 30 seconds",
+      "RIPv2 broadcast, with no masks in the updates",
+      "RIPv2, which allows classless networks and authentication"
+    ],
+    "answer": 3,
+    "explanation": "RIPv2 includes masks, handles classless and discontiguous networks, and supports authentication. RIPv1 is tempting because it also updates every 30 seconds, but it has no masks or authentication.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-13",
+    "topicId": "n10-ch10",
+    "prompt": "EIGRP (internal) and OSPF both offer a route to the same network. Which is installed?",
+    "choices": [
+      "OSPF, since 110 is the larger number",
+      "EIGRP, since its AD of 90 is lower",
+      "Whichever one has more hops",
+      "Both, as equal-cost routes"
+    ],
+    "answer": 1,
+    "explanation": "EIGRP internal has AD 90 against OSPF's 110, so it is installed. OSPF is tempting if you read the larger number as better, but lower AD is preferred.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-14",
+    "topicId": "n10-ch10",
+    "prompt": "A router learns two routes to one network from the same protocol, and AD is identical. What decides between them?",
+    "choices": [
+      "The AD of the neighboring router",
+      "The order they arrived in the table",
+      "The protocol metric",
+      "The age of the interface"
+    ],
+    "answer": 2,
+    "explanation": "Metrics break ties between routes from the same protocol, so the lower metric wins. Arrival order is tempting, but it plays no role in route selection.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-15",
+    "topicId": "n10-ch10",
+    "prompt": "An ISP needs to route traffic between separate autonomous systems while tracking the AS path. Which fits, and what kind of protocol is it?",
+    "choices": [
+      "BGP, a path-vector protocol used between ASes",
+      "OSPF, a link-state protocol used between ASes",
+      "RIP, a distance-vector protocol used between ASes",
+      "EIGRP, a hybrid protocol used between ASes"
+    ],
+    "answer": 0,
+    "explanation": "BGP is the path-vector protocol that tracks the AS path between autonomous systems (an EGP). OSPF is tempting, but it, RIP and EIGRP are IGPs run inside one AS.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-16",
+    "topicId": "n10-ch10",
+    "prompt": "Which statement describes the metric that EIGRP uses to choose a path?",
+    "choices": [
+      "Hop count with a limit of 15 hops",
+      "Cost from a 100 Mbps reference rate",
+      "The AS path length across networks",
+      "Delay, bandwidth, reliability, and load combined"
+    ],
+    "answer": 3,
+    "explanation": "EIGRP builds a composite from delay, bandwidth, reliability, and load, weighted by K values. Reference-bandwidth cost is tempting, but that is OSPF's metric.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-17",
+    "topicId": "n10-ch10",
+    "prompt": "How often does a RIP router send periodic updates, and what AD does RIP carry?",
+    "choices": [
+      "Every 60 seconds, AD 110",
+      "Every 30 seconds, AD 120",
+      "Every 30 seconds, AD 90",
+      "Every 15 seconds, AD 100"
+    ],
+    "answer": 1,
+    "explanation": "Both RIP versions send updates every 30 seconds with AD 120. AD 110 is tempting, but that value belongs to OSPF.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-18",
+    "topicId": "n10-ch10",
+    "prompt": "A router has a connected interface, a static route, and an OSPF route for one prefix. Which list ranks them from most trusted to least?",
+    "choices": [
+      "Static route, connected, OSPF",
+      "OSPF, static route, connected",
+      "Connected, OSPF, static route",
+      "Connected, static route, OSPF"
+    ],
+    "answer": 3,
+    "explanation": "Connected is AD 0, static is 1, and OSPF is 110, so trust runs in that order. Putting static first is tempting, but a connected interface has an AD of 0, even lower.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-01",
+    "topicId": "n10-ch11",
+    "prompt": "A small office swaps an old multiport repeater for a device that forwards frames in hardware using ASICs. What changes for the users?",
+    "choices": [
+      "Every signal is still copied to every port, but at a faster line speed",
+      "Each packet is decapsulated and re-encapsulated at every hop it crosses",
+      "Lower latency and higher bandwidth, with frames sent only where needed",
+      "Frames are handled in software, so latency rises a little for each frame"
+    ],
+    "answer": 2,
+    "explanation": "A switch uses ASICs for hardware forwarding, which gives the lowest latency and highest bandwidth, unlike a hub that repeats everything to every port. Software-based forwarding describes a bridge, which has higher latency than a switch.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-02",
+    "topicId": "n10-ch11",
+    "prompt": "A frame from host A (source MAC 00:aa) arrives on port 3 of a switch whose MAC table is empty. What does the switch record?",
+    "choices": [
+      "That 00:aa is reachable through port 3, learned from the source address",
+      "That the destination address is reachable through port 3, for later replies",
+      "Both the source and destination addresses as a pair bound to port 3",
+      "Nothing at all until a reply frame comes back on some other port"
+    ],
+    "answer": 0,
+    "explanation": "Switches learn from the source MAC address of incoming frames and store it in the MAC address table. Learning from the destination is the tempting idea, but the destination only decides where the frame is sent.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-03",
+    "topicId": "n10-ch11",
+    "prompt": "A switch receives a unicast frame in VLAN 20 for a destination MAC address that is not in its MAC table. What does it do?",
+    "choices": [
+      "Sends the frame out every port on the switch, in all VLANs at once",
+      "Sends the frame back out only the port where the frame arrived",
+      "Floods the frame to all ports in VLAN 20 only, not other VLANs",
+      "Drops the frame until the destination host sends some traffic of its own"
+    ],
+    "answer": 3,
+    "explanation": "An unknown destination is flooded to all ports in the same VLAN only, so VLAN 20 hosts see it and other VLANs do not. Flooding across every VLAN is tempting, but VLANs keep flooded and broadcast traffic inside their own boundary.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-04",
+    "topicId": "n10-ch11",
+    "prompt": "An admin splits one large flat switched network into three VLANs without adding hardware. What is the direct result?",
+    "choices": [
+      "More broadcast domains and more collision domains than before the split",
+      "The network keeps a single broadcast domain but gains three times the bandwidth",
+      "Fewer broadcast domains, because the traffic is now grouped by function",
+      "More broadcast domains, with no change to the number of collision domains"
+    ],
+    "answer": 1,
+    "explanation": "Per the chapter, adding VLANs increases both the number of broadcast domains and the number of collision domains. Saying only broadcast domains grow is tempting, but the chapter states collision domains rise too.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-05",
+    "topicId": "n10-ch11",
+    "prompt": "An admin tries to delete VLAN 1 to tidy a switch configuration, and the command is refused. Why?",
+    "choices": [
+      "VLAN 1 is protected by IOS, as are VLANs 1002 to 1005, so it cannot be deleted",
+      "VLAN 1 can be removed only after every trunk port has been shut down",
+      "Deleting it requires the VTP server switch to be reloaded beforehand",
+      "VLAN 1 can be deleted only once 802.1X is enabled on each access port"
+    ],
+    "answer": 1,
+    "explanation": "VLAN 1, along with 1002 to 1005, is protected and cannot be deleted; every port also starts in VLAN 1 from the factory. The trunk-shutdown idea sounds reasonable, but protection is absolute and not conditional on trunk state.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-06",
+    "topicId": "n10-ch11",
+    "prompt": "In a lab, each switch port is assigned to a VLAN by hand, and the PCs never learn which VLAN they are in. Which VLAN type is this?",
+    "choices": [
+      "Voice VLANs, where tags appear only after the default CoS is changed",
+      "Dynamic VLANs, where VMPS places a port using the device's MAC address",
+      "Static VLANs, configured manually while the node stays unaware of it",
+      "Native VLANs, where every frame on the link crosses without any tag"
+    ],
+    "answer": 3,
+    "explanation": "Static VLANs are set by hand on each port and the node does not know its VLAN. Dynamic VLANs use a VMPS and the device's MAC address instead, so they would not need manual per-port assignment.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-07",
+    "topicId": "n10-ch11",
+    "prompt": "A laptop plugs into a switch port assigned to VLAN 30. What does the laptop see in the frames sent to it?",
+    "choices": [
+      "Plain frames, because the VLAN tag is removed before leaving the port",
+      "Frames carrying a 4-byte tag so the laptop can confirm its own VLAN",
+      "Frames that stay tagged end to end, as they would across a trunk link",
+      "Frames tagged only when the CoS value is left at its default setting"
+    ],
+    "answer": 0,
+    "explanation": "An access port carries one VLAN for an end device and removes the tag before the frame leaves, so the client cannot see tagging. Tags carried end to end describe a trunk, not an access port.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-08",
+    "topicId": "n10-ch11",
+    "prompt": "Two switches are joined by a trunk, and some frames cross it with no 802.1Q tag. Where is that untagged traffic placed?",
+    "choices": [
+      "In the voice VLAN, since only voice traffic is allowed to be untagged",
+      "In the native VLAN, which is where untagged trunk traffic belongs",
+      "In VLAN 1 only, no matter which native VLAN the trunk is set to",
+      "In a new VLAN that the receiving switch creates for each such frame"
+    ],
+    "answer": 2,
+    "explanation": "Untagged traffic on a trunk is placed on the native VLAN, often used for management traffic between switches. The reverse is not true, because tagged traffic is not placed on the native VLAN.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-09",
+    "topicId": "n10-ch11",
+    "prompt": "An engineer inspects an 802.1Q frame and looks for the field holding the VLAN number. Which description is correct?",
+    "choices": [
+      "A 16-bit field in the tag that always reads 0x8100 on tagged frames",
+      "A 12-bit VLAN ID inside the 4-byte tag, after the source MAC address",
+      "A 3-bit field in the tag that also maps frames to eight queues",
+      "A 1-bit field in the tag sitting next to the drop-eligible indicator"
+    ],
+    "answer": 2,
+    "explanation": "The 4-byte tag sits between the source MAC address and the type field and holds a 16-bit TPID of 0x8100, a 3-bit CoS, a 1-bit drop-eligible indicator, and a 12-bit VLAN ID. The 0x8100 value is the TPID, which only identifies the frame as tagged.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-10",
+    "topicId": "n10-ch11",
+    "prompt": "Switches from two different vendors must be linked with a trunk. Which trunking protocol should be used?",
+    "choices": [
+      "802.1Q, the open-standard trunking protocol",
+      "ISL, because it is the more mature protocol for carrying many VLANs",
+      "VTP, because it handles trunk encapsulation between unlike vendors",
+      "802.3at, because one cable then carries both VLAN tags and power"
+    ],
+    "answer": 0,
+    "explanation": "802.1Q is the open standard and works between vendors. ISL is Cisco-only, so it fails in a mixed environment, and VTP does not handle trunk encapsulation at all.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-11",
+    "topicId": "n10-ch11",
+    "prompt": "Three switches in a redundant loop all keep their default priority. Which one becomes the STP root bridge?",
+    "choices": [
+      "The one with the highest MAC address among the three bridges",
+      "The one with the most ports currently in a forwarding state",
+      "The one with the lowest MAC address, since the priorities tie",
+      "The one that was powered on first when the loop was built"
+    ],
+    "answer": 3,
+    "explanation": "The root bridge has the lowest priority, and when priorities are equal the lowest MAC address wins. Picking the highest MAC address is tempting but reverses the rule.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-12",
+    "topicId": "n10-ch11",
+    "prompt": "A new PC is cabled to a port running STP (802.1D) and cannot reach the network for a while. What is the best explanation?",
+    "choices": [
+      "The port starts in blocking and needs 50 seconds to reach forwarding",
+      "The port starts in forwarding and then spends 50 seconds learning MACs",
+      "The port starts in blocking and needs about 5 seconds to reach forwarding",
+      "The port starts in blocking and RSTP deliberately adds a 50 second wait"
+    ],
+    "answer": 1,
+    "explanation": "Blocking is the default STP port state, and convergence from blocking to forwarding takes 50 seconds. RSTP (802.1w) is the faster version, so it would not add that delay.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-13",
+    "topicId": "n10-ch11",
+    "prompt": "The R&D group must be isolated from the rest of the company while keeping maximum design flexibility. What is the best plan?",
+    "choices": [
+      "Create a new VLAN, add a routed SVI, and apply ACLs on the VLAN interface",
+      "Create a new VLAN and apply extended ACLs to its layer 2 switch ports",
+      "Place a new server in the new VLAN and leave the routing unchanged",
+      "Trunk the file server to both VLANs so R&D can reach it more safely"
+    ],
+    "answer": 0,
+    "explanation": "A new VLAN with a routed SVI lets ACLs sit on the layer 3 VLAN interface. Extended ACLs cannot be applied to layer 2 switch ports, which is why the port-level option fails.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-14",
+    "topicId": "n10-ch11",
+    "prompt": "A manager wants each wall jack limited to two known laptops so unknown devices cannot join. Which feature does this?",
+    "choices": [
+      "802.1X, which counts the MAC addresses allowed on the access port",
+      "VTP, which restricts the devices that each port is able to serve",
+      "Port security, which caps the MAC addresses allowed on the port",
+      "Jumbo frames, which restrict what each attached device can send"
+    ],
+    "answer": 3,
+    "explanation": "Port security limits a port to a set number of MAC addresses, configured in advance or learned dynamically. 802.1X controls user authentication rather than address counts, and jumbo frames control frame size.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-15",
+    "topicId": "n10-ch11",
+    "prompt": "A VoIP rollout needs prioritization at layer 2 using a value carried in the VLAN tag. Which method fits?",
+    "choices": [
+      "DiffServ, a layer 3 marking that is carried inside the 802.1Q tag",
+      "CoS, a 3-bit field in the 802.1Q tag that maps to eight queues",
+      "ToS, a layer 3 marking that is carried in the IP header",
+      "CoS, a 12-bit field in the 802.1Q tag that maps to eight queues"
+    ],
+    "answer": 2,
+    "explanation": "CoS is the layer 2 QoS method, a 3-bit field in the 802.1Q tag mapping to eight queues. ToS and DiffServ are layer 3 methods, and 12 bits is the size of the VLAN ID, not CoS.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-16",
+    "topicId": "n10-ch11",
+    "prompt": "An access point needs more power than older PoE allowed, with 25.5 watts available. Which standard provides that?",
+    "choices": [
+      "802.3at, the PoE standard delivering 25.5 watts of power",
+      "802.1Q, which supplies power along with the VLAN tags",
+      "802.1D, which supplies power while it prevents switching loops",
+      "802.1w, which supplies power while it speeds up convergence"
+    ],
+    "answer": 1,
+    "explanation": "802.3at is the PoE standard delivering 25.5 watts. 802.1Q handles VLAN tagging, and 802.1D and 802.1w concern loop prevention, so none of them supplies power.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-17",
+    "topicId": "n10-ch11",
+    "prompt": "An admin creates VLAN 40 once on a server switch and wants every client switch to learn it automatically. Which protocol does this?",
+    "choices": [
+      "VTP, which copies the VLAN database from the server switch",
+      "802.1Q, which negotiates trunks and also carries the VLAN database",
+      "STP, which replicates VLANs across switches to prevent loops",
+      "VMPS, which pushes VLAN names down to each client switch"
+    ],
+    "answer": 0,
+    "explanation": "VTP propagates the VLAN database from a master copy on a server switch to client switches. It does not negotiate trunks or handle trunk encapsulation, which is the job people wrongly assign to it.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c11-18",
+    "topicId": "n10-ch11",
+    "prompt": "Security wants to enable port security on the uplink between two switches that carries many VLANs. Why is that a poor choice?",
+    "choices": [
+      "Port security is supported only on ports in the native VLAN",
+      "A trunk carries many MAC addresses, so use an access port instead",
+      "Port security only works once a router sits between the switches",
+      "Port security has been deprecated in favor of dynamic VLANs"
+    ],
+    "answer": 2,
+    "explanation": "Port security belongs on an access port in access mode, because a trunk carries many MAC addresses and the feature does not work well there. Dynamic VLANs are the deprecated feature, not port security.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-19",
+    "topicId": "n10-ch10",
+    "prompt": "An IPv6 host has just joined a network and needs to learn which neighbors and which gateway are on its link. Which pair of mechanisms provides that information?",
+    "choices": [
+      "NDP discovers neighbors and router advertisements announce the gateway",
+      "DHCP relay discovers neighbors and ARP announces the gateway",
+      "RIP discovers neighbors and OSPF announces the gateway",
+      "Teredo discovers neighbors and ISATAP announces the gateway"
+    ],
+    "answer": 0,
+    "explanation": "NDP finds neighboring devices on IPv6 networks and router advertisements (RA) tell hosts where the gateway is. Teredo and ISATAP are tunneling methods, not discovery tools.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-20",
+    "topicId": "n10-ch10",
+    "prompt": "A company wants IPv6 to cross a part of its network that only supports IPv4, without turning off IPv4 anywhere. Which approach carries IPv6 inside IPv4 packets?",
+    "choices": [
+      "Dual stack",
+      "Tunneling, such as Teredo or ISATAP",
+      "Router advertisements",
+      "Neighbor Discovery"
+    ],
+    "answer": 1,
+    "explanation": "Tunneling encapsulates IPv6 inside IPv4. Dual stack runs both protocols side by side but does not carry one inside the other.",
+    "weak": false
   }
 ]
