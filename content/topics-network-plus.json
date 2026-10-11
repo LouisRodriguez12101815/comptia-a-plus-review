@@ -607,7 +607,7 @@
             "type": "bullets",
             "items": [
               "A router decides where to send a packet using its route table and the destination network of the packet. It does not need the destination host, the originating network, or the return path to route the packet.",
-              "The frame changes at each hop. The packet is never changed until it reaches the destination host.",
+              "Routers rebuild Ethernet frames at routed hops. Without NAT, source and destination IP addresses stay the same; TTL decreases and the IPv4 header checksum changes.",
               "A frame carries a packet to only two places: a host on the local network, or a router interface when the packet is going to a remote network.",
               "When the destination is on another network, the host sets the destination MAC address to the default gateway. The destination IP address never changes."
             ]
@@ -615,7 +615,7 @@
           {
             "type": "callout",
             "kind": "critical",
-            "text": "Frames are local and rebuilt at every hop. The packet, with its source and destination IP addresses, travels unchanged from the source host to the destination host."
+            "text": "Ethernet frames are local and rebuilt at routed hops. Without NAT, the IP source and destination remain end to end, while routers update TTL and the IPv4 header checksum."
           }
         ]
       },
@@ -736,7 +736,7 @@
               ],
               [
                 "Packet",
-                "The IP packet. Unchanged by routers until it reaches the destination host."
+                "The IP packet. Without NAT its IP endpoints stay the same; routers change TTL and the IPv4 header checksum."
               ],
               [
                 "Frame check sequence (FCS)",

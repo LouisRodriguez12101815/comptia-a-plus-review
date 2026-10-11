@@ -8,7 +8,7 @@ import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { isHubPath, toolStatuses, trackForPath } from "@/lib/tracks";
 
 function isActive(toolId: string, pathname: string): boolean {
-  if (toolId === "game") return pathname.startsWith("/game");
+  if (toolId === "game") return pathname.startsWith("/game") || pathname.startsWith("/practice-games");
   if (toolId === "labs") return pathname.startsWith("/labs");
   return pathname.startsWith(`/${toolId}`);
 }

@@ -101,9 +101,9 @@ export const toolMeta: {
   },
   {
     id: "game",
-    label: "Game",
-    blurb: "Outage Ops: solo or live multiplayer incident response.",
-    href: "/game",
+    label: "Practice Games",
+    blurb: "Component matching, packet journeys, and Outage Ops troubleshooting.",
+    href: "/practice-games",
   },
 ];
 
@@ -142,9 +142,11 @@ export function trackForPath(pathname: string, focus: StudyFocus): Track | undef
     (track) => pathname === track.href || pathname.startsWith(`${track.href}/`),
   );
   if (direct) return direct;
+  if (pathname.startsWith("/practice-games/component-match")) return getTrack("core1");
+  if (pathname.startsWith("/practice-games/follow-packet")) return getTrack("networking");
   if (pathname.startsWith("/network-plus")) return getTrack("networking");
   if (pathname.startsWith("/labs")) return getTrack("ccna");
-  if (["/notes", "/flashcards", "/quiz", "/game"].some((p) => pathname.startsWith(p))) {
+  if (["/notes", "/flashcards", "/quiz", "/game", "/practice-games"].some((p) => pathname.startsWith(p))) {
     return trackForFocus(focus);
   }
   return undefined;

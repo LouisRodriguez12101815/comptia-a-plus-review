@@ -1,0 +1,1255 @@
+{
+  "sources": [
+    {
+      "id": "hardware-notes",
+      "title": "Core 1: expansion, storage and power",
+      "path": "content/topics.json",
+      "sections": [
+        "expansion-slots",
+        "storage-speeds",
+        "power-supplies",
+        "raid5-video"
+      ],
+      "href": "/notes/core1-ch2"
+    },
+    {
+      "id": "diagnostic-notes",
+      "title": "Troubleshooting: memory and disk checks",
+      "path": "content/topics.json",
+      "sections": [
+        "boot-bsod",
+        "taskmgr-mobile"
+      ],
+      "href": "/notes/core2-ch7"
+    },
+    {
+      "id": "ram-primary",
+      "title": "Kingston: What is computer memory?",
+      "path": "docs/practice-games-sources.md",
+      "sections": [
+        "RAM function and compatibility"
+      ],
+      "href": "https://www.kingston.com/unitedkingdom/en/blog/pc-performance/what-is-computer-memory"
+    },
+    {
+      "id": "routing-notes",
+      "title": "Network+ Chapter 9: routing and ARP",
+      "path": "content/topics-network-plus.json",
+      "sections": [
+        "routing-process",
+        "mac-arp",
+        "route-table",
+        "frame-anatomy",
+        "route-selection",
+        "written-lab"
+      ],
+      "href": "/notes/n10-ch9"
+    },
+    {
+      "id": "routing-lab",
+      "title": "Lab 01: two-subnet routing",
+      "path": "content/labs.json",
+      "sections": [
+        "addressing",
+        "verification"
+      ],
+      "href": "/labs/two-subnet-lan"
+    },
+    {
+      "id": "rfc826",
+      "title": "RFC 826: Ethernet address resolution",
+      "path": "docs/practice-games-sources.md",
+      "sections": [
+        "Packet Reception"
+      ],
+      "href": "https://www.rfc-editor.org/rfc/rfc826.html"
+    },
+    {
+      "id": "rfc1812",
+      "title": "RFC 1812: IPv4 router requirements",
+      "path": "docs/practice-games-sources.md",
+      "sections": [
+        "5.2.1.2",
+        "5.2.4.3",
+        "5.3.1"
+      ],
+      "href": "https://www.rfc-editor.org/rfc/rfc1812.html"
+    }
+  ],
+  "challenges": [
+    {
+      "id": "component-match",
+      "version": 1,
+      "title": "CompTIA A+ Computer Component Match",
+      "certification": "A+ Core 1",
+      "exam": "220-1201",
+      "topic": "Computer hardware",
+      "difficulty": "Foundation",
+      "kind": "component",
+      "description": "Identify components, check compatibility and connect symptoms to useful checks.",
+      "rounds": [
+        {
+          "id": "ram-identify",
+          "title": "Identification \u00b7 working memory",
+          "prompt": "Match this memory-module illustration to its job. Names are supplied as an alternative to the drawing.",
+          "objective": "Distinguish temporary working memory from persistent storage.",
+          "topic": "Identification",
+          "choices": [
+            {
+              "id": "ram",
+              "label": "RAM \u2014 temporary workspace for active programs",
+              "explanation": "RAM needs power to retain working data; save persistent data to storage.",
+              "art": "ram"
+            },
+            {
+              "id": "ssd",
+              "label": "SSD \u2014 temporary workspace that loses saved files at power-off",
+              "explanation": "An SSD is persistent storage, not the volatile workspace shown.",
+              "art": "ssd"
+            },
+            {
+              "id": "psu",
+              "label": "PSU \u2014 workspace for active programs",
+              "explanation": "A PSU supplies DC power; it does not hold program data.",
+              "art": "psu"
+            }
+          ],
+          "correctAnswerId": "ram",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "ram-primary"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Distinguish temporary working memory from persistent storage."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement.",
+          "art": "ram"
+        },
+        {
+          "id": "psu-function",
+          "title": "Identification \u00b7 power",
+          "prompt": "Which component turns wall-outlet AC into the DC power a desktop uses?",
+          "objective": "Identify the PSU\u2019s AC-to-DC function.",
+          "topic": "Identification",
+          "choices": [
+            {
+              "id": "psu",
+              "label": "Power supply unit (PSU)",
+              "explanation": "The PSU converts the input AC to the DC outputs used by components.",
+              "art": "psu"
+            },
+            {
+              "id": "gpu",
+              "label": "Graphics card (GPU)",
+              "explanation": "A GPU processes graphics; it consumes power rather than converting outlet AC.",
+              "art": "gpu"
+            },
+            {
+              "id": "nic",
+              "label": "Network interface card (NIC)",
+              "explanation": "A NIC connects to a network; it does not convert outlet power.",
+              "art": "nic"
+            }
+          ],
+          "correctAnswerId": "psu",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "hardware-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Identify the PSU\u2019s AC-to-DC function."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement.",
+          "art": "psu"
+        },
+        {
+          "id": "ssd-function",
+          "title": "Identification \u00b7 storage",
+          "prompt": "Match persistent storage with no moving parts to a component.",
+          "objective": "Distinguish solid-state storage from mechanical storage and RAM.",
+          "topic": "Identification",
+          "choices": [
+            {
+              "id": "ssd",
+              "label": "Solid-state drive (SSD)",
+              "explanation": "An SSD stores data with no moving mechanical parts.",
+              "art": "ssd"
+            },
+            {
+              "id": "hdd",
+              "label": "Hard disk drive (HDD)",
+              "explanation": "An HDD uses mechanical components; it is not the no-moving-parts match.",
+              "art": "hdd"
+            },
+            {
+              "id": "ram",
+              "label": "RAM module",
+              "explanation": "RAM is working memory, not the persistent storage requested.",
+              "art": "ram"
+            }
+          ],
+          "correctAnswerId": "ssd",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "hardware-notes",
+            "ram-primary"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Distinguish solid-state storage from mechanical storage and RAM."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement."
+        },
+        {
+          "id": "ram-compatible",
+          "title": "Compatibility \u00b7 memory",
+          "prompt": "Specification card: desktop DDR4 DIMM slots; the manual approves the offered DDR4 capacity/speed. Match the compatible module.",
+          "objective": "Use memory generation and form factor to check compatibility.",
+          "topic": "Compatibility",
+          "choices": [
+            {
+              "id": "ddr4",
+              "label": "Approved DDR4 desktop DIMM",
+              "explanation": "It matches both the stipulated desktop module type and supported generation.",
+              "art": "ram"
+            },
+            {
+              "id": "ddr5",
+              "label": "DDR5 desktop DIMM",
+              "explanation": "A newer DDR generation does not fit an older DDR socket. Similar appearance is insufficient.",
+              "art": "ram"
+            },
+            {
+              "id": "sodimm",
+              "label": "DDR4 laptop SO-DIMM",
+              "explanation": "The generation matches but the laptop module form factor does not match the desktop DIMM slot.",
+              "art": "ram"
+            }
+          ],
+          "correctAnswerId": "ddr4",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "ram-primary"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Use memory generation and form factor to check compatibility."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement."
+        },
+        {
+          "id": "gpu-compatible",
+          "title": "Compatibility \u00b7 expansion",
+          "prompt": "Specification card: available PCIe x16 slot, adequate space and approved PSU connectors/wattage. Which graphics card matches this interface?",
+          "objective": "Match an expansion card to the supported slot and stated power constraints.",
+          "topic": "Compatibility",
+          "choices": [
+            {
+              "id": "pcie",
+              "label": "PCIe x16 graphics card",
+              "explanation": "The specified interface matches; the scenario also explicitly satisfies space and power.",
+              "art": "gpu"
+            },
+            {
+              "id": "agp",
+              "label": "Legacy AGP graphics card",
+              "explanation": "AGP is a different, obsolete interface; it does not match a PCIe slot.",
+              "art": "gpu"
+            },
+            {
+              "id": "pci",
+              "label": "Plain PCI graphics card",
+              "explanation": "Plain PCI and PCI Express are distinct interfaces.",
+              "art": "gpu"
+            }
+          ],
+          "correctAnswerId": "pcie",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "hardware-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Match an expansion card to the supported slot and stated power constraints."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement."
+        },
+        {
+          "id": "storage-check",
+          "title": "Symptoms \u00b7 storage",
+          "prompt": "A mechanical drive shows read failures and heavy disk activity. Which component should you investigate first, preserving data before replacement?",
+          "objective": "Connect disk-related symptoms to a storage investigation without overdiagnosing.",
+          "topic": "Symptoms",
+          "choices": [
+            {
+              "id": "hdd",
+              "label": "HDD and its storage path",
+              "explanation": "Disk symptoms justify investigating the HDD/path and protecting data; they do not prove a unique cause.",
+              "art": "hdd"
+            },
+            {
+              "id": "gpu",
+              "label": "GPU only",
+              "explanation": "Graphics processing does not explain the disk-read evidence.",
+              "art": "gpu"
+            },
+            {
+              "id": "nic",
+              "label": "NIC only",
+              "explanation": "Network connectivity is not the failing operation in this scenario.",
+              "art": "nic"
+            }
+          ],
+          "correctAnswerId": "hdd",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "hardware-notes",
+            "diagnostic-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Connect disk-related symptoms to a storage investigation without overdiagnosing."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement."
+        },
+        {
+          "id": "ram-check",
+          "title": "Symptoms \u00b7 memory",
+          "prompt": "A memory diagnostic reports errors after a memory upgrade. Which component and installation should you check against the manual?",
+          "objective": "Use diagnostic evidence to prioritize a RAM/installation check.",
+          "topic": "Symptoms",
+          "choices": [
+            {
+              "id": "ram",
+              "label": "RAM modules and seating/compatibility",
+              "explanation": "The test targets memory. Check the upgrade and installation; this alone does not isolate a particular stick.",
+              "art": "ram"
+            },
+            {
+              "id": "ssd",
+              "label": "SSD capacity only",
+              "explanation": "Storage capacity is not the subsystem implicated by the memory diagnostic.",
+              "art": "ssd"
+            },
+            {
+              "id": "nic",
+              "label": "NIC link speed only",
+              "explanation": "Link speed is unrelated to the reported memory-test errors.",
+              "art": "nic"
+            }
+          ],
+          "correctAnswerId": "ram",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "diagnostic-notes",
+            "ram-primary"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Use diagnostic evidence to prioritize a RAM/installation check."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement."
+        },
+        {
+          "id": "nic-function",
+          "title": "Identification \u00b7 networking",
+          "prompt": "Match the component responsible for connecting a computer to an Ethernet network.",
+          "objective": "Identify the NIC\u2019s network-connectivity role.",
+          "topic": "Identification",
+          "choices": [
+            {
+              "id": "nic",
+              "label": "Ethernet network interface card",
+              "explanation": "A NIC provides the computer\u2019s network interface.",
+              "art": "nic"
+            },
+            {
+              "id": "psu",
+              "label": "Power supply",
+              "explanation": "The PSU supplies power, not an Ethernet data interface.",
+              "art": "psu"
+            },
+            {
+              "id": "gpu",
+              "label": "Graphics card",
+              "explanation": "The GPU handles display/graphics work, not Ethernet connectivity.",
+              "art": "gpu"
+            }
+          ],
+          "correctAnswerId": "nic",
+          "hint": "Compare the component\u2019s job with the requirement. Physical appearance alone does not establish compatibility.",
+          "sourceIds": [
+            "hardware-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "220-1201",
+              "area": "Hardware and hardware troubleshooting: Identify the NIC\u2019s network-connectivity role."
+            }
+          ],
+          "success": "The match is supported by the stated function or evidence; a symptom identifies a check, not an automatic replacement."
+        }
+      ],
+      "scenarios": []
+    },
+    {
+      "id": "follow-packet",
+      "version": 1,
+      "title": "IP Routing: Follow the Packet",
+      "certification": "Network+",
+      "exam": "n10-009",
+      "topic": "IPv4 routing",
+      "difficulty": "Foundation \u2192 Applied",
+      "kind": "packet",
+      "description": "Build a justified packet journey: local delivery, routed delivery, then a different network.",
+      "rounds": [
+        {
+          "id": "local-subnet",
+          "scenarioId": "local",
+          "title": "Compare destination subnet",
+          "topic": "IPv4 forwarding",
+          "objective": "Use the mask to decide local versus remote.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Compare /24 network IDs: both are 172.16.30.0, so the destination is on-link.",
+              "explanation": "The destination is local; the host selects the destination itself as the link-layer next hop."
+            },
+            {
+              "id": "premature",
+              "label": "Send to the gateway because all traffic must use a router.",
+              "explanation": "A router is unnecessary when both hosts share the on-link subnet."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Compare MAC addresses to determine the IP subnet.",
+              "explanation": "Subnet membership comes from IP addresses and masks, not MAC equality."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "The destination is local; the host selects the destination itself as the link-layer next hop.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "source",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "local-arp",
+          "scenarioId": "local",
+          "title": "Resolve the local destination",
+          "topic": "IPv4 forwarding",
+          "objective": "Choose the correct ARP target with an empty cache.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "ARP for 172.16.30.3 because the local destination has no cached MAC.",
+              "explanation": "An ARP reply maps 172.16.30.3 to 02:00:00:00:30:03."
+            },
+            {
+              "id": "premature",
+              "label": "ARP for 172.16.30.1 because it is the gateway.",
+              "explanation": "The destination is on-link, so the gateway is not the next hop."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Broadcast the IP data packet instead of resolving a MAC.",
+              "explanation": "ARP is the resolution exchange; the unicast data packet is not made a broadcast."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "An ARP reply maps 172.16.30.3 to 02:00:00:00:30:03.",
+          "sourceIds": [
+            "routing-notes",
+            "rfc826"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "source",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "local-frame",
+          "scenarioId": "local",
+          "title": "Construct the Ethernet frame",
+          "topic": "IPv4 forwarding",
+          "objective": "Distinguish local MAC endpoints from IP endpoints.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Build C-MAC \u2192 D-MAC around IP 172.16.30.2 \u2192 172.16.30.3; they are different address layers.",
+              "explanation": "The frame contains the IPv4 packet; EtherType 0x0800 identifies IPv4."
+            },
+            {
+              "id": "premature",
+              "label": "Set the frame destination to the gateway MAC.",
+              "explanation": "This local destination needs Host_D\u2019s MAC, not the gateway\u2019s."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Replace the destination IP with a MAC address.",
+              "explanation": "IP and MAC fields are separate; a MAC is not an IP destination."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "The frame contains the IPv4 packet; EtherType 0x0800 identifies IPv4.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "source",
+            "ttl": 64,
+            "frameSource": "02:00:00:00:30:02",
+            "frameDestination": "02:00:00:00:30:03"
+          }
+        },
+        {
+          "id": "local-forward",
+          "scenarioId": "local",
+          "title": "Forward through the switch",
+          "topic": "IPv4 forwarding",
+          "objective": "Explain switching without decrementing IP TTL.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Forward the frame using the switch MAC table; the switch does not route this packet.",
+              "explanation": "Switch-L forwards the Ethernet frame without changing its MAC endpoints or IP TTL."
+            },
+            {
+              "id": "premature",
+              "label": "Reduce TTL to 63 because every network device counts as an IP hop.",
+              "explanation": "An Ethernet switch is not a routed IP hop."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Send the frame to the router regardless of destination MAC.",
+              "explanation": "The known destination MAC selects the local output port."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Switch-L forwards the Ethernet frame without changing its MAC endpoints or IP TTL.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "switch",
+            "ttl": 64,
+            "frameSource": "02:00:00:00:30:02",
+            "frameDestination": "02:00:00:00:30:03"
+          }
+        },
+        {
+          "id": "local-deliver",
+          "scenarioId": "local",
+          "title": "Deliver to the destination",
+          "topic": "IPv4 forwarding",
+          "objective": "Explain frame removal and local IP delivery.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Host_D checks the frame and accepts its own destination IP; it removes link encapsulation.",
+              "explanation": "Host_D receives the packet with TTL 64. IP endpoints remained C \u2192 D; no routed hop occurred."
+            },
+            {
+              "id": "premature",
+              "label": "Forward to the gateway to reduce TTL before accepting local traffic.",
+              "explanation": "The packet is already at its destination; no router forwarding is needed."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Save the frame as permanent RAM data.",
+              "explanation": "Frame reception and IP delivery are networking operations, not persistent storage."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Host_D receives the packet with TTL 64. IP endpoints remained C \u2192 D; no routed hop occurred.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "destination",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "route-subnet",
+          "scenarioId": "routed",
+          "title": "Compare source and destination",
+          "topic": "IPv4 forwarding",
+          "objective": "Use subnet comparison to choose a gateway.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "172.16.10.0/24 differs from 172.16.30.0/24; select 172.16.10.1 as the host next hop.",
+              "explanation": "Host_A uses its default route while keeping final destination IP 172.16.30.2."
+            },
+            {
+              "id": "premature",
+              "label": "ARP directly for remote 172.16.30.2 on the source LAN.",
+              "explanation": "The remote host is outside this broadcast domain."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Rewrite the packet destination IP to 172.16.10.1.",
+              "explanation": "The gateway is the frame next hop, not the final IP endpoint."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Host_A uses its default route while keeping final destination IP 172.16.30.2.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "source",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "route-arp-gateway",
+          "scenarioId": "routed",
+          "title": "Resolve the gateway",
+          "topic": "IPv4 forwarding",
+          "objective": "Resolve a local next-hop MAC for a remote IP destination.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "ARP for 172.16.10.1 on the source LAN because the gateway cache entry is absent.",
+              "explanation": "Gateway e0 replies with MAC 02:00:00:00:10:01."
+            },
+            {
+              "id": "premature",
+              "label": "ARP for 172.16.30.2 across the router.",
+              "explanation": "ARP resolution is local; ordinary routers do not forward this broadcast."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Ask DNS for the gateway MAC.",
+              "explanation": "DNS resolves names, while ARP resolves local IPv4-to-MAC mappings."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Gateway e0 replies with MAC 02:00:00:00:10:01.",
+          "sourceIds": [
+            "routing-notes",
+            "rfc826"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "source",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "route-first-frame",
+          "scenarioId": "routed",
+          "title": "Send the first frame",
+          "topic": "IPv4 forwarding",
+          "objective": "Construct a frame to the gateway while retaining IP endpoints.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Send A-MAC \u2192 e0-MAC with IP 172.16.10.2 \u2192 172.16.30.2; the router is only the next hop.",
+              "explanation": "Switch-A forwards to Lab_A e0; the packet arrives at the router with TTL 64."
+            },
+            {
+              "id": "premature",
+              "label": "Send A-MAC \u2192 C-MAC before learning any reachable next-hop MAC.",
+              "explanation": "Host_C\u2019s MAC is not on Host_A\u2019s Ethernet segment."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Change source IP to the router before sending.",
+              "explanation": "No NAT is configured; the host\u2019s source IP stays unchanged."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Switch-A forwards to Lab_A e0; the packet arrives at the router with TTL 64.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "router",
+            "ttl": 64,
+            "frameSource": "02:00:00:00:10:02",
+            "frameDestination": "02:00:00:00:10:01"
+          }
+        },
+        {
+          "id": "route-lookup",
+          "scenarioId": "routed",
+          "title": "Look up the destination route",
+          "topic": "IPv4 forwarding",
+          "objective": "Apply longest-prefix match rather than first/default route.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Remove the received frame; look up 172.16.30.2 and choose the matching /24 through e2.",
+              "explanation": "The connected 172.16.30.0/24 route wins. The destination itself is the next hop on e2."
+            },
+            {
+              "id": "premature",
+              "label": "Choose the matching /16 because it appears broader and handles more hosts.",
+              "explanation": "The matching /24 is more specific than /16 or /0."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Look up the source IP to select the destination exit.",
+              "explanation": "Forwarding uses the packet destination, not the original source."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "The connected 172.16.30.0/24 route wins. The destination itself is the next hop on e2.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "router",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "route-ttl",
+          "scenarioId": "routed",
+          "title": "Update the IPv4 header",
+          "topic": "IPv4 forwarding",
+          "objective": "Explain router TTL reduction without NAT endpoint changes.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Reduce TTL 64 \u2192 63 and update the IPv4 header checksum before forwarding.",
+              "explanation": "TTL is 63; IP endpoints remain 172.16.10.2 \u2192 172.16.30.2. TTL zero would cause a drop instead."
+            },
+            {
+              "id": "premature",
+              "label": "Keep the whole IP header unchanged because frames alone change.",
+              "explanation": "TTL and its header checksum change at a routed hop."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Replace source and destination IPs with the router interface addresses.",
+              "explanation": "Without NAT the IP endpoints stay Host_A \u2192 Host_C."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "TTL is 63; IP endpoints remain 172.16.10.2 \u2192 172.16.30.2. TTL zero would cause a drop instead.",
+          "sourceIds": [
+            "routing-notes",
+            "rfc1812"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "router",
+            "ttl": 63,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "route-arp-out",
+          "scenarioId": "routed",
+          "title": "Resolve the outgoing next hop",
+          "topic": "IPv4 forwarding",
+          "objective": "Use the selected exit network for address resolution.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "ARP on e2 for 172.16.30.2 because it is on-link there and the router cache is empty.",
+              "explanation": "Host_C maps to 02:00:00:00:30:02 on e2."
+            },
+            {
+              "id": "premature",
+              "label": "ARP on e0 for Host_A again.",
+              "explanation": "The source-side MAC does not provide the outgoing destination mapping."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "ARP for the remote host on every interface.",
+              "explanation": "The selected route determines which local network needs resolution."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Host_C maps to 02:00:00:00:30:02 on e2.",
+          "sourceIds": [
+            "routing-notes",
+            "rfc826"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "router",
+            "ttl": 63,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "route-reframe",
+          "scenarioId": "routed",
+          "title": "Rebuild and forward",
+          "topic": "IPv4 forwarding",
+          "objective": "Explain which link-layer addresses change after routing.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Build e2-MAC \u2192 C-MAC around the same IP endpoints with TTL 63; forward on e2.",
+              "explanation": "The new frame has source 02:00:00:00:30:01 and destination 02:00:00:00:30:02; Switch-C forwards it."
+            },
+            {
+              "id": "premature",
+              "label": "Reuse A-MAC \u2192 e0-MAC on the destination LAN.",
+              "explanation": "Those MAC endpoints belong to the previous Ethernet segment."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Change destination IP to e2 because it constructs the frame.",
+              "explanation": "Constructing a frame does not replace the final IP destination."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "The new frame has source 02:00:00:00:30:01 and destination 02:00:00:00:30:02; Switch-C forwards it.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "switch-out",
+            "ttl": 63,
+            "frameSource": "02:00:00:00:30:01",
+            "frameDestination": "02:00:00:00:30:02"
+          }
+        },
+        {
+          "id": "route-deliver",
+          "scenarioId": "routed",
+          "title": "Deliver the routed packet",
+          "topic": "IPv4 forwarding",
+          "objective": "Recognize destination delivery and end-to-end IP addresses.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Host_C accepts its own MAC/IP destination and delivers the packet; no further forwarding is required.",
+              "explanation": "Host_C receives IP 172.16.10.2 \u2192 172.16.30.2 with TTL 63. Ethernet endpoints changed at the router, not at the switches."
+            },
+            {
+              "id": "premature",
+              "label": "Decrease TTL again because the destination is another routed hop.",
+              "explanation": "Receiving the final packet is not forwarding it as a router."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Report that Host_A\u2019s IP changed because the Ethernet source changed.",
+              "explanation": "Frame-source MAC changed; the IPv4 source did not, because this scenario has no NAT."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Host_C receives IP 172.16.10.2 \u2192 172.16.30.2 with TTL 63. Ethernet endpoints changed at the router, not at the switches.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "destination",
+            "ttl": 63,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "transfer-next-hop",
+          "scenarioId": "transfer",
+          "title": "Transfer: choose resolution behavior",
+          "topic": "IPv4 forwarding",
+          "objective": "Apply a different subnet and a populated ARP cache.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Destination 10.10.2.70 is remote; use cached gateway 10.10.1.1 \u2192 02:00:00:01:00:01.",
+              "explanation": "Source can construct its first frame from the valid gateway mapping, keeping IP destination 10.10.2.70."
+            },
+            {
+              "id": "premature",
+              "label": "Broadcast ARP for 10.10.2.70 on the source /24.",
+              "explanation": "The destination is not on the source LAN."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Always send a new ARP request even for a valid populated cache.",
+              "explanation": "This stated valid cache already supplies the mapping; no new request is needed."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "Source can construct its first frame from the valid gateway mapping, keeping IP destination 10.10.2.70.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "router",
+            "ttl": 64,
+            "frameSource": "02:00:00:01:00:20",
+            "frameDestination": "02:00:00:01:00:01"
+          }
+        },
+        {
+          "id": "transfer-prefix",
+          "scenarioId": "transfer",
+          "title": "Transfer: choose the route",
+          "topic": "IPv4 forwarding",
+          "objective": "Apply longest-prefix match with /26 versus /24 and default.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "10.10.2.70 falls in 10.10.2.64/26; choose e1 because /26 is the longest matching prefix.",
+              "explanation": "The on-link /26 supplies the outgoing interface. R2 uses its cached destination MAC."
+            },
+            {
+              "id": "premature",
+              "label": "Choose 10.10.2.0/24 because it is the larger network.",
+              "explanation": "Larger address coverage is not a more specific route."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Choose the default route before checking the /26.",
+              "explanation": "A matching /26 wins over /24 and /0."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "The on-link /26 supplies the outgoing interface. R2 uses its cached destination MAC.",
+          "sourceIds": [
+            "routing-notes"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "router",
+            "ttl": 64,
+            "frameSource": null,
+            "frameDestination": null
+          }
+        },
+        {
+          "id": "transfer-delivery",
+          "scenarioId": "transfer",
+          "title": "Transfer: predict received addresses",
+          "topic": "IPv4 forwarding",
+          "objective": "Predict TTL and both address layers on a different network.",
+          "prompt": "Place the next step in the packet journey. Choose both the action and its justification.",
+          "correctAnswerId": "place",
+          "choices": [
+            {
+              "id": "place",
+              "label": "Send e1-MAC \u2192 destination-MAC; deliver IP 10.10.1.20 \u2192 10.10.2.70 with TTL 63.",
+              "explanation": "R2 updates TTL/checksum, uses its warm ARP cache, and constructs a new frame. The destination receives the unchanged IP endpoints at TTL 63."
+            },
+            {
+              "id": "premature",
+              "label": "Deliver with gateway source IP 10.10.1.1 and TTL 64.",
+              "explanation": "No NAT changes the source IP; the router also reduces TTL."
+            },
+            {
+              "id": "layer-confusion",
+              "label": "Reuse the first frame MACs and decrement TTL at each switch.",
+              "explanation": "Router forwarding rebuilds the frame; Ethernet switches do not decrement IP TTL."
+            }
+          ],
+          "hint": "Use the current packet location, subnet mask and cache state. A link-layer next hop can differ from the final IP destination.",
+          "success": "R2 updates TTL/checksum, uses its warm ARP cache, and constructs a new frame. The destination receives the unchanged IP endpoints at TTL 63.",
+          "sourceIds": [
+            "routing-notes",
+            "rfc1812"
+          ],
+          "examMappings": [
+            {
+              "exam": "n10-009",
+              "area": "2.1 Routing technologies; 1.0 Networking concepts: IPv4/Ethernet"
+            }
+          ],
+          "effect": {
+            "nodeId": "destination",
+            "ttl": 63,
+            "frameSource": "02:00:00:02:00:65",
+            "frameDestination": "02:00:00:02:00:70"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "local",
+          "title": "Same subnet \u00b7 Host_C to Host_D",
+          "description": "Host_C and Host_D share 172.16.30.0/24. Router e2 is the available gateway but is not required for local delivery.",
+          "assumptions": "IPv4 unicast over Ethernet; /24 masks unless shown otherwise; no NAT, VLAN changes, fragmentation, loss or ACL blocks; initial TTL 64. Switch MAC tables are populated. MAC addresses are authored locally administered examples. Decisions model conceptual order; implementations may overlap processing. Host_C ARP cache starts empty.",
+          "sourceIp": "172.16.30.2",
+          "destinationIp": "172.16.30.3",
+          "nodes": [
+            {
+              "id": "source",
+              "label": "Host_C",
+              "ip": "172.16.30.2/24",
+              "mac": "02:00:00:00:30:02",
+              "detail": "eth0; gateway 172.16.30.1"
+            },
+            {
+              "id": "switch",
+              "label": "Switch-L",
+              "ip": "172.16.30.0/24",
+              "mac": "\u2014",
+              "detail": "Ethernet switch; no TTL decrement"
+            },
+            {
+              "id": "destination",
+              "label": "Host_D",
+              "ip": "172.16.30.3/24",
+              "mac": "02:00:00:00:30:03",
+              "detail": "eth0; gateway 172.16.30.1"
+            }
+          ],
+          "context": [
+            "Router Lab_A e2: 172.16.30.1/24; MAC 02:00:00:00:30:01"
+          ],
+          "routes": [
+            "Host_C on-link route: 172.16.30.0/24 via eth0",
+            "Host_C default: 0.0.0.0/0 via 172.16.30.1"
+          ]
+        },
+        {
+          "id": "routed",
+          "title": "Routed \u00b7 Host_A to Host_C",
+          "description": "Source LAN 172.16.10.0/24 \u2192 Lab_A \u2192 destination LAN 172.16.30.0/24. The router also has e1 on 172.16.20.0/24.",
+          "assumptions": "IPv4 unicast over Ethernet; /24 masks unless shown otherwise; no NAT, VLAN changes, fragmentation, loss or ACL blocks; initial TTL 64. Switch MAC tables are populated. MAC addresses are authored locally administered examples. Decisions model conceptual order; implementations may overlap processing. Host_A and router e2 ARP caches start empty.",
+          "sourceIp": "172.16.10.2",
+          "destinationIp": "172.16.30.2",
+          "nodes": [
+            {
+              "id": "source",
+              "label": "Host_A",
+              "ip": "172.16.10.2/24",
+              "mac": "02:00:00:00:10:02",
+              "detail": "eth0; gateway 172.16.10.1"
+            },
+            {
+              "id": "switch",
+              "label": "Switch-A",
+              "ip": "172.16.10.0/24",
+              "mac": "\u2014",
+              "detail": "LAN switching only"
+            },
+            {
+              "id": "router",
+              "label": "Lab_A",
+              "ip": "e0 172.16.10.1/24; e2 172.16.30.1/24",
+              "mac": "e0 \u202610:01; e2 \u202630:01",
+              "detail": "e1 172.16.20.1/24"
+            },
+            {
+              "id": "switch-out",
+              "label": "Switch-C",
+              "ip": "172.16.30.0/24",
+              "mac": "\u2014",
+              "detail": "LAN switching only"
+            },
+            {
+              "id": "destination",
+              "label": "Host_C",
+              "ip": "172.16.30.2/24",
+              "mac": "02:00:00:00:30:02",
+              "detail": "eth0; gateway 172.16.30.1"
+            }
+          ],
+          "context": [
+            "e0 MAC 02:00:00:00:10:01; e2 MAC 02:00:00:00:30:01",
+            "A broader fallback route is an authored exercise assumption; connected routes use Chapter 9 addresses."
+          ],
+          "routes": [
+            "C 172.16.10.0/24 \u2192 e0",
+            "C 172.16.20.0/24 \u2192 e1",
+            "C 172.16.30.0/24 \u2192 e2 (on-link)",
+            "S 172.16.0.0/16 \u2192 172.16.20.254 via e1",
+            "S 0.0.0.0/0 \u2192 172.16.20.254 via e1"
+          ]
+        },
+        {
+          "id": "transfer",
+          "title": "Transfer \u00b7 a different network and warm ARP caches",
+          "description": "Authored network: 10.10.1.20/24 \u2192 R2 \u2192 10.10.2.70/26. Apply the same principles to different prefixes.",
+          "assumptions": "IPv4 unicast over Ethernet; Source /24; destination LAN /26; no NAT, VLAN changes, fragmentation, loss or ACL blocks; initial TTL 64. Switch MAC tables are populated. MAC addresses are authored locally administered examples. Decisions model conceptual order; implementations may overlap processing. Source ARP cache has 10.10.1.1 \u2192 02:00:00:01:00:01. R2 ARP cache has 10.10.2.70 \u2192 02:00:00:02:00:70.",
+          "sourceIp": "10.10.1.20",
+          "destinationIp": "10.10.2.70",
+          "nodes": [
+            {
+              "id": "source",
+              "label": "Source",
+              "ip": "10.10.1.20/24",
+              "mac": "02:00:00:01:00:20",
+              "detail": "eth0; gateway 10.10.1.1"
+            },
+            {
+              "id": "router",
+              "label": "R2",
+              "ip": "e0 10.10.1.1/24; e1 10.10.2.65/26",
+              "mac": "e0 \u202600:01; e1 \u202600:65",
+              "detail": "No NAT"
+            },
+            {
+              "id": "destination",
+              "label": "Destination",
+              "ip": "10.10.2.70/26",
+              "mac": "02:00:00:02:00:70",
+              "detail": "eth0; gateway 10.10.2.65"
+            }
+          ],
+          "context": [
+            "R2 e0 MAC 02:00:00:01:00:01; e1 MAC 02:00:00:02:00:65",
+            "Ethernet switching between nodes is implicit in this compact transfer diagram."
+          ],
+          "routes": [
+            "C 10.10.1.0/24 \u2192 e0",
+            "C 10.10.2.64/26 \u2192 e1 (on-link)",
+            "S 10.10.2.0/24 \u2192 10.10.1.254 via e0",
+            "S 0.0.0.0/0 \u2192 10.10.1.254 via e0"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { OutageOps } from "@/app/components/game/OutageOps";
 
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function GamePage() {
-  return <OutageOps />;
+  return <><p className="mb-5"><Link href="/practice-games" className="text-cyan-200 underline">← Practice Games</Link></p><OutageOps /></>;
 }

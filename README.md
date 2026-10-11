@@ -43,7 +43,7 @@ If later `git push` does not auto-deploy, connect this GitHub repo to the Vercel
 
 ## Outage Ops MVP
 
-Open `/game` from the Game navigation link or the home-page button. The Guided Demo walks through five DNS troubleshooting decisions based on Lab 03, with mentor hints, score, uptime penalties, a debrief, and replay. Scores for this demo last only for the current session.
+Open `/game` from the Practice Games catalog or the home-page button. The Guided Demo walks through five DNS troubleshooting decisions based on Lab 03, with mentor hints, score, uptime penalties, a debrief, and replay. Scores for this demo last only for the current session.
 
 Each question starts unanswered with a shuffled answer order. Select an answer to submit it and see immediate answer-specific feedback plus mentor reasoning. Incorrect answers cost 5% uptime and reveal a mentor hint. Choose **Try again** to retry the same question or **Continue** to advance. Retries keep the hint and uptime penalties; each question awards points at most once (100 without a hint, 75 with one). Replaying resets the mission and shuffles again.
 
@@ -56,3 +56,9 @@ See [Twilio setup, the $5 daily guard, and the laptop/phone acceptance test](doc
 Validate with `npm run lint`, `npm run typecheck`, and `npm run build`. The typecheck command runs `next typegen` before `tsc --noEmit` so it also works before the first build. The production build downloads Geist through `next/font/google` and requires HTTPS access to `fonts.googleapis.com` and `fonts.gstatic.com`.
 
 Outage Ops cooperative practice now includes shared findings, recoverable diagnostic decisions, round objectives/consequences, and a mistake-based reconstruction. See [the learning review](docs/outage-ops-learning-review.md) for source mapping, validation, and pending live/learner checks.
+
+## Practice Games
+
+Open `/practice-games` for certification/topic/difficulty filters. **Computer Component Match** has eight A+ hardware identification, compatibility and symptom decisions. **Follow the Packet** has sixteen Network+ decisions across same-subnet delivery, routed delivery and a transfer network, with responsive diagrams and explicit IPv4/Ethernet assumptions. Both are solo practice with retries, priced hints, versioned browser progress and mistake-based debriefs. Outage Ops remains available with Guided Demo and Twilio room entry.
+
+See [implementation and limitations](docs/practice-games.md) and [content sources and gaps](docs/practice-games-sources.md). Run `npm run test:practice` for framework/content regression tests and `npm run test:e2e:practice -- --browser /usr/bin/chromium` for complete rendered-UI walkthroughs. These games are not multiplayer; automated tests do not demonstrate learning gains.
