@@ -1,6 +1,6 @@
 # Subnet Architect
 
-Solo Network+ N10-009 (objectives version 4.0, objective 1.7) practice at `/practice-games/subnet-architect`, added to the existing filtered Practice Games catalog. Branch starts from main `0c3e205`. Outage Ops, Guided Demo, Twilio services, multiplayer scoring, reconnects and the daily guard are unchanged.
+Solo Network+ N10-009 (objectives version 4.0, objective 1.7) practice at `/practice-games/subnet-architect`, added to the existing filtered Practice Games catalog. Branch starts from main `0c3e205` and integrates main `d2382f5` (PR #24 visuals) without conflicts. Outage Ops, Guided Demo, Twilio services, multiplayer scoring, reconnects and the daily guard are unchanged.
 
 ## Learning loop and observable objectives
 
