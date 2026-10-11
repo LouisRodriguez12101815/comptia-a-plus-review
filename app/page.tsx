@@ -28,6 +28,12 @@ export default function Home() {
             Browse notes
           </Link>
           <Link
+            href="/network-plus"
+            className="rounded-full border border-slate-600 px-5 py-2 hover:border-teal-400"
+          >
+            Network+ chapters
+          </Link>
+          <Link
             href="/flashcards?topic=weak"
             className="rounded-full border border-slate-600 px-5 py-2 hover:border-teal-400"
           >
