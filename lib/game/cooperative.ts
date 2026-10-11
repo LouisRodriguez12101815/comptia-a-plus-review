@@ -123,7 +123,7 @@ export function evidenceItemsFor(incident: GuidedIncident, stepIndex: number) {
   const step = incident.steps[stepIndex];
   if (!step) return [];
   const clues = evidence[incident.id]?.[stepIndex] ?? (step.evidence ? [step.evidence] : []);
-  return clues.map((text, index) => ({ id: `${incident.id}:${stepIndex}:${index}`, label: evidenceLabels[incident.id]?.[stepIndex]?.[index] ?? `Evidence ${index + 1}`, text })).filter((item) => item.text.trim().length > 0);
+  return clues.map((text, index) => ({ id: `${incident.id}:${stepIndex}:${index}`, label: evidenceLabels[incident.id]?.[stepIndex]?.[index] ?? `Evidence ${index + 1}`, text })).filter((item) => typeof item.text === "string" && item.text.trim().length > 0 && item.label.trim().length > 0);
 }
 export function evidenceFor(incident: GuidedIncident, stepIndex: number, seat: number, playerCount: number): string[] {
   const clues = evidenceItemsFor(incident, stepIndex).map((i) => i.text);

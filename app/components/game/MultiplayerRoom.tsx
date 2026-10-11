@@ -201,6 +201,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   const allReady = room.players.length >= 1 && room.players.every((player) => player.ready);
   const foundEvidence = self.evidenceStatus.assigned === self.evidenceStatus.discovered;
   const evidenceWait = evidenceGate.continueAvailableAt === null ? 0 : Math.max(0, Math.ceil((evidenceGate.continueAvailableAt - estimatedNow) / 1000));
+  const outstandingEvidence = evidenceGate.continued ? [] : evidenceGate.items.filter((item) => item.required && !item.discovered);
   const ownRoleAction = room.usefulActions.find((action) => action.playerId === viewerId);
   const finalIncident = room.incidentIndex + 1 >= incident.count || room.result === "timeout" || room.result === "uptime";
   const disabled = busy || !!connectionError;
@@ -235,7 +236,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           {room.players.map((player) => <li key={player.id} className="flex flex-wrap justify-between gap-2 rounded-xl bg-slate-950 p-3">
             <span>{player.nickname}{player.id === viewerId ? " (you)" : ""}{player.isHost ? " · Host" : ""}</span>
             <span className="text-sm text-cyan-100">{player.role} · {player.connected ? "Connected" : "Disconnected"} · {player.ready ? "Ready" : "Not ready"} · Contribution {player.score}</span>
-            <span className="w-full text-xs text-slate-300">Evidence {player.contributions.evidence} · Correct answers {player.contributions.answers} · Role actions {player.contributions.actions} · Resolution {player.contributions.resolution}{room.status === "playing" ? ` · Evidence: ${player.evidenceStatus.state === "not-required" ? "Complete (no assigned items)" : player.evidenceStatus.state === "disconnected" ? "Disconnected (does not block answers)" : player.evidenceStatus.state} · ${player.evidenceStatus.discovered}/${player.evidenceStatus.assigned} items` : ""}</span>
+            <span className="w-full text-xs text-slate-300">Evidence {player.contributions.evidence} · Correct answers {player.contributions.answers} · Role actions {player.contributions.actions} · Resolution {player.contributions.resolution}{room.status === "playing" && room.phase !== "briefing" ? ` · Evidence: ${player.evidenceStatus.state === "not-required" ? "Complete (no assigned items)" : player.evidenceStatus.state === "disconnected" ? "Disconnected (does not block answers)" : player.evidenceStatus.state === "waived" ? "Waived by host (no discovery points)" : player.evidenceStatus.state} · ${player.evidenceStatus.discovered}/${player.evidenceStatus.assigned} items` : ""}</span>
           </li>)}
         </ul>
         {room.status === "lobby" && <div className="mt-5 flex flex-wrap gap-3">
@@ -251,6 +252,11 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         <div className="flex flex-wrap justify-between gap-3"><p className="text-cyan-300">Incident {room.incidentIndex + 1} · {room.phase}</p><p aria-label="Time remaining" className="font-mono">Time {remaining}s</p></div>
         <h1 className="text-3xl font-semibold">{room.phase === "briefing" ? incident.title : step?.title}</h1>
         {room.phase === "briefing" ? <><p>{incident.ticket}</p><p className="text-cyan-100">{incident.objective}</p><p role="status" className="text-xl font-semibold">Mission begins in {countdown}s</p></> : step && <>
+          {isHost && !evidenceGate.continued && <aside aria-label="Host evidence fallback" className={`space-y-3 rounded-2xl border-2 p-5 ${evidenceWait === 0 ? "border-amber-300 bg-amber-300/15" : "border-slate-600 bg-slate-950"}`}>
+            <h2 className="text-lg font-semibold">{evidenceWait === 0 ? "Continue the incident now" : "Evidence timeout"}</h2>
+            <p>{evidenceWait > 0 ? `Continue with current evidence becomes available in ${evidenceWait}s.` : "The timeout has elapsed. Continue even if your evidence card or a teammate is missing; this unlocks answers for this question without awarding discovery points."}</p>
+            <button data-host-evidence-continue disabled={disabled || evidenceWait > 0 || remaining === 0} onClick={() => void command("continue-evidence")} className="w-full rounded-xl border-2 border-amber-200 bg-amber-300 px-6 py-4 text-lg font-bold text-slate-950 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto">Continue with current evidence</button>
+          </aside>}
           <section className="space-y-3 rounded-xl border border-teal-300/25 p-4" aria-label="Your evidence and responsibility">
             <h2 className="font-semibold">Discover and discuss your evidence</h2>
             <p className="text-sm text-slate-300">Discover and discuss each required evidence item. Teammates with the same item can cover for one another. If someone is absent or idle, the host can continue after the 15-second timeout.</p>
@@ -272,11 +278,10 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           <h2 className="text-lg font-semibold">{step.prompt}</h2>
           <section className="space-y-2 rounded-xl bg-slate-950 p-4" aria-label="Evidence progress">
             <h3 className="font-semibold">Required evidence</h3>
-            <ul className="space-y-2">{evidenceGate.items.map((item) => <li key={item.id}>{item.label}: {item.discovered ? "Discovered" : item.required ? "Outstanding" : "Not required (no connected owner)"} — {item.owners.length ? item.owners.map((owner) => `${owner.nickname} (${owner.discovered ? "discovered" : owner.connected ? "awaiting discovery" : "disconnected"})`).join(", ") : "No assigned responder"}</li>)}</ul>
+            {outstandingEvidence.length ? <ul className="space-y-2">{outstandingEvidence.map((item) => <li key={item.id}>{item.label}: Outstanding — {item.owners.filter((owner) => owner.connected).map((owner) => owner.nickname).join(", ")}</li>)}</ul> : <p role="status" className="text-emerald-200">No outstanding evidence requirements.</p>}
             {!evidenceGate.canAnswer && !ownAction && <p role="status" className="text-amber-100">{!foundEvidence ? "Discover your evidence to submit an answer." : "Required evidence is outstanding. The host can continue when the timeout ends."}</p>}
             {evidenceGate.continued ? <p role="status" className="text-amber-100">The host continued with current evidence. Missing responders can rejoin and discover their evidence; their points are not awarded automatically.</p> : <>
               <p role="status" className="text-sm text-cyan-100">{evidenceWait > 0 ? `Host may continue with current evidence in ${evidenceWait}s.` : "Evidence timeout reached. The host may continue with current evidence."}</p>
-              {isHost && <button disabled={disabled || !foundEvidence || evidenceWait > 0 || remaining === 0} onClick={() => void command("continue-evidence")} className={buttonStyle}>Continue with current evidence</button>}
             </>}
           </section>
           <div className="grid gap-3 sm:grid-cols-2">{step.choices.map((choice) => <button key={choice.id} data-answer-id={choice.id} disabled={disabled || !evidenceGate.canAnswer || !!ownAction || remaining === 0} aria-pressed={ownAction?.answerId === choice.id} onClick={() => void command("actions", { answerId: choice.id })} className="min-h-20 rounded-xl border border-slate-600 bg-slate-950 p-4 text-left hover:border-cyan-300 disabled:opacity-60">{choice.label}</button>)}</div>
