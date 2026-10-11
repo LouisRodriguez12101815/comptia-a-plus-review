@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A ping across switches and routers</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+
+.node.swn{fill:var(--muted)}
+.node.swn.hot{fill:var(--good)}
+.node.dim{opacity:.4}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.alt{stroke:var(--line);stroke-width:3;stroke-dasharray:3 6;fill:none}
+.tag{font-size:12px;font-weight:600;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:6px 18px;margin:4px 0 8px}
+.opt{display:none}
+.opt.on{display:block}
+.layer{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;border:2px solid var(--line)}
+.layer.host{border-color:var(--accent);color:var(--accent)}
+.layer.l2{border-color:var(--muted);color:var(--ink)}
+.layer.l3{border-color:var(--warm);color:var(--warm)}
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:10px}
+td.chg,th.chg{background:var(--warm-soft);font-weight:700}
+tr.cur td{border-top:2px solid var(--accent);border-bottom:2px solid var(--accent)}
+tr.cur td:first-child{border-left:2px solid var(--accent)}
+tr.cur td:last-child{border-right:2px solid var(--accent)}
+tr.hit td{background:var(--good-soft);font-weight:600}
+td small{display:block;color:var(--muted);font-size:11px}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.res{margin:12px 0 4px;padding:12px 14px;border-radius:10px;border:2px solid var(--line);font-size:14px}
+.res.ok{border-color:var(--good);background:var(--good-soft)}
+.res.fail{border-color:var(--bad);background:var(--bad-soft)}
+.led td,.led th{white-space:nowrap}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>A ping across switches and routers</h1>
+<p class="lede">The same ping process from the chapter, now in a bigger network. Pick where Host A is pinging and follow the frame. You will see switches decide by MAC address and VLAN, routers decide by routing table, and what changes or stays the same at each stop. Chapter 10 and 11 ideas show up where they matter.</p>
+<div class="card">
+  <p class="lab">Host A (172.16.10.2, VLAN 10) pings</p>
+  <div class="ctrls" id="scn" role="group" aria-label="Destination"></div>
+
+  <div class="opt" id="o-S">
+    <p class="lab">Switch table</p>
+    <div class="ctrls" id="knows" role="group" aria-label="Does SW1 already know Host C"></div>
+  </div>
+  <div class="opt" id="o-R">
+    <p class="lab">How R1 learned the route to 172.16.30.0/24</p>
+    <div class="ctrls" id="src" role="group" aria-label="Route source on R1"></div>
+    <p class="lab">The R1 to R2 link</p>
+    <div class="ctrls" id="link" role="group" aria-label="Primary link state"></div>
+    <div id="retwrap">
+      <p class="lab">Route back on R2 (static only)</p>
+      <div class="ctrls" id="ret" role="group" aria-label="Static return route on R2"></div>
+    </div>
+  </div>
+
+  <div class="stage">
+  <svg viewBox="0 0 800 310" role="img" aria-label="Network diagram. Hosts A and C are in VLAN 10 and Host B is in VLAN 20, all on switch SW1. SW1 has one trunk to router R1. R1 connects to R2 directly and through R3. R2 connects through switch SW2 to Host D on 172.16.30.0/24.">
+    <line id="L-A-SW1" class="wire" x1="50" y1="50" x2="200" y2="140"/>
+    <line id="L-C-SW1" class="wire" x1="50" y1="140" x2="200" y2="140"/>
+    <line id="L-B-SW1" class="wire" x1="50" y1="230" x2="200" y2="140"/>
+    <line id="L-SW1-R1" class="wire" x1="200" y1="140" x2="350" y2="140"/>
+    <line id="L-R1-R2" class="wire" x1="350" y1="140" x2="560" y2="140"/>
+    <line id="L-R1-R3" class="alt" x1="350" y1="140" x2="455" y2="255"/>
+    <line id="L-R3-R2" class="alt" x1="455" y1="255" x2="560" y2="140"/>
+    <line id="L-R2-SW2" class="wire" x1="560" y1="140" x2="670" y2="140"/>
+    <line id="L-SW2-D" class="wire" x1="670" y1="140" x2="755" y2="140"/>
+    <text x="275" y="127" text-anchor="middle" class="sub">trunk (802.1Q)</text>
+    <text x="455" y="127" text-anchor="middle" class="sub" id="tp">10.0.12.0/30</text>
+    <text x="385" y="214" text-anchor="end" class="sub">10.0.13.0/30</text>
+    <text x="535" y="214" text-anchor="start" class="sub">10.0.23.0/30</text>
+    <text x="615" y="190" text-anchor="middle" class="sub">172.16.30.0/24</text>
+    <circle id="nA" class="node" cx="50" cy="50" r="22"/><text x="50" y="55" text-anchor="middle" class="node-txt">A</text>
+    <circle id="nC" class="node" cx="50" cy="140" r="22"/><text x="50" y="145" text-anchor="middle" class="node-txt">C</text>
+    <circle id="nB" class="node" cx="50" cy="230" r="22"/><text x="50" y="235" text-anchor="middle" class="node-txt">B</text>
+    <rect id="nSW1" class="node swn" x="170" y="123" width="60" height="34" rx="8"/><text x="200" y="145" text-anchor="middle" class="node-txt">SW1</text>
+    <rect id="nR1" class="node rtr" x="318" y="118" width="64" height="44" rx="10"/><text x="350" y="145" text-anchor="middle" class="node-txt">R1</text>
+    <rect id="nR2" class="node rtr" x="528" y="118" width="64" height="44" rx="10"/><text x="560" y="145" text-anchor="middle" class="node-txt">R2</text>
+    <rect id="nR3" class="node rtr" x="423" y="233" width="64" height="44" rx="10"/><text x="455" y="260" text-anchor="middle" class="node-txt">R3</text>
+    <rect id="nSW2" class="node swn" x="640" y="123" width="60" height="34" rx="8"/><text x="670" y="145" text-anchor="middle" class="node-txt">SW2</text>
+    <circle id="nD" class="node" cx="760" cy="140" r="22"/><text x="760" y="145" text-anchor="middle" class="node-txt">D</text>
+    <text x="50" y="86" text-anchor="middle" class="sub">Host A</text><text x="50" y="100" text-anchor="middle" class="sub">VLAN 10 &middot; .10.2</text>
+    <text x="50" y="176" text-anchor="middle" class="sub">Host C</text><text x="50" y="190" text-anchor="middle" class="sub">VLAN 10 &middot; .10.3</text>
+    <text x="50" y="266" text-anchor="middle" class="sub">Host B</text><text x="50" y="280" text-anchor="middle" class="sub">VLAN 20 &middot; .20.2</text>
+    <text x="745" y="188" text-anchor="middle" class="sub">Host D</text><text x="745" y="202" text-anchor="middle" class="sub">.30.2</text>
+  </svg>
+  </div>
+
+  <div class="ctrls">
+    <button type="button" id="back">Back</button>
+    <button type="button" id="next">Next stop</button>
+    <button type="button" id="all">Show whole trip</button>
+    <button type="button" id="reset">Restart</button>
+  </div>
+
+  <div class="out" id="out" aria-live="polite"></div>
+  <div class="twocol">
+    <div><p class="lab" id="tl">Table used here</p><div id="tb"></div></div>
+    <div><p class="lab">Who decides</p><div id="who"></div></div>
+  </div>
+
+  <p class="lab">Address ledger: the frame as it arrives at each stop</p>
+  <div class="tbl"><table class="led">
+    <thead><tr><th>#</th><th>Where</th><th>Dest MAC</th><th>Source MAC</th><th>VLAN tag</th><th>Source IP</th><th>Dest IP</th><th>TTL</th></tr></thead>
+    <tbody id="led"></tbody>
+  </table></div>
+  <p class="note" id="sum"></p>
+  <div id="res"></div>
+  <div id="retbox"></div>
+  <p class="answer" id="idea"></p>
+</div>
+
+</div>
+<script>
+
+const $=function(id){ return document.getElementById(id); };
+const MAC={A:'00A1',C:'00C1',B:'00B1',D:'00D1',R1_10:'00E1',R1_20:'00E2',R1_wan:'00E3',R1_r3:'00E4',R2_wan:'00F1',R2_lan:'00F2',R2_r3:'00F3',R3_a:'0031',R3_b:'0032'};
+const NAME={A:'Host A',C:'Host C',B:'Host B',D:'Host D',R1_10:'R1 Gi0/0.10',R1_20:'R1 Gi0/0.20',R1_wan:'R1 Gi0/1',R1_r3:'R1 Gi0/2',R2_wan:'R2 Gi0/0',R2_lan:'R2 Gi0/1',R2_r3:'R2 Gi0/2',R3_a:'R3 Gi0/0',R3_b:'R3 Gi0/1'};
+const IP={A:'172.16.10.2',C:'172.16.10.3',B:'172.16.20.2',D:'172.16.30.2'};
+const SRC={
+  S:{label:'Static (S)',ad:1,mUp:0,mDn:null},
+  R:{label:'RIP (R)',ad:120,mUp:1,mDn:2},
+  O:{label:'OSPF (O)',ad:110,mUp:2,mDn:3}
+};
+const SRCSETS={static:['S'],rip:['R'],ospf:['O'],ripospf:['R','O'],staticrip:['S','R']};
+const SRCLABEL={static:'Static route',rip:'RIP',ospf:'OSPF',ripospf:'RIP and OSPF',staticrip:'Static and RIP'};
+let scn='V', knows=true, srcKey='static', down=false, ret=true, st=0, rows=[], result=null, retTbl=null;
+
+function row(o){ return o; }
+function fr(d,s,t){ return {dst:d,src:s,tag:t||null}; }
+function ipx(s,d,ttl){ return {src:s,dst:d,ttl:ttl}; }
+
+function build(){
+  rows=[]; result=null; retTbl=null;
+  const A=IP.A;
+  if(scn==='S'){
+    const f=fr('C','A'), p=ipx(A,IP.C,64);
+    rows.push(row({dev:'A',layer:'host',where:'Host A (builds it)',link:null,f:f,p:p,
+      text:'Host A compares 172.16.10.3 with its own network, 172.16.10.0/24. It is the same network, so no gateway is needed. Host A ARPs for Host C (a broadcast that stays inside VLAN 10) and frames the packet straight to Host C’s MAC address.',
+      tb:{t:'Local or remote?',h:['Check','Result'],r:[['Destination 172.16.10.3','On 172.16.10.0/24'],['Host A’s network','172.16.10.0/24'],['Same network?','Yes, send directly']],hit:2}}));
+    rows.push(row({dev:'SW1',layer:'l2',where:'SW1 (Fa0/1, VLAN 10)',link:'A-SW1',f:f,p:p,
+      text: knows
+        ? 'SW1 learns Host A’s MAC on Fa0/1 from the source address. It finds Host C’s MAC in the table and forwards out Fa0/3 only.'
+        : 'SW1 learns Host A’s MAC on Fa0/1. Host C’s MAC is not in the table yet, so the switch floods the frame out every other VLAN 10 port, including the trunk to R1. R1 ignores it because the destination MAC is not its own. VLAN 20 ports never see it.',
+      tb:{t:'SW1 MAC address table',h:['MAC','Port','VLAN','How it got there'],
+        r: knows ? [['00A1 (Host A)','Fa0/1','10','Learned from this frame'],['00C1 (Host C)','Fa0/3','10','Learned earlier']]
+                 : [['00A1 (Host A)','Fa0/1','10','Learned from this frame']],
+        hit: knows?1:-1, note: knows?'':'No entry for the destination, so the frame is flooded within VLAN 10.'}}));
+    rows.push(row({dev:'C',layer:'host',where:'Host C',link:'C-SW1',f:f,p:p,
+      text:'Host C checks the CRC, the destination MAC, and the destination IP. All match, so protocol 01 sends the payload to ICMP. No router touched the packet, so the TTL is still 64.',
+      tb:null}));
+    result={ok:true,text:'Echo reply comes back and the ping prints !. Traffic inside one VLAN is switched only. No router and no routing table are involved.'};
+  }
+  if(scn==='V'){
+    const p0=ipx(A,IP.B,64), p1=ipx(A,IP.B,63);
+    rows.push(row({dev:'A',layer:'host',where:'Host A (builds it)',link:null,f:fr('R1_10','A'),p:p0,
+      text:'Host B is on 172.16.20.0/24, a different network and a different VLAN, so Host A sends the packet to its default gateway, R1’s VLAN 10 sub-interface (172.16.10.1). The frame is addressed to R1’s MAC, not Host B’s.',
+      tb:{t:'Local or remote?',h:['Check','Result'],r:[['Destination 172.16.20.2','On 172.16.20.0/24'],['Host A’s network','172.16.10.0/24'],['Same network?','No, use the default gateway']],hit:2}}));
+    rows.push(row({dev:'SW1',layer:'l2',where:'SW1 (Fa0/1, VLAN 10)',link:'A-SW1',f:fr('R1_10','A'),p:p0,
+      text:'SW1 learns Host A on Fa0/1, finds R1’s MAC on the trunk Gi0/1, and sends the frame up the trunk with an 802.1Q tag for VLAN 10 added so R1 knows which VLAN it came from.',
+      tb:{t:'SW1 MAC address table',h:['MAC','Port','VLAN','How it got there'],r:[['00A1 (Host A)','Fa0/1','10','Learned from this frame'],['00E1 (R1 Gi0/0.10)','Gi0/1 (trunk)','10','Learned earlier']],hit:1}}));
+    rows.push(row({dev:'R1',layer:'l3',where:'R1 (Gi0/0.10)',link:'SW1-R1',f:fr('R1_10','A',10),p:p0,
+      text:'R1 removes the frame and reads the destination IP. 172.16.20.2 is not R1’s address, so it looks in the routing table. The network is directly connected on sub-interface Gi0/0.20. TTL drops from 64 to 63. R1 ARPs for Host B and builds a new frame, tagged VLAN 20.',
+      tb:{t:'R1: show ip route',h:['Code','Network','Exit interface'],r:[['C','172.16.10.0/24','Gi0/0.10'],['C','172.16.20.0/24','Gi0/0.20'],['C','10.0.12.0/30','Gi0/1']],hit:1,note:'Connected networks need no routing protocol.'}}));
+    rows.push(row({dev:'SW1',layer:'l2',where:'SW1 (trunk Gi0/1)',link:'SW1-R1',f:fr('B','R1_20',20),p:p1,
+      text:'The same trunk carries the frame back down, now tagged VLAN 20 with Host B’s MAC as the destination. SW1 looks in the VLAN 20 part of its table, finds Host B on Fa0/2, removes the tag, and sends it out that access port.',
+      tb:{t:'SW1 MAC address table',h:['MAC','Port','VLAN','How it got there'],r:[['00B1 (Host B)','Fa0/2','20','Learned earlier'],['00E2 (R1 Gi0/0.20)','Gi0/1 (trunk)','20','Learned from this frame']],hit:0}}));
+    rows.push(row({dev:'B',layer:'host',where:'Host B',link:'B-SW1',f:fr('B','R1_20'),p:p1,
+      text:'Host B accepts the frame and the packet. The packet went up and back down the same cable (router on a stick). TTL is 63 because exactly one router handled it.',tb:null}));
+    result={ok:true,text:'Echo reply comes back and the ping prints !. Two VLANs are two broadcast domains, so only a router could connect them.'};
+  }
+  if(scn==='R'){
+    const set=SRCSETS[srcKey];
+    const offered=[], cand=[];
+    set.forEach(function(k){
+      if(k==='S' && down){ cand.push({k:k,removed:true}); return; }
+      offered.push(k); cand.push({k:k});
+    });
+    let win=null; offered.forEach(function(k){ if(win===null || SRC[k].ad<SRC[win].ad) win=k; });
+    const viaR3 = down && win!==null;
+    const nh = viaR3 ? '10.0.13.2' : '10.0.12.2';
+    const crows=cand.map(function(c){
+      const s=SRC[c.k];
+      if(c.removed) return [s.label,String(s.ad),'0','10.0.12.2','Removed: exit interface Gi0/1 is down'];
+      const m = down ? s.mDn : s.mUp;
+      const note = c.k===win ? 'Installed' : 'Not installed: higher AD';
+      return [s.label,String(s.ad),String(m),nh,note];
+    });
+    let hit=-1; cand.forEach(function(c,i){ if(c.k===win) hit=i; });
+    const lk = win===null
+      ? {t:'Routes offered for 172.16.30.0/24',h:['Source','AD','Metric','Next hop','Result'],r:[['None','-','-','-','No route to 172.16.30.0/24']],hit:0,note:'No entry for the destination network means the packet is discarded and an ICMP Destination Unreachable goes back.'}
+      : {t:'Routes offered for 172.16.30.0/24 (R1)',h:['Source','AD','Metric','Next hop','Result'],r:crows,hit:hit,note:'Administrative distance picks the winning source. A metric only breaks ties between routes from the same protocol, and metrics from different protocols are not comparable.'};
+    const p0=ipx(A,IP.D,64);
+    rows.push(row({dev:'A',layer:'host',where:'Host A (builds it)',link:null,f:fr('R1_10','A'),p:p0,
+      text:'Host D is on 172.16.30.0/24, a remote network. Host A sends the packet to its default gateway, R1, exactly as in the 36 steps. The destination MAC is R1’s, and the destination IP is Host D’s.',
+      tb:{t:'Local or remote?',h:['Check','Result'],r:[['Destination 172.16.30.2','On 172.16.30.0/24'],['Host A’s network','172.16.10.0/24'],['Same network?','No, use the default gateway']],hit:2}}));
+    rows.push(row({dev:'SW1',layer:'l2',where:'SW1 (Fa0/1, VLAN 10)',link:'A-SW1',f:fr('R1_10','A'),p:p0,
+      text:'SW1 does what it always does: learn the source MAC, find R1’s MAC on the trunk, and send the frame up with a VLAN 10 tag. It never looks at the IP address.',
+      tb:{t:'SW1 MAC address table',h:['MAC','Port','VLAN','How it got there'],r:[['00A1 (Host A)','Fa0/1','10','Learned from this frame'],['00E1 (R1 Gi0/0.10)','Gi0/1 (trunk)','10','Learned earlier']],hit:1}}));
+    if(win===null){
+      rows.push(row({dev:'R1',layer:'l3',where:'R1 (Gi0/0.10)',link:'SW1-R1',f:fr('R1_10','A',10),p:p0,
+        text:'R1 removes the frame and looks for 172.16.30.0/24. With the R1 to R2 link down, the static route is removed from the table and nothing else offers a path. This is the "no route" case from step 12: the packet is discarded and an ICMP Destination Unreachable is sent to Host A.',
+        tb:lk}));
+      result={ok:false,text:'Host A sees "Destination host unreachable" from 172.16.10.1. This is a known failure at R1, so R1 reports it. A static route cannot adapt on its own.'};
+    } else {
+      const p1=ipx(A,IP.D,63), p2=ipx(A,IP.D,62), p3=ipx(A,IP.D,61);
+      const code = win==='S'?'S':win==='R'?'R':'O';
+      const dyn0 = set.filter(function(k){ return k!=='S'; });
+      let bk=null; dyn0.forEach(function(k){ if(bk===null||SRC[k].ad<SRC[bk].ad) bk=k; });
+      const hasBack = bk!==null || ret;
+      const backCode = bk!==null ? bk : 'S';
+      const backRow = hasBack ? [[backCode,'172.16.10.0/24','Gi0/0 (route back)']] : [];
+      if(!viaR3){
+        rows.push(row({dev:'R1',layer:'l3',where:'R1 (Gi0/0.10)',link:'SW1-R1',f:fr('R1_10','A',10),p:p0,
+          text:'R1 removes the frame and looks up 172.16.30.0/24. '+SRC[win].label+' wins and points to next hop 10.0.12.2 out Gi0/1. TTL drops to 63. R1 builds a new frame for R2’s MAC. The IP addresses are untouched.',tb:lk}));
+        rows.push(row({dev:'R2',layer:'l3',where:'R2 (Gi0/0)',link:'R1-R2',f:fr('R2_wan','R1_wan'),p:p1,
+          text:'R2 checks the frame, removes it, and looks up 172.16.30.0/24. It is directly connected on Gi0/1, so no protocol is needed for this last hop. TTL drops to 62. R2 ARPs for Host D and builds a new frame.',
+          tb:{t:'R2: show ip route',h:['Code','Network','Exit interface'],r:[['C','172.16.30.0/24','Gi0/1'],['C','10.0.12.0/30','Gi0/0']].concat(backRow),hit:0,note:hasBack?'':'R2 has no route to 172.16.10.0/24. That only matters on the return trip.'}}));
+        rows.push(row({dev:'SW2',layer:'l2',where:'SW2 (Gi0/1, VLAN 30)',link:'R2-SW2',f:fr('D','R2_lan'),p:p2,
+          text:'SW2 is another Layer 2 stop. It learns R2’s MAC and forwards by MAC address only, out the access port where Host D lives.',
+          tb:{t:'SW2 MAC address table',h:['MAC','Port','VLAN','How it got there'],r:[['00D1 (Host D)','Fa0/1','30','Learned earlier'],['00F2 (R2 Gi0/1)','Gi0/1','30','Learned from this frame']],hit:0}}));
+        rows.push(row({dev:'D',layer:'host',where:'Host D',link:'SW2-D',f:fr('D','R2_lan'),p:p2,
+          text:'Host D accepts the frame and the packet and gives the payload to ICMP. Two routers handled the packet, so TTL went from 64 to 62.',tb:null}));
+      } else {
+        rows.push(row({dev:'R1',layer:'l3',where:'R1 (Gi0/0.10)',link:'SW1-R1',f:fr('R1_10','A',10),p:p0,
+          text:'R1 removes the frame and looks up 172.16.30.0/24. Because the R1 to R2 link is down, '+(set.indexOf('S')>-1?'the static route is removed and ':'')+SRC[win].label+' now points to next hop 10.0.13.2 (R3) out Gi0/2. TTL drops to 63 and R1 builds a new frame for R3.',tb:lk}));
+        rows.push(row({dev:'R3',layer:'l3',where:'R3 (Gi0/0)',link:'R1-R3',f:fr('R3_a','R1_r3'),p:p1,
+          text:'R3 is one more routing decision. Its table holds a route to 172.16.30.0/24 through R2, so it lowers the TTL to 62 and builds a new frame for R2.',
+          tb:{t:'R3: show ip route',h:['Code','Network','Next hop'],r:[[code,'172.16.30.0/24','R2 (10.0.23.2)'],[code,'172.16.10.0/24','R1 (10.0.13.1)']],hit:0}}));
+        rows.push(row({dev:'R2',layer:'l3',where:'R2 (Gi0/2)',link:'R3-R2',f:fr('R2_r3','R3_b'),p:p2,
+          text:'R2 receives the frame on its third interface and finds 172.16.30.0/24 directly connected on Gi0/1. TTL drops to 61. New frame for Host D.',
+          tb:{t:'R2: show ip route',h:['Code','Network','Exit interface'],r:[['C','172.16.30.0/24','Gi0/1'],[backCode,'172.16.10.0/24','via R3 (route back)']],hit:0}}));
+        rows.push(row({dev:'SW2',layer:'l2',where:'SW2 (Gi0/1, VLAN 30)',link:'R2-SW2',f:fr('D','R2_lan'),p:p3,
+          text:'SW2 forwards by MAC address only, out the access port to Host D.',
+          tb:{t:'SW2 MAC address table',h:['MAC','Port','VLAN','How it got there'],r:[['00D1 (Host D)','Fa0/1','30','Learned earlier'],['00F2 (R2 Gi0/1)','Gi0/1','30','Learned from this frame']],hit:0}}));
+        rows.push(row({dev:'D',layer:'host',where:'Host D',link:'SW2-D',f:fr('D','R2_lan'),p:p3,
+          text:'Host D accepts it. The detour added a hop, so TTL is 61 instead of 62.',tb:null}));
+      }
+      // return trip check
+      const dyn = set.some(function(k){ return k!=='S'; });
+      const hasRet = dyn || ret;
+      const rr=[];
+      if(set.indexOf('S')>-1) rr.push([SRC.S.label, ret ? 'S 172.16.10.0/24 [1/0] via R1' : 'No static route configured on R2']);
+      set.forEach(function(k){ if(k!=='S') rr.push([SRC[k].label,'Learned automatically from R1']); });
+      retTbl={rows:rr,ok:hasRet};
+      if(hasRet){
+        result={ok:true,text:'The echo request arrived, R2 knows the way back to 172.16.10.0/24, and the echo reply returns. The ping prints !.'+(viaR3?' Dynamic routing found the detour without anyone touching a router.':'')};
+      } else {
+        result={ok:false,text:'The echo request reached Host D, but on the return trip R2 has no route to 172.16.10.0/24 and drops the reply. Host A sees "Request timed out", not Destination Unreachable, because the failure happened on the way back. A static route has to be configured in both directions.'};
+      }
+    }
+  }
+}
+
+const MESSAGES={
+ S:'Same VLAN: the switch does all the work. The frame is addressed to Host C itself, and the router never sees it.',
+ V:'Different VLANs are different broadcast domains. A router has to connect them, and the same trunk carries the frame up and back down with different VLAN tags.',
+ R:'Switches stay Layer 2 stops and routers rebuild the frame at every hop. Administrative distance chooses the route source, and a metric only breaks ties within one protocol.'
+};
+function g(i,l){ const e=$(i); e.innerHTML=''; l.forEach(function(x){ const b=document.createElement('button'); b.type='button'; b.dataset.k=x[0]; b.textContent=x[1]; b.addEventListener('click',function(){ x[2](); st=0; render(); }); e.appendChild(b); }); }
+function setupControls(){
+  g('scn',[['S','Host C, same VLAN (172.16.10.3)',function(){ scn='S'; }],['V','Host B, other VLAN (172.16.20.2)',function(){ scn='V'; }],['R','Host D, remote site (172.16.30.2)',function(){ scn='R'; }]]);
+  g('knows',[['y','SW1 already knows Host C',function(){ knows=true; }],['n','SW1 has never seen Host C',function(){ knows=false; }]]);
+  g('src',[['static','Static route',function(){ srcKey='static'; }],['rip','RIP',function(){ srcKey='rip'; }],['ospf','OSPF',function(){ srcKey='ospf'; }],['ripospf','RIP and OSPF both',function(){ srcKey='ripospf'; }],['staticrip','Static and RIP both',function(){ srcKey='staticrip'; }]]);
+  g('link',[['up','Link up',function(){ down=false; }],['down','Link down (R3 detour exists)',function(){ down=true; }]]);
+  g('ret',[['y','R2 has a static route back',function(){ ret=true; }],['n','R2 has none',function(){ ret=false; }]]);
+}
+function pressed(id,fn){ $(id).querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed',String(fn(b.dataset.k))); }); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function cellMac(k,chg){ return '<td'+(chg?' class="chg"':'')+'>'+MAC[k]+'<small>'+esc(NAME[k])+'</small></td>'; }
+function render(){
+  build();
+  const last=rows.length-1; if(st>last) st=last;
+  $('o-S').className='opt'+(scn==='S'?' on':''); $('o-R').className='opt'+(scn==='R'?' on':'');
+  $('retwrap').style.display = (scn==='R' && srcKey==='static' && !down) ? 'block' : 'none';
+  pressed('scn',function(k){ return k===scn; }); pressed('knows',function(k){ return (k==='y')===knows; });
+  pressed('src',function(k){ return k===srcKey; }); pressed('link',function(k){ return (k==='down')===down; });
+  pressed('ret',function(k){ return (k==='y')===ret; });
+  const r=rows[st];
+  $('out').innerHTML='<strong>Stop '+(st+1)+' of '+rows.length+' · '+esc(r.where)+'</strong><br>'+esc(r.text);
+  const lay = r.layer==='host'?['host','Host']:r.layer==='l2'?['l2','Layer 2 switch']:['l3','Layer 3 router'];
+  const why = r.layer==='host'?'Builds or accepts the packet and frame. A host decides local or remote, then frames to the destination or the gateway.'
+    : r.layer==='l2'?'Decides by MAC address and VLAN only. Never changes the IP packet or the TTL.'
+    : 'Decides by destination IP using the routing table. Rebuilds the frame and lowers the TTL by 1.';
+  $('who').innerHTML='<span class="layer '+lay[0]+'">'+lay[1]+'</span><p class="note">'+why+'</p>';
+  if(r.tb){
+    $('tl').textContent=r.tb.t;
+    let h='<div class="tbl"><table><thead><tr>'+r.tb.h.map(function(x){ return '<th>'+esc(x)+'</th>'; }).join('')+'</tr></thead><tbody>';
+    r.tb.r.forEach(function(x,i){ h+='<tr'+(i===r.tb.hit?' class="hit"':'')+'>'+x.map(function(c){ return '<td>'+esc(c)+'</td>'; }).join('')+'</tr>'; });
+    h+='</tbody></table></div>'; if(r.tb.hit>=0) h+='<p class="note"><strong>Highlighted row:</strong> the entry used at this stop.</p>';
+    if(r.tb.note) h+='<p class="note">'+esc(r.tb.note)+'</p>';
+    $('tb').innerHTML=h;
+  } else { $('tl').textContent='Table used here'; $('tb').innerHTML='<p class="note">No table lookup at this stop.</p>'; }
+  // ledger
+  let L='', macChanges=0;
+  for(let i=0;i<=st;i++){
+    const c=rows[i], p=i>0?rows[i-1]:null;
+    const dch=p&&p.f.dst!==c.f.dst, sch=p&&p.f.src!==c.f.src, tch=p&&(p.f.tag||'')!==(c.f.tag||''), ttch=p&&p.p.ttl!==c.p.ttl;
+    if(dch||sch) macChanges++;
+    L+='<tr'+(i===st?' class="cur" aria-current="step"':'')+'><td>'+(i+1)+'</td><td>'+esc(c.where)+'</td>'+cellMac(c.f.dst,dch)+cellMac(c.f.src,sch)+'<td'+(tch?' class="chg"':'')+'>'+(c.f.tag?('VLAN '+c.f.tag):'none')+'</td><td>'+c.p.src+'</td><td>'+c.p.dst+'</td><td'+(ttch?' class="chg"':'')+'>'+c.p.ttl+'</td></tr>';
+  }
+  $('led').innerHTML=L;
+  $('sum').innerHTML='Highlighted cells changed since the previous stop. So far the source and destination IP addresses have never changed, the MAC addresses changed '+macChanges+' time'+(macChanges===1?'':'s')+', and the TTL is '+r.p.ttl+'.';
+  // diagram
+  const ids=['A','C','B','SW1','R1','R2','R3','SW2','D'];
+  const used={}; for(let i=0;i<=st;i++) used[rows[i].dev]=1;
+  ids.forEach(function(d){
+    const e=$('n'+d); const isRtr=/^R/.test(d), isSw=/^SW/.test(d);
+    e.setAttribute('class','node'+(isRtr?' rtr':'')+(isSw?' swn':'')+(d===r.dev?' hot':'')+((d==='R3'&&!used.R3&&!(scn==='R'&&down))?' dim':''));
+  });
+  const cross={}; for(let i=0;i<=st;i++){ if(rows[i].link) cross[rows[i].link]=1; }
+  ['A-SW1','C-SW1','B-SW1','SW1-R1','R1-R2','R1-R3','R3-R2','R2-SW2','SW2-D'].forEach(function(l){
+    const e=$('L-'+l); let cls='wire';
+    if(l==='R1-R3'||l==='R3-R2') cls='alt';
+    if(l==='R1-R2' && scn==='R' && down) cls='dead';
+    if(cross[l]) cls='live';
+    e.setAttribute('class',cls);
+  });
+  $('tp').textContent = (scn==='R'&&down) ? '✕ 10.0.12.0/30 down' : '10.0.12.0/30';
+  // result and return
+  if(st===last){
+    $('res').innerHTML='<div class="res '+(result.ok?'ok':'fail')+'"><strong>'+(result.ok?'✓ Ping succeeds':'✕ Ping fails')+'.</strong> '+esc(result.text)+'</div>';
+  } else $('res').innerHTML='';
+  if(retTbl && st===last){
+    $('retbox').innerHTML='<p class="lab">Can the echo reply get back? R2’s route to 172.16.10.0/24</p><div class="tbl"><table><thead><tr><th>Source</th><th>Route on R2</th></tr></thead><tbody>'+retTbl.rows.map(function(x){ return '<tr><td>'+esc(x[0])+'</td><td>'+esc(x[1])+'</td></tr>'; }).join('')+'</tbody></table></div>';
+  } else $('retbox').innerHTML='';
+  $('idea').innerHTML='<strong>Takeaway.</strong> '+esc(MESSAGES[scn]);
+  $('back').disabled=st===0; $('next').disabled=st===last;
+}
+$('back').addEventListener('click',function(){ if(st>0){ st--; render(); } });
+$('next').addEventListener('click',function(){ if(st<rows.length-1){ st++; render(); } });
+$('all').addEventListener('click',function(){ st=rows.length-1; render(); });
+$('reset').addEventListener('click',function(){ st=0; render(); });
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'&&st<rows.length-1){ st++; render(); }
+  if(e.key==='ArrowLeft'&&st>0){ st--; render(); }
+});
+setupControls(); render();
+
+</script>
+</body>
+</html>
