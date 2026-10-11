@@ -24,7 +24,16 @@ test('mission content maps every decision and reward to a sourced objective and 
     for(const link of o.review){
       if(link.href.startsWith('/notes/'))assert.ok(notes.find(t=>t.id==='n10-ch9').sections.some(s=>s.id===link.href.split('#')[1]));
       if(link.href.startsWith('/labs/'))assert.ok(labs.find(l=>l.slug==='two-subnet-lan').sections.some(s=>s.id===link.href.split('#')[1]));
-      if(link.href.startsWith('/flashcards'))assert.equal(cards.filter(c=>c.topicId==='n10-ch9').length,3);
+      if(link.href.startsWith('/flashcards')){
+        const topic=new URL(link.href,'https://example.invalid').searchParams.get('topic');
+        assert.equal(topic,'n10-ch9');
+        const reviewDeck=cards.filter(c=>c.topicId===topic);
+        for(const id of ['fc-next-hop-1','fc-next-hop-2','fc-next-hop-3']){
+          const matches=reviewDeck.filter(c=>c.id===id);
+          assert.equal(matches.length,1,`Required mission review card ${id} must appear once in the linked deck`);
+          assert.ok(matches[0].back.length>30,'Review feedback must retain its explanatory content');
+        }
+      }
     }
   }
   assert.ok(!cards.find(c=>c.id==='fc-n6').back.includes('learn every device'));
