@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The 36 steps of a ping</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+
+.dev{fill:var(--accent)}
+.dev.rtr{fill:var(--warm)}
+.dev.hot{fill:var(--good)}
+.dev.dim{opacity:.45}
+.pkt rect{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.pkt text{fill:var(--ink);font:600 11px system-ui,sans-serif}
+.pkt{transition:transform .7s ease;transform-box:fill-box}
+.tag{font-size:12px;font-weight:600;color:var(--muted)}
+.bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0 10px}
+.bar>div{height:100%;background:var(--accent);transition:width .25s}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 10px}
+.chips button{min-width:36px;padding:4px 0;font-size:12px;border-radius:8px}
+.chips button[aria-current="step"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.chips button.done{background:var(--accent-soft)}
+.layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:6px 0 4px}
+.layer{border:2px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--muted)}
+.layer b{display:block;color:var(--ink);font-size:13px}
+.layer.on{border-color:var(--good);background:var(--good-soft);color:var(--ink)}
+.layer.on::after{content:"\2713 active";display:block;font-size:11px;font-weight:600;color:var(--good)}
+.pdu{display:grid;gap:8px;margin-top:6px}
+.row{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg)}
+.row h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.flds{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}
+.fld{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--surface);min-width:0;overflow-wrap:anywhere}
+.fld small{display:block;color:var(--muted);font-size:11px}
+.fld span{font-size:13px}
+.fld.chg{background:var(--warm-soft);border-color:var(--warm)}
+.none{color:var(--muted);font-size:13px}
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+tr.hit td{background:var(--good-soft);font-weight:600}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.stepno{font-weight:700;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>The 36 steps of a ping, one at a time</h1>
+<p class="lede">Host_A pings Host_B through one router (Figure 9.2). Step through all 36 steps and watch where the work happens, which layer is active, and which fields in the packet and frame change. MAC addresses are the ones from the chapter's output.</p>
+<div class="card">
+  <p class="lab">Jump to a phase</p>
+  <div class="ctrls" id="phases" role="group" aria-label="Phases of the process"></div>
+  <div class="bar" role="progressbar" aria-label="Progress through the 36 steps" aria-valuemin="1" aria-valuemax="36" id="pb"><div id="pbi"></div></div>
+  <div class="chips" id="chips" role="group" aria-label="Go to step"></div>
+  <div class="stage">
+  <svg viewBox="0 0 640 170" role="img" aria-label="Host_A connects to router Lab_A on interface e0 (172.16.10.1). Lab_A connects to Host_B on interface e1 (172.16.20.1). The current step highlights the device doing the work, and a frame marker travels along the cable when bits are sent.">
+    <path class="wire" d="M116 80 H270"/>
+    <path class="wire" d="M370 80 H524"/>
+    <circle id="dA" class="dev" cx="90" cy="80" r="26"/><text x="90" y="85" text-anchor="middle" class="node-txt">A</text>
+    <rect id="dR" class="dev rtr" x="270" y="50" width="100" height="60" rx="12"/><text x="320" y="85" text-anchor="middle" class="node-txt">Lab_A</text>
+    <circle id="dB" class="dev" cx="550" cy="80" r="26"/><text x="550" y="85" text-anchor="middle" class="node-txt">B</text>
+    <text x="90" y="128" text-anchor="middle" class="lbl">Host_A</text><text x="90" y="144" text-anchor="middle" class="sub">172.16.10.2</text>
+    <text x="550" y="128" text-anchor="middle" class="lbl">Host_B</text><text x="550" y="144" text-anchor="middle" class="sub">172.16.20.2</text>
+    <text x="193" y="68" text-anchor="middle" class="sub">e0 · 172.16.10.1</text>
+    <text x="447" y="68" text-anchor="middle" class="sub">e1 · 172.16.20.1</text>
+    <g id="pkt" class="pkt" style="opacity:0"><rect x="-30" y="-12" width="60" height="24" rx="8"/><text x="0" y="4" text-anchor="middle">frame</text></g>
+  </svg>
+  </div>
+  <p class="tag"><span id="trip" class="pill"></span> <span id="where"></span></p>
+  <div class="ctrls">
+    <button type="button" id="back">Back</button>
+    <button type="button" id="next">Next step</button>
+    <button type="button" id="play" aria-pressed="false">Play</button>
+    <button type="button" id="reset">Restart</button>
+  </div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="lab">Which layer is working</p>
+  <div class="layers" id="layers"></div>
+  <div class="twocol">
+    <div>
+      <p class="lab">What the device is holding</p>
+      <div class="pdu" id="pdu"></div>
+    </div>
+    <div>
+      <p class="lab">Lookup or check in this step</p>
+      <div id="lk"></div>
+    </div>
+  </div>
+  <p class="answer"><strong>Key idea.</strong> The IP packet keeps the same source and destination addresses from end to end. Only the frame is rebuilt at each hop, so the destination MAC is always the next device on the local network, here the default gateway on the way out. Frames are never placed on a remote network. A bigger network repeats the same steps with more hops.</p>
+</div>
+
+</div>
+<script>
+
+const M={A:'0030.9492.a4ac',E0:'0015.0506.31b0',E1:'00d0.58ad.05f4',B:'0030.9492.a5dd'};
+const OWN={}; OWN[M.A]='Host_A'; OWN[M.E0]='Lab_A e0'; OWN[M.E1]='Lab_A e1'; OWN[M.B]='Host_B';
+const IPQ={src:'172.16.10.2',dst:'172.16.20.2',proto:'01 (ICMP)'};
+const IPR={src:'172.16.20.2',dst:'172.16.10.2',proto:'01 (ICMP)'};
+function F(d,s){ return {dst:M[d],src:M[s],type:'0x0800 (IP)',fcs:'CRC result'}; }
+const F1=F('E0','A'), F2=F('B','E1'), F3=F('E1','B'), F4=F('A','E0');
+
+const PHASES=[
+  {t:'A packet is created on the host',a:1,b:2},
+  {t:'The packet is forwarded',a:3,b:8},
+  {t:'The router receives the packet',a:9,b:10},
+  {t:'The router routes the packet',a:11,b:16},
+  {t:'The remote host receives the packet',a:17,b:19},
+  {t:'The destination host becomes a source host',a:20,b:25},
+  {t:'The router routes another packet',a:26,b:33},
+  {t:'The original source receives the reply',a:34,b:36}
+];
+
+const KINDS={
+  icmp:{label:'ICMP acts'},
+  create:{label:'IP builds a packet'},
+  route:{label:'Routing decision'},
+  arp:{label:'MAC lookup (ARP)'},
+  frame:{label:'Data Link builds a frame'},
+  send:{label:'Bits on the wire'},
+  receive:{label:'Receive and check'}
+};
+
+function RT(hit,note){ return {t:'Lab_A: show ip route',h:['Code','Network','Exit interface'],r:[['C','172.16.10.0','Ethernet0'],['C','172.16.20.0','Ethernet1']],hit:hit,note:note}; }
+function RARP(hit){ return {t:'Lab_A: show ip arp',h:['IP address','Hardware address','Interface'],r:[['172.16.20.1','00d0.58ad.05f4','Ethernet1 (the router itself)'],['172.16.20.2','0030.9492.a5dd','Ethernet1'],['172.16.10.1','0015.0506.31b0','Ethernet0 (the router itself)'],['172.16.10.2','0030.9492.a4ac','Ethernet0']],hit:hit,note:'If the entry were missing, the router would ARP out that interface first. Cisco keeps ARP entries for four hours.'}; }
+function CHK(n){ const t=['CRC result matches the FCS','Destination MAC matches this interface','EtherType says the packet is IP']; return {t:'Frame checks',h:['Check','Result'],r:t.map(function(x,i){ return [x, i<n?'Passed':'Not yet']; }),hit:n-1}; }
+
+const STEPS=[
+ {n:1,dev:'A',at:'Host_A',lay:['app'],kind:'icmp',title:'ICMP makes an echo request',
+  text:'The user pings Host_B. ICMP creates an echo request payload (the alphabet in the data field).',
+  pay:'Echo request',ip:null,fr:null,lk:null},
+ {n:2,dev:'A',at:'Host_A',lay:['net'],kind:'create',title:'IP builds the packet',
+  text:'ICMP hands the payload to IP. IP builds a packet with a source address, a destination address, and Protocol 01h so the receiver knows to give the payload to ICMP.',
+  pay:'Echo request',ip:IPQ,fr:null,lk:null},
+ {n:3,dev:'A',at:'Host_A',lay:['net'],kind:'route',title:'Local or remote?',
+  text:'IP decides whether the destination is on the local network or a remote one. 172.16.20.2 is not on 172.16.10.0, so it is remote.',
+  pay:'Echo request',ip:IPQ,fr:null,
+  lk:{t:'Local or remote?',h:['Check','Value'],r:[['Destination IP','172.16.20.2'],['Host_A network','172.16.10.0/24'],['Same network?','No, so it is remote']],hit:2}},
+ {n:4,dev:'A',at:'Host_A',lay:['net'],kind:'route',title:'Use the default gateway',
+  text:'Because the destination is remote, the packet must go to the default gateway. Windows reads the configured gateway from its registry.',
+  pay:'Echo request',ip:IPQ,fr:null,
+  lk:{t:'Default gateway',h:['Setting','Value'],r:[['Default gateway','172.16.10.1']],hit:0,note:'172.16.10.1 is the IP address of Lab_A interface e0.'}},
+ {n:5,dev:'A',at:'Host_A',lay:['net'],kind:'arp',title:'Which MAC does the frame need?',
+  text:'To frame the packet, Host_A needs a hardware address. Hosts only talk by MAC address on the local LAN, so the MAC it needs is the gateway’s (Lab_A e0), not Host_B’s.',
+  pay:'Echo request',ip:IPQ,fr:null,
+  lk:{t:'Which MAC does Host_A need?',h:['Packet is addressed to','MAC for the frame'],r:[['172.16.20.2 (Host_B)','Not used, Host_B is remote'],['172.16.10.1 (gateway)','Lab_A e0 MAC address']],hit:1,note:'MAC addresses are local to a LAN and never go past a router.'}},
+ {n:6,dev:'A',at:'Host_A',lay:['net'],kind:'arp',title:'Check the ARP cache',
+  text:'Host_A checks its ARP cache for the gateway’s MAC. If it is missing, Host_A broadcasts an ARP request, the router replies, and Host_A caches the answer.',
+  pay:'Echo request',ip:IPQ,fr:null,
+  lk:{t:'Host_A: arp -a',h:['Internet address','Physical address','Type'],r:[['172.16.10.1','00-15-05-06-31-b0','dynamic']],hit:0,note:'Missing entry: ARP broadcast, router replies with its e0 MAC.'}},
+ {n:7,dev:'A',at:'Host_A',lay:['link'],kind:'frame',title:'Build the frame',
+  text:'The Data Link layer wraps the packet in an Ethernet frame: destination MAC (Lab_A e0), source MAC (Host_A), EtherType for IP, and an FCS at the end. Host_B’s MAC is not in this frame.',
+  pay:'Echo request',ip:IPQ,fr:F1,lk:null},
+ {n:8,dev:'A',at:'Host_A → Lab_A',lay:['phy'],kind:'send',title:'Send bits to the router',
+  text:'The frame goes to the Physical layer and is placed on the twisted-pair cable one bit at a time.',
+  pay:'Echo request',ip:IPQ,fr:F1,wire:'AR',lk:null},
+ {n:9,dev:'R',at:'Lab_A (e0)',lay:['link'],kind:'receive',title:'Router checks the frame',
+  text:'Lab_A e0 builds the frame from the bits and runs the CRC. If it does not match the FCS, the frame is discarded. If it matches, the destination MAC is checked (it is e0), then the EtherType.',
+  pay:'Echo request',ip:IPQ,fr:F1,lk:CHK(3)},
+ {n:10,dev:'R',at:'Lab_A (e0)',lay:['link','net'],kind:'receive',title:'Frame removed, packet to IP',
+  text:'The packet is pulled out of the frame and the rest of the frame is thrown away. The EtherType (IP) says who gets the packet, so it goes to IP.',
+  pay:'Echo request',ip:IPQ,fr:null,lk:null},
+ {n:11,dev:'R',at:'Lab_A (e0)',lay:['net'],kind:'route',title:'Not mine, so look it up',
+  text:'IP reads the destination address. 172.16.20.2 does not match any address on Lab_A’s interfaces, so the router looks up the destination network in its routing table.',
+  pay:'Echo request',ip:IPQ,fr:null,
+  lk:{t:'IP checks the destination',h:['Check','Result'],r:[['Destination 172.16.20.2','Not an address on Lab_A'],['Next','Look up network 172.16.20.0']],hit:1}},
+ {n:12,dev:'R',at:'Lab_A (e0)',lay:['net'],kind:'route',title:'Is there a route?',
+  text:'The table must have an entry for 172.16.20.0. If it does not, the packet is discarded at once and an ICMP Destination Unreachable goes back to the sender.',
+  pay:'Echo request',ip:IPQ,fr:null,lk:RT(1,'No entry for the destination network means discard plus ICMP Destination Unreachable.')},
+ {n:13,dev:'R',at:'Lab_A',lay:['net'],kind:'route',title:'Route found: exit e1',
+  text:'The entry is there. C means directly connected, so no routing protocol is needed in this network. The exit interface is Ethernet 1.',
+  pay:'Echo request',ip:IPQ,fr:null,lk:RT(1,'Both networks are directly connected, so both routes are marked C.')},
+ {n:14,dev:'R',at:'Lab_A (e1)',lay:['net'],kind:'route',title:'Switch to the e1 buffer',
+  text:'The router packet-switches the packet to the Ethernet 1 buffer. The packet itself has not changed.',
+  pay:'Echo request',ip:IPQ,fr:null,lk:null},
+ {n:15,dev:'R',at:'Lab_A (e1)',lay:['net'],kind:'arp',title:'Find Host_B’s MAC',
+  text:'IP needs Host_B’s hardware address and checks the router’s ARP cache. It is already there. If not, the router would send an ARP request out e1.',
+  pay:'Echo request',ip:IPQ,fr:null,lk:RARP(1)},
+ {n:16,dev:'R',at:'Lab_A → Host_B',lay:['link','phy'],kind:'frame',title:'New frame out e1',
+  text:'The Data Link layer builds a new frame: destination Host_B, source Lab_A e1, EtherType, FCS. The packet inside is unchanged. It is sent out one bit at a time.',
+  pay:'Echo request',ip:IPQ,fr:F2,wire:'RB',lk:null},
+ {n:17,dev:'B',at:'Host_B',lay:['link'],kind:'receive',title:'Host_B checks the frame',
+  text:'Host_B runs the CRC, checks that the destination MAC is its own, and reads the EtherType to find the Network layer protocol: IP.',
+  pay:'Echo request',ip:IPQ,fr:F2,lk:CHK(3)},
+ {n:18,dev:'B',at:'Host_B',lay:['net'],kind:'receive',title:'IP finds a match',
+  text:'IP checks the destination address. This time it matches, so the Protocol field is read to decide who gets the payload.',
+  pay:'Echo request',ip:IPQ,fr:null,
+  lk:{t:'IP checks at Host_B',h:['Check','Result'],r:[['Destination 172.16.20.2','Matches Host_B'],['Protocol 01','Give the payload to ICMP']],hit:1}},
+ {n:19,dev:'B',at:'Host_B',lay:['app'],kind:'icmp',title:'ICMP makes the echo reply',
+  text:'ICMP sees an echo request. It discards the packet and builds a new payload: an echo reply.',
+  pay:'Echo reply',ip:null,fr:null,
+  lk:{t:'ICMP at Host_B',h:['Item','Value'],r:[['Received','Echo request'],['Action','Discard it, build an echo reply']],hit:1}},
+ {n:20,dev:'B',at:'Host_B',lay:['net'],kind:'create',title:'Reply packet: B to A',
+  text:'IP builds a new packet. The source and destination are swapped: source Host_B, destination Host_A, Protocol 01.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:null},
+ {n:21,dev:'B',at:'Host_B',lay:['net'],kind:'route',title:'Remote again',
+  text:'Host_A is on a remote network, so the reply must go to Host_B’s default gateway.',
+  pay:'Echo reply',ip:IPR,fr:null,
+  lk:{t:'Local or remote?',h:['Check','Value'],r:[['Destination IP','172.16.10.2'],['Host_B network','172.16.20.0/24'],['Same network?','No, so it is remote']],hit:2}},
+ {n:22,dev:'B',at:'Host_B',lay:['net'],kind:'arp',title:'Gateway MAC from cache',
+  text:'The gateway IP comes from the Windows registry. Host_B then checks its ARP cache to see whether that IP is already resolved to a MAC address.',
+  pay:'Echo reply',ip:IPR,fr:null,
+  lk:{t:'Host_B: arp -a',h:['Internet address','Physical address'],r:[['172.16.20.1 (gateway)','00d0.58ad.05f4']],hit:0,note:'That MAC belongs to Lab_A e1.'}},
+ {n:23,dev:'B',at:'Host_B',lay:['net','link'],kind:'arp',title:'Hand packet and MAC down',
+  text:'With the gateway’s MAC known, the packet and the destination hardware address go down to the Data Link layer.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:null},
+ {n:24,dev:'B',at:'Host_B',lay:['link'],kind:'frame',title:'Build the reply frame',
+  text:'The Data Link layer frames the packet: destination and source hardware addresses, EtherType 0x0800 for IP, and the FCS with the CRC result.',
+  pay:'Echo reply',ip:IPR,fr:F3,lk:null},
+ {n:25,dev:'B',at:'Host_B → Lab_A',lay:['phy'],kind:'send',title:'Send bits to the router',
+  text:'The frame is handed to the Physical layer and sent one bit at a time.',
+  pay:'Echo reply',ip:IPR,fr:F3,wire:'BR',lk:null},
+ {n:26,dev:'R',at:'Lab_A (e1)',lay:['link'],kind:'receive',title:'Router checks the CRC',
+  text:'Lab_A e1 receives the bits, builds the frame, runs the CRC, and compares the answer with the FCS.',
+  pay:'Echo reply',ip:IPR,fr:F3,lk:CHK(1)},
+ {n:27,dev:'R',at:'Lab_A (e1)',lay:['link','net'],kind:'receive',title:'MAC matches, packet pulled',
+  text:'The CRC is fine and the destination MAC is the router’s interface. The packet is pulled from the frame and the EtherType says to give it to IP.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:CHK(3)},
+ {n:28,dev:'R',at:'Lab_A (e1)',lay:['net'],kind:'route',title:'Is there a way back?',
+  text:'IP checks only the header for errors (not a full CRC like the Data Link layer). The destination is not the router, so it looks for a route to 172.16.10.0. No route means the packet is dropped on the return trip.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:RT(0,'A missing route back is why a ping can fail even when the request arrived. The sender typically sees Request Timed Out.')},
+ {n:29,dev:'R',at:'Lab_A (e0)',lay:['net'],kind:'route',title:'Route found: exit e0',
+  text:'The router knows 172.16.10.0 and the exit interface is Ethernet 0, so the packet is switched to e0.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:RT(0)},
+ {n:30,dev:'R',at:'Lab_A (e0)',lay:['net'],kind:'arp',title:'Find Host_A’s MAC',
+  text:'The router checks its ARP cache to see whether the MAC for 172.16.10.2 is already resolved.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:RARP(3)},
+ {n:31,dev:'R',at:'Lab_A (e0)',lay:['net','link'],kind:'arp',title:'Cached from the trip out',
+  text:'The address was learned during the first trip to Host_B, so the packet and MAC go straight down to the Data Link layer.',
+  pay:'Echo reply',ip:IPR,fr:null,lk:RARP(3)},
+ {n:32,dev:'R',at:'Lab_A (e0)',lay:['link'],kind:'frame',title:'New frame out e0',
+  text:'The Data Link layer builds the frame with the destination and source MACs, IP in the EtherType field, and a CRC result in the FCS.',
+  pay:'Echo reply',ip:IPR,fr:F4,lk:null},
+ {n:33,dev:'R',at:'Lab_A → Host_A',lay:['phy'],kind:'send',title:'Send bits to Host_A',
+  text:'The frame is handed to the Physical layer and sent onto the local network one bit at a time.',
+  pay:'Echo reply',ip:IPR,fr:F4,wire:'RA',lk:null},
+ {n:34,dev:'A',at:'Host_A',lay:['link'],kind:'receive',title:'Host_A checks the frame',
+  text:'The original source host runs the CRC, checks the destination MAC, and reads the EtherType to find out who gets the packet.',
+  pay:'Echo reply',ip:IPR,fr:F4,lk:CHK(3)},
+ {n:35,dev:'A',at:'Host_A',lay:['net','app'],kind:'receive',title:'IP hands it to ICMP',
+  text:'IP is the receiver. It reads the Protocol field, which says give the payload to ICMP, and ICMP sees that it is an echo reply.',
+  pay:'Echo reply',ip:IPR,fr:null,
+  lk:{t:'IP and ICMP at Host_A',h:['Check','Result'],r:[['Destination 172.16.10.2','Matches Host_A'],['Protocol 01','Give the payload to ICMP'],['ICMP type','Echo reply']],hit:2}},
+ {n:36,dev:'A',at:'Host_A',lay:['app'],kind:'icmp',title:'Ping prints a !',
+  text:'ICMP confirms the reply by sending an exclamation point (!) to the user interface, then tries four more echo requests.',
+  pay:'Echo reply',ip:null,fr:null,
+  lk:{t:'What the user sees',h:['Output','Meaning'],r:[['!','Echo reply received'],['Next','Four more echo requests']],hit:0}}
+];
+
+let cur=0, timer=null;
+const $=function(id){ return document.getElementById(id); };
+const reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LAYERS=[['app','Application','ICMP'],['net','Network','IP'],['link','Data Link','Ethernet'],['phy','Physical','bits']];
+const POS={AR:[150,236],RB:[404,490],BR:[490,404],RA:[236,150]};
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+const ph=$('phases');
+PHASES.forEach(function(p,i){
+  const b=document.createElement('button'); b.type='button'; b.dataset.i=i;
+  b.textContent=(i+1)+'. '+p.t+' ('+(p.a===p.b?p.a:p.a+'–'+p.b)+')';
+  b.addEventListener('click',function(){ stop(); cur=p.a-1; render(); });
+  ph.appendChild(b);
+});
+const ch=$('chips');
+STEPS.forEach(function(s,i){
+  const b=document.createElement('button'); b.type='button'; b.textContent=s.n; b.dataset.i=i;
+  b.setAttribute('aria-label','Step '+s.n+': '+s.title);
+  b.addEventListener('click',function(){ stop(); cur=i; render(); });
+  ch.appendChild(b);
+});
+
+function fld(label,val,changed,owner){
+  return '<div class="fld'+(changed?' chg':'')+'"><small>'+label+'</small><span>'+esc(val)+(owner?' <em>('+owner+')</em>':'')+'</span></div>';
+}
+function pduHtml(s,p){
+  const prev=p||{};
+  let h='';
+  h+='<div class="row"><h3>ICMP payload</h3>'+(s.pay?'<div class="flds">'+fld('Type',s.pay,prev.pay!==s.pay)+'</div>':'<div class="none">Not built yet</div>')+'</div>';
+  h+='<div class="row"><h3>IP packet</h3>'+(s.ip?'<div class="flds">'+
+    fld('Source IP',s.ip.src,!prev.ip||prev.ip.src!==s.ip.src)+fld('Destination IP',s.ip.dst,!prev.ip||prev.ip.dst!==s.ip.dst)+fld('Protocol',s.ip.proto,!prev.ip||prev.ip.proto!==s.ip.proto)+'</div>':'<div class="none">'+(s.fr===null&&s.pay&&!s.ip?'Not built yet':'Not built yet')+'</div>')+'</div>';
+  h+='<div class="row"><h3>Ethernet frame (wraps the packet)</h3>'+(s.fr?'<div class="flds">'+
+    fld('Destination MAC',s.fr.dst,!prev.fr||prev.fr.dst!==s.fr.dst,OWN[s.fr.dst])+fld('Source MAC',s.fr.src,!prev.fr||prev.fr.src!==s.fr.src,OWN[s.fr.src])+fld('EtherType',s.fr.type,false)+fld('FCS',s.fr.fcs,false)+'</div>':'<div class="none">'+(s.ip?'No frame right now (removed or not built yet)':'No frame yet')+'</div>')+'</div>';
+  return h;
+}
+function lkHtml(l){
+  if(!l) return '<p class="none">No table lookup in this step.</p>';
+  let h='<div class="tbl"><table><caption class="tag" style="text-align:left;padding:0 0 6px">'+esc(l.t)+'</caption><thead><tr>'+l.h.map(function(x){ return '<th>'+esc(x)+'</th>'; }).join('')+'</tr></thead><tbody>';
+  l.r.forEach(function(r,i){ h+='<tr'+(i===l.hit?' class="hit"':'')+'>'+r.map(function(c){ return '<td>'+esc(c)+'</td>'; }).join('')+'</tr>'; });
+  h+='</tbody></table></div>';
+  if(l.hit>=0) h+='<p class="note"><strong>Highlighted row:</strong> the entry used in this step.</p>';
+  if(l.note) h+='<p class="note">'+esc(l.note)+'</p>';
+  return h;
+}
+function stop(){ if(timer){ clearInterval(timer); timer=null; } $('play').setAttribute('aria-pressed','false'); $('play').textContent='Play'; }
+function render(){
+  const s=STEPS[cur], p=cur>0?STEPS[cur-1]:null;
+  $('out').innerHTML='<span class="stepno">Step '+s.n+' of 36 · '+esc(s.title)+'</span><br>'+esc(s.text);
+  $('trip').textContent = s.n<=19 ? 'Echo request: Host_A to Host_B' : 'Echo reply: Host_B to Host_A';
+  $('where').textContent='Working: '+s.at+' · '+KINDS[s.kind].label;
+  $('pbi').style.width=(s.n/36*100)+'%'; $('pb').setAttribute('aria-valuenow',s.n);
+  $('layers').innerHTML=LAYERS.map(function(l){
+    const on=s.lay.indexOf(l[0])>-1;
+    return '<div class="layer'+(on?' on':'')+'"'+(on?' aria-current="true"':'')+'><b>'+l[1]+'</b>'+l[2]+'</div>';
+  }).join('');
+  $('pdu').innerHTML=pduHtml(s,p);
+  $('lk').innerHTML=lkHtml(s.lk);
+  ph.querySelectorAll('button').forEach(function(b){ const i=+b.dataset.i; b.setAttribute('aria-pressed',String(s.n>=PHASES[i].a&&s.n<=PHASES[i].b)); });
+  ch.querySelectorAll('button').forEach(function(b){ const i=+b.dataset.i; if(i===cur) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); b.className=i<cur?'done':''; });
+  ['A','R','B'].forEach(function(d){ const e=$('d'+d); e.setAttribute('class','dev'+(d==='R'?' rtr':'')+(s.dev===d?' hot':'')+(s.dev!==d&&!s.wire?' dim':'')); });
+  const pk=$('pkt');
+  if(s.wire){
+    const a=POS[s.wire];
+    pk.style.transition='none'; pk.style.transform='translate('+a[0]+'px,80px)'; pk.style.opacity=1; void pk.getBoundingClientRect();
+    pk.style.transition=''; pk.style.transform='translate('+a[1]+'px,80px)';
+  } else { pk.style.opacity=0; }
+  $('back').disabled=cur===0; $('next').disabled=cur===35;
+}
+$('back').addEventListener('click',function(){ stop(); if(cur>0){ cur--; render(); } });
+$('next').addEventListener('click',function(){ stop(); if(cur<35){ cur++; render(); } });
+$('reset').addEventListener('click',function(){ stop(); cur=0; render(); });
+$('play').addEventListener('click',function(){
+  if(timer){ stop(); return; }
+  if(cur===35){ cur=0; render(); }
+  $('play').setAttribute('aria-pressed','true'); $('play').textContent='Pause';
+  timer=setInterval(function(){ if(cur<35){ cur++; render(); } else stop(); }, 4200);
+});
+document.addEventListener('keydown',function(e){
+  if(e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.key==='ArrowRight'){ stop(); if(cur<35){ cur++; render(); } }
+  if(e.key==='ArrowLeft'){ stop(); if(cur>0){ cur--; render(); } }
+});
+render();
+
+</script>
+</body>
+</html>

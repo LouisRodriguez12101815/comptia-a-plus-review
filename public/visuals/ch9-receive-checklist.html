@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The checklist every device runs</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+
+.dev{fill:var(--accent)}
+.dev.rtr{fill:var(--warm)}
+.dev.hot{fill:var(--good)}
+.dev.dim{opacity:.45}
+.pkt rect{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.pkt text{fill:var(--ink);font:600 11px system-ui,sans-serif}
+.pkt{transition:transform .7s ease;transform-box:fill-box}
+.tag{font-size:12px;font-weight:600;color:var(--muted)}
+.bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0 10px}
+.bar>div{height:100%;background:var(--accent);transition:width .25s}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 10px}
+.chips button{min-width:36px;padding:4px 0;font-size:12px;border-radius:8px}
+.chips button[aria-current="step"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.chips button.done{background:var(--accent-soft)}
+.layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:6px 0 4px}
+.layer{border:2px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--muted)}
+.layer b{display:block;color:var(--ink);font-size:13px}
+.layer.on{border-color:var(--good);background:var(--good-soft);color:var(--ink)}
+.layer.on::after{content:"\2713 active";display:block;font-size:11px;font-weight:600;color:var(--good)}
+.pdu{display:grid;gap:8px;margin-top:6px}
+.row{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg)}
+.row h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.flds{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}
+.fld{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--surface);min-width:0;overflow-wrap:anywhere}
+.fld small{display:block;color:var(--muted);font-size:11px}
+.fld span{font-size:13px}
+.fld.chg{background:var(--warm-soft);border-color:var(--warm)}
+.none{color:var(--muted);font-size:13px}
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+tr.hit td{background:var(--good-soft);font-weight:600}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.stepno{font-weight:700;color:var(--accent)}
+
+.flow{display:grid;gap:0;margin:8px 0}
+.stg{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:start;border:2px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--bg)}
+.stg + .stg{margin-top:14px;position:relative}
+.stg + .stg::before{content:"\2193";position:absolute;left:18px;top:-17px;color:var(--muted);font-size:14px;line-height:14px}
+.stg .no{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--ink);font-weight:700;font-size:13px}
+.stg .ttl{font-weight:600}
+.stg .sub2{color:var(--muted);font-size:13px}
+.stg .st{display:inline-block;margin-top:4px;font-size:12px;font-weight:700}
+.stg.pass{border-color:var(--good);background:var(--good-soft)}
+.stg.pass .st{color:var(--good)}
+.stg.stop{border-color:var(--bad);background:var(--bad-soft)}
+.stg.stop .st{color:var(--bad)}
+.stg.skip{opacity:.55}
+.stg.skip .st{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>The checklist every device runs</h1>
+<p class="lede">Steps 9 and 10, 17 and 18, 26 to 28, and 34 and 35 are the same checklist applied again and again. Pick the device that receives a frame, then pick what arrived, and see where the checklist passes, stops, or branches. The first three checks are identical for hosts and routers. They only differ at the IP check.</p>
+<div class="card">
+  <p class="lab">Device receiving the frame</p>
+  <div class="ctrls" id="dev" role="group" aria-label="Receiving device"></div>
+  <p class="lab">What arrived</p>
+  <div class="ctrls" id="sc" role="group" aria-label="Scenario"></div>
+  <div class="flow" id="flow"></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Remember.</strong> The Data Link layer runs a full CRC on the whole frame. IP only checks its own header. A router that cannot find a route throws the packet away, and that can happen on the return trip too, which is why a ping can fail even though the request reached the destination.</p>
+</div>
+
+</div>
+<script>
+
+let dev='R', sc=0;
+const DEVS=[['R','Router Lab_A (interface e0)'],['H','Host_B']];
+const SCS=[
+ {k:'good', t:'A good frame for this device, addressed to another network', crc:1, mac:1, typ:1, ipmine:0, route:1},
+ {k:'mine', t:'A good frame, and the IP packet is addressed to this device', crc:1, mac:1, typ:1, ipmine:1, route:1},
+ {k:'crc',  t:'A frame damaged on the wire (CRC does not match the FCS)', crc:0},
+ {k:'mac',  t:'A frame addressed to a different device’s MAC', crc:1, mac:0},
+ {k:'norte',t:'A packet for a network the router has no route to', crc:1, mac:1, typ:1, ipmine:0, route:0}
+];
+function build(){
+  const s=SCS[sc], router=dev==='R', who=router?'Lab_A':'Host_B';
+  const st=[];
+  st.push({t:'Run the CRC and compare it with the FCS',d:'Data Link layer. A mismatch means the frame is discarded.',ok:!!s.crc,bad:'CRC does not match, so the frame is discarded.'});
+  st.push({t:'Check the destination MAC address',d:'Is it this interface or this host?',ok:!!s.mac,bad:'The MAC is for another device, so this device ignores the frame.'});
+  st.push({t:'Read the EtherType and pass the packet up',d:'The frame is removed. The packet goes to the protocol named in EtherType, here IP.',ok:!!s.typ});
+  st.push({t:'IP checks the destination IP address',d:'Does it match an address of this device?',ok:true,branch:true});
+  const out={steps:st,final:''};
+  return {st:st,s:s,router:router,who:who};
+}
+function render(){
+  const b=build(), s=b.s, st=b.st;
+  let stopAt=-1, msg='', kind='';
+  for(let i=0;i<3;i++){ if(!st[i].ok){ stopAt=i; msg=st[i].bad; kind='drop'; break; } }
+  let tail=[];
+  if(stopAt<0){
+    if(s.ipmine){
+      tail=[{t:'Protocol field names the next receiver',d:'Protocol 01 means the payload goes to ICMP.',res:'pass'}];
+      msg=b.who+' accepts the packet and gives the payload to ICMP.'; kind='ok';
+    } else if(b.router){
+      if(s.route){
+        tail=[{t:'Look up the destination network in the routing table',d:'An entry is found, so it gives the exit interface.',res:'pass'},
+              {t:'Find the next MAC (ARP), build a new frame, and send it',d:'The packet is switched to the exit interface buffer.',res:'pass'}];
+        msg='Lab_A forwards the packet with a new frame on the exit interface.'; kind='ok';
+      } else {
+        tail=[{t:'Look up the destination network in the routing table',d:'No entry for that network.',res:'stop'},
+              {t:'Find the next MAC (ARP), build a new frame, and send it',d:'Never reached.',res:'skip'}];
+        msg='Lab_A discards the packet at once and sends an ICMP Destination Unreachable back to the sender.'; kind='drop';
+      }
+    } else {
+      tail=[{t:'Hosts do not forward packets',d:'The packet is not for this host and a host has no routing role, so it is discarded.',res:'stop'}];
+      msg='Host_B discards the packet because it is not addressed to Host_B.'; kind='drop';
+    }
+  }
+  let h='';
+  for(let i=0;i<4;i++){
+    let cls='skip', lab='Not reached';
+    if(stopAt<0 || i<stopAt){ cls='pass'; lab='Passed'; }
+    else if(i===stopAt){ cls='stop'; lab='Stops here'; }
+    if(i===3 && stopAt<0){ cls='pass'; lab = s.ipmine?'Match: this packet is for this device':'No match: not one of this device’s addresses'; }
+    h+=stage(i+1,st[i].t,st[i].d,cls,lab);
+  }
+  tail.forEach(function(x,j){
+    const cls=x.res==='pass'?'pass':x.res==='stop'?'stop':'skip';
+    const lab=x.res==='pass'?'Done':x.res==='stop'?'Stops here':'Not reached';
+    h+=stage(5+j,x.t,x.d,cls,lab);
+  });
+  if(stopAt>=0){
+    // remaining stages show as skipped (already drawn for 1-4)
+  }
+  document.getElementById('flow').innerHTML=h;
+  document.getElementById('out').innerHTML='<strong>'+(kind==='ok'?'Result: accepted':'Result: dropped')+'.</strong> '+msg;
+  document.querySelectorAll('#dev button').forEach(function(x){ x.setAttribute('aria-pressed',String(x.dataset.k===dev)); });
+  document.querySelectorAll('#sc button').forEach(function(x){ x.setAttribute('aria-pressed',String(+x.dataset.k===sc)); });
+}
+function stage(n,t,d,cls,lab){
+  const icon = cls==='pass'?'✓ ':cls==='stop'?'✕ ':'– ';
+  return '<div class="stg '+cls+'"><div class="no">'+n+'</div><div><div class="ttl">'+t+'</div><div class="sub2">'+d+'</div><span class="st">'+icon+lab+'</span></div></div>';
+}
+const dv=document.getElementById('dev');
+DEVS.forEach(function(d){ const b=document.createElement('button'); b.type='button'; b.dataset.k=d[0]; b.textContent=d[1]; b.addEventListener('click',function(){ dev=d[0]; render(); }); dv.appendChild(b); });
+const sv=document.getElementById('sc');
+SCS.forEach(function(x,i){ const b=document.createElement('button'); b.type='button'; b.dataset.k=i; b.textContent=x.t; b.addEventListener('click',function(){ sc=i; render(); }); sv.appendChild(b); });
+render();
+
+</script>
+</body>
+</html>
