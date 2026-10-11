@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:game": "node --import ./tests/register.mjs --test tests/outage-ops-*.test.mjs",
+    "test:game": "node --import ./tests/register.mjs --test --test-isolation=none tests/outage-ops-*.test.mjs",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "npm run test:game"
+    "test": "npm run test:game",
+    "test:e2e": "node --import ./tests/register.mjs scripts/verify-outage-ops-e2e.mjs"
   },
   "dependencies": {
     "next": "16.3.5",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "playwright": "1.62.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
