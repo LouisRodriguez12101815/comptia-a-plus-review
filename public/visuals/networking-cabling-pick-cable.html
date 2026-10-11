@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pick the cable</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+.grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.grid .cell{font:inherit;font-size:14px}</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Pick the cable for the job</h1>
+<p class="lede">Set the run length, the speed you need and whether there is EMI. Then click the cable you would install. The page reveals which cables actually work and why the others fail.</p>
+<div class="card">
+ <div class="lab">Run length</div><div class="ctrls" id="len" role="group" aria-label="Run length"></div>
+ <div class="lab">Speed needed</div><div class="ctrls" id="spd" role="group" aria-label="Speed"></div>
+ <div class="lab">Environment</div><div class="ctrls" id="emi" role="group" aria-label="Environment"></div>
+ <div class="ctrls" style="margin-top:8px"><button id="rnd" class="go">Random scenario</button></div>
+ <p class="q" id="scen" style="margin-top:12px"></p>
+ <div class="lab">Click the cheapest cable that meets the need</div>
+ <div class="grid" id="cables"></div>
+ <div class="fb" id="fb" aria-live="polite">Pick a cable to see the answer.</div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const LENS=[['30 m',30],['55 m',55],['90 m',90],['150 m',150],['2 km',2000]];
+const SPDS=[['1 Gb/s',1],['10 Gb/s',10]];
+const ENVS=[['Normal office',0],['Near motors / fluorescent lights (EMI)',1]];
+const CABLES=[
+ {n:'Cat 5e UTP',spec:'1 Gb/s at 100 m',copper:1,shield:0,cost:1},
+ {n:'Cat 6 UTP',spec:'1 Gb/s at 100 m, 10 Gb/s only to 55 m',copper:1,shield:0,cost:2},
+ {n:'Cat 6a UTP',spec:'10 Gb/s at 100 m',copper:1,shield:0,cost:3},
+ {n:'Cat 7 (shielded)',spec:'10 Gb/s, shielded, 100 m',copper:1,shield:1,cost:4},
+ {n:'Multimode fiber',spec:'LED/VCSEL light, shorter runs inside buildings',copper:0,cost:5},
+ {n:'Single-mode fiber',spec:'Laser, long distance, campus or ISP backbone',copper:0,cost:6}];
+let L=1,S=1,E=0,picked=-1;
+function check(c){
+ const len=LENS[L][1],sp=SPDS[S][1],emi=ENVS[E][1];
+ if(c.copper){
+  if(len>100)return [0,'Copper twisted pair stops at 100 m because the signal attenuates.'];
+  if(c.n==='Cat 5e UTP'&&sp===10)return [0,'Cat 5e is rated for 1 Gb/s, not 10 Gb/s.'];
+  if(c.n==='Cat 6 UTP'&&sp===10&&len>55)return [0,'Cat 6 reaches 10 Gb/s only to 55 m.'];
+  if(emi&&!c.shield)return [0,'Unshielded cable picks up EMI. Use shielded (STP) copper or fiber.'];
+  return [1,c.shield&&emi?'Shielded, so it resists EMI, and it is within 100 m.':'Meets the speed within 100 m.'];
+ }
+ if(c.n==='Multimode fiber'){
+  if(len>300)return [0,'Multimode is for shorter runs inside a building. Long runs need single-mode.'];
+  return [1,'Light is immune to EMI and goes beyond 100 m for in-building runs.'];
+ }
+ return [1,'Laser over a small core (about 9 micron) covers the longest distances and ignores EMI.'];
+}
+function best(){for(const c of CABLES.slice().sort((a,b)=>a.cost-b.cost)){if(check(c)[0])return c}}
+function draw(){
+ const host=$('cables');host.innerHTML='';
+ CABLES.forEach((c,i)=>{
+  const b=document.createElement('button');b.type='button';b.className='cell';b.style.textAlign='left';b.style.cursor='pointer';
+  let h='<span class="t">'+esc(c.n)+'</span><br><span class="s">'+esc(c.spec)+'</span>';
+  if(picked>=0){const r=check(c);b.classList.add(r[0]?'good':'bad');h+='<br><span class="s"><strong>'+(r[0]?'Works: ':'Fails: ')+'</strong>'+esc(r[1])+'</span>'}
+  b.innerHTML=h;b.onclick=()=>pick(i);host.appendChild(b)});
+ $('scen').textContent='Scenario: a '+LENS[L][0]+' run needing '+SPDS[S][0]+(ENVS[E][1]?' beside motors and fluorescent lights.':' in a normal office.');
+}
+function pick(i){
+ picked=i;draw();const c=CABLES[i],r=check(c),b=best();
+ if(!r[0])fb($('fb'),false,'<strong>Not quite. The answer is '+esc(b.n)+'.</strong> '+esc(c.n)+' fails here: '+esc(r[1]));
+ else if(c===b)fb($('fb'),true,'<strong>Correct. The answer is '+esc(b.n)+'.</strong> '+esc(r[1]));
+ else fb($('fb'),false,'<strong>Not quite. The answer is '+esc(b.n)+'.</strong> '+esc(c.n)+' also works, but '+esc(b.n)+' is the cheapest cable that meets the need. Fiber costs the most.');
+}
+function reset(){picked=-1;$('fb').className='fb';$('fb').textContent='Pick a cable to see the answer.';draw()}
+mkBtns($('len'),LENS.map(x=>x[0]),i=>{L=i;reset()},L);
+mkBtns($('spd'),SPDS.map(x=>x[0]),i=>{S=i;reset()},S);
+mkBtns($('emi'),ENVS.map(x=>x[0]),i=>{E=i;reset()},E);
+$('rnd').onclick=()=>{L=Math.floor(Math.random()*5);S=Math.floor(Math.random()*2);E=Math.random()<.4?1:0;press($('len'),L);press($('spd'),S);press($('emi'),E);reset()};
+draw();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Will it fit on the disc</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.opts{flex-direction:column;align-items:stretch}
+.opts button,.pick button{text-align:left;border-radius:10px}
+button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+button.dim{opacity:.45}
+.okbox{background:var(--good-soft)}
+.nobox{background:var(--bad-soft)}
+.qt{font-weight:600;margin:4px 0 10px}
+.sec{margin-top:18px}
+.sec h2{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.sec .why{color:var(--muted);font-size:14px;margin:0 0 10px;max-width:70ch}
+.stage{overflow-x:auto}
+svg{display:block;width:100%;height:auto}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:2}
+.bx.on{fill:var(--accent-soft);stroke:var(--accent)}
+.bx.good{fill:var(--good-soft);stroke:var(--good)}
+.bx.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-dasharray:6 4}
+.tx{fill:var(--ink);font:600 13px system-ui,sans-serif}
+.tx2{fill:var(--muted);font:13px system-ui,sans-serif}
+.arr{stroke:var(--line);stroke-width:3;fill:none}
+.arr.on{stroke:var(--accent)}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.bars{display:grid;gap:6px}
+.brow{display:grid;grid-template-columns:110px 1fr 90px;gap:8px;align-items:center;font-size:13px}
+.brow .tr{height:16px;background:var(--line);border-radius:999px;overflow:hidden}
+.brow .tr i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s}
+.brow .tm{text-align:right;font-weight:600}
+@media (max-width:480px){.brow{grid-template-columns:84px 1fr 74px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Will it fit on the disc?</h1>
+<p class="lede">Choose a file size and see which optical formats hold it, and how many discs you would burn.</p>
+<div class="card">
+ <div class="lab">File size</div>
+ <div class="ctrls" id="pre" role="group" aria-label="File size presets"></div>
+ <label class="lab" for="rng" style="display:block">Or drag: <span id="val"></span></label>
+ <input type="range" id="rng" min="0" max="100" value="60" style="width:100%">
+ <div class="grid" id="discs" style="margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))"></div>
+ <div class="out" id="out" aria-live="polite"></div>
+</div>
+<div class="card sec"><div class="lab">Test yourself</div><div id="qz"></div></div>
+
+</div>
+<script>
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=(i*7+3)%(i+1);var t=b[i];b[i]=b[j];b[j]=t}return b}
+function quiz(id,qs){var root=$(id),i=0,score=0,done=false;
+ function draw(){var q=qs[i];done=false;
+  root.innerHTML='<div class="lab">Question '+(i+1)+' of '+qs.length+' &middot; score '+score+'</div><p class="qt">'+esc(q.q)+'</p><div class="ctrls opts"></div><div class="out qfb" aria-live="polite" hidden></div><div class="ctrls"><button type="button" class="nx" hidden>'+(i<qs.length-1?'Next question':'Start over')+'</button></div>';
+  var o=root.querySelector('.opts');
+  q.o.forEach(function(t,k){var b=document.createElement('button');b.type='button';b.textContent=t;
+   b.onclick=function(){if(done)return;done=true;var ok=(k===q.a);if(ok)score++;
+    b.classList.add(ok?'right':'wrong');if(!ok)o.children[q.a].classList.add('right');
+    var f=root.querySelector('.qfb');f.hidden=false;f.className='out qfb '+(ok?'okbox':'nobox');
+    f.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'Answer: '+esc(q.o[q.a])+'.</strong> '+esc(q.why);
+    var n=root.querySelector('.nx');n.hidden=false;
+    n.onclick=function(){if(i<qs.length-1){i++}else{i=0;score=0}draw()}};
+   o.appendChild(b)})}
+ draw()}
+function multi(id,q,opts,answers,why){var root=$(id),sel={};
+ root.innerHTML='<p class="qt">'+esc(q)+'</p><div class="ctrls opts"></div><div class="ctrls"><button type="button" class="chk">Check my answer</button></div><div class="out" aria-live="polite" hidden></div>';
+ var o=root.querySelector('.opts'),out=root.querySelector('.out');
+ opts.forEach(function(t){var b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('aria-pressed','false');
+  b.onclick=function(){sel[t]=!sel[t];b.setAttribute('aria-pressed',sel[t]?'true':'false')};o.appendChild(b)});
+ root.querySelector('.chk').onclick=function(){var ok=true;
+  opts.forEach(function(t,k){var want=answers.indexOf(t)>=0;if(!!sel[t]!==want)ok=false;var b=o.children[k];b.classList.remove('right','wrong');if(want)b.classList.add('right');else if(sel[t])b.classList.add('wrong')});
+  out.hidden=false;out.className='out '+(ok?'okbox':'nobox');
+  out.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'Answer: '+esc(answers.join(' + '))+'.</strong> '+esc(why)}}
+function rank(id,items,order,ask){var root=$(id),placed=[],miss=0;
+ function draw(){var left=shuffle(items.map(function(x){return x.k})).filter(function(k){return placed.indexOf(k)<0});
+  var lab={};items.forEach(function(x){lab[x.k]=x});
+  root.innerHTML='<p class="qt">'+esc(ask)+'</p><div class="lab">Tap the next one</div><div class="ctrls pick"></div><div class="lab">Your ranking</div><ol class="plc" style="margin:0 0 6px;padding-left:22px"></ol><div class="out" aria-live="polite">'+(placed.length?'':'Tap items in order. You get instant feedback each time.')+'</div><div class="ctrls"><button type="button" class="rs">Reset</button></div>';
+  var p=root.querySelector('.pick'),ol=root.querySelector('.plc'),out=root.querySelector('.out');
+  placed.forEach(function(k){var li=document.createElement('li');li.innerHTML='<strong>'+esc(lab[k].label)+'</strong> <span class="pill good">'+esc(lab[k].sub)+'</span>';ol.appendChild(li)});
+  left.forEach(function(k){var b=document.createElement('button');b.type='button';b.textContent=lab[k].label;
+   b.onclick=function(){var want=order[placed.length];
+    if(k===want){placed.push(k);var msg=placed.length===order.length?'Done with '+miss+' mistake'+(miss===1?'':'s')+'. ':'Correct. ';draw();var o2=root.querySelector('.out');o2.className='out okbox';o2.innerHTML='<strong>'+msg+esc(lab[k].label)+'.</strong> '+esc(lab[k].why)}
+    else{miss++;b.classList.add('wrong');out.className='out nobox';out.innerHTML='<strong>Not quite. The correct pick here is '+esc(lab[want].label)+'.</strong> '+esc(lab[want].why)}};
+   p.appendChild(b)});
+  root.querySelector('.rs').onclick=function(){placed=[];miss=0;draw()}}
+ draw()}
+
+var MED=[{n:'CD',gb:0.7,t:'about 700 MB'},{n:'DVD single-layer (DVD+R / DVD-R)',gb:4.7,t:'about 4.7 GB'},{n:'DVD+R double-sided, single-layer',gb:9.5,t:'about 9 to 10 GB'},{n:'Blu-ray single-sided, single-layer',gb:25,t:'about 25 GB'}];
+var PRE=[{l:'600 MB song set',gb:0.6},{l:'4 GB movie',gb:4},{l:'20 GB video',gb:20},{l:'50 GB archive',gb:50}];
+var gb=20;
+function fmtgb(g){return g<1?Math.round(g*1000)+' MB':(g<10?g.toFixed(1):Math.round(g))+' GB'}
+function draw(){$('val').textContent=fmtgb(gb);
+ $('discs').innerHTML=MED.map(function(m){var fits=gb<=m.gb;var n=Math.ceil(gb/m.gb);var pct=Math.min(100,100*gb/m.gb);
+  return '<div class="cell '+(fits?'good':'bad')+'"><div class="t">'+m.n+'</div><div class="s">'+m.t+'</div><div class="bar" style="height:10px;margin:8px 0 6px"><div style="width:'+pct+'%;height:100%;background:'+(fits?'var(--good)':'var(--bad)')+'"></div></div><div><strong>'+(fits?'Fits on 1 disc':'Does not fit on 1 disc')+'</strong>'+(fits?'':' ('+n+' needed)')+'</div></div>'}).join('');
+ var best=MED.filter(function(m){return gb<=m.gb})[0];
+ $('out').innerHTML=best?'<strong>Smallest single disc that holds '+fmtgb(gb)+': '+best.n+'.</strong> Check the capacity next to the name.':'<strong>Nothing here holds '+fmtgb(gb)+' on one disc.</strong> Even Blu-ray at about 25 GB would need more than one disc.'}
+PRE.forEach(function(p){var b=document.createElement('button');b.type='button';b.textContent=p.l;b.onclick=function(){gb=p.gb;$('rng').value=Math.round(100*Math.sqrt(gb/60));draw()};$('pre').appendChild(b)});
+$('rng').oninput=function(){var v=this.value/100;gb=Math.max(0.1,Math.round(v*v*60*10)/10);draw()};
+draw();
+quiz('qz',[
+ {q:'You must store a single 20 GB video file on one disc. Which format?',o:['Single-layer DVD+R (4.7 GB)','Double-sided, single-layer DVD+R (9 to 10 GB)','Single-sided, single-layer Blu-ray (about 25 GB)'],a:2,why:'20 GB needs a larger format than single-layer DVD, and only Blu-ray at about 25 GB holds it.'},
+ {q:'What is the capacity of a standard single-layer DVD+R or DVD-R?',o:['700 MB','4.7 GB','25 GB'],a:1,why:'Single-layer DVD+R and DVD-R hold about 4.7 GB. 700 MB is a CD.'},
+ {q:'Which disc is about 700 MB?',o:['CD','DVD+R','Blu-ray'],a:0,why:'A CD is about 700 MB.'},
+ {q:'Which holds about 9 to 10 GB?',o:['Single-layer DVD-R','Double-sided, single-layer DVD+R','Single-layer Blu-ray'],a:1,why:'Two sides of 4.7 GB each give roughly 9 to 10 GB.'}
+]);
+
+</script>
+</body>
+</html>

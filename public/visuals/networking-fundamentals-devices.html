@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who gets the frame</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Who gets the frame?</h1>
+<p class="lede">PC A sends traffic through a device. Swap the device and the destination, and see which ports actually receive it. Then match seven jobs to their devices.</p>
+<div class="card">
+ <h2 class="sec">1. Send it through the device</h2>
+ <div class="lab">Device in the middle</div><div class="ctrls" id="dv" role="group" aria-label="Device"></div>
+ <div class="lab">Destination</div><div class="ctrls" id="ds" role="group" aria-label="Destination"></div>
+ <div id="vlrow" style="display:none"><div class="lab">VLAN setup</div><div class="ctrls" id="vl" role="group" aria-label="VLAN"></div></div>
+ <div id="fwrow" style="display:none"><div class="lab">Firewall rule</div><div class="ctrls" id="fw" role="group" aria-label="Rule"></div></div>
+ <div id="res" style="margin-top:12px"></div>
+ <div class="fb" id="fbx" aria-live="polite"></div>
+</div>
+<div class="card">
+ <h2 class="sec">2. Match the job</h2>
+ <div class="q" id="jdq"></div><div class="opts" id="jdo"></div><div class="fb" id="jdf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="jdn">Next question</button><span class="sc" id="jds"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const DEV=['Hub','Switch','Managed switch','Router','Firewall'];
+const DST=['PC B','PC C','Other network','Broadcast'];
+const PORTS=['PC B','PC C','PC D','Other network'];
+let dv=0,ds=0,vl=0,fw=0;
+function recv(){
+ const tgt=[0,1,3][ds];const bc=ds===3;
+ if(dv===0)return [[0,1,2,3],'A hub repeats every bit to every port. It has no intelligence, so everyone hears it.'];
+ if(dv===1||dv===2){
+  if(dv===2&&vl){
+   if(bc)return [[0,3],'The managed switch put PC C and PC D in VLAN 20, so the broadcast stays inside the sender\'s VLAN.'];
+   if(tgt===1)return [[],'PC C is in another VLAN, so the managed switch will not deliver the frame to it. Only a managed switch can create VLANs.'];
+   return [[tgt],'The managed switch looks up the destination MAC and uses only that port.'];
+  }
+  if(bc)return [[0,1,2,3],'A broadcast goes out every port in the network.'];
+  return [[tgt],'The switch looks up the destination MAC in its address table and uses only that port.'];
+ }
+ if(dv===3){
+  if(bc)return [[],'A router does not forward broadcasts.'];
+  return [[tgt],'The router checks the destination IP against its routing table and sends the packet out one interface toward that network.'];
+ }
+ if(fw)return [[],'The firewall ACL says deny, so the traffic is blocked.'];
+ if(bc)return [[0,1,2,3],'The ACL says permit, so traffic passes (a broadcast reaches every port).'];
+ return [[tgt],'The ACL says permit, so the traffic passes to its destination only.'];
+}
+function draw(){
+ const r=recv(),got=r[0];
+ let h='<div class="mini">PC A sends to <strong>'+esc(DST[ds])+'</strong> through the <strong>'+esc(DEV[dv])+'</strong>.</div><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-top:8px">';
+ PORTS.forEach((p,i)=>{const on=got.includes(i);h+='<div class="cell '+(on?'good':'')+'"><div class="t">Port '+(i+1)+': '+esc(p)+'</div><div class="s">'+(on?'Receives it':'Does not receive it')+'</div></div>'});
+ h+='</div>';$('res').innerHTML=h;
+ fb($('fbx'),got.length>0,'<strong>'+got.length+' of 4 ports get the traffic.</strong> '+r[1]);
+ $('vlrow').style.display=dv===2?'block':'none';$('fwrow').style.display=dv===4?'block':'none';
+}
+mkBtns($('dv'),DEV,i=>{dv=i;if(i!==2)vl=0;draw()},0);
+mkBtns($('ds'),DST,i=>{ds=i;draw()},0);
+mkBtns($('vl'),['No VLANs','PC C and PC D in VLAN 20'],i=>{vl=i;draw()},0);
+mkBtns($('fw'),['ACL: permit','ACL: deny'],i=>{fw=i;draw()},0);
+draw();
+const JQ=[{"q": "It moves packets between networks using routing tables. Which device?", "a": 0, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "Moves packets between networks using routing tables (IP addresses)."}, {"q": "It forwards frames inside one network using its MAC address table. Which device?", "a": 1, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "Forwards frames inside one network using its MAC address table."}, {"q": "It repeats every bit to every port. Which device?", "a": 2, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "Repeats every bit to every port with no intelligence."}, {"q": "It blocks unwanted traffic using permit/deny ACL rules. Which device?", "a": 3, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "Blocks unwanted traffic with ACL rules (permit or deny)."}, {"q": "You must create VLANs. Which listed device can do it?", "a": 4, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "The only listed device that can create VLANs."}, {"q": "You need to attach bare wires to a 110 block with no connector. Which device?", "a": 5, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "Attaches bare wires (110 or 66 style), with no connector."}, {"q": "Fiber Internet arrives at the building. What terminates it instead of a cable or DSL modem?", "a": 6, "o": ["Router", "Switch", "Hub", "Firewall", "Managed switch", "Punchdown block", "ONT"], "why": "Optical Network Terminal: where fiber Internet terminates instead of a cable or DSL modem."}];
+Deck({items:JQ,q:$('jdq'),opts:$('jdo'),fb:$('jdf'),next:$('jdn'),score:$('jds')});
+
+</script>
+</body>
+</html>

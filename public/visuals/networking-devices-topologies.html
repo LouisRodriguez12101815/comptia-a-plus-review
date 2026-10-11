@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Topology failure simulator</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+svg text{pointer-events:none}svg g:focus-visible{outline:3px solid var(--accent)}</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Topology failure simulator</h1>
+<p class="lede">Pick a topology, then click links or devices to break them. See who can still talk and how many cables the design costs.</p>
+<div class="card">
+ <h2 class="sec">1. Break something</h2>
+ <div class="ctrls" id="tp" role="group" aria-label="Topology"></div>
+ <div class="ctrls" id="rg" role="group" aria-label="Ring type" style="display:none"></div>
+ <div class="ctrls"><button id="rl">Cut a random link</button><button id="rd">Cut a random device</button><button id="rs" class="go">Restore all</button></div>
+ <div class="stage"><svg id="svg" viewBox="0 0 400 300" style="max-width:520px;margin:6px auto;display:block;width:100%" role="img" aria-label="Network topology diagram. Click a link or device to break it."></svg></div>
+ <div class="mini" id="cab"></div>
+ <div class="fb" id="fb1" aria-live="polite"></div>
+</div>
+<div class="card">
+ <h2 class="sec">2. Name the topology</h2>
+ <div class="q" id="tqq"></div><div class="opts" id="tqo"></div><div class="fb" id="tqf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="tqn">Next question</button><span class="sc" id="tqs"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const NAMES=['Bus','Ring','Mesh','Star','Hybrid'];
+let t=3,dual=0,cutE=new Set(),cutN=new Set(),G=null;
+function circ(n,r,cx,cy,off){const a=[];for(let i=0;i<n;i++){const ang=-Math.PI/2+off+i*2*Math.PI/n;a.push([cx+r*Math.cos(ang),cy+r*Math.sin(ang)])}return a}
+function build(){
+ const N=[],E=[];
+ if(t===3){N.push({x:200,y:150,k:'sw',l:'Switch'});circ(5,105,200,150,0).forEach((p,i)=>{N.push({x:p[0],y:p[1],k:'pc',l:'PC'+(i+1)});E.push([0,i+1])})}
+ if(t===1){circ(6,100,200,150,0).forEach((p,i)=>{N.push({x:p[0],y:p[1],k:'pc',l:'PC'+(i+1)})});for(let i=0;i<6;i++)E.push([i,(i+1)%6])}
+ if(t===2){circ(5,105,200,150,0).forEach((p,i)=>N.push({x:p[0],y:p[1],k:'pc',l:'PC'+(i+1)}));for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)E.push([i,j])}
+ if(t===0){const xs=[50,125,200,275,350];xs.forEach((x,i)=>N.push({x:x,y:150,k:'tap',l:''}));xs.forEach((x,i)=>{N.push({x:x,y:i%2?230:70,k:'pc',l:'PC'+(i+1)})});for(let i=0;i<4;i++)E.push([i,i+1,'trunk']);for(let i=0;i<5;i++)E.push([i,5+i,'drop'])}
+ if(t===4){const S=[[200,60],[90,200],[310,200]];S.forEach((p,i)=>N.push({x:p[0],y:p[1],k:'sw',l:'SW'+(i+1)}));
+  const P=[[130,25],[270,25],[30,260],[130,275],[270,275],[370,260]];P.forEach((p,i)=>N.push({x:p[0],y:p[1],k:'pc',l:'PC'+(i+1)}));
+  E.push([0,1],[1,2],[0,2]);P.forEach((p,i)=>E.push([Math.floor(i/2),3+i]))}
+ return {N,E}}
+function calc(){
+ const {N,E}=G,hosts=N.map((n,i)=>n.k==='pc'?i:-1).filter(i=>i>=0);
+ const alive=i=>!cutN.has(i);
+ const adj=N.map(()=>[]);E.forEach((e,ei)=>{if(!cutE.has(ei)&&alive(e[0])&&alive(e[1])){adj[e[0]].push(e[1]);adj[e[1]].push(e[0])}});
+ const comp=N.map(()=>-1);let c=0;
+ N.forEach((n,i)=>{if(comp[i]<0&&alive(i)){const q=[i];comp[i]=c;while(q.length){const x=q.pop();adj[x].forEach(y=>{if(comp[y]<0){comp[y]=c;q.push(y)}})}c++}});
+ const on=new Set();
+ hosts.forEach(h=>{if(!alive(h))return;const mates=hosts.filter(o=>o!==h&&alive(o)&&comp[o]===comp[h]);if(mates.length)on.add(h)});
+ let why='All devices are connected.';const anyCut=cutE.size||cutN.size;
+ let allDown=false;
+ if(t===0){const trunkCut=E.some((e,i)=>e[2]==='trunk'&&cutE.has(i));if(trunkCut){allDown=true;why='One break in the backbone takes down everything on a bus.'}else if(anyCut)why='Only the PC with the broken drop (or the dead PC) is lost. The trunk still carries the rest.'}
+ else if(t===1&&!dual){if(anyCut){allDown=true;why='Token passing needs the whole ring. One break stops the token for everyone.'}}
+ else if(t===1){if(anyCut)why=(cutE.size+cutN.size)>1?'Two failures split the redundant ring into separate pieces.':'The redundant ring sends traffic the other way around, so one failure is survived.'}
+ else if(t===2){if(anyCut)why='Every device has several paths, so the mesh reroutes. That redundancy costs 10 cables for 5 devices.'}
+ else if(t===3){if(cutN.has(0))why='The central switch is the single point of failure. Every device is down.';else if(anyCut)why='Only the device on the cut spoke is isolated. The rest still talk through the switch.'}
+ else if(t===4){const sw=[0,1,2].some(i=>cutN.has(i));const bb=E.some((e,i)=>i<3&&cutE.has(i));if(anyCut)why=sw?'A dead switch isolates the PCs on its star LAN. The mesh backbone keeps the other LANs connected.':(bb?'One broken backbone link is survived because the mesh offers another path.':'Only the PC on the cut link is isolated.')}
+ if(allDown)on.clear();
+ return {on,why,hosts}}
+function draw(){
+ G=build();const {N,E}=G,r=calc();let s='';
+ E.forEach((e,i)=>{const a=N[e[0]],b=N[e[1]],dead=cutE.has(i);
+  s+='<g tabindex="0" role="button" aria-label="'+(dead?'Restore':'Cut')+' link '+(i+1)+'" data-e="'+i+'" style="cursor:pointer"><line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+(dead?'var(--bad)':'var(--muted)')+'" stroke-width="'+(dead?3:4)+'"'+(dead?' stroke-dasharray="6 5"':'')+'/><line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="transparent" stroke-width="22"/></g>'});
+ N.forEach((n,i)=>{if(n.k==='tap'){s+='<circle cx="'+n.x+'" cy="'+n.y+'" r="4" fill="var(--muted)"/>';return}
+  const dead=cutN.has(i),up=n.k==='pc'?r.on.has(i):!dead;
+  const fill=dead?'var(--bad)':(n.k==='pc'?(r.on.has(i)?'var(--good)':'var(--muted)'):'var(--warm)');
+  s+='<g tabindex="0" role="button" aria-label="'+(dead?'Restore ':'Cut ')+esc(n.l)+'" data-n="'+i+'" style="cursor:pointer">';
+  s+=n.k==='sw'?'<rect x="'+(n.x-22)+'" y="'+(n.y-14)+'" width="44" height="28" rx="6" fill="'+fill+'"/>':'<circle cx="'+n.x+'" cy="'+n.y+'" r="19" fill="'+fill+'"/>';
+  s+='<text x="'+n.x+'" y="'+(n.y+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bg)" font-family="system-ui,sans-serif">'+esc(n.l)+'</text></g>'});
+ if(t===0)s+='<text x="200" y="176" text-anchor="middle" font-size="13" fill="var(--muted)" font-family="system-ui,sans-serif">coax backbone</text>';
+ $('svg').innerHTML=s;
+ [...$('svg').querySelectorAll('g')].forEach(g=>{const f=()=>{if(g.dataset.e!=null){const k=+g.dataset.e;cutE.has(k)?cutE.delete(k):cutE.add(k)}else{const k=+g.dataset.n;cutN.has(k)?cutN.delete(k):cutN.add(k)}draw()};g.onclick=f;g.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();f()}}});
+ const h=r.hosts.length,on=r.on.size;
+ $('cab').textContent='Cables needed: '+E.length+' for '+h+' PCs.  '+NAMES[t]+(t===1?(dual?' (redundant fiber ring)':' (legacy token ring)'):'')+'.';
+ fb($('fb1'),on===h,'<strong>'+on+' of '+h+' PCs can still communicate.</strong> '+esc(r.why))}
+function clear(){cutE=new Set();cutN=new Set()}
+mkBtns($('tp'),NAMES,i=>{t=i;clear();$('rg').style.display=i===1?'flex':'none';draw()},3);
+mkBtns($('rg'),['Legacy token ring','Redundant fiber ring'],i=>{dual=i;clear();draw()},0);
+$('rl').onclick=()=>{const n=G.E.length;cutE.add(Math.floor(Math.random()*n));draw()};
+$('rd').onclick=()=>{const c=G.N.map((n,i)=>n.k==='tap'?-1:i).filter(i=>i>=0);cutN.add(c[Math.floor(Math.random()*c.length)]);draw()};
+$('rs').onclick=()=>{clear();draw()};
+draw();
+const TQ=[{"q": "Thinnet or thicknet coax, and one break takes down everything. Which topology?", "o": ["Bus", "Ring", "Mesh", "Star", "Hybrid"], "a": 0, "why": "Bus is legacy coax where one break takes down the whole network."}, {"q": "A computer waits for the token before it transmits. Which topology?", "o": ["Bus", "Ring", "Mesh", "Star", "Hybrid"], "a": 1, "why": "Ring uses token passing, and it is slow."}, {"q": "Everything is connected to everything, for redundancy at a higher cost. Which topology?", "o": ["Bus", "Ring", "Mesh", "Star", "Hybrid"], "a": 2, "why": "Mesh gives redundancy but costs more cabling."}, {"q": "A central switch, \"hub and spoke\", and today's standard LAN. Which topology?", "o": ["Bus", "Ring", "Mesh", "Star", "Hybrid"], "a": 3, "why": "Star is the modern standard LAN layout."}, {"q": "A star LAN tied into a mesh backbone. Which topology?", "o": ["Bus", "Ring", "Mesh", "Star", "Hybrid"], "a": 4, "why": "Hybrid mixes topologies."}, {"q": "Redundant fiber rings still appear in which setting?", "o": ["Infrastructure", "Home LANs", "Coax TV drops"], "a": 0, "why": "Ring is legacy for LANs but still used conceptually for redundant fiber rings in infrastructure."}];
+Deck({items:TQ,q:$('tqq'),opts:$('tqo'),fb:$('tqf'),next:$('tqn'),score:$('tqs')});
+
+</script>
+</body>
+</html>

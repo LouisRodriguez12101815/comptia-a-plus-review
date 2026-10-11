@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAS versus SAN</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.opts{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:8px 0}
+.opts button{min-height:40px;border-radius:10px;text-align:left;font-weight:500;line-height:1.35;padding:8px 12px}
+.opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.fb{padding:10px 12px;border-radius:10px;font-size:14px;margin:8px 0;display:none}
+.fb.show{display:block}
+.fb.yes{background:var(--good-soft)}
+.fb.nope{background:var(--bad-soft)}
+.fb.info{background:var(--accent-soft)}
+.qq{font-weight:600;margin:4px 0}
+.qn{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.seq{list-style:none;padding:0;margin:6px 0;display:grid;gap:6px}
+.seq li{border:2px dashed var(--line);border-radius:10px;padding:8px 10px;min-height:38px;font-size:14px}
+.seq li.filled{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.seq li.empty{color:var(--muted)}
+.seq li .n{font-weight:700;color:var(--accent);margin-right:8px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sep{height:1px;background:var(--line);margin:18px 0}
+button{min-height:36px}
+.pill{font-size:13px}
+.sec{margin:0 0 4px;font:600 18px/1.3 Georgia,serif}
+.mini{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.term{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.term .g{color:var(--good);font-weight:700}
+.term .r{color:var(--bad);font-weight:700}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+
+.dsk{min-height:64px;text-align:left;border-radius:10px;padding:8px 12px;font-weight:600;border:2px solid var(--good);background:var(--good-soft);color:var(--ink);line-height:1.35}
+.dsk .s{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.dsk.fail{border-color:var(--bad);background:var(--bad-soft);border-style:dashed}
+.dsk.rb{border-color:var(--warm);background:var(--warm-soft)}
+.grp{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--bg);margin-bottom:8px}
+.grp .gl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.grp .dd{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.meter{height:12px;border-radius:999px;background:var(--line);overflow:hidden;margin:4px 0 8px}
+.meter>div{height:100%;background:var(--accent);transition:width .25s}
+.card2{border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.card2 h3{margin:0 0 4px;font:600 16px Georgia,serif}
+.card2.sel{border-color:var(--accent);background:var(--accent-soft)}
+.ck{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.ck .cell{text-align:left}
+input[type=range]{width:100%;min-height:36px;accent-color:var(--accent)}
+.src{display:flex;flex-wrap:wrap;gap:8px}
+.src button{border-radius:10px;text-align:left;font-weight:500;padding:8px 12px;max-width:100%}
+.src button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.src button .mini{margin:0}
+.src button[aria-pressed="true"] .mini{color:inherit;opacity:.85}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>NAS versus SAN</h1>
+<p class="lede">Compare the two one attribute at a time, see why Ethernet can bottleneck a NAS, then decide which one fits each scenario.</p>
+<div class="card">
+ <div class="sec">1. Compare</div>
+ <div class="ctrls" id="at" role="group"></div>
+ <div class="two" id="cmp"></div>
+ <div class="sep"></div>
+ <div class="sec">2. Why Ethernet can bottleneck a NAS</div>
+ <p class="mini">Everyone on the NAS shares one Ethernet link. Pick the link speed and add users.</p>
+ <div class="ctrls" id="sp" role="group"><button type="button">1 Gb link</button><button type="button">2.5 Gb link</button></div>
+ <label class="lab" for="us" style="display:block">Users copying files at the same time: <b id="un">4</b></label>
+ <input type="range" id="us" min="1" max="12" value="4">
+ <div class="meter"><div id="mb"></div></div>
+ <div class="out" id="bo" aria-live="polite"></div>
+ <div class="sep"></div>
+ <div class="sec">3. Which one fits?</div>
+ <div id="qz"></div>
+</div>
+
+</div>
+<script>
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
+function tabs(root){const bs=[].slice.call(root.querySelectorAll('[data-tab]')),ps=[].slice.call(root.querySelectorAll('[data-panel]'));
+ bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});ps.forEach(function(p){p.hidden=p.getAttribute('data-panel')!==b.getAttribute('data-tab')})}});bs[0].click()}
+function setPress(group,idx){[].slice.call(group.children).forEach(function(b,j){b.setAttribute('aria-pressed',j===idx?'true':'false')})}
+function Quiz(root,qs){
+ let i=0,score=0,answered=false,order=shuffle(qs.map(function(_,k){return k}));
+ function draw(){
+  if(i>=qs.length){root.innerHTML='<p class="qq">Finished: '+score+' of '+qs.length+' right.</p><div class="ctrls"><button type="button" class="again">Try again</button></div>';
+   root.querySelector('.again').onclick=function(){i=0;score=0;order=shuffle(order);draw()};return}
+  const q=qs[order[i]];answered=false;
+  root.innerHTML='<div class="qn">Question '+(i+1)+' of '+qs.length+'</div><p class="qq">'+q.q+'</p><div class="opts"></div><div class="fb" aria-live="polite"></div><div class="ctrls"><button type="button" class="nx" disabled>'+(i===qs.length-1?'See score':'Next question')+'</button></div>';
+  const box=root.querySelector('.opts'),fb=root.querySelector('.fb'),nx=root.querySelector('.nx');
+  q.o.forEach(function(t,k){const b=document.createElement('button');b.type='button';b.innerHTML=t;
+   b.onclick=function(){if(answered)return;answered=true;const ok=k===q.a;if(ok)score++;
+    [].slice.call(box.children).forEach(function(c,j){if(j===q.a)c.classList.add('right');else if(j===k)c.classList.add('wrong')});
+    fb.className='fb show '+(ok?'yes':'nope');
+    fb.innerHTML=(ok?'<b>Correct: ':'<b>Not quite. The answer is: ')+q.o[q.a]+'</b>. '+q.w;nx.disabled=false};
+   box.appendChild(b)});
+  nx.onclick=function(){i++;draw()};
+ }
+ draw();
+}
+function Orderer(root,items,opt){
+ opt=opt||{};let pos=0,miss=0,pool=shuffle(items.map(function(_,k){return k})),msg=null;
+ function draw(){
+  let h='<ol class="seq">';
+  items.forEach(function(it,k){h+=k<pos?'<li class="filled"><span class="n">'+(k+1)+'</span>'+it.t+'</li>':'<li class="empty"><span class="n">'+(k+1)+'</span>?</li>'});
+  h+='</ol>';
+  if(pos<items.length)h+='<div class="mini">'+(opt.pool||'Click the one that comes next:')+'</div><div class="opts" id="pl"></div>';
+  h+='<div class="fb'+(msg?' show '+msg.c:'')+'" aria-live="polite">'+(msg?msg.h:'')+'</div><div class="ctrls"><button type="button" class="rs">Shuffle and restart</button></div>';
+  root.innerHTML=h;
+  const pl=root.querySelector('#pl');
+  if(pl)pool.forEach(function(k){if(k<pos)return;const b=document.createElement('button');b.type='button';b.innerHTML=items[k].t;
+   b.onclick=function(){
+    if(k===pos){pos++;msg={c:'yes',h:'<b>Correct: '+items[k].t+'.</b> '+items[k].w+(pos===items.length?' <b>Done with '+miss+' wrong click'+(miss===1?'':'s')+'.</b>':'')}}
+    else{miss++;msg={c:'nope',h:'<b>Not yet.</b> The next one is <b>'+items[pos].t+'</b>. '+items[pos].w}}
+    draw()};
+   pl.appendChild(b)});
+  root.querySelector('.rs').onclick=function(){pos=0;miss=0;msg=null;pool=shuffle(pool);draw()};
+ }
+ draw();
+}
+
+const A=[
+ ['Connection','Ethernet (often 1 to 2.5 Gb), sometimes USB.','High-speed enterprise network, Fibre Channel.'],
+ ['Used for','File sharing and media at home and in small business.','Enterprise storage, presented as LUNs.'],
+ ['Cost model','Modest box for home and SMB. WD is common.','Hardware you buy up front (CapEx), versus cloud storage you rent (OpEx).'],
+ ['Watch out','Ethernet can bottleneck. Synology can lock to vendor drives.','Built for enterprise scale, so it is overkill for a home.']];
+const at=document.getElementById('at'),cmp=document.getElementById('cmp');
+A.forEach(function(a,i){const b=document.createElement('button');b.type='button';b.textContent=a[0];b.onclick=function(){setPress(at,i);
+ cmp.innerHTML='<div class="card2 sel"><h3>NAS</h3>'+a[1]+'</div><div class="card2"><h3>SAN</h3>'+a[2]+'</div>'};at.appendChild(b)});
+at.children[0].click();
+let sp=0;const spb=document.getElementById('sp'),us=document.getElementById('us');
+[].slice.call(spb.children).forEach(function(b,i){b.onclick=function(){sp=i;bw()}});
+us.oninput=bw;
+function bw(){setPress(spb,sp);const n=+us.value,gb=sp?2500:1000,per=gb/n;document.getElementById('un').textContent=n;
+ document.getElementById('mb').style.width=Math.min(100,per/gb*100)+'%';
+ document.getElementById('bo').innerHTML='<strong>About '+Math.round(per)+' Mb/s each.</strong> '+n+' user'+(n>1?'s':'')+' share one '+(sp?'2.5':'1')+' Gb link ('+gb+' Mb/s), so each gets roughly '+gb+' / '+n+'. More users, thinner slices: Ethernet is the bottleneck, not the disks.'}
+bw();
+Quiz(document.getElementById('qz'),[
+ {q:'A home user wants shared media and file storage on the LAN.',o:['NAS','SAN'],a:0,w:'NAS is for file sharing and media at home and in small business.'},
+ {q:'An enterprise needs high-speed block storage over Fibre Channel with LUNs.',o:['NAS','SAN'],a:1,w:'Fibre Channel and LUNs describe a SAN.'},
+ {q:'A Synology box refuses third-party drives. Which device and issue?',o:['NAS, vendor lock-in','SAN, LUN masking'],a:0,w:'Synology is a NAS brand that can lock to vendor drives.'},
+ {q:'Buying storage hardware up front, compared with renting cloud storage, is which model?',o:['CapEx for the hardware (cloud is OpEx)','OpEx for the hardware (cloud is CapEx)'],a:0,w:'Hardware you buy is CapEx; cloud is OpEx.'},
+ {q:'A small office NAS is slow when ten people copy files at once. Likely cause?',o:['The Ethernet link is the bottleneck','Fibre Channel is too slow'],a:0,w:'Many users share one Ethernet link, so each slice is thin.'},
+ {q:'A NAS is plugged in with one cable. Which connection is typical?',o:['Ethernet (sometimes USB)','Fibre Channel only'],a:0,w:'NAS uses Ethernet, sometimes USB; Fibre Channel belongs to SAN.'}]);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TCP vs UDP and port picker</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>TCP vs UDP and port picker</h1>
+<p class="lede">Send four packets with each protocol, drop one on purpose, and see what each protocol does about it. Then look up ports and quiz yourself.</p>
+<div class="card">
+ <h2 class="sec">1. Send four packets</h2>
+ <div class="ctrls" id="pr" role="group" aria-label="Protocol"></div>
+ <div class="ctrls" id="ls" role="group" aria-label="Loss"></div>
+ <div class="ctrls"><button class="go" id="nx">Next step</button><button id="all">Run all</button><button id="rs">Reset</button></div>
+ <div id="log" style="margin-top:10px"></div>
+ <div class="fb" id="fb1" aria-live="polite">Press Next step.</div>
+</div>
+<div class="card">
+ <h2 class="sec">2. Port lookup</h2>
+ <div class="ctrls" id="pl" role="group" aria-label="Services"></div>
+ <div class="out" id="po"></div>
+ <div class="lab">How many ports?</div>
+ <div class="ctrls" id="tot" role="group" aria-label="Count"></div>
+ <div class="out" id="to"></div>
+</div>
+<div class="card">
+ <h2 class="sec">3. Test yourself</h2>
+ <div class="q" id="tqq"></div><div class="opts" id="tqo"></div><div class="fb" id="tqf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="tqn">Next question</button><span class="sc" id="tqs"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+let pr=0,ls=0,st=0;
+function events(){
+ const e=[];
+ if(pr===0){e.push(['A to B','SYN','A asks to open a connection.',0],['B to A','SYN/ACK','B agrees.',0],['A to B','ACK','Connection is open (3-way handshake done).',0]);
+  for(let p=1;p<=4;p++){
+   if(ls&&p===2){e.push(['A to B','DATA '+p,'Lost in transit.',1],['(waiting)','No ACK arrives','A waits, then resends because it never got an acknowledgement.',1],['A to B','DATA 2 (resend)','Arrives this time.',0],['B to A','ACK 2','B acknowledges.',0])}
+   else e.push(['A to B','DATA '+p,'',0],['B to A','ACK '+p,'B acknowledges.',0])}
+ }else{
+  for(let p=1;p<=4;p++){e.push(['A to B','DATA '+p,(ls&&p===2)?'Lost in transit. UDP never notices.':'',(ls&&p===2)?1:0])}
+ }
+ return e}
+function draw(){
+ const e=events(),sh=e.slice(0,st);
+ $('log').innerHTML=sh.length?'<div class="tbl"><table><thead><tr><th>Direction</th><th>Message</th><th>Note</th></tr></thead><tbody>'+sh.map(x=>'<tr'+(x[3]?' style="background:var(--bad-soft)"':'')+'><td>'+esc(x[0])+'</td><td class="mono">'+esc(x[1])+'</td><td>'+esc(x[2])+'</td></tr>').join('')+'</tbody></table></div>':'<div class="mini">No messages yet.</div>';
+ if(st>=e.length){
+  const sent=e.filter(x=>x[0]!=='(waiting)').length;const delivered=pr===0?4:(ls?3:4);
+  fb($('fb1'),delivered===4,'<strong>Delivered '+delivered+' of 4 packets using '+sent+' messages.</strong> '+(pr===0?'TCP spent a handshake and ACKs to make delivery reliable'+(ls?', and resent the lost packet.':'.'):'UDP has no handshake and no ACKs, so it is fast'+(ls?', but the lost packet is gone for good.':'.')))
+ }else{$('fb1').className='fb';$('fb1').textContent='Step '+st+' of '+e.length+'. Press Next step.'}
+}
+function reset(){st=0;draw()}
+mkBtns($('pr'),['TCP','UDP'],i=>{pr=i;reset()},0);
+mkBtns($('ls'),['No packet loss','Lose packet 2'],i=>{ls=i;reset()},0);
+$('nx').onclick=()=>{if(st<events().length)st++;draw()};
+$('all').onclick=()=>{st=events().length;draw()};$('rs').onclick=reset;draw();
+const PORTS=[["FTP", "20/21", "Well-known (0 to 1023)"], ["SSH", "22", "Well-known (0 to 1023)"], ["Telnet", "23", "Well-known (0 to 1023)"], ["SMTP", "25", "Well-known (0 to 1023)"], ["DNS", "53", "Well-known (0 to 1023)"], ["DHCP", "67/68", "Well-known (0 to 1023)"], ["HTTP", "80", "Well-known (0 to 1023)"], ["HTTPS", "443", "Well-known (0 to 1023)"], ["RDP", "3389", "Common port to memorize"], ["SQL", "1433", "Registered by a vendor"], ["QuickTime", "1220", "Registered by a vendor"], ["VLC", "1234", "Registered by a vendor"]];
+mkBtns($('pl'),PORTS.map(p=>p[0]),i=>{$('po').innerHTML='<strong>'+esc(PORTS[i][0])+'</strong>: port <span class="mono">'+esc(PORTS[i][1])+'</span><br>Class: '+esc(PORTS[i][2])},0);
+$('po').innerHTML='<strong>FTP</strong>: port <span class="mono">20/21</span><br>Class: Well-known (0 to 1023)';
+const TT=[['TCP only','65,536 TCP ports'],['UDP only','65,536 UDP ports'],['TCP + UDP','65,536 + 65,536 = 131,072 ports in total']];
+mkBtns($('tot'),TT.map(t=>t[0]),i=>{$('to').textContent=TT[i][1]},2);$('to').textContent=TT[2][1];
+const TQ=[{"q": "A live video call: which transport fits best?", "o": ["TCP", "UDP"], "a": 1, "why": "UDP: speed matters more than retransmission, so no handshake and no ACKs."}, {"q": "Streaming music: which transport carries the stream?", "o": ["TCP", "UDP"], "a": 1, "why": "UDP is used for streaming, music, VoIP and video calls."}, {"q": "The initial YouTube connection (secured) uses which protocol?", "o": ["TCP", "UDP"], "a": 0, "why": "The initial connection is TCP; then the stream itself switches to UDP."}, {"q": "Which protocol sends each packet and waits for an ACK, resending if none arrives?", "o": ["TCP", "UDP"], "a": 0, "why": "TCP is connection-oriented and reliable."}, {"q": "Which protocol is the \"Hail Mary\" pass with no handshake and no ACKs?", "o": ["TCP", "UDP"], "a": 1, "why": "UDP is connectionless and does not acknowledge."}, {"q": "Which is the 3-way handshake order?", "o": ["SYN, SYN/ACK, ACK", "SYN, ACK, SYN/ACK", "ACK, SYN, SYN/ACK"], "a": 0, "why": "TCP opens with SYN, then SYN/ACK, then ACK."}, {"q": "Which port is SSH?", "o": ["22", "23", "25", "53"], "a": 0, "why": "SSH is 22. Telnet is 23, SMTP is 25, DNS is 53."}, {"q": "Which port is RDP?", "o": ["3389", "443", "80", "1433"], "a": 0, "why": "RDP is 3389."}, {"q": "Which port is DNS?", "o": ["53", "25", "67", "443"], "a": 0, "why": "DNS is 53. DHCP uses 67/68."}, {"q": "Which ports does FTP use?", "o": ["20/21", "22", "25", "67/68"], "a": 0, "why": "FTP is 20/21."}, {"q": "Which port is HTTPS?", "o": ["443", "80", "23", "3389"], "a": 0, "why": "HTTPS is 443. HTTP is 80."}, {"q": "How many ports exist in total (TCP plus UDP)?", "o": ["65,536", "131,072", "1,023", "49,152"], "a": 1, "why": "65,536 TCP + 65,536 UDP = 131,072."}, {"q": "SQL on 1433 is which kind of port?", "o": ["Well-known", "Registered", "High/dynamic"], "a": 1, "why": "Software vendors register ports like SQL 1433 so apps do not conflict."}, {"q": "Which ports are used randomly for client connections?", "o": ["Well-known", "Registered", "High/dynamic"], "a": 2, "why": "High or dynamic ports are chosen randomly for client connections."}, {"q": "Port 25 is assigned to which protocol?", "o": ["SMTP", "Telnet", "DNS"], "a": 0, "why": "SMTP is 25."}];
+Deck({items:TQ,q:$('tqq'),opts:$('tqo'),fb:$('tqf'),next:$('tqn'),score:$('tqs')});
+
+</script>
+</body>
+</html>

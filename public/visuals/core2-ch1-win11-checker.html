@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Windows 11 upgrade checker</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.opt{display:block;width:100%;text-align:left;border-radius:10px;margin:6px 0;min-height:40px;padding:8px 12px;background:var(--bg);font-weight:500}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.opt[disabled]{cursor:default}
+.qtext{font-size:15px;font-weight:600;margin:4px 0 6px}
+.row2{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:700px){.row2{grid-template-columns:1fr 1fr}}
+.chip{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.chip.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.chip.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip.warm{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.sp{margin-top:18px}
+button.sm{padding:4px 10px;min-height:36px}
+button,select{min-height:36px}
+
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;min-width:0}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=range]{accent-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Windows 11 upgrade checker</h1>
+<p class="lede">Build a PC, then see which requirement stops the upgrade. Use the presets or set each part yourself.</p>
+<div class="card">
+<div class="lab">Presets</div><div class="ctrls" id="pre"></div>
+<div class="row2">
+<div id="fields"></div>
+<div><div class="lab">Requirement check (CompTIA spec)</div><div id="rows"></div></div>
+</div>
+<div class="out" id="verdict" aria-live="polite"></div>
+</div>
+<div class="card sp"><div class="lab">Test yourself</div><div id="quiz"></div></div>
+
+</div>
+<script>
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function Quiz(root, qs){
+  let i=0,score=0,done=false;
+  const el=document.getElementById(root);
+  function draw(){
+    if(i>=qs.length){
+      el.innerHTML='<div class="out"><strong>Score: '+score+' of '+qs.length+'.</strong> '+(score===qs.length?'Clean sweep.':'Retry the ones you missed.')+'</div><div class="ctrls"><button type="button" id="'+root+'-re">Restart quiz</button></div>';
+      document.getElementById(root+'-re').onclick=()=>{i=0;score=0;draw()};return;}
+    const q=qs[i];done=false;
+    let h='<div class="lab">Question '+(i+1)+' of '+qs.length+'</div><div class="qtext">'+esc(q.q)+'</div><div>';
+    q.o.forEach((o,k)=>{h+='<button type="button" class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
+    h+='</div><div class="out" aria-live="polite">Pick an answer.</div><div class="ctrls"><button type="button" id="'+root+'-nx" disabled>'+(i===qs.length-1?'See score':'Next question')+'</button></div>';
+    el.innerHTML=h;
+    el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(done)return;done=true;const k=+b.dataset.k;const ok=k===q.a;if(ok)score++;
+      el.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add('good');else if(j===k)x.classList.add('bad')});
+      el.querySelector('.out').innerHTML=(ok?'<strong>Correct: '+esc(q.o[q.a])+'.</strong> ':'<strong>Not quite. The answer is '+esc(q.o[q.a])+'.</strong> ')+esc(q.why);
+      document.getElementById(root+'-nx').disabled=false;});
+    document.getElementById(root+'-nx').onclick=()=>{i++;draw()};
+  }
+  draw();
+}
+function group(elId,items,onpick,start){
+  const el=document.getElementById(elId);el.innerHTML='';
+  items.forEach((t,k)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{set(k);onpick(k)};el.appendChild(b)});
+  function set(k){[...el.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===k?'true':'false'))}
+  if(start!==undefined){set(start)}
+  return set;
+}
+
+const F=[
+ {id:'cpu',label:'Processor speed',o:[['0.8 GHz',0.8],['1.0 GHz',1],['2.4 GHz',2.4]],ok:v=>v>=1,need:'1.0 GHz or faster'},
+ {id:'cores',label:'CPU cores',o:[['1 core',1],['2 cores',2],['4 cores',4]],ok:v=>v>=2,need:'2 cores minimum'},
+ {id:'ram',label:'RAM',o:[['2 GB',2],['4 GB',4],['8 GB',8]],ok:v=>v>=4,need:'4 GB minimum (8 GB recommended)'},
+ {id:'disk',label:'Storage',o:[['32 GB',32],['64 GB',64],['256 GB',256]],ok:v=>v>=64,need:'64 GB minimum'},
+ {id:'fw',label:'Firmware',o:[['Legacy BIOS',0],['UEFI, no Secure Boot',1],['UEFI, Secure Boot capable',2]],ok:v=>v>=2,need:'UEFI with Secure Boot capable'},
+ {id:'tpm',label:'TPM',o:[['None',0],['TPM 1.2',1],['TPM 2.0',2]],ok:v=>v===2,need:'TPM 2.0 (mandatory)'},
+ {id:'disp',label:'Display',o:[['Under 9 in / below 720p',0],['720p, 9 in or larger',1]],ok:v=>v===1,need:'720p, 9 inch minimum'}
+];
+const S={cpu:2.4,cores:4,ram:8,disk:256,fw:2,tpm:2,disp:1};
+const PRE=[['Meets everything',{cpu:2.4,cores:4,ram:8,disk:256,fw:2,tpm:2,disp:1}],
+ ['Fast PC with TPM 1.2',{cpu:2.4,cores:4,ram:8,disk:256,fw:2,tpm:1,disp:1}],
+ ['Old BIOS desktop',{cpu:2.4,cores:2,ram:4,disk:256,fw:0,tpm:0,disp:1}],
+ ['Tiny 32 GB tablet',{cpu:1,cores:2,ram:4,disk:32,fw:2,tpm:2,disp:1}]];
+const fe=document.getElementById('fields');
+const setters={};
+F.forEach(f=>{const d=document.createElement('div');d.innerHTML='<div class="lab">'+f.label+'</div><div class="ctrls" id="g-'+f.id+'"></div>';fe.appendChild(d);
+ setters[f.id]=group('g-'+f.id,f.o.map(x=>x[0]),k=>{S[f.id]=f.o[k][1];draw()});});
+function sync(){F.forEach(f=>{const k=f.o.findIndex(x=>x[1]===S[f.id]);setters[f.id](k)})}
+const pre=document.getElementById('pre');
+PRE.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p[0];b.onclick=()=>{Object.assign(S,p[1]);sync();draw()};pre.appendChild(b)});
+function draw(){
+ const bad=F.filter(f=>!f.ok(S[f.id]));
+ document.getElementById('rows').innerHTML=F.map(f=>{const g=f.ok(S[f.id]);
+  return '<div class="cell '+(g?'good':'bad')+'" style="margin-bottom:6px"><span class="t">'+f.label+'</span> <span class="chip '+(g?'good':'bad')+'">'+(g?'pass':'fail')+'</span><div class="s">Needs: '+f.need+'</div></div>'}).join('');
+ const v=document.getElementById('verdict');
+ if(!bad.length)v.innerHTML='<strong>Upgrade allowed.</strong> Every requirement is met.';
+ else{const t=bad.find(f=>f.id==='tpm');
+  v.innerHTML='<strong>Upgrade blocked by: '+bad.map(f=>f.label).join(', ')+'.</strong> '+(t?'TPM 2.0 is mandatory and is the classic blocker, even on a fast PC with plenty of RAM and disk.':'Fix '+(bad.length>1?'each failing part':'that part')+' and the PC qualifies.')}
+}
+sync();draw();
+Quiz('quiz',[
+ {q:'A PC has a 3 GHz 4-core CPU, 8 GB RAM, a 256 GB SSD and UEFI with Secure Boot, but a TPM 1.2 chip. What blocks the Windows 11 upgrade?',o:['Not enough RAM','The TPM version (TPM 2.0 is required)','Not enough disk space','Too few CPU cores'],a:1,why:'TPM 2.0 is mandatory, and it is often the upgrade blocker rather than RAM or disk size.'},
+ {q:'What is the minimum RAM for Windows 11?',o:['2 GB','4 GB','8 GB','16 GB'],a:1,why:'4 GB is the minimum. 8 GB is only recommended.'},
+ {q:'Which firmware does Windows 11 need?',o:['Legacy BIOS','Any BIOS with a TPM','UEFI, Secure Boot capable','UEFI with no Secure Boot'],a:2,why:'The spec is UEFI with Secure Boot capable.'},
+ {q:'Per the CompTIA spec, what is the minimum storage?',o:['32 GB','64 GB','128 GB','256 GB'],a:1,why:'64 GB is the CompTIA number, even if marketing numbers run lower.'}
+]);
+
+</script>
+</body>
+</html>
