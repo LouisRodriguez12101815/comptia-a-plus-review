@@ -38,6 +38,7 @@ export function summarize(session: Session, challenge: Challenge) {
   const firstCorrect = rows.filter((row) => row.firstAttemptCorrect).length;
   return { rows, points: rows.reduce((sum, row) => sum + row.points, 0), hints: rows.filter((row) => row.hintUsed).length,
     completed: rows.filter((row) => row.complete).length, attempted, firstCorrect,
+    retries: challenge.rounds.reduce((n, round) => n + Math.max(0, (session.receipts[round.id]?.attemptedIds.length ?? 0) - 1), 0),
     firstAttemptAccuracy: attempted ? Math.round(firstCorrect / attempted * 100) : null,
     recommendations: rows.filter((row) => row.misconceptions.length || row.hintUsed).map((row) => ({ objective: row.round.objective, sourceIds: row.round.sourceIds })) };
 }

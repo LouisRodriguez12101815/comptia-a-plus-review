@@ -1,8 +1,8 @@
 import { useId } from "react";
 import type { PacketEffect, Scenario } from "@/lib/practice/types";
-export function PacketDiagram({ scenario, effect, decisionId }: { scenario: Scenario; effect?: PacketEffect; decisionId: string }) {
+export function PacketDiagram({ scenario, effect, decisionId, planOnly = false }: { scenario: Scenario; effect?: PacketEffect; decisionId: string; planOnly?: boolean }) {
   const id = useId();
-  const current = scenario.nodes.findIndex((node) => node.id === (effect?.nodeId ?? "source"));
+  const current = planOnly ? -1 : scenario.nodes.findIndex((node) => node.id === (effect?.nodeId ?? "source"));
   function drawing(vertical: boolean) {
     const arrow = `${id}-${vertical ? "vertical" : "horizontal"}`;
     const width = vertical ? 340 : 780, height = vertical ? scenario.nodes.length * 78 + 20 : 150;
@@ -25,8 +25,8 @@ export function PacketDiagram({ scenario, effect, decisionId }: { scenario: Scen
     <figcaption className="font-semibold">{scenario.title}</figcaption>
     <p className="text-sm text-slate-300">{scenario.description}</p>
     {drawing(false)}{drawing(true)}
-    <p role="status" data-packet-location className="text-sm text-amber-100">Packet at {scenario.nodes[current]?.label} · IPv4 {scenario.sourceIp} → {scenario.destinationIp} · TTL {effect?.ttl ?? 64}</p>
-    <p className="break-words text-sm" data-frame-state>Ethernet frame: {effect?.frameSource ? `${effect.frameSource} → ${effect.frameDestination}` : "not constructed / removed for IP processing"}</p>
+    {!planOnly && <><p role="status" data-packet-location className="text-sm text-amber-100">Packet at {scenario.nodes[current]?.label} · IPv4 {scenario.sourceIp} → {scenario.destinationIp} · TTL {effect?.ttl ?? 64}</p>
+    <p className="break-words text-sm" data-frame-state>Ethernet frame: {effect?.frameSource ? `${effect.frameSource} → ${effect.frameDestination}` : "not constructed / removed for IP processing"}</p></>}
     <dl className="grid gap-3 text-sm sm:grid-cols-2">{scenario.nodes.map((node) => <div key={node.id} className="rounded-xl bg-slate-900 p-3"><dt className="font-semibold text-cyan-100">{node.label}</dt><dd className="break-words">{node.ip}<br />MAC {node.mac}<br />{node.detail}</dd></div>)}</dl>
     {scenario.context.map((line) => <p key={line} className="text-xs text-slate-300">{line}</p>)}
     <div><h3 className="font-semibold">Routing information</h3><ul className="mt-2 space-y-1 font-mono text-xs sm:text-sm">{scenario.routes.map((route) => <li key={route} className="break-words">{route}</li>)}</ul></div>

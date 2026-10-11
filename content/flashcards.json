@@ -577,7 +577,7 @@
     "id": "fc-n6",
     "topicId": "networking-devices",
     "front": "What is ARP and what does it do?",
-    "back": "Address Resolution Protocol — broadcasts to learn every device's IP and MAC; the switch stores answers in its MAC table. arp -a shows the cache. Also a security vector (ARP poisoning / MITM).",
+    "back": "ARP resolves a local IPv4 next hop to a MAC address: the destination host for same-subnet delivery, or the default gateway for a remote destination. Hosts cache ARP mappings (arp -a). Switches separately learn source MAC-to-port mappings from Ethernet frames.",
     "weak": false
   },
   {
@@ -618,8 +618,8 @@
   {
     "id": "fc-n12",
     "topicId": "networking-devices",
-    "front": "Network is 'converging' — what does that mean?",
-    "back": "After a switch boots, its MAC table is empty (volatile RAM); devices send ARP requests to learn each other. Fully converged = every device and the router knows all MACs and IPs.",
+    "front": "Does Ethernet forwarding require every device to know every IP and MAC?",
+    "back": "No. Switches learn source MAC-to-port mappings from frames. Hosts resolve the IPv4 next hops they need using ARP and cache those mappings. Routing convergence concerns agreement on usable routes; it does not require every host to know every address.",
     "weak": false
   },
   {
@@ -641,6 +641,36 @@
     "topicId": "networking-devices",
     "front": "PoE — what and why",
     "back": "Power over Ethernet: switch delivers low-voltage (<48V) power over the data cable; VoIP phones ship without power bricks. No PoE switch? Use a PoE injector.",
+    "weak": false
+  },
+  {
+    "id": "fc-next-hop-1",
+    "topicId": "n10-ch9",
+    "examCodes": [
+      "n10-009"
+    ],
+    "front": "How does a host choose the ARP target for local versus remote IPv4 delivery?",
+    "back": "Compare the destination with the local subnet using the mask. Resolve the destination host locally; for a remote destination resolve the on-link default gateway. The packet keeps the remote destination IP.",
+    "weak": false
+  },
+  {
+    "id": "fc-next-hop-2",
+    "topicId": "n10-ch9",
+    "examCodes": [
+      "n10-009"
+    ],
+    "front": "Why did Lab 01’s wrong /24 mask break delivery from PC-A2 to Ops?",
+    "back": "The approved plan uses /26. With /24, PC-A2 treated remote .74 as local and ARPed on Sales instead of using .1 as its gateway. Compare the mask with the plan and verify the repaired remote path.",
+    "weak": false
+  },
+  {
+    "id": "fc-next-hop-3",
+    "topicId": "n10-ch9",
+    "examCodes": [
+      "n10-009"
+    ],
+    "front": "What should be verified and documented after a next-hop repair?",
+    "back": "Test relevant local, gateway and previously failed remote reachability. Record configuration, source/destination, tests and results. A successful ping supports tested IP reachability, not proof that every application works.",
     "weak": false
   }
 ]

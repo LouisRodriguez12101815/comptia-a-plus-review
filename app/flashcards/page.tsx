@@ -1,3 +1,4 @@
+import { MissionReturnLink } from "@/app/components/practice/MissionReturnLink";
 import { FlashcardDeck } from "@/app/components/FlashcardDeck";
 
 export default async function FlashcardsPage({
@@ -15,6 +16,7 @@ export default async function FlashcardsPage({
           saved in this browser only.
         </p>
       </div>
+      {topic === "n10-ch9" && <MissionReturnLink />}
       <FlashcardDeck initialTopic={topic ?? "all"} />
     </div>
   );

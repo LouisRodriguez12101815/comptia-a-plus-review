@@ -1,0 +1,544 @@
+{
+  "id": "next-hop",
+  "version": 1,
+  "title": "Next-hop troubleshooting",
+  "description": "Investigate Lab 01\u2019s wrong-mask fault, explain the next hop, then verify the repair. Review mistakes and apply each objective to a fresh scenario before earning an independent-application achievement.",
+  "exam": "n10-009",
+  "objectives": [
+    {
+      "id": "diagnose",
+      "label": "Choose a test that distinguishes wrong addressing from a routing failure",
+      "practiceId": "diagnose-practice",
+      "applicationIds": [
+        "diagnose-apply-1",
+        "diagnose-apply-2"
+      ],
+      "review": [
+        {
+          "label": "Review the relevant note",
+          "href": "/notes/n10-ch9#mac-arp"
+        },
+        {
+          "label": "Review Lab 01 break/fix",
+          "href": "/labs/two-subnet-lan#break-fix"
+        },
+        {
+          "label": "Practice Chapter 9 flashcards",
+          "href": "/flashcards?topic=n10-ch9"
+        }
+      ],
+      "achievement": {
+        "title": "Evidence before repair",
+        "reason": "You chose a targeted addressing test in a new scenario without a hint or an incorrect attempt."
+      }
+    },
+    {
+      "id": "next-hop",
+      "label": "Use subnet comparison to distinguish the IP destination from the Ethernet next hop",
+      "practiceId": "next-hop-practice",
+      "applicationIds": [
+        "next-hop-apply-1",
+        "next-hop-apply-2"
+      ],
+      "review": [
+        {
+          "label": "Review the relevant note",
+          "href": "/notes/n10-ch9#routing-process"
+        },
+        {
+          "label": "Review Lab 01 break/fix",
+          "href": "/labs/two-subnet-lan#break-fix"
+        },
+        {
+          "label": "Practice Chapter 9 flashcards",
+          "href": "/flashcards?topic=n10-ch9"
+        }
+      ],
+      "achievement": {
+        "title": "Next hop explained",
+        "reason": "You applied subnet and frame-address reasoning to a new scenario without assistance."
+      }
+    },
+    {
+      "id": "verify",
+      "label": "Verify the repaired path and document configuration and test results",
+      "practiceId": "verify-practice",
+      "applicationIds": [
+        "verify-apply-1",
+        "verify-apply-2"
+      ],
+      "review": [
+        {
+          "label": "Review the relevant note",
+          "href": "/notes/n10-ch9#routing-process"
+        },
+        {
+          "label": "Review Lab 01 verification",
+          "href": "/labs/two-subnet-lan#verification"
+        },
+        {
+          "label": "Practice Chapter 9 flashcards",
+          "href": "/flashcards?topic=n10-ch9"
+        }
+      ],
+      "achievement": {
+        "title": "Repair verified",
+        "reason": "You chose verification and documentation for a different repair without assistance."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "diagnose-practice",
+      "objectiveId": "diagnose",
+      "stage": "practice",
+      "title": "A useful test before changing the network",
+      "prompt": "Lab 01: PC-A2 (192.168.10.11) can reach PC-A1 (.10), but not PC-B1 (.74). The approved Sales plan is /26, gateway .1; Ops is .64/26. A capture shows PC-A2 ARPing for .74 on LAN-A. Links and R1 connected routes are healthy; addresses are numeric, so DNS is not involved. Which check distinguishes a wrong host mask from a router fault?",
+      "objective": "Choose a test that distinguishes wrong addressing from a routing failure",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "diagnose-practice-0",
+          "label": "Compare PC-A2\u2019s configured mask with the /26 plan before changing anything",
+          "explanation": "A /24 would incorrectly classify .74 as local, explaining the ARP target. Comparing configuration with the plan tests that explanation directly."
+        },
+        {
+          "id": "diagnose-practice-1",
+          "label": "Reboot R1 before checking host addressing",
+          "explanation": "Healthy connected routes and links make an untested router reboot weaker than inspecting the host decision that produced the ARP."
+        },
+        {
+          "id": "diagnose-practice-2",
+          "label": "Flush DNS and retry the numeric address",
+          "explanation": "The test uses numeric IPs; DNS lookup does not explain the observed on-link ARP for .74."
+        }
+      ],
+      "correctAnswerId": "diagnose-practice-0",
+      "hint": "The ARP target tells you what PC-A2 believes is local. What host setting decides that?",
+      "success": "Test result: PC-A2 has /24. Restore the approved /26 (255.255.255.192), then verify; this is a scenario result, not a change to a real device.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "diagnose-apply-1",
+      "objectiveId": "diagnose",
+      "stage": "application",
+      "title": "Application: the return side fails",
+      "prompt": "New case: PC-B2 (192.168.10.75) reaches local .74 but cannot reply to PC-A1 (.10). It has gateway .65 and ARPs for .10 on Ops instead of forwarding to .65. The approved plan is Ops .64/26 and Sales .0/26. R1 and links are healthy. Which check distinguishes a mask error from a router fault?",
+      "objective": "Choose a test that distinguishes wrong addressing from a routing failure",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "diagnose-apply-1-0",
+          "label": "Inspect PC-B2\u2019s mask against Ops\u2019 /26 plan",
+          "explanation": "With /24, .10 would appear local; /26 makes it remote. Checking the host mask directly tests the observed incorrect on-link decision."
+        },
+        {
+          "id": "diagnose-apply-1-1",
+          "label": "Reset both switches\u2019 MAC tables",
+          "explanation": "A switch forwards frames; clearing tables does not test why the host classified a remote IP as local."
+        },
+        {
+          "id": "diagnose-apply-1-2",
+          "label": "Change the destination IP to .65 so the same packet reaches PC-A1",
+          "explanation": "The destination IP must identify PC-A1. The gateway is the Ethernet next hop, not a replacement IP destination."
+        }
+      ],
+      "correctAnswerId": "diagnose-apply-1-0",
+      "hint": "Determine which setting could make .75 and .10 appear on the same local network.",
+      "success": "Finding: the observed behavior is consistent with /24 on PC-B2. Confirm the configuration, repair to the approved /26, and retest both directions.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "diagnose-apply-2",
+      "objectiveId": "diagnose",
+      "stage": "application",
+      "title": "Application: a different address plan",
+      "prompt": "Authored transfer network: a host 10.20.0.10 should use /25 and gateway .1. Destination .150 is in 10.20.0.128/25. The host currently uses /24 and broadcasts ARP for .150; links and the router are healthy. Which test is justified before repair?",
+      "objective": "Choose a test that distinguishes wrong addressing from a routing failure",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "diagnose-apply-2-0",
+          "label": "Compare the configured /24 mask with the approved /25 plan",
+          "explanation": "The host\u2019s /24 combines the two planned /25 networks. Comparing the mask explains why it wrongly ARPs for a remote host."
+        },
+        {
+          "id": "diagnose-apply-2-1",
+          "label": "Replace Ethernet with a faster NIC before testing the mask",
+          "explanation": "No link or capacity failure is given. A faster NIC does not change the host\u2019s subnet comparison."
+        },
+        {
+          "id": "diagnose-apply-2-2",
+          "label": "Treat the three matching address octets as proof the destination is local",
+          "explanation": "Locality is determined by the mask, not simply by matching the first three octets."
+        }
+      ],
+      "correctAnswerId": "diagnose-apply-2-0",
+      "hint": "The approved /25 boundary is .128; compare that boundary with the configured /24.",
+      "success": "The test supports repairing the mask to the approved /25 and checking routed delivery; the same principle applies to a different prefix.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "transfer"
+    },
+    {
+      "id": "next-hop-practice",
+      "objectiveId": "next-hop",
+      "stage": "practice",
+      "title": "Interpret the corrected next hop",
+      "prompt": "PC-A2 is now 192.168.10.11/26 with gateway .1. It sends to PC-B1 192.168.10.74/26. An ARP reply has resolved R1 Gi0/0 at .1. Which outbound address pairing is correct?",
+      "objective": "Use subnet comparison to distinguish the IP destination from the Ethernet next hop",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "next-hop-practice-0",
+          "label": "Destination IP .74; destination Ethernet MAC belongs to R1 Gi0/0 (.1)",
+          "explanation": "Subnet comparison puts .74 on Ops\u2019 remote subnet. The IP packet still targets PC-B1; the local frame targets the gateway interface."
+        },
+        {
+          "id": "next-hop-practice-1",
+          "label": "Destination IP .1; destination MAC belongs to R1 Gi0/0",
+          "explanation": "Changing the destination IP to the gateway would address the router instead of PC-B1. Only the local frame\u2019s next-hop address targets the gateway."
+        },
+        {
+          "id": "next-hop-practice-2",
+          "label": "Destination IP .74; destination MAC belongs to remote PC-B1 on LAN-A",
+          "explanation": "The remote host is not on this Ethernet segment. PC-A2 uses its local gateway\u2019s MAC for the first frame."
+        }
+      ],
+      "correctAnswerId": "next-hop-practice-0",
+      "hint": "Separate the end-to-end IP destination from the local Ethernet receiver.",
+      "success": "The first Ethernet hop reaches R1; R1 uses its connected Ops route and rebuilds the frame for PC-B1. Without NAT, the IP endpoints remain PC-A2 and PC-B1.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "next-hop-apply-1",
+      "objectiveId": "next-hop",
+      "stage": "application",
+      "title": "Application: reverse the direction",
+      "prompt": "New case: PC-B2 (.75/26) sends to PC-A1 (.10/26), gateway .65. Its ARP cache is initially empty. Which address should it resolve, and what IP destination should the packet retain?",
+      "objective": "Use subnet comparison to distinguish the IP destination from the Ethernet next hop",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "next-hop-apply-1-0",
+          "label": "Resolve .65\u2019s MAC; retain destination IP .10",
+          "explanation": "PC-A1 is outside Ops .64/26, so the Ethernet next hop is R1 Gi0/1 at .65; the IP destination remains PC-A1."
+        },
+        {
+          "id": "next-hop-apply-1-1",
+          "label": "Resolve remote .10 directly on Ops; retain destination IP .10",
+          "explanation": "The remote host cannot answer ARP across the router. Resolve the on-link gateway instead."
+        },
+        {
+          "id": "next-hop-apply-1-2",
+          "label": "Resolve .65\u2019s MAC; replace destination IP .10 with .65",
+          "explanation": "The gateway\u2019s IP is used to resolve the local next hop; it is not the end-to-end destination."
+        }
+      ],
+      "correctAnswerId": "next-hop-apply-1-0",
+      "hint": "Compare .75/26 and .10/26 before choosing an ARP target.",
+      "success": "The return direction uses a different gateway interface and local MAC, but the packet still addresses the intended remote host.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "next-hop-apply-2",
+      "objectiveId": "next-hop",
+      "stage": "application",
+      "title": "Application: keep local traffic local",
+      "prompt": "New case: PC-A1 (.10/26) sends to PC-A2 (.11/26). Both are on Sales, gateway .1. Its ARP cache is empty. Which local Ethernet delivery is justified?",
+      "objective": "Use subnet comparison to distinguish the IP destination from the Ethernet next hop",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "next-hop-apply-2-0",
+          "label": "Resolve .11\u2019s MAC and keep destination IP .11",
+          "explanation": "Both hosts are within .0/26. ARP resolves the destination host locally; the gateway is not required for same-subnet delivery."
+        },
+        {
+          "id": "next-hop-apply-2-1",
+          "label": "Resolve .1\u2019s MAC for every packet because a gateway is configured",
+          "explanation": "The host uses the gateway for remote destinations. A configured gateway does not make every frame traverse the router."
+        },
+        {
+          "id": "next-hop-apply-2-2",
+          "label": "Replace destination IP .11 with the switch management IP .2",
+          "explanation": "The switch forwards Ethernet frames; its management IP is not the packet\u2019s intended destination."
+        }
+      ],
+      "correctAnswerId": "next-hop-apply-2-0",
+      "hint": "A configured gateway does not override the local subnet comparison.",
+      "success": "The switch delivers the local frame toward PC-A2; no router hop is needed for this same-subnet path.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "verify-practice",
+      "objectiveId": "verify",
+      "stage": "practice",
+      "title": "Verify and document the mask repair",
+      "prompt": "After restoring PC-A2 from /24 to the approved /26, what provides relevant evidence that the repaired path works? This is a small, controlled lab; successful ping proves IP reachability, not every application.",
+      "objective": "Verify the repaired path and document configuration and test results",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "verify-practice-0",
+          "label": "Check local, gateway and cross-subnet pings; record the corrected mask and results",
+          "explanation": "These checks separate local access, gateway access and the repaired remote path. Recording configuration and results documents what changed and what was actually verified."
+        },
+        {
+          "id": "verify-practice-1",
+          "label": "Close the ticket as soon as the mask is edited",
+          "explanation": "A configuration change is not proof of functionality. The remote path still needs to be tested and the result documented."
+        },
+        {
+          "id": "verify-practice-2",
+          "label": "Run only a same-subnet ping and declare remote delivery fixed",
+          "explanation": "Local delivery worked before the repair. It does not demonstrate that the previously failed cross-subnet path now works."
+        }
+      ],
+      "correctAnswerId": "verify-practice-0",
+      "hint": "Repeat the previously failed path, not only a path that already worked.",
+      "success": "Scenario result: local, gateway and remote pings reply after ARP settles. Record .11/26, gateway .1, source/destination and results; application-specific checks remain separate.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "verify-apply-1",
+      "objectiveId": "verify",
+      "stage": "application",
+      "title": "Application: verify the reply path",
+      "prompt": "New case from Lab 01: PC-B2 (.75/26) lacked its default gateway, so local pings worked but remote replies failed. You restored gateway .65. Which verification and record best support closing this lab fault?",
+      "objective": "Verify the repaired path and document configuration and test results",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "verify-apply-1-0",
+          "label": "Test local and cross-subnet reachability in both directions; record .75/26, gateway .65 and results",
+          "explanation": "The missing gateway affected replies to another subnet. Testing the previously failed return path as well as local access and recording results checks the repair\u2019s actual scope."
+        },
+        {
+          "id": "verify-apply-1-1",
+          "label": "Test only PC-B2 to local .74 because it is faster",
+          "explanation": "Local access worked before the gateway repair; it does not test the missing remote reply path."
+        },
+        {
+          "id": "verify-apply-1-2",
+          "label": "Record a reward score instead of the addressing and test results",
+          "explanation": "Practice points do not verify network functionality or document the configuration change."
+        }
+      ],
+      "correctAnswerId": "verify-apply-1-0",
+      "hint": "The repaired setting was needed for remote replies. Which test exercises those replies?",
+      "success": "Successful lab pings support IP reachability in the tested directions. Record what was tested; do not generalize that every service works.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    },
+    {
+      "id": "verify-apply-2",
+      "objectiveId": "verify",
+      "stage": "application",
+      "title": "Application: verify a router-interface repair",
+      "prompt": "Different Lab 01 fault: R1 Gi0/1 was administratively down and its Ops connected route disappeared. You applied no shutdown. Which checks and documentation verify this repair?",
+      "objective": "Verify the repaired path and document configuration and test results",
+      "topic": "IPv4 next-hop troubleshooting",
+      "choices": [
+        {
+          "id": "verify-apply-2-0",
+          "label": "Confirm Gi0/1 up/up and the Ops connected route, then test cross-subnet pings and record results",
+          "explanation": "The repair must restore the interface and route as well as the formerly failed traffic path. Lab 01 documents show ip int brief, show ip route and cross-subnet pings for these purposes."
+        },
+        {
+          "id": "verify-apply-2-1",
+          "label": "Verify only that the no shutdown command was accepted",
+          "explanation": "Command acceptance does not prove interface state, route presence or successful forwarding."
+        },
+        {
+          "id": "verify-apply-2-2",
+          "label": "Clear host ARP caches and declare the interface repaired without traffic tests",
+          "explanation": "Cache changes do not establish that the interface or route is restored. Inspect the repaired components and exercise the failed path."
+        }
+      ],
+      "correctAnswerId": "verify-apply-2-0",
+      "hint": "Verify the changed interface, the route it supplies, and the actual traffic path.",
+      "success": "The evidence is interface up/up, connected .64/26 via Gi0/1 and successful tested pings. Document the fault, change and observed results.",
+      "sourceIds": [
+        "routing-notes",
+        "routing-lab"
+      ],
+      "examMappings": [
+        {
+          "exam": "n10-009",
+          "area": "Routing concepts (2.1), IPv4 addressing (1.7) and network troubleshooting methodology (5.1)"
+        }
+      ],
+      "scenarioId": "lab-office"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "lab-office",
+      "title": "Lab 01 \u00b7 Sales and Ops",
+      "description": "Sales 192.168.10.0/26 \u2192 SW1 \u2192 R1 \u2192 SW2 \u2192 Ops 192.168.10.64/26. Questions explicitly state direction and any faulty configuration.",
+      "assumptions": "IPv4 over Ethernet; no NAT, VLAN changes or packet loss. ICMP is allowed. Lab addressing uses /26; every host has the stated gateway except an explicitly described fault. MAC addresses are authored diagram examples. ARP starts empty unless a resolved entry is stated. Initial IPv4 TTL is 64. Healthy links/routes are stipulated except the named interface fault.",
+      "sourceIp": "192.168.10.11",
+      "destinationIp": "192.168.10.74",
+      "nodes": [
+        {
+          "id": "source",
+          "label": "PC-A2",
+          "ip": ".11/26",
+          "mac": "02:00:00:00:10:11",
+          "detail": "Fa0; gateway 192.168.10.1"
+        },
+        {
+          "id": "switch-a",
+          "label": "SW1",
+          "ip": ".2 (management)",
+          "mac": "\u2014",
+          "detail": "Sales Ethernet; no router hop"
+        },
+        {
+          "id": "router",
+          "label": "R1",
+          "ip": ".1 / .65",
+          "mac": "Gi0/0: 02:00:00:00:10:01; Gi0/1: 02:00:00:00:10:65",
+          "detail": "Gi0/0: 192.168.10.1/26; Gi0/1: 192.168.10.65/26"
+        },
+        {
+          "id": "switch-b",
+          "label": "SW2",
+          "ip": ".66 (management)",
+          "mac": "\u2014",
+          "detail": "Ops Ethernet; no router hop"
+        },
+        {
+          "id": "destination",
+          "label": "PC-B1",
+          "ip": ".74/26",
+          "mac": "02:00:00:00:10:74",
+          "detail": "Fa0; gateway 192.168.10.65"
+        }
+      ],
+      "context": [
+        "All abbreviated node addresses share prefix 192.168.10. PC-A1 is .10/26; PC-B2 is .75/26. This diagram shows the approved plan, not a diagnosis of the current fault."
+      ],
+      "routes": [
+        "C 192.168.10.0/26 \u2192 Gi0/0",
+        "C 192.168.10.64/26 \u2192 Gi0/1"
+      ]
+    },
+    {
+      "id": "transfer",
+      "title": "Transfer \u00b7 two /25 networks",
+      "description": "Authored transfer topology: host .10 should use 10.20.0.0/25; destination .150 uses 10.20.0.128/25. Both networks connect through a router.",
+      "assumptions": "IPv4 over Ethernet; no NAT, VLAN changes or packet loss. ICMP is allowed. This transfer uses /25; every host has the stated gateway except an explicitly described fault. MAC addresses are authored diagram examples. ARP starts empty unless a resolved entry is stated. Initial IPv4 TTL is 64. Healthy links/routes are stipulated except the named interface fault.",
+      "sourceIp": "10.20.0.10",
+      "destinationIp": "10.20.0.150",
+      "nodes": [
+        {
+          "id": "source",
+          "label": "Client",
+          "ip": "10.20.0.10/25",
+          "mac": "02:00:00:00:20:10",
+          "detail": "eth0; gateway 10.20.0.1"
+        },
+        {
+          "id": "router",
+          "label": "Router",
+          "ip": "10.20.0.1 / .129",
+          "mac": "02:00:00:00:20:01 / 02:00:00:00:20:81",
+          "detail": "e0: 10.20.0.1/25; e1: 10.20.0.129/25"
+        },
+        {
+          "id": "destination",
+          "label": "Server",
+          "ip": "10.20.0.150/25",
+          "mac": "02:00:00:00:20:96",
+          "detail": "eth0; gateway 10.20.0.129"
+        }
+      ],
+      "context": [
+        "Transfer addresses are teaching fixtures applying the subnet comparison rule in Chapter 9; not observed lab output."
+      ],
+      "routes": [
+        "C 10.20.0.0/25 \u2192 e0",
+        "C 10.20.0.128/25 \u2192 e1"
+      ]
+    }
+  ]
+}

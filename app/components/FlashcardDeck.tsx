@@ -23,6 +23,9 @@ function shuffle<T>(items: T[]) {
 
 export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
   const [focus, setFocus] = useStudyFocus();
+  // A linked Chapter 9 review must not become empty under a saved Core 1 focus.
+  const [topicFocus, setTopicFocus] = useState<StudyFocus | null>(initialTopic === "n10-ch9" ? "n10-009" : null);
+  const activeFocus = topicFocus ?? focus;
   const progress = useSyncExternalStore(
     subscribeProgress,
     getProgressSnapshot,
@@ -33,8 +36,8 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
   const [flipped, setFlipped] = useState(false);
   const [order, setOrder] = useState<string[]>([]);
 
-  const deck = useMemo(() => getFlashcards(topicId, focus), [topicId, focus]);
-  const topicOptions = getTopics(focus);
+  const deck = useMemo(() => getFlashcards(topicId, activeFocus), [topicId, activeFocus]);
+  const topicOptions = getTopics(activeFocus);
   const cards = useMemo(() => {
     const byId = new Map(deck.map((card) => [card.id, card]));
     const ordered = order
@@ -54,6 +57,7 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
   }
 
   function changeFocus(nextFocus: StudyFocus) {
+    setTopicFocus(null);
     setFocus(nextFocus);
     setTopicId("all");
     resetDeck();
@@ -62,7 +66,7 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
   return (
     <div className="space-y-5">
       <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-        <ExamFocusPicker focus={focus} onChange={changeFocus} />
+        <ExamFocusPicker focus={activeFocus} onChange={changeFocus} />
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
