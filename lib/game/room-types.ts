@@ -34,6 +34,9 @@ export type SharedRoom = {
   hintsUsed: number;
   hintUsed: boolean;
   evidenceDiscoveries: string[];
+  evidenceAssignments: { playerId: string; itemIds: string[] }[];
+  evidenceContinueAt: number | null;
+  evidenceContinued: boolean;
   usefulActions: { playerId: string; actionId: string; useful: boolean }[];
   outcomes: IncidentOutcome[];
   incidentStartScore: number;
@@ -51,9 +54,17 @@ export type RoomSnapshot = {
   room: SharedRoom & { uptimeScore: number; streakMultiplier: number };
   viewerId: string;
   serverNow: number;
-  incident: { title: string; ticket: string; objective: string; debrief: string[]; count: number; objectives: string[]; reviewTopics: string[] };
+  incident: { title: string; ticket: string; objective: string; debrief: string[]; count: number; objectives: string[]; reviewTopics: string[]; sources: StudySource[] };
   role: { name: string; responsibility: string; actionId: string; action: string };
-  debrief: { teamOutcome: "resolved" | "unresolved"; uptimeScore: number; objectives: string[]; reviewTopics: string[] } | null;
+  debrief: { teamOutcome: "resolved" | "unresolved"; uptimeScore: number; objectives: string[]; reviewTopics: string[]; sources: StudySource[] } | null;
+  evidenceGate: {
+    items: { id: string; label: string; discovered: boolean; owners: { playerId: string; nickname: string; connected: boolean; discovered: boolean }[] }[];
+    canAnswer: boolean;
+    canAdvance: boolean;
+    continueAvailableAt: number | null;
+    continued: boolean;
+    outstandingAnswers: string[];
+  };
   step: {
     title: string;
     prompt: string;
@@ -62,6 +73,8 @@ export type RoomSnapshot = {
     choices: Pick<IncidentChoice, "id" | "label">[];
   } | null;
 };
+
+export type StudySource = { path: string; href: string; title: string; sections: string[] };
 
 export type StoredRoom = Omit<SharedRoom, "players" | "selectedActions"> & {
   players: (CooperativePlayer & { tokenHash: string; lastSeenAt: number })[];

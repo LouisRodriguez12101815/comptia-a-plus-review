@@ -152,7 +152,7 @@ test("roles rotate between real incidents; stale requests cannot score in a new 
   assert.equal(new Set(before.room.players.map((p) => p.role)).size, 4);
   await assert.rejects(f.service().nextIncident("ABC234", f.members[1].token, 0), rejects(403));
   const next = await f.service().nextIncident("ABC234", f.members[0].token, 0);
-  assert.equal(next.room.incidentIndex, 1); assert.equal(next.room.incidentId, "missing-dhcp-lease");
+  assert.equal(next.room.incidentIndex, 1); assert.equal(next.room.incidentId, "dhcp-relay-route");
   assert.equal(next.room.phase, "briefing"); assert.equal(next.room.score, before.room.score);
   assert.deepEqual(next.room.players.map((p) => p.role), before.room.players.map((p, i) => roleFor(i, 1).id));
   assert.ok(next.room.players.every((p, i) => p.role !== before.room.players[i].role));
@@ -180,7 +180,10 @@ test("roles rotate between real incidents; stale requests cannot score in a new 
   assert.equal(final.room.outcomes.length, 2);
   assert.equal(final.room.result, "resolved"); assert.equal(final.debrief.teamOutcome, "resolved");
   assert.ok(final.debrief.objectives.length >= 3);
-  assert.ok(final.debrief.reviewTopics.includes("DHCP leases and APIPA"));
+  assert.ok(final.debrief.reviewTopics.includes("DHCP relay and giaddr"));
+  assert.ok(final.debrief.sources.some((source) => source.href === "/labs/cant-reach-website"));
+  assert.ok(final.debrief.sources.some((source) => source.href === "/labs/dhcp-relay-three-site"));
+  assert.ok(final.debrief.sources.some((source) => source.href === "/notes/networking-dns-dhcp"));
   assert.equal(final.room.players[1].contributions.resolution, 50);
   await assert.rejects(f.service().nextIncident("ABC234", f.members[0].token, 1), rejects(409));
   const settled = final.room.players[1].score;
@@ -207,6 +210,7 @@ test("timeout and all-wrong decisions produce honest debriefs; all cooperative w
   for (const run of [
     () => paused.service().hint("ABC234", paused.members[0].token, 0, 0),
     () => paused.service().discover("ABC234", paused.members[0].token, 0, 0),
+    () => paused.service().continueEvidence("ABC234", paused.members[0].token, 0, 0),
     () => paused.service().usefulAction("ABC234", paused.members[0].token, 0, "compare-scope", 0),
     () => paused.service().nextIncident("ABC234", paused.members[0].token, 0),
   ]) await assert.rejects(run(), rejects(423));
