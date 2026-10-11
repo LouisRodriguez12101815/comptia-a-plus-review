@@ -10,11 +10,12 @@ import { isHubPath, toolStatuses, trackForPath } from "@/lib/tracks";
 function isActive(toolId: string, pathname: string): boolean {
   if (toolId === "game") return pathname.startsWith("/game") || pathname.startsWith("/practice-games");
   if (toolId === "labs") return pathname.startsWith("/labs");
+  if (toolId === "visuals") return pathname.endsWith("/visuals") || pathname.startsWith("/network-plus");
   return pathname.startsWith(`/${toolId}`);
 }
 
 /**
- * Shown on the tool pages (notes, flashcards, quizzes, labs, game, Network+ chapters)
+ * Shown on the tool pages (notes, visuals, flashcards, quizzes, labs, game, Network+ chapters)
  * so a learner can move between tools without going back to the landing page.
  */
 export function TrackBar() {
@@ -41,7 +42,7 @@ export function TrackBar() {
         <nav aria-label={`${track.short} study tools`} className="flex flex-wrap gap-2 text-sm">
           {tools.map((tool) => {
             const active = isActive(tool.id, pathname);
-            if (tool.state === "soon") {
+            if (tool.state === "soon" && !tool.openable) {
               return (
                 <span
                   key={tool.id}
@@ -72,22 +73,14 @@ export function TrackBar() {
                     <StatusIcon kind="elsewhere" className="inline" /> CCNA
                   </span>
                 ) : null}
+                {tool.state === "soon" ? (
+                  <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                    <StatusIcon kind="soon" className="inline" /> Soon
+                  </span>
+                ) : null}
               </TrackLink>
             );
           })}
-          {track.id === "networking" ? (
-            <Link
-              href="/network-plus"
-              aria-current={pathname.startsWith("/network-plus") ? "page" : undefined}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 ${
-                pathname.startsWith("/network-plus")
-                  ? "border-teal-400 bg-teal-400 font-medium text-slate-950"
-                  : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"
-              }`}
-            >
-              Chapter visuals
-            </Link>
-          ) : null}
         </nav>
       </div>
     </div>

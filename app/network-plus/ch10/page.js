@@ -95,7 +95,7 @@ export default function Page() {
 
       <section className="card" aria-labelledby="visuals-heading">
         <h2 id="visuals-heading">Interactive visuals</h2>
-        <p className="muted">Pick a topic. Each visual is interactive, and you can open it full screen.</p>
+        <p className="muted">Go through them in order with Next, or open the list and jump to any topic. Each visual is interactive.</p>
         <ChapterViewer visuals={ch10.visuals} />
       </section>
     </main>
