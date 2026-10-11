@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Autonomous systems and route selection</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Autonomous systems, IGP and EGP, and route selection</h1>
+<p class="lede">Pick a link to see which kind of routing protocol runs on it. Then compare two routes to the same destination and see how a router chooses.</p>
+<div class="card">
+  <p class="lab">Pick a link</p>
+  <div class="ctrls" id="links" role="group" aria-label="Link"></div>
+  <div class="stage">
+    <svg viewBox="0 0 640 210" role="img" aria-label="Two autonomous systems. AS 100 contains routers R1, R2, and R3. AS 200 contains routers R4 and R5. R3 connects to R4 across the boundary.">
+      <rect x="10" y="20" width="360" height="170" rx="18" fill="var(--accent-soft)" stroke="var(--line)" stroke-width="2"/>
+      <rect x="400" y="20" width="230" height="170" rx="18" fill="var(--warm-soft)" stroke="var(--line)" stroke-width="2"/>
+      <text x="26" y="42" class="lbl">AS 100</text><text x="416" y="42" class="lbl">AS 200</text>
+      <path id="k0" class="wire" d="M90 110 H170"/><path id="k1" class="wire" d="M230 110 H310"/>
+      <path id="k2" class="wire" d="M340 110 H460"/><path id="k3" class="wire" d="M520 110 H580"/>
+      <circle class="node" cx="70" cy="110" r="22"/><text x="70" y="115" text-anchor="middle" class="node-txt">R1</text>
+      <circle class="node" cx="200" cy="110" r="22"/><text x="200" y="115" text-anchor="middle" class="node-txt">R2</text>
+      <circle class="node" cx="330" cy="110" r="22"/><text x="330" y="115" text-anchor="middle" class="node-txt">R3</text>
+      <circle class="node" cx="490" cy="110" r="22"/><text x="490" y="115" text-anchor="middle" class="node-txt">R4</text>
+      <circle class="node" cx="600" cy="110" r="22"/><text x="600" y="115" text-anchor="middle" class="node-txt">R5</text>
+    </svg>
+  </div>
+  <div class="out" id="out1" aria-live="polite"></div>
+
+  <p class="lab" style="margin-top:20px">Compare two routes to the same destination</p>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+    <div class="cell"><div class="t">Route 1</div>
+      <label class="s" for="l1">Prefix length </label><select id="l1"></select><br>
+      <label class="s" for="s1">Learned from </label><select id="s1"></select><br>
+      <label class="s" for="m1">Metric </label><select id="m1"></select></div>
+    <div class="cell"><div class="t">Route 2</div>
+      <label class="s" for="l2">Prefix length </label><select id="l2"></select><br>
+      <label class="s" for="s2">Learned from </label><select id="s2"></select><br>
+      <label class="s" for="m2">Metric </label><select id="m2"></select></div>
+  </div>
+  <div class="out" id="out2" aria-live="polite"></div>
+  <p class="answer"><strong>Review question 20 (answer A) and exam objective 2.1.</strong> An autonomous system is a collection of networks or subnets in the same administrative domain. An IGP runs inside an autonomous system. An EGP, such as BGP, runs between them. A router prefers the longest prefix first, then the lowest administrative distance, then the lowest metric.</p>
+</div>
+
+</div>
+<script>
+
+const LK=[
+  {n:'R1 to R2', id:'k0', inside:true, as:'AS 100'},
+  {n:'R2 to R3', id:'k1', inside:true, as:'AS 100'},
+  {n:'R3 to R4', id:'k2', inside:false},
+  {n:'R4 to R5', id:'k3', inside:true, as:'AS 200'}
+];
+let lk=0;
+const lc=document.getElementById('links');
+LK.forEach(function(l,i){
+  const b=document.createElement('button'); b.type='button'; b.textContent=l.n;
+  b.addEventListener('click',function(){ lk=i; drawLink(); });
+  lc.appendChild(b);
+});
+function drawLink(){
+  lc.querySelectorAll('button').forEach(function(b,i){ b.setAttribute('aria-pressed',String(i===lk)); });
+  LK.forEach(function(l,i){ document.getElementById(l.id).setAttribute('class', i===lk ? 'live' : 'wire'); });
+  const l=LK[lk];
+  document.getElementById('out1').innerHTML = l.inside
+    ? '<strong>'+l.n+' stays inside '+l.as+'.</strong> Routers in the same autonomous system share routes with an interior gateway protocol (IGP), such as RIP, EIGRP, or OSPF.'
+    : '<strong>'+l.n+' crosses the boundary between AS 100 and AS 200.</strong> Routers in different autonomous systems exchange routes with an exterior gateway protocol (EGP). BGP is the EGP in use today.';
+}
+const SRCS=[['Connected',0],['Static',1],['eBGP',20],['EIGRP',90],['OSPF',110],['RIP',120]];
+const LENS=[16,24,27];
+const METS=[1,5,10,20];
+function fill(id,list,fmt,def){
+  const el=document.getElementById(id);
+  list.forEach(function(v,i){ const o=document.createElement('option'); o.value=String(i); o.textContent=fmt(v); el.appendChild(o); });
+  el.value=String(def);
+  el.addEventListener('change',drawSel);
+}
+fill('l1',LENS,function(v){ return '/'+v; },1);
+fill('l2',LENS,function(v){ return '/'+v; },1);
+fill('s1',SRCS,function(v){ return v[0]+' (AD '+v[1]+')'; },5);
+fill('s2',SRCS,function(v){ return v[0]+' (AD '+v[1]+')'; },4);
+fill('m1',METS,function(v){ return String(v); },0);
+fill('m2',METS,function(v){ return String(v); },2);
+function get(n){
+  return {len:LENS[Number(document.getElementById('l'+n).value)], src:SRCS[Number(document.getElementById('s'+n).value)], met:METS[Number(document.getElementById('m'+n).value)]};
+}
+function drawSel(){
+  const a=get(1), b=get(2);
+  let out;
+  if(a.len!==b.len){
+    const w=a.len>b.len?1:2;
+    out='<strong>Route '+w+' wins on prefix length.</strong> The longest matching prefix is the most specific route, and it is checked before administrative distance or metric.';
+  } else if(a.src[1]!==b.src[1]){
+    const w=a.src[1]<b.src[1]?1:2, x=w===1?a:b;
+    out='<strong>Route '+w+' wins on administrative distance.</strong> The prefix lengths tie, and '+x.src[0]+' (AD '+x.src[1]+') is more trusted than the other source. The metric is not compared.';
+  } else if(a.met!==b.met){
+    const w=a.met<b.met?1:2;
+    out='<strong>Route '+w+' wins on metric.</strong> The prefix length and administrative distance tie, so the lowest metric is the best path.';
+  } else {
+    out='<strong>The routes tie on every check.</strong> The router can use both and share the traffic between them.';
+  }
+  document.getElementById('out2').innerHTML=out;
+}
+drawLink(); drawSel();
+
+</script>
+</body>
+</html>

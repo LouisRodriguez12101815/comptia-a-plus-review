@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The frame changes at every hop</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>The frame changes at every hop, the packet doesn't</h1>
+<p class="lede">Send a packet from Host A and step it across the router. The IP addresses stay the same from start to finish. The MAC addresses are rewritten for each local network. The MAC addresses shown are shortened examples.</p>
+<div class="card">
+  <p class="lab">Send from Host A to</p>
+  <div class="ctrls" id="dst" role="group" aria-label="Destination host"></div>
+  <div class="stage"><svg viewBox="0 0 640 250" role="img" aria-label="Network diagram. Host A (172.16.10.2) connects to router Lab_A interface e0. Host B (172.16.20.2) connects to e1. Hosts C (172.16.30.2) and D (172.16.30.3) share the network on e2.">
+  <path id="lA" class="wire" d="M106 130 H270"/>
+  <path id="lB" class="wire" d="M320 100 V66"/>
+  <path id="lE2" class="wire" d="M370 130 H450"/>
+  <path id="lBus" class="wire" d="M450 78 V182"/>
+  <path id="lC" class="wire" d="M450 78 H536"/>
+  <path id="lD" class="wire" d="M450 182 H536"/>
+  <circle id="n-A" class="node" cx="80" cy="130" r="26"/><text x="80" y="135" text-anchor="middle" class="node-txt">A</text>
+  <circle id="n-B" class="node" cx="320" cy="42" r="24"/><text x="320" y="47" text-anchor="middle" class="node-txt">B</text>
+  <circle id="n-C" class="node" cx="560" cy="78" r="24"/><text x="560" y="83" text-anchor="middle" class="node-txt">C</text>
+  <circle id="n-D" class="node" cx="560" cy="182" r="24"/><text x="560" y="187" text-anchor="middle" class="node-txt">D</text>
+  <rect id="n-R" class="node rtr" x="270" y="100" width="100" height="60" rx="12"/><text x="320" y="135" text-anchor="middle" class="node-txt">Lab_A</text>
+  <text x="80" y="176" text-anchor="middle" class="lbl">Host A</text><text x="80" y="192" text-anchor="middle" class="sub">172.16.10.2</text>
+  <text x="352" y="40" class="lbl">Host B</text><text x="352" y="56" class="sub">172.16.20.2</text>
+  <text x="560" y="122" text-anchor="middle" class="lbl">Host C</text><text x="560" y="138" text-anchor="middle" class="sub">172.16.30.2</text>
+  <text x="560" y="226" text-anchor="middle" class="lbl">Host D</text><text x="560" y="242" text-anchor="middle" class="sub">172.16.30.3</text>
+  <text x="188" y="122" text-anchor="middle" class="sub">e0 · 172.16.10.1</text>
+  <text x="330" y="86" class="sub">e1 · 172.16.20.1</text>
+  <text x="410" y="150" text-anchor="middle" class="sub">e2</text><text x="410" y="166" text-anchor="middle" class="sub">172.16.30.1</text>
+</svg></div>
+  <div class="ctrls">
+    <button type="button" id="back">Back</button>
+    <button type="button" id="next">Next step</button>
+    <button type="button" id="reset">Restart</button>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Source</th><th>Destination</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Exam essentials, review questions 16 and 19, and written lab 4.</strong> A frame carries the packet only across one local network, so it is rebuilt at every hop. The packet is not changed until it reaches the destination host. After routing, the source IP is still 172.16.10.2 and the destination IP is still the final host.</p>
+</div>
+
+</div>
+<script>
+
+const NODES=['A','B','C','D','R'];
+const LINKS=['lA','lB','lE2','lBus','lC','lD'];
+function hotNodes(list){ NODES.forEach(function(n){ const e=document.getElementById('n-'+n); e.setAttribute('class','node'+(n==='R'?' rtr':'')+(list.indexOf(n)>-1?' hot':'')); }); }
+function hotLinks(list){ LINKS.forEach(function(id){ document.getElementById(id).setAttribute('class', list.indexOf(id)>-1?'live':'wire'); }); }
+
+const A={ip:'172.16.10.2',mac:'00:0A'}, E0='00:E0';
+const D={
+  B:{ip:'172.16.20.2',mac:'00:0B',iface:'e1',ifmac:'00:E1',links:['lB'],node:'B'},
+  C:{ip:'172.16.30.2',mac:'00:0C',iface:'e2',ifmac:'00:E2',links:['lE2','lBus','lC'],node:'C'}
+};
+let dst='C', step=0;
+function steps(){
+  const d=D[dst], nm='Host '+dst;
+  return [
+    {t:'<strong>1. Host A builds the packet and the frame.</strong> '+nm+' is on another network, so Host A puts the packet in a frame addressed to its default gateway, router interface e0. The packet itself is addressed to '+nm+' ('+d.ip+').', f:[A.mac,E0], p:[A.ip,d.ip], l:['lA'], n:['A','R']},
+    {t:'<strong>2. The router receives the frame on e0.</strong> It removes the frame and reads the destination IP address. Its route table sends '+d.ip+' out interface '+d.iface+'. The packet is not changed.', f:null, p:[A.ip,d.ip], l:[], n:['R']},
+    {t:'<strong>3. The router builds a new frame on '+d.iface+'.</strong> The same packet goes into a new frame. The source MAC is now interface '+d.iface+', and the destination MAC is '+nm+'.', f:[d.ifmac,d.mac], p:[A.ip,d.ip], l:d.links, n:['R',d.node]},
+    {t:'<strong>4. '+nm+' receives the packet.</strong> It removes the frame and passes the packet up its network stack. The IP addresses were the same the whole way.', f:null, p:[A.ip,d.ip], l:[], n:[d.node]}
+  ];
+}
+function cell(v,changed){
+  if(v===null) return '<span style="color:var(--muted)">frame removed</span>';
+  return changed ? '<span class="chg">'+v+'</span>' : v;
+}
+const dv=document.getElementById('dst');
+[['B','Host B (172.16.20.2)'],['C','Host C (172.16.30.2)']].forEach(function(it){
+  const b=document.createElement('button'); b.type='button'; b.dataset.k=it[0]; b.textContent=it[1];
+  b.addEventListener('click',function(){ dst=it[0]; step=0; render(); });
+  dv.appendChild(b);
+});
+document.getElementById('back').addEventListener('click',function(){ if(step>0){ step--; render(); } });
+document.getElementById('next').addEventListener('click',function(){ if(step<3){ step++; render(); } });
+document.getElementById('reset').addEventListener('click',function(){ step=0; render(); });
+function render(){
+  const all=steps(), s=all[step];
+  dv.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.k===dst)); });
+  let pf=null, pp=null;
+  for(let i=0;i<step;i++){ if(all[i].f) pf=all[i].f; pp=all[i].p; }
+  const ch=function(a,b){ return a!==null && b!==null && a!==b; };
+  document.getElementById('rows').innerHTML =
+    '<tr><th>Frame (MAC addresses)</th><td>'+cell(s.f?s.f[0]:null, s.f&&pf&&ch(pf[0],s.f[0]))+'</td><td>'+cell(s.f?s.f[1]:null, s.f&&pf&&ch(pf[1],s.f[1]))+'</td></tr>'+
+    '<tr><th>Packet (IP addresses)</th><td>'+s.p[0]+'</td><td>'+s.p[1]+'</td></tr>';
+  document.getElementById('out').innerHTML=s.t;
+  document.getElementById('back').disabled = step===0;
+  document.getElementById('next').disabled = step===3;
+  hotNodes(s.n); hotLinks(s.l);
+}
+render();
+
+</script>
+</body>
+</html>
