@@ -35,6 +35,7 @@ export type SharedRoom = {
   hintUsed: boolean;
   evidenceDiscoveries: string[];
   evidenceAssignments: { playerId: string; itemIds: string[] }[];
+  discoveredEvidenceIds: string[];
   evidenceContinueAt: number | null;
   evidenceContinued: boolean;
   usefulActions: { playerId: string; actionId: string; useful: boolean }[];
@@ -51,14 +52,14 @@ export type SharedRoom = {
 };
 
 export type RoomSnapshot = {
-  room: SharedRoom & { uptimeScore: number; streakMultiplier: number };
+  room: Omit<SharedRoom, "players"> & { players: (CooperativePlayer & { evidenceStatus: { state: "pending" | "complete" | "not-required" | "disconnected"; assigned: number; discovered: number } })[]; uptimeScore: number; streakMultiplier: number };
   viewerId: string;
   serverNow: number;
   incident: { title: string; ticket: string; objective: string; debrief: string[]; count: number; objectives: string[]; reviewTopics: string[]; sources: StudySource[] };
   role: { name: string; responsibility: string; actionId: string; action: string };
   debrief: { teamOutcome: "resolved" | "unresolved"; uptimeScore: number; objectives: string[]; reviewTopics: string[]; sources: StudySource[] } | null;
   evidenceGate: {
-    items: { id: string; label: string; discovered: boolean; owners: { playerId: string; nickname: string; connected: boolean; discovered: boolean }[] }[];
+    items: { id: string; label: string; required: boolean; discovered: boolean; owners: { playerId: string; nickname: string; connected: boolean; discovered: boolean }[] }[];
     canAnswer: boolean;
     canAdvance: boolean;
     continueAvailableAt: number | null;
@@ -69,6 +70,7 @@ export type RoomSnapshot = {
     title: string;
     prompt: string;
     evidence?: string;
+    assignedEvidence: { id: string; label: string; discovered: boolean; text?: string }[];
     hint: string | null;
     choices: Pick<IncidentChoice, "id" | "label">[];
   } | null;

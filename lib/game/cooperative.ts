@@ -122,13 +122,13 @@ const evidenceLabels: Record<string, string[][]> = {
 export function evidenceItemsFor(incident: GuidedIncident, stepIndex: number) {
   const step = incident.steps[stepIndex];
   if (!step) return [];
-  const clues = evidence[incident.id]?.[stepIndex] ?? [step.evidence ?? incident.ticket, step.prompt];
-  return clues.map((text, index) => ({ id: `${incident.id}:${stepIndex}:${index}`, label: evidenceLabels[incident.id]?.[stepIndex]?.[index] ?? `Evidence ${index + 1}`, text }));
+  const clues = evidence[incident.id]?.[stepIndex] ?? (step.evidence ? [step.evidence] : []);
+  return clues.map((text, index) => ({ id: `${incident.id}:${stepIndex}:${index}`, label: evidenceLabels[incident.id]?.[stepIndex]?.[index] ?? `Evidence ${index + 1}`, text })).filter((item) => item.text.trim().length > 0);
 }
 export function evidenceFor(incident: GuidedIncident, stepIndex: number, seat: number, playerCount: number): string[] {
-  const clues = evidence[incident.id]?.[stepIndex] ?? [incident.steps[stepIndex].evidence ?? incident.ticket, incident.steps[stepIndex].prompt];
+  const clues = evidenceItemsFor(incident, stepIndex).map((i) => i.text);
   // A solo player covers both responsibilities. Teams must communicate their fragments.
-  return playerCount === 1 ? clues : [clues[seat % clues.length]];
+  return playerCount === 1 || !clues.length ? clues : [clues[seat % clues.length]];
 }
 export function learningFor(incident: GuidedIncident) {
   const labSlug = incident.id === "cant-reach-website-dns" ? "cant-reach-website" : "dhcp-relay-three-site";
