@@ -92,16 +92,19 @@ test("host start requires everyone ready, supports unready and synchronizes dead
 test("answers use stable IDs, score once, and don't advance until the host chooses", async () => {
   const f = fixture(); const { host, guest } = await players(f);
   await start(f, host, guest); f.tick(5000);
+  await f.service().discover("ABC234", host.token, 0);
+  await f.service().discover("ABC234", guest.token, 0);
   const step = incident.steps[0];
   const correct = await f.service().answer("ABC234", host.token, 0, step.correctAnswerId);
-  assert.equal(correct.room.score, 100);
+  assert.equal(correct.room.score, 0, "Team decision points wait until the host advances");
+  assert.equal(correct.room.players[0].contributions.answers, 100);
   assert.equal(correct.room.stepIndex, 0);
   assert.equal(correct.room.selectedActions[0].correct, true);
   await assert.rejects(f.service().answer("ABC234", host.token, 0, step.correctAnswerId), fails(409));
   await assert.rejects(f.service().advance("ABC234", host.token, 0), fails(409));
   const incorrectId = step.choices.find((choice) => choice.id !== step.correctAnswerId).id;
   const incorrect = await f.service().answer("ABC234", guest.token, 0, incorrectId);
-  assert.equal(incorrect.room.score, 100);
+  assert.equal(incorrect.room.score, 0);
   assert.equal(incorrect.room.stepIndex, 0);
   assert.ok(incorrect.room.selectedActions[1].explanation);
   assert.equal((await f.service().advance("ABC234", host.token, 0)).room.stepIndex, 1);
@@ -113,8 +116,11 @@ test("concurrent readiness and answers preserve both writes with revision retrie
   await Promise.all([host, guest].map((p) => f.service().ready("ABC234", p.token, true)));
   assert.ok((await f.service().get("ABC234", host.token)).room.players.every((p) => p.ready));
   await f.service().start("ABC234", host.token); f.tick(5000);
+  await Promise.all([host, guest].map((p) => f.service().discover("ABC234", p.token, 0)));
   await Promise.all([host, guest].map((p) => f.service().answer("ABC234", p.token, 0, incident.steps[0].correctAnswerId)));
-  assert.equal((await f.service().get("ABC234", host.token)).room.score, 200);
+  const result = await f.service().advance("ABC234", host.token, 0);
+  assert.equal(result.room.score, 100, "A shared decision scores once regardless of responder count");
+  assert.ok(result.room.players.every((p) => p.contributions.answers === 100));
 });
 
 test("rooms expire after 30 minutes regardless of activity, and invalid codes fail gracefully", async () => {
@@ -130,13 +136,15 @@ test("rooms expire after 30 minutes regardless of activity, and invalid codes fa
 test("reconnect preserves player identity, readiness, scores and answer state", async () => {
   const f = fixture(); const { host, guest } = await players(f);
   await start(f, host, guest); f.tick(5000);
+  await f.service().discover("ABC234", host.token, 0);
+  await f.service().discover("ABC234", guest.token, 0);
   await f.service().answer("ABC234", guest.token, 0, incident.steps[0].correctAnswerId);
   f.tick(31_000);
   assert.equal((await f.service().get("ABC234", host.token)).room.players[1].connected, false);
   const resume = await f.service().join("ABC234", "Phone", guest.token);
   assert.equal(resume.snapshot.viewerId, guest.snapshot.viewerId);
   assert.equal(resume.snapshot.room.players.length, 2);
-  assert.equal(resume.snapshot.room.players[1].score, 100);
+  assert.equal(resume.snapshot.room.players[1].score, 110);
   assert.equal(resume.snapshot.room.players[1].ready, true);
   assert.equal(resume.snapshot.room.players[1].connected, true);
   assert.equal(resume.snapshot.room.selectedActions.length, 1);
@@ -235,13 +243,14 @@ test("eight-player full mission fits document limits and awards consistent final
   for (const member of members) await f.service().ready("ABC234", member.token, true);
   await f.service().start("ABC234", host.token); f.tick(5000);
   for (let stepIndex = 0; stepIndex < incident.steps.length; stepIndex++) {
+    for (const member of members) await f.service().discover("ABC234", member.token, stepIndex);
     for (const member of members) await f.service().answer("ABC234", member.token, stepIndex, incident.steps[stepIndex].correctAnswerId);
     await f.service().advance("ABC234", host.token, stepIndex);
   }
   const view = await f.service().get("ABC234", host.token);
   assert.equal(view.room.result, "resolved");
-  assert.equal(view.room.score, 4000);
-  assert.ok(view.room.players.every((p) => p.score === 500));
+  assert.equal(view.room.score, 1200);
+  assert.ok(view.room.players.every((p) => p.score === 575));
   assert.ok(Buffer.byteLength(JSON.stringify((await f.documents.fetch("outage-ops-room-ABC234")).data)) < 16384);
 });
 
@@ -327,7 +336,7 @@ test("HTTP membership, cookies, read-only tokens, ACL enforcement and pause prot
   assert.equal((await api("ready", cookie, { ready: true })).status, 200);
   await f.guard.pause(new Date(f.now()).toISOString().slice(0, 10), 5);
   const writes = f.documents.writes, permissionWrites = permissions.length;
-  for (const operation of ["create", "join", "get", "ready", "start", "answer", "advance", "leave", "token"]) {
+  for (const operation of ["create", "join", "get", "ready", "start", "answer", "advance", "leave", "token", "discover", "hint", "role-action", "next"]) {
     const blocked = await api(operation, cookie, { nickname: "Phone", ready: true, stepIndex: 0, answerId: incident.steps[0].correctAnswerId });
     assert.equal(blocked.status, 423, operation);
     assert.equal((await blocked.json()).error, PAUSED_MESSAGE);

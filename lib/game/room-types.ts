@@ -1,4 +1,8 @@
 import type { GamePhase, IncidentChoice, RoomPlayer } from "@/lib/game/types";
+import type { Contributions, RoleId } from "@/lib/game/cooperative";
+
+export type CooperativePlayer = RoomPlayer & { seat: number; role: RoleId; contributions: Contributions };
+export type IncidentOutcome = { incidentId: string; result: "resolved" | "unresolved" | "timeout" | "uptime"; score: number; uptime: number; mistakes: number; hints: number };
 
 export type RoomAction = {
   playerId: string;
@@ -15,7 +19,8 @@ export type SharedRoom = {
   status: "lobby" | "playing" | "results";
   phase: "lobby" | GamePhase;
   hostPlayerId: string;
-  players: RoomPlayer[];
+  players: CooperativePlayer[];
+  departedPlayers: CooperativePlayer[];
   incidentIndex: number;
   incidentId: string;
   stepIndex: number;
@@ -23,29 +28,43 @@ export type SharedRoom = {
   endsAt: number | null;
   roundSeconds: number;
   score: number;
+  streak: number;
+  bestStreak: number;
+  hintPenalties: number;
+  hintsUsed: number;
+  hintUsed: boolean;
+  evidenceDiscoveries: string[];
+  usefulActions: { playerId: string; actionId: string; useful: boolean }[];
+  outcomes: IncidentOutcome[];
+  incidentStartScore: number;
+  incidentStartHints: number;
+  incidentMistakes: number;
   uptime: number;
   selectedActions: RoomAction[];
-  result: "resolved" | "timeout" | "uptime" | null;
+  result: IncidentOutcome["result"] | null;
   createdAt: number;
   updatedAt: number;
   expiresAt: number;
 };
 
 export type RoomSnapshot = {
-  room: SharedRoom;
+  room: SharedRoom & { uptimeScore: number; streakMultiplier: number };
   viewerId: string;
   serverNow: number;
-  incident: { title: string; ticket: string; objective: string; debrief: string[] };
+  incident: { title: string; ticket: string; objective: string; debrief: string[]; count: number; objectives: string[]; reviewTopics: string[] };
+  role: { name: string; responsibility: string; actionId: string; action: string };
+  debrief: { teamOutcome: "resolved" | "unresolved"; uptimeScore: number; objectives: string[]; reviewTopics: string[] } | null;
   step: {
     title: string;
     prompt: string;
     evidence?: string;
+    hint: string | null;
     choices: Pick<IncidentChoice, "id" | "label">[];
   } | null;
 };
 
 export type StoredRoom = Omit<SharedRoom, "players" | "selectedActions"> & {
-  players: (RoomPlayer & { tokenHash: string; lastSeenAt: number })[];
+  players: (CooperativePlayer & { tokenHash: string; lastSeenAt: number })[];
   answerOrders: string[][];
   selectedActions: Omit<RoomAction, "explanation">[];
 };
