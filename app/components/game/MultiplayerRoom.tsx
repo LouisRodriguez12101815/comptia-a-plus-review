@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { RoomSnapshot } from "@/lib/game/room-types";
 import { createRoomClient, createRoomReconciler, RoomApiError, validateRoomSnapshot } from "@/lib/game/room-client";
+import { NetworkDiagram } from "@/app/components/game/NetworkDiagram";
 
 type TimedSnapshot = RoomSnapshot & { receivedAt: number };
 const roomApi = createRoomClient();
@@ -260,7 +261,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           <section className="space-y-3 rounded-xl border border-teal-300/25 p-4" aria-label="Your evidence and responsibility">
             <h2 className="font-semibold">Discover and discuss your evidence</h2>
             <p className="text-sm text-slate-300">Discover and discuss each required evidence item. Teammates with the same item can cover for one another. If someone is absent or idle, the host can continue after the 15-second timeout.</p>
-            {step.assignedEvidence.length === 0 && <p role="status" className="text-cyan-100">No evidence is assigned to you for this question. Your evidence requirement is complete; no discovery points are awarded.</p>}
+            {step.assignedEvidence.length === 0 && <p role="status" className="text-cyan-100">Complete · 0/0. No evidence is assigned to you for this question. Your evidence requirement is complete; no discovery points are awarded.</p>}
             <ul className="space-y-3" aria-label="Your assigned evidence">{step.assignedEvidence.map((item) => <li key={item.id} className="rounded-xl bg-slate-950 p-4">
               <h3 className="font-semibold">{item.label}</h3>
               <button data-evidence-id={item.id} disabled={disabled || remaining === 0} onClick={() => void command("evidence", { itemId: item.id })} className={buttonStyle}>{item.discovered ? "Review assigned evidence" : "Discover assigned evidence"}</button>
@@ -275,6 +276,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           </section>
           <button disabled={disabled || room.hintUsed || remaining === 0} onClick={() => void command("hint")} className="rounded-full border border-amber-300/40 px-4 py-2 text-sm text-amber-200">{room.hintUsed ? "Shared hint unlocked" : "Ask for a shared hint (−25 team points)"}</button>
           {step.hint && <p role="status" className="rounded-xl bg-amber-400/10 p-4 text-amber-100">Mentor hint: {step.hint}</p>}
+          {snapshot.networkDiagram && <NetworkDiagram diagram={snapshot.networkDiagram} />}
           <h2 className="text-lg font-semibold">{step.prompt}</h2>
           <section className="space-y-2 rounded-xl bg-slate-950 p-4" aria-label="Evidence progress">
             <h3 className="font-semibold">Required evidence</h3>

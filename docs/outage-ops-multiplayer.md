@@ -116,7 +116,7 @@ Both debriefs link directly to their practiced content: DNS to `/labs/cant-reach
 
 Do not paste environment values, access tokens, cookies, provider response bodies, or raw SDK errors into reports. In Vercel, confirm that all seven required variables listed above exist in **Production**, then redeploy if configuration changed. Missing configuration returns HTTP 503 with `configuration_missing` and variable **names only**; malformed resource IDs return `configuration_invalid` without values.
 
-The server fetches the configured Sync Service using the configured API key before reading any documents. It compares the returned account to the configured account internally. A missing or inaccessible Service is no longer mistaken for an absent daily-pause document. A normal missing daily document still means the day has not been paused. Failure responses and runtime logs report only an operation stage, sanitized reason, numeric upstream status/code, and a random request ID:
+The server fetches the configured Sync Service using the configured API key before reading any documents. It compares the returned account to the configured account internally. A missing or inaccessible Service is no longer mistaken for an absent daily-pause document. A normal missing daily document still means the day has not been paused. Failure responses report sanitized stages and upstream status/code; runtime logs retain only operation names, status, failure reason and request ID:
 
 | Upstream result | Application response | Diagnostic reason |
 | --- | --- | --- |
@@ -130,7 +130,7 @@ The server fetches the configured Sync Service using the configured API key befo
 | Recognized connection failure | 503 | `network_failure` |
 | Other unexpected failure | 503 | `unexpected_failure` |
 
-Use the `X-Outage-Ops-Request-Id` response header to locate `outage_ops_room_failure` in Vercel runtime logs. A successful creation emits `outage_ops_room_storage_verified`: seven variables present, account comparison passed, API-key Service read and room document create succeeded. A successful member token request emits `outage_ops_room_token_permissions_verified`: ACL enabled and API-key read-only member permission write succeeded. These entries contain no identifier values or credentials. They verify the permissions exercised by those requests; inspect any subsequent document-update failure separately. Cross-site GET token requests are rejected; authenticated same-site GET and POST token requests both work.
+Use the `X-Outage-Ops-Request-Id` response header to locate `outage_ops_room_failure` in Vercel runtime logs. A successful creation or token request emits the normal `outage_ops_room_request` success status. The same service/account and read-only ACL checks still run; no configuration counts, account flags, identifiers, credential values or request headers are logged. Server failure logs contain only the request ID, operation, HTTP status and sanitized failure reason. Endpoint responses retain sanitized diagnostic stages for inspection. Cross-site GET token requests are rejected; authenticated same-site GET and POST token requests both work.
 
 From a machine that can reach the deployment, run:
 
@@ -180,3 +180,31 @@ node --import ./tests/register.mjs scripts/verify-outage-ops-host-evidence.mjs -
 ```
 
 Use the optional Playwright installation described above. Two isolated Chromium contexts exercise the real UI with a shared authoritative room-service fixture and controlled server clock; Sync token transport is intentionally unavailable. The test checks 0/0 and no card, the exact outstanding item/owner or no requirement, the enabled host control after timeout, POST continue/answer, immediate submission and advancement, and zero fabricated discovery credit. It does not inspect or modify a Production room, or certify live Twilio/device acceptance.
+
+
+## Build identity and real-route browser regression
+
+`GET /api/game/version` returns the build commit and room protocol version with `Cache-Control: no-store`. Vercel builds embed `VERCEL_GIT_COMMIT_SHA`; other builders may set the non-secret `OUTAGE_OPS_BUILD_COMMIT`, otherwise the commit is explicitly `unknown`. Room responses carry the same identity and `X-Outage-Ops-Build` / `X-Outage-Ops-Protocol` response headers. The client sends only the protocol number, and rejects incompatible or unversioned snapshots with a reload message. The server rejects a supplied incompatible protocol before accessing shared storage. Legacy clients without the header remain supported. Inspect the browser's HTML/chunk URLs separately; a GitHub deployment success does not prove that the public alias or an already-open client serves that build. Do not copy other request headers into diagnostic reports.
+
+The primary test uses the rendered UI, genuine membership cookies, the production Next.js server and actual application API routes. It does not replace game routes with a browser bridge. Install dependencies, build, then run:
+
+```sh
+npm run build -- --webpack
+npm run test:e2e -- --mock-sync --browser /usr/bin/chromium
+```
+
+Omit `--browser` if Playwright's Chromium is installed (`npx playwright install chromium`). The explicit mock mode starts a localhost production server and intercepts only external Twilio Sync HTTP requests in a test-only Node preload; the actual Twilio SDK, permission flow, JWT generation, room store, CAS, daily guard, API handlers and cookies still execute. Browser realtime transport is deliberately unavailable, exercising shared API reconciliation. No mock route or test memory-store switch is present in application code. All seven credentials in this mode are synthetic; no real provider resource is written. Saved fault injection is confined to the test fixture file. `work/e2e-summary.json` contains only sanitized operations, statuses, reasons and request IDs.
+
+Without `--mock-sync`, `npm run test:e2e -- --url https://YOUR-DEDICATED-TEST-DEPLOYMENT` exercises configured Sync and leaves the actual application and provider routes intact. Use a dedicated service with the existing cost guard; this creates temporary test rooms and exercises real gameplay. No credentials are supplied on the command line or in chat. This environment has no configured test credentials; that mode remains pending. Browser contexts emulate laptop/phone viewport sizes and cannot certify physical-device acceptance.
+
+The primary test covers complementary actionable cards and matching stored assignments/viewer identities, both players discovering and submitting all ten questions, both incidents, duplicate-answer rejection, mobile diagram fit/privacy, and the visible host timeout with an undiscovered host card. Explicit mock mode also injects an invalid host assignment (Complete · 0/0), shared ownership and stale disconnected presence, then verifies override submission, no automatic evidence points, advancement, and reconnect identity/requirements. The older `verify-outage-ops-client.mjs` and `verify-outage-ops-host-evidence.mjs` scripts remain supplemental UI fixture tests that replace game routes; they are not the primary end-to-end test.
+
+The default Turbopack build requires local helper ports; when an execution sandbox blocks those ports, use Next's supported `--webpack` option. Report the failed default command and successful fallback separately.
+
+## Network diagram provenance and privacy
+
+DNS diagrams map to `content/labs.json`, Lab 03 (`cant-reach-website`), sections quickstart, setup, step-2, step-4 and step-5, plus the DNS section of `content/topics.json`. They show PC1/PC2, SW1/SW2, R1 interfaces, the two /24 LANs, gateways and SRV1. The client's faulty DNS setting is not part of the baseline diagram.
+
+DHCP relay diagrams map to Lab 02 (`dhcp-relay-three-site`), sections scenario, addressing, how-it-works and terminal-commands, plus the DHCP notes. They show Miami's client segment, switches, the relay, the MIA–DC /30, both server and router addresses/interfaces, and the New York branch connections. The routing typo and repair are not baseline annotations. Highlighted arrows identify the path being investigated, not successful traffic or a verified lease.
+
+Annotations are projected server-side only from the authenticated viewer's assigned discovered cards. No undiscovered private text or answer ID is sent in diagram data. Shared discovery reveals an annotation only to owners of that item and never automatically grants contribution points. Diagrams stack on phones, expand horizontally on larger screens, and include text descriptions, interface/branch details and source mappings.

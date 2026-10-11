@@ -1,7 +1,8 @@
 import type { RoomSnapshot } from "@/lib/game/room-types";
+import { ROOM_PROTOCOL_VERSION } from "@/lib/game/version";
 
 const operations = new Set(["join", "token", "evidence", "actions", "ready", "start", "advance", "hint", "role-action", "next", "continue-evidence", "leave"]);
-const reasons = new Set(["configuration_missing", "configuration_invalid", "authentication_rejected", "permission_denied", "service_not_found", "account_mismatch", "rate_limited", "provider_unavailable", "network_failure", "unexpected_failure"]);
+const reasons = new Set(["configuration_missing", "configuration_invalid", "authentication_rejected", "permission_denied", "service_not_found", "account_mismatch", "rate_limited", "provider_unavailable", "network_failure", "unexpected_failure", "version_mismatch"]);
 export class RoomApiError extends Error {
   status: number;
   operation: string;
@@ -12,6 +13,9 @@ export class RoomApiError extends Error {
 
 /** Validate the authenticated viewer and their actionable evidence, never guess a player ID. */
 export function validateRoomSnapshot(value: RoomSnapshot): RoomSnapshot {
+  if (value?.protocolVersion !== ROOM_PROTOCOL_VERSION) {
+    throw new RoomApiError(409, "The game client and API versions differ. Reload this page to load the current game.", "state", "version_mismatch");
+  }
   if (!value?.room || !Array.isArray(value.room.players) || !value.room.players.some((player) => player.id === value.viewerId) || !Number.isFinite(value.serverNow)) {
     throw new RoomApiError(502, "Room membership could not be verified. Refreshing shared state; reconnect if this continues.", "state", "invalid_snapshot");
   }
@@ -38,7 +42,7 @@ export function createRoomClient({ fetchImpl = fetch, log = (event: object) => c
     if (operation !== "state") log({ operation, method, event: "started" });
     let status = 0, requestId: string | undefined;
     try {
-      const response = await fetchImpl(`/api/game/rooms${path}`, { method, credentials: "same-origin", cache: "no-store", headers: payload ? { "Content-Type": "application/json" } : undefined, body: payload ? JSON.stringify(payload) : undefined, signal: signal ?? AbortSignal.timeout(7000) });
+      const response = await fetchImpl(`/api/game/rooms${path}`, { method, credentials: "same-origin", cache: "no-store", headers: { "X-Outage-Ops-Protocol": String(ROOM_PROTOCOL_VERSION), ...(payload ? { "Content-Type": "application/json" } : {}) }, body: payload ? JSON.stringify(payload) : undefined, signal: signal ?? AbortSignal.timeout(7000) });
       status = response.status;
       const id = response.headers.get("X-Outage-Ops-Request-Id");
       if (id && /^[a-f0-9-]{36}$/i.test(id)) requestId = id;

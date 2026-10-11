@@ -52,6 +52,9 @@ export type SharedRoom = {
 };
 
 export type RoomSnapshot = {
+  networkDiagram: import("@/lib/game/network-diagram").NetworkDiagram | null;
+  protocolVersion: number;
+  buildCommit: string;
   /** API transport health, derived after a successful shared-store operation. Not persisted. */
   storageAvailable?: boolean;
   room: Omit<SharedRoom, "players"> & { players: (CooperativePlayer & { evidenceStatus: { state: "pending" | "complete" | "not-required" | "disconnected" | "waived"; assigned: number; discovered: number } })[]; uptimeScore: number; streakMultiplier: number };
