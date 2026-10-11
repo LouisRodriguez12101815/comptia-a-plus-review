@@ -2,7 +2,7 @@
 
 ## Inspection before changes
 
-Branch base: `10b41ef` on main, including merged Practice Games PR #20 and Chapter 9 visuals PR #21. Inspected navigation, local progress, practice transitions, notes/labs/flashcards, and the Outage Ops shared-room architecture. The new Chapter 9 36-step, swimlane and receive-checklist visual registrations are preserved.
+Initial branch base: `10b41ef` on main, including merged Practice Games PR #20 and Chapter 9 visuals PR #21. Integrated newer main `7d16d77` (Visuals navigation PR #22) before final validation. Inspected navigation, local progress, practice transitions, notes/labs/flashcards, and the Outage Ops shared-room architecture. The Chapter 9 36-step, swimlane and receive-checklist visual registrations and the new per-track Visuals pages/navigation are preserved.
 
 A phone-sized new-learner walkthrough confirmed that Follow the Packet could recover from a mistake and hint, but progress did not display retries, no practice reset was available, and its debrief offered review/replay rather than a fresh application linked to review. Its “Resume saved practice” control appears even without a saved record and reports that condition when selected; this release leaves the existing entry behavior alone. No game deadlock was observed in that walkthrough. These observations are local, not a claim about the deployed site.
 
