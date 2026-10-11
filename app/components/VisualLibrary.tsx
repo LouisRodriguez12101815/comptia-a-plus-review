@@ -535,7 +535,7 @@ const css = `
 .cv-steps { display: flex; gap: 8px; margin-left: auto; }
 .cv-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--cv-line); border-radius: 10px; background: var(--cv-surface); color: var(--cv-ink); font-weight: 600; text-decoration: none; }
 .cv-btn:hover:not(:disabled) { border-color: var(--cv-accent); }
-.cv-primary { background: var(--cv-accent); border-color: var(--cv-accent); color: var(--cv-bg); }
+.cv .cv-btn.cv-primary { background: var(--cv-accent); border-color: var(--cv-accent); color: var(--cv-bg); }
 .cv-browse { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--cv-accent); border-radius: 10px; background: var(--cv-soft); font-weight: 600; }
 
 .cv-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }

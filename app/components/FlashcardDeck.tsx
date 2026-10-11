@@ -71,6 +71,7 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <select
+          aria-label="Choose a flashcard deck"
           value={topicId}
           onChange={(event) => {
             setTopicId(event.target.value);
