@@ -1,0 +1,509 @@
+[
+  {
+    "id": "n10-ch9",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Introduction to IP Routing",
+    "chapter": "Network+ · Chapter 9",
+    "summary": "The IP routing process, frames versus packets, MAC addresses and ARP, reading a route table, static and dynamic routing, autonomous systems, and route selection.",
+    "sections": [
+      {
+        "id": "routing-process",
+        "title": "The IP routing process",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A router decides where to send a packet using its route table and the destination network of the packet. It does not need the destination host, the originating network, or the return path to route the packet.",
+              "The frame changes at each hop. The packet is never changed until it reaches the destination host.",
+              "A frame carries a packet to only two places: a host on the local network, or a router interface when the packet is going to a remote network.",
+              "When the destination is on another network, the host sets the destination MAC address to the default gateway. The destination IP address never changes."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Frames are local and rebuilt at every hop. The packet, with its source and destination IP addresses, travels unchanged from the source host to the destination host."
+          }
+        ]
+      },
+      {
+        "id": "mac-arp",
+        "title": "MAC addresses and ARP",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "MAC (hardware) addresses are always local. They are used only on the local LAN and never pass a router interface.",
+              "Address Resolution Protocol (ARP) finds the MAC address of the default gateway, or of a local host, from an IP address.",
+              "A host ARPs for the destination if it is on the same network. If not, it ARPs for the default gateway.",
+              "At the far end, the router interface facing the destination network ARPs for the destination host.",
+              "Reverse ARP (RARP) does the opposite, deriving an IP address from a MAC address, similar to DHCP. It does not update route tables."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Task",
+              "Command"
+            ],
+            "rows": [
+              [
+                "View the ARP cache on a Windows or Mac host",
+                "arp -a"
+              ],
+              [
+                "View the ARP cache on a Cisco router or switch",
+                "show ip arp"
+              ],
+              [
+                "View the route table on a Cisco router",
+                "show ip route"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The chapter text prints arp -g in Exercise 9.1 and in question 6, but the command on a host is arp -a (question 18). Cisco routers use show ip arp."
+          }
+        ]
+      },
+      {
+        "id": "route-table",
+        "title": "Reading the route table",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The route table is the router's map of the internetwork. Routing decisions are made by destination network, not by host.",
+              "A C in the table means the network is directly connected because it is configured on an interface. An S is a static route.",
+              "The gateway of last resort is the default route. If it is not set and no route matches, the packet is dropped.",
+              "To find the exit interface, match the destination IP address to the network that contains it. 172.16.20.94 falls inside 172.16.20.64/27, so the exit interface is FastEthernet 0/2 (question 14)."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Route in the table",
+              "Addresses it covers",
+              "Exit interface"
+            ],
+            "rows": [
+              [
+                "172.16.20.0/27",
+                "172.16.20.0 to .31",
+                "FastEthernet 0/0"
+              ],
+              [
+                "172.16.20.32/27",
+                "172.16.20.32 to .63",
+                "FastEthernet 0/1"
+              ],
+              [
+                "172.16.20.64/27",
+                "172.16.20.64 to .95",
+                "FastEthernet 0/2"
+              ],
+              [
+                "172.16.20.128/27",
+                "172.16.20.128 to .159",
+                "FastEthernet 0/3"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A router with these four routes has no match for 172.16.20.100. That address sits between the /27 blocks, so the packet is dropped."
+          }
+        ]
+      },
+      {
+        "id": "frame-anatomy",
+        "title": "Frame fields",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Field",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "Destination MAC address",
+                "The next device on this local network. For a remote destination, the default gateway."
+              ],
+              [
+                "Source MAC address",
+                "The sender on this local network. Rewritten at every router hop."
+              ],
+              [
+                "EtherType",
+                "Identifies the protocol inside the frame. 0x0800 is IPv4 and 0x0806 is ARP."
+              ],
+              [
+                "Packet",
+                "The IP packet. Unchanged by routers until it reaches the destination host."
+              ],
+              [
+                "Frame check sequence (FCS)",
+                "A 4-byte cyclic redundancy check at the end of the frame. The destination uses it to verify the frame arrived intact."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The source MAC, destination MAC, and EtherType are included when the FCS is calculated, but only the FCS tells the receiver that the frame is intact."
+          }
+        ]
+      },
+      {
+        "id": "no-route",
+        "title": "When there is no route",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "If the router has no route to the destination network, it drops the packet.",
+              "The router also sends an ICMP destination unreachable message to the sender. The original packet is never returned.",
+              "Logging happens only if it is configured. Routers do not ask for dynamic updates when they meet an unknown network.",
+              "If a ping is lost along the way, the sender sees Request timed out. Destination unreachable appears when a router lacks the route."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "static-dynamic",
+        "title": "Static and dynamic routing",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "",
+              "Static routing",
+              "Dynamic routing"
+            ],
+            "rows": [
+              [
+                "How routes get in",
+                "An administrator adds every route by hand to every router",
+                "Routing protocols learn and share routes automatically"
+              ],
+              [
+                "When the network changes",
+                "Nothing updates until an administrator changes it",
+                "Tables update automatically"
+              ],
+              [
+                "Traffic path",
+                "A packet takes the same route regardless of network status",
+                "Routers can move traffic to another path"
+              ],
+              [
+                "Best for",
+                "Small, simple networks",
+                "Networks with many locations or planned growth"
+              ],
+              [
+                "Default on routers",
+                "Yes, static routing is the default",
+                "Must be configured"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "The main job of a routing protocol is to update routing tables.",
+              "Convergence is the term for the result of all routes being updated in the routing table through a dynamic routing protocol. Faster convergence is better."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "If a question asks for routing that is automated as new locations are added, the answer is dynamic routing, not static routing, DHCP, or RARP."
+          }
+        ]
+      },
+      {
+        "id": "as-igp-egp",
+        "title": "Autonomous systems, IGP, and EGP",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "An autonomous system (AS) is a collection of networks or subnets in the same administrative domain.",
+              "An interior gateway protocol (IGP) is a dynamic routing protocol used inside an autonomous system. RIP, EIGRP, and OSPF are IGPs.",
+              "An exterior gateway protocol (EGP) is a dynamic routing protocol used between autonomous systems. BGP is the EGP in use today.",
+              "Administrative distance (AD) decides the most trusted route when two or more routes to the same network exist.",
+              "Distance-vector and link-state describe how routing protocols share and calculate routes. Chapter 10 covers them in detail."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "route-selection",
+        "title": "Route selection",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Exam objective 2.1 lists three factors for route selection: prefix length, administrative distance, and metric.",
+              "A router first prefers the route with the longest matching prefix, because it is the most specific.",
+              "If prefix lengths tie, the router prefers the lowest administrative distance.",
+              "If administrative distance also ties, the router prefers the lowest metric."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Route source",
+              "Typical administrative distance"
+            ],
+            "rows": [
+              [
+                "Connected",
+                "0"
+              ],
+              [
+                "Static",
+                "1"
+              ],
+              [
+                "eBGP",
+                "20"
+              ],
+              [
+                "EIGRP",
+                "90"
+              ],
+              [
+                "OSPF",
+                "110"
+              ],
+              [
+                "RIP",
+                "120"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "written-lab",
+        "title": "Written lab: Lab_A network",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Host_A (172.16.10.2) connects to Lab_A through e0 (172.16.10.1). Host_B (172.16.20.2) connects through e1 (172.16.20.1). Host_C (172.16.30.2) and Host_D (172.16.30.3) connect through e2 (172.16.30.1)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Destination network",
+              "Exit interface"
+            ],
+            "rows": [
+              [
+                "172.16.10.0/24",
+                "e0"
+              ],
+              [
+                "172.16.20.0/24",
+                "e1"
+              ],
+              [
+                "172.16.30.0/24",
+                "e2"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "#",
+              "Statement",
+              "Answer"
+            ],
+            "rows": [
+              [
+                "1",
+                "Host_A sends to Host_C and ARPs for the MAC address of",
+                "Interface e0"
+              ],
+              [
+                "2",
+                "Host_C sends to Host_D and ARPs for the MAC address of",
+                "Host_D"
+              ],
+              [
+                "3",
+                "A packet routed to 172.16.30.3: interface sends an ARP request for",
+                "e2, Host_D"
+              ],
+              [
+                "4",
+                "After routing from Host_A to Host_C, source IP and destination IP are",
+                "172.16.10.2, 172.16.30.2"
+              ],
+              [
+                "5",
+                "Host_A sends to 172.16.20.2: interface sends an ARP request to",
+                "e1, Host_B"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "exercise",
+        "title": "Exercise 9.1: Examine the ARP cache",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Open a command prompt, find the IP address of the default gateway, and ping a website such as www.wiley.com.",
+              "Run arp -a and locate the entry for the default gateway. This gives you the MAC address of the router.",
+              "Look at the other entries. The default gateway's MAC address is relevant only to local clients on the network."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The ipconfig command shows the default gateway on Windows. The chapter text writes ifconfig, which is the command on Mac and Linux."
+          }
+        ]
+      },
+      {
+        "id": "review-key",
+        "title": "Review question answer key",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Q",
+              "Concept",
+              "Answer"
+            ],
+            "rows": [
+              [
+                "1",
+                "Required for routing a packet",
+                "C. Destination network of the packet"
+              ],
+              [
+                "2",
+                "Command to display the route table",
+                "A. show ip route"
+              ],
+              [
+                "3",
+                "True about static routes",
+                "D. All routes must be manually configured"
+              ],
+              [
+                "4",
+                "Meaning of C in a route entry",
+                "C. The network is configured on the interface (directly connected)"
+              ],
+              [
+                "5",
+                "Destination is on another network",
+                "B. Destination MAC is set to the default gateway"
+              ],
+              [
+                "6",
+                "View the ARP cache on a Cisco router",
+                "D. show ip arp"
+              ],
+              [
+                "7",
+                "Map of the internetwork inside a router",
+                "B. Route table"
+              ],
+              [
+                "8",
+                "Protocol that finds the gateway's MAC",
+                "A. ARP"
+              ],
+              [
+                "9",
+                "EtherType for IPv4",
+                "C. 0x0800"
+              ],
+              [
+                "10",
+                "Automated routing for a growing network",
+                "B. Dynamic routing"
+              ],
+              [
+                "11",
+                "No route to the destination (choose two)",
+                "C and D. Packet dropped, ICMP unreachable sent to the sender"
+              ],
+              [
+                "12",
+                "End of a frame to verify it arrived intact",
+                "D. FCS (frame check sequence)"
+              ],
+              [
+                "13",
+                "Message when a ping is lost en route",
+                "A. Request timed out"
+              ],
+              [
+                "14",
+                "Exit interface for 172.16.20.94",
+                "C. FastEthernet 0/2"
+              ],
+              [
+                "15",
+                "Best description of dynamic routing",
+                "C. Routing tables update automatically when the network changes"
+              ],
+              [
+                "16",
+                "True statement about MAC addresses",
+                "B. Always local on the LAN and never routed"
+              ],
+              [
+                "17",
+                "Result of all routes being updated",
+                "D. Convergence"
+              ],
+              [
+                "18",
+                "View the ARP cache on your host",
+                "D. arp -a"
+              ],
+              [
+                "19",
+                "Where the packet gets changed",
+                "C. Destination host"
+              ],
+              [
+                "20",
+                "Collection of networks in one administrative domain",
+                "A. Autonomous system"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "visuals",
+        "title": "Interactive visuals",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "This chapter has interactive visuals for the routing process, ARP, the route table, frame fields, static and dynamic routing, the written lab, and route selection. Open them at /network-plus/ch9."
+          }
+        ]
+      }
+    ]
+  }
+]

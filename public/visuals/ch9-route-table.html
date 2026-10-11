@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading a routing table</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Reading a routing table</h1>
+<p class="lede">The router sends each packet out the route whose network contains the destination address. If several routes match, the longest prefix wins. Type an address or pick an example.</p>
+<div class="card">
+  <p class="lab">Routing table</p>
+  <div class="ctrls" role="group" aria-label="Routing table">
+    <button type="button" id="t14" aria-pressed="true">Review question 14</button>
+    <button type="button" id="tlab" aria-pressed="false">Written lab</button>
+    <button type="button" id="gw" aria-pressed="false">Gateway of last resort</button>
+  </div>
+  <label class="lab" for="ip">Destination IP address</label>
+  <div class="ctrls"><input type="text" id="ip" value="172.16.20.94" inputmode="decimal" autocomplete="off"><button type="button" id="go">Look up</button></div>
+  <div class="ctrls" id="ex" role="group" aria-label="Example addresses"></div>
+  <p class="mono" id="grl" style="margin:12px 0 6px"></p>
+  <div class="tbl"><table><thead><tr><th>Code</th><th>Network</th><th>Covers</th><th>Exit</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Review questions 2, 4, 7, and 14, plus the route selection objective.</strong> <code>show ip route</code> displays the route table. <strong>C</strong> means the network is directly connected because it is configured on the interface. <strong>S</strong> is a static route. Route decisions use the destination IP address only, and the route table is the router's map of the internetwork.</p>
+</div>
+
+</div>
+<script>
+
+const SETS={
+  q14:{routes:[['C','172.16.20.0',27,'FastEthernet0/0'],['C','172.16.20.32',27,'FastEthernet0/1'],['C','172.16.20.64',27,'FastEthernet0/2'],['C','172.16.20.128',27,'FastEthernet0/3']],
+       ex:['172.16.20.94','172.16.20.10','172.16.20.100','172.16.20.130','8.8.8.8']},
+  lab:{routes:[['C','172.16.10.0',24,'e0'],['C','172.16.20.0',24,'e1'],['C','172.16.30.0',24,'e2']],
+       ex:['172.16.30.3','172.16.20.2','172.16.10.50','172.16.40.1']}
+};
+let setKey='q14', useGw=false;
+function toInt(s){
+  const p=s.trim().split('.');
+  if(p.length!==4) return null;
+  let n=0;
+  for(let i=0;i<4;i++){ if(!/^\d{1,3}$/.test(p[i])) return null; const v=Number(p[i]); if(v>255) return null; n=n*256+v; }
+  return n;
+}
+function toStr(n){ return [Math.floor(n/16777216)%256, Math.floor(n/65536)%256, Math.floor(n/256)%256, n%256].join('.'); }
+function maskOf(len){ return len===0 ? 0 : (0xFFFFFFFF << (32-len)) >>> 0; }
+function currentRoutes(){
+  const r=SETS[setKey].routes.slice();
+  if(useGw) r.push(['S*','0.0.0.0',0,'next hop 10.0.0.1']);
+  return r;
+}
+function bin8(n){ return ('00000000'+n.toString(2)).slice(-8); }
+function lookup(){
+  const raw=document.getElementById('ip').value;
+  const ip=toInt(raw);
+  const routes=currentRoutes();
+  document.getElementById('t14').setAttribute('aria-pressed',String(setKey==='q14'));
+  document.getElementById('tlab').setAttribute('aria-pressed',String(setKey==='lab'));
+  document.getElementById('gw').setAttribute('aria-pressed',String(useGw));
+  document.getElementById('grl').textContent = useGw ? 'Gateway of last resort is 10.0.0.1 to network 0.0.0.0' : 'Gateway of last resort is not set';
+  let best=-1, bestLen=-1;
+  const info=routes.map(function(r){
+    const net=toInt(r[1]), len=r[2], m=maskOf(len);
+    const last=(net | (~m>>>0))>>>0;
+    const hit = ip!==null && ((ip & m)>>>0)===net;
+    return {r:r, net:net, len:len, last:last, hit:hit};
+  });
+  info.forEach(function(x,i){ if(x.hit && x.len>bestLen){ best=i; bestLen=x.len; } });
+  document.getElementById('tb').innerHTML = info.map(function(x,i){
+    const style = i===best ? ' style="background:var(--good-soft)"' : '';
+    return '<tr'+style+'><td>'+x.r[0]+'</td><td>'+x.r[1]+'/'+x.len+'</td><td>'+(x.len===0?'every address':toStr(x.net)+' to '+toStr(x.last))+'</td><td>'+x.r[3]+'</td></tr>';
+  }).join('');
+  let out;
+  if(ip===null){
+    out='<strong>That is not a valid IPv4 address.</strong> Enter four numbers from 0 to 255 separated by dots.';
+  } else if(best<0){
+    out='<strong>No route matches '+raw.trim()+'.</strong> The router has no route and no gateway of last resort, so it drops the packet and sends an ICMP destination unreachable message to the sender.';
+  } else {
+    const x=info[best], matches=info.filter(function(y){ return y.hit; }).length;
+    out='<strong>'+raw.trim()+' leaves through '+x.r[3]+'.</strong> ';
+    if(x.len===0){
+      out+='Only the default route matches, so the router uses the gateway of last resort.';
+    } else {
+      out+='It falls inside '+x.r[1]+'/'+x.len+'.';
+      if(matches>1) out+=' More than one route matches, and the longest prefix wins.';
+      if(x.len%8!==0){
+        const o=Math.floor(x.len/8), bits=x.len%8;
+        const octs=raw.trim().split('.').map(Number);
+        const b=bin8(octs[o]);
+        out+=' Octet '+(o+1)+' of the address is '+octs[o]+' = <span class="mono"><strong>'+b.slice(0,bits)+'</strong>'+b.slice(bits)+'</span>. The /'+x.len+' prefix keeps the first '+(x.len-o*8)+' bits of that octet, so the network starts at '+toStr(x.net)+'.';
+      }
+    }
+  }
+  document.getElementById('out').innerHTML=out;
+}
+function buildExamples(){
+  const ex=document.getElementById('ex'); ex.innerHTML='';
+  SETS[setKey].ex.forEach(function(v){
+    const b=document.createElement('button'); b.type='button'; b.textContent=v;
+    b.addEventListener('click',function(){ document.getElementById('ip').value=v; lookup(); });
+    ex.appendChild(b);
+  });
+}
+document.getElementById('t14').addEventListener('click',function(){ setKey='q14'; document.getElementById('ip').value='172.16.20.94'; buildExamples(); lookup(); });
+document.getElementById('tlab').addEventListener('click',function(){ setKey='lab'; document.getElementById('ip').value='172.16.30.3'; buildExamples(); lookup(); });
+document.getElementById('gw').addEventListener('click',function(){ useGw=!useGw; lookup(); });
+document.getElementById('go').addEventListener('click',lookup);
+document.getElementById('ip').addEventListener('keydown',function(e){ if(e.key==='Enter') lookup(); });
+buildExamples(); lookup();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Static vs dynamic routing</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.stage{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+.wire{stroke:var(--line);stroke-width:3;fill:none}
+.live{stroke:var(--good);stroke-width:5;fill:none}
+.dead{stroke:var(--bad);stroke-width:4;stroke-dasharray:7 6;fill:none}
+.lbl{fill:var(--ink);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.sub{fill:var(--muted);font:12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.node{fill:var(--accent)}
+.rtr{fill:var(--warm)}
+.node.hot{fill:var(--good)}
+.node-txt{fill:var(--bg);font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif}
+.chg{background:var(--warm-soft);padding:1px 6px;border-radius:6px;font-weight:600}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0;width:200px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ok{color:var(--good);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Static vs dynamic routing: adding a new site</h1>
+<p class="lede">Each router has a LAN. Add a site and see how many routes someone has to type with static routing, and how dynamic routing spreads the news on its own.</p>
+<div class="card">
+  <p class="lab">Routing method</p>
+  <div class="ctrls" role="group" aria-label="Routing method">
+    <button type="button" id="m-st" aria-pressed="true">Static routing</button>
+    <button type="button" id="m-dy" aria-pressed="false">Dynamic routing</button>
+  </div>
+  <div class="ctrls">
+    <button type="button" id="add">Add a site</button>
+    <button type="button" id="act"></button>
+    <button type="button" id="reset">Reset</button>
+  </div>
+  <p class="lab">What each router knows (filled = has a route to that LAN)</p>
+  <div id="board" style="display:grid;gap:8px"></div>
+  <div class="tbl" style="margin-top:12px"><table><tbody>
+    <tr><th>Routes typed by an administrator</th><td id="typed"></td></tr>
+    <tr><th>Update rounds so far</th><td id="ticks"></td></tr>
+  </tbody></table></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Review questions 3, 10, 15, and 17.</strong> With static routing, every route is added by hand to every router, and nothing updates itself. Dynamic routing protocols update the tables automatically when the network changes. Convergence is the state where all routes are updated and every router agrees.</p>
+</div>
+
+</div>
+<script>
+
+let mode='static', n=3, known=[], typed=0, ticks=0;
+function full(){ const s=[]; for(let i=0;i<n;i++) s.push(i); return s; }
+function init(){
+  n=3; ticks=0; known=[];
+  for(let i=0;i<n;i++) known.push(new Set(full()));
+  typed = mode==='static' ? n*(n-1) : 0;
+  msg('Every router already knows every LAN. Add a site to see what each method needs.');
+  draw();
+}
+let message='';
+function msg(t){ message=t; }
+function missing(){
+  let c=0;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) if(!known[i].has(j)) c++;
+  return c;
+}
+function converged(){ return missing()===0; }
+function draw(){
+  document.getElementById('m-st').setAttribute('aria-pressed',String(mode==='static'));
+  document.getElementById('m-dy').setAttribute('aria-pressed',String(mode==='dynamic'));
+  const b=document.getElementById('board'); b.innerHTML='';
+  for(let i=0;i<n;i++){
+    let chips='';
+    for(let j=0;j<n;j++){
+      const on=known[i].has(j);
+      chips+='<span title="LAN '+(j+1)+'" style="display:inline-block;width:26px;height:26px;margin-right:4px;border-radius:6px;text-align:center;line-height:22px;font-size:12px;font-weight:600;border:2px solid '+(on?'var(--good)':'var(--line)')+';background:'+(on?'var(--good-soft)':'var(--bg)')+';color:'+(on?'var(--good)':'var(--muted)')+'">'+(j+1)+'</span>';
+    }
+    b.insertAdjacentHTML('beforeend','<div class="cell" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px"><div class="t" style="min-width:140px">Router '+(i+1)+' (LAN '+(i+1)+')</div><div>'+chips+'</div><div class="s">knows '+known[i].size+' of '+n+' LANs</div></div>');
+  }
+  document.getElementById('typed').textContent = typed + (mode==='dynamic' ? ' (the protocol is enabled on each router)' : '');
+  document.getElementById('ticks').textContent = mode==='dynamic' ? ticks : 'Not used. Static routes never update themselves.';
+  const act=document.getElementById('act');
+  act.textContent = mode==='static' ? 'Administrator types the missing routes' : 'Run one update round';
+  act.disabled = converged();
+  document.getElementById('add').disabled = n>=6;
+  document.getElementById('out').innerHTML = message + (converged() ? '' : ' <strong>'+missing()+' routes are still missing.</strong>');
+}
+document.getElementById('m-st').addEventListener('click',function(){ mode='static'; init(); });
+document.getElementById('m-dy').addEventListener('click',function(){ mode='dynamic'; init(); });
+document.getElementById('reset').addEventListener('click',init);
+document.getElementById('add').addEventListener('click',function(){
+  if(n>=6) return;
+  const s=new Set(); s.add(n);
+  known.push(s); n++;
+  if(mode==='static') msg('<strong>Site '+n+' added.</strong> Nothing updates itself. The new router knows only its own LAN, and the old routers do not know about it.');
+  else msg('<strong>Site '+n+' added.</strong> Routers have not exchanged updates yet, so the new LAN is unknown to most of the network.');
+  draw();
+});
+document.getElementById('act').addEventListener('click',function(){
+  if(mode==='static'){
+    const m=missing();
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++) known[i].add(j);
+    typed+=m;
+    msg('<strong>The administrator typed '+m+' routes by hand.</strong> This is what dynamic routing protocols automate.');
+  } else {
+    const next=known.map(function(s){ return new Set(s); });
+    for(let i=0;i<n;i++){
+      [i-1,i+1].forEach(function(k){ if(k>=0 && k<n) known[k].forEach(function(v){ next[i].add(v); }); });
+    }
+    known=next; ticks++;
+    msg(converged() ? '<strong>Converged after '+ticks+' update round'+(ticks>1?'s':'')+'.</strong> Every router learned every LAN with no routes typed by hand.' : '<strong>Round '+ticks+':</strong> each router shared its table with its neighbors. News moves one hop per round.');
+  }
+  draw();
+});
+init();
+
+</script>
+</body>
+</html>

@@ -4,6 +4,12 @@ export const metadata = { title: "Network+ · CompTIA Review" };
 
 const chapters = [
   {
+    href: "/network-plus/ch9",
+    label: "Chapter 9",
+    title: "Introduction to IP Routing",
+    note: "Interactive visuals and summary",
+  },
+  {
     href: "/network-plus/ch10",
     label: "Chapter 10",
     title: "Routing Protocols",
@@ -13,7 +19,7 @@ const chapters = [
     href: "/network-plus/ch11",
     label: "Chapter 11",
     title: "Switching and Virtual LANs",
-    note: "Summary and key concepts",
+    note: "Interactive visuals and summary",
   },
 ];
 
