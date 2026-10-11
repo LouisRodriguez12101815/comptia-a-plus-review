@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Written labs 7.1 and 7.2</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+input[type=text]{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;width:100%;max-width:420px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.fb{margin-top:8px;padding:10px 12px;border-radius:10px;font-size:14px}
+.fb.good{background:var(--good-soft);color:var(--ink);border:1px solid var(--good)}
+.fb.bad{background:var(--bad-soft);color:var(--ink);border:1px solid var(--bad)}
+.fb.hint{background:var(--accent-soft)}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--bg)}
+.q .t{font-weight:600;margin-bottom:6px}
+.score{font-weight:600;color:var(--accent)}
+.bytes{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.byte{font-family:ui-monospace,Menlo,monospace;font-size:16px;padding:8px 10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);min-width:48px;text-align:center}
+.byte.ins{border-color:var(--good);background:var(--good-soft)}
+.byte.flip{border-color:var(--warm);background:var(--warm-soft)}
+.bits{display:flex;gap:3px;margin:6px 0;flex-wrap:wrap}
+.bit{font-family:ui-monospace,Menlo,monospace;width:30px;height:34px;display:flex;align-items:center;justify-content:center;border:2px solid var(--line);border-radius:6px;background:var(--surface)}
+.bit.hot{border-color:var(--warm);background:var(--warm-soft);font-weight:700}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Written labs 7.1 and 7.2</h1>
+<p class="lede">Type your answer to each question and check it. Matching looks for the key terms, so wording does not have to be exact. The model answer shows every time.</p>
+<div class="card">
+<div class="lab">Choose a lab</div>
+<div class="ctrls" id="labsel" role="group" aria-label="Choose a lab"><button type="button" data-lab="7.1" aria-pressed="true">Lab 7.1: IPv4 and IPv6 basics</button><button type="button" data-lab="7.2" aria-pressed="false">Lab 7.2: IPv6 address types</button></div>
+<div class="row"><span class="score" id="score"></span><button type="button" id="checkall">Check all</button><button type="button" id="clear">Clear</button></div>
+<div id="list"></div>
+</div>
+</div>
+<script>
+const ITEMS=[{"lab": "7.1", "q": "What is the valid range used for a Class C private IP address?", "ans": "192.168.0.0 through 192.168.255.255", "groups": [["192.168.0.0"], ["192.168.255.255"]], "need": 2}, {"lab": "7.1", "q": "Name some benefits of IPv6 over IPv4.", "ans": "More available addresses, a simpler header, options for authentication, and other security.", "groups": [["more address", "larger address", "address space", "128"], ["simpler header", "simple header", "simplified header", "header"], ["authenticat"], ["security", "secure", "ipsec"]], "need": 2}, {"lab": "7.1", "q": "What is the term for the autoconfiguration technology responsible for addresses that start with 169.254?", "ans": "Automatic Private IP Addressing (APIPA).", "groups": [["apipa", "automatic private"]], "need": 1}, {"lab": "7.1", "q": "What defines a unicast address?", "ans": "An address assigned to a single interface: one-to-one communication.", "groups": [["one-to-one", "one to one", "single interface", "one interface", "1 to 1"]], "need": 1}, {"lab": "7.1", "q": "What defines a multicast address?", "ans": "A one-to-many address.", "groups": [["one-to-many", "one to many", "many"]], "need": 1}, {"lab": "7.1", "q": "What is the name for a 48-bit (6-byte) numerical address physically assigned to a network interface such as a NIC?", "ans": "A MAC address (also called a hardware address or burned-in address).", "groups": [["mac", "hardware address", "burned"]], "need": 1}, {"lab": "7.1", "q": "IPv6 has how many more bits than IPv4 addresses?", "ans": "96 more bits (128 bits compared with 32 bits).", "groups": [["96"]], "need": 1}, {"lab": "7.1", "q": "What is the private address range for Class B networks?", "ans": "172.16.0.0 through 172.31.255.255", "groups": [["172.16.0.0"], ["172.31.255.255"]], "need": 2}, {"lab": "7.1", "q": "What is the Class C range of values for the first octet, in decimal and in binary?", "ans": "192 to 223, and 110xxxxx in binary.", "groups": [["192"], ["223"], ["110"]], "need": 3}, {"lab": "7.1", "q": "What is the 127.0.0.1 address used for?", "ans": "Loopback (diagnostics). The whole 127 range is loopback.", "groups": [["loopback", "loop back", "diagnos", "test", "itself", "self", "localhost"]], "need": 1}, {"lab": "7.2", "q": "Which type of IPv6 packet is addressed and delivered to only a single interface?", "ans": "Unicast", "groups": [["unicast"]], "need": 1}, {"lab": "7.2", "q": "Which type of IPv6 address is used just like a regular public routable address in IPv4?", "ans": "Global unicast", "groups": [["global"]], "need": 1}, {"lab": "7.2", "q": "Which type of IPv6 address is not meant to be routed?", "ans": "Link-local", "groups": [["link-local", "link local", "linklocal"]], "need": 1}, {"lab": "7.2", "q": "Which type of IPv6 address is not meant to be routed to the Internet but is still globally unique?", "ans": "Unique local (formerly called site-local).", "groups": [["unique local", "unique-local", "ula", "site-local", "site local"]], "need": 1}, {"lab": "7.2", "q": "Which type of IPv6 address is meant to be delivered to multiple interfaces?", "ans": "Multicast", "groups": [["multicast"]], "need": 1}, {"lab": "7.2", "q": "Which type of address identifies multiple interfaces, but packets are delivered only to the first one it finds?", "ans": "Anycast", "groups": [["anycast"]], "need": 1}, {"lab": "7.2", "q": "Which addressing type is also referred to as one-to-nearest?", "ans": "Anycast", "groups": [["anycast"]], "need": 1}, {"lab": "7.2", "q": "IPv4 had a loopback address of 127.0.0.1. What is the IPv6 loopback address?", "ans": "::1", "groups": [["::1"]], "need": 1}, {"lab": "7.2", "q": "What does a link-local address always start with?", "ans": "FE80::/10", "groups": [["fe80"]], "need": 1}, {"lab": "7.2", "q": "What does a unique local unicast range start with?", "ans": "FC00::/7", "groups": [["fc00", "fc"]], "need": 1}];
+let lab='7.1';const list=document.getElementById('list'),score=document.getElementById('score');
+const state={};
+function norm(s){return s.toLowerCase().replace(/[\s,]+/g,' ').trim()}
+function grade(it,val){const v=norm(val);if(!v)return null;const vc=v.replace(/\s/g,'');
+ let hit=0;it.groups.forEach(g=>{if(g.some(k=>{const kk=k.toLowerCase();return v.indexOf(kk)>=0||vc.indexOf(kk.replace(/\s/g,''))>=0}))hit++});
+ return hit>=it.need}
+function render(){
+ list.innerHTML='';
+ ITEMS.forEach((it,i)=>{if(it.lab!==lab)return;
+  const n=ITEMS.filter(x=>x.lab===lab).indexOf(it)+1;
+  const d=document.createElement('div');d.className='q';
+  const id='a'+i;
+  d.innerHTML='<div class="t"><span class="pill">'+lab+'.'+n+'</span> '+it.q+'</div><div class="row"><label class="lab" style="margin:0" for="'+id+'">Your answer</label><input type="text" id="'+id+'" autocomplete="off" spellcheck="false"></div><div class="row"><button type="button" data-chk="'+i+'">Check</button><button type="button" data-show="'+i+'">Show answer</button></div><div id="fb'+i+'" aria-live="polite"></div>';
+  list.appendChild(d);
+  const inp=d.querySelector('input');if(state[i]&&state[i].val!==undefined)inp.value=state[i].val;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')check(i)});
+  if(state[i]&&state[i].shown)paint(i)});
+ updateScore()}
+function paint(i){const it=ITEMS[i],st=state[i],el=document.getElementById('fb'+i);if(!el)return;
+ let h='';
+ if(st.ok===true)h='<div class="fb good"><strong>Matches.</strong> Model answer: '+it.ans+'</div>';
+ else if(st.ok===false)h='<div class="fb bad"><strong>Not quite.</strong> Model answer: '+it.ans+'</div>';
+ else if(st.ok===null&&st.shown)h='<div class="fb hint">Model answer: '+it.ans+'</div>';
+ el.innerHTML=h}
+function check(i){const inp=document.getElementById('a'+i);const g=grade(ITEMS[i],inp.value);
+ state[i]={val:inp.value,ok:g===null?null:g,shown:true};
+ if(g===null){document.getElementById('fb'+i).innerHTML='<div class="fb hint">Type an answer first, or use Show answer.</div>';return}
+ paint(i);updateScore()}
+function show(i){const inp=document.getElementById('a'+i);state[i]={val:inp.value,ok:state[i]?state[i].ok:null,shown:true};if(state[i].ok===undefined)state[i].ok=null;paint(i)}
+function updateScore(){const its=ITEMS.map((x,i)=>[x,i]).filter(p=>p[0].lab===lab);
+ const ok=its.filter(p=>state[p[1]]&&state[p[1]].ok===true).length,tried=its.filter(p=>state[p[1]]&&state[p[1]].ok!==null&&state[p[1]].ok!==undefined).length;
+ score.textContent='Lab '+lab+': '+ok+' matched of '+its.length+' ('+tried+' checked)'}
+list.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;if(t.dataset.chk!==undefined)check(+t.dataset.chk);if(t.dataset.show!==undefined)show(+t.dataset.show)});
+document.getElementById('checkall').onclick=()=>{ITEMS.forEach((it,i)=>{if(it.lab===lab&&document.getElementById('a'+i)){const inp=document.getElementById('a'+i);const g=grade(it,inp.value);state[i]={val:inp.value,ok:g===null?null:g,shown:true};paint(i)}});updateScore()};
+document.getElementById('clear').onclick=()=>{ITEMS.forEach((it,i)=>{if(it.lab===lab)delete state[i]});render()};
+document.querySelectorAll('#labsel button').forEach(b=>b.onclick=()=>{ITEMS.forEach((it,i)=>{const inp=document.getElementById('a'+i);if(inp&&state[i])state[i].val=inp.value});lab=b.dataset.lab;document.querySelectorAll('#labsel button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));render()});
+render();
+
+</script>
+</body>
+</html>
