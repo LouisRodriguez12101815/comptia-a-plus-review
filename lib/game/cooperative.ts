@@ -64,9 +64,9 @@ const relay: GuidedIncident = {
       { id: "typo", label: "The static route uses 194.168.50.0 instead of the DC subnet 192.168.50.0", explanation: "The Lab 02 troubleshooting log records this exact octet typo as the root cause of Miami's unreachable server subnet." },
       { id: "scope", label: "The evidence proves that every DHCP scope is exhausted", explanation: "The log identifies an incorrect network in the static route; it does not establish scope exhaustion." },
     ], correctAnswerId: "typo", hint: "Read each octet of the route and the addressing plan.", explanation: "The route points to the wrong network." },
-    { phase: "interpret", title: "Explain the lease path", prompt: "What must work for a relayed lease to complete?", choices: [
-      { id: "both", label: "Routing from the branch to the server and a return route back to the relay", explanation: "Lab 02 warns that Discover can arrive while Offer is lost if the server's side has no return route." },
-      { id: "one", label: "Only the outbound Discover path; the Offer needs no route", explanation: "The DHCP exchange must return through the relay to the client." },
+    { phase: "interpret", title: "Explain the lease path", prompt: "If Discover arrives but no Offer returns, which test best distinguishes a return-path fault?", choices: [
+      { id: "both", label: "Test branch-to-server reachability and inspect the DC return route to the relay LAN", explanation: "Lab 02 warns that Discover can arrive while Offer is lost if the server's side has no return route." },
+      { id: "one", label: "Test only the outbound Discover path and assume the Offer can return", explanation: "The DHCP exchange must return through the relay to the client." },
     ], correctAnswerId: "both", hint: "A request and its response travel in opposite directions.", explanation: "Check routing in both directions before blaming DHCP." },
     { phase: "repair", title: "Correct the documented fault", prompt: "Which repair matches the Lab 02 troubleshooting log?", choices: [
       { id: "route", label: "Remove the incorrect route and add ip route 192.168.50.0 255.255.255.0 10.0.2.2", explanation: "This is the log's recorded Miami repair: the correct DC network and the MIA–DC next hop." },

@@ -92,6 +92,24 @@ try {
     }
     throw new Error('Application did not become ready');
   });
+  phase = 'guided_recovery';
+  const guidedContext = await browser.newContext({ viewport: { width: 390, height: 844 } }); contexts.push(guidedContext);
+  const guided = await guidedContext.newPage(); await guided.goto(new URL('/game', origin).href);
+  await guided.getByRole('button', { name: 'Begin training', exact: true }).click();
+  await guided.getByRole('figure').waitFor();
+  await guided.locator('[data-answer-id="router"]').click();
+  assert.equal(await guided.getByRole('button', { name: 'Continue →', exact: true }).count(), 0, 'Wrong guided decisions must be recoverable before progression');
+  await guided.getByRole('button', { name: 'Try again', exact: true }).click();
+  for (const round of multiplayerIncidents[0].steps) {
+    await guided.locator(`[data-answer-id="${round.correctAnswerId}"]`).click();
+    await guided.getByText('What we learned:', { exact: true }).waitFor();
+    await guided.getByRole('button', { name: 'Continue →', exact: true }).click();
+  }
+  await guided.getByRole('heading', { name: 'Ticket closed. The site is back.', exact: true }).waitFor();
+  await guided.getByRole('heading', { name: 'Incident reconstruction', exact: true }).waitFor();
+  await guided.getByText('Review: Rebooting shared equipment', { exact: false }).waitFor();
+  checks.push('Guided Demo phone walkthrough: diagram, wrong decision, retry, consequence and learning feedback, five decisions, mistake-based debrief and transfer question.');
+  await guidedContext.close();
   phase = 'campaign';
   const f = await pair();
   for (let incidentIndex = 0; incidentIndex < multiplayerIncidents.length; incidentIndex++) {
@@ -107,13 +125,41 @@ try {
         assert.equal(view.room.players.find((p) => p.id === view.viewerId).evidenceStatus.assigned, 1);
         assert.equal(view.networkDiagram.annotations.length, 0);
         await page.getByRole('button', { name: 'Discover assigned evidence', exact: true }).click();
-        await page.getByRole('button', { name: 'Review assigned evidence', exact: true }).waitFor();
+        await page.getByText('Evidence shared', { exact: true }).waitFor();
         assert.equal((await snapshot(page, f.code)).networkDiagram.annotations.length, 1);
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Diagram must fit phone viewport');
       }
       assert.notEqual(views[0].step.assignedEvidence[0].id, views[1].step.assignedEvidence[0].id);
       const indices = { incidentIndex, stepIndex }, correct = incident.steps[stepIndex].correctAnswerId;
-      for (const page of f.pages) await page.locator(`[data-answer-id="${correct}"]`).click();
+      for (const page of f.pages) {
+        const shared = await snapshot(page, f.code);
+        assert.equal(shared.sharedFindings.length, 2);
+        const panel = page.getByRole('region', { name: 'Shared findings', exact: true });
+        await panel.getByText(shared.sharedFindings[0].text, { exact: false }).waitFor();
+        await panel.getByText(shared.sharedFindings[1].text, { exact: false }).waitFor();
+      }
+      if (incidentIndex === 0 && stepIndex === 0) {
+        phase = 'wrong_decision_recovery';
+        await f.a.locator('[data-answer-id="router"]').click();
+        await f.a.getByText('Not the best next move', { exact: true }).waitFor();
+        assert.equal(await f.a.locator(`[data-answer-id="${correct}"]`).isEnabled(), true);
+        const wrongView = await snapshot(f.a, f.code);
+        const repeated = await f.a.request.post(new URL(`/api/game/rooms/${f.code}/actions`, origin).href, { data: { ...indices, answerId: 'router' } });
+        assert.equal(repeated.status(), 409);
+        assert.equal((await snapshot(f.a, f.code)).room.uptime, wrongView.room.uptime);
+      }
+      for (const page of f.pages) {
+        await page.locator(`[data-answer-id="${correct}"]`).click();
+        await page.getByText('Consequence / next test:', { exact: true }).waitFor();
+        await page.getByText('What we learned:', { exact: true }).waitFor();
+      }
+      if (incidentIndex === 0 && stepIndex === 0) {
+        await f.a.getByRole('button', { name: 'Publish justified role finding (+20)', exact: true }).click();
+        await f.b.getByRole('region', { name: 'Shared findings' }).getByText('Laptop published a justified finding:', { exact: false }).waitFor();
+        const recovered = await snapshot(f.a, f.code);
+        assert.equal(recovered.room.players.find((p) => p.id === recovered.viewerId).contributions.answers, 100);
+        assert.equal(recovered.room.players.find((p) => p.id === recovered.viewerId).contributions.actions, 20);
+      }
       const before = await snapshot(f.a, f.code);
       const duplicate = await f.a.request.post(new URL(`/api/game/rooms/${f.code}/actions`, origin).href, { data: { ...indices, answerId: correct } });
       assert.equal(duplicate.status(), 409);
@@ -121,6 +167,11 @@ try {
       await f.a.getByRole('heading', { name: stepIndex === incident.steps.length - 1 ? incidentIndex === multiplayerIncidents.length - 1 ? 'Final team debrief' : 'Incident debrief' : incident.steps[stepIndex + 1].title, exact: true }).waitFor();
       const after = await snapshot(f.a, f.code);
       assert.ok(after.room.score > before.room.score);
+      if (stepIndex === incident.steps.length - 1) {
+        assert.equal(after.learningDebrief.length, (incidentIndex + 1) * 5);
+        assert.ok(after.learningDebrief[0].decisions.some((d) => !d.correct));
+        await f.a.getByText('Misconception to review:', { exact: false }).first().waitFor();
+      }
       if (stepIndex < incident.steps.length - 1) await f.b.getByRole('heading', { name: incident.steps[stepIndex + 1].title, exact: true }).waitFor();
     }
     if (incidentIndex + 1 < multiplayerIncidents.length) {
@@ -128,7 +179,7 @@ try {
       await Promise.all(f.pages.map((p) => p.getByRole('heading', { name: multiplayerIncidents[incidentIndex + 1].steps[0].title, exact: true }).waitFor()));
     }
   }
-  checks.push('Both isolated players discovered, submitted and advanced through all ten questions and both incidents via real routes; duplicate answers rejected; diagrams fit phone width and expose only owned discoveries.');
+  checks.push('Both isolated players shared discoveries, recovered from an incorrect decision, published a justified role finding, submitted and advanced through all ten questions and both incidents via real routes; duplicate answers rejected; diagrams fit phone width and expose only owned discoveries.');
   for (const page of f.pages) await page.context().close();
   // Real timeout with an undiscovered host card. Fault-injected empty/invalid cards only in mock mode.
   for (const fault of mock ? ['invalid-host-assignment', 'undiscovered-host-card'] : ['undiscovered-host-card']) {
@@ -172,7 +223,7 @@ try {
     const hostItem = (await snapshot(h.a, h.code)).step.assignedEvidence[0].id;
     await h.b.locator(`[data-evidence-id="${hostItem}"]`).waitFor();
     await h.a.getByRole('button', { name: 'Discover assigned evidence', exact: true }).click();
-    await h.b.getByRole('button', { name: 'Review assigned evidence', exact: true }).waitFor();
+    await h.b.getByText('Evidence shared', { exact: true }).waitFor();
     const shared = await snapshot(h.b, h.code);
     assert.equal(shared.evidenceGate.canAnswer, true);
     assert.equal(shared.room.players.find((p) => p.id === h.bv.viewerId).contributions.evidence, 0);

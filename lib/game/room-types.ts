@@ -8,12 +8,16 @@ export type RoomAction = {
   playerId: string;
   stepIndex: number;
   answerId: string;
+  attemptedAnswerIds?: string[];
   correct: boolean;
   explanation: string;
   submittedAt: number;
 };
 
+export type LearningRecord = { incidentId: string; stepIndex: number; evidenceIds: string[]; answerIds: string[]; hint: boolean; continued: boolean };
+
 export type SharedRoom = {
+  learningHistory?: LearningRecord[];
   code: string;
   version: number;
   status: "lobby" | "playing" | "results";
@@ -71,7 +75,12 @@ export type RoomSnapshot = {
     continued: boolean;
     outstandingAnswers: string[];
   };
+  sharedFindings: { id: string; label: string; text: string }[];
+  learningDebrief: { title: string; goal: string; evidence: string[]; decisions: { label: string; correct: boolean; explanation: string }[]; learned: string; alternative: string; overridden: boolean; hint: boolean }[];
+  transferQuestion: string;
   step: {
+    learning: import("@/lib/game/round-learning").RoundLearning;
+    consequence: string | null;
     title: string;
     prompt: string;
     evidence?: string;

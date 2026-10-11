@@ -3,6 +3,10 @@
 import { useMemo, useState } from "react";
 import { cantReachWebsiteIncident } from "@/lib/game/incidents";
 import { MultiplayerRoom } from "@/app/components/game/MultiplayerRoom";
+import { NetworkDiagram } from "@/app/components/game/NetworkDiagram";
+import { networkDiagramFor } from "@/lib/game/network-diagram";
+import { evidenceItemsFor, learningFor } from "@/lib/game/cooperative";
+import { roundLearning, transferQuestion } from "@/lib/game/round-learning";
 import { shuffleAnswers } from "@/lib/game/answers";
 import type { IncidentChoice } from "@/lib/game/types";
 
@@ -31,6 +35,7 @@ export function OutageOps() {
   const [credited, setCredited] = useState(false);
   const [score, setScore] = useState(0);
   const [uptime, setUptime] = useState(100);
+  const [decisions, setDecisions] = useState<{ stepIndex: number; answerId: string }[]>([]);
   const [hintVisible, setHintVisible] = useState(false);
 
   const step = incident.steps[stepIndex];
@@ -43,6 +48,7 @@ export function OutageOps() {
 
   function resetGuidedDemo() {
     setStepIndex(0);
+    setDecisions([]);
     setSelected(null);
     setAnswers(shuffleAnswers(incident.steps[0].choices));
     setCredited(false);
@@ -55,6 +61,7 @@ export function OutageOps() {
   function choose(choiceId: string) {
     if (selected !== null || !step || !step.choices.some((answer) => answer.id === choiceId)) return;
     setSelected(choiceId);
+    setDecisions((value) => [...value, { stepIndex, answerId: choiceId }]);
     if (choiceId === step.correctAnswerId) {
       if (!credited) {
         setScore((value) => value + (hintVisible ? 75 : 100));
@@ -72,7 +79,7 @@ export function OutageOps() {
   }
 
   function advance() {
-    if (selected === null || !step) return;
+    if (selected !== step?.correctAnswerId || !step) return;
     const nextStep = incident.steps[stepIndex + 1];
     setAnswers(nextStep ? shuffleAnswers(nextStep.choices) : []);
     setSelected(null);
@@ -109,6 +116,13 @@ export function OutageOps() {
                 <li key={item} className="rounded-2xl border border-slate-700 bg-slate-950/70 p-4 text-sm text-slate-200">{item}</li>
               ))}
             </ul>
+            <div className="mt-6 space-y-4">
+              <h2 className="text-xl font-semibold text-white">Incident reconstruction</h2>
+              {incident.steps.map((round, index) => <article key={round.title} className="text-sm text-slate-200"><h3 className="font-semibold">{round.title}</h3><p>{roundLearning(incident, index).learned}</p>{decisions.filter((d) => d.stepIndex === index && d.answerId !== round.correctAnswerId).map((d) => <p key={d.answerId} className="text-amber-100">Review: {round.choices.find((c) => c.id === d.answerId)?.explanation}</p>)}</article>)}
+              <p className="text-slate-200"><strong>Transfer question:</strong> {transferQuestion(incident.id)}</p>
+              <p className="text-sm text-slate-300">Points record practice contributions, not mastery. Execute the verification in the source lab.</p>
+              {learningFor(incident).sources.map((source) => <a key={source.href} href={source.href} className="block text-sm text-cyan-200 underline">{source.title}</a>)}
+            </div>
             <div className="mt-7 flex flex-wrap gap-3">
               <button onClick={resetGuidedDemo} className="rounded-full bg-cyan-300 px-5 py-2.5 font-semibold text-slate-950 hover:bg-cyan-200">Replay guided demo</button>
               <button onClick={() => setScreen("create")} className="rounded-full border border-cyan-300/50 px-5 py-2.5 font-semibold text-cyan-100 hover:bg-cyan-300/10">Create a live room</button>
@@ -124,6 +138,8 @@ export function OutageOps() {
             </div>
             <div className="space-y-5 p-6 sm:p-8">
               {step.evidence && <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl border border-cyan-400/20 bg-slate-950 p-4 font-mono text-sm text-cyan-100">{step.evidence}</pre>}
+              <p className="text-cyan-100"><strong>Round objective:</strong> {roundLearning(incident, stepIndex).goal}</p>
+              <NetworkDiagram diagram={networkDiagramFor(incident.id, evidenceItemsFor(incident, stepIndex).map((i) => ({ ...i, discovered: true })), learningFor(incident).sources)!} />
               <h2 className="text-lg font-semibold text-white">{step.prompt}</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {answers.map((choice) => {
@@ -145,7 +161,7 @@ export function OutageOps() {
               </div>
 
               {!selected && (
-                <button onClick={() => setHintVisible(true)} className="text-sm font-medium text-amber-200 hover:text-amber-100">Ask Mentor for a hint</button>
+                <button onClick={() => setHintVisible(true)} className="text-sm font-medium text-amber-200 hover:text-amber-100">Ask Mentor for a hint (−25 on this decision)</button>
               )}
               {hintVisible && !selected && <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-50"><strong>Mentor:</strong> {step.hint}</div>}
               {selected && (
@@ -153,10 +169,11 @@ export function OutageOps() {
                   <p className="font-semibold text-white">{isCorrect ? "Correct diagnostic move" : "Not the best next move"}</p>
                   <p className="mt-2 text-sm text-slate-200">{selectedAnswer?.explanation}</p>
                   <p className="mt-2 text-sm text-cyan-100"><strong>Mentor reasoning:</strong> {step.explanation}</p>
+                  {isCorrect && <><p className="mt-2 text-sm text-cyan-100"><strong>Consequence / next test:</strong> {roundLearning(incident, stepIndex).result}</p><p className="mt-2 text-sm"><strong>What we learned:</strong> {roundLearning(incident, stepIndex).learned}</p></>}
                   {!isCorrect && <p className="mt-3 text-sm text-amber-100"><strong>Mentor hint:</strong> {step.hint}</p>}
                   <div className="mt-4 flex flex-wrap gap-3">
-                    <button onClick={tryAgain} className="rounded-full border border-cyan-300 px-5 py-2 font-semibold text-cyan-100 hover:bg-cyan-300/10">Try again</button>
-                    <button onClick={advance} className="rounded-full bg-white px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-100">Continue →</button>
+                    {!isCorrect && <button onClick={tryAgain} className="rounded-full border border-cyan-300 px-5 py-2 font-semibold text-cyan-100 hover:bg-cyan-300/10">Try again</button>}
+                    {isCorrect && <button onClick={advance} className="rounded-full bg-white px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-100">Continue →</button>}
                   </div>
                 </div>
               )}
