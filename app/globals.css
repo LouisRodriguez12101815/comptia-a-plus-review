@@ -1,17 +1,110 @@
 @import "tailwindcss";
 
+/*
+ * Network operations console theme.
+ *
+ * Navy surfaces, with bright colors reserved for things a learner needs to notice.
+ *   Deep navy   #0B1220  page background        slate-950
+ *   Slate navy  #152238  cards and panels       slate-900
+ *   Slate blue  #34465F  borders, inactive      slate-800
+ *   Soft white  #F1F5F9  main text              slate-100
+ *   Light slate #B8C5D6  secondary text         slate-400
+ *   Electric cyan #22D3EE primary actions       teal-400 (remapped to cyan)
+ *   Teal green  #34D399  healthy / success      emerald-400
+ *   Warm amber  #FBBF24  hints and warnings     amber-400
+ *   Coral red   #FB7185  faults and mistakes    rose-400
+ *
+ * The existing pages are written with Tailwind's slate and teal classes, so the
+ * palette is applied by remapping those scales here instead of editing every page.
+ * Put deep navy text on bright buttons and soft white text on dark panels.
+ * Always pair a status color with an icon and a label.
+ */
+@theme {
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #d0d9e6;
+  --color-slate-400: #b8c5d6;
+  --color-slate-500: #8497b0;
+  --color-slate-600: #566d8c;
+  --color-slate-700: #405672;
+  --color-slate-800: #34465f;
+  --color-slate-900: #152238;
+  --color-slate-950: #0b1220;
+
+  --color-teal-50: #ecfeff;
+  --color-teal-100: #cffafe;
+  --color-teal-200: #a5f3fc;
+  --color-teal-300: #67e8f9;
+  --color-teal-400: #22d3ee;
+  --color-teal-500: #06b6d4;
+  --color-teal-600: #0891b2;
+  --color-teal-700: #0e7490;
+  --color-teal-800: #155e75;
+  --color-teal-900: #164e63;
+  --color-teal-950: #083344;
+}
+
 :root {
-  --background: #020617;
-  --foreground: #e2e8f0;
+  --background: #0b1220;
+  --foreground: #f1f5f9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 2px;
+}
+
+/* Subtle packet motion on the landing diagram. Disabled for reduced motion. */
+@keyframes packet-travel {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(276px);
+    opacity: 0;
+  }
+}
+
+.packet {
+  animation: packet-travel 5.5s linear infinite;
+}
+
+.packet-late {
+  animation-delay: 2.75s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .packet {
+    animation: none;
+    opacity: 1;
+    transform: translateX(138px);
+  }
+
+  .packet-late {
+    display: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
