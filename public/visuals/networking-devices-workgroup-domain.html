@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workgroup vs domain login</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Workgroup vs domain login</h1>
+<p class="lede">Maria's account was created on PC 1. Pick the network type and the PC she logs into, then follow the login step by step.</p>
+<div class="card">
+ <h2 class="sec">1. Log in</h2>
+ <div class="lab">Network type</div><div class="ctrls" id="net" role="group" aria-label="Network type"></div>
+ <div class="lab">Maria sits at</div><div class="ctrls" id="pc" role="group" aria-label="PC"></div>
+ <div id="rsrow"><div class="lab">Domain rule for Maria</div><div class="ctrls" id="rs" role="group" aria-label="Rule"></div></div>
+ <div class="ctrls" style="margin-top:8px"><button class="go" id="run">Log in as Maria</button></div>
+ <div id="dia" style="margin-top:10px"></div>
+ <div id="steps" style="margin-top:10px"></div>
+ <div class="fb" id="fb1" aria-live="polite">Press Log in to run it.</div>
+</div>
+<div class="card">
+ <h2 class="sec">2. Count the accounts to manage</h2>
+ <p class="hint">Every user needs to work at every PC.</p>
+ <div class="row2"><div><div class="lab">Users</div><div class="ctrls" id="us" role="group" aria-label="Users"></div></div><div><div class="lab">PCs</div><div class="ctrls" id="ps" role="group" aria-label="PCs"></div></div></div>
+ <div id="cnt" style="margin-top:8px"></div>
+</div>
+<div class="card">
+ <h2 class="sec">3. Which model?</h2>
+ <div class="q" id="wdq"></div><div class="opts" id="wdo"></div><div class="fb" id="wdf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="wdn">Next question</button><span class="sc" id="wds"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+let net=0,pc=0,rs=0,ran=false;
+const PCN=['PC 1','PC 2','PC 3'];
+function dia(res){
+ let h='<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">';
+ if(net===1)h+='<div class="cell src"><div class="t">Domain controller</div><div class="s">Holds Maria\'s account'+(rs?' and the rule: PC 1 and PC 2 only':'')+'</div></div>';
+ PCN.forEach((n,i)=>{let c='cell';if(i===pc)c+=ran?(res?' good':' bad'):' src';
+  h+='<div class="'+c+'"><div class="t">'+n+(i===pc?' (Maria is here)':'')+'</div><div class="s">'+(net===0?(i===0?'Local accounts: Maria':'Local accounts: none'):'No local accounts needed')+'</div></div>'});
+ $('dia').innerHTML=h+'</div>'}
+function result(){
+ if(net===0)return pc===0?[1,['Maria types her password on PC 1.','PC 1 checks its own local account list and finds Maria.','Login succeeds and her local profile loads.'],'Her profile is tied to PC 1, so it works only here.']:
+  [0,['Maria types her password on '+PCN[pc]+'.',PCN[pc]+' checks its own local accounts. Maria is not there and there is no central server to ask.','Login fails. A workgroup profile is tied to one physical computer.'],'A workgroup needs a separate account on every PC. It is not scalable and less secure.'];
+ if(rs&&pc===2)return [0,['Maria types her password on PC 3.','PC 3 sends the login to the domain controller (DC).','The DC finds her account but the rule says PC 1 and PC 2 only, so access is denied.'],'A domain can restrict access by device.'];
+ return [1,['Maria types her password on '+PCN[pc]+'.',PCN[pc]+' sends the login to the domain controller (DC).','The DC finds her account, approves, and her roaming profile follows her to '+PCN[pc]+'.'],'One central account works on any device on the network.'];
+}
+function showRun(){const r=result();ran=true;dia(r[0]);
+ $('steps').innerHTML='<ol style="margin:0;padding-left:20px">'+r[1].map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>';
+ fb($('fb1'),r[0],'<strong>'+(r[0]?'Login succeeds. ':'Login fails. ')+'</strong>'+esc(r[2]))}
+function reset(){ran=false;dia(0);$('steps').innerHTML='';$('fb1').className='fb';$('fb1').textContent='Press Log in to run it.';$('rsrow').style.display=net?'block':'none'}
+mkBtns($('net'),['Workgroup (peer-to-peer)','Client-server domain'],i=>{net=i;reset()},0);
+mkBtns($('pc'),PCN,i=>{pc=i;reset()},0);
+mkBtns($('rs'),['Maria may use any device','Maria may use PC 1 and PC 2 only'],i=>{rs=i;reset()},0);
+$('run').onclick=showRun;reset();
+const US=[5,20,50],PS=[5,20,50];let u=0,p=1;
+function cnt(){const us=US[u],ps=PS[p],wg=us*ps,dm=us;
+ $('cnt').innerHTML='<div class="mini">Workgroup: '+wg+' account entries to create and maintain ('+us+' users x '+ps+' PCs)</div><div class="bar2" style="margin:4px 0 10px"><i class="b" style="width:100%"></i></div><div class="mini">Domain: '+dm+' accounts on the domain controller</div><div class="bar2" style="margin-top:4px"><i class="g" style="width:'+Math.max(2,dm/wg*100)+'%"></i></div><p class="mini" style="margin-top:8px">Why: in a workgroup every profile is tied to one computer, so every PC needs its own copy of every user. The domain keeps one central account.</p>'}
+mkBtns($('us'),US.map(x=>x+' users'),i=>{u=i;cnt()},0);
+mkBtns($('ps'),PS.map(x=>x+' PCs'),i=>{p=i;cnt()},1);cnt();
+const Q=[{"q": "Which model? Each profile is tied to one physical computer.", "o": ["Workgroup (peer-to-peer)", "Client-server domain"], "a": 0, "why": "Peer-to-peer workgroup: no central server, so the profile lives on one PC."}, {"q": "Which model? A domain controller centralizes the accounts.", "o": ["Workgroup (peer-to-peer)", "Client-server domain"], "a": 1, "why": "Client-server domain: the DC holds the accounts."}, {"q": "Which model? Not scalable, difficult to manage, less secure.", "o": ["Workgroup (peer-to-peer)", "Client-server domain"], "a": 0, "why": "Those are the workgroup traits."}, {"q": "Which model? A user logs in on any device with a roaming profile.", "o": ["Workgroup (peer-to-peer)", "Client-server domain"], "a": 1, "why": "That is the domain benefit."}, {"q": "Which model? Access can be restricted by device.", "o": ["Workgroup (peer-to-peer)", "Client-server domain"], "a": 1, "why": "The domain controller can restrict which devices a user may use."}, {"q": "Which model? There is no central server.", "o": ["Workgroup (peer-to-peer)", "Client-server domain"], "a": 0, "why": "A workgroup is peer-to-peer with no central server."}];
+Deck({items:Q,q:$('wdq'),opts:$('wdo'),fb:$('wdf'),next:$('wdn'),score:$('wds')});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Media planner and CSMA/CD</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+.med.cell{font:inherit;font-size:14px}</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Media planner and CSMA/CD</h1>
+<p class="lede">Compare how far each medium reaches against the run you need, then watch an Ethernet NIC decide when it may transmit.</p>
+<div class="card">
+ <h2 class="sec">1. Plan the run</h2>
+ <div class="lab">Scenario</div><div class="ctrls" id="sc" role="group" aria-label="Scenario"></div>
+ <p class="q" id="scq"></p>
+ <div class="lab">Click the medium you would use</div>
+ <div id="med"></div>
+ <div class="fb" id="fb1" aria-live="polite">Pick a medium to see the answer.</div>
+</div>
+<div class="card">
+ <h2 class="sec">2. CSMA/CD: sense, then send</h2>
+ <p class="hint">PC A wants to send. Decide whether PC B is already using the cable, then press Send.</p>
+ <div class="ctrls" id="busy" role="group" aria-label="Cable state"></div>
+ <div class="ctrls"><button class="go" id="send">PC A tries to send</button><button id="both">A and B start at the same instant</button></div>
+ <div class="fb" id="fb2" aria-live="polite">Press a button to see what the NIC does.</div>
+</div>
+<div class="card">
+ <h2 class="sec">3. Quick checks</h2>
+ <div class="q" id="dq"></div><div class="opts" id="do"></div><div class="fb" id="df" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="dn">Next question</button><span class="sc" id="ds"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const SC=[
+ {t:'A 80 m office run at 100 Mbps',km:0.08,best:0,why:'Cat 5e is the lowest UTP grade rated for 100 Mbps, and 80 m is inside the 100 m limit.'},
+ {t:'A 400 m run between two buildings',km:0.4,best:1,why:'UTP stops at 100 m. Single-mode fiber has the longest segment lengths, kilometers.'},
+ {t:'A 5 km run at 10 Gbps',km:5,best:2,why:'10GBaseER is extended-range 10 Gbps fiber, so a 5 km run fits easily.'}];
+const MED=[
+ {n:'Cat 5e UTP',max:0.1,note:'Rated for 100 Mbps. Max segment 100 m.'},
+ {n:'Single-mode fiber',max:99,note:'Longest segment lengths: kilometers.'},
+ {n:'10GBaseER fiber',max:99,note:'Extended-range 10 Gbps fiber.'}];
+let s=0,got=-1;
+function draw(){
+ const sc=SC[s];$('scq').textContent='Scenario: '+sc.t+'.';
+ let h='';
+ MED.forEach((m,i)=>{
+  const reach=Math.min(m.max,5);const w=Math.max(1.5,reach/5*100);const run=Math.min(sc.km,5)/5*100;
+  const fits=m.max>=sc.km;
+  h+='<button type="button" class="cell med" style="width:100%;text-align:left;margin-bottom:8px;cursor:pointer" data-i="'+i+'"><span class="t">'+esc(m.n)+'</span> <span class="s">'+esc(m.note)+'</span>'
+   +'<div class="bar2" style="margin-top:6px"><i class="'+(got>=0?(fits?'g':'b'):'')+'" style="width:'+w+'%"></i><span style="position:absolute;left:'+Math.min(run,99)+'%;top:0;bottom:0;width:3px;background:var(--warm)"></span></div>'
+   +'<span class="s">'+(got>=0?(fits?'Reaches the run':'Too short for the run'):'Bar shows reach on a 0 to 5 km scale; orange line is your run')+'</span></button>'});
+ $('med').innerHTML=h;
+ [...document.querySelectorAll('.med')].forEach(b=>b.onclick=()=>pick(+b.dataset.i));
+}
+function pick(i){got=i;draw();const sc=SC[s],b=sc.best;
+ if(i===b)fb($('fb1'),true,'<strong>Correct. The answer is '+esc(MED[b].n)+'.</strong> '+sc.why);
+ else fb($('fb1'),false,'<strong>Not quite. The answer is '+esc(MED[b].n)+'.</strong> '+sc.why)}
+mkBtns($('sc'),SC.map(x=>x.t),i=>{s=i;got=-1;$('fb1').className='fb';$('fb1').textContent='Pick a medium to see the answer.';draw()},0);
+draw();
+let busy=0;
+mkBtns($('busy'),['Cable is clear','PC B is transmitting'],i=>{busy=i},0);
+$('send').onclick=()=>{
+ if(busy)fb($('fb2'),false,'<strong>PC A waits.</strong> It senses the cable, hears PC B, and holds off. When the cable is clear, it transmits.');
+ else fb($('fb2'),true,'<strong>PC A transmits.</strong> It senses the cable first, finds it clear, and sends.')};
+$('both').onclick=()=>fb($('fb2'),false,'<strong>Collision.</strong> Both sensed a clear cable and sent together. The NICs detect the collision, stop, wait a random time, and try again.');
+const Q=[
+ {q:'Which standard is described as a wireless personal area network (WPAN)?',o:['Bluetooth','10GBaseER','CSMA/CD','Cat 5e'],a:0,why:'Bluetooth is the WPAN standard.'},
+ {q:'What is the lowest UTP grade rated for 100 Mbps?',o:['Cat 3','Cat 5e','Cat 6','Cat 6a'],a:1,why:'Cat 5e is the lowest UTP grade rated for 100 Mbps.'},
+ {q:'How does an Ethernet NIC avoid talking over another device?',o:['CSMA/CD: sense the cable and send only when clear','It always transmits immediately','It asks the router for permission','It uses a punchdown block'],a:0,why:'Ethernet NICs use CSMA/CD: sense first, transmit only when the cable is clear.'},
+ {q:'Which medium offers the longest segment lengths?',o:['Cat 5e UTP','Single-mode fiber','Cat 6 UTP','Coax'],a:1,why:'Single-mode fiber reaches kilometers versus 100 m for UTP.'}];
+Deck({items:Q,q:$('dq'),opts:$('do'),fb:$('df'),next:$('dn'),score:$('ds')});
+
+</script>
+</body>
+</html>

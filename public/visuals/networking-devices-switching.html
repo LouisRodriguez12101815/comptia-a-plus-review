@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Converge, count and read</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+.sym *{stroke:var(--ink);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}.sym rect,.sym circle{fill:var(--accent-soft)}.q svg{display:block}table td{font-size:13px}</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Converge, count and read</h1>
+<p class="lede">Three small labs on hubs, switches, routers, MAC addresses and ARP. Pick a tab.</p>
+<div class="tabsbar" id="tabs" role="group" aria-label="Labs"></div>
+<div class="card" id="t0">
+ <h2 class="sec">Reboot and converge</h2>
+ <p class="hint">PC A, PC B, PC C and the router share one segment. PC C runs Wireshark. Ping from PC A and watch the table fill.</p>
+ <div class="ctrls" id="md" role="group" aria-label="Middle device"></div>
+ <div class="ctrls"><button id="pB">PC A pings PC B</button><button id="pC">PC A pings PC C</button><button id="pR">PC A pings the router</button><button id="rb" class="go">Reboot the middle device</button></div>
+ <div id="meter" style="margin:10px 0"></div>
+ <div class="row2">
+  <div><div class="lab">MAC table (CAM)</div><div class="tbl"><table><thead><tr><th>MAC</th><th>Port</th></tr></thead><tbody id="cam"></tbody></table></div></div>
+  <div><div class="lab">What PC C's Wireshark captured</div><div id="cap" class="mini" style="min-height:60px"></div></div>
+ </div>
+ <div class="fb" id="fb0" aria-live="polite">Pick a middle device and ping.</div>
+</div>
+<div class="card" id="t1" style="display:none">
+ <h2 class="sec">Count the domains</h2>
+ <p class="hint">Two segments are joined by a link device. Predict, then check. PC counts: 4 on segment 1, 3 on segment 2.</p>
+ <div class="row2">
+  <div><div class="lab">Segment 1 device</div><div class="ctrls" id="s1" role="group" aria-label="Segment 1"></div></div>
+  <div><div class="lab">Segment 2 device</div><div class="ctrls" id="s2" role="group" aria-label="Segment 2"></div></div>
+  <div><div class="lab">Joined by</div><div class="ctrls" id="lk" role="group" aria-label="Link"></div></div>
+ </div>
+ <div id="lay" class="mini" style="margin:10px 0"></div>
+ <div class="row2">
+  <div><div class="lab">Collision domains</div><div class="ctrls" style="align-items:center"><button id="c-" aria-label="fewer collision domains">-</button><strong id="cv" style="min-width:28px;text-align:center">1</strong><button id="c+" aria-label="more collision domains">+</button></div></div>
+  <div><div class="lab">Broadcast domains</div><div class="ctrls" style="align-items:center"><button id="b-" aria-label="fewer broadcast domains">-</button><strong id="bv" style="min-width:28px;text-align:center">1</strong><button id="b+" aria-label="more broadcast domains">+</button></div></div>
+ </div>
+ <div class="ctrls" style="margin-top:8px"><button class="go" id="chk">Check my counts</button><button id="rl">Random layout</button></div>
+ <div class="fb" id="fb1" aria-live="polite">Set both counts, then press Check.</div>
+</div>
+<div class="card" id="t2" style="display:none">
+ <h2 class="sec">Symbols and MAC anatomy</h2>
+ <div class="q" id="syq"></div><div class="opts" id="syo"></div><div class="fb" id="syf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="syn">Next question</button><span class="sc" id="sys"></span></div>
+ <div class="lab" style="margin-top:16px">Inspect a MAC address</div>
+ <div class="mono" style="font-size:20px;margin:6px 0"><span id="oui" class="tag">00:1B:44</span> : <span id="ser" class="tag w">11:3A:B7</span></div>
+ <div class="ctrls" id="ma" role="group" aria-label="MAC parts"></div>
+ <div class="fb" id="fbm" aria-live="polite">Pick a part of the address.</div>
+</div>
+<div class="card">
+ <h2 class="sec">Quick checks</h2>
+ <div class="q" id="hdq"></div><div class="opts" id="hdo"></div><div class="fb" id="hdf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="hdn">Next question</button><span class="sc" id="hds"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const T=['Reboot and converge','Count the domains','Symbols and MAC'];
+mkBtns($('tabs'),T,i=>{[0,1,2].forEach(j=>$('t'+j).style.display=j===i?'block':'none')},0);
+// ---- tab 0
+const H=[{k:'A',mac:'00:0A:0A:0A:0A:0A',port:1,ip:'192.168.1.10'},{k:'B',mac:'00:0B:0B:0B:0B:0B',port:2,ip:'192.168.1.11'},{k:'C',mac:'00:0C:0C:0C:0C:0C',port:3,ip:'192.168.1.12'},{k:'R',mac:'00:0D:0D:0D:0D:0D',port:4,ip:'192.168.1.1'}];
+let hub=0,tab={},arp={},cap=[];
+function draw0(){
+ $('cam').innerHTML=hub?'<tr><td colspan="2">A hub has no MAC table. It repeats every frame to every port.</td></tr>':(Object.keys(tab).length?Object.keys(tab).map(m=>'<tr><td class="mono">'+m+'</td><td>Port '+tab[m]+'</td></tr>').join(''):'<tr><td colspan="2">Empty</td></tr>');
+ const n=Object.keys(tab).length;
+ $('meter').innerHTML=hub?'':'<div class="mini">Converged: '+n+' of 4 devices known</div><div class="bar2" style="margin-top:4px"><i class="'+(n===4?'g':'w')+'" style="width:'+n*25+'%"></i></div><div class="mini" style="margin-top:4px">'+(n===4?'Fully converged: ping, printing and internet access work.':'Still converging.')+'</div>';
+ $('cap').innerHTML=cap.length?cap.map(c=>'<div>'+c+'</div>').join(''):'Nothing yet.';
+}
+function frame(txt,toC,learn){ if(!hub&&learn)tab[learn[0]]=learn[1]; if(hub||toC)cap.push(txt+(hub&&!toC?' (seen only because the hub repeats it)':'')) }
+function ping(i){
+ const h=H[i];let steps=[];
+ if(!arp[h.k]){
+  frame('ARP request: who has '+h.ip+'? to FF:FF:FF:FF:FF:FF',1,[H[0].mac,1]);
+  frame('ARP reply from '+h.k+' to A (unicast)',h.k==='C',[h.mac,h.port]);arp[h.k]=1;
+  steps.push('A did not know '+h.ip+', so it ARP-broadcast. The switch learned A from the SOURCE MAC and flooded the broadcast; the reply taught it '+(h.k==='R'?'the router':'PC '+h.k)+'.');
+ }else steps.push('A already knew the MAC, so no ARP was needed.');
+ frame('Echo request A to '+h.k+' (unicast)',h.k==='C');frame('Echo reply '+h.k+' to A (unicast)',false);
+ let msg=steps[0];
+ if(hub)msg+=' Because the middle device is a hub, PC C captured every frame: easy to sniff, a security weakness.';
+ else if(h.k!=='C')msg+=' PC C only sees the broadcast; the unicast frames went one-to-one using the table.';
+ fb($('fb0'),1,'<strong>Ping done.</strong> '+msg);draw0()}
+function reboot(){tab={};arp={};cap=[];
+ fb($('fb0'),0,'<strong>'+(hub?'A hub has nothing to reboot.':'Table wiped.')+'</strong> '+(hub?'It never kept a table; it just repeats.':'The MAC table is volatile RAM, so it is empty after a reboot. Devices must ARP again before the network is converged.'));draw0()}
+mkBtns($('md'),['Switch in the middle','Hub in the middle'],i=>{hub=i;tab={};arp={};cap=[];$('fb0').className='fb';$('fb0').textContent='Pick a middle device and ping.';draw0()},0);
+$('pB').onclick=()=>ping(1);$('pC').onclick=()=>ping(2);$('pR').onclick=()=>ping(3);$('rb').onclick=reboot;draw0();
+// ---- tab 1
+let s1=1,s2=0,lk=0,cv=1,bv=1;
+function ans(){const c=(s1?5:1)+(s2?4:1),b=lk===0?2:1;return [c,b]}
+function lay(){
+ $('lay').innerHTML='<strong>Layout:</strong> 4 PCs - '+(s1?'switch':'hub')+' - '+(lk===0?'router':'switch')+' - '+(s2?'switch':'hub')+' - 3 PCs'}
+function upd(){$('cv').textContent=cv;$('bv').textContent=bv}
+function reset1(){$('fb1').className='fb';$('fb1').textContent='Set both counts, then press Check.';lay()}
+mkBtns($('s1'),['Hub','Switch'],i=>{s1=i;reset1()},1);
+mkBtns($('s2'),['Hub','Switch'],i=>{s2=i;reset1()},0);
+mkBtns($('lk'),['Router','Switch'],i=>{lk=i;reset1()},0);
+$('c-').onclick=()=>{cv=Math.max(1,cv-1);upd()};$('c+').onclick=()=>{cv=Math.min(12,cv+1);upd()};
+$('b-').onclick=()=>{bv=Math.max(1,bv-1);upd()};$('b+').onclick=()=>{bv=Math.min(6,bv+1);upd()};
+$('chk').onclick=()=>{const a=ans();const ok=cv===a[0]&&bv===a[1];
+ const why='Collision: segment 1 '+(s1?'switch = one per port (4 PCs + 1 uplink = 5)':'hub = 1 for the whole hub')+'; segment 2 '+(s2?'switch = one per port (3 PCs + 1 uplink = 4)':'hub = 1 for the whole hub')+'. Broadcast: '+(lk===0?'the router splits them, so 2':'a switch does not split them, so 1')+'.';
+ fb($('fb1'),ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+a[0]+' collision domains and '+a[1]+' broadcast domain'+(a[1]>1?'s':'')+'.</strong> '+why)};
+$('rl').onclick=()=>{s1=Math.round(Math.random());s2=Math.round(Math.random());lk=Math.round(Math.random());press($('s1'),s1);press($('s2'),s2);press($('lk'),lk);reset1()};
+upd();lay();
+// ---- tab 2
+const MA=['First half','Second half','Spoof the MAC'];
+mkBtns($('ma'),MA,i=>{
+ if(i===0)fb($('fbm'),1,'<strong>OUI.</strong> Organizational Unique Identifier: identifies the manufacturer (for example Intel).');
+ else if(i===1)fb($('fbm'),1,'<strong>Serial.</strong> The second half is the unique serial assigned by the manufacturer. Together they are 48 bits of hex, burned into the NIC.');
+ else fb($('fbm'),0,'<strong>Only memory changes.</strong> Spoofing changes the address the OS uses, not the real burned-in address on the NIC. MAC is physical; IP is logical and changeable at the OS level.')});
+const SQ=[{"q": "Which device is this symbol?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 80 60\" width=\"110\" height=\"82\" class=\"sym\" role=\"img\" aria-label=\"Circle with an X\"><circle cx=\"40\" cy=\"30\" r=\"24\"/><path d=\"M24 14 L56 46 M56 14 L24 46\"/></svg></div>", "o": ["Router", "Hub", "Switch"], "a": 0, "why": "A circle with an X (or four criss-cross arrows) is a router."}, {"q": "Which device is this symbol?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 80 60\" width=\"110\" height=\"82\" class=\"sym\" role=\"img\" aria-label=\"Rectangle with one arrow\"><rect x=\"8\" y=\"12\" width=\"64\" height=\"36\" rx=\"3\"/><path d=\"M20 30 H58 M50 23 L58 30 L50 37\"/></svg></div>", "o": ["Router", "Hub", "Switch"], "a": 1, "why": "A rectangle with ONE arrow is a hub: it repeats everything one way to everyone."}, {"q": "Which device is this symbol?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 80 60\" width=\"110\" height=\"82\" class=\"sym\" role=\"img\" aria-label=\"Rectangle with two opposite arrows\"><rect x=\"8\" y=\"12\" width=\"64\" height=\"36\" rx=\"3\"/><path d=\"M20 24 H58 M50 18 L58 24 L50 30\"/><path d=\"M60 38 H22 M30 32 L22 38 L30 44\"/></svg></div>", "o": ["Router", "Hub", "Switch"], "a": 2, "why": "A rectangle with TWO arrows in opposite directions is a switch."}, {"q": "An exam question lists a bridge. What do you do with the word \"bridge\"?", "o": ["Replace it with \"switch\"", "Replace it with \"router\"", "Replace it with \"hub\""], "a": 0, "why": "The bridge was the transition device from hubs to switches, so on exam questions treat it as a switch."}];const HQ=[{"q": "A switch has just rebooted. What is in its MAC address table?", "o": ["Nothing, it starts empty", "Every MAC on the network", "Only the router MAC"], "a": 0, "why": "The table lives in volatile RAM, so it is empty after a reboot and devices ARP to relearn."}, {"q": "Another name for the switch MAC address table?", "o": ["CAM table", "Routing table", "ARP poison table"], "a": 0, "why": "CAM stands for Content Addressable Memory."}, {"q": "Which command shows learned IP to MAC pairs?", "o": ["arp -a", "ipconfig /all", "route print"], "a": 0, "why": "arp -a lists learned pairs. ipconfig /all shows your own MAC, and route print shows the routing table."}, {"q": "Which command shows your own MAC address?", "o": ["ipconfig /all", "arp -a", "route print"], "a": 0, "why": "ipconfig /all shows your own MAC. arp -a shows the learned pairs."}, {"q": "What is the broadcast MAC address?", "o": ["FF:FF:FF:FF:FF:FF", "00:00:00:00:00:00", "255.255.255.255"], "a": 0, "why": "A broadcast uses MAC all Fs. 255.255.255.255 is the broadcast IP, not a MAC."}, {"q": "How many collision domains does a hub network have?", "o": ["One", "One per port", "One per router"], "a": 0, "why": "A hub repeats to every port, so everyone competes in one collision domain."}, {"q": "What does a router add that a switch does not?", "o": ["Broadcast domain boundaries", "More collision domains per port", "A MAC table"], "a": 0, "why": "Routers do not forward broadcasts, so each interface is a broadcast domain boundary."}, {"q": "Which Windows command shows the routing table?", "o": ["route print", "arp -a", "ipconfig /all"], "a": 0, "why": "route print views the routing table a router uses to forward by IP."}];
+Deck({items:SQ,q:$('syq'),opts:$('syo'),fb:$('syf'),next:$('syn'),score:$('sys')});
+Deck({items:HQ,q:$('hdq'),opts:$('hdo'),fb:$('hdf'),next:$('hdn'),score:$('hds')});
+
+</script>
+</body>
+</html>

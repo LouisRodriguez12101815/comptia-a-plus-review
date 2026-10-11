@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connector identifier</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+.cico{flex:none}.cico *{stroke:var(--ink);stroke-width:2.5;fill:var(--surface);stroke-linejoin:round}.cico .f{fill:var(--accent-soft)}.q svg{display:block}</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Connector identifier</h1>
+<p class="lede">Inspect each connector, then test yourself. Every connector is tied to one medium and one way of attaching.</p>
+<div class="card">
+ <h2 class="sec">Inspect</h2>
+ <div class="ctrls" id="ins" role="group" aria-label="Connectors"></div>
+ <div class="out" id="insout" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"></div>
+</div>
+<div class="card">
+ <h2 class="sec">Quiz me</h2>
+ <p class="hint">A mix of drawings and clues. Wrong answers still name the right connector and why.</p>
+ <div class="q" id="dq"></div><div class="opts" id="do"></div><div class="fb" id="df" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="dn">Next question</button><span class="sc" id="ds"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+const CON=[{"n": "RJ-45", "med": "Twisted pair copper", "how": "Clips into the port with a latch tab", "use": "The 8P8C connector for Ethernet twisted pair.", "svg": "<svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"RJ-45 connector drawing\" class=\"cico\"><rect x=\"16\" y=\"16\" width=\"68\" height=\"40\" rx=\"3\"/><g class=\"f\"><rect x=\"21\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"28\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"35\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"42\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"49\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"56\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"63\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"70\" y=\"18\" width=\"4\" height=\"10\"/></g><path d=\"M38 56 v9 h24 v-9\"/></svg>"}, {"n": "LC", "med": "Fiber", "how": "Small and latching", "use": "Most common fiber connector today.", "svg": "<svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"LC connector drawing\" class=\"cico\"><rect x=\"30\" y=\"26\" width=\"40\" height=\"30\" rx=\"3\"/><rect x=\"43\" y=\"10\" width=\"14\" height=\"16\" class=\"f\"/><path d=\"M36 26 v-6 h-8 M64 26 v-6 h8\"/><path d=\"M42 56 v8 h16 v-8\"/></svg>"}, {"n": "SC", "med": "Fiber", "how": "Push-pull, square body", "use": "Square fiber connector that you push in and pull out.", "svg": "<svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"SC connector drawing\" class=\"cico\"><rect x=\"26\" y=\"20\" width=\"48\" height=\"42\" rx=\"3\"/><rect x=\"40\" y=\"8\" width=\"20\" height=\"12\" class=\"f\"/><path d=\"M34 28 v26 M66 28 v26 M50 30 v22\"/></svg>"}, {"n": "ST", "med": "Fiber", "how": "Bayonet twist", "use": "Legacy fiber connector.", "svg": "<svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"ST connector drawing\" class=\"cico\"><circle cx=\"50\" cy=\"36\" r=\"26\"/><circle cx=\"50\" cy=\"36\" r=\"8\" class=\"f\"/><path d=\"M22 28 h-8 v8 M78 28 h8 v8\"/><path d=\"M50 10 v-6\"/></svg>"}, {"n": "F-connector", "med": "Coax", "how": "Screws on", "use": "RG-6 coax for TV, satellite and internet drops.", "svg": "<svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"F-connector connector drawing\" class=\"cico\"><polygon points=\"50,8 75,22 75,50 50,64 25,50 25,22\"/><circle cx=\"50\" cy=\"36\" r=\"13\" class=\"f\"/><path d=\"M50 36 v-4 M50 36 h4\" /><circle cx=\"50\" cy=\"36\" r=\"3\"/></svg>"}, {"n": "BNC", "med": "Coax", "how": "Twists and locks", "use": "Older networks and CCTV.", "svg": "<svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"BNC connector drawing\" class=\"cico\"><circle cx=\"50\" cy=\"36\" r=\"26\"/><circle cx=\"50\" cy=\"36\" r=\"14\" class=\"f\"/><circle cx=\"50\" cy=\"36\" r=\"4\"/><path d=\"M24 36 h-8 M76 36 h8\"/><rect x=\"12\" y=\"32\" width=\"8\" height=\"8\"/><rect x=\"80\" y=\"32\" width=\"8\" height=\"8\"/></svg>"}];const QI=[{"q": "Which connector is drawn here?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"RJ-45 connector drawing\" class=\"cico\"><rect x=\"16\" y=\"16\" width=\"68\" height=\"40\" rx=\"3\"/><g class=\"f\"><rect x=\"21\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"28\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"35\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"42\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"49\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"56\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"63\" y=\"18\" width=\"4\" height=\"10\"/><rect x=\"70\" y=\"18\" width=\"4\" height=\"10\"/></g><path d=\"M38 56 v9 h24 v-9\"/></svg></div>", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 0, "why": "RJ-45: twisted pair copper, clips into the port with a latch tab."}, {"q": "Which connector is the 8P8C plug on Ethernet twisted pair?", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 0, "why": "RJ-45: The 8P8C connector for Ethernet twisted pair.. Medium: twisted pair copper."}, {"q": "Which connector is drawn here?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"LC connector drawing\" class=\"cico\"><rect x=\"30\" y=\"26\" width=\"40\" height=\"30\" rx=\"3\"/><rect x=\"43\" y=\"10\" width=\"14\" height=\"16\" class=\"f\"/><path d=\"M36 26 v-6 h-8 M64 26 v-6 h8\"/><path d=\"M42 56 v8 h16 v-8\"/></svg></div>", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 1, "why": "LC: fiber, small and latching."}, {"q": "Which connector is small, latching and the most common fiber connector today?", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 1, "why": "LC: Most common fiber connector today.. Medium: fiber."}, {"q": "Which connector is drawn here?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"SC connector drawing\" class=\"cico\"><rect x=\"26\" y=\"20\" width=\"48\" height=\"42\" rx=\"3\"/><rect x=\"40\" y=\"8\" width=\"20\" height=\"12\" class=\"f\"/><path d=\"M34 28 v26 M66 28 v26 M50 30 v22\"/></svg></div>", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 2, "why": "SC: fiber, push-pull, square body."}, {"q": "Which connector is the push-pull square fiber connector?", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 2, "why": "SC: Square fiber connector that you push in and pull out.. Medium: fiber."}, {"q": "Which connector is drawn here?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"ST connector drawing\" class=\"cico\"><circle cx=\"50\" cy=\"36\" r=\"26\"/><circle cx=\"50\" cy=\"36\" r=\"8\" class=\"f\"/><path d=\"M22 28 h-8 v8 M78 28 h8 v8\"/><path d=\"M50 10 v-6\"/></svg></div>", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 3, "why": "ST: fiber, bayonet twist."}, {"q": "Which connector is the legacy fiber connector with a bayonet twist?", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 3, "why": "ST: Legacy fiber connector.. Medium: fiber."}, {"q": "Which connector is drawn here?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"F-connector connector drawing\" class=\"cico\"><polygon points=\"50,8 75,22 75,50 50,64 25,50 25,22\"/><circle cx=\"50\" cy=\"36\" r=\"13\" class=\"f\"/><path d=\"M50 36 v-4 M50 36 h4\" /><circle cx=\"50\" cy=\"36\" r=\"3\"/></svg></div>", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 4, "why": "F-connector: coax, screws on."}, {"q": "Which connector screws onto RG-6 coax for TV, satellite and internet drops?", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 4, "why": "F-connector: RG-6 coax for TV, satellite and internet drops.. Medium: coax."}, {"q": "Which connector is drawn here?<div style=\"margin-top:6px\"><svg viewBox=\"0 0 100 72\" width=\"120\" height=\"86\" role=\"img\" aria-label=\"BNC connector drawing\" class=\"cico\"><circle cx=\"50\" cy=\"36\" r=\"26\"/><circle cx=\"50\" cy=\"36\" r=\"14\" class=\"f\"/><circle cx=\"50\" cy=\"36\" r=\"4\"/><path d=\"M24 36 h-8 M76 36 h8\"/><rect x=\"12\" y=\"32\" width=\"8\" height=\"8\"/><rect x=\"80\" y=\"32\" width=\"8\" height=\"8\"/></svg></div>", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 5, "why": "BNC: coax, twists and locks."}, {"q": "Which connector twists and locks on older networks and CCTV coax?", "o": ["RJ-45", "LC", "SC", "ST", "F-connector", "BNC"], "a": 5, "why": "BNC: Older networks and CCTV.. Medium: coax."}];
+mkBtns($('ins'),CON.map(c=>c.n),i=>show(i),0);
+function show(i){const c=CON[i];$('insout').innerHTML=c.svg+'<div><strong>'+esc(c.n)+'</strong><br>Medium: '+esc(c.med)+'<br>Attaches: '+esc(c.how)+'<br>'+esc(c.use)+'</div>'}
+show(0);
+Deck({items:QI,q:$('dq'),opts:$('do'),fb:$('df'),next:$('dn'),score:$('ds')});
+
+</script>
+</body>
+</html>

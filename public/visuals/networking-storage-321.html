@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3-2-1 backup builder</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.opts{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:8px 0}
+.opts button{min-height:40px;border-radius:10px;text-align:left;font-weight:500;line-height:1.35;padding:8px 12px}
+.opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.fb{padding:10px 12px;border-radius:10px;font-size:14px;margin:8px 0;display:none}
+.fb.show{display:block}
+.fb.yes{background:var(--good-soft)}
+.fb.nope{background:var(--bad-soft)}
+.fb.info{background:var(--accent-soft)}
+.qq{font-weight:600;margin:4px 0}
+.qn{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.seq{list-style:none;padding:0;margin:6px 0;display:grid;gap:6px}
+.seq li{border:2px dashed var(--line);border-radius:10px;padding:8px 10px;min-height:38px;font-size:14px}
+.seq li.filled{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.seq li.empty{color:var(--muted)}
+.seq li .n{font-weight:700;color:var(--accent);margin-right:8px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sep{height:1px;background:var(--line);margin:18px 0}
+button{min-height:36px}
+.pill{font-size:13px}
+.sec{margin:0 0 4px;font:600 18px/1.3 Georgia,serif}
+.mini{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.term{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.term .g{color:var(--good);font-weight:700}
+.term .r{color:var(--bad);font-weight:700}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+
+.dsk{min-height:64px;text-align:left;border-radius:10px;padding:8px 12px;font-weight:600;border:2px solid var(--good);background:var(--good-soft);color:var(--ink);line-height:1.35}
+.dsk .s{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.dsk.fail{border-color:var(--bad);background:var(--bad-soft);border-style:dashed}
+.dsk.rb{border-color:var(--warm);background:var(--warm-soft)}
+.grp{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--bg);margin-bottom:8px}
+.grp .gl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.grp .dd{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.meter{height:12px;border-radius:999px;background:var(--line);overflow:hidden;margin:4px 0 8px}
+.meter>div{height:100%;background:var(--accent);transition:width .25s}
+.card2{border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.card2 h3{margin:0 0 4px;font:600 16px Georgia,serif}
+.card2.sel{border-color:var(--accent);background:var(--accent-soft)}
+.ck{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.ck .cell{text-align:left}
+input[type=range]{width:100%;min-height:36px;accent-color:var(--accent)}
+.src{display:flex;flex-wrap:wrap;gap:8px}
+.src button{border-radius:10px;text-align:left;font-weight:500;padding:8px 12px;max-width:100%}
+.src button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.src button .mini{margin:0}
+.src button[aria-pressed="true"] .mini{color:inherit;opacity:.85}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>3-2-1 builder and disaster test</h1>
+<p class="lede">Your original data lives on a laptop disk. Add copies and watch the three rules: 3 copies, 2 media types, 1 offsite. Then trigger a disaster and see what survives.</p>
+<div class="card">
+ <div class="lab">Presets</div>
+ <div class="ctrls" id="pre"></div>
+ <div class="lab">Add copies (click to toggle)</div>
+ <div class="src" id="src"></div>
+ <div class="ck" id="ck"></div>
+ <div class="out" id="vd" aria-live="polite"></div>
+ <div class="sep"></div>
+ <div class="sec">What survives?</div>
+ <div class="ctrls" id="dz"></div>
+ <div class="out" id="do" aria-live="polite">Pick a disaster.</div>
+ <div class="sep"></div>
+ <div class="sec">Test a scenario</div>
+ <div id="qz"></div>
+</div>
+
+</div>
+<script>
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
+function tabs(root){const bs=[].slice.call(root.querySelectorAll('[data-tab]')),ps=[].slice.call(root.querySelectorAll('[data-panel]'));
+ bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});ps.forEach(function(p){p.hidden=p.getAttribute('data-panel')!==b.getAttribute('data-tab')})}});bs[0].click()}
+function setPress(group,idx){[].slice.call(group.children).forEach(function(b,j){b.setAttribute('aria-pressed',j===idx?'true':'false')})}
+function Quiz(root,qs){
+ let i=0,score=0,answered=false,order=shuffle(qs.map(function(_,k){return k}));
+ function draw(){
+  if(i>=qs.length){root.innerHTML='<p class="qq">Finished: '+score+' of '+qs.length+' right.</p><div class="ctrls"><button type="button" class="again">Try again</button></div>';
+   root.querySelector('.again').onclick=function(){i=0;score=0;order=shuffle(order);draw()};return}
+  const q=qs[order[i]];answered=false;
+  root.innerHTML='<div class="qn">Question '+(i+1)+' of '+qs.length+'</div><p class="qq">'+q.q+'</p><div class="opts"></div><div class="fb" aria-live="polite"></div><div class="ctrls"><button type="button" class="nx" disabled>'+(i===qs.length-1?'See score':'Next question')+'</button></div>';
+  const box=root.querySelector('.opts'),fb=root.querySelector('.fb'),nx=root.querySelector('.nx');
+  q.o.forEach(function(t,k){const b=document.createElement('button');b.type='button';b.innerHTML=t;
+   b.onclick=function(){if(answered)return;answered=true;const ok=k===q.a;if(ok)score++;
+    [].slice.call(box.children).forEach(function(c,j){if(j===q.a)c.classList.add('right');else if(j===k)c.classList.add('wrong')});
+    fb.className='fb show '+(ok?'yes':'nope');
+    fb.innerHTML=(ok?'<b>Correct: ':'<b>Not quite. The answer is: ')+q.o[q.a]+'</b>. '+q.w;nx.disabled=false};
+   box.appendChild(b)});
+  nx.onclick=function(){i++;draw()};
+ }
+ draw();
+}
+function Orderer(root,items,opt){
+ opt=opt||{};let pos=0,miss=0,pool=shuffle(items.map(function(_,k){return k})),msg=null;
+ function draw(){
+  let h='<ol class="seq">';
+  items.forEach(function(it,k){h+=k<pos?'<li class="filled"><span class="n">'+(k+1)+'</span>'+it.t+'</li>':'<li class="empty"><span class="n">'+(k+1)+'</span>?</li>'});
+  h+='</ol>';
+  if(pos<items.length)h+='<div class="mini">'+(opt.pool||'Click the one that comes next:')+'</div><div class="opts" id="pl"></div>';
+  h+='<div class="fb'+(msg?' show '+msg.c:'')+'" aria-live="polite">'+(msg?msg.h:'')+'</div><div class="ctrls"><button type="button" class="rs">Shuffle and restart</button></div>';
+  root.innerHTML=h;
+  const pl=root.querySelector('#pl');
+  if(pl)pool.forEach(function(k){if(k<pos)return;const b=document.createElement('button');b.type='button';b.innerHTML=items[k].t;
+   b.onclick=function(){
+    if(k===pos){pos++;msg={c:'yes',h:'<b>Correct: '+items[k].t+'.</b> '+items[k].w+(pos===items.length?' <b>Done with '+miss+' wrong click'+(miss===1?'':'s')+'.</b>':'')}}
+    else{miss++;msg={c:'nope',h:'<b>Not yet.</b> The next one is <b>'+items[pos].t+'</b>. '+items[pos].w}}
+    draw()};
+   pl.appendChild(b)});
+  root.querySelector('.rs').onclick=function(){pos=0;miss=0;msg=null;pool=shuffle(pool);draw()};
+ }
+ draw();
+}
+
+const C=[
+ {n:'USB drive at the desk',m:'Disk',off:0,raid:0},
+ {n:'NAS in the office',m:'Disk',off:0,raid:0},
+ {n:'USB drive kept at home',m:'Disk',off:1,raid:0},
+ {n:'Cloud backup',m:'Cloud',off:1,raid:0},
+ {n:'Tape in offsite storage',m:'Tape',off:1,raid:0},
+ {n:'RAID mirror inside the same PC',m:'RAID',off:0,raid:1}];
+const on=C.map(function(){return 0});
+const src=document.getElementById('src');
+C.forEach(function(c,i){const b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed','false');
+ b.innerHTML=c.n+' <span class="mini">('+(c.raid?'local redundancy, not a backup':c.m+', '+(c.off?'offsite':'onsite'))+')</span>';
+ b.onclick=function(){on[i]=on[i]?0:1;b.setAttribute('aria-pressed',on[i]?'true':'false');draw()};src.appendChild(b)});
+const P=[['Only RAID',[0,0,0,0,0,1]],['Laptop plus USB at the desk',[1,0,0,0,0,0]],['A 3-2-1 set',[1,0,0,1,0,0]]];
+const pre=document.getElementById('pre');
+P.forEach(function(p,k){const b=document.createElement('button');b.type='button';b.textContent=p[0];b.onclick=function(){p[1].forEach(function(v,i){on[i]=v});sync();setPress(pre,k)};pre.appendChild(b)});
+function sync(){[].slice.call(src.children).forEach(function(b,i){b.setAttribute('aria-pressed',on[i]?'true':'false')});draw()}
+function calc(){let n=1;const med={Disk:1};let off=0,raid=0,bk=0;
+ C.forEach(function(c,i){if(!on[i])return;if(c.raid){raid=1;return}n++;bk++;med[c.m]=1;if(c.off)off=1});
+ return {n:n,m:Object.keys(med).length,off:off,raid:raid,bk:bk}}
+function draw(){const r=calc();
+ const R=[['Copies',r.n+' of 3',r.n>=3],['Media types',r.m+' of 2',r.m>=2],['Offsite',r.off?'1 of 1':'0 of 1',!!r.off]];
+ document.getElementById('ck').innerHTML=R.map(function(x){return '<div class="cell '+(x[2]?'good':'bad')+'"><div class="t">'+(x[2]?'✓ ':'✗ ')+x[0]+'</div><div class="s">'+x[1]+'</div></div>'}).join('');
+ const ok=R.every(function(x){return x[2]});
+ const miss=R.filter(function(x){return !x[2]}).map(function(x){return x[0].toLowerCase()});
+ document.getElementById('vd').innerHTML=ok?'<strong>3-2-1 satisfied.</strong> 3 copies, 2 media types, 1 offsite.':'<strong>Not 3-2-1 yet.</strong> Missing: '+miss.join(', ')+'.'+(r.raid&&!r.bk?' A RAID mirror is local redundancy, not a backup, so it adds no copy.':'');
+ dis(last)}
+let last=-1;
+const D=[['One disk dies'],['Office fire or flood'],['A file is deleted by mistake']];
+const dz=document.getElementById('dz');
+D.forEach(function(d,i){const b=document.createElement('button');b.type='button';b.textContent=d[0];b.onclick=function(){last=i;setPress(dz,i);dis(i)};dz.appendChild(b)});
+function dis(i){if(i<0)return;const r=calc(),o=document.getElementById('do');let ok,why;
+ if(i===0){ok=r.raid||r.bk>0;why=r.raid?'The RAID mirror keeps the data online.':(r.bk>0?'A backup copy exists to restore from.':'Only one copy existed, on the dead disk.')}
+ if(i===1){ok=!!r.off;why=r.off?'An offsite copy sits outside the building.':'Every copy was in the building, including the RAID mirror. Backups = disaster recovery, and you need one offsite.'}
+ if(i===2){ok=r.bk>0;why=r.bk>0?'A backup holds the earlier version.':'RAID mirrored the deletion to every disk. RAID is not a backup.'}
+ o.innerHTML='<strong>'+D[i][0]+': '+(ok?'data survives.':'data is lost.')+'</strong> '+why}
+draw();
+Quiz(document.getElementById('qz'),[
+ {q:'What does 3-2-1 stand for?',o:['3 copies, 2 media types, 1 offsite','3 disks, 2 mirrors, 1 parity','3 sites, 2 users, 1 admin'],a:0,w:'3 copies of the data, on 2 media types, with 1 copy offsite.'},
+ {q:'A RAID 1 mirror is your only extra copy. Do you have a backup?',o:['No, RAID is not a backup','Yes, a mirror is a backup'],a:0,w:'RAID is local redundancy; backups are disaster recovery.'},
+ {q:'Three copies on three USB drives, all in one office. Which rule fails?',o:['2 media types and 1 offsite','3 copies only'],a:0,w:'Same media and no offsite copy; only the copy count is met.'},
+ {q:'Which protects against a building fire?',o:['An offsite backup','A RAID mirror in the server room'],a:0,w:'Backups are disaster recovery, and the offsite copy is outside the building.'},
+ {q:'RAID or backups?',o:['Both','RAID only','Backups only'],a:0,w:'RAID gives local redundancy and backups give disaster recovery; you want both.'}]);
+
+</script>
+</body>
+</html>

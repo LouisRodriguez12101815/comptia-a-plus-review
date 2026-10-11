@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>File system chooser</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.opt{display:block;width:100%;text-align:left;border-radius:10px;margin:6px 0;min-height:40px;padding:8px 12px;background:var(--bg);font-weight:500}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.opt[disabled]{cursor:default}
+.qtext{font-size:15px;font-weight:600;margin:4px 0 6px}
+.row2{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:700px){.row2{grid-template-columns:1fr 1fr}}
+.chip{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.chip.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.chip.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip.warm{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.sp{margin-top:18px}
+button.sm{padding:4px 10px;min-height:36px}
+button,select{min-height:36px}
+
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;min-width:0}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=range]{accent-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>File system chooser</h1>
+<p class="lede">Set the file size and the features you need. Each file system is checked live.</p>
+<div class="card">
+<div class="lab">Largest single file: <span id="szv" class="chip">5 GB</span></div>
+<input type="range" id="sz" min="1" max="8" value="5" step="1" style="width:100%;min-height:36px" aria-label="Largest file in GB">
+<div class="lab">Required features</div><div class="ctrls" id="feat"></div>
+<div class="lab">Common scenarios</div><div class="ctrls" id="scn"></div>
+<div id="fs" class="grid" style="margin-top:10px"></div>
+<div class="out" id="fsout" aria-live="polite"></div>
+</div>
+<div class="card sp"><div class="lab">Test yourself</div><div id="quiz"></div></div>
+
+</div>
+<script>
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function Quiz(root, qs){
+  let i=0,score=0,done=false;
+  const el=document.getElementById(root);
+  function draw(){
+    if(i>=qs.length){
+      el.innerHTML='<div class="out"><strong>Score: '+score+' of '+qs.length+'.</strong> '+(score===qs.length?'Clean sweep.':'Retry the ones you missed.')+'</div><div class="ctrls"><button type="button" id="'+root+'-re">Restart quiz</button></div>';
+      document.getElementById(root+'-re').onclick=()=>{i=0;score=0;draw()};return;}
+    const q=qs[i];done=false;
+    let h='<div class="lab">Question '+(i+1)+' of '+qs.length+'</div><div class="qtext">'+esc(q.q)+'</div><div>';
+    q.o.forEach((o,k)=>{h+='<button type="button" class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
+    h+='</div><div class="out" aria-live="polite">Pick an answer.</div><div class="ctrls"><button type="button" id="'+root+'-nx" disabled>'+(i===qs.length-1?'See score':'Next question')+'</button></div>';
+    el.innerHTML=h;
+    el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(done)return;done=true;const k=+b.dataset.k;const ok=k===q.a;if(ok)score++;
+      el.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add('good');else if(j===k)x.classList.add('bad')});
+      el.querySelector('.out').innerHTML=(ok?'<strong>Correct: '+esc(q.o[q.a])+'.</strong> ':'<strong>Not quite. The answer is '+esc(q.o[q.a])+'.</strong> ')+esc(q.why);
+      document.getElementById(root+'-nx').disabled=false;});
+    document.getElementById(root+'-nx').onclick=()=>{i++;draw()};
+  }
+  draw();
+}
+function group(elId,items,onpick,start){
+  const el=document.getElementById(elId);el.innerHTML='';
+  items.forEach((t,k)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{set(k);onpick(k)};el.appendChild(b)});
+  function set(k){[...el.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===k?'true':'false'))}
+  if(start!==undefined){set(start)}
+  return set;
+}
+
+const FEATS=['NTFS permissions','Encryption / BitLocker','Journaling'];
+const FS=[{n:'FAT32',max:4,f:[0,0,0],best:'Legacy'},{n:'NTFS',max:1e9,f:[1,1,1],best:'Internal Windows'},{n:'exFAT',max:1e9,f:[0,0,0.5],best:'USB / cross-platform'}];
+const need=[false,false,false];let size=5;
+const fe=document.getElementById('feat');
+FEATS.forEach((n,k)=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-pressed','false');
+ b.onclick=()=>{need[k]=!need[k];b.setAttribute('aria-pressed',need[k]);draw()};fe.appendChild(b)});
+document.getElementById('sz').oninput=e=>{size=+e.target.value;draw()};
+const SC=[['Internal C: drive',{size:5,need:[1,1,1]}],['USB for Mac + Windows',{size:5,need:[0,0,0]}],['Old legacy device',{size:2,need:[0,0,0]}]];
+const sc=document.getElementById('scn');
+SC.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p[0];b.onclick=()=>{size=p[1].size;document.getElementById('sz').value=size;p[1].need.forEach((v,k)=>{need[k]=!!v;fe.children[k].setAttribute('aria-pressed',!!v)});draw()};sc.appendChild(b)});
+function draw(){
+ document.getElementById('szv').textContent=size+' GB';
+ const res=FS.map(x=>{const miss=[];if(size>x.max)miss.push('file over '+x.max+' GB');need.forEach((n,k)=>{if(n&&x.f[k]<1)miss.push(x.f[k]>0?FEATS[k]+' (only limited)':FEATS[k])});return {x,miss}});
+ document.getElementById('fs').innerHTML=res.map(r=>{const ok=!r.miss.length;
+  return '<div class="cell '+(ok?'good':'bad')+'"><span class="t">'+r.x.n+'</span> <span class="chip '+(ok?'good':'bad')+'">'+(ok?'works':'fails')+'</span><div class="s">Best for: '+r.x.best+'. '+(ok?'Meets every need.':'Fails: '+r.miss.join(', ')+'.')+'</div></div>'}).join('');
+ const okn=res.filter(r=>!r.miss.length).map(r=>r.x.n);
+ let t;
+ if(!okn.length)t='No file system fits.';
+ else if(okn.length===3)t='<strong>All three work.</strong> Pick by purpose: NTFS for internal Windows, exFAT for USB across platforms, FAT32 only for legacy.';
+ else t='<strong>Works: '+okn.join(', ')+'.</strong> ';
+ if(size>4)t+=' A file over 4 GB will not fit on FAT32.';
+ if(okn.indexOf('NTFS')>=0&&okn.length<3&&(need[0]||need[1]))t+=' Permissions and BitLocker exist only on NTFS.';
+ document.getElementById('fsout').innerHTML=t;
+}
+draw();
+Quiz('quiz',[
+ {q:'You must copy a 5 GB video to a flash drive that works on Mac and Windows. Which format?',o:['FAT32','NTFS','exFAT','ReFS'],a:2,why:'FAT32 caps files at 4 GB, and exFAT is the USB / cross-platform choice with huge file support.'},
+ {q:'Which file system is right for the internal C: drive?',o:['FAT32','NTFS','exFAT','Any of them'],a:1,why:'NTFS gives permissions, BitLocker and journaling for internal Windows drives.'},
+ {q:'Which file systems support NTFS-style permissions?',o:['FAT32 and exFAT','NTFS only','All three','None'],a:1,why:'FAT32 and exFAT have no permissions. Only NTFS does.'}
+]);
+
+</script>
+</body>
+</html>

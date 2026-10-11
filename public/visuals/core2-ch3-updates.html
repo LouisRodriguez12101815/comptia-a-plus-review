@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Update picker and Insider eligibility</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.opt{display:block;width:100%;text-align:left;border-radius:10px;margin:6px 0;min-height:40px;padding:8px 12px;background:var(--bg);font-weight:500}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.opt[disabled]{cursor:default}
+.qtext{font-size:15px;font-weight:600;margin:4px 0 6px}
+.row2{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:700px){.row2{grid-template-columns:1fr 1fr}}
+.chip{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.chip.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.chip.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip.warm{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.sp{margin-top:18px}
+button.sm{padding:4px 10px;min-height:36px}
+button,select{min-height:36px}
+
+input[type=text]{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;min-width:0}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=range]{accent-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Update picker and Insider eligibility</h1>
+<p class="lede">Check whether an edition can join the Insider Program, then route a patch to its update type.</p>
+<div class="card">
+<div class="lab">Edition</div><div class="ctrls" id="ed"></div>
+<div class="lab">Branch / channel</div><div class="ctrls" id="ch"></div>
+<div class="out" id="iout" aria-live="polite"></div>
+</div>
+<div class="card sp"><div class="lab">32-bit to 64-bit</div><div class="ctrls" id="ar"></div><div class="out" id="aout" aria-live="polite"></div></div>
+<div class="card sp"><div class="lab">Which update type?</div><div id="quiz"></div></div>
+
+</div>
+<script>
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function Quiz(root, qs){
+  let i=0,score=0,done=false;
+  const el=document.getElementById(root);
+  function draw(){
+    if(i>=qs.length){
+      el.innerHTML='<div class="out"><strong>Score: '+score+' of '+qs.length+'.</strong> '+(score===qs.length?'Clean sweep.':'Retry the ones you missed.')+'</div><div class="ctrls"><button type="button" id="'+root+'-re">Restart quiz</button></div>';
+      document.getElementById(root+'-re').onclick=()=>{i=0;score=0;draw()};return;}
+    const q=qs[i];done=false;
+    let h='<div class="lab">Question '+(i+1)+' of '+qs.length+'</div><div class="qtext">'+esc(q.q)+'</div><div>';
+    q.o.forEach((o,k)=>{h+='<button type="button" class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
+    h+='</div><div class="out" aria-live="polite">Pick an answer.</div><div class="ctrls"><button type="button" id="'+root+'-nx" disabled>'+(i===qs.length-1?'See score':'Next question')+'</button></div>';
+    el.innerHTML=h;
+    el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(done)return;done=true;const k=+b.dataset.k;const ok=k===q.a;if(ok)score++;
+      el.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add('good');else if(j===k)x.classList.add('bad')});
+      el.querySelector('.out').innerHTML=(ok?'<strong>Correct: '+esc(q.o[q.a])+'.</strong> ':'<strong>Not quite. The answer is '+esc(q.o[q.a])+'.</strong> ')+esc(q.why);
+      document.getElementById(root+'-nx').disabled=false;});
+    document.getElementById(root+'-nx').onclick=()=>{i++;draw()};
+  }
+  draw();
+}
+function group(elId,items,onpick,start){
+  const el=document.getElementById(elId);el.innerHTML='';
+  items.forEach((t,k)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{set(k);onpick(k)};el.appendChild(b)});
+  function set(k){[...el.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===k?'true':'false'))}
+  if(start!==undefined){set(start)}
+  return set;
+}
+
+let ed=0,ch=0;
+const ED=['Home','Pro','Education','Enterprise'];
+const CH=['Insider (preview)','Semi-Annual Channel','LTSC','General Availability'];
+group('ed',ED,k=>{ed=k;d()},0);group('ch',CH,k=>{ch=k;d()},0);
+function d(){
+ const o=document.getElementById('iout');let t;
+ if(ch===0){t=ed===0?'<strong>Not available.</strong> The Insider Program is not on Home. It is supported on Pro, Education and Enterprise.':'<strong>Supported.</strong> '+ED[ed]+' can join the Insider Program, which delivers previews.'}
+ else if(ch===1)t='<strong>Regular public releases.</strong> Semi-Annual Channel is the regular public branch.';
+ else if(ch===2)t='<strong>Long-term enterprise servicing.</strong> LTSC is the long-term enterprise branch.';
+ else t='<strong>Not a branch name on this material.</strong> Do not pick "General Availability". Use Semi-Annual Channel for regular public, LTSC for long-term, Insider for preview.';
+ o.innerHTML=t;}
+d();
+group('ar',['Try an in-place upgrade','Add a stepping stone','Clean install'],k=>{
+ document.getElementById('aout').innerHTML=k===2?'<strong>Correct.</strong> 32-bit to 64-bit is clean install only.':'<strong>Not quite. The answer is clean install.</strong> There is no in-place path and no intermediate stepping stone from 32-bit to 64-bit.'});
+function q(t,a,w){return {q:t,o:['Security update','Critical update','Feature update','Quality rollup','Optional update'],a:a,why:w}}
+Quiz('quiz',[
+ q('A patch fixes a vulnerability and is the highest priority. Which type?',0,'Security updates fix vulnerabilities and are the highest priority.'),
+ q('A release moves Windows from 21H2 to 22H2. Which type?',2,'Feature updates bump the version.'),
+ q('The monthly cumulative package. Which type?',3,'Quality rollups are monthly cumulative.'),
+ q('A vendor driver offered as a non-essential extra. Which type?',4,'Optional updates are drivers and extras.'),
+ q('A fix for a major bug that is not a vulnerability. Which type?',1,'Critical updates cover major bugs.')
+]);
+
+</script>
+</body>
+</html>
