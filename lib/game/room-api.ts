@@ -1,9 +1,9 @@
-import { cantReachWebsiteIncident } from "@/lib/game/incidents";
+import { multiplayerIncidents } from "@/lib/game/cooperative";
 import { RoomError, RoomService } from "@/lib/game/room-service";
 import twilio from "twilio";
 import { roomDocumentName, syncInfrastructure } from "@/lib/game/room-store";
 
-type Operation = "create" | "join" | "get" | "ready" | "start" | "answer" | "advance" | "leave" | "token";
+type Operation = "create" | "join" | "get" | "ready" | "start" | "answer" | "advance" | "leave" | "token" | "discover" | "hint" | "role-action" | "next";
 const cookieName = (code: string) => `outage_ops_${code}`;
 
 function sessionToken(request: Request, code: string): string | null {
@@ -37,7 +37,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
     const token = sessionToken(request, code);
     const payload = operation === "get" ? {} : await body(request);
     const infrastructure = infrastructureFactory();
-    const rooms = new RoomService(infrastructure.store, cantReachWebsiteIncident);
+    const rooms = new RoomService(infrastructure.store, multiplayerIncidents);
     if (operation === "create" || operation === "join") {
       const result = operation === "create" ? await rooms.create(payload.nickname) : await rooms.join(code, payload.nickname, token);
       const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
@@ -67,8 +67,12 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
     const snapshot = operation === "get" ? await rooms.get(code, token)
       : operation === "ready" ? await rooms.ready(code, token, payload.ready)
       : operation === "start" ? await rooms.start(code, token)
-      : operation === "answer" ? await rooms.answer(code, token, payload.stepIndex, payload.answerId)
-      : await rooms.advance(code, token, payload.stepIndex);
+      : operation === "answer" ? await rooms.answer(code, token, payload.stepIndex, payload.answerId, payload.incidentIndex)
+      : operation === "discover" ? await rooms.discover(code, token, payload.stepIndex, payload.incidentIndex)
+      : operation === "hint" ? await rooms.hint(code, token, payload.stepIndex, payload.incidentIndex)
+      : operation === "role-action" ? await rooms.usefulAction(code, token, payload.stepIndex, payload.actionId, payload.incidentIndex)
+      : operation === "next" ? await rooms.nextIncident(code, token, payload.incidentIndex)
+      : await rooms.advance(code, token, payload.stepIndex, payload.incidentIndex);
     return Response.json(snapshot, { headers });
   } catch (error) {
     const known = error instanceof RoomError;

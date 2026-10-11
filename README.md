@@ -49,7 +49,7 @@ Each question starts unanswered with a shuffled answer order. Select an answer t
 
 Run `npm test` (or `npm run test:game`) with Node.js 22.18+ (Node.js 24 is installed in this cloud environment) for answer-ID, shuffle, room, concurrency, reconnect, provisioning, and signed cost-guard regression tests.
 
-Create Room and Join Team now use server-authoritative Twilio Sync Documents. Players subscribe to room updates, with periodic API reconciliation for presence and deadlines. The first shared mission is DNS troubleshooting. Guided Demo stays fully local and never calls Twilio. Without service configuration, multiplayer reports **“Multiplayer service not configured”**; it does not substitute a local lobby.
+Create Room and Join Team use server-authoritative Twilio Sync Documents. Players subscribe to room updates, with periodic API reconciliation for presence and deadlines. The cooperative session covers DNS troubleshooting and a DHCP/VLAN incident with rotating roles and complementary evidence. A live scoreboard separates team points from evidence, answer, role-action, and resolution contributions. Clean team decisions earn a streak multiplier; mistakes cost uptime and time, and optional shared hints cost team points. The final debrief includes outcomes, contribution breakdowns, CompTIA objective areas, and review topics. Guided Demo stays fully local and never calls Twilio. Without service configuration, multiplayer reports **“Multiplayer service not configured”**; it does not substitute a local lobby.
 
 See [Twilio setup, the $5 daily guard, and the laptop/phone acceptance test](docs/outage-ops-multiplayer.md). The implementation has automated tests; live cross-device acceptance still requires a configured Vercel deployment and actual devices.
 

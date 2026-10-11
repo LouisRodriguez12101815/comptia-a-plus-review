@@ -1,5 +1,6 @@
 import ch11 from "@/content/network-plus/ch11.json";
 import ChapterViewer from "@/app/network-plus/ch10/ChapterViewer";
+import Link from "next/link";
 
 export const metadata = { title: ch11.title };
 
@@ -40,7 +41,7 @@ export default function Page() {
         <h1>{ch11.title}</h1>
         <p className="lede">{ch11.summary}</p>
         <p className="links">
-          <a href="/notes?exam=n10-009">Read the Chapter 11 notes in the Notes section</a>
+          <Link href="/notes?exam=n10-009">Read the Chapter 11 notes in the Notes section</Link>
         </p>
       </header>
 
