@@ -1,8 +1,9 @@
 import { getFlashcards, getQuestions, getTopics, labs } from "@/lib/content";
+import { visualCounts } from "@/lib/visuals";
 import type { ExamCode, StudyFocus, Topic } from "@/lib/types";
 
 export type TrackId = "core1" | "core2" | "networking" | "ccna";
-export type ToolId = "notes" | "flashcards" | "quiz" | "labs" | "game";
+export type ToolId = "notes" | "visuals" | "flashcards" | "quiz" | "labs" | "game";
 export type DeviceIconName = "laptop" | "server" | "switch" | "router";
 
 export type Track = {
@@ -82,6 +83,12 @@ export const toolMeta: {
 }[] = [
   { id: "notes", label: "Notes", blurb: "Chapter summaries and key terms.", href: "/notes" },
   {
+    id: "visuals",
+    label: "Visuals",
+    blurb: "Interactive diagrams and simulators for each chapter.",
+    href: "/visuals",
+  },
+  {
     id: "flashcards",
     label: "Flashcards",
     blurb: "Flip, then mark known or still learning.",
@@ -118,6 +125,8 @@ export type ToolStatus = {
   chip: string;
   /** Exam focus to store when the tool opens. */
   focus: StudyFocus | null;
+  /** A tool marked "soon" is normally not a link. This keeps it one, because its page explains what is coming. */
+  openable: boolean;
 };
 
 export function getTrack(id: TrackId): Track {
@@ -169,12 +178,26 @@ function plural(count: number, word: string): string {
 export function toolStatuses(track: Track): ToolStatus[] {
   const counts = trackCounts(track);
   return toolMeta.map((tool): ToolStatus => {
-    const base = { id: tool.id, label: tool.label, blurb: tool.blurb, href: tool.href, focus: track.focus };
+    const base = {
+      id: tool.id,
+      label: tool.label,
+      blurb: tool.blurb,
+      href: tool.href,
+      focus: track.focus,
+      openable: false,
+    };
     switch (tool.id) {
       case "notes":
         return counts.topics > 0
           ? { ...base, state: "ready", chip: plural(counts.topics, "chapter") }
           : { ...base, state: "soon", chip: "Coming soon" };
+      case "visuals": {
+        const visuals = visualCounts(track.focus);
+        const href = `${track.href}/visuals`;
+        return visuals.visuals > 0
+          ? { ...base, href, openable: true, state: "ready", chip: plural(visuals.visuals, "visual") }
+          : { ...base, href, openable: true, state: "soon", chip: "Coming soon" };
+      }
       case "flashcards":
         return counts.cards > 0
           ? { ...base, state: "ready", chip: plural(counts.cards, "card") }
