@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Network Devices and Fundamentals map</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.tile{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;border-radius:10px;padding:10px 12px;font-weight:500}
+.tile .n{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .tt{font-weight:600;font-size:14px;line-height:1.3}
+.tile[aria-pressed="true"] .n{color:inherit;opacity:.85}
+.detail h2{font:600 20px/1.25 Georgia,serif;margin:0 0 8px}
+.detail ul{margin:0 0 10px;padding-left:20px}
+.detail li{margin:3px 0}
+.trap{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--warm-soft);color:var(--ink);font-size:14px}
+.trap b{color:var(--warm)}
+.seevis{margin-top:10px;font-size:13px;color:var(--muted)}
+.seevis b{color:var(--accent)}
+.navrow{display:flex;gap:8px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Network Devices and Fundamentals map</h1><p class="lede">Eight topics from the notes in order. Pick one to see its key facts and the exam trap, then use Next to walk through them.</p><div class="card"><div class="lab">Pick a topic from the notes</div><div class="tiles" id="tiles"></div><div class="out detail" id="detail" aria-live="polite"></div><div class="navrow"><button id="prev">&larr; Previous topic</button><button id="next">Next topic &rarr;</button></div></div>
+</div>
+<script>
+const ITEMS=[{"name": "Workgroup vs. client-server domain", "tag": "1 \u00b7 Workgroup", "facts": ["Peer-to-peer is a Microsoft workgroup: no central server, each profile is tied to one physical computer. Not scalable, hard to manage, less secure.", "Client-server is a Microsoft domain: a domain controller (DC) centralizes accounts.", "Domain benefit: log in on any device with a roaming profile, and restrict access by device.", "Domain traits: scalable, more manageable, more secure."], "trap": "\"Profile tied to one physical computer\" means workgroup. \"Domain controller\" means domain.", "visual": "Workgroup vs domain login"}, {"name": "Hub, bridge, switch, router", "tag": "2 \u00b7 Devices", "facts": ["Hub (repeater): repeats every frame out all other ports; one big collision domain; inefficient and insecure.", "Diagram symbols: circle with X = router; rectangle with ONE arrow = hub; rectangle with TWO opposite arrows = switch.", "Bridge: transition device from the hub era to the switch era. On exam questions, replace \"bridge\" with \"switch\".", "Switch: ASIC plus a MAC (CAM) table, so each port is its own collision domain. Router: forwards by IP and routing tables (route print), and every interface is a broadcast boundary."], "trap": "Every router interface is a broadcast domain boundary; switch ports only split collision domains.", "visual": "Converge, count and read: reboot sim, domain counter, symbols"}, {"name": "MAC addresses and ARP", "tag": "3 \u00b7 MAC, ARP", "facts": ["MAC: 48-bit hex, burned into the NIC; spoofing only changes it in memory. First half is the OUI (Organizational Unique Identifier), second half is the serial.", "MAC is physical; IP is logical. IPv4 is 32-bit decimal; MAC is 48-bit hex.", "ARP broadcasts to learn IP and MAC pairs. arp -a shows learned pairs; ipconfig /all shows your own MAC. ARP poisoning enables man-in-the-middle.", "Broadcast: destination IP 255.255.255.255 and MAC FF:FF:FF:FF:FF:FF."], "trap": "Know what OUI stands for. A spoofed MAC does not change the burned-in address.", "visual": "Converge, count and read (MAC and symbols tab)"}, {"name": "Convergence, collision and broadcast domains", "tag": "4 \u00b7 Domains", "facts": ["After a reboot a switch MAC table is empty (volatile RAM); devices ARP to relearn each other while the network converges.", "Fully converged: all devices and the router know each other's MAC and IP; only then do ping, printing and internet work.", "Hub network = ONE collision domain. Switch = one collision domain PER PORT. Router = adds broadcast domains.", "A hub network is easy to sniff with Wireshark: a security weakness."], "trap": "Switch splits collision domains. Only a router splits broadcast domains.", "visual": "Converge, count and read"}, {"name": "TCP vs UDP and port numbers", "tag": "5 \u00b7 TCP, UDP", "facts": ["TCP: connection-oriented, reliable; 3-way handshake SYN, SYN/ACK, ACK; waits for ACK and resends. UDP: connectionless, no handshake, no ACKs.", "UDP for streaming, music, VoIP, video calls. The initial YouTube connection is TCP, then the stream switches to UDP.", "65,536 TCP + 65,536 UDP = 131,072 ports. Well-known 0 to 1023: 20/21 FTP, 22 SSH, 23 Telnet, 25 SMTP, 53 DNS, 67/68 DHCP, 80 HTTP, 443 HTTPS, 3389 RDP.", "Registered: SQL 1433, QuickTime 1220, VLC 1234. High/dynamic: random client connections."], "trap": "Total ports is 131,072, not 65,536.", "visual": "TCP vs UDP and port picker"}, {"name": "WAN connections: MPLS \u2192 SD-WAN", "tag": "6 \u00b7 WAN", "facts": ["MPLS is legacy and expensive (about $2,000 per month per circuit per site in the example, times 54 sites).", "MPLS existed for private branch-to-branch lines and its unique feature was Class of Service (COS) on the WAN. On the LAN the idea is QoS.", "Telephony used PRI circuits (like a T1) dedicated to voice.", "Today: SD-WAN (on a firewall or router, can still do QoS) or site-to-site VPNs over the internet (encrypted tunnels, port 443). Jitter and packet loss hurt voice on any network."], "trap": "LAN prioritization is QoS; WAN prioritization is Class of Service (COS), once only MPLS.", "visual": "WAN chooser"}, {"name": "Network topologies", "tag": "7 \u00b7 Topologies", "facts": ["Bus (legacy): coax; one break takes down everything; slow. Ring (legacy): token passing; slow.", "Mesh: everything connected to everything, redundant, more expensive. Star: central switch, today's standard LAN.", "Hybrid: mixes topologies, such as a star LAN tied into a mesh backbone."], "trap": "Know all five: bus, ring, mesh, star, hybrid.", "visual": "Topology failure simulator"}, {"name": "Power over Ethernet (PoE)", "tag": "8 \u00b7 PoE", "facts": ["The switch sends low-voltage power (under 48 V) through the data cable; VoIP phones often ship without a power brick.", "A PoE switch auto-detects whether a device needs power and shuts power off on ports that do not.", "No PoE switch? Use a PoE injector, which is cheaper than a power brick.", "Ethernet over power (data through the electrical grid) works but is not recommended."], "trap": "Ethernet over power is the opposite of PoE.", "visual": "PoE standard match (in the Cabling and Connectors visuals)"}];
+const tiles=document.getElementById('tiles'),detail=document.getElementById('detail');
+let cur=0;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+ITEMS.forEach((it,i)=>{const b=document.createElement('button');b.className='tile';b.type='button';
+ b.innerHTML='<span class="n">'+esc(it.tag||('Topic '+(i+1)))+'</span><span class="tt">'+esc(it.name)+'</span>';
+ b.onclick=()=>show(i);tiles.appendChild(b)});
+function show(i){cur=i;const it=ITEMS[i];
+ [...tiles.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'));
+ let h='<h2>'+esc(it.name)+'</h2><ul>'+it.facts.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>';
+ if(it.trap)h+='<div class="trap"><b>Exam trap:</b> '+esc(it.trap)+'</div>';
+ if(it.visual)h+='<div class="seevis">Interactive visual for this topic: <b>'+esc(it.visual)+'</b></div>';
+ detail.innerHTML=h;
+ document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===ITEMS.length-1}
+document.getElementById('prev').onclick=()=>show(cur-1);
+document.getElementById('next').onclick=()=>show(cur+1);
+show(0);
+
+</script>
+</body>
+</html>

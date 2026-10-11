@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DHCP DORA stepper</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.opts{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:8px 0}
+.opts button{min-height:40px;border-radius:10px;text-align:left;font-weight:500;line-height:1.35;padding:8px 12px}
+.opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.fb{padding:10px 12px;border-radius:10px;font-size:14px;margin:8px 0;display:none}
+.fb.show{display:block}
+.fb.yes{background:var(--good-soft)}
+.fb.nope{background:var(--bad-soft)}
+.fb.info{background:var(--accent-soft)}
+.qq{font-weight:600;margin:4px 0}
+.qn{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.seq{list-style:none;padding:0;margin:6px 0;display:grid;gap:6px}
+.seq li{border:2px dashed var(--line);border-radius:10px;padding:8px 10px;min-height:38px;font-size:14px}
+.seq li.filled{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.seq li.empty{color:var(--muted)}
+.seq li .n{font-weight:700;color:var(--accent);margin-right:8px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sep{height:1px;background:var(--line);margin:18px 0}
+button{min-height:36px}
+.pill{font-size:13px}
+.sec{margin:0 0 4px;font:600 18px/1.3 Georgia,serif}
+.mini{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.term{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.term .g{color:var(--good);font-weight:700}
+.term .r{color:var(--bad);font-weight:700}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+
+.stage svg{display:block;width:100%;max-width:560px;margin:0 auto;min-width:0;height:auto}
+.life{stroke:var(--line);stroke-width:2;stroke-dasharray:4 5}
+.hd{fill:var(--accent)}
+.hd.off{fill:var(--muted)}
+.hd.bad{fill:var(--bad)}
+.hdt{fill:var(--bg);font:600 13px system-ui,sans-serif}
+.hds{fill:var(--bg);font:600 11px system-ui,sans-serif}
+.arr{stroke:var(--accent);stroke-width:2.5;fill:none;opacity:.6}
+.arr.cur{stroke:var(--good);stroke-width:4;opacity:1}
+.arr.rog{stroke:var(--bad)}
+.ahd{fill:var(--accent)}
+.alb{fill:var(--ink);font:700 13px system-ui,sans-serif}
+.asb{fill:var(--muted);font:13px system-ui,sans-serif}
+.nooff{fill:var(--bad);font:700 14px system-ui,sans-serif}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:2}
+.bx.on{stroke:var(--good);fill:var(--good-soft)}
+.bxt{fill:var(--ink);font:600 13px system-ui,sans-serif}
+.bxs{fill:var(--muted);font:12px system-ui,sans-serif}
+table.z td,table.z th{font-size:13px}
+tr.hit td{background:var(--good-soft);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>DHCP DORA, one message at a time</h1>
+<p class="lede">Step through Discover, Offer, Request, Acknowledge. Then break things: take the real server down, add a rogue server, turn on DHCP snooping, and see what the client ends up with.</p>
+<div class="card">
+ <div class="lab">Network conditions (click to switch)</div>
+ <div class="ctrls" id="sw">
+  <button type="button" aria-pressed="true" data-k="up">Real DHCP server is up</button>
+  <button type="button" aria-pressed="false" data-k="rogue">Rogue DHCP server present</button>
+  <button type="button" aria-pressed="false" data-k="snoop">DHCP snooping on</button>
+ </div>
+ <div class="stage" id="stage"></div>
+ <div class="ctrls">
+  <button type="button" id="back">Back</button>
+  <button type="button" id="next">Next message</button>
+  <button type="button" id="rst">Restart</button>
+ </div>
+ <div class="out" id="out" aria-live="polite"></div>
+ <div class="sep"></div>
+ <div class="sec">Test a scenario</div>
+ <div id="qz"></div>
+</div>
+
+</div>
+<script>
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
+function tabs(root){const bs=[].slice.call(root.querySelectorAll('[data-tab]')),ps=[].slice.call(root.querySelectorAll('[data-panel]'));
+ bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});ps.forEach(function(p){p.hidden=p.getAttribute('data-panel')!==b.getAttribute('data-tab')})}});bs[0].click()}
+function setPress(group,idx){[].slice.call(group.children).forEach(function(b,j){b.setAttribute('aria-pressed',j===idx?'true':'false')})}
+function Quiz(root,qs){
+ let i=0,score=0,answered=false,order=shuffle(qs.map(function(_,k){return k}));
+ function draw(){
+  if(i>=qs.length){root.innerHTML='<p class="qq">Finished: '+score+' of '+qs.length+' right.</p><div class="ctrls"><button type="button" class="again">Try again</button></div>';
+   root.querySelector('.again').onclick=function(){i=0;score=0;order=shuffle(order);draw()};return}
+  const q=qs[order[i]];answered=false;
+  root.innerHTML='<div class="qn">Question '+(i+1)+' of '+qs.length+'</div><p class="qq">'+q.q+'</p><div class="opts"></div><div class="fb" aria-live="polite"></div><div class="ctrls"><button type="button" class="nx" disabled>'+(i===qs.length-1?'See score':'Next question')+'</button></div>';
+  const box=root.querySelector('.opts'),fb=root.querySelector('.fb'),nx=root.querySelector('.nx');
+  q.o.forEach(function(t,k){const b=document.createElement('button');b.type='button';b.innerHTML=t;
+   b.onclick=function(){if(answered)return;answered=true;const ok=k===q.a;if(ok)score++;
+    [].slice.call(box.children).forEach(function(c,j){if(j===q.a)c.classList.add('right');else if(j===k)c.classList.add('wrong')});
+    fb.className='fb show '+(ok?'yes':'nope');
+    fb.innerHTML=(ok?'<b>Correct: ':'<b>Not quite. The answer is: ')+q.o[q.a]+'</b>. '+q.w;nx.disabled=false};
+   box.appendChild(b)});
+  nx.onclick=function(){i++;draw()};
+ }
+ draw();
+}
+function Orderer(root,items,opt){
+ opt=opt||{};let pos=0,miss=0,pool=shuffle(items.map(function(_,k){return k})),msg=null;
+ function draw(){
+  let h='<ol class="seq">';
+  items.forEach(function(it,k){h+=k<pos?'<li class="filled"><span class="n">'+(k+1)+'</span>'+it.t+'</li>':'<li class="empty"><span class="n">'+(k+1)+'</span>?</li>'});
+  h+='</ol>';
+  if(pos<items.length)h+='<div class="mini">'+(opt.pool||'Click the one that comes next:')+'</div><div class="opts" id="pl"></div>';
+  h+='<div class="fb'+(msg?' show '+msg.c:'')+'" aria-live="polite">'+(msg?msg.h:'')+'</div><div class="ctrls"><button type="button" class="rs">Shuffle and restart</button></div>';
+  root.innerHTML=h;
+  const pl=root.querySelector('#pl');
+  if(pl)pool.forEach(function(k){if(k<pos)return;const b=document.createElement('button');b.type='button';b.innerHTML=items[k].t;
+   b.onclick=function(){
+    if(k===pos){pos++;msg={c:'yes',h:'<b>Correct: '+items[k].t+'.</b> '+items[k].w+(pos===items.length?' <b>Done with '+miss+' wrong click'+(miss===1?'':'s')+'.</b>':'')}}
+    else{miss++;msg={c:'nope',h:'<b>Not yet.</b> The next one is <b>'+items[pos].t+'</b>. '+items[pos].w}}
+    draw()};
+   pl.appendChild(b)});
+  root.querySelector('.rs').onclick=function(){pos=0;miss=0;msg=null;pool=shuffle(pool);draw()};
+ }
+ draw();
+}
+
+const st={up:1,rogue:0,snoop:0};
+const X={c:50,s:190,r:330},NM={c:'Client',s:'Server',r:'Rogue'};
+let cur=0,steps=[];
+function mk(){
+ const legit=!!st.up,rog=st.rogue&&!st.snoop;
+ steps=[];
+ const disc=[['c','s']];if(st.rogue)disc.push(['c','r']);
+ steps.push({n:'DISCOVER',sb:'UDP 68 to 67',a:disc,t:'The client has no address yet, so it broadcasts <strong>DHCPDISCOVER</strong> from UDP port 68 to the server port, UDP 67.'+(st.rogue?' The broadcast reaches the rogue server as well.':'')+(st.up?'':' The real server is down.')});
+ if(!legit&&!rog){
+  steps.push({n:'',sb:'',a:[],none:1,t:'<strong>No offer comes back.</strong>'+(st.rogue&&st.snoop?' DHCP snooping dropped the rogue server\'s offer, and the real server is down.':' The real server is down.')});
+  steps.push({n:'',sb:'',a:[],fin:'bad',t:'<strong>Result: APIPA.</strong> The client gives itself a 169.254.x.x address. That means DHCP failed. It is not a usable routed address.'});
+ } else {
+  const ch=rog?'r':'s',off=[];if(legit)off.push(['s','c']);if(rog)off.push(['r','c']);
+  steps.push({n:'OFFER',sb:'UDP 67 to 68',a:off,t:(legit&&rog)?'<strong>DHCPOFFER</strong> from both servers. Worst case shown: the rogue answers first and the client takes its offer.':(rog?'<strong>DHCPOFFER</strong> comes only from the rogue server, because the real one is down.':'<strong>DHCPOFFER</strong>: the server proposes an address and lease.')+(st.rogue&&st.snoop?' (The rogue\'s offer was dropped by DHCP snooping.)':'')});
+  steps.push({n:'REQUEST',sb:'UDP 68 to 67',a:[['c',ch]],t:'The client sends <strong>DHCPREQUEST</strong> to accept the offer it chose.'});
+  steps.push({n:'ACK',sb:'UDP 67 to 68',a:[[ch,'c']],fin:ch==='r'?'bad':'good',t:ch==='r'?'<strong>DHCPACK from the rogue.</strong> The client now trusts an attacker\'s settings. Rogue DHCP is a security issue; turn on DHCP snooping or allow only authorized servers.':'<strong>DHCPACK</strong>: the lease is granted and the client configures its address.'});
+  steps.push({n:'RENEW',sb:'UDP 68 to 67',a:[['c',ch]],t:'Leases expire, so the client renews the lease with the server that gave it.'});
+ }
+ if(cur>=steps.length)cur=steps.length-1}
+function draw(){
+ const H=64+Math.max(steps.length,5)*60;
+ let g='<svg viewBox="0 0 380 '+H+'" role="img" aria-label="Sequence diagram of DHCP messages between client, server and rogue server"><defs><marker id="m" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path class="ahd" d="M0,0 L9,4.5 L0,9z"/></marker></defs>';
+ ['c','s','r'].forEach(function(k){if(k==='r'&&!st.rogue)return;const off=k==='s'&&!st.up;
+  g+='<line class="life" x1="'+X[k]+'" x2="'+X[k]+'" y1="46" y2="'+(H-8)+'"/><rect class="hd'+(off?' off':'')+(k==='r'?' bad':'')+'" x="'+(X[k]-42)+'" y="4" width="84" height="40" rx="8"/><text class="hdt" x="'+X[k]+'" y="'+(off?20:29)+'" text-anchor="middle">'+NM[k]+'</text>'+(off?'<text class="hds" x="'+X[k]+'" y="36" text-anchor="middle">DOWN</text>':'')});
+ steps.forEach(function(s,i){if(i>cur)return;const y=80+i*60;
+  if(s.none){g+='<text class="nooff" x="190" y="'+(y+4)+'" text-anchor="middle">No offer received</text>';return}
+  if(s.fin==='bad'&&!s.a.length){g+='<text class="nooff" x="190" y="'+(y+4)+'" text-anchor="middle">APIPA 169.254.x.x</text>';return}
+  s.a.forEach(function(a,j){const f=X[a[0]],t=X[a[1]],dir=t>f?1:-1,yy=y+j*12;
+   const rog=a[0]==='r'||a[1]==='r';
+   g+='<path class="arr'+(i===cur?' cur':'')+(rog?' rog':'')+'" d="M'+(f+dir*4)+' '+yy+' H'+(t-dir*6)+'" marker-end="url(#m)"/>';
+   if(j===0)g+='<text class="alb" x="'+((f+t)/2)+'" y="'+(yy-8)+'" text-anchor="middle">'+(i+1)+' '+s.n+'</text><text class="asb" x="'+((f+t)/2)+'" y="'+(yy+(s.a.length>1?30:20))+'" text-anchor="middle">'+s.sb+'</text>'})});
+ g+='</svg>';document.getElementById('stage').innerHTML=g;
+ const s=steps[cur],out=document.getElementById('out');
+ out.innerHTML='<span class="pill'+(s.fin==='bad'?' bad':(s.fin==='good'?' good':''))+'">Step '+(cur+1)+' of '+steps.length+'</span> '+s.t;
+ document.getElementById('back').disabled=cur===0;document.getElementById('next').disabled=cur===steps.length-1}
+document.getElementById('next').onclick=function(){cur++;draw()};
+document.getElementById('back').onclick=function(){cur--;draw()};
+document.getElementById('rst').onclick=function(){cur=0;draw()};
+[].slice.call(document.querySelectorAll('#sw button')).forEach(function(b){b.onclick=function(){const k=b.getAttribute('data-k');st[k]=st[k]?0:1;b.setAttribute('aria-pressed',st[k]?'true':'false');cur=0;mk();draw()}});
+mk();draw();
+Quiz(document.getElementById('qz'),[
+ {q:'A PC shows 169.254.12.7 and cannot reach the router. What happened?',o:['DHCP failed and it used APIPA','DNS failed','The lease was renewed'],a:0,w:'169.254.x.x is APIPA, the sign that DHCP failed; it is not a usable routed address.'},
+ {q:'Which ports does DHCP use?',o:['Server UDP 67, client UDP 68','Server UDP 68, client UDP 67','Server TCP 53, client UDP 68'],a:0,w:'The server listens on UDP 67 and the client uses UDP 68.'},
+ {q:'Which is the correct DORA order?',o:['Discover, Offer, Request, Acknowledge','Discover, Request, Offer, Acknowledge','Offer, Discover, Acknowledge, Request'],a:0,w:'DORA spells the order: Discover, Offer, Request, Acknowledge.'},
+ {q:'An unauthorized server is handing out addresses. What helps?',o:['DHCP snooping or authorized servers only','A 3-2-1 backup','An AAAA record'],a:0,w:'Rogue DHCP is stopped by DHCP snooping and authorized servers.'},
+ {q:'Is the 3-2-1 rule a DHCP setting?',o:['No, it is a backup rule','Yes, a lease setting','Yes, a port setting'],a:0,w:'3-2-1 means 3 copies, 2 media, 1 offsite; it has nothing to do with DHCP.'},
+ {q:'What happens when a lease expires?',o:['The client renews it','The client gets a DNS record','The server uses UDP 53'],a:0,w:'Leases expire and clients renew.'}]);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inside the power supply</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.opts{flex-direction:column;align-items:stretch}
+.opts button,.pick button{text-align:left;border-radius:10px}
+button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+button.dim{opacity:.45}
+.okbox{background:var(--good-soft)}
+.nobox{background:var(--bad-soft)}
+.qt{font-weight:600;margin:4px 0 10px}
+.sec{margin-top:18px}
+.sec h2{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.sec .why{color:var(--muted);font-size:14px;margin:0 0 10px;max-width:70ch}
+.stage{overflow-x:auto}
+svg{display:block;width:100%;height:auto}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:2}
+.bx.on{fill:var(--accent-soft);stroke:var(--accent)}
+.bx.good{fill:var(--good-soft);stroke:var(--good)}
+.bx.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-dasharray:6 4}
+.tx{fill:var(--ink);font:600 13px system-ui,sans-serif}
+.tx2{fill:var(--muted);font:13px system-ui,sans-serif}
+.arr{stroke:var(--line);stroke-width:3;fill:none}
+.arr.on{stroke:var(--accent)}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.bars{display:grid;gap:6px}
+.brow{display:grid;grid-template-columns:110px 1fr 90px;gap:8px;align-items:center;font-size:13px}
+.brow .tr{height:16px;background:var(--line);border-radius:999px;overflow:hidden}
+.brow .tr i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s}
+.brow .tm{text-align:right;font-weight:600}
+@media (max-width:480px){.brow{grid-template-columns:84px 1fr 74px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Inside the power supply</h1>
+<p class="lede">Step through what a PSU does, build the input and output yourself, sort the rails, and fail a power supply to see why servers use redundancy.</p>
+<div class="card">
+ <div class="lab">1. Follow the power</div>
+ <div class="ctrls"><button type="button" id="back">Back</button><button type="button" id="fwd">Next step</button></div>
+ <div class="stage"><svg viewBox="0 0 640 150" role="img" aria-label="Wall outlet supplies AC to the power supply, which outputs DC rails to the computer parts.">
+  <rect id="b0" class="bx" x="8" y="30" width="150" height="80" rx="12"/><text class="tx" x="83" y="66" text-anchor="middle">Wall outlet</text><text class="tx2" x="83" y="88" text-anchor="middle">AC</text>
+  <path id="a0" class="arr" d="M160 70 H240"/>
+  <rect id="b1" class="bx" x="240" y="30" width="160" height="80" rx="12"/><text class="tx" x="320" y="66" text-anchor="middle">PSU</text><text class="tx2" x="320" y="88" text-anchor="middle">converts AC to DC</text>
+  <path id="a1" class="arr" d="M402 70 H482"/>
+  <rect id="b2" class="bx" x="482" y="30" width="150" height="80" rx="12"/><text class="tx" x="557" y="66" text-anchor="middle">DC rails</text><text class="tx2" x="557" y="88" text-anchor="middle">+3.3 +5 +12 (-12)</text>
+ </svg></div>
+ <div class="out" id="so" aria-live="polite"></div>
+</div>
+<div class="card sec"><div class="lab">2. Build the conversion</div>
+ <div class="row2">
+  <div><div class="lab">Power INTO the PSU</div><div class="ctrls"><button type="button" class="tg" data-s="in" data-v="AC" aria-pressed="false">AC</button><button type="button" class="tg" data-s="in" data-v="DC" aria-pressed="false">DC</button></div></div>
+  <div><div class="lab">Power OUT of the PSU</div><div class="ctrls"><button type="button" class="tg" data-s="out" data-v="AC" aria-pressed="false">AC</button><button type="button" class="tg" data-s="out" data-v="DC" aria-pressed="false">DC</button></div></div>
+ </div>
+ <div class="ctrls"><button type="button" id="ck">Check my build</button></div>
+ <div class="out" id="bo" aria-live="polite">Pick one for each side, then check.</div>
+</div>
+<div class="card sec"><div class="lab">3. Is this a standard PC rail?</div>
+ <div class="ctrls" id="rails" role="group" aria-label="Voltage candidates"></div>
+ <div class="out" id="ro" aria-live="polite">Tap a voltage.</div>
+</div>
+<div class="card sec"><div class="lab">4. Redundant PSU</div>
+ <div class="ctrls"><button type="button" id="rd" aria-pressed="true">Redundant PSU installed</button><button type="button" id="fl">Fail the primary PSU</button><button type="button" id="rs">Restore</button></div>
+ <div class="grid" id="psus" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:8px"></div>
+ <div class="out" id="po" aria-live="polite"></div>
+</div>
+<div class="card sec"><div class="lab">Test yourself</div><div id="qz"></div></div>
+
+</div>
+<script>
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=(i*7+3)%(i+1);var t=b[i];b[i]=b[j];b[j]=t}return b}
+function quiz(id,qs){var root=$(id),i=0,score=0,done=false;
+ function draw(){var q=qs[i];done=false;
+  root.innerHTML='<div class="lab">Question '+(i+1)+' of '+qs.length+' &middot; score '+score+'</div><p class="qt">'+esc(q.q)+'</p><div class="ctrls opts"></div><div class="out qfb" aria-live="polite" hidden></div><div class="ctrls"><button type="button" class="nx" hidden>'+(i<qs.length-1?'Next question':'Start over')+'</button></div>';
+  var o=root.querySelector('.opts');
+  q.o.forEach(function(t,k){var b=document.createElement('button');b.type='button';b.textContent=t;
+   b.onclick=function(){if(done)return;done=true;var ok=(k===q.a);if(ok)score++;
+    b.classList.add(ok?'right':'wrong');if(!ok)o.children[q.a].classList.add('right');
+    var f=root.querySelector('.qfb');f.hidden=false;f.className='out qfb '+(ok?'okbox':'nobox');
+    f.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'Answer: '+esc(q.o[q.a])+'.</strong> '+esc(q.why);
+    var n=root.querySelector('.nx');n.hidden=false;
+    n.onclick=function(){if(i<qs.length-1){i++}else{i=0;score=0}draw()}};
+   o.appendChild(b)})}
+ draw()}
+function multi(id,q,opts,answers,why){var root=$(id),sel={};
+ root.innerHTML='<p class="qt">'+esc(q)+'</p><div class="ctrls opts"></div><div class="ctrls"><button type="button" class="chk">Check my answer</button></div><div class="out" aria-live="polite" hidden></div>';
+ var o=root.querySelector('.opts'),out=root.querySelector('.out');
+ opts.forEach(function(t){var b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('aria-pressed','false');
+  b.onclick=function(){sel[t]=!sel[t];b.setAttribute('aria-pressed',sel[t]?'true':'false')};o.appendChild(b)});
+ root.querySelector('.chk').onclick=function(){var ok=true;
+  opts.forEach(function(t,k){var want=answers.indexOf(t)>=0;if(!!sel[t]!==want)ok=false;var b=o.children[k];b.classList.remove('right','wrong');if(want)b.classList.add('right');else if(sel[t])b.classList.add('wrong')});
+  out.hidden=false;out.className='out '+(ok?'okbox':'nobox');
+  out.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'Answer: '+esc(answers.join(' + '))+'.</strong> '+esc(why)}}
+function rank(id,items,order,ask){var root=$(id),placed=[],miss=0;
+ function draw(){var left=shuffle(items.map(function(x){return x.k})).filter(function(k){return placed.indexOf(k)<0});
+  var lab={};items.forEach(function(x){lab[x.k]=x});
+  root.innerHTML='<p class="qt">'+esc(ask)+'</p><div class="lab">Tap the next one</div><div class="ctrls pick"></div><div class="lab">Your ranking</div><ol class="plc" style="margin:0 0 6px;padding-left:22px"></ol><div class="out" aria-live="polite">'+(placed.length?'':'Tap items in order. You get instant feedback each time.')+'</div><div class="ctrls"><button type="button" class="rs">Reset</button></div>';
+  var p=root.querySelector('.pick'),ol=root.querySelector('.plc'),out=root.querySelector('.out');
+  placed.forEach(function(k){var li=document.createElement('li');li.innerHTML='<strong>'+esc(lab[k].label)+'</strong> <span class="pill good">'+esc(lab[k].sub)+'</span>';ol.appendChild(li)});
+  left.forEach(function(k){var b=document.createElement('button');b.type='button';b.textContent=lab[k].label;
+   b.onclick=function(){var want=order[placed.length];
+    if(k===want){placed.push(k);var msg=placed.length===order.length?'Done with '+miss+' mistake'+(miss===1?'':'s')+'. ':'Correct. ';draw();var o2=root.querySelector('.out');o2.className='out okbox';o2.innerHTML='<strong>'+msg+esc(lab[k].label)+'.</strong> '+esc(lab[k].why)}
+    else{miss++;b.classList.add('wrong');out.className='out nobox';out.innerHTML='<strong>Not quite. The correct pick here is '+esc(lab[want].label)+'.</strong> '+esc(lab[want].why)}};
+   p.appendChild(b)});
+  root.querySelector('.rs').onclick=function(){placed=[];miss=0;draw()}}
+ draw()}
+
+var STEPS=[
+ {on:[0],t:'The wall outlet supplies AC (alternating current). A computer cannot run on it directly.'},
+ {on:[0,1],t:'The PSU takes AC in and converts it. Input is AC.'},
+ {on:[1,2],t:'The PSU outputs DC (direct current) on several rails. Output is DC.'},
+ {on:[2],t:'The rails power the parts: +3.3V, +5V, +12V DC, and -12V DC, which is rarely used. Wattage (100W, 500W, 850W) only says how much, never changes AC to DC.'}];
+var st=0;
+function step(){STEPS.forEach(function(){});for(var i=0;i<3;i++){$('b'+i).setAttribute('class','bx'+(STEPS[st].on.indexOf(i)>=0?' on':''))}
+ $('a0').setAttribute('class','arr'+(st>=1?' on':''));$('a1').setAttribute('class','arr'+(st>=2?' on':''));
+ $('so').innerHTML='<strong>Step '+(st+1)+' of 4.</strong> '+STEPS[st].t;$('back').disabled=st===0;$('fwd').disabled=st===3}
+$('back').onclick=function(){st--;step()};$('fwd').onclick=function(){st++;step()};step();
+var pick={in:null,out:null};
+Array.prototype.forEach.call(document.querySelectorAll('.tg'),function(b){b.onclick=function(){pick[b.dataset.s]=b.dataset.v;
+ Array.prototype.forEach.call(document.querySelectorAll('.tg[data-s="'+b.dataset.s+'"]'),function(x){x.setAttribute('aria-pressed',x===b?'true':'false')})}});
+$('ck').onclick=function(){var o=$('bo');
+ if(!pick.in||!pick.out){o.className='out';o.textContent='Choose both sides first.';return}
+ var ok=pick.in==='AC'&&pick.out==='DC';o.className='out '+(ok?'okbox':'nobox');
+ o.innerHTML=ok?'<strong>Correct. AC in, DC out.</strong> The wall gives AC and the computer needs DC, so the PSU converts AC to DC.':'<strong>Not quite. Correct answer: AC in, DC out.</strong> '+(pick.in==='DC'?'The wall outlet is AC, so DC cannot be the input. ':'')+(pick.out==='AC'?'The computer parts need DC, so AC cannot be the output. ':'')+'Reversing input and output is the common exam mistake.'};
+var R=[['+3.3V',1,'+3.3V DC is a standard PC rail.'],['+5V',1,'+5V DC is a standard PC rail.'],['+12V',1,'+12V DC is a standard PC rail.'],['-12V',1,'-12V DC is standard but rarely used.'],['+4.3V',0,'Not a standard rail value.'],['+8V',0,'Not a standard rail value.'],['+110V',0,'Not a standard DC rail. 110V-ish power is AC from the wall, not a PSU output rail.']];
+R.forEach(function(r){var b=document.createElement('button');b.type='button';b.textContent=r[0]+' DC';b.onclick=function(){
+ Array.prototype.forEach.call($('rails').children,function(x){x.classList.remove('right','wrong')});b.classList.add(r[1]?'right':'wrong');
+ $('ro').className='out '+(r[1]?'okbox':'nobox');$('ro').innerHTML='<strong>'+r[0]+' DC: '+(r[1]?'standard.':'not standard.')+'</strong> '+r[2]};$('rails').appendChild(b)});
+var red=true,failed=false;
+function psu(){$('rd').setAttribute('aria-pressed',red?'true':'false');
+ var h='<div class="cell '+(failed?'bad':'good')+'"><div class="t">Primary PSU</div><div class="s">'+(failed?'FAILED':'running')+'</div></div>';
+ if(red)h+='<div class="cell '+(failed?'good':'src')+'"><div class="t">Standby PSU</div><div class="s">'+(failed?'took over':'standby')+'</div></div>';
+ $('psus').innerHTML=h;
+ var up=!failed||red;$('po').className='out '+(up?'okbox':'nobox');
+ $('po').innerHTML=!failed?'<strong>Server is up.</strong> '+(red?'One PSU runs and one waits as a backup.':'There is no backup, so a failure would be fatal.'):(red?'<strong>Server stays up.</strong> The redundant PSU is the backup if the primary fails, which is why servers use one.':'<strong>Server is down.</strong> With no redundant PSU, one failure powers everything off.')}
+$('rd').onclick=function(){red=!red;psu()};$('fl').onclick=function(){failed=true;psu()};$('rs').onclick=function(){failed=false;psu()};psu();
+quiz('qz',[
+ {q:'What does a PC power supply do?',o:['Converts AC from the wall into DC for the computer','Converts DC from the wall into AC for the computer','Boosts 110V DC to 220V DC'],a:0,why:'The wall is AC and the computer needs DC, so the PSU converts AC to DC.'},
+ {q:'Which is a standard PC power supply voltage?',o:['+4.3V DC','+8V DC','+12V DC'],a:2,why:'+3.3V, +5V, +12V and rarely -12V are standard. +4.3V, +8V and +110V are not.'},
+ {q:'A 850W supply replaces a 500W supply. What changes?',o:['It now converts DC to AC','Only how much power it can deliver; it still converts AC to DC','It outputs +110V rails'],a:1,why:'Wattage varies and must match system needs, but voltage conversion stays AC to DC.'},
+ {q:'Why do servers often have two power supplies?',o:['To double the wall voltage','As a backup if the primary fails','Because one PSU only handles AC'],a:1,why:'A redundant PSU is a backup, often one on and one standby.'}
+]);
+
+</script>
+</body>
+</html>

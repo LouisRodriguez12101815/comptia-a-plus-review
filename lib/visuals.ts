@@ -57,7 +57,11 @@ export function visualChapters(focus: StudyFocus | null): VisualChapter[] {
     );
   const ready = all
     .filter((chapter) => chapter.visuals.length > 0)
-    .sort((a, b) => chapterNumber(a.label) - chapterNumber(b.label));
+    .sort(
+      (a, b) =>
+        (chapterNumber(a.label) || Number.MAX_SAFE_INTEGER) -
+        (chapterNumber(b.label) || Number.MAX_SAFE_INTEGER),
+    );
   const soon = all.filter((chapter) => chapter.visuals.length === 0);
   return [...ready, ...soon];
 }

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WAN chooser</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+button{min-height:38px}
+.card+.card{margin-top:14px}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.sc{font-size:13px;color:var(--muted)}
+.tabsbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mini{font-size:13px;color:var(--muted)}
+.bar2{position:relative;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar2>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px;transition:width .3s}
+.bar2>i.g{background:var(--good)}.bar2>i.b{background:var(--bad)}.bar2>i.w{background:var(--warm)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.stage{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>WAN chooser</h1>
+<p class="lede">Compare the four WAN technologies, see what MPLS costs per site, and watch how Class of Service lets voice jump the queue.</p>
+<div class="card">
+ <h2 class="sec">1. Compare</h2>
+ <div class="ctrls" id="tc" role="group" aria-label="Technology"></div>
+ <div class="out" id="to"></div>
+ <div class="lab">MPLS monthly cost (example: $2,000 per site)</div>
+ <div class="ctrls" id="si" role="group" aria-label="Sites"></div>
+ <div id="cost"></div>
+</div>
+<div class="card">
+ <h2 class="sec">2. Voice meets a bulk download</h2>
+ <p class="hint">Eight packets arrive in this order. V = voice, v = video, B = bulk data. Pick the WAN and see the order they leave.</p>
+ <div class="ctrls" id="wn" role="group" aria-label="WAN"></div>
+ <div class="lab">Arrival order</div><div id="arr"></div>
+ <div class="lab">Departure order</div><div id="dep"></div>
+ <div class="fb" id="fbw" aria-live="polite"></div>
+</div>
+<div class="card">
+ <h2 class="sec">3. Which one?</h2>
+ <div class="q" id="wqq"></div><div class="opts" id="wqo"></div><div class="fb" id="wqf" aria-live="polite"></div><div class="ctrls" style="margin-top:10px;align-items:center"><button id="wqn">Next question</button><span class="sc" id="wqs"></span></div>
+</div>
+
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fb(el,ok,html){el.className='fb '+(ok?'good':'bad');el.innerHTML=html}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function mkBtns(host,labels,onpick,start){host.innerHTML='';labels.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{press(host,i);onpick(i)};host.appendChild(b)});if(start!=null){press(host,start)}}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    fb(o.fb,ok,'<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why);
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const TECH=[["MPLS", "Legacy. Private branch-to-branch lines. Unique feature: Class of Service. Expensive: about $2,000 per month per circuit per site in the example."], ["SD-WAN", "Software-defined WAN, configured on a firewall or router. Replaces MPLS and can still do QoS."], ["Site-to-site VPN", "Encrypted tunnels over the internet, on port 443."], ["PRI", "Dedicated voice circuit, like a T1, used by telephony before VoIP over the internet."]];
+mkBtns($('tc'),TECH.map(t=>t[0]),i=>{$('to').innerHTML='<strong>'+esc(TECH[i][0])+'</strong>: '+esc(TECH[i][1])},0);
+$('to').innerHTML='<strong>'+esc(TECH[0][0])+'</strong>: '+esc(TECH[0][1]);
+const SI=[5,20,54];let si=2;
+function cost(){const n=SI[si],t=n*2000;$('cost').innerHTML='<div class="mini">'+n+' sites x $2,000 = <strong>$'+t.toLocaleString('en-US')+' per month</strong></div><div class="bar2" style="margin-top:4px"><i class="w" style="width:'+n/54*100+'%"></i></div>'}
+mkBtns($('si'),SI.map(x=>x+' sites'),i=>{si=i;cost()},2);cost();
+const ARR=['B','B','V','B','v','B','V','B'];
+const WN=[['MPLS with COS',1],['SD-WAN with QoS',1],['VPN, no QoS',0]];
+let wn=0;
+function chip(c){const col=c==='V'?'good':c==='v'?'src':'';return '<span class="cell '+col+'" style="display:inline-block;min-width:36px;text-align:center;padding:4px 8px;margin:2px">'+c+'</span>'}
+function wan(){
+ const pri=WN[wn][1];let dep=ARR.slice();
+ if(pri){dep=[...ARR.filter(c=>c==='V'),...ARR.filter(c=>c==='v'),...ARR.filter(c=>c==='B')]}
+ $('arr').innerHTML=ARR.map(chip).join('');$('dep').innerHTML=dep.map(chip).join('');
+ const vp=dep.map((c,i)=>c==='V'?i+1:0).filter(x=>x);
+ fb($('fbw'),pri,'<strong>Voice leaves in positions '+vp.join(' and ')+'.</strong> '+(pri?'The WAN prioritizes voice and video first (Class of Service on MPLS, QoS on SD-WAN), so bulk data waits.':'With no prioritization everything leaves in arrival order, so voice waits behind bulk data. Jitter and packet loss still hurt voice on any network type.'))}
+mkBtns($('wn'),WN.map(x=>x[0]),i=>{wn=i;wan()},0);wan();
+const WQ=[{"q": "Branch offices needed private lines with Class of Service for voice and video. Which WAN technology was that?", "o": ["MPLS", "SD-WAN", "Site-to-site VPN", "PRI"], "a": 0, "why": "MPLS is the legacy, expensive private WAN whose unique feature was Class of Service."}, {"q": "What do you call prioritizing voice and video on the WAN?", "o": ["Class of Service (COS)", "Quality of Service (QoS)", "VLAN tagging"], "a": 0, "why": "On the LAN it is QoS. On the WAN it is Class of Service, and only MPLS supported it."}, {"q": "Software-defined WAN configured on a firewall or router that can still do QoS?", "o": ["SD-WAN", "MPLS", "PRI"], "a": 0, "why": "SD-WAN replaced MPLS and can still do QoS."}, {"q": "Encrypted tunnels between sites over the internet on port 443?", "o": ["Site-to-site VPN", "MPLS", "PRI"], "a": 0, "why": "A site-to-site VPN uses encrypted tunnels over the internet."}, {"q": "A circuit like a T1, dedicated to voice before VoIP over the internet?", "o": ["PRI", "SD-WAN", "MPLS"], "a": 0, "why": "Telephony used PRI circuits dedicated to voice."}, {"q": "Which problems affect voice traffic on any type of network?", "o": ["Jitter and packet loss", "Only MPLS cost", "Only encryption"], "a": 0, "why": "Jitter and packet loss hurt voice on any network type."}];
+Deck({items:WQ,q:$('wqq'),opts:$('wqo'),fb:$('wqf'),next:$('wqn'),score:$('wqs')});
+
+</script>
+</body>
+</html>

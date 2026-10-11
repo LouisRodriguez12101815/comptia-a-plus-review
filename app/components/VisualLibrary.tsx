@@ -476,7 +476,8 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
             <p className="cv-text">{text}</p>
             {covers ? (
               <p className="cv-covers">
-                <strong>Covers:</strong> {covers}
+                <strong>{/^Notes:/i.test(covers) ? "From the notes:" : "Covers:"}</strong>{" "}
+                {covers.replace(/^Notes:\s*/i, "")}
               </p>
             ) : null}
             <div className="cv-actions">
