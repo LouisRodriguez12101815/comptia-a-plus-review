@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Port Security</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Port security limits devices on a port</h1>
+<p class="lede">Port security restricts a switch port to a set number of MAC addresses. This port is limited to two. Connect devices in order and watch which ones are allowed.</p>
+<div class="card">
+  <p class="lab">Port mode</p>
+  <div class="ctrls" id="modes" role="group" aria-label="Port mode">
+    <button type="button" id="m-acc" aria-pressed="true">Access mode</button>
+    <button type="button" id="m-trk" aria-pressed="false">Trunk mode</button>
+  </div>
+  <p class="lab">Devices (click to connect or disconnect)</p>
+  <div class="grid" id="dev" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))"></div>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Review questions 6 and 13.</strong> Port security guarantees a maximum number of devices, either learned or preconfigured. It should be set on an access port. On a trunk, many MAC addresses cross the link, so it is not effective. 802.1X controls who can connect and jumbo frames change frame size, so neither limits the device count.</p>
+</div>
+
+</div>
+<script>
+
+const names=['Laptop','Phone','Tablet','Guest PC'];
+let order=[],mode='access';const LIMIT=2;
+const el=document.getElementById('dev');
+names.forEach((n,i)=>{
+  const d=document.createElement('div');d.className='cell';d.id='d'+i;
+  d.innerHTML='<button type="button" id="b'+i+'" aria-pressed="false">'+n+'</button><div class="s" id="s'+i+'" style="margin-top:6px">Not connected</div>';
+  el.appendChild(d);
+  d.querySelector('button').addEventListener('click',()=>{const k=order.indexOf(i);if(k>=0)order.splice(k,1);else order.push(i);draw();});
+});
+function setMode(m){mode=m;document.getElementById('m-acc').setAttribute('aria-pressed',String(m==='access'));document.getElementById('m-trk').setAttribute('aria-pressed',String(m==='trunk'));draw();}
+document.getElementById('m-acc').addEventListener('click',()=>setMode('access'));
+document.getElementById('m-trk').addEventListener('click',()=>setMode('trunk'));
+function draw(){
+  names.forEach((n,i)=>{
+    const pos=order.indexOf(i),c=document.getElementById('d'+i),s=document.getElementById('s'+i);
+    document.getElementById('b'+i).setAttribute('aria-pressed',String(pos>=0));
+    if(pos<0){c.className='cell';s.textContent='Not connected';}
+    else if(mode==='trunk'){c.className='cell';s.textContent='Not limited (trunk mode)';}
+    else if(pos<LIMIT){c.className='cell good';s.textContent='Allowed (device '+(pos+1)+' of '+LIMIT+')';}
+    else{c.className='cell bad';s.textContent='Blocked: limit of '+LIMIT+' reached';}
+  });
+  const o=document.getElementById('out');
+  if(mode==='trunk')o.innerHTML='<strong>Port security is not effective in trunk mode.</strong> Many different MAC addresses legitimately cross a trunk, so a device limit cannot be enforced meaningfully.';
+  else if(order.length>LIMIT)o.innerHTML='<strong>Violation.</strong> '+names[order[LIMIT]]+(order.length>LIMIT+1?' and others are':' is')+' blocked because the port already has '+LIMIT+' devices.';
+  else o.innerHTML='<strong>'+order.length+' of '+LIMIT+' devices connected.</strong> The port also protects against turning into a trunk when another switch is plugged in, because it stays in access mode.';
+}
+draw();
+
+</script>
+</body>
+</html>

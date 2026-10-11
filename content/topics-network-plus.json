@@ -223,6 +223,373 @@
     ]
   },
   {
+    "id": "n10-ch11",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Switching and Virtual LANs",
+    "chapter": "Network+ · Chapter 11",
+    "summary": "Switch learning and forwarding, VLANs, access and trunk ports, 802.1Q tagging, Spanning Tree, port security, QoS, and PoE.",
+    "sections": [
+      {
+        "id": "switches-vs-hubs",
+        "title": "Switches, hubs, and bridges",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Switches give the lowest latency and highest bandwidth. They use ASICs (application-specific integrated circuits) to forward frames in hardware.",
+              "A hub is a multiport repeater. It sends every signal to every port and shares the bandwidth.",
+              "A bridge is a software-based switch with higher latency than a switch.",
+              "Routers add latency because each packet is decapsulated, routed, and re-encapsulated."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mac-learning",
+        "title": "How a switch learns and forwards",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A switch learns MAC addresses from the source MAC address of incoming frames, and stores them in its MAC address table.",
+              "It forwards each frame based on the destination MAC address in the table.",
+              "If the destination MAC address is not in the table, the switch floods the frame to all ports in the same VLAN.",
+              "Broadcast frames stay inside the VLAN they start in, because they cannot cross a router."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Switches learn from the source MAC address, not the destination. The destination decides where the frame goes."
+          }
+        ]
+      },
+      {
+        "id": "vlans",
+        "title": "VLANs and broadcast domains",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Adding a VLAN increases the number of broadcast domains. It also increases the number of collision domains.",
+              "All switch ports start in VLAN 1 from the factory. VLANs 1 and 1002 to 1005 are protected by IOS and cannot be deleted.",
+              "Static VLANs are configured manually on each port. The node does not know which VLAN it is in.",
+              "Dynamic VLANs assign a port based on the device's MAC address, using a VMPS (VLAN Membership Policy Server). They are deprecated, and 802.1X is the recommended replacement.",
+              "Converting a flat layer 2 network to routed VLANs makes design more flexible but adds complexity to operations."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "access-trunk",
+        "title": "Access ports and trunk ports",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Port type",
+              "What it carries",
+              "Tagging"
+            ],
+            "rows": [
+              [
+                "Access",
+                "One VLAN for an end device",
+                "VLAN tag removed before the frame leaves the port"
+              ],
+              [
+                "Trunk",
+                "Multiple VLANs between switches or routers",
+                "Tags carried end to end"
+              ],
+              [
+                "Native",
+                "Untagged frames on a trunk",
+                "Untagged"
+              ],
+              [
+                "Voice",
+                "Voice traffic on an access port",
+                "Tags only when the CoS value is changed from the default"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Hosts usually connect to access links.",
+              "Native VLAN traffic is untagged on the trunk. It is often used for management traffic between switches before both sides are configured as trunks.",
+              "Port security should be set on an access port. A trunk carries many MAC addresses, so port security does not work well there."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "802-1q",
+        "title": "802.1Q tagging",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "802.1Q is the open-standard trunking protocol. ISL is Cisco-only, so it cannot be used between switches from different vendors.",
+              "802.1Q inserts a 4-byte (32-bit) tag between the source MAC address and the type field.",
+              "The tag holds a 16-bit TPID of 0x8100, a 3-bit CoS field, a 1-bit drop-eligible indicator, and a 12-bit VLAN ID."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Tagged traffic is not placed on the native VLAN. Only untagged traffic is."
+          }
+        ]
+      },
+      {
+        "id": "stp",
+        "title": "Spanning Tree Protocol",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "STP (802.1D) prevents loops in switched networks. RSTP (802.1w) is the faster version.",
+              "The root bridge is the switch with the lowest priority. If every priority is at the default, the lowest MAC address wins.",
+              "The default state for an STP port is blocking.",
+              "It takes 50 seconds for STP to converge from blocking to forwarding."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "routed-vlans",
+        "title": "Routed VLANs and segmentation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A routed, VLAN-enabled network is more flexible for user management and design than a flat layer 2 network, although operations get more complex.",
+              "To segment a workgroup such as R&D, create a new VLAN, configure a routed SVI (switched virtual interface), and apply ACLs to the VLAN interface.",
+              "ACLs belong on the VLAN (layer 3) interface. Extended ACLs cannot be applied to layer 2 switch ports.",
+              "Placing a new server in the new VLAN, or trunking the file server to both VLANs, does not restrict access."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "port-security",
+        "title": "Port security",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Port security limits a switch port to a set number of MAC addresses. The addresses can be configured in advance or learned dynamically. It is set on an access port in access mode. It does not use jumbo frames or 802.1X, which control frame size and user authentication instead."
+          }
+        ]
+      },
+      {
+        "id": "qos-poe",
+        "title": "QoS and PoE",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "CoS is the layer 2 QoS method. It is a 3-bit field in the 802.1Q tag that maps to eight queues.",
+              "ToS and DiffServ are layer 3 QoS methods.",
+              "802.3at delivers 25.5 watts of power over Ethernet (PoE)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "vtp",
+        "title": "VTP",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "VTP (VLAN Trunking Protocol) propagates the VLAN database from a master copy on a server switch to client switches. It does not negotiate trunks or handle trunk encapsulation."
+          }
+        ]
+      },
+      {
+        "id": "review-key",
+        "title": "Review question answer key",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Q",
+              "Concept",
+              "Answer"
+            ],
+            "rows": [
+              [
+                "1",
+                "Lowest latency and highest bandwidth",
+                "B. Switches (ASICs forward in hardware)"
+              ],
+              [
+                "2",
+                "Function of a layer 2 switch",
+                "D. Forward by destination MAC address using its table"
+              ],
+              [
+                "3",
+                "Layer 2 QoS method",
+                "D. CoS (3-bit field in the 802.1Q tag)"
+              ],
+              [
+                "4",
+                "Trunking between two vendors",
+                "C. 802.1Q (ISL is Cisco-only)"
+              ],
+              [
+                "5",
+                "STP root bridge",
+                "D. Lowest priority (lowest MAC address if priorities tie)"
+              ],
+              [
+                "6",
+                "Limit a port to two devices",
+                "D. Port security"
+              ],
+              [
+                "7",
+                "Benefit of routed VLANs over a flat network",
+                "C. Flexibility of user management and design"
+              ],
+              [
+                "8",
+                "Frames and VLANs",
+                "D. Unknown-destination frames flood only within their VLAN"
+              ],
+              [
+                "9",
+                "Static VLANs",
+                "C. Nodes are unaware of the VLAN they are in"
+              ],
+              [
+                "10",
+                "Direct benefit of adding VLANs",
+                "B. More broadcast domains and more collision domains (book answer)"
+              ],
+              [
+                "11",
+                "Dynamic VLANs",
+                "C. Port is placed in a VLAN based on the computer's MAC address (VMPS)"
+              ],
+              [
+                "12",
+                "Port that removes the VLAN ID on egress",
+                "A. Access port"
+              ],
+              [
+                "13",
+                "Mode for port security",
+                "A. Access mode"
+              ],
+              [
+                "14",
+                "Factory default VLAN",
+                "D. VLAN 1"
+              ],
+              [
+                "15",
+                "Segment R&D with maximum flexibility",
+                "A. New VLAN, routed SVI, ACLs on the VLAN"
+              ],
+              [
+                "16",
+                "How 802.1Q tags frames",
+                "C. 32-bit field between the source MAC address and the type field"
+              ],
+              [
+                "17",
+                "Static access ports",
+                "C. The client cannot see VLAN tagging information"
+              ],
+              [
+                "18",
+                "Why VLAN 1 cannot be deleted",
+                "C. VLAN 1 is protected from deletion"
+              ],
+              [
+                "19",
+                "Native VLANs",
+                "C. Untagged traffic is placed on the native VLAN"
+              ],
+              [
+                "20",
+                "Function of VTP",
+                "B. Propagates the VLAN database"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "key-terms",
+        "title": "Key terms from the written lab",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Destination MAC address",
+                "Decides where a switch forwards a frame"
+              ],
+              [
+                "Source MAC address",
+                "The address a switch learns from incoming frames"
+              ],
+              [
+                "Spanning Tree Protocol",
+                "Prevents loops in switched networks"
+              ],
+              [
+                "802.1Q",
+                "Open-standard trunking protocol"
+              ],
+              [
+                "802.3at",
+                "PoE standard that delivers 25.5 watts"
+              ],
+              [
+                "Blocking",
+                "Default STP state for a port"
+              ],
+              [
+                "50 seconds",
+                "Time for STP to converge from blocking to forwarding"
+              ],
+              [
+                "Forward/filter",
+                "Decision a switch makes using its MAC address table"
+              ],
+              [
+                "QoS",
+                "Prioritizes traffic at the Data Link layer"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "visuals",
+        "title": "Interactive visuals",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "This chapter has interactive visuals for the review questions and written lab. Open them at /network-plus/ch11."
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "n10-ch9",
     "group": "networking",
     "examCodes": [
