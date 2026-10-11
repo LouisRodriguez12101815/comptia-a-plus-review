@@ -77,11 +77,11 @@ The server stores host, players, ready state, phase, incident/step index, shared
 | `POST /api/game/rooms/CODE/role-action` | Current indices and `actionId`; role-checked contribution or a penalty for unsupported shared-equipment restart |
 | `POST /api/game/rooms/CODE/next` | Host starts the next incident with current `incidentIndex`; roles rotate |
 | `POST /api/game/rooms/CODE/leave` | Leave, revoke membership/read permission, transfer hosting if needed |
-| `POST /api/game/rooms/CODE/token` | Short-lived access token with Sync grant for an authenticated member |
+| `GET` or `POST /api/game/rooms/CODE/token` | Short-lived access token with Sync grant for an authenticated member |
 
 Member authentication uses a random token in an HttpOnly, same-site, room-scoped cookie. Its hash is stored server-side. Browser Sync tokens expire within five minutes or the remaining room lifetime, whichever is shorter. Only that member's room gets read permission, with write/manage permission disabled. Token refresh rechecks membership, expiration, and the daily guard. Browser tokens are transient and are not persisted in localStorage.
 
-Sync notifications cause an authorized snapshot refresh. A 10-second heartbeat/reconciliation loop supplements notifications, with deadline requests for briefing/timer transitions. Visible timers use shared server timestamps and a monotonic local clock. Presence becomes disconnected after 30 seconds without a heartbeat. Browser sessionStorage retains only the last room code; **Resume previous room** uses the existing cookie to restore the same player, readiness, score, role, evidence discovery, hint state, and submission. Closing a tab does not leave immediately. Explicit Leave room transfers host to the next player; disconnected hosts retain ownership and may reconnect. Contributions from members who explicitly leave remain in the debrief. Automatic host failover and choosing arbitrary incidents remain deferred; the host advances through the fixed two-incident sequence.
+Sync notifications cause an authorized snapshot refresh. A 10-second heartbeat/reconciliation loop supplements notifications; when Sync is unavailable, authorized room snapshots are polled every two seconds and API-backed evidence/answer controls remain available. A Sync-only error displays a warning instead of disabling those controls. Deadline requests reconcile briefing/timer transitions. Visible timers use shared server timestamps and a monotonic local clock. Presence becomes disconnected after 30 seconds without a heartbeat. Browser sessionStorage retains only the last room code; **Resume previous room** uses the existing cookie to restore the same player, readiness, score, role, evidence discovery, hint state, and submission. Closing a tab does not leave immediately. Explicit Leave room transfers host to the next player; disconnected hosts retain ownership and may reconnect. Contributions from members who explicitly leave remain in the debrief. Automatic host failover and choosing arbitrary incidents remain deferred; the host advances through the fixed two-incident sequence.
 
 The shared session contains two five-question incidents: Lab 03 DNS, then Lab 02 DHCP relay routing troubleshooting. Answers are shuffled once per question on the server; correctness uses `correctAnswerId`, never an array index. No answer is selected automatically. Evidence discovery awards 10 contribution points, a useful assigned role action awards 20, a correct answer awards 100, and helping resolve an incident awards 25. The team score is separate: each clean decision awards 100 × the new streak (maximum ×3) once when the host advances; mixed answers or a risky role action award 50 if somebody answered correctly, otherwise 0. Incorrect answers and unsupported actions each cost 5% shared uptime and five seconds, and reset the streak. A shared hint costs 25 team points once per question; scores may be negative. Uptime score is uptime ×10. All scoring, deadlines, roles, and duplicate protection are server-authoritative.
 
@@ -110,3 +110,34 @@ Use Node.js 22.18+ (24 recommended): `npm ci`, `npm run lint`, `npm run typechec
 ## Scenario provenance
 
 Both debriefs link directly to their practiced content: DNS to `/labs/cant-reach-website` (method and steps 1–6), DHCP relay to `/labs/dhcp-relay-three-site` (addressing, how-it-works, troubleshooting), and both to `/notes/networking-dns-dhcp` (DNS or DHCP). Source paths and section IDs are returned in authenticated snapshots. The relay scenario uses the exact Miami static-route typo and correction in `content/labs.json`; the lab still marks its Miami lease test in progress, and the verification question preserves that limitation. Previously running DHCP/VLAN rooms retain their scenario and IDs through their 30-minute lifetime, with DHCP and Chapter 11 VLAN review links. Guided Demo is unchanged.
+
+
+## Sanitized production diagnosis
+
+Do not paste environment values, access tokens, cookies, provider response bodies, or raw SDK errors into reports. In Vercel, confirm that all seven required variables listed above exist in **Production**, then redeploy if configuration changed. Missing configuration returns HTTP 503 with `configuration_missing` and variable **names only**; malformed resource IDs return `configuration_invalid` without values.
+
+The server fetches the configured Sync Service using the configured API key before reading any documents. It compares the returned account to the configured account internally. A missing or inaccessible Service is no longer mistaken for an absent daily-pause document. A normal missing daily document still means the day has not been paused. Failure responses and runtime logs report only an operation stage, sanitized reason, numeric upstream status/code, and a random request ID:
+
+| Upstream result | Application response | Diagnostic reason |
+| --- | --- | --- |
+| 401 / Twilio 20003 | 503 | `authentication_rejected` |
+| 403 | 503 | `permission_denied` |
+| 404 while fetching Service | 503 | `service_not_found` |
+| Service account differs | 503 | `account_mismatch` |
+| Service ACL disabled | 503 | `configuration_invalid` |
+| 429 | 503 | `rate_limited` |
+| 5xx | 503 | `provider_unavailable` |
+| Recognized connection failure | 503 | `network_failure` |
+| Other unexpected failure | 503 | `unexpected_failure` |
+
+Use the `X-Outage-Ops-Request-Id` response header to locate `outage_ops_room_failure` in Vercel runtime logs. A successful creation emits `outage_ops_room_storage_verified`: seven variables present, account comparison passed, API-key Service read and room document create succeeded. A successful member token request emits `outage_ops_room_token_permissions_verified`: ACL enabled and API-key read-only member permission write succeeded. These entries contain no identifier values or credentials. They verify the permissions exercised by those requests; inspect any subsequent document-update failure separately. Cross-site GET token requests are rejected; authenticated same-site GET and POST token requests both work.
+
+From a machine that can reach the deployment, run:
+
+```sh
+node scripts/probe-outage-ops.mjs --url https://comptia-a-plus-review.vercel.app
+```
+
+This script creates a temporary two-player lobby when possible and probes create, join, state, GET/POST token, and evidence endpoints. It retains membership cookies only in memory and prints only sanitized statuses/diagnostics. In a lobby, evidence discovery correctly returns 409 because no question is active. If creation fails, it probes an intentionally invalid code and never joins another person's room. The temporary lobby expires after 30 minutes. Use the laptop/phone checklist above to exercise discovery in an active incident, including the visible host timeout fallback.
+
+During cloud diagnosis, both the public and immutable deployment hosts were blocked by the cloud outbound proxy with HTTP 403 (CONNECT tunnel failed). This is **not** an application or Twilio response. Production runtime logs, variable presence, account ownership, API-key permissions, and physical-device acceptance remain unverified until checked on an accessible deployment. Tests use injected provider failures and shared-document fixtures; they cannot establish the live production cause.
