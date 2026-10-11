@@ -1,5 +1,10 @@
+import { EnsureTopicFocus } from "@/app/components/EnsureTopicFocus";
+import { focusForTopic } from "@/lib/chapter";
+import { getTopic } from "@/lib/content";
 import { MissionReturnLink } from "@/app/components/practice/MissionReturnLink";
 import { FlashcardDeck } from "@/app/components/FlashcardDeck";
+
+export const metadata = { title: "Flashcards | CompTIA Review" };
 
 export default async function FlashcardsPage({
   searchParams,
@@ -7,6 +12,7 @@ export default async function FlashcardsPage({
   searchParams: Promise<{ topic?: string }>;
 }) {
   const { topic } = await searchParams;
+  const chapter = topic ? getTopic(topic) : undefined;
   return (
     <div className="space-y-6">
       <div>
@@ -17,6 +23,7 @@ export default async function FlashcardsPage({
         </p>
       </div>
       {topic === "n10-ch9" && <MissionReturnLink />}
+      {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       <FlashcardDeck initialTopic={topic ?? "all"} />
     </div>
   );
