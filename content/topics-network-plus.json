@@ -1,5 +1,238 @@
 [
   {
+    "id": "n10-ch7",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "IP Addressing",
+    "chapter": "Network+ · Chapter 7",
+    "summary": "Public and private IPv4 ranges, APIPA, address classes A to E, choosing a private range, IPv6 basics, tunneling and dual stack, SLAAC, and EUI-64.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Domain 1.0 Networking concepts: use appropriate IPv4 network addressing (public vs. private, APIPA, RFC 1918, loopback/localhost, subnetting with VLSM and CIDR, and address classes A to E).",
+              "Domain 1.0 Networking concepts: evolving use cases, including IPv6 addressing, mitigating address exhaustion, and compatibility requirements (tunneling, dual stack, NAT64).",
+              "Domain 3.0 Network operations: implement IPv4 and IPv6 network services, including stateless address autoconfiguration (SLAAC)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "public-private",
+        "title": "Public, private, APIPA, and loopback addresses",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Public addresses are routable on the Internet. Private addresses (RFC 1918) are not.",
+              "Class A private range: 10.0.0.0 through 10.255.255.255.",
+              "Class B private range: 172.16.0.0 through 172.31.255.255.",
+              "Class C private range: 192.168.0.0 through 192.168.255.255.",
+              "APIPA (Automatic Private IP Addressing) range: 169.254.0.1 through 169.254.255.254. A client that cannot reach a DHCP server configures itself with an APIPA address and the default Class B mask 255.255.0.0.",
+              "Loopback (localhost) addresses point a host at itself. 127.0.0.1 is the one you use."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Seeing 169.254.x.x on a client means DHCP did not answer. It is a symptom to troubleshoot, not an address to keep."
+          }
+        ]
+      },
+      {
+        "id": "address-classes",
+        "title": "IPv4 address classes",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Class",
+              "First octet range",
+              "Default network / host bits",
+              "Use"
+            ],
+            "rows": [
+              [
+                "A",
+                "1 through 126",
+                "8 / 24",
+                "Unicast"
+              ],
+              [
+                "B",
+                "128 through 191",
+                "16 / 16",
+                "Unicast"
+              ],
+              [
+                "C",
+                "192 through 223",
+                "24 / 8",
+                "Unicast"
+              ],
+              [
+                "D",
+                "224 through 239",
+                "Not applicable",
+                "Multicast"
+              ],
+              [
+                "E",
+                "240 through 255",
+                "Not applicable",
+                "Experimental"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "The gap between 126 and 128 is the 127 loopback network.",
+              "Class D and E have no network and host split because they are not used for ordinary host addressing."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "choosing-private",
+        "title": "Which private range should you use?",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "For a corporate network of any size, consultants use a Class A private network (10.0.0.0) because it gives the most flexibility and room to grow.",
+              "Example: Acme Corporation has 14 departments with about 70 users each. A plan of 10.1.x.0 with a /24 mask, where x is the department's subnet number, is easy to design, install, and troubleshoot.",
+              "Using 10.0.0.0 with a /24 mask gives 65,536 networks of 254 hosts each.",
+              "For a home network, use a Class C private address. It is the easiest to understand and configure, and the default Class C mask gives one network with 254 hosts.",
+              "CIDR and VLSM let you give each department or building only the number of addresses it needs, without wasting space. Chapter 8 covers the subnet math. A /24 means 24 of the 32 mask bits are turned on."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ipv6-basics",
+        "title": "Why IPv6, and how it differs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Without IPv6 the world would run out of IPv4 addresses. IPv6 mitigates address exhaustion.",
+              "An IPv6 address is 128 bits long and written in hexadecimal. An IPv4 address is 32 bits long and written in decimal.",
+              "If the acronym IP is used alone, it means IPv4.",
+              "Link-local addresses are like IPv4 APIPA addresses, but they cannot be routed at all, not even inside your organization.",
+              "Unique local addresses are like IPv4 private addresses. They cannot be routed to the Internet, but unlike link-local they can be routed inside your organization."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Link-local: never routed. Unique local: routed inside the organization, never on the Internet."
+          }
+        ]
+      },
+      {
+        "id": "ipv6-compat",
+        "title": "IPv6 compatibility: tunneling, dual stack, NAT64",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Tunneling carries IPv6 traffic inside IPv4 so it can cross an IPv4-only part of the network.",
+              "Dual stack runs IPv4 and IPv6 side by side on the same devices.",
+              "NAT64 translates between IPv6 and IPv4 so IPv6-only hosts can reach IPv4 services."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "slaac-eui64",
+        "title": "SLAAC and EUI-64",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Hosts can use stateless address autoconfiguration (SLAAC) to obtain an IPv6 address without a DHCP server. One way to build the interface ID is EUI-64.",
+              "EUI-64 takes the host's 48-bit MAC address and inserts FF:FE in the middle, which makes a 64-bit interface ID.",
+              "It also inverts the 7th bit of the first byte, typically changing it from 0 to 1."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Step",
+              "Example"
+            ],
+            "rows": [
+              [
+                "Start with the MAC address",
+                "00:1A:2B:3C:4D:5E"
+              ],
+              [
+                "Split it in half",
+                "00:1A:2B | 3C:4D:5E"
+              ],
+              [
+                "Insert FF:FE in the middle",
+                "00:1A:2B:FF:FE:3C:4D:5E"
+              ],
+              [
+                "Invert the 7th bit of the first byte (00 becomes 02)",
+                "02:1A:2B:FF:FE:3C:4D:5E"
+              ],
+              [
+                "Interface ID",
+                "021A:2BFF:FE3C:4D5E"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Reading an EUI-64 address backwards: drop the FF:FE and flip the 7th bit back to recover the MAC address."
+          }
+        ]
+      },
+      {
+        "id": "exercise-7-1",
+        "title": "Exercise 7.1: Identify your own IP addresses",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Open a command prompt (Start, type cmd, press Enter).",
+              "Run ipconfig /all and note the addresses on your computer. On Linux or macOS the command is ifconfig.",
+              "Open a web browser, go to whatismyipaddress.com or a similar site, and note the address shown as your public IP.",
+              "For each address, identify the version, the class, and the type. Is it public or private? What is in use on your Internet connection?"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "exam-essentials",
+        "title": "Exam essentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Class A is 1 to 126 (8 network bits, 24 host bits). Class B is 128 to 191 (16/16). Class C is 192 to 223 (24/8).",
+              "Know the three private ranges: 10.0.0.0/8, 172.16.0.0 to 172.31.255.255, and 192.168.0.0 to 192.168.255.255.",
+              "APIPA is 169.254.0.1 to 169.254.255.254 with mask 255.255.0.0.",
+              "IPv6 exists because IPv4 addresses would run out. It is 128 bits, hexadecimal.",
+              "Link-local cannot be routed at all. Unique local can be routed inside the organization.",
+              "Read an EUI-64 address: FF:FE is inserted in the middle of the MAC address and the 7th bit of the first byte is inverted."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "n10-ch10",
     "group": "networking",
     "examCodes": [
