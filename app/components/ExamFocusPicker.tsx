@@ -32,7 +32,7 @@ export function ExamFocusPicker({
               onClick={() => onChange(exam.id)}
               aria-pressed={selected}
               title={exam.description}
-              className={`rounded-full border px-3 py-1.5 text-sm transition ${
+              className={`inline-flex min-h-11 items-center rounded-full border px-3 py-1.5 text-sm transition ${
                 selected
                   ? "border-teal-400 bg-teal-400 text-slate-950"
                   : "border-slate-700 bg-slate-900 text-slate-200 hover:border-teal-400"

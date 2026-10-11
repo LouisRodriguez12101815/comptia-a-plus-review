@@ -44,7 +44,7 @@ export default async function TopicPage({
         <ul className="mt-2 space-y-1 text-sm">
           {topic.sections.map((section) => (
             <li key={section.id}>
-              <a href={`#${section.id}`} className="text-teal-300 hover:text-teal-200">
+              <a href={`#${section.id}`} className="-my-2 inline-flex min-h-11 items-center py-2 text-teal-300 hover:text-teal-200">
                 {section.title}
                 {section.weak ? " (often missed)" : ""}
               </a>
