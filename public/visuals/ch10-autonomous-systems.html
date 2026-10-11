@@ -1,0 +1,101 @@
+<title>Autonomous Systems Diagram</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270;
+  --line: #d9d5cc; --as1: #1f5f7a; --as2: #7a4e1d; --link: #4b3f7a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5;
+    --line: #353a46; --as1: #7fc0da; --as2: #e0b07a; --link: #b9aee6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5;
+  --line: #353a46; --as1: #7fc0da; --as2: #e0b07a; --link: #b9aee6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 20px; color: var(--muted); max-width: 62ch; }
+.diagram {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px; overflow-x: auto;
+}
+svg { display: block; width: 100%; height: auto; min-width: 560px; }
+.label { fill: var(--ink); font: 600 14px "IBM Plex Sans", system-ui, sans-serif; }
+.sub { fill: var(--muted); font: 12px "IBM Plex Sans", system-ui, sans-serif; }
+.edge { stroke: var(--link); stroke-width: 2; stroke-dasharray: 6 4; }
+.igp { stroke: var(--muted); stroke-width: 1.5; }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+.note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.note h2 { margin: 0 0 4px; font-size: 14px; }
+.note p { margin: 0; font-size: 13px; color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <h1>Interior gateway protocols and autonomous systems</h1>
+  <p class="lede">Routers inside one autonomous system (AS) share routes and are managed as a unit. Different ASs connect through exterior routing.</p>
+
+  <div class="diagram" role="img" aria-label="Two autonomous systems. AS 1 holds three routers running the same interior protocol. AS 2 holds two routers. A dashed exterior link joins the two systems.">
+    <svg viewBox="0 0 680 300" aria-hidden="true">
+      <!-- AS 1 boundary -->
+      <rect x="20" y="30" width="290" height="240" rx="14" fill="none" stroke="var(--as1)" stroke-width="2"/>
+      <text x="36" y="58" class="label" fill="var(--as1)">Autonomous System 1</text>
+      <text x="36" y="76" class="sub">All routers run the same interior protocol</text>
+
+      <!-- AS 2 boundary -->
+      <rect x="370" y="30" width="290" height="240" rx="14" fill="none" stroke="var(--as2)" stroke-width="2"/>
+      <text x="386" y="58" class="label" fill="var(--as2)">Autonomous System 2</text>
+      <text x="386" y="76" class="sub">Its own interior protocol and routers</text>
+
+      <!-- AS 1 internal links -->
+      <line x1="90" y1="150" x2="170" y2="110" class="igp"/>
+      <line x1="170" y1="110" x2="250" y2="165" class="igp"/>
+      <line x1="90" y1="150" x2="200" y2="215" class="igp"/>
+      <line x1="200" y1="215" x2="250" y2="165" class="igp"/>
+
+      <!-- AS 2 internal links -->
+      <line x1="430" y1="165" x2="540" y2="130" class="igp"/>
+      <line x1="540" y1="130" x2="620" y2="180" class="igp"/>
+
+      <!-- Exterior link -->
+      <line x1="310" y1="150" x2="370" y2="150" class="edge"/>
+      <text x="340" y="140" text-anchor="middle" class="sub">exterior link</text>
+
+      <!-- AS 1 routers -->
+      <g><circle cx="90" cy="150" r="18" fill="var(--as1)"/><text x="90" y="155" text-anchor="middle" fill="var(--bg)" font-weight="600">R1</text></g>
+      <g><circle cx="170" cy="110" r="18" fill="var(--as1)"/><text x="170" y="115" text-anchor="middle" fill="var(--bg)" font-weight="600">R2</text></g>
+      <g><circle cx="250" cy="165" r="18" fill="var(--as1)"/><text x="250" y="170" text-anchor="middle" fill="var(--bg)" font-weight="600">R3</text></g>
+      <g><circle cx="200" cy="215" r="18" fill="var(--as1)"/><text x="200" y="220" text-anchor="middle" fill="var(--bg)" font-weight="600">R4</text></g>
+
+      <!-- AS 2 routers -->
+      <g><circle cx="430" cy="165" r="18" fill="var(--as2)"/><text x="430" y="170" text-anchor="middle" fill="var(--bg)" font-weight="600">R5</text></g>
+      <g><circle cx="540" cy="130" r="18" fill="var(--as2)"/><text x="540" y="135" text-anchor="middle" fill="var(--bg)" font-weight="600">R6</text></g>
+      <g><circle cx="620" cy="180" r="18" fill="var(--as2)"/><text x="620" y="185" text-anchor="middle" fill="var(--bg)" font-weight="600">R7</text></g>
+    </svg>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <h2>Inside an AS</h2>
+      <p>Routers exchange routes to destination networks and converge as one unit, so they run the same interior protocol.</p>
+    </div>
+    <div class="note">
+      <h2>Between ASs</h2>
+      <p>Each AS has its own number. Exterior routing, such as BGP, connects them.</p>
+    </div>
+    <div class="note">
+      <h2>What the question tests</h2>
+      <p>Answer A. Grouping routers into autonomous systems is how interior gateway protocols are managed.</p>
+    </div>
+  </div>
+</div>

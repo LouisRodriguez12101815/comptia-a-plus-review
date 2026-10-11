@@ -1,0 +1,105 @@
+<title>Routing Loop Review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --bad: #9a3b2e; --bad-soft: #f3dcd8; --warm: #7a4e1d;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --bad: #f0a494; --bad-soft: #3d2623; --warm: #e0b07a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --bad: #f0a494; --bad-soft: #3d2623; --warm: #e0b07a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.stage { overflow-x: auto; }
+svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.wire { stroke: var(--line); stroke-width: 2; }
+.lbl { fill: var(--ink); font: 600 13px "IBM Plex Sans", system-ui, sans-serif; }
+.sub { fill: var(--muted); font: 12px "IBM Plex Sans", system-ui, sans-serif; }
+.node { fill: var(--accent); }
+.node-txt { fill: var(--bg); font: 600 13px "IBM Plex Sans", system-ui, sans-serif; }
+.pkt { fill: var(--bad); }
+.ctrls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.ctrls button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.ctrls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.options { display: grid; gap: 8px; margin-top: 14px; }
+.opt { display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+.opt .l { font-weight: 600; color: var(--muted); }
+.opt.right { border-color: var(--good); background: var(--good-soft); }
+.opt.right .l { color: var(--good); }
+.opt.wrong { color: var(--muted); }
+.answer { margin-top: 14px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>What a routing loop looks like</h1>
+  <p class="lede">A routing loop sends a packet around a circle of routers. It never reaches the destination. Each hop lowers the TTL, and the packet is dropped when the TTL hits 0.</p>
+
+  <div class="card">
+    <div class="stage">
+      <svg viewBox="0 0 640 260" role="img" aria-label="Three routers in a loop. A packet circles between them and its TTL drops each hop until it is discarded.">
+        <line x1="150" y1="60" x2="490" y2="60" class="wire"/>
+        <line x1="490" y1="60" x2="320" y2="200" class="wire"/>
+        <line x1="320" y1="200" x2="150" y2="60" class="wire"/>
+        <g><circle cx="150" cy="60" r="34" class="node"/><text x="150" y="65" text-anchor="middle" class="node-txt">Router A</text></g>
+        <g><circle cx="490" cy="60" r="34" class="node"/><text x="490" y="65" text-anchor="middle" class="node-txt">Router B</text></g>
+        <g><circle cx="320" cy="200" r="34" class="node"/><text x="320" y="205" text-anchor="middle" class="node-txt">Router C</text></g>
+        <circle id="pkt" cx="150" cy="60" r="11" class="pkt"/>
+        <text id="ttl" x="320" y="128" text-anchor="middle" class="lbl">TTL = 5</text>
+        <text id="st" x="320" y="250" text-anchor="middle" class="sub">Packet at Router A</text>
+      </svg>
+    </div>
+    <div class="ctrls">
+      <button id="next" type="button">Next hop</button>
+      <button id="reset" type="button">Reset</button>
+    </div>
+
+    <div class="options">
+      <div class="opt"><span class="l">A</span><span>Packets go out one interface and come back on a different one.</span></div>
+      <div class="opt right"><span class="l">B</span><span>Packets move between a series of routers and never reach the destination. This is the loop.</span></div>
+      <div class="opt wrong"><span class="l">C</span><span>The TTL expires before reaching the network. This is a result of the loop, not its definition.</span></div>
+      <div class="opt wrong"><span class="l">D</span><span>Packets take an inefficient path.</span></div>
+    </div>
+
+    <p class="answer"><strong>Question 12 answer is B.</strong> C describes what happens after a loop starts, but B describes the loop itself.</p>
+  </div>
+</div>
+
+<script>
+const pos = [[150,60],[490,60],[320,200]];
+const names = ['Router A','Router B','Router C'];
+const pkt = document.getElementById('pkt');
+const ttl = document.getElementById('ttl');
+const st = document.getElementById('st');
+let step = 0;
+function draw() {
+  const p = pos[step % 3];
+  pkt.setAttribute('cx', p[0]); pkt.setAttribute('cy', p[1]);
+  const left = Math.max(0, 5 - step);
+  ttl.textContent = 'TTL = ' + left;
+  st.textContent = left === 0 ? 'TTL reached 0, packet discarded' : 'Packet at ' + names[step % 3];
+}
+document.getElementById('next').addEventListener('click', () => { if (step < 5) step++; draw(); });
+document.getElementById('reset').addEventListener('click', () => { step = 0; draw(); });
+draw();
+</script>

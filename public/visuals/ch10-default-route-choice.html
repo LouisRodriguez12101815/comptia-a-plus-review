@@ -1,0 +1,74 @@
+<title>Default Route Selection</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --good: #2f6b4f; --good-soft: #dcebe3;
+  --bad: #9a3b2e; --bad-soft: #f3dcd8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+    --bad: #f0a494; --bad-soft: #3d2623;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --good: #8fd0ae; --good-soft: #223a2e;
+  --bad: #f0a494; --bad-soft: #3d2623;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.routes { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.route { border: 2px solid var(--line); border-radius: 10px; padding: 14px; background: var(--bg); min-width: 0; }
+.route.win { border-color: var(--good); background: var(--good-soft); }
+.route.lose { opacity: .75; }
+.route h2 { margin: 0 0 8px; font-size: 15px; }
+.route dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 14px; }
+.route dt { color: var(--muted); }
+.route dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+.badge { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
+.badge.win { background: var(--good); color: var(--bg); }
+.badge.lose { background: var(--bad-soft); color: var(--bad); }
+.steps { margin-top: 18px; display: grid; gap: 8px; }
+.step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; font-size: 14px; }
+.num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 600; font-size: 13px; }
+.answer { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>Choosing between two default routes</h1>
+  <p class="lede">A router can have two default routes to the same destination, one static and one from RIP. It compares administrative distance (AD) first. The metric is only used when the ADs are equal.</p>
+
+  <div class="card">
+    <div class="routes">
+      <div class="route win">
+        <h2>Static default route</h2>
+        <dl><dt>Next hop</dt><dd>192.168.1.2</dd><dt>AD</dt><dd>1</dd><dt>Metric</dt><dd>Not compared</dd></dl>
+        <span class="badge win">Installed</span>
+      </div>
+      <div class="route lose">
+        <h2>RIP default route</h2>
+        <dl><dt>Next hop</dt><dd>192.168.2.2</dd><dt>AD</dt><dd>120</dd><dt>Metric</dt><dd>Hop count</dd></dl>
+        <span class="badge lose">Not installed</span>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><span class="num">1</span><span>Both are default routes to 0.0.0.0/0, so they compete directly.</span></div>
+      <div class="step"><span class="num">2</span><span>Compare AD: static is 1, RIP is 120. Lower wins.</span></div>
+      <div class="step"><span class="num">3</span><span>The static route is installed. The RIP route is not used, even if its metric were lower.</span></div>
+    </div>
+
+    <p class="answer"><strong>Question 10 answer is A, the route with the lowest AD.</strong> The metric would only decide the choice if both routes had the same AD.</p>
+  </div>
+</div>

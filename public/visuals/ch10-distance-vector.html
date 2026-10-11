@@ -1,0 +1,89 @@
+<title>Distance-Vector Identification</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f6f4ef; --surface: #ffffff; --ink: #1d1f24; --muted: #5d6270; --line: #d9d5cc;
+  --accent: #1f5f7a; --accent-soft: #dcebf1; --warm: #7a4e1d; --warm-soft: #f2e6d6;
+  --good: #2f6b4f; --good-soft: #dcebe3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+    --accent: #7fc0da; --accent-soft: #223640; --warm: #e0b07a; --warm-soft: #3a2f22;
+    --good: #8fd0ae; --good-soft: #223a2e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2129; --ink: #ece9e1; --muted: #a3a8b5; --line: #353a46;
+  --accent: #7fc0da; --accent-soft: #223640; --warm: #e0b07a; --warm-soft: #3a2f22;
+  --good: #8fd0ae; --good-soft: #223a2e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; padding: 0 16px; }
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 28px 40px; }
+h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 18px; color: var(--muted); max-width: 68ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ctrls button {
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.ctrls button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.ctrls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.kind { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--bg); margin-bottom: 12px; }
+.kind.hit { border-color: var(--good); background: var(--good-soft); }
+.kind h2 { margin: 0 0 4px; font-size: 15px; }
+.kind p { margin: 0; font-size: 14px; color: var(--muted); }
+.kind .who { font-weight: 600; color: var(--ink); }
+.hop { font-size: 14px; color: var(--muted); margin-top: 10px; }
+.answer { margin-top: 16px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.answer strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <h1>Which protocol is distance-vector?</h1>
+  <p class="lede">The protocol type tells you how much a router knows. Distance-vector routers learn routes only from neighbors. Choose a type to see which protocols it covers.</p>
+
+  <div class="card">
+    <div class="ctrls" role="group" aria-label="Protocol type">
+      <button type="button" data-k="dv" aria-pressed="true">Distance-vector</button>
+      <button type="button" data-k="ls" aria-pressed="false">Link-state</button>
+      <button type="button" data-k="hy" aria-pressed="false">Hybrid</button>
+      <button type="button" data-k="pv" aria-pressed="false">Path-vector</button>
+    </div>
+
+    <div id="kinds"></div>
+
+    <p class="answer"><strong>Question 11 answer is B, RIP.</strong> OSPF is link-state, not distance-vector, which is why A was wrong.</p>
+  </div>
+</div>
+
+<script>
+const KINDS = {
+  dv: { title: 'Distance-vector', text: 'Learns routes from neighbors and passes its table along. No full topology map.', who: 'RIP (answer), IGRP' },
+  ls: { title: 'Link-state', text: 'Every router learns every link and builds the same map, then computes best paths.', who: 'OSPF, IS-IS' },
+  hy: { title: 'Hybrid', text: 'Distance-vector behavior with some link-state features.', who: 'EIGRP' },
+  pv: { title: 'Path-vector', text: 'Tracks the path of autonomous systems. Used between ASs on the Internet.', who: 'BGP' }
+};
+const box = document.getElementById('kinds');
+const buttons = document.querySelectorAll('.ctrls button');
+function show(k) {
+  const d = KINDS[k];
+  box.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'kind hit';
+  div.innerHTML = '<h2></h2><p></p><div class="hop"></div>';
+  div.querySelector('h2').textContent = d.title;
+  div.querySelector('p').textContent = d.text;
+  div.querySelector('.hop').innerHTML = 'Protocols: <span class="who"></span>';
+  div.querySelector('.who').textContent = d.who;
+  box.appendChild(div);
+  buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === k)));
+}
+buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.k)));
+show('dv');
+</script>

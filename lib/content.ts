@@ -1,5 +1,6 @@
 import flashcardsJson from "@/content/flashcards.json";
 import labsJson from "@/content/labs.json";
+import networkPlusTopicsJson from "@/content/topics-network-plus.json";
 import questionsJson from "@/content/questions.json";
 import topicsJson from "@/content/topics.json";
 import { examMatches } from "@/lib/exams";
@@ -13,7 +14,10 @@ import type {
   TopicGroup,
 } from "@/lib/types";
 
-export const topics = topicsJson as Topic[];
+export const topics = [
+  ...(topicsJson as Topic[]),
+  ...(networkPlusTopicsJson as Topic[]),
+];
 export const flashcards = flashcardsJson as Flashcard[];
 export const questions = questionsJson as Question[];
 export const labs = labsJson as Lab[];

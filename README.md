@@ -47,10 +47,10 @@ Open `/game` from the Game navigation link or the home-page button. The Guided D
 
 Each question starts unanswered with a shuffled answer order. Select an answer to submit it and see immediate answer-specific feedback plus mentor reasoning. Incorrect answers cost 5% uptime and reveal a mentor hint. Choose **Try again** to retry the same question or **Continue** to advance. Retries keep the hint and uptime penalties; each question awards points at most once (100 without a hint, 75 with one). Replaying resets the mission and shuffles again.
 
-Run `npm test` with Node.js 22.18+ (Node.js 24 is installed in this cloud environment) for answer-ID, shuffle, room, concurrency, reconnect, and signed cost-guard regression tests.
+Run `npm test` (or `npm run test:game`) with Node.js 22.18+ (Node.js 24 is installed in this cloud environment) for answer-ID, shuffle, room, concurrency, reconnect, provisioning, and signed cost-guard regression tests.
 
 Create Room and Join Team now use server-authoritative Twilio Sync Documents. Players subscribe to room updates, with periodic API reconciliation for presence and deadlines. The first shared mission is DNS troubleshooting. Guided Demo stays fully local and never calls Twilio. Without service configuration, multiplayer reports **“Multiplayer service not configured”**; it does not substitute a local lobby.
 
 See [Twilio setup, the $5 daily guard, and the laptop/phone acceptance test](docs/outage-ops-multiplayer.md). The implementation has automated tests; live cross-device acceptance still requires a configured Vercel deployment and actual devices.
 
-Validate with `npm run lint`, `npm run typecheck`, and `npm run build`. The production build downloads Geist through `next/font/google` and requires HTTPS access to `fonts.googleapis.com` and `fonts.gstatic.com`.
+Validate with `npm run lint`, `npm run typecheck`, and `npm run build`. The typecheck command runs `next typegen` before `tsc --noEmit` so it also works before the first build. The production build downloads Geist through `next/font/google` and requires HTTPS access to `fonts.googleapis.com` and `fonts.gstatic.com`.

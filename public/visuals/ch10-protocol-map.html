@@ -1,0 +1,246 @@
+<title>Chapter 10 Protocol Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600&display=swap">
+<style>
+/* Layout: three top-level tiers (availability, routing, IPv6), with routing split by how each protocol learns routes. Tap any protocol for its details. */
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --ink: #1d1f24;
+  --muted: #5d6270;
+  --line: #d9d5cc;
+  --accent: #1f5f7a;
+  --accent-soft: #dcebf1;
+  --tier-1: #7a4e1d;
+  --tier-2: #1f5f7a;
+  --tier-3: #4b3f7a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c;
+    --surface: #1e2129;
+    --ink: #ece9e1;
+    --muted: #a3a8b5;
+    --line: #353a46;
+    --accent: #7fc0da;
+    --accent-soft: #223640;
+    --tier-1: #e0b07a;
+    --tier-2: #7fc0da;
+    --tier-3: #b9aee6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c;
+  --surface: #1e2129;
+  --ink: #ece9e1;
+  --muted: #a3a8b5;
+  --line: #353a46;
+  --accent: #7fc0da;
+  --accent-soft: #223640;
+  --tier-1: #e0b07a;
+  --tier-2: #7fc0da;
+  --tier-3: #b9aee6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+  padding: 0 16px;
+}
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 28px 40px; }
+header h1 {
+  font: 600 30px/1.15 "Source Serif 4", Georgia, serif;
+  margin: 0 0 6px;
+  text-wrap: balance;
+}
+header p { margin: 0; color: var(--muted); max-width: 62ch; }
+.tier { margin-top: 26px; }
+.tier-head {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  border-bottom: 2px solid var(--tier);
+  padding-bottom: 6px; margin-bottom: 14px;
+}
+.tier-head h2 {
+  margin: 0; font: 600 18px/1.2 "Source Serif 4", Georgia, serif; color: var(--tier);
+}
+.tier-head span { color: var(--muted); font-size: 13px; }
+.groups { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.group {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px; min-width: 0;
+}
+.group h3 {
+  margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--muted);
+}
+.group .blurb { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+button.chip {
+  font: inherit; font-weight: 600; font-size: 14px;
+  color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+button.chip:hover { border-color: var(--tier); }
+button.chip[aria-pressed="true"] {
+  background: var(--tier); color: var(--bg); border-color: var(--tier);
+}
+button.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.detail {
+  margin-top: 26px; background: var(--surface); border: 1px solid var(--line);
+  border-left: 4px solid var(--accent); border-radius: 10px; padding: 18px 20px;
+}
+.detail h2 { margin: 0 0 4px; font: 600 22px/1.2 "Source Serif 4", Georgia, serif; }
+.detail .tag { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px 18px; margin: 0 0 12px; }
+.facts dt { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-variant-numeric: tabular-nums; font-weight: 500; }
+.detail p { margin: 0; max-width: 66ch; }
+.legend { margin-top: 22px; font-size: 13px; color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Chapter 10 Protocol Map</h1>
+    <p>Routing protocols grouped by level. Start with what a protocol is for, then how it learns routes. Tap any protocol for details.</p>
+  </header>
+
+  <section class="tier" style="--tier: var(--tier-1)">
+    <div class="tier-head"><h2>Availability</h2><span>Keeps a default gateway reachable when a device fails</span></div>
+    <div class="groups">
+      <div class="group">
+        <h3>First-hop redundancy</h3>
+        <p class="blurb">Hosts point at one virtual gateway that moves between routers.</p>
+        <div class="chips">
+          <button class="chip" data-id="vrrp" aria-pressed="false">VRRP</button>
+          <button class="chip" data-id="hsrp" aria-pressed="false">HSRP</button>
+          <button class="chip" data-id="nlb" aria-pressed="false">NLB</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tier" style="--tier: var(--tier-2)">
+    <div class="tier-head"><h2>Routing</h2><span>Learns and chooses paths to remote networks</span></div>
+    <div class="groups">
+      <div class="group">
+        <h3>Distance-vector</h3>
+        <p class="blurb">Passes routing tables to neighbors and picks by hop count or metric.</p>
+        <div class="chips">
+          <button class="chip" data-id="rip1" aria-pressed="false">RIPv1</button>
+          <button class="chip" data-id="rip2" aria-pressed="false">RIPv2</button>
+          <button class="chip" data-id="igrp" aria-pressed="false">IGRP</button>
+        </div>
+      </div>
+      <div class="group">
+        <h3>Hybrid</h3>
+        <p class="blurb">Distance-vector at heart, with link-state features.</p>
+        <div class="chips">
+          <button class="chip" data-id="eigrp" aria-pressed="false">EIGRP</button>
+        </div>
+      </div>
+      <div class="group">
+        <h3>Link-state</h3>
+        <p class="blurb">Builds a map of the network and computes best paths from it.</p>
+        <div class="chips">
+          <button class="chip" data-id="ospf" aria-pressed="false">OSPF</button>
+          <button class="chip" data-id="isis" aria-pressed="false">IS-IS</button>
+        </div>
+      </div>
+      <div class="group">
+        <h3>Path-vector (exterior)</h3>
+        <p class="blurb">Routes between autonomous systems on the Internet.</p>
+        <div class="chips">
+          <button class="chip" data-id="bgp" aria-pressed="false">BGP</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tier" style="--tier: var(--tier-3)">
+    <div class="tier-head"><h2>IPv6 and transition</h2><span>Discovery and running IPv4 and IPv6 together</span></div>
+    <div class="groups">
+      <div class="group">
+        <h3>Discovery</h3>
+        <p class="blurb">How IPv6 devices find neighbors and the gateway.</p>
+        <div class="chips">
+          <button class="chip" data-id="ndp" aria-pressed="false">NDP</button>
+          <button class="chip" data-id="ra" aria-pressed="false">Router Advertisement</button>
+        </div>
+      </div>
+      <div class="group">
+        <h3>Coexistence</h3>
+        <p class="blurb">Ways IPv6 traffic crosses or sits beside IPv4.</p>
+        <div class="chips">
+          <button class="chip" data-id="dual" aria-pressed="false">Dual stack</button>
+          <button class="chip" data-id="tunnel" aria-pressed="false">IPv6 tunneling</button>
+          <button class="chip" data-id="teredo" aria-pressed="false">Teredo</button>
+          <button class="chip" data-id="isatap" aria-pressed="false">ISATAP</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail" id="detail" aria-live="polite" hidden></section>
+
+  <p class="legend">Administrative distance (AD) ranks route sources: static 1, EIGRP internal 90, IGRP 100, OSPF 110, RIP 120. Lower wins. Connected interfaces use 0.</p>
+</div>
+
+<script>
+const DATA = {
+  vrrp: { name: "VRRP", tag: "Availability · open standard", facts: [["Type","Open standard"],["Purpose","Default gateway failover"]], body: "Several routers share one virtual gateway IP. If the active router fails, a backup takes over the same address, so hosts keep their default route." },
+  hsrp: { name: "HSRP", tag: "Availability · Cisco proprietary", facts: [["Type","Cisco proprietary"],["Purpose","Default gateway failover"]], body: "Same job as VRRP, a standby router takes over a virtual gateway, but it is proprietary to Cisco, not an open standard." },
+  nlb: { name: "NLB", tag: "Availability · Windows service", facts: [["Type","Windows service"],["Purpose","Load balancing"]], body: "Network Load Balancing spreads client traffic across servers. It is not a router protocol and does not provide gateway failover." },
+  rip1: { name: "RIPv1", tag: "Distance-vector · interior", facts: [["AD","120"],["Updates","Broadcast every 30 s"],["Metric","Hop count (max 15)"],["Subnet masks","Not sent"]], body: "Sends its full routing table out every active interface every 30 seconds. Does not support VLSM, classless networks, or authentication." },
+  rip2: { name: "RIPv2", tag: "Distance-vector · interior", facts: [["AD","120"],["Updates","Multicast 224.0.0.9 every 30 s"],["Metric","Hop count (max 15)"],["Subnet masks","Sent"]], body: "Same behavior as RIPv1 with multicast instead of broadcast, subnet masks in updates (classless and discontiguous networks), and authentication between routers." },
+  igrp: { name: "IGRP", tag: "Distance-vector · interior", facts: [["AD","100"],["Type","Distance-vector"]], body: "Cisco's older distance-vector protocol. The file lists it with AD 100, and it is the protocol EIGRP replaced." },
+  eigrp: { name: "EIGRP", tag: "Hybrid · interior", facts: [["AD","90 (internal)"],["Metric","Composite: delay, bandwidth, reliability, load"]], body: "Distance-vector at heart with link-state features. Uses a composite metric, and K values weight that calculation." },
+  ospf: { name: "OSPF", tag: "Link-state · interior", facts: [["AD","110"],["Algorithm","Dijkstra"],["Metric","Cost (reference bandwidth ÷ interface bandwidth)"],["Multicast","224.0.0.5 and 224.0.0.6"]], body: "Open-standard link-state protocol. Supports VLSM and classless routing, and every router builds the same topology database before picking the shortest path." },
+  isis: { name: "IS-IS", tag: "Link-state · interior", facts: [["Type","Link-state"]], body: "Link-state protocol covered in the chapter's closing section, alongside OSPF. Its details are outside this review file's questions." },
+  bgp: { name: "BGP", tag: "Path-vector · exterior", facts: [["Scope","Between autonomous systems"],["Use","Internet routing"]], body: "Path-vector protocol that routes packets between autonomous systems. The file describes it as the protocol that routes Internet traffic." },
+  ndp: { name: "NDP", tag: "IPv6 · discovery", facts: [["Network","IPv6"],["Job","Discover neighbors"]], body: "Neighbor Discovery Protocol. In IPv6 networks it discovers information about neighboring devices." },
+  ra: { name: "Router Advertisement", tag: "IPv6 · discovery", facts: [["Network","IPv6"],["Job","Detect the gateway"]], body: "Routers send these to announce themselves, so hosts can detect the gateway out of the network." },
+  dual: { name: "Dual stack", tag: "IPv6 · coexistence", facts: [["Approach","Run IPv4 and IPv6 side by side"]], body: "Devices run both IP versions at once, so each can use whichever one the destination supports." },
+  tunnel: { name: "IPv6 tunneling", tag: "IPv6 · coexistence", facts: [["Approach","Carry IPv6 inside IPv4"]], body: "IPv6 packets are wrapped in IPv4 so they can cross an IPv4-only network." },
+  teredo: { name: "Teredo", tag: "IPv6 · coexistence", facts: [["Approach","Tunnel through NAT"]], body: "Tunneling mechanism that lets IPv6 traffic cross IPv4 networks, including behind NAT." },
+  isatap: { name: "ISATAP", tag: "IPv6 · coexistence", facts: [["Approach","Tunnel inside an IPv4 network"]], body: "Tunneling mechanism that gives IPv6 connectivity across an IPv4 network, typically inside a site." }
+};
+
+const detail = document.getElementById("detail");
+const chips = document.querySelectorAll("button.chip");
+
+function show(id) {
+  const d = DATA[id];
+  detail.innerHTML = "";
+  const h = document.createElement("h2");
+  h.textContent = d.name;
+  const t = document.createElement("div");
+  t.className = "tag";
+  t.textContent = d.tag;
+  const dl = document.createElement("dl");
+  dl.className = "facts";
+  d.facts.forEach(([k, v]) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  });
+  const p = document.createElement("p");
+  p.textContent = d.body;
+  detail.append(h, t, dl, p);
+  detail.hidden = false;
+}
+
+chips.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const id = btn.dataset.id;
+    const wasOn = btn.getAttribute("aria-pressed") === "true";
+    chips.forEach(c => c.setAttribute("aria-pressed", "false"));
+    if (wasOn) { detail.hidden = true; return; }
+    btn.setAttribute("aria-pressed", "true");
+    show(id);
+  });
+});
+</script>
