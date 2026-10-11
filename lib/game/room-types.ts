@@ -54,7 +54,7 @@ export type SharedRoom = {
 export type RoomSnapshot = {
   /** API transport health, derived after a successful shared-store operation. Not persisted. */
   storageAvailable?: boolean;
-  room: Omit<SharedRoom, "players"> & { players: (CooperativePlayer & { evidenceStatus: { state: "pending" | "complete" | "not-required" | "disconnected"; assigned: number; discovered: number } })[]; uptimeScore: number; streakMultiplier: number };
+  room: Omit<SharedRoom, "players"> & { players: (CooperativePlayer & { evidenceStatus: { state: "pending" | "complete" | "not-required" | "disconnected" | "waived"; assigned: number; discovered: number } })[]; uptimeScore: number; streakMultiplier: number };
   viewerId: string;
   serverNow: number;
   incident: { title: string; ticket: string; objective: string; debrief: string[]; count: number; objectives: string[]; reviewTopics: string[]; sources: StudySource[] };

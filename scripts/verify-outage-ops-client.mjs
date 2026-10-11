@@ -60,7 +60,7 @@ try {
   await a.getByRole('button', { name: 'Start mission', exact: true }).click();
   const room = JSON.parse(data); room.startsAt = Date.now() - 1;
   // Reproduce Player B's stale assignment and receipt from an older room.
-  room.evidenceAssignments[1].itemIds = ['old-question:missing-item']; room.evidenceDiscoveries.push(room.players[1].id);
+  room.evidenceAssignments[1].itemIds.push('old-question:missing-item'); room.evidenceDiscoveries.push(room.players[1].id);
   room.players[1].contributions.evidence = 10; room.players[1].score = 10; data = JSON.stringify(room);
   for (const page of pages) await page.clock.fastForward(2000);
   await b.getByText('Your evidence assignment is unavailable.', { exact: false }).waitFor();
