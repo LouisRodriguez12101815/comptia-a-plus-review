@@ -19,7 +19,7 @@ What it checks:
 - Answer-position balance per topic and minimum coverage (15 questions, 10 cards) for Network+ chapters.
 - Visual files listed in `content/track-visuals.json` exist, and each "(Notes: ...)" description names a real section title.
 - Author-confirmed facts in `scripts/content-facts.json`: `require` patterns the notes must still state, `forbid` patterns that must not appear in notes, cards, explanations or visuals (distractor choices are ignored), and `numeric` patterns whose captured numbers must be in an allowed list (for example every RIP administrative distance must be 120).
-- Worked examples recomputed by the script: EUI-64 interface IDs, IPv4 class and private/public/APIPA type, and route lookups with longest-prefix match.
+- Worked examples recomputed by the script: EUI-64 interface IDs, IPv4 class and private/public/APIPA type, route lookups with longest-prefix match, and subnet math (subnets, hosts per subnet, block size, subnet and broadcast addresses).
 
 Errors fail the command. Warnings are advice on older content and do not fail unless `--strict` is passed.
 
