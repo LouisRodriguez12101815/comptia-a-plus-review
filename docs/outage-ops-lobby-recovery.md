@@ -51,3 +51,13 @@ The browser walkthrough demonstrated ordinary two-player discovery, incorrect-de
 Sanitized operation/status/failure-reason/request-ID evidence is written to ignored `work/e2e-summary.json` by the existing script. No credentials, tokens, cookies or request headers are recorded.
 
 Remaining acceptance: a configured deployed test Sync service and actual laptop/phone must independently verify presence detection, subscriptions/polling, pre-recovery reconnect rejection, late observer identity, actionable evidence, submission and advancement. Verify the standard Turbopack build in CI/deployment as well. Mocked tests do not prove provider permissions or improved learning.
+
+## Browser shutdown finding
+
+Classification: **consistent with intentional cleanup; the exact “Browser app server websocket closed” message/endpoint is unconfirmed**. The user observed it near the end of the Codex browser run without an exact timestamp.
+
+The original runner saved PASS before its `finally` block closed browser contexts, closed Chromium and sent SIGTERM to the local server. The log has no earlier `browser_test` failure or copy of the exact message. Subsequent process/HTTP checks found the local server stopped. No application crash or earlier interrupted assertion is established.
+
+All six local/mock check groups completed before shutdown: Guided Demo; ordinary two-player campaign through final debrief with incorrect-answer recovery, role actions and duplicate checks; invalid-host-assignment override; undiscovered-host-card override; shared ownership/regular reconnect; absent-unready lobby recovery and late observer through final debrief. The subsequent recovery replay completed those groups again and left the local server running with `/game` HTTP 200. Old contexts were closed and rooms expired, so that was a fresh replay, not proof an interrupted checkpoint passed.
+
+No further local reruns or code changes are warranted without new evidence. Deployed laptop-and-phone acceptance remains pending; see [the manual checklist](outage-ops-device-acceptance.md).
