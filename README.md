@@ -53,6 +53,8 @@ Create Room and Join Team use server-authoritative Twilio Sync Documents. Player
 
 See [Twilio setup, the $5 daily guard, and the laptop/phone acceptance test](docs/outage-ops-multiplayer.md). The implementation has automated tests; live cross-device acceptance still requires a configured Vercel deployment and actual devices.
 
+Run `npm run check:content` to check quiz answer keys, cross-content consistency, author-confirmed facts, and worked examples (see [content fact-checking](docs/content-fact-check.md)).
+
 Validate with `npm run lint`, `npm run typecheck`, and `npm run build`. The typecheck command runs `next typegen` before `tsc --noEmit` so it also works before the first build. The production build downloads Geist through `next/font/google` and requires HTTPS access to `fonts.googleapis.com` and `fonts.gstatic.com`.
 
 Outage Ops cooperative practice now includes shared findings, recoverable diagnostic decisions, round objectives/consequences, and a mistake-based reconstruction. See [the learning review](docs/outage-ops-learning-review.md) for source mapping, validation, and pending live/learner checks.
