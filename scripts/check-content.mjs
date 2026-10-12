@@ -276,6 +276,23 @@ for (const ex of factsFile.computed ?? []) {
     const info = ipv4Info(ex.ip);
     if (ex.class && info.cls !== ex.class) add("error", "computed", where, `${ex.ip} is class ${info.cls}, facts file says ${ex.class}`);
     if (ex.kind && info.kind !== ex.kind) add("error", "computed", where, `${ex.ip} is ${info.kind}, facts file says ${ex.kind}`);
+  } else if (ex.type === "subnet") {
+    const host = 32 - ex.cidr;
+    const classBits = ex.classBits ?? 24;
+    const got = { subnets: 2 ** (ex.cidr - classBits), hosts: 2 ** host - 2, block: 2 ** (host % 8 === 0 ? 8 : host % 8) };
+    if (host > 8) got.block = 2 ** host;
+    for (const k of ["subnets", "hosts", "block"]) {
+      if (ex[k] !== undefined && ex[k] !== got[k]) add("error", "computed", where, `/${ex.cidr}: ${k} is ${got[k]}, facts file says ${ex[k]}`);
+    }
+    const base = toInt(ex.network);
+    const size = 2 ** host;
+    const ipStr = (n) => [n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join(".");
+    (ex.first ?? []).forEach((f, i) => {
+      if (ipStr(base + i * size) !== f) add("error", "computed", where, `subnet ${i} of ${ex.network}/${ex.cidr} is ${ipStr(base + i * size)}, facts file says ${f}`);
+    });
+    (ex.broadcast ?? []).forEach((b, i) => {
+      if (ipStr(base + (i + 1) * size - 1) !== b) add("error", "computed", where, `broadcast ${i} of ${ex.network}/${ex.cidr} is ${ipStr(base + (i + 1) * size - 1)}, facts file says ${b}`);
+    });
   } else if (ex.type === "route-lookup") {
     for (const c of ex.cases) {
       const hit = ex.routes.filter((r) => cidrContains(r.cidr, c.ip)).sort((a, b) => Number(b.cidr.split("/")[1]) - Number(a.cidr.split("/")[1]))[0];
