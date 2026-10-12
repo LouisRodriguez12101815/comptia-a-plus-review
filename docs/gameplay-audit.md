@@ -151,3 +151,16 @@ For the feedback diagnostic, start `npm run start -- --hostname 127.0.0.1 --port
 ## Recommended next fix and definition of done
 
 Address **GA-04** next: align the newly added Chapter 7 review with the game’s verified CIDR/RFC guidance. Done means the content author has reviewed the unsupported universal sizing rule; rendered notes explicitly name the /8 parent, correctly distinguish link-local scope from automatic-selection bounds, and agree with `/subnet-sources`; related flashcards/questions are checked; meaningful source regressions, lint, typecheck, all tests, build and the source-review browser walkthrough pass. Mark it verified only after those exact reproductions no longer fail in the named local environment. Production/device and learner verification remain separate.
+
+
+## OO-01 · Disconnected unready guest prevents lobby start
+
+Severity: impossible progression. Route `/game`, cooperative lobby. Follow-up fix on `fix/disconnected-lobby-recovery`, based on main `3bf1fc1`.
+
+Reproduction: create as host, join as guest, mark only the host ready, then stop guest heartbeats for the existing 30-second absence threshold. Original UI disabled start and the service returned 409 requiring every stored player ready. Post-start evidence continuation could not recover a lobby. The new deterministic regression reproduced this failure before implementation.
+
+Correction: server-projected readiness/presence gate; prominent host-only **Continue with connected players** with excluded-player names; atomic start excludes only absent players while connected unready players remain blockers. Late reconnect keeps authenticated identity/contributions as a campaign observer, Complete · 0/0, without evidence or answer requirements. See [contract and validation](outage-ops-lobby-recovery.md).
+
+Regression: threshold boundaries, connected unready rejection, reconnect before/after recovery, CAS start/reconnect races, repeat start/answer scoring, remaining actionable evidence and both incidents through final debrief. **Verified locally with mocked external Sync and real application API routes**: the two-context rendered reproduction no longer deadlocks; the host completes the campaign and the returned guest observes the final debrief. Ordinary two-player and Guided Demo flows also pass.
+
+Deployed/physical-device status: pending. Do not mark Production or laptop/phone acceptance verified from this local result.

@@ -7,6 +7,7 @@ import { emptyContributions, evidenceItemsFor, legacyDhcpIncident, HINT_PENALTY,
 import { assignEvidence, evidenceModel, CONNECTION_WINDOW } from "@/lib/game/evidence-model";
 import { BUILD_COMMIT, ROOM_PROTOCOL_VERSION } from "@/lib/game/version";
 import { roundLearning, transferQuestion } from "@/lib/game/round-learning";
+import { lobbyStartModel } from "@/lib/game/lobby-model";
 import { networkDiagramFor } from "@/lib/game/network-diagram";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -121,7 +122,7 @@ export class RoomService {
 
   private prepareEvidence(room: StoredRoom, openedAt: number) {
     const items = evidenceItemsFor(this.incident(room), room.stepIndex);
-    room.evidenceAssignments = assignEvidence(items, room.players);
+    room.evidenceAssignments = assignEvidence(items, room.players.filter((p) => !p.excludedFromMission));
     room.discoveredEvidenceIds = [];
     room.evidenceContinueAt = openedAt + EVIDENCE_WAIT;
     room.evidenceContinued = false;
@@ -158,8 +159,8 @@ export class RoomService {
     const model = this.evidenceModel(room, now);
     const items = model.coverage.map((item) => ({ ...item, required: active && !room.evidenceContinued && item.required }));
     const decisions = room.selectedActions.filter((a) => a.stepIndex === room.stepIndex);
-    const outstanding = room.players.filter((p) => now - p.lastSeenAt < CONNECTION_WINDOW && !decisions.some((a) => a.playerId === p.id));
-    return { items, canAnswer: active && (room.evidenceContinued || (model.complete(viewerId) && items.every((i) => !i.required || i.discovered))),
+    const outstanding = room.players.filter((p) => !p.excludedFromMission && now - p.lastSeenAt < CONNECTION_WINDOW && !decisions.some((a) => a.playerId === p.id));
+    return { items, canAnswer: active && !room.players.find((p) => p.id === viewerId)?.excludedFromMission && (room.evidenceContinued || (model.complete(viewerId) && items.every((i) => !i.required || i.discovered))),
       canAdvance: active && decisions.some((a) => a.playerId === room.hostPlayerId) && (room.evidenceContinued || outstanding.length === 0),
       continueAvailableAt: room.evidenceContinueAt, continued: room.evidenceContinued,
       outstandingAnswers: outstanding.map((p) => p.nickname) };
@@ -205,6 +206,10 @@ export class RoomService {
     const player = token ? room.players.find((candidate) => candidate.tokenHash === hashToken(token)) : undefined;
     if (!player) throw new RoomError(401, "Join this room before using its controls.");
     return player;
+  }
+
+  private requireParticipant(player: StoredRoom["players"][number]) {
+    if (player.excludedFromMission) throw new RoomError(403, "You are observing this mission after lobby recovery. Create or join a new room to participate.");
   }
 
   private async update(codeInput: string, change: (room: StoredRoom, now: number) => string): Promise<RoomSnapshot> {
@@ -286,15 +291,22 @@ export class RoomService {
     });
   }
 
-  async start(code: string, token: string | null) {
+  async start(code: string, token: string | null, continueWithConnected: unknown = false) {
+    if (typeof continueWithConnected !== "boolean") throw new RoomError(400, "Choose a valid lobby start mode.");
     return this.update(code, (room, now) => {
       const player = this.authenticate(room, token);
       if (player.id !== room.hostPlayerId) throw new RoomError(403, "Only the host can start the mission.");
       if (room.status !== "lobby") throw new RoomError(409, "This mission has already started.");
-      if (!room.players.length || !room.players.every((member) => member.ready)) {
-        throw new RoomError(409, "Every player must be ready before starting.");
-      }
+      // This authenticated request is itself proof that the host is present.
       player.lastSeenAt = now;
+      const gate = lobbyStartModel(room.players, room.hostPlayerId, now);
+      if (!(continueWithConnected ? gate.canContinue : gate.canStart)) {
+        throw new RoomError(409, gate.unready.length ? "Every connected player must be ready before starting." : "Refresh the lobby. Use the host recovery control only after players are disconnected.");
+      }
+      if (continueWithConnected) {
+        const excluded = new Set(gate.excluded.map((p) => p.id));
+        room.players.forEach((p) => { p.excludedFromMission = excluded.has(p.id); });
+      }
       this.beginIncident(room, now);
       return player.id;
     });
@@ -339,7 +351,7 @@ export class RoomService {
 
   async discover(code: string, token: string | null, stepIndex: unknown, incidentIndex: unknown = 0, itemId?: unknown) {
     return this.update(code, (room, now) => {
-      const player = this.authenticate(room, token); this.activeStep(room, stepIndex, incidentIndex);
+      const player = this.authenticate(room, token); this.requireParticipant(player); this.activeStep(room, stepIndex, incidentIndex);
       const assigned = this.assignedEvidence(room, player.id);
       if (itemId !== undefined && !assigned.some((i) => i.id === itemId)) throw new RoomError(403, "Discover only an evidence item assigned to you for this question.");
       const selected = itemId === undefined ? assigned : assigned.filter((i) => i.id === itemId);
@@ -354,7 +366,7 @@ export class RoomService {
 
   async hint(code: string, token: string | null, stepIndex: unknown, incidentIndex: unknown = 0) {
     return this.update(code, (room, now) => {
-      const player = this.authenticate(room, token); this.activeStep(room, stepIndex, incidentIndex);
+      const player = this.authenticate(room, token); this.requireParticipant(player); this.activeStep(room, stepIndex, incidentIndex);
       if (!room.hintUsed) {
         room.hintUsed = true; room.hintsUsed += 1; room.hintPenalties += HINT_PENALTY; room.score -= HINT_PENALTY;
       }
@@ -374,7 +386,7 @@ export class RoomService {
 
   async usefulAction(code: string, token: string | null, stepIndex: unknown, actionId: unknown, incidentIndex: unknown = 0) {
     return this.update(code, (room, now) => {
-      const player = this.authenticate(room, token); this.activeStep(room, stepIndex, incidentIndex);
+      const player = this.authenticate(room, token); this.requireParticipant(player); this.activeStep(room, stepIndex, incidentIndex);
       const role = roles.find((r) => r.id === player.role)!;
       if (actionId !== role.actionId && actionId !== "restart-shared-equipment") throw new RoomError(400, "Choose an action assigned to your role.");
       if (!this.evidenceComplete(room, player.id)) throw new RoomError(409, "Discover your evidence before acting.");
@@ -400,7 +412,7 @@ export class RoomService {
 
   async answer(code: string, token: string | null, stepIndex: unknown, answerId: unknown, incidentIndex: unknown = 0) {
     return this.update(code, (room, now) => {
-      const player = this.authenticate(room, token);
+      const player = this.authenticate(room, token); this.requireParticipant(player);
       this.activeStep(room, stepIndex, incidentIndex);
       if (!room.evidenceContinued && !this.evidenceComplete(room, player.id)) throw new RoomError(409, "Discover your evidence before answering.");
       if (!this.evidenceGate(room, player.id, now).canAnswer) throw new RoomError(409, "Required evidence is still outstanding. Discover and share it, or ask the host to continue after the evidence timeout.");
@@ -456,6 +468,7 @@ export class RoomService {
     const learning = learningFor(incident);
     return {
       protocolVersion: ROOM_PROTOCOL_VERSION, buildCommit: BUILD_COMMIT,
+      lobbyGate: lobbyStartModel(players, stored.hostPlayerId, now),
       networkDiagram: room.status === "playing" && room.phase !== "briefing" ? networkDiagramFor(incident.id,
         this.assignedEvidence(stored, viewerId).map((i) => ({ ...i, discovered: stored.discoveredEvidenceIds.includes(i.id), text: stored.discoveredEvidenceIds.includes(i.id) ? i.text : undefined })), learning.sources) : null,
       room: { ...room, uptimeScore: room.uptime * 10, streakMultiplier: Math.max(1, Math.min(3, room.streak)),
@@ -464,7 +477,7 @@ export class RoomService {
           const assigned = this.assignedEvidence(stored, player.id);
           const connected = now - player.lastSeenAt < CONNECTION_WINDOW;
           const discovered = assigned.filter((i) => stored.discoveredEvidenceIds.includes(i.id)).length;
-          return { id: player.id, nickname: player.nickname, ready: player.ready, score: player.score, seat: player.seat, role: player.role, contributions: player.contributions, connected, isHost: player.id === room.hostPlayerId,
+          return { excludedFromMission: player.excludedFromMission, id: player.id, nickname: player.nickname, ready: player.ready, score: player.score, seat: player.seat, role: player.role, contributions: player.contributions, connected, isHost: player.id === room.hostPlayerId,
             evidenceStatus: { state: !connected ? "disconnected" : !assigned.length ? "not-required" : discovered === assigned.length ? "complete" : room.evidenceContinued ? "waived" : "pending", assigned: assigned.length, discovered } };
         }) },
       viewerId, serverNow: now,

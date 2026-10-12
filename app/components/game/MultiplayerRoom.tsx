@@ -199,7 +199,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   const remaining = room.endsAt ? Math.max(0, Math.ceil((room.endsAt - estimatedNow) / 1000)) : room.roundSeconds;
   const actions = room.selectedActions.filter((action) => action.stepIndex === room.stepIndex);
   const ownAction = actions.findLast((action) => action.playerId === viewerId);
-  const allReady = room.players.length >= 1 && room.players.every((player) => player.ready);
+  const lobbyGate = snapshot.lobbyGate;
   const foundEvidence = self.evidenceStatus.assigned === self.evidenceStatus.discovered;
   const evidenceWait = evidenceGate.continueAvailableAt === null ? 0 : Math.max(0, Math.ceil((evidenceGate.continueAvailableAt - estimatedNow) / 1000));
   const outstandingEvidence = evidenceGate.continued ? [] : evidenceGate.items.filter((item) => item.required && !item.discovered);
@@ -236,17 +236,25 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         <ul className="mt-4 space-y-2" aria-label="Players">
           {room.players.map((player) => <li key={player.id} className="flex flex-wrap justify-between gap-2 rounded-xl bg-slate-950 p-3">
             <span>{player.nickname}{player.id === viewerId ? " (you)" : ""}{player.isHost ? " · Host" : ""}</span>
-            <span className="text-sm text-cyan-100">{player.role} · {player.connected ? "Connected" : "Disconnected"} · {player.ready ? "Ready" : "Not ready"} · Contribution {player.score}</span>
+            <span className="text-sm text-cyan-100">{player.excludedFromMission ? "Observer" : player.role} · {player.connected ? "Connected" : "Disconnected"} · {player.ready ? "Ready" : "Not ready"} · Contribution {player.score}</span>
             <span className="w-full text-xs text-slate-300">Evidence {player.contributions.evidence} · Correct answers {player.contributions.answers} · Role actions {player.contributions.actions} · Resolution {player.contributions.resolution}{room.status === "playing" && room.phase !== "briefing" ? ` · Evidence: ${player.evidenceStatus.state === "not-required" ? "Complete (no assigned items)" : player.evidenceStatus.state === "disconnected" ? "Disconnected (does not block answers)" : player.evidenceStatus.state === "waived" ? "Waived by host (no discovery points)" : player.evidenceStatus.state} · ${player.evidenceStatus.discovered}/${player.evidenceStatus.assigned} items` : ""}</span>
           </li>)}
         </ul>
         {room.status === "lobby" && <div className="mt-5 flex flex-wrap gap-3">
           <button disabled={disabled} onClick={() => void command("ready", { ready: !self.ready })} className={buttonStyle}>{self.ready ? "Mark unready" : "Mark ready"}</button>
-          {isHost && <button disabled={disabled || !allReady} onClick={() => void command("start")} className={buttonStyle}>Start mission</button>}
-          <p className="w-full text-sm text-slate-300">{allReady ? "All players are ready. The host can start." : "Every player must mark ready before the host can start."}</p>
+          {isHost && <button disabled={disabled || !lobbyGate?.canStart} onClick={() => void command("start")} className={buttonStyle}>Start mission</button>}
+          <p className="w-full text-sm text-slate-300">{lobbyGate?.canStart ? "All connected players are ready. The host can start." : "Every connected player must mark ready. The host can exclude disconnected players after the absence threshold."}</p>
         </div>}
       </section>
 
+      {room.status === "lobby" && isHost && !!lobbyGate?.excluded.length && <section aria-label="Lobby recovery" className="space-y-3 rounded-2xl border-2 border-amber-300 bg-amber-400/10 p-6">
+        <h2 className="text-xl font-semibold">Continue without absent responders</h2>
+        <p>Disconnected for at least {lobbyGate.absenceSeconds} seconds: {lobbyGate.excluded.map((p) => p.nickname).join(", ")}. These players will be excluded from this mission&apos;s decisions and evidence requirements.</p>
+        <p className="text-sm">If they reconnect after the start, they can observe findings and the debrief with their identity and contributions preserved. A new room is needed to participate.</p>
+        {lobbyGate.unready.length > 0 && <p role="status">Connected players still need to mark ready: {lobbyGate.unready.map((p) => p.nickname).join(", ")}.</p>}
+        <button disabled={disabled || !lobbyGate.canContinue} onClick={() => void command("start", { continueWithConnected: true })} className={buttonStyle}>Continue with connected players</button>
+      </section>}
+      {self.excludedFromMission && <p role="status" className="rounded-xl border border-amber-300 p-4">You are observing this mission after lobby recovery. Your identity and contributions are preserved. You have no required evidence (Complete · 0/0); follow shared findings and the debrief. Join a new room to participate.</p>}
       {room.status === "lobby" && <section className="rounded-2xl border border-slate-700 p-6"><h1 className="text-2xl font-semibold">Response lobby</h1><p className="mt-3 text-slate-300">Share code {room.code}. Tackle {incident.count} incidents with a ten-minute discussion window per incident. Roles rotate after each incident. A solo responder receives all evidence; teams receive complementary clues to discuss. Rooms expire 30 minutes after creation.</p></section>}
 
       {room.status === "playing" && <section className="space-y-5 rounded-[2rem] border border-cyan-300/25 bg-slate-900/90 p-6 sm:p-8">
@@ -281,7 +289,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
             {snapshot.sharedFindings.length ? snapshot.sharedFindings.map((finding) => <p key={finding.id} className="whitespace-pre-wrap text-sm"><strong>{finding.label}:</strong> {finding.text}</p>) : <p>No discoveries yet. Unopened clues stay private.</p>}
             {room.usefulActions.filter((a) => a.useful).map((a) => <p key={a.playerId} className="text-sm text-emerald-100">{room.players.find((p) => p.id === a.playerId)?.nickname} published a justified finding: {actions.find((decision) => decision.playerId === a.playerId && decision.correct)?.explanation}</p>)}
           </section>
-          <button disabled={disabled || room.hintUsed || remaining === 0} onClick={() => void command("hint")} className="rounded-full border border-amber-300/40 px-4 py-2 text-sm text-amber-200">{room.hintUsed ? "Shared hint unlocked" : "Ask for a shared hint (−25 team points)"}</button>
+          <button disabled={disabled || !!self.excludedFromMission || room.hintUsed || remaining === 0} onClick={() => void command("hint")} className="rounded-full border border-amber-300/40 px-4 py-2 text-sm text-amber-200">{room.hintUsed ? "Shared hint unlocked" : "Ask for a shared hint (−25 team points)"}</button>
           {step.hint && <p role="status" className="rounded-xl bg-amber-400/10 p-4 text-amber-100">Mentor hint: {step.hint}</p>}
           {snapshot.networkDiagram && <NetworkDiagram diagram={snapshot.networkDiagram} />}
           <h2 className="text-lg font-semibold">{step.prompt}</h2>
@@ -295,7 +303,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           </section>
           <div className="grid gap-3 sm:grid-cols-2">{step.choices.map((choice) => <button key={choice.id} data-answer-id={choice.id} disabled={disabled || !evidenceGate.canAnswer || (ownAction?.correct || actions.some((a) => a.playerId === viewerId && (a.attemptedAnswerIds ?? [a.answerId]).includes(choice.id))) || remaining === 0} aria-pressed={ownAction?.answerId === choice.id} onClick={() => void command("actions", { answerId: choice.id })} className="min-h-20 rounded-xl border border-slate-600 bg-slate-950 p-4 text-left hover:border-cyan-300 disabled:opacity-60">{choice.label}</button>)}</div>
           {ownAction && <div role="status" className={`rounded-xl p-4 ${ownAction.correct ? "bg-emerald-400/10 text-emerald-100" : "bg-rose-400/10 text-rose-100"}`}><p className="font-semibold">{ownAction.correct ? "Correct diagnostic move" : "Not the best next move"}</p><p className="mt-2">{ownAction.explanation}</p><p className="mt-2 text-sm">{step.learning.competingExplanation}</p>{ownAction.correct ? <><p className="mt-2"><strong>Consequence / next test:</strong> {step.consequence}</p><p className="mt-2"><strong>What we learned:</strong> {step.learning.learned}</p><p className="mt-2 text-sm">Correct decision: +100 individual points, once. Team points are awarded separately when the host continues.</p></> : <p className="mt-2 font-semibold">Uptime −5%, time −5s. Review the findings and choose a different decision above; the penalty remains.</p>}</div>}
-          <p className="text-sm text-slate-300">Answers received: {new Set(actions.map((a) => a.playerId)).size}/{room.players.filter((player) => player.connected).length} connected players</p>
+          <p className="text-sm text-slate-300">Answers received: {new Set(actions.map((a) => a.playerId)).size}/{room.players.filter((player) => player.connected && !player.excludedFromMission).length} connected players</p>
           {evidenceGate.outstandingAnswers.length > 0 && <p className="text-sm text-amber-100">Answers outstanding: {evidenceGate.outstandingAnswers.join(", ")}{evidenceGate.continued ? " (host may proceed after answering)" : ""}</p>}
           {isHost ? <button disabled={disabled || !evidenceGate.canAdvance || remaining === 0} onClick={() => void command("advance", { stepIndex: room.stepIndex })} className={buttonStyle}>Continue mission</button> : <p className="text-sm text-cyan-200">The host continues after answering and receiving teammate answers, or after choosing to continue with current evidence.</p>}
         </>}

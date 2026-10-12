@@ -68,7 +68,7 @@ The server stores host, players, ready state, phase, incident/step index, shared
 | `POST /api/game/rooms/CODE/join` | Join with `{ "nickname": "Phone" }` |
 | `GET /api/game/rooms/CODE` | Authorized snapshot, heartbeat, timer reconciliation |
 | `POST /api/game/rooms/CODE/ready` | `{ "ready": true }` or `false` |
-| `POST /api/game/rooms/CODE/start` | Host starts when every player is ready |
+| `POST /api/game/rooms/CODE/start` | Normal host start requires everyone connected and ready; `{ "continueWithConnected": true }` explicitly excludes absent players when all connected players are ready |
 | `POST /api/game/rooms/CODE/actions` | `{ "incidentIndex": 0, "stepIndex": 0, "answerId": "stable-id" }` |
 | `POST /api/game/rooms/CODE/advance` | Host continues with current `incidentIndex` and `stepIndex` after the host and connected players answer, or after the host explicitly overrides missing responders |
 | `POST /api/game/rooms/CODE/evidence` | Current `incidentIndex` and `stepIndex`; optional `itemId` must belong to the authenticated player; without it, discover only their assigned items for old-client compatibility; credit discovery once per player/question |
@@ -210,3 +210,9 @@ DHCP relay diagrams map to Lab 02 (`dhcp-relay-three-site`), sections scenario, 
 Annotations are projected server-side only from the authenticated viewer's assigned discovered cards. No undiscovered private text or answer ID is sent in diagram data. Shared discovery reveals an annotation only to owners of that item and never automatically grants contribution points. Diagrams stack on phones, expand horizontally on larger screens, and include text descriptions, interface/branch details and source mappings.
 
 See [the cooperative learning review](outage-ops-learning-review.md) for the observed baseline, ten-minute practice window, goal/source mapping, recovery rules, and remaining learner/live acceptance checks.
+
+## Lobby absence recovery
+
+A host can explicitly **Continue with connected players** after the existing 30-second server absence threshold. The control names the disconnected players who will be excluded; every connected participant must still be ready. Normal start does not silently exclude absent players. The server recomputes this gate atomically rather than trusting the displayed list.
+
+Excluded players keep their identity and contributions and may reconnect as observers for the entire campaign. They see Complete · 0/0, shared findings and debriefs, without adding evidence/answer requirements or earning new points. A reconnect before recovery restores normal participation/readiness requirements. See [the recovery contract and validation record](outage-ops-lobby-recovery.md).

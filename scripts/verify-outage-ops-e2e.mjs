@@ -37,7 +37,7 @@ async function snapshot(page, code) {
   const response = await page.request.get(new URL(`/api/game/rooms/${code}`, origin).href);
   assert.equal(response.status(), 200); return response.json();
 }
-async function pair() {
+async function pair(start = true) {
   const pages = [];
   let code;
   for (let i = 0; i < 2; i++) {
@@ -70,6 +70,7 @@ async function pair() {
   }
   const [a, b] = pages, av = await snapshot(a, code), bv = await snapshot(b, code);
   assert.notEqual(av.viewerId, bv.viewerId); assert.equal(av.viewerId, av.room.hostPlayerId); assert.notEqual(bv.viewerId, bv.room.hostPlayerId);
+  if (!start) return { a, b, pages, code, av, bv };
   for (const page of pages) await page.getByRole('button', { name: 'Mark ready', exact: true }).click();
   await a.getByRole('button', { name: 'Start mission', exact: true }).click();
   await Promise.all(pages.map((page) => page.locator('[data-evidence-id]').first().waitFor()));
@@ -247,6 +248,63 @@ try {
     checks.push('Mocked shared ownership: one discovery satisfies both without automatic contribution; disconnected owner stops blocking, reconnect preserves cookie identity and restores its requirement through real routes.');
     for (const page of h.pages) await page.context().close();
   }
+  phase = 'lobby_recovery';
+  const lobby = await pair(false);
+  await lobby.a.getByRole('button', { name: 'Mark ready', exact: true }).click();
+  assert.equal(await lobby.a.getByRole('button', { name: 'Start mission', exact: true }).isDisabled(), true);
+  const connectedStart = await lobby.a.request.post(new URL(`/api/game/rooms/${lobby.code}/start`, origin).href, { data: {} });
+  assert.equal(connectedStart.status(), 409, 'A connected unready guest must block start');
+  await lobby.b.context().setOffline(true);
+  const recovery = lobby.a.getByRole('button', { name: 'Continue with connected players', exact: true });
+  await recovery.waitFor({ timeout: 45_000 });
+  await lobby.a.getByRole('region', { name: 'Lobby recovery' }).getByText('Phone', { exact: false }).first().waitFor();
+  assert.equal((await snapshot(lobby.a, lobby.code)).lobbyGate.canContinue, true);
+  // Reconnect before recovery: the endpoint re-evaluates presence, not a stale UI list.
+  await lobby.b.context().setOffline(false);
+  await snapshot(lobby.b, lobby.code);
+  const staleRecovery = await lobby.a.request.post(new URL(`/api/game/rooms/${lobby.code}/start`, origin).href, { data: { continueWithConnected: true } });
+  assert.equal(staleRecovery.status(), 409);
+  await recovery.waitFor({ state: 'hidden', timeout: 15_000 });
+  assert.equal(await lobby.a.getByRole('button', { name: 'Start mission', exact: true }).isDisabled(), true);
+  await lobby.b.context().setOffline(true);
+  await recovery.waitFor({ timeout: 45_000 });
+  await recovery.click();
+  await lobby.a.locator('[data-evidence-id]').first().waitFor();
+  await lobby.b.context().setOffline(false);
+  await lobby.b.getByText('You are observing this mission after lobby recovery.', { exact: false }).waitFor({ timeout: 15_000 });
+  const returned = await snapshot(lobby.b, lobby.code);
+  assert.equal(returned.viewerId, lobby.bv.viewerId);
+  assert.equal(returned.room.players.find(p => p.id === returned.viewerId).excludedFromMission, true);
+  assert.equal(returned.room.players.find(p => p.id === returned.viewerId).score, lobby.bv.room.players.find(p => p.id === lobby.bv.viewerId).score);
+  assert.deepEqual(returned.step.assignedEvidence, []);
+  assert.equal(returned.evidenceGate.canAnswer, false);
+  for (let incidentIndex = 0; incidentIndex < multiplayerIncidents.length; incidentIndex++) {
+    const incident = multiplayerIncidents[incidentIndex];
+    for (let stepIndex = 0; stepIndex < incident.steps.length; stepIndex++) {
+      phase = 'recovered_campaign';
+      const view = await snapshot(lobby.a, lobby.code);
+      assert.ok(view.step.assignedEvidence.length > 0);
+      for (const card of view.step.assignedEvidence) await lobby.a.locator(`[data-evidence-id="${card.id}"]`).getByRole('button').click();
+      const correct = incident.steps[stepIndex].correctAnswerId;
+      await lobby.a.locator(`[data-answer-id="${correct}"]`).click();
+      await lobby.a.getByText('Consequence / next test:', { exact: true }).waitFor();
+      const duplicate = await lobby.a.request.post(new URL(`/api/game/rooms/${lobby.code}/actions`, origin).href, { data: { incidentIndex, stepIndex, answerId: correct } });
+      assert.equal(duplicate.status(), 409);
+      await lobby.a.getByRole('button', { name: 'Continue mission', exact: true }).click();
+      await lobby.a.getByRole('heading', { name: stepIndex === incident.steps.length - 1 ? incidentIndex === multiplayerIncidents.length - 1 ? 'Final team debrief' : 'Incident debrief' : incident.steps[stepIndex + 1].title, exact: true }).waitFor();
+    }
+    if (incidentIndex + 1 < multiplayerIncidents.length) {
+      await lobby.a.getByRole('button', { name: 'Next incident · Rotate roles', exact: true }).click();
+      await lobby.a.locator('[data-evidence-id]').first().waitFor();
+    }
+  }
+  await lobby.b.getByRole('heading', { name: 'Final team debrief', exact: true }).waitFor();
+  const final = await snapshot(lobby.b, lobby.code);
+  assert.equal(final.room.outcomes.length, multiplayerIncidents.length);
+  assert.ok(final.room.outcomes.every(o => o.result === 'resolved'));
+  assert.equal(final.room.players.find(p => p.id === final.viewerId).score, 0);
+  checks.push('Real absence threshold: connected unready guest blocked start; reconnect before recovery blocked stale start; host named and excluded absent guest; late reconnect retained identity as a Complete 0/0 observer; recovered host discovered every card, submitted and advanced through both incidents to final debrief without duplicate points.');
+  for (const page of lobby.pages) await page.context().close();
   assert.ok(['create', 'join', 'token', 'get', 'evidence', 'continue-evidence', 'actions', 'advance'].every((op) => operations.some((r) => r.operation === op && r.status < 400)));
   await writeFile('work/e2e-summary.json', JSON.stringify({ result: 'PASS', mode: mock ? 'MOCKED external Sync HTTP; REAL application routes' : 'Configured Sync service; REAL application routes', checks, operations }, null, 2));
   console.log(JSON.stringify({ result: 'PASS', mode: mock ? 'mocked Sync transport / real routes' : 'configured Sync / real routes', checks }, null, 2));

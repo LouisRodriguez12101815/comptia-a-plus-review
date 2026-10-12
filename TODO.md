@@ -32,3 +32,9 @@ See [the October 11 gameplay audit](docs/gameplay-audit.md) for target commits, 
 - [ ] GA-03: apply context in a different transfer question or limit transfer reporting to the new objectives.
 - [ ] Verify actual deployed commit/assets, configured Sync and physical laptop/phone shared-room acceptance; local mocked runs do not complete this item.
 - [ ] Learner testing and comprehensive keyboard/screen-reader/contrast/physical-phone checks; completion does not establish mastery.
+
+
+## Outage Ops lobby recovery follow-up
+
+- [x] Fix disconnected-unready lobby recovery; verify reconnect/duplicate behavior and final-debrief progression locally through real application routes with mocked Sync (see `docs/outage-ops-lobby-recovery.md`).
+- [ ] Verify lobby recovery and late reconnect against configured deployed Twilio Sync with an actual laptop and phone; verify standard Turbopack build in CI/deployment.

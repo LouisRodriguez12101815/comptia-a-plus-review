@@ -83,7 +83,7 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
     }
     const snapshot = operation === "get" ? await rooms.get(code, token)
       : operation === "ready" ? await rooms.ready(code, token, payload.ready)
-      : operation === "start" ? await rooms.start(code, token)
+      : operation === "start" ? await rooms.start(code, token, payload.continueWithConnected ?? false)
       : operation === "answer" ? await rooms.answer(code, token, payload.stepIndex, payload.answerId, payload.incidentIndex)
       : operation === "discover" ? await rooms.discover(code, token, payload.stepIndex, payload.incidentIndex, payload.itemId)
       : operation === "continue-evidence" ? await rooms.continueEvidence(code, token, payload.stepIndex, payload.incidentIndex)
