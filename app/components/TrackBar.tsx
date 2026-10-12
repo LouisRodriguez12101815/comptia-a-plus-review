@@ -29,8 +29,8 @@ export function TrackBar() {
 
   return (
     <div className="border-b border-slate-800 bg-slate-900/60">
-      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-400">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:py-3">
+        <p className="hidden text-sm text-slate-400 sm:block">
           <Link href="/" className="hover:text-white">
             Home
           </Link>
@@ -39,14 +39,17 @@ export function TrackBar() {
             {track.label}
           </Link>
         </p>
-        <nav aria-label={`${track.short} study tools`} className="flex flex-wrap gap-2 text-sm">
+        <nav
+          aria-label={`${track.short} study tools`}
+          className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 text-sm sm:mx-0 sm:flex-wrap sm:overflow-visible sm:p-0"
+        >
           {tools.map((tool) => {
             const active = isActive(tool.id, pathname);
             if (tool.state === "soon" && !tool.openable) {
               return (
                 <span
                   key={tool.id}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-slate-700 px-3 py-1.5 text-slate-500"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-dashed border-slate-700 px-3 py-1.5 text-slate-500"
                 >
                   <ToolIcon id={tool.id} width={16} height={16} />
                   {tool.label}
@@ -60,7 +63,7 @@ export function TrackBar() {
                 href={tool.href}
                 focus={tool.focus}
                 aria-current={active ? "page" : undefined}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 ${
+                className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 ${
                   active
                     ? "border-teal-400 bg-teal-400 font-medium text-slate-950"
                     : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"
