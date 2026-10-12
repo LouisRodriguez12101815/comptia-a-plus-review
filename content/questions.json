@@ -3116,5 +3116,297 @@
     "answer": 1,
     "explanation": "EUI-64 inserts FF:FE in the middle of the MAC address and inverts the 7th bit of the first byte, so 00 becomes 02: 021A:2BFF:FE3C:4D5E. Skipping the flip, inserting FF:FF, or appending FFFE at the end are all wrong.",
     "weak": false
+  },
+  {
+    "id": "q-n10c7-17",
+    "topicId": "n10-ch7",
+    "prompt": "Which of these addresses cannot be used on the public Internet?",
+    "choices": [
+      "191.192.168.1",
+      "191.168.169.254",
+      "172.31.12.251",
+      "172.32.255.0"
+    ],
+    "answer": 2,
+    "explanation": "172.31.12.251 falls inside the RFC 1918 Class B private range, 172.16.0.0 through 172.31.255.255, so it must not be used on the Internet. 172.32.255.0 is just past the end of that range and is public, and both 191.x addresses are ordinary public Class B addresses. The 192.168 in 191.192.168.1 does not make it private.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-18",
+    "topicId": "n10-ch7",
+    "prompt": "A DHCP client cannot reach a DHCP server and has no static fallback, so it gives itself an address. Which range and mask does it use?",
+    "choices": [
+      "169.254.x.x with mask 255.255.0.0",
+      "169.254.x.x with mask 255.255.255.0",
+      "169.255.x.x with mask 255.255.0.0",
+      "169.254.0.x with mask 255.255.255.0"
+    ],
+    "answer": 0,
+    "explanation": "APIPA uses 169.254.0.0 through 169.254.255.255 with the Class B mask 255.255.0.0. The second octet must be 254, and the mask is 16 bits, not 24. These addresses are not routable across routers, so seeing one means DHCP did not answer.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-19",
+    "topicId": "n10-ch7",
+    "prompt": "Which statement about private IP addresses is most accurate?",
+    "choices": [
+      "Private addresses cannot be used on intranets that need routing",
+      "Private addresses must be assigned by a registrar or ISP",
+      "Private addresses can be used by only one administrative domain",
+      "A host on the Internet cannot ping your host if it has a private address"
+    ],
+    "answer": 3,
+    "explanation": "Private addresses are not routable on the Internet, so a remote Internet host cannot reach yours. They are fully routable inside a private intranet, need no permission from a registrar or ISP, and can be reused by many organizations at once because they never appear on the Internet.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-20",
+    "topicId": "n10-ch7",
+    "prompt": "Which of these is a valid Class A address?",
+    "choices": [
+      "191.10.0.1",
+      "126.10.0.1",
+      "127.10.0.1",
+      "128.10.0.1"
+    ],
+    "answer": 1,
+    "explanation": "126.10.0.1 is Class A because first octets run 1 through 126. 127 is reserved for loopback, and 128 and 191 are Class B.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-21",
+    "topicId": "n10-ch7",
+    "prompt": "Which of these is a valid Class B address?",
+    "choices": [
+      "129.1.1.1",
+      "10.1.1.1",
+      "126.1.1.1",
+      "192.168.1.1"
+    ],
+    "answer": 0,
+    "explanation": "Class B first octets run 128 through 191, so 129.1.1.1 is Class B. 10 and 126 are Class A, and 192.168.1.1 is Class C.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-22",
+    "topicId": "n10-ch7",
+    "prompt": "Which description matches a broadcast address?",
+    "choices": [
+      "All network bits are off (0s)",
+      "All network bits are on (1s)",
+      "All host bits are off (0s)",
+      "All host bits are on (1s)"
+    ],
+    "answer": 3,
+    "explanation": "A broadcast address has every host bit set to 1. All host bits 0 is the network address, and an address with all network bits 0 or 1 does not identify a normal network.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-23",
+    "topicId": "n10-ch7",
+    "prompt": "Which of these is a layer 2 broadcast?",
+    "choices": [
+      "FF:FF:FF:FF:FF:FF",
+      "FF:FF:FF:EE:EE:EE",
+      "255.255.255.255",
+      "255.0.0.0"
+    ],
+    "answer": 0,
+    "explanation": "A layer 2 broadcast is the MAC address FF:FF:FF:FF:FF:FF. 255.255.255.255 is the layer 3 (IP) broadcast, and 255.0.0.0 is a subnet mask, not a broadcast.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-24",
+    "topicId": "n10-ch7",
+    "prompt": "In a default Class C address, how many bits make up the network portion?",
+    "choices": [
+      "8 bits",
+      "16 bits",
+      "24 bits",
+      "32 bits"
+    ],
+    "answer": 2,
+    "explanation": "The default Class C mask is 255.255.255.0, so the first three octets, 24 bits, are the network and the last 8 bits are the host.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-25",
+    "topicId": "n10-ch7",
+    "prompt": "Which statement about a unicast address is true?",
+    "choices": [
+      "It is a private IPv4-style address that is not meant to be routed",
+      "Packets sent to it are delivered to a single interface",
+      "It is meant for nonrouting use and is almost globally unique",
+      "It is delivered to every interface that shares the address"
+    ],
+    "answer": 1,
+    "explanation": "A unicast address identifies one interface, and packets sent to it are delivered to that single interface. Describing a private address that is not routed matches unique local, and delivery to every interface describes multicast.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-26",
+    "topicId": "n10-ch7",
+    "prompt": "After a reboot, a host has the address 169.123.13.34. What happened?",
+    "choices": [
+      "The host received an APIPA address",
+      "The host received a multicast address",
+      "The host received a private address",
+      "The host received a public address"
+    ],
+    "answer": 3,
+    "explanation": "APIPA is 169.254.x.x, and 169.123.x.x is not in it. 169.123.13.34 is an ordinary public Class B address. Read the second octet carefully.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-27",
+    "topicId": "n10-ch7",
+    "prompt": "An IPv4 address is 32 bits. How long is an IPv6 address?",
+    "choices": [
+      "64 bits",
+      "192 bits",
+      "128 bits",
+      "255 bits"
+    ],
+    "answer": 2,
+    "explanation": "An IPv6 address is 128 bits, written in hexadecimal. That is four times the length of IPv4.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-28",
+    "topicId": "n10-ch7",
+    "prompt": "Which statement about a multicast address is true?",
+    "choices": [
+      "Packets are delivered to all interfaces identified by the address (one-to-many)",
+      "Packets are delivered to only the closest interface (one-to-nearest)",
+      "Packets are delivered to a single interface",
+      "It is a nonrouting address that is almost globally unique"
+    ],
+    "answer": 0,
+    "explanation": "Multicast is one-to-many: every interface that belongs to the group receives the packet. In IPv6 multicast addresses begin with FF. One-to-nearest is anycast.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-29",
+    "topicId": "n10-ch7",
+    "prompt": "Which statement about an anycast address is true?",
+    "choices": [
+      "Packets are delivered to every interface identified by the address",
+      "It is a nonrouting address that is almost globally unique",
+      "Packets are delivered to a single interface identified by that one address",
+      "The address identifies several interfaces, and the packet goes only to the closest one"
+    ],
+    "answer": 3,
+    "explanation": "Anycast is one-to-nearest: several interfaces share the address, and routing delivers the packet to just one, the nearest. Multicast, by contrast, delivers to all of them.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-30",
+    "topicId": "n10-ch7",
+    "prompt": "You want to ping your own host's loopback address. Which two commands work? (Choose two.)",
+    "choices": [
+      "ping ::1",
+      "ping 0.0.0.0",
+      "ping 127.0.0.1",
+      "trace 0.0.::1"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "The IPv4 loopback is 127.0.0.1 and the IPv6 loopback is ::1, so both pings test the local TCP/IP stack. 0.0.0.0 is not a loopback address, and 0.0.::1 is not a valid address in any form.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-31",
+    "topicId": "n10-ch7",
+    "prompt": "Which two statements about IPv6 addresses are true? (Choose two.)",
+    "choices": [
+      "Leading zeros are required in every field",
+      "Two colons (::) replace one run of consecutive all-zero fields",
+      "Two colons (::) separate every pair of fields",
+      "One interface can hold several IPv6 addresses of different types"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "A double colon stands for successive all-zero fields, and it can be used only once per address. Leading zeros may be dropped, not required. One interface can carry link-local, global unicast, and multicast addresses at the same time.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-32",
+    "topicId": "n10-ch7",
+    "prompt": "Which two statements about IPv4 and IPv6 addresses are true? (Choose two.)",
+    "choices": [
+      "An IPv6 address is 32 bits long and written in hexadecimal",
+      "An IPv4 address is 32 bits long and written in decimal",
+      "An IPv6 address is 128 bits long and written in decimal",
+      "An IPv6 address is 128 bits long and written in hexadecimal"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "IPv4 is 32 bits in decimal and IPv6 is 128 bits in hexadecimal. The other two choices swap the length or the number format.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-33",
+    "topicId": "n10-ch7",
+    "prompt": "Which of these is a Class C network address?",
+    "choices": [
+      "128.0.0.0",
+      "192.255.254.0",
+      "10.10.10.0",
+      "127.0.0.1"
+    ],
+    "answer": 1,
+    "explanation": "Class C first octets run 192 through 223, so 192.255.254.0 is Class C. A 255 is allowed in later octets; only the first octet decides the class. 10 is Class A, 128 is Class B, and 127.0.0.1 is loopback.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-34",
+    "topicId": "n10-ch7",
+    "prompt": "Which two of these are private IP addresses? (Choose two.)",
+    "choices": [
+      "172.20.14.36",
+      "168.172.19.39",
+      "192.168.24.43",
+      "172.33.194.30"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "172.20.14.36 is inside 172.16.0.0 through 172.31.255.255, and 192.168.24.43 is inside 192.168.0.0/16. 172.33.194.30 is just outside the Class B private range, and 168.172.19.39 is a public Class B address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-35",
+    "topicId": "n10-ch7",
+    "prompt": "IPv6 unicast routing is running on the Corp router, and FastEthernet0/0 has the MAC address 000d.bd3b.0d80. Which link-local address does EUI-64 build?",
+    "choices": [
+      "FF02::020D:BDFF:FE3B:0D80",
+      "FE80::020D:BDFF:FE3B:0D80",
+      "FE80::000D:BDFF:FE3B:0D80",
+      "FE80::020D:FFBD:3BFE:0D80"
+    ],
+    "answer": 1,
+    "explanation": "Split the MAC into 000D:BD and 3B:0D80, insert FF:FE in the middle to get 000D:BDFF:FE3B:0D80, then invert the 7th bit of the first byte so 00 becomes 02. That gives FE80::020D:BDFF:FE3B:0D80 on the link-local prefix. FF02 is multicast, 000D forgets the bit flip, and the last option scrambles the inserted bytes.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c7-36",
+    "topicId": "n10-ch7",
+    "prompt": "Which of these is not valid as a host address?",
+    "choices": [
+      "10.0.0.1",
+      "128.0.0.1",
+      "224.0.0.1",
+      "172.0.0.1"
+    ],
+    "answer": 2,
+    "explanation": "224.0.0.1 is a Class D multicast address and cannot be assigned to a host. 10.0.0.1 is a valid private host address, and 128.0.0.1 and 172.0.0.1 are valid public ones. 172.0.0.1 is public because the private range starts at 172.16.",
+    "weak": false
   }
 ]
