@@ -1,0 +1,699 @@
+{
+  "_readme": "Author-confirmed facts for scripts/check-content.mjs. Each fact is what YOUR book and notes say. require = notes must still state it; forbid = text that must not appear (distractor choices are ignored); numeric = every captured number must be in allowed. computed = worked examples recomputed by the script. Add a fact when you confirm one; change a value only after checking your book. answerKeys = the exact text of the correct choice for each question the author has verified against the book's answer key (position-independent, so shuffling cannot break it). Any question in pinChapters without a pin is reported until someone verifies it.",
+  "facts": [
+    {
+      "id": "ch7-classes",
+      "topics": [
+        "n10-ch7"
+      ],
+      "statement": "Class A 1 to 126, Class B 128 to 191, Class C 192 to 223",
+      "source": "Chapter 7 notes and labs",
+      "require": [
+        "1 (?:through|to) 126",
+        "128 (?:through|to) 191",
+        "192 (?:through|to) 223"
+      ],
+      "forbid": [
+        {
+          "pattern": "Class A[^\\n]{0,40}\\b1 (?:through|to) 127\\b",
+          "reason": "Class A ends at 126; 127 is loopback"
+        }
+      ]
+    },
+    {
+      "id": "ch7-private-ranges",
+      "topics": [
+        "n10-ch7"
+      ],
+      "statement": "RFC 1918 ranges: 10.0.0.0, 172.16.0.0 to 172.31.255.255, 192.168.0.0 to 192.168.255.255",
+      "source": "Chapter 7 notes and Lab 7.1",
+      "require": [
+        "10\\.0\\.0\\.0",
+        "172\\.16\\.0\\.0 (?:through|to) 172\\.31\\.255\\.255",
+        "192\\.168\\.0\\.0 (?:through|to) 192\\.168\\.255\\.255"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "172\\.16\\.0\\.0 (?:through|to) 172\\.(\\d+)\\.255\\.255"
+          ],
+          "allowed": [
+            31
+          ]
+        },
+        {
+          "patterns": [
+            "192\\.168\\.0\\.0 (?:through|to) 192\\.(\\d+)\\.255\\.255"
+          ],
+          "allowed": [
+            168
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch7-apipa",
+      "topics": [
+        "n10-ch7"
+      ],
+      "statement": "APIPA is 169.254.0.1 to 169.254.255.254 with mask 255.255.0.0",
+      "source": "Chapter 7 notes and Lab 7.1",
+      "require": [
+        "169\\.254\\.0\\.1 (?:through|to) 169\\.254\\.255\\.254",
+        "255\\.255\\.0\\.0"
+      ],
+      "forbid": [
+        {
+          "pattern": "APIPA[^\\n]{0,80}255\\.255\\.255\\.0",
+          "reason": "APIPA uses 255.255.0.0"
+        }
+      ]
+    },
+    {
+      "id": "ch7-eui64",
+      "topics": [
+        "n10-ch7"
+      ],
+      "statement": "EUI-64 inserts FF:FE in the middle of the MAC and inverts the 7th bit",
+      "source": "Chapter 7 notes (the original note text said FF:FF, corrected)",
+      "require": [
+        "FF:FE",
+        "7th bit"
+      ],
+      "forbid": [
+        {
+          "pattern": "insert(?:s|ing)?\\s+(?:the\\s+)?FF:FF",
+          "reason": "EUI-64 inserts FF:FE"
+        },
+        {
+          "pattern": "FF:FF in the middle",
+          "reason": "EUI-64 inserts FF:FE"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card",
+        "visual"
+      ]
+    },
+    {
+      "id": "ch7-ipv6-types",
+      "topics": [
+        "n10-ch7"
+      ],
+      "statement": "Link-local FE80::/10, unique local FC00::/7, loopback ::1",
+      "source": "Lab 7.2",
+      "require": [
+        "FE80::/10",
+        "FC00::/7",
+        "::1"
+      ]
+    },
+    {
+      "id": "ch7-ipv6-size",
+      "topics": [
+        "n10-ch7"
+      ],
+      "statement": "IPv6 is 128 bits, 96 more than IPv4",
+      "source": "Chapter 7 notes and Lab 7.1",
+      "require": [
+        "128 bits"
+      ],
+      "forbid": [
+        {
+          "pattern": "IPv6 (?:address(?:es)? )?(?:is|are|uses|use)\\s+(?:a\\s+)?(?:32|64)[- ]bits?",
+          "reason": "IPv6 is 128 bits"
+        }
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "(\\d+) more bits"
+          ],
+          "allowed": [
+            96
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ad-table",
+      "topics": [
+        "n10-ch9",
+        "n10-ch10"
+      ],
+      "statement": "Administrative distance: connected 0, static 1, eBGP 20, EIGRP 90, IGRP 100, OSPF 110, RIP 120",
+      "source": "Chapters 9 and 10 notes and review answer keys",
+      "numeric": [
+        {
+          "patterns": [
+            "\\bRIP(?:v[12])?\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*RIP\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            120
+          ]
+        },
+        {
+          "patterns": [
+            "\\bOSPF\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*OSPF\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            110
+          ]
+        },
+        {
+          "patterns": [
+            "\\bEIGRP\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*EIGRP\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            90,
+            170
+          ]
+        },
+        {
+          "patterns": [
+            "\\bIGRP\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*IGRP\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            100
+          ]
+        },
+        {
+          "patterns": [
+            "\\bstatic(?: route)?\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*Static\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            1
+          ]
+        },
+        {
+          "patterns": [
+            "\\bconnected\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*Connected\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            0
+          ]
+        },
+        {
+          "patterns": [
+            "\\beBGP\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)[^\\d\\n]{0,15}(\\d{1,3})",
+            "(?:^|\\n)\\s*eBGP\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch10-rip",
+      "topics": [
+        "n10-ch10"
+      ],
+      "statement": "RIP: 15 hops maximum, 16 is unreachable, updates every 30 seconds, RIPv2 multicast 224.0.0.9",
+      "source": "Chapter 10 notes and review answer key",
+      "require": [
+        "\\b15\\b[^\\n]{0,30}usable",
+        "16[^\\n]{0,30}unreachable",
+        "224\\.0\\.0\\.9"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "\\bRIP\\b[^\\n]{0,60}?(?:maximum|max|limit|up to)[^\\d\\n]{0,20}(\\d+)\\s*hops?",
+            "maximum hop count[^\\d\\n]{0,30}(\\d+)"
+          ],
+          "allowed": [
+            15,
+            16
+          ]
+        },
+        {
+          "patterns": [
+            "RIP[^\\n]{0,80}?every (\\d+) seconds"
+          ],
+          "allowed": [
+            30
+          ]
+        },
+        {
+          "patterns": [
+            "RIPv2[^\\d\\n]{0,60}?224\\.0\\.0\\.(\\d+)"
+          ],
+          "allowed": [
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch10-protocol-types",
+      "topics": [
+        "n10-ch10"
+      ],
+      "statement": "RIP is distance-vector, OSPF is link-state (Dijkstra), EIGRP is hybrid, BGP is path-vector",
+      "source": "Chapter 10 notes and review answer key",
+      "require": [
+        "Dijkstra"
+      ],
+      "forbid": [
+        {
+          "pattern": "RIP is a link[- ]state",
+          "reason": "RIP is distance-vector"
+        },
+        {
+          "pattern": "OSPF is a distance[- ]vector",
+          "reason": "OSPF is link-state"
+        },
+        {
+          "pattern": "EIGRP is a link[- ]state",
+          "reason": "EIGRP is hybrid (distance-vector with link-state behavior)"
+        },
+        {
+          "pattern": "TTL expiry is a symptom",
+          "reason": "book Q12: TTL expiry alone does not prove a routing loop"
+        },
+        {
+          "pattern": "run the same (?:interior |routing )?(?:routing )?protocol",
+          "reason": "book Q2: routers in one AS do not necessarily use the same routing protocol"
+        }
+      ]
+    },
+    {
+      "id": "ch9-frame",
+      "topics": [
+        "n10-ch9"
+      ],
+      "statement": "EtherType 0x0800 IPv4 and 0x0806 ARP; FCS is 4 bytes",
+      "source": "Chapter 9 notes",
+      "require": [
+        "0x0800",
+        "0x0806",
+        "4-byte"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "(?:FCS|Frame check sequence)[^\\n]{0,80}?(\\d+)-byte"
+          ],
+          "allowed": [
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch9-route-selection",
+      "topics": [
+        "n10-ch9"
+      ],
+      "statement": "Route selection: longest prefix, then lowest AD, then lowest metric",
+      "source": "Chapter 9 notes (objective 2.1)",
+      "require": [
+        "prefix length[^\\n]{0,100}administrative distance[^\\n]{0,100}metric"
+      ],
+      "forbid": [
+        {
+          "pattern": "(?:prefer|prefers|chooses?|selects?)[^\\n]{0,30}highest (?:AD|administrative distance)",
+          "reason": "the lowest AD wins"
+        }
+      ]
+    },
+    {
+      "id": "ch9-arp-command",
+      "topics": [
+        "n10-ch9"
+      ],
+      "statement": "The host ARP cache command is arp -a (the book prints arp -g)",
+      "source": "Chapter 9 notes and review answer key",
+      "require": [
+        "arp -a"
+      ],
+      "kinds": [
+        "card",
+        "question-explanation",
+        "visual",
+        "chapter-json"
+      ],
+      "forbid": [
+        {
+          "pattern": "\\barp -g\\b",
+          "reason": "the command is arp -a"
+        }
+      ]
+    },
+    {
+      "id": "ch11-dot1q",
+      "topics": [
+        "n10-ch11"
+      ],
+      "statement": "802.1Q tag is 4 bytes: 16-bit TPID 0x8100, 3-bit CoS, 1-bit DEI, 12-bit VLAN ID",
+      "source": "Chapter 11 notes",
+      "require": [
+        "0x8100"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "802\\.1Q[^\\n]{0,80}?(\\d+)-byte"
+          ],
+          "allowed": [
+            4
+          ]
+        },
+        {
+          "patterns": [
+            "(\\d+)-bit VLAN ID"
+          ],
+          "allowed": [
+            12
+          ]
+        },
+        {
+          "patterns": [
+            "(\\d+)-bit CoS"
+          ],
+          "allowed": [
+            3
+          ]
+        },
+        {
+          "patterns": [
+            "(\\d+)-bit TPID"
+          ],
+          "allowed": [
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch11-stp",
+      "topics": [
+        "n10-ch11"
+      ],
+      "statement": "STP is 802.1D, RSTP is 802.1w; default port state is blocking; convergence takes 50 seconds",
+      "source": "Chapter 11 notes and written lab",
+      "require": [
+        "802\\.1D",
+        "802\\.1w",
+        "default state[^\\n]{0,40}blocking"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "(\\d+) seconds for STP"
+          ],
+          "allowed": [
+            50
+          ]
+        }
+      ],
+      "forbid": [
+        {
+          "pattern": "RSTP[^\\n]{0,20}802\\.1D",
+          "reason": "RSTP is 802.1w"
+        },
+        {
+          "pattern": "\\bSTP[^\\n]{0,10}\\(802\\.1w\\)",
+          "reason": "STP is 802.1D"
+        }
+      ]
+    },
+    {
+      "id": "ch11-vlans",
+      "topics": [
+        "n10-ch11"
+      ],
+      "statement": "VLANs 1 and 1002 to 1005 cannot be deleted",
+      "source": "Chapter 11 notes",
+      "require": [
+        "1002 to 1005"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "VLANs? (\\d+) and 1002"
+          ],
+          "allowed": [
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch11-poe",
+      "topics": [
+        "n10-ch11"
+      ],
+      "statement": "802.3at delivers 25.5 watts",
+      "source": "Chapter 11 notes and written lab",
+      "numeric": [
+        {
+          "patterns": [
+            "802\\.3at[^\\n]{0,60}?(\\d+(?:\\.\\d+)?) watts"
+          ],
+          "allowed": [
+            25.5,
+            30
+          ]
+        },
+        {
+          "patterns": [
+            "802\\.3af[^\\n]{0,60}?(\\d+(?:\\.\\d+)?) watts"
+          ],
+          "allowed": [
+            12.95,
+            15.4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch11-switch-learning",
+      "topics": [
+        "n10-ch11"
+      ],
+      "statement": "A switch learns from the SOURCE MAC and forwards by the DESTINATION MAC",
+      "source": "Chapter 11 notes",
+      "require": [
+        "learns[^\\n]{0,40}source MAC"
+      ],
+      "forbid": [
+        {
+          "pattern": "learns?[^\\n]{0,40}from the destination MAC",
+          "reason": "switches learn from the source MAC"
+        }
+      ]
+    }
+  ],
+  "computed": [
+    {
+      "id": "eui64-example",
+      "type": "eui64",
+      "topic": "n10-ch7",
+      "mac": "00:1A:2B:3C:4D:5E",
+      "expect": "021A:2BFF:FE3C:4D5E"
+    },
+    {
+      "id": "class-c",
+      "type": "ipv4",
+      "topic": "n10-ch7",
+      "ip": "200.15.4.9",
+      "class": "C",
+      "kind": "public"
+    },
+    {
+      "id": "class-b",
+      "type": "ipv4",
+      "topic": "n10-ch7",
+      "ip": "150.1.1.1",
+      "class": "B",
+      "kind": "public"
+    },
+    {
+      "id": "outside-class-b-private",
+      "type": "ipv4",
+      "topic": "n10-ch7",
+      "ip": "172.32.0.10",
+      "kind": "public"
+    },
+    {
+      "id": "apipa",
+      "type": "ipv4",
+      "topic": "n10-ch7",
+      "ip": "169.254.12.9",
+      "kind": "apipa"
+    },
+    {
+      "id": "private-c",
+      "type": "ipv4",
+      "topic": "n10-ch7",
+      "ip": "192.168.4.5",
+      "kind": "private"
+    },
+    {
+      "id": "loopback",
+      "type": "ipv4",
+      "topic": "n10-ch7",
+      "ip": "127.0.0.1",
+      "kind": "loopback"
+    },
+    {
+      "id": "route-table-q14",
+      "type": "route-lookup",
+      "topic": "n10-ch9",
+      "routes": [
+        {
+          "cidr": "172.16.20.0/27",
+          "exit": "FastEthernet 0/0"
+        },
+        {
+          "cidr": "172.16.20.32/27",
+          "exit": "FastEthernet 0/1"
+        },
+        {
+          "cidr": "172.16.20.64/27",
+          "exit": "FastEthernet 0/2"
+        },
+        {
+          "cidr": "172.16.20.128/27",
+          "exit": "FastEthernet 0/3"
+        }
+      ],
+      "cases": [
+        {
+          "ip": "172.16.20.94",
+          "exit": "FastEthernet 0/2"
+        },
+        {
+          "ip": "172.16.20.5",
+          "exit": "FastEthernet 0/0"
+        },
+        {
+          "ip": "172.16.20.100",
+          "exit": null
+        }
+      ]
+    },
+    {
+      "id": "lab-a-exit-interfaces",
+      "type": "route-lookup",
+      "topic": "n10-ch9",
+      "routes": [
+        {
+          "cidr": "172.16.10.0/24",
+          "exit": "e0"
+        },
+        {
+          "cidr": "172.16.20.0/24",
+          "exit": "e1"
+        },
+        {
+          "cidr": "172.16.30.0/24",
+          "exit": "e2"
+        }
+      ],
+      "cases": [
+        {
+          "ip": "172.16.30.3",
+          "exit": "e2"
+        },
+        {
+          "ip": "172.16.20.2",
+          "exit": "e1"
+        },
+        {
+          "ip": "172.16.10.2",
+          "exit": "e0"
+        }
+      ]
+    }
+  ],
+  "pinChapters": [
+    "n10-ch7",
+    "n10-ch9",
+    "n10-ch10",
+    "n10-ch11"
+  ],
+  "answerKeys": {
+    "q-n10c9-01": "The packet's destination network",
+    "q-n10c9-02": "The default gateway router",
+    "q-n10c9-03": "IPs are unchanged; only TTL is lower",
+    "q-n10c9-04": "An IPv4 packet",
+    "q-n10c9-05": "10.1.1.0/24, because it is the most specific match",
+    "q-n10c9-06": "It is dropped and ICMP unreachable is sent back",
+    "q-n10c9-07": "Dynamic routing",
+    "q-n10c9-08": "An exterior gateway protocol such as BGP",
+    "q-n10c9-09": "The OSPF route, with the lower distance",
+    "q-n10c9-10": "FastEthernet 0/1",
+    "q-n10c9-11": "Host_D",
+    "q-n10c9-12": "show ip arp",
+    "q-n10c9-13": "The ping was lost somewhere along the way",
+    "q-n10c9-14": "The frame check sequence",
+    "q-n10c9-15": "Convergence",
+    "q-n10c9-16": "Its source MAC is the last router interface",
+    "q-n10c9-17": "The /24 RIP route, since prefix length is checked first",
+    "q-n10c9-18": "The network is directly connected",
+    "q-n10c10-01": "It marks the network as unreachable",
+    "q-n10c10-02": "RIPv2",
+    "q-n10c10-03": "The static route, because its AD of 1 is lower",
+    "q-n10c10-04": "The 100 Mbps link costs less",
+    "q-n10c10-05": "Link-state",
+    "q-n10c10-06": "RIP",
+    "q-n10c10-07": "EIGRP",
+    "q-n10c10-08": "A symptom of a routing loop",
+    "q-n10c10-09": "It stays until an administrator changes it",
+    "q-n10c10-10": "More RAM, CPU, and bandwidth in exchange for resiliency",
+    "q-n10c10-11": "OSPF, because its AD of 110 is lower",
+    "q-n10c10-12": "RIPv2, which allows classless networks and authentication",
+    "q-n10c10-13": "EIGRP, since its AD of 90 is lower",
+    "q-n10c10-14": "The protocol metric",
+    "q-n10c10-15": "BGP, a path-vector protocol used between ASes",
+    "q-n10c10-16": "Delay, bandwidth, reliability, and load combined",
+    "q-n10c10-17": "Every 30 seconds, AD 120",
+    "q-n10c10-18": "Connected, static route, OSPF",
+    "q-n10c11-01": "Lower latency and higher bandwidth, with frames sent only where needed",
+    "q-n10c11-02": "That 00:aa is reachable through port 3, learned from the source address",
+    "q-n10c11-03": "Floods the frame to all ports in VLAN 20 only, not other VLANs",
+    "q-n10c11-04": "More broadcast domains and more collision domains than before the split",
+    "q-n10c11-05": "VLAN 1 is protected by IOS, as are VLANs 1002 to 1005, so it cannot be deleted",
+    "q-n10c11-06": "Static VLANs, configured manually while the node stays unaware of it",
+    "q-n10c11-07": "Plain frames, because the VLAN tag is removed before leaving the port",
+    "q-n10c11-08": "In the native VLAN, which is where untagged trunk traffic belongs",
+    "q-n10c11-09": "A 12-bit VLAN ID inside the 4-byte tag, after the source MAC address",
+    "q-n10c11-10": "802.1Q, the open-standard trunking protocol",
+    "q-n10c11-11": "The one with the lowest MAC address, since the priorities tie",
+    "q-n10c11-12": "The port starts in blocking and needs 50 seconds to reach forwarding",
+    "q-n10c11-13": "Create a new VLAN, add a routed SVI, and apply ACLs on the VLAN interface",
+    "q-n10c11-14": "Port security, which caps the MAC addresses allowed on the port",
+    "q-n10c11-15": "CoS, a 3-bit field in the 802.1Q tag that maps to eight queues",
+    "q-n10c11-16": "802.3at, the PoE standard delivering 25.5 watts of power",
+    "q-n10c11-17": "VTP, which copies the VLAN database from the server switch",
+    "q-n10c11-18": "A trunk carries many MAC addresses, so use an access port instead",
+    "q-n10c10-19": "NDP discovers neighbors and router advertisements announce the gateway",
+    "q-n10c10-20": "Tunneling, such as Teredo or ISATAP",
+    "q-n10c7-01": "192.168.0.0 through 192.168.255.255",
+    "q-n10c7-02": "Automatic Private IP Addressing (APIPA)",
+    "q-n10c7-03": "Class C, 110xxxxx",
+    "q-n10c7-04": "172.16.0.0 through 172.31.255.255",
+    "q-n10c7-05": "The local TCP/IP stack on the same host, using the loopback address",
+    "q-n10c7-06": "It is public because the Class B private range ends at 172.31.255.255",
+    "q-n10c7-07": "MAC address",
+    "q-n10c7-08": "96 more bits",
+    "q-n10c7-09": "An address assigned to an interface for one-to-one communication",
+    "q-n10c7-10": "Multicast",
+    "q-n10c7-11": "Global unicast",
+    "q-n10c7-12": "FE80::/10",
+    "q-n10c7-13": "Unique local",
+    "q-n10c7-14": "Anycast",
+    "q-n10c7-15": "::1",
+    "q-n10c7-16": "021A:2BFF:FE3C:4D5E"
+  }
+}

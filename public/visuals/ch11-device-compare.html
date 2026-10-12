@@ -47,11 +47,11 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
 <div class="wrap">
 
 <h1>Hubs, bridges, switches, and routers compared</h1>
-<p class="lede">Pick a device to compare its OSI layer, latency, bandwidth, and domains. Move the slider to change the number of hosts.</p>
+<p class="lede">Pick a device to compare its OSI layer, latency, bandwidth, and domains. Move the slider to change the number of ports in use, with one host on each port.</p>
 <div class="card">
   <p class="lab">Device</p>
   <div class="ctrls" id="devs" role="group" aria-label="Device"></div>
-  <label class="lab" for="n">Hosts connected: <span id="nv">12</span></label>
+  <label class="lab" for="n">Ports in use (one host per port): <span id="nv">12</span></label>
   <input id="n" type="range" min="2" max="12" value="12" style="width:100%">
   <div class="tbl" style="margin-top:10px"><table><tbody id="rows"></tbody></table></div>
   <p class="lab">Latency (shorter bar is faster)</p>
@@ -65,7 +65,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
 
 const devs={
  hub:{name:'Hub',layer:'Layer 1 (physical)',lat:2,latTxt:'Low, but repeats every frame to every port',bw:'Shared by all ports',note:'A hub repeats the signal to every port, so all hosts share one bandwidth pool and one collision domain.'},
- bridge:{name:'Bridge',layer:'Layer 2 (data link)',lat:7,latTxt:'Higher, software-based',bw:'Limited by software',note:'A bridge is a software switch, so it adds more latency than a hardware switch.'},
+ bridge:{name:'Bridge',layer:'Layer 2 (data link)',lat:7,latTxt:'Higher, software-based',bw:'Limited by software',note:'A bridge is a software switch, so it adds more latency than a hardware switch. The table assumes a two-port bridge, which gives two collision domains.'},
  sw:{name:'Switch',layer:'Layer 2 (data link)',lat:1,latTxt:'Lowest, ASIC-based',bw:'Highest, full speed on each port',note:'Application-specific integrated circuits (ASICs) make switching the fastest option.'},
  router:{name:'Router',layer:'Layer 3 (network)',lat:8,latTxt:'Highest, strips and rebuilds each packet',bw:'Per interface',note:'Routers add latency by decapsulating, routing, and re-encapsulating each packet.'}
 };

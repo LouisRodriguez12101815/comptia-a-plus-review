@@ -117,6 +117,12 @@ button.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2p
         <div class="chips">
           <button class="chip" data-id="vrrp" aria-pressed="false">VRRP</button>
           <button class="chip" data-id="hsrp" aria-pressed="false">HSRP</button>
+        </div>
+      </div>
+      <div class="group">
+        <h3>Not a gateway protocol</h3>
+        <p class="blurb">Spreads client traffic across servers. It does not move the default gateway.</p>
+        <div class="chips">
           <button class="chip" data-id="nlb" aria-pressed="false">NLB</button>
         </div>
       </div>
@@ -196,10 +202,10 @@ const DATA = {
   nlb: { name: "NLB", tag: "Availability · Windows service", facts: [["Type","Windows service"],["Purpose","Load balancing"]], body: "Network Load Balancing spreads client traffic across servers. It is not a router protocol and does not provide gateway failover." },
   rip1: { name: "RIPv1", tag: "Distance-vector · interior", facts: [["AD","120"],["Updates","Broadcast every 30 s"],["Metric","Hop count (max 15)"],["Subnet masks","Not sent"]], body: "Sends its full routing table out every active interface every 30 seconds. Does not support VLSM, classless networks, or authentication." },
   rip2: { name: "RIPv2", tag: "Distance-vector · interior", facts: [["AD","120"],["Updates","Multicast 224.0.0.9 every 30 s"],["Metric","Hop count (max 15)"],["Subnet masks","Sent"]], body: "Same behavior as RIPv1 with multicast instead of broadcast, subnet masks in updates (classless and discontiguous networks), and authentication between routers." },
-  igrp: { name: "IGRP", tag: "Distance-vector · interior", facts: [["AD","100"],["Type","Distance-vector"]], body: "Cisco's older distance-vector protocol. The file lists it with AD 100, and it is the protocol EIGRP replaced." },
+  igrp: { name: "IGRP", tag: "Distance-vector · interior", facts: [["AD","100"],["Type","Distance-vector"]], body: "Cisco's older distance-vector protocol, with an AD of 100. EIGRP replaced it." },
   eigrp: { name: "EIGRP", tag: "Hybrid · interior", facts: [["AD","90 (internal)"],["Metric","Composite: delay, bandwidth, reliability, load"]], body: "Distance-vector at heart with link-state features. Uses a composite metric, and K values weight that calculation." },
   ospf: { name: "OSPF", tag: "Link-state · interior", facts: [["AD","110"],["Algorithm","Dijkstra"],["Metric","Cost (reference bandwidth ÷ interface bandwidth)"],["Multicast","224.0.0.5 and 224.0.0.6"]], body: "Open-standard link-state protocol. Supports VLSM and classless routing, and every router builds the same topology database before picking the shortest path." },
-  isis: { name: "IS-IS", tag: "Link-state · interior", facts: [["Type","Link-state"]], body: "Link-state protocol covered in the chapter's closing section, alongside OSPF. Its details are outside this review file's questions." },
+  isis: { name: "IS-IS", tag: "Link-state · interior", facts: [["Type","Link-state"]], body: "Link-state protocol, like OSPF. The chapter covers it only briefly." },
   bgp: { name: "BGP", tag: "Path-vector · exterior", facts: [["Scope","Between autonomous systems"],["Use","Internet routing"]], body: "Path-vector protocol that routes packets between autonomous systems. The file describes it as the protocol that routes Internet traffic." },
   ndp: { name: "NDP", tag: "IPv6 · discovery", facts: [["Network","IPv6"],["Job","Discover neighbors"]], body: "Neighbor Discovery Protocol. In IPv6 networks it discovers information about neighboring devices." },
   ra: { name: "Router Advertisement", tag: "IPv6 · discovery", facts: [["Network","IPv6"],["Job","Detect the gateway"]], body: "Routers send these to announce themselves, so hosts can detect the gateway out of the network." },
