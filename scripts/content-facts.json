@@ -212,6 +212,60 @@
       ]
     },
     {
+      "id": "ad-table-external-unknown",
+      "topics": [
+        "n10-ch10",
+        "n10-ch11"
+      ],
+      "statement": "External EIGRP AD 170; unknown source AD 255 is never used; the router checks AD first when two updates list the same network",
+      "source": "Sybex chapter 11 slide deck, slide 6 (Administrative Distance)",
+      "require": [
+        "External EIGRP[^\\n]{0,40}170",
+        "255[^\\n]{0,40}never used"
+      ],
+      "numeric": [
+        {
+          "patterns": [
+            "External EIGRP[^\\d\\n]{0,40}(\\d{1,3})",
+            "(?:^|\\n)\\s*External EIGRP\\s*\\|\\s*(\\d{1,3})\\b"
+          ],
+          "allowed": [
+            170
+          ]
+        },
+        {
+          "patterns": [
+            "\\bUnknown\\b[^\\d\\n]{0,40}?(?:AD|administrative distance)?[^\\d\\n]{0,15}(\\d{1,3})\\b(?=[^\\n]{0,40}never)"
+          ],
+          "allowed": [
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch10-snmp-trap-ports",
+      "topics": [
+        "n10-ch10"
+      ],
+      "statement": "SNMP traps use UDP 162; polling (GET) uses UDP 161; traps are unacknowledged, INFORMs are acknowledged",
+      "source": "Author's real-world note on SNMP traps",
+      "require": [
+        "traps use UDP port 162",
+        "UDP port 161"
+      ],
+      "forbid": [
+        {
+          "pattern": "traps? (?:use|go to|are sent (?:over|on)) UDP(?: port)? 161",
+          "reason": "traps use UDP 162; 161 is polling"
+        },
+        {
+          "pattern": "INFORMs? (?:is|are) (?:not |un)acknowledged",
+          "reason": "INFORMs are acknowledged"
+        }
+      ]
+    },
+    {
       "id": "ch10-rip",
       "topics": [
         "n10-ch10"
@@ -714,6 +768,9 @@
     "q-n10c7-33": "192.255.254.0",
     "q-n10c7-34": "172.20.14.36 / 192.168.24.43",
     "q-n10c7-35": "FE80::020D:BDFF:FE3B:0D80",
-    "q-n10c7-36": "224.0.0.1"
+    "q-n10c7-36": "224.0.0.1",
+    "q-n10c10-21": "The internal route, because its AD of 90 is lower",
+    "q-n10c10-22": "Never uses it, because the source is unknown",
+    "q-n10c10-23": "Administrative distance"
   }
 }

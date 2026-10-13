@@ -515,13 +515,118 @@
               [
                 "RIP",
                 "120"
+              ],
+              [
+                "External EIGRP",
+                "170"
+              ],
+              [
+                "Unknown",
+                "255 (never used)"
               ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "When a router receives two updates for the same remote network, AD is the first thing it checks. The route with the lower AD goes into the routing table.",
+              "Internal EIGRP routes carry AD 90. External EIGRP routes, redistributed into EIGRP from another source, carry AD 170.",
+              "AD 255 means the source is unknown. The router never uses a route with AD 255."
             ]
           },
           {
             "type": "callout",
             "kind": "critical",
             "text": "A static default route (AD 1) beats a RIP default route (AD 120), even if RIP has a lower metric."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Real world: a wise network engineer does not change the default administrative distance values for protocols. Leave AD at its defaults so every router makes the same, predictable choice."
+          }
+        ]
+      },
+      {
+        "id": "real-world-snmp-traps",
+        "title": "Real world: watching the network with SNMP traps",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Leaving AD alone does not mean ignoring routing. A senior engineer managed his team of network engineers with SNMP traps, so problems reached them as they happened. An SNMP (Simple Network Management Protocol) trap is an unsolicited, real-time alert that an SNMP-enabled device (the agent) sends to a central network management system (NMS) to report a critical event or status change, without waiting to be polled."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Transport: traps use UDP port 162. Polling, such as GET requests, uses UDP port 161.",
+              "Unsolicited alerts: devices push a message only when a trigger happens, which cuts the overhead of constant polling.",
+              "OID (Object Identifier): a dotted-decimal string that uniquely identifies the event or object.",
+              "Varbinds (variable bindings): key-value pairs with context, such as sysUpTime, snmpTrapOID, interface indexes, or error descriptions.",
+              "Timestamp and agent address: when the event happened and which device sent it."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Use case",
+              "Example traps"
+            ],
+            "rows": [
+              [
+                "Interface states",
+                "linkDown or linkUp when a physical or logical interface flaps"
+              ],
+              [
+                "Hardware and environment",
+                "Power supply loss, fan failure, high temperature, memory exhaustion"
+              ],
+              [
+                "Security and access",
+                "Authentication failures, wrong community string attempts, firewall security triggers"
+              ],
+              [
+                "Routing and protocol changes",
+                "BGP session drops, EGP neighbor loss"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Feature",
+              "SNMP trap",
+              "SNMP INFORM"
+            ],
+            "rows": [
+              [
+                "Acknowledged?",
+                "No. Fire and forget; the agent never knows if the NMS got it.",
+                "Yes. The NMS must send an acknowledgment."
+              ],
+              [
+                "If the message is lost",
+                "It is gone.",
+                "The agent retries until it gets an ACK."
+              ],
+              [
+                "Best for",
+                "High-volume, lower-priority alerts",
+                "Critical enterprise infrastructure"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Upgrade to SNMPv3. SNMPv1 and SNMPv2c send community strings (public, private) in clear text; SNMPv3 adds authentication and encryption.",
+              "Compile MIBs on the NMS. Load the vendor MIBs (for example Cisco or Juniper) into the management platform, such as PRTG, LogicMonitor, or Netdata, so raw OIDs show as readable text.",
+              "Rate-limit and filter. Prevent trap storms during a major outage by filtering redundant or low-priority traps, and pair traps with periodic polling for complete visibility.",
+              "Use Cisco EEM (Embedded Event Manager) to script custom triggers that turn CLI events or log messages into tailored SNMP notifications."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Exam memory hook: traps go to UDP 162, polls go to UDP 161. A trap is not acknowledged; an INFORM is. For more, see Cisco's SNMP trap configuration guide or LogicMonitor's SNMP trap overview."
           }
         ]
       },
@@ -1010,6 +1115,71 @@
           {
             "type": "paragraph",
             "text": "This chapter has interactive visuals for the review questions and written lab. Open them at /network-plus/ch11."
+          }
+        ]
+      },
+      {
+        "id": "admin-distance-slides",
+        "title": "Administrative distance (from the chapter 11 slides)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The chapter 11 slide deck reviews administrative distance (AD), a routing topic. The full notes, AD table, and practice visuals are in Network+ Chapter 10, Routing Protocols."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Route source",
+              "Default AD"
+            ],
+            "rows": [
+              [
+                "Connected interface",
+                "0"
+              ],
+              [
+                "Static route",
+                "1"
+              ],
+              [
+                "EIGRP",
+                "90"
+              ],
+              [
+                "IGRP",
+                "100"
+              ],
+              [
+                "OSPF",
+                "110"
+              ],
+              [
+                "RIP",
+                "120"
+              ],
+              [
+                "External EIGRP",
+                "170"
+              ],
+              [
+                "Unknown",
+                "255 (never used)"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Two updates for the same remote network? The router checks AD first, and the lower AD wins the spot in the routing table."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Real world: a wise network engineer does not change the default administrative distance values for protocols. Leave AD at its defaults so every router makes the same, predictable choice."
+          },
+          {
+            "type": "paragraph",
+            "text": "Real-world note: Chapter 10 also covers how engineers watch routing and hardware events with SNMP traps (UDP 162) instead of changing AD values."
           }
         ]
       }

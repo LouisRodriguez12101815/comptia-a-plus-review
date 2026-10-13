@@ -2894,6 +2894,48 @@
     "weak": false
   },
   {
+    "id": "q-n10c10-21",
+    "topicId": "n10-ch10",
+    "prompt": "A router learns the same remote network as an internal EIGRP route and as an external EIGRP route. Which route goes in the routing table?",
+    "choices": [
+      "The external route, because 170 is a higher trust rating",
+      "Both routes, load-balanced because they are both EIGRP",
+      "The internal route, because its AD of 90 is lower",
+      "Whichever route has the lower composite metric"
+    ],
+    "answer": 2,
+    "explanation": "Internal EIGRP has AD 90 and external EIGRP has AD 170, so the internal route wins. Comparing metrics is tempting, but metrics only break ties when AD is equal.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-22",
+    "topicId": "n10-ch10",
+    "prompt": "A route in a router's database shows an administrative distance of 255. What does the router do with it?",
+    "choices": [
+      "Uses it only if no other route exists",
+      "Treats it like a static route",
+      "Prefers it, because higher AD means more trusted",
+      "Never uses it, because the source is unknown"
+    ],
+    "answer": 3,
+    "explanation": "AD 255 marks an unknown source, and the router never uses that route. Keeping it as a last resort sounds sensible, but 255 means never, not last.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c10-23",
+    "topicId": "n10-ch10",
+    "prompt": "A router receives two updates that list the same remote network from different routing sources. What does it check first to decide which route to install?",
+    "choices": [
+      "Administrative distance",
+      "Hop count",
+      "Interface bandwidth",
+      "Which update arrived first"
+    ],
+    "answer": 0,
+    "explanation": "The router checks administrative distance first, and the lower AD goes in the routing table. Hop count is a RIP metric and only breaks ties within one protocol.",
+    "weak": false
+  },
+  {
     "id": "q-n10c7-01",
     "topicId": "n10-ch7",
     "prompt": "A technician is assigning a private Class C network to a small office. Which range is the Class C private range?",
