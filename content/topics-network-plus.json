@@ -1032,6 +1032,29 @@
         ]
       },
       {
+        "id": "split-horizon",
+        "title": "Split horizon",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Split horizon is a loop-prevention rule used by distance-vector protocols such as RIP and IGRP. A router does not advertise a route back out the interface it learned that route on."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Example: Router B learns 10.0.0.0 from Router A on its link to A. B does not send that route back to A on that link.",
+              "B still advertises the route out its other interfaces.",
+              "Without split horizon, A and B can pass the same route back and forth, and the packets loop."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Split horizon blocks one route on one interface. It does not stop every update, and it does not stop broadcast storms on switches."
+          }
+        ]
+      },
+      {
         "id": "static-default-dynamic",
         "title": "Static, default, and dynamic routing",
         "blocks": [
