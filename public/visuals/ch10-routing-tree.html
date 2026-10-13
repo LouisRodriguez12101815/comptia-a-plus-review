@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chapter 10 map: the routing tree</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.tile{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;border-radius:10px;padding:10px 12px;font-weight:500}
+.tile .n{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .tt{font-weight:600;font-size:14px;line-height:1.3}
+.tile[aria-pressed="true"] .n{color:inherit;opacity:.85}
+.detail h2{font:600 20px/1.25 Georgia,serif;margin:0 0 8px}
+.detail ul{margin:0 0 10px;padding-left:20px}
+.detail li{margin:3px 0}
+.trap{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--warm-soft);color:var(--ink);font-size:14px}
+.trap b{color:var(--warm)}
+.seevis{margin-top:10px;font-size:13px;color:var(--muted)}
+.seevis b{color:var(--accent)}
+.navrow{display:flex;gap:8px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Chapter 10 map: the routing tree</h1><p class="lede">Start at static or dynamic routing, then follow the branches. Pick a step to see its protocols and the exam trap, and use Next to walk the tree.</p><div class="card"><div class="lab">Pick a topic from the notes</div><div class="tiles" id="tiles"></div><div class="out detail" id="detail" aria-live="polite"></div><div class="navrow"><button id="prev">&larr; Previous topic</button><button id="next">Next topic &rarr;</button></div></div>
+</div>
+<script>
+const ITEMS=[{"name": "Routing: static or dynamic", "tag": "1 \u00b7 Start", "facts": ["Static routing is typed in by an administrator and stays until someone changes it.", "Dynamic routing protocols learn routes and reroute around failures with no administrator action.", "Every dynamic protocol sits under one of two branches: interior (IGP) or exterior (EGP)."], "trap": "Static and default routes need an administrator to fix them when they fail.", "visual": "Concept visuals"}, {"name": "IGP: inside one autonomous system", "tag": "2 \u00b7 IGP", "facts": ["An interior gateway protocol runs inside one autonomous system (AS).", "Examples: RIP, IGRP, EIGRP, OSPF, IS-IS.", "The IGP branch splits into distance-vector and link-state."], "trap": "RIP, EIGRP, and OSPF are all IGPs, even though they use different methods.", "visual": "Concept visuals"}, {"name": "Distance vector", "tag": "3 \u00b7 IGP branch", "facts": ["Passes routing tables to neighbors. No full topology map.", "Protocols: RIPv1, RIPv2, IGRP.", "RIP counts hops and treats 16 or more as unreachable."], "trap": "Distance vector does not build a full topology map.", "visual": "Distance vector"}, {"name": "Link state", "tag": "4 \u00b7 IGP branch", "facts": ["Learns every link and builds the same topology map on every router.", "Protocols: OSPF and IS-IS.", "Each router runs Dijkstra to choose the best path."], "trap": "OSPF is link state, not distance vector, even though it is an IGP.", "visual": "Link state"}, {"name": "Hybrid", "tag": "5 \u00b7 IGP branch", "facts": ["Behaves like distance vector with link-state features.", "Protocol: EIGRP.", "Hybrid sits in the IGP branch."], "trap": "EIGRP is hybrid, not link state.", "visual": "Hybrid spectrum"}, {"name": "EGP: between autonomous systems", "tag": "6 \u00b7 EGP", "facts": ["An exterior gateway protocol runs between autonomous systems.", "Protocol: BGP, the EGP in use today.", "BGP is path-vector: it tracks the AS path."], "trap": "BGP is an EGP and path-vector. It is not an IGP, and it is not hybrid.", "visual": "Autonomous systems"}];
+const tiles=document.getElementById('tiles'),detail=document.getElementById('detail');
+let cur=0;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+ITEMS.forEach((it,i)=>{const b=document.createElement('button');b.className='tile';b.type='button';
+ b.innerHTML='<span class="n">'+esc(it.tag||('Topic '+(i+1)))+'</span><span class="tt">'+esc(it.name)+'</span>';
+ b.onclick=()=>show(i);tiles.appendChild(b)});
+function show(i){cur=i;const it=ITEMS[i];
+ [...tiles.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'));
+ let h='<h2>'+esc(it.name)+'</h2><ul>'+it.facts.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>';
+ if(it.trap)h+='<div class="trap"><b>Exam trap:</b> '+esc(it.trap)+'</div>';
+ if(it.visual)h+='<div class="seevis">Interactive visual for this topic: <b>'+esc(it.visual)+'</b></div>';
+ detail.innerHTML=h;
+ document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===ITEMS.length-1}
+document.getElementById('prev').onclick=()=>show(cur-1);
+document.getElementById('next').onclick=()=>show(cur+1);
+show(0);
+
+</script>
+</body>
+</html>
