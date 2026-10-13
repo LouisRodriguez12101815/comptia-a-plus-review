@@ -61,11 +61,13 @@ h1 { font: 600 26px/1.2 Georgia, serif; margin: 0 0 6px; text-wrap: balance; }
     <div class="ctrls" role="group" aria-label="Choose a scenario">
       <button id="s1" type="button" aria-pressed="true">Static route vs RIP</button>
       <button id="s2" type="button" aria-pressed="false">OSPF vs RIP</button>
+      <button id="s3" type="button" aria-pressed="false">Internal vs external EIGRP</button>
+      <button id="s4" type="button" aria-pressed="false">Unknown source (AD 255)</button>
     </div>
 
     <div class="routes" id="routes"></div>
 
-    <div class="rule"><strong>Rule:</strong> lower AD wins, even when the other route has a better metric. The router installs only the winning route in its table.</div>
+    <div class="rule"><strong>Rule:</strong> when two updates list the same remote network, the router checks AD first. Lower AD wins, even when the other route has a better metric, and only the winner goes in the routing table. AD 255 means the source is unknown, so that route is never used, even if it is the only one.</div>
 
     <p class="answer"><strong>Question 8 answer is B.</strong> ADs define the reliability of each routing source. They don't define standards, calculate shortest paths, or get set for path selection by the router itself.</p>
   </div>
@@ -80,12 +82,21 @@ const scenarios = {
   s2: [
     { name: 'OSPF route', ad: 110, metric: 'Cost 50', via: '10.1.1.2' },
     { name: 'RIP route', ad: 120, metric: '2 hops', via: '10.1.2.2' }
+  ],
+  s3: [
+    { name: 'Internal EIGRP route', ad: 90, metric: 'Composite 3,072,000', via: '172.16.1.2' },
+    { name: 'External EIGRP route', ad: 170, metric: 'Composite 28,160', via: '172.16.2.2' }
+  ],
+  s4: [
+    { name: 'Route from an unknown source', ad: 255, metric: 'Not compared', via: '10.9.9.2' }
   ]
 };
+const ids = Object.keys(scenarios);
 
 function render(key) {
   const routes = scenarios[key];
-  const winner = routes.reduce((a, b) => (b.ad < a.ad ? b : a));
+  const usable = routes.filter(r => r.ad < 255);
+  const winner = usable.length ? usable.reduce((a, b) => (b.ad < a.ad ? b : a)) : null;
   const box = document.getElementById('routes');
   box.innerHTML = '';
   routes.forEach(r => {
@@ -94,7 +105,7 @@ function render(key) {
     div.className = 'route ' + (won ? 'win' : 'lose');
     div.innerHTML =
       '<h2></h2><dl><dt>AD</dt><dd></dd><dt>Metric</dt><dd></dd><dt>Next hop</dt><dd></dd></dl>' +
-      '<span class="badge ' + (won ? 'win' : 'lose') + '">' + (won ? 'Installed in routing table' : 'Not installed') + '</span>';
+      '<span class="badge ' + (won ? 'win' : 'lose') + '">' + (won ? 'Installed in routing table' : (r.ad === 255 ? 'Never used (AD 255)' : 'Not installed')) + '</span>';
     div.querySelector('h2').textContent = r.name;
     const dd = div.querySelectorAll('dd');
     dd[0].textContent = r.ad;
@@ -104,9 +115,9 @@ function render(key) {
   });
 }
 
-['s1', 's2'].forEach(id => {
+ids.forEach(id => {
   document.getElementById(id).addEventListener('click', () => {
-    ['s1', 's2'].forEach(x => document.getElementById(x).setAttribute('aria-pressed', String(x === id)));
+    ids.forEach(x => document.getElementById(x).setAttribute('aria-pressed', String(x === id)));
     render(id);
   });
 });

@@ -69,7 +69,7 @@ export default function Page() {
 
       <section className="card" aria-labelledby="ad-heading">
         <h2 id="ad-heading">Administrative distance</h2>
-        <p className="muted">Lower numbers are trusted more. The router installs the route from the source with the lowest AD.</p>
+        <p className="muted">Lower numbers are trusted more. When two updates list the same remote network, the router checks AD first and installs the route with the lowest AD. A route with AD 255 is never used.</p>
         <div className="table-wrap">
           <table>
             <caption className="muted" style={{ textAlign: "left", captionSide: "top", padding: 0 }}>
@@ -85,7 +85,7 @@ export default function Page() {
               {ch10.adTable.map((row) => (
                 <tr key={row.source}>
                   <th scope="row">{row.source}</th>
-                  <td>{row.ad}</td>
+                  <td>{row.note ? `${row.ad} (${row.note})` : row.ad}</td>
                 </tr>
               ))}
             </tbody>
