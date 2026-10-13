@@ -2110,6 +2110,286 @@
     "weak": false
   },
   {
+    "id": "q-n10c8-01",
+    "topicId": "n10-ch8",
+    "prompt": "A network is subnetted with the mask 255.255.255.128. How many usable host addresses does each subnet have?",
+    "choices": [
+      "128",
+      "126",
+      "127",
+      "254"
+    ],
+    "answer": 1,
+    "explanation": "A /25 leaves 7 host bits, so 2^7 - 2 = 126. The 2 removed are the subnet address and the broadcast address. 254 is the answer for a /24, and 128 forgets to subtract 2.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-02",
+    "topicId": "n10-ch8",
+    "prompt": "You subnet 192.168.10.0 with the mask 255.255.255.128. Which are the valid subnet addresses?",
+    "choices": [
+      "192.168.10.0 and 192.168.10.64",
+      "192.168.10.1 and 192.168.10.129",
+      "192.168.10.0 and 192.168.10.127",
+      "192.168.10.0 and 192.168.10.128"
+    ],
+    "answer": 3,
+    "explanation": "The block size is 256 - 128 = 128, so you count from zero in steps of 128: 192.168.10.0 and 192.168.10.128. 127 is the broadcast of the first subnet, not a subnet address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-03",
+    "topicId": "n10-ch8",
+    "prompt": "What is the broadcast address of the 192.168.10.0 subnet when the mask is 255.255.255.128?",
+    "choices": [
+      "192.168.10.127",
+      "192.168.10.128",
+      "192.168.10.255",
+      "192.168.10.126"
+    ],
+    "answer": 0,
+    "explanation": "The broadcast is the number right before the next subnet. The next subnet is 192.168.10.128, so the broadcast is 192.168.10.127. 192.168.10.255 is the broadcast of the second subnet.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-04",
+    "topicId": "n10-ch8",
+    "prompt": "What is the valid host range of the 192.168.10.128 subnet with the mask 255.255.255.128?",
+    "choices": [
+      "192.168.10.128 through 192.168.10.255",
+      "192.168.10.129 through 192.168.10.255",
+      "192.168.10.129 through 192.168.10.254",
+      "192.168.10.128 through 192.168.10.254"
+    ],
+    "answer": 2,
+    "explanation": "Hosts sit between the subnet address (.128) and the broadcast address (.255), so the first host is 192.168.10.129 and the last is 192.168.10.254.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-05",
+    "topicId": "n10-ch8",
+    "prompt": "A host has the address 192.168.10.100 and the mask 255.255.255.128. Which subnet is it in?",
+    "choices": [
+      "192.168.10.64",
+      "192.168.10.0",
+      "192.168.10.100",
+      "192.168.10.128"
+    ],
+    "answer": 1,
+    "explanation": "The subnets are 0 and 128. The address ends in 100, which is at least 0 and below 128, so it belongs to the 192.168.10.0 subnet (hosts 1 through 126).",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-06",
+    "topicId": "n10-ch8",
+    "prompt": "What is the block size for the subnet mask 255.255.255.192?",
+    "choices": [
+      "32",
+      "192",
+      "128",
+      "64"
+    ],
+    "answer": 3,
+    "explanation": "Block size is 256 minus the interesting octet: 256 - 192 = 64. The subnets in a Class C network are then 0, 64, 128, and 192.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-07",
+    "topicId": "n10-ch8",
+    "prompt": "A Class C network is subnetted with 255.255.255.224. How many subnets and usable hosts per subnet result?",
+    "choices": [
+      "8 subnets, 30 hosts",
+      "4 subnets, 62 hosts",
+      "8 subnets, 32 hosts",
+      "6 subnets, 30 hosts"
+    ],
+    "answer": 0,
+    "explanation": "The mask uses 3 subnet bits and leaves 5 host bits: 2^3 = 8 subnets and 2^5 - 2 = 30 hosts. The block size is 32.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-08",
+    "topicId": "n10-ch8",
+    "prompt": "Dozens of point-to-point WAN links each need exactly two addresses. Which mask wastes the fewest addresses?",
+    "choices": [
+      "255.255.255.0 (/24)",
+      "255.255.255.128 (/25)",
+      "255.255.255.252 (/30)",
+      "255.255.255.240 (/28)"
+    ],
+    "answer": 2,
+    "explanation": "A /30 leaves 2 host bits, so 2^2 - 2 = 2 usable hosts, exactly the two ends of a link. A /24 would waste 252 addresses on every link.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-09",
+    "topicId": "n10-ch8",
+    "prompt": "A WAN link uses the mask 255.255.255.0 even though it needs only two addresses. How many host addresses are wasted on that link?",
+    "choices": [
+      "254",
+      "252",
+      "253",
+      "126"
+    ],
+    "answer": 1,
+    "explanation": "A /24 provides 254 host addresses and the link uses 2, so 252 are wasted. Using a /30 avoids that waste.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-10",
+    "topicId": "n10-ch8",
+    "prompt": "What is the default subnet mask of a Class B address?",
+    "choices": [
+      "255.255.0.0",
+      "255.0.0.0",
+      "255.255.255.0",
+      "255.255.255.128"
+    ],
+    "answer": 0,
+    "explanation": "Class B has the format network.network.host.host, so the default mask is 255.255.0.0 (/16). 255.0.0.0 is Class A and 255.255.255.0 is Class C.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-11",
+    "topicId": "n10-ch8",
+    "prompt": "Which CIDR notation matches the subnet mask 255.255.255.0?",
+    "choices": [
+      "/8",
+      "/16",
+      "/32",
+      "/24"
+    ],
+    "answer": 3,
+    "explanation": "255.255.255.0 has three full octets, 24 bits, turned on, so it is written /24. /8 and /16 are the Class A and Class B default masks.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-12",
+    "topicId": "n10-ch8",
+    "prompt": "A network uses the same subnet mask on every host and router interface. How is this network described?",
+    "choices": [
+      "Classless",
+      "VLSM",
+      "Classful",
+      "Dynamic"
+    ],
+    "answer": 2,
+    "explanation": "A classful network uses one mask everywhere. Classless routing allows different size masks, which is what VLSM provides.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-13",
+    "topicId": "n10-ch8",
+    "prompt": "Which technique lets one network use different size subnet masks, such as /30 for WAN links and /24 for LANs?",
+    "choices": [
+      "APIPA",
+      "PAT",
+      "Classful addressing",
+      "VLSM"
+    ],
+    "answer": 3,
+    "explanation": "Variable length subnet masking (VLSM) lets each subnet get a mask that fits its needs. Classful addressing uses one mask everywhere.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-14",
+    "topicId": "n10-ch8",
+    "prompt": "A technician runs ipconfig /all and sees 192.168.10.77 with the mask 255.255.255.0. What is the host ID portion?",
+    "choices": [
+      "77 (the last octet)",
+      "192.168.10",
+      "192",
+      "10.77"
+    ],
+    "answer": 0,
+    "explanation": "A /24 mask covers the first three octets as the network ID (192.168.10), so the host ID is the last octet, 77.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-15",
+    "topicId": "n10-ch8",
+    "prompt": "How many subnets does a mask create when it uses 3 subnet bits?",
+    "choices": [
+      "3",
+      "6",
+      "8",
+      "16"
+    ],
+    "answer": 2,
+    "explanation": "Subnets = 2 to the power of the subnet bits, so 2^3 = 8.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-16",
+    "topicId": "n10-ch8",
+    "prompt": "Which term is another name for NAT overloading?",
+    "choices": [
+      "Static NAT",
+      "PAT (port address translation)",
+      "Dynamic NAT",
+      "VLSM"
+    ],
+    "answer": 1,
+    "explanation": "NAT overloading and port address translation (PAT) are the same feature: many inside hosts share one public address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-17",
+    "topicId": "n10-ch8",
+    "prompt": "Many inside hosts share a single public address through PAT. How does the translating device keep their conversations apart?",
+    "choices": [
+      "By MAC addresses",
+      "By subnet masks",
+      "By TTL values",
+      "By port numbers"
+    ],
+    "answer": 3,
+    "explanation": "PAT adds the port number to the translation, so each inside conversation maps to a different port on the shared public address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-18",
+    "topicId": "n10-ch8",
+    "prompt": "An administrator permanently maps one inside address to one fixed public address. Which NAT type is this?",
+    "choices": [
+      "Static NAT",
+      "Dynamic NAT",
+      "PAT",
+      "APIPA"
+    ],
+    "answer": 0,
+    "explanation": "Static NAT is a fixed one-to-one mapping. Dynamic NAT picks public addresses from a pool as needed, and PAT shares one address among many hosts.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-19",
+    "topicId": "n10-ch8",
+    "prompt": "Which NAT type hands out public addresses from a pool as inside hosts need them?",
+    "choices": [
+      "Static NAT",
+      "PAT",
+      "Dynamic NAT",
+      "Loopback"
+    ],
+    "answer": 2,
+    "explanation": "Dynamic NAT maps inside hosts to a pool of public addresses on demand. Static NAT is a fixed mapping, and PAT overloads a single address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c8-20",
+    "topicId": "n10-ch8",
+    "prompt": "How many usable hosts does each subnet have with the mask 255.255.255.240 (/28)?",
+    "choices": [
+      "16",
+      "14",
+      "15",
+      "30"
+    ],
+    "answer": 1,
+    "explanation": "A /28 has 4 host bits: 2^4 - 2 = 14. The block size is 16, which counts the subnet and broadcast addresses too.",
+    "weak": false
+  },
+  {
     "id": "q-n10c9-01",
     "topicId": "n10-ch9",
     "prompt": "A router receives a packet from a LAN it has never seen before. Which piece of information does it actually need in order to forward the packet?",

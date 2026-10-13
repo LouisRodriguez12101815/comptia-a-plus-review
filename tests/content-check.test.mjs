@@ -31,6 +31,11 @@ test("the checker still catches seeded mistakes", () => {
     pinned.answer = (pinned.answer + 1) % pinned.choices.length;
     fs.writeFileSync(qPath, JSON.stringify(questions));
 
+    const fPath = path.join(dir, "scripts/content-facts.json");
+    const facts = JSON.parse(fs.readFileSync(fPath, "utf8"));
+    facts.computed.find((c) => c.id === "ch8-slash25").hosts = 128;
+    fs.writeFileSync(fPath, JSON.stringify(facts));
+
     const tPath = path.join(dir, "content/topics-network-plus.json");
     fs.writeFileSync(tPath, fs.readFileSync(tPath, "utf8").replace("inserts FF:FE", "inserts FF:FF"));
 
@@ -40,6 +45,7 @@ test("the checker still catches seeded mistakes", () => {
     assert.ok(checks.has("answer-key"), "invalid answer index should be caught");
     assert.ok(checks.has("fact-forbidden"), "FF:FF in the EUI-64 notes should be caught");
     assert.ok(checks.has("answer-pin"), "a valid-looking but wrong answer key should be caught");
+    assert.ok(checks.has("computed"), "a wrong subnet worked example should be caught");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

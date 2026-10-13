@@ -61,7 +61,13 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
           );
         }
         return (
-          <div key={index} className="overflow-x-auto">
+          <div
+            key={index}
+            role="region"
+            tabIndex={0}
+            aria-label={`Table: ${block.headers.join(", ")}`}
+            className="overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
+          >
             <table className="min-w-full border-collapse text-left text-sm">
               <thead>
                 <tr>

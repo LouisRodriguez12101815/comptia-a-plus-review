@@ -545,6 +545,92 @@
           "reason": "switches learn from the source MAC"
         }
       ]
+    },
+    {
+      "id": "ch8-default-masks",
+      "topics": [
+        "n10-ch8"
+      ],
+      "statement": "Default masks: Class A 255.0.0.0, Class B 255.255.0.0, Class C 255.255.255.0",
+      "source": "Chapter 8 Table 8.1",
+      "require": [
+        "255\\.0\\.0\\.0",
+        "255\\.255\\.0\\.0",
+        "255\\.255\\.255\\.0"
+      ],
+      "forbid": [
+        {
+          "pattern": "Class B[^\\n,.;]{0,24}255\\.255\\.255\\.0\\b",
+          "reason": "Class B default mask is 255.255.0.0"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "ch8-big-five",
+      "topics": [
+        "n10-ch8"
+      ],
+      "statement": "Hosts per subnet is 2^h - 2; subnets 2^s; block size 256 minus the mask value",
+      "source": "Chapter 8 subnetting practice",
+      "require": [
+        "2\\^7 - 2",
+        "256 - 128"
+      ],
+      "forbid": [
+        {
+          "pattern": "2\\^7\\s*=\\s*126",
+          "reason": "126 comes from 2^7 - 2"
+        },
+        {
+          "pattern": "hosts?[^\\n]{0,30}2\\^h\\s*(?:$|[.,])",
+          "reason": "hosts per subnet need the minus 2"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "ch8-wan-30",
+      "topics": [
+        "n10-ch8"
+      ],
+      "statement": "A /30 (255.255.255.252) fits point-to-point WAN links; a /24 wastes 252 addresses per link",
+      "source": "Chapter 8 Real World Scenario",
+      "require": [
+        "255\\.255\\.255\\.252",
+        "252"
+      ],
+      "forbid": [
+        {
+          "pattern": "point-to-point[^\\n]{0,60}(?:/29|/28|/24)\\b",
+          "reason": "the chapter recommends /30 for WAN links"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "ch8-pat",
+      "topics": [
+        "n10-ch8"
+      ],
+      "statement": "NAT overloading is port address translation (PAT)",
+      "source": "Chapter 8 summary",
+      "require": [
+        "NAT overloading",
+        "PAT"
+      ],
+      "kinds": [
+        "notes"
+      ]
     }
   ],
   "computed": [
@@ -668,15 +754,104 @@
           "exit": "e0"
         }
       ]
+    },
+    {
+      "id": "ch8-slash25",
+      "type": "subnet",
+      "topic": "n10-ch8",
+      "network": "192.168.10.0",
+      "cidr": 25,
+      "subnets": 2,
+      "hosts": 126,
+      "block": 128,
+      "first": [
+        "192.168.10.0",
+        "192.168.10.128"
+      ],
+      "broadcast": [
+        "192.168.10.127",
+        "192.168.10.255"
+      ]
+    },
+    {
+      "id": "ch8-slash26",
+      "type": "subnet",
+      "topic": "n10-ch8",
+      "network": "192.168.10.0",
+      "cidr": 26,
+      "subnets": 4,
+      "hosts": 62,
+      "block": 64
+    },
+    {
+      "id": "ch8-slash27",
+      "type": "subnet",
+      "topic": "n10-ch8",
+      "network": "192.168.10.0",
+      "cidr": 27,
+      "subnets": 8,
+      "hosts": 30,
+      "block": 32
+    },
+    {
+      "id": "ch8-slash28",
+      "type": "subnet",
+      "topic": "n10-ch8",
+      "network": "192.168.10.0",
+      "cidr": 28,
+      "subnets": 16,
+      "hosts": 14,
+      "block": 16
+    },
+    {
+      "id": "ch8-slash29",
+      "type": "subnet",
+      "topic": "n10-ch8",
+      "network": "192.168.10.0",
+      "cidr": 29,
+      "subnets": 32,
+      "hosts": 6,
+      "block": 8
+    },
+    {
+      "id": "ch8-slash30",
+      "type": "subnet",
+      "topic": "n10-ch8",
+      "network": "192.168.10.0",
+      "cidr": 30,
+      "subnets": 64,
+      "hosts": 2,
+      "block": 4
     }
   ],
   "pinChapters": [
     "n10-ch7",
+    "n10-ch8",
     "n10-ch9",
     "n10-ch10",
     "n10-ch11"
   ],
   "answerKeys": {
+    "q-n10c8-01": "126",
+    "q-n10c8-02": "192.168.10.0 and 192.168.10.128",
+    "q-n10c8-03": "192.168.10.127",
+    "q-n10c8-04": "192.168.10.129 through 192.168.10.254",
+    "q-n10c8-05": "192.168.10.0",
+    "q-n10c8-06": "64",
+    "q-n10c8-07": "8 subnets, 30 hosts",
+    "q-n10c8-08": "255.255.255.252 (/30)",
+    "q-n10c8-09": "252",
+    "q-n10c8-10": "255.255.0.0",
+    "q-n10c8-11": "/24",
+    "q-n10c8-12": "Classful",
+    "q-n10c8-13": "VLSM",
+    "q-n10c8-14": "77 (the last octet)",
+    "q-n10c8-15": "8",
+    "q-n10c8-16": "PAT (port address translation)",
+    "q-n10c8-17": "By port numbers",
+    "q-n10c8-18": "Static NAT",
+    "q-n10c8-19": "Dynamic NAT",
+    "q-n10c8-20": "14",
     "q-n10c9-01": "The packet's destination network",
     "q-n10c9-02": "The default gateway router",
     "q-n10c9-03": "IPs are unchanged; only TTL is lower",

@@ -1057,5 +1057,131 @@
     "front": "What range counts as loopback in IPv4?",
     "back": "127.0.0.1 through 127.255.255.254, used for loopback and diagnostics.",
     "weak": false
+  },
+  {
+    "id": "fc-n10c8-01",
+    "topicId": "n10-ch8",
+    "front": "What are the default subnet masks for Class A, B, and C?",
+    "back": "A: 255.0.0.0 (/8). B: 255.255.0.0 (/16). C: 255.255.255.0 (/24).",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-02",
+    "topicId": "n10-ch8",
+    "front": "What are the big five subnetting questions?",
+    "back": "How many subnets? How many hosts per subnet? What are the valid subnets? What is the broadcast address of each? What are the valid hosts?",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-03",
+    "topicId": "n10-ch8",
+    "front": "How do you find the number of subnets?",
+    "back": "2 to the power of the subnet bits. One bit on in the interesting octet gives 2^1 = 2 subnets.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-04",
+    "topicId": "n10-ch8",
+    "front": "How do you find the hosts per subnet?",
+    "back": "2 to the power of the host bits, minus 2. A /25 has 7 host bits: 2^7 - 2 = 126.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-05",
+    "topicId": "n10-ch8",
+    "front": "Why do you subtract 2 from the host count?",
+    "back": "One address is the subnet address (all host bits off) and one is the broadcast (all host bits on). Neither can be given to a host.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-06",
+    "topicId": "n10-ch8",
+    "front": "How do you find the block size?",
+    "back": "256 minus the mask value in the interesting octet. For 255.255.255.128: 256 - 128 = 128.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-07",
+    "topicId": "n10-ch8",
+    "front": "How do you find a subnet's broadcast address?",
+    "back": "Take the number right before the next subnet. All host bits are on. For the 0 subnet in a /25, that is 127.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-08",
+    "topicId": "n10-ch8",
+    "front": "What are the valid hosts in a subnet?",
+    "back": "Everything between the subnet address and the broadcast address.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-09",
+    "topicId": "n10-ch8",
+    "front": "Summarize 192.168.10.0 with mask 255.255.255.128 (/25).",
+    "back": "2 subnets (0 and 128), 126 hosts each, broadcasts 127 and 255, hosts 1 to 126 and 129 to 254.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-10",
+    "topicId": "n10-ch8",
+    "front": "Class C /26 (255.255.255.192): block size, subnets, hosts?",
+    "back": "Block size 64, 4 subnets, 62 hosts per subnet.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-11",
+    "topicId": "n10-ch8",
+    "front": "Class C /27 (255.255.255.224): block size, subnets, hosts?",
+    "back": "Block size 32, 8 subnets, 30 hosts per subnet.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-12",
+    "topicId": "n10-ch8",
+    "front": "Which mask is best for a point-to-point WAN link, and why?",
+    "back": "255.255.255.252 (/30). It has 2 usable hosts, exactly the two ends of the link, and wastes nothing.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-13",
+    "topicId": "n10-ch8",
+    "front": "How many addresses does a /24 waste on a two-address WAN link?",
+    "back": "252 (254 hosts minus the 2 used).",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-14",
+    "topicId": "n10-ch8",
+    "front": "What does CIDR notation tell you?",
+    "back": "How many bits of the mask are on, written after a slash. 255.255.255.0 is /24.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-15",
+    "topicId": "n10-ch8",
+    "front": "What is a classful network versus classless routing?",
+    "back": "Classful uses the same mask on every host and router interface. Classless lets different size masks be used (VLSM).",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-16",
+    "topicId": "n10-ch8",
+    "front": "What is the difference between static NAT, dynamic NAT, and PAT?",
+    "back": "Static: fixed one-to-one mapping. Dynamic: public addresses taken from a pool. PAT (NAT overloading): many hosts share one public address, separated by port numbers.",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-17",
+    "topicId": "n10-ch8",
+    "front": "Which two names mean the same NAT feature?",
+    "back": "NAT overloading and port address translation (PAT).",
+    "weak": false
+  },
+  {
+    "id": "fc-n10c8-18",
+    "topicId": "n10-ch8",
+    "front": "What is the network ID and host ID of 192.168.10.77 with mask 255.255.255.0?",
+    "back": "Network ID 192.168.10 (the first three octets). Host ID 77 (the last octet).",
+    "weak": false
   }
 ]

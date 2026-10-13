@@ -426,6 +426,326 @@
     ]
   },
   {
+    "id": "n10-ch8",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "IP Subnetting, Troubleshooting IP, and NAT",
+    "chapter": "Network+ · Chapter 8",
+    "summary": "Why you subnet, default masks and CIDR, the big five subnetting questions, worked /25 example, Class C mask table, classful vs classless and VLSM, the /30 WAN mask, and an introduction to NAT and PAT.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Domain 1.0 Networking Concepts, 1.4: explain common networking ports, protocols, services, and traffic types. Traffic types are unicast, multicast, anycast, and broadcast.",
+              "Domain 1.0 Networking Concepts, 1.7: use appropriate IPv4 network addressing. This covers public vs. private (APIPA, RFC 1918, loopback/localhost), subnetting (VLSM and CIDR), and IPv4 address classes A to E.",
+              "Domain 2.0 Network Implementation, 2.1: explain characteristics of routing technologies, including address translation with NAT and port address translation (PAT)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "why-subnet",
+        "title": "Why you subnet",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Add a router to a physical network and you have an internetwork. The hosts on it must now have a logical network addressing scheme to communicate.",
+              "IPv6 could be used, but IPv4 is still the most popular, and it is what this chapter covers.",
+              "The key to understanding subnetting is understanding the very reason you need to do it. Subnetting splits one network into smaller networks, so each segment on a router gets its own network ID."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "default-masks",
+        "title": "Default subnet masks and CIDR notation",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Class",
+              "Format",
+              "Default subnet mask",
+              "CIDR"
+            ],
+            "rows": [
+              [
+                "A",
+                "network.host.host.host",
+                "255.0.0.0",
+                "/8"
+              ],
+              [
+                "B",
+                "network.network.host.host",
+                "255.255.0.0",
+                "/16"
+              ],
+              [
+                "C",
+                "network.network.network.host",
+                "255.255.255.0",
+                "/24"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "CIDR notation writes how many bits of the mask are turned on, after a slash. 255.255.255.0 has 24 bits on, so it is /24.",
+              "The network ID is the part of the address covered by the mask. The host ID is the rest."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "big-five",
+        "title": "The big five subnetting questions",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1. How many subnets? 2 to the power of the number of subnet bits (mask bits turned on in the interesting octet). For 255.255.255.128 that is 1 bit, so 2^1 = 2.",
+              "2. How many hosts per subnet? 2 to the power of the host bits, minus 2. For /25 there are 7 host bits, so 2^7 - 2 = 126. The 2 removed are the subnet address (all host bits off) and the broadcast address (all host bits on).",
+              "3. What are the valid subnets? Block size = 256 minus the mask value in the interesting octet. 256 - 128 = 128. Start at zero and count in the block size: 0, 128.",
+              "4. What is the broadcast address of each subnet? The number right before the next subnet, with all host bits turned on. The next subnet after 0 is 128, so the broadcast of the 0 subnet ends in 127.",
+              "5. What are the valid hosts? The numbers between the subnet address and its broadcast address."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Write the subnet address and the broadcast address first. The valid hosts are then obvious: everything in between."
+          }
+        ]
+      },
+      {
+        "id": "example-25",
+        "title": "Worked example: 192.168.10.0 /25",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Network address 192.168.10.0 with subnet mask 255.255.255.128 (/25). The number 128 is 10000000 in binary, so 1 bit is used for subnetting and 7 bits are left for hosts."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Item",
+              "Subnet 0",
+              "Subnet 128"
+            ],
+            "rows": [
+              [
+                "Subnet address",
+                "192.168.10.0",
+                "192.168.10.128"
+              ],
+              [
+                "First host",
+                "192.168.10.1",
+                "192.168.10.129"
+              ],
+              [
+                "Last host",
+                "192.168.10.126",
+                "192.168.10.254"
+              ],
+              [
+                "Broadcast",
+                "192.168.10.127",
+                "192.168.10.255"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "/25 on a Class C gives 2 subnets with 126 hosts each. Subnets: 0 and 128. Broadcasts: 127 and 255."
+          }
+        ]
+      },
+      {
+        "id": "class-c-table",
+        "title": "Class C masks at a glance",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The same five steps work for every Class C mask. Compare each row with the /25 example."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Mask",
+              "CIDR",
+              "Subnet bits",
+              "Block size",
+              "Subnets",
+              "Hosts per subnet"
+            ],
+            "rows": [
+              [
+                "255.255.255.0",
+                "/24",
+                "0",
+                "256",
+                "1",
+                "254"
+              ],
+              [
+                "255.255.255.128",
+                "/25",
+                "1",
+                "128",
+                "2",
+                "126"
+              ],
+              [
+                "255.255.255.192",
+                "/26",
+                "2",
+                "64",
+                "4",
+                "62"
+              ],
+              [
+                "255.255.255.224",
+                "/27",
+                "3",
+                "32",
+                "8",
+                "30"
+              ],
+              [
+                "255.255.255.240",
+                "/28",
+                "4",
+                "16",
+                "16",
+                "14"
+              ],
+              [
+                "255.255.255.248",
+                "/29",
+                "5",
+                "8",
+                "32",
+                "6"
+              ],
+              [
+                "255.255.255.252",
+                "/30",
+                "6",
+                "4",
+                "64",
+                "2"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Quick check: subnets times block size always equals 256 in a Class C network."
+          }
+        ]
+      },
+      {
+        "id": "classful-classless",
+        "title": "Classful, classless, and VLSM",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A classful network uses the same subnet mask on every host and router interface.",
+              "Classless routing lets you use different size masks in the same network. Giving each link a mask that fits its need is called variable length subnet masking (VLSM).",
+              "CIDR (classless inter-domain routing) is the slash notation used to write those masks, such as /25 or /30."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wan-30",
+        "title": "Real world: the /30 mask for WAN links",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Scenario: you administer Acme Corporation in San Francisco with dozens of WAN links to the corporate office. Every host and router interface uses the same mask, and you must pick a mask for point-to-point links.",
+              "A /24 (255.255.255.0) gives each WAN network 254 hosts, but a WAN link uses only 2 addresses. That wastes 252 addresses per link.",
+              "A /30 (255.255.255.252) leaves 2 host bits, so 2^2 - 2 = 2 hosts per subnet. That is exactly enough for the two ends of a link, and no precious addresses are wasted."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Point-to-point WAN links: use 255.255.255.252 (/30). Two usable hosts, nothing wasted."
+          }
+        ]
+      },
+      {
+        "id": "nat-intro",
+        "title": "Introduction to NAT and PAT",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Network address translation (NAT) is introduced at the end of the chapter, with the difference between static NAT, dynamic NAT, and NAT overloading, which is port address translation (PAT).",
+              "Static NAT: a fixed one-to-one mapping between an inside address and a public address.",
+              "Dynamic NAT: inside addresses are mapped to public addresses taken from a pool as they are needed.",
+              "NAT overloading (PAT): many inside hosts share a single public address, and the translating device tells their conversations apart by port number."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "NAT overloading and PAT are the same thing. The chapter lists both names, and the exam objectives use PAT."
+          }
+        ]
+      },
+      {
+        "id": "exercise-8-1",
+        "title": "Exercise 8.1: Examine your IP address and subnet mask",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Open a command prompt (Start, type cmd, press Enter).",
+              "Type ipconfig /all and note the IP address and subnet mask. On Linux or macOS the command is ifconfig.",
+              "Count how many bits your subnet mask uses and write it in CIDR notation.",
+              "Identify the network ID portion of your IP address and write it down.",
+              "Identify the host ID portion of the IP address and write it down.",
+              "Identify the class of the address by examining the first octet.",
+              "Compare the mask with the class: you should know the network the host belongs to and its CIDR notation."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "exam-essentials",
+        "title": "Exam essentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Know the default masks: Class A 255.0.0.0, Class B 255.255.0.0, Class C 255.255.255.0.",
+              "Answer the big five for any mask: subnets, hosts per subnet, valid subnets, broadcast of each, valid hosts.",
+              "Hosts per subnet is 2^h - 2. Block size is 256 minus the interesting octet.",
+              "Use /30 (255.255.255.252) for point-to-point WAN links.",
+              "Be able to find valid IP addresses and subnet masks by reading a network diagram.",
+              "Know the difference between static NAT, dynamic NAT, and NAT overloading (PAT)."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "n10-ch10",
     "group": "networking",
     "examCodes": [

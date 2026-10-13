@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why a /30 for WAN links</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button,select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+select{border-radius:8px;padding:4px 8px;font-weight:500}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+.grid{display:grid;gap:10px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);min-width:0;font-size:14px}
+.cell.good{border-color:var(--good);background:var(--good-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.src{border-color:var(--accent);background:var(--accent-soft)}
+.cell .t{font-weight:600}
+.cell .s{color:var(--muted);font-size:13px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+input[type=text]{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;width:100%;max-width:420px}
+input[type=text]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.fb{margin-top:8px;padding:10px 12px;border-radius:10px;font-size:14px}
+.fb.good{background:var(--good-soft);color:var(--ink);border:1px solid var(--good)}
+.fb.bad{background:var(--bad-soft);color:var(--ink);border:1px solid var(--bad)}
+.fb.hint{background:var(--accent-soft)}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--bg)}
+.q .t{font-weight:600;margin-bottom:6px}
+.score{font-weight:600;color:var(--accent)}
+.bytes{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.byte{font-family:ui-monospace,Menlo,monospace;font-size:16px;padding:8px 10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);min-width:48px;text-align:center}
+.byte.ins{border-color:var(--good);background:var(--good-soft)}
+.byte.flip{border-color:var(--warm);background:var(--warm-soft)}
+.bits{display:flex;gap:3px;margin:6px 0;flex-wrap:wrap}
+.bit{font-family:ui-monospace,Menlo,monospace;width:30px;height:34px;display:flex;align-items:center;justify-content:center;border:2px solid var(--line);border-radius:6px;background:var(--surface)}
+.bit.hot{border-color:var(--warm);background:var(--warm-soft);font-weight:700}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600}
+
+select{min-height:40px;font-size:15px}
+.tbl:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+tr.hit td{background:var(--good-soft);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0}
+.seg .bit.net{border-color:var(--accent);background:var(--accent-soft)}
+.seg .bit.sub{border-color:var(--warm);background:var(--warm-soft);font-weight:700}
+.seg .bit.hst{border-color:var(--line)}
+.dot{width:12px;margin:0 2px;display:flex;align-items:flex-end;justify-content:center;font-weight:700}
+.bar{height:18px;border-radius:6px;background:var(--line);overflow:hidden;display:flex;margin:4px 0 2px}
+.bar i{display:block;height:100%}
+.bar .u{background:var(--good)} .bar .w{background:var(--bad)}
+.legend{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Why a /30 for WAN links</h1>
+<p class="lede">Each point-to-point WAN link needs exactly two addresses. Compare what each mask costs when Acme Corporation has many links to the corporate office.</p>
+<div class="card">
+<div class="lab">How many WAN links?</div>
+<div class="ctrls" id="links" role="group" aria-label="Number of WAN links"></div>
+<div class="lab">Mask on each link</div>
+<div class="ctrls" id="masks" role="group" aria-label="Mask on each WAN link"></div>
+<div class="out" id="out" aria-live="polite"></div>
+</div>
+</div>
+<script>
+
+const L=[12,24,48],MS=[{c:24,m:'255.255.255.0'},{c:25,m:'255.255.255.128'},{c:28,m:'255.255.255.240'},{c:30,m:'255.255.255.252'}];
+let nl=24,mi=0;
+const bl=document.getElementById('links'),bm=document.getElementById('masks'),out=document.getElementById('out');
+L.forEach(n=>{const b=document.createElement('button');b.type='button';b.textContent=n+' links';b.onclick=()=>{nl=n;draw()};bl.appendChild(b)});
+MS.forEach((x,i)=>{const b=document.createElement('button');b.type='button';b.textContent='/'+x.c+'  '+x.m;b.onclick=()=>{mi=i;draw()};bm.appendChild(b)});
+function draw(){
+ [...bl.children].forEach((b,i)=>b.setAttribute('aria-pressed',L[i]===nl?'true':'false'));
+ [...bm.children].forEach((b,i)=>b.setAttribute('aria-pressed',i===mi?'true':'false'));
+ const x=MS[mi],hosts=Math.pow(2,32-x.c)-2,wasted=hosts-2,perLink=Math.pow(2,32-x.c);
+ const pct=Math.round(2/hosts*100);
+ let h='<strong>Per link with '+x.m+' (/'+x.c+'):</strong> '+hosts+' usable host addresses, 2 used, <strong>'+wasted+' wasted</strong>.'
+  +'<div class="bar" role="img" aria-label="'+pct+' percent of the host addresses are used"><i class="u" style="width:'+Math.max(pct,1)+'%"></i><i class="w" style="width:'+(100-Math.max(pct,1))+'%"></i></div>'
+  +'<div class="legend">Green: used by the two ends of the link. Red: wasted.</div>'
+  +'<p><strong>Across '+nl+' links:</strong> '+(nl*hosts)+' host addresses set aside, '+(nl*2)+' used, '+(nl*wasted)+' wasted. Each link consumes a block of '+perLink+' addresses.</p>';
+ if(x.c===30)h+='<p><strong>This is the right answer.</strong> A /30 has 2 host bits, so 2^2 - 2 = 2 hosts: exactly the two ends of the link. A single Class C network can be carved into 64 of these links.</p>';
+ else h+='<p>A WAN link uses only 2 addresses, so this mask is too big. Switch to /30 to see no waste.</p>';
+ out.innerHTML=h;
+}
+draw();
+
+</script>
+</body>
+</html>
