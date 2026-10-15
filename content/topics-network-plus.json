@@ -423,7 +423,8 @@
           }
         ]
       }
-    ]
+    ],
+    "concept": "networking-concepts"
   },
   {
     "id": "n10-ch8",
@@ -743,7 +744,8 @@
           }
         ]
       }
-    ]
+    ],
+    "concept": "networking-concepts"
   },
   {
     "id": "n10-ch10",
@@ -1094,7 +1096,8 @@
           }
         ]
       }
-    ]
+    ],
+    "concept": "implementation"
   },
   {
     "id": "n10-ch11",
@@ -1526,7 +1529,8 @@
           }
         ]
       }
-    ]
+    ],
+    "concept": "implementation"
   },
   {
     "id": "n10-ch9",
@@ -2030,6 +2034,188 @@
           {
             "type": "paragraph",
             "text": "This chapter has interactive visuals for the routing process, ARP, the route table, frame fields, static and dynamic routing, the written lab, and route selection. Open them at /network-plus/ch9."
+          }
+        ]
+      }
+    ],
+    "concept": "implementation"
+  },
+  {
+    "id": "n10-security",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "security",
+    "title": "Security Foundations: Encryption, PKI, and Access",
+    "chapter": "Network+ · Security foundations",
+    "summary": "Encryption by OSI layer, symmetric and asymmetric keys, hashing, PKI, authentication versus nonrepudiation, AAA protocols, SNMP security, and NAC.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "4.1 Explain the importance of basic network security concepts: data in transit and at rest, PKI and self-signed certificates, IAM (authentication, MFA, SSO, RADIUS, LDAP, SAML, TACACS+, authorization, least privilege, RBAC).",
+              "1.4 Explain common networking ports, protocols, services, and traffic types, including IPsec (AH, ESP, IKE) and SNMP (161/162).",
+              "3.2 Given a scenario, use network monitoring technologies: SNMP traps, MIB, SNMP v2c and v3, community strings.",
+              "4.3 Given a scenario, apply network security features: NAC, 802.1X, port security, MAC filtering."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "encryption-by-layer",
+        "title": "Where encryption happens in the OSI model",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "OSI layer",
+              "Common examples",
+              "What it protects"
+            ],
+            "rows": [
+              [
+                "1 Physical",
+                "No encryption standard; use physical security",
+                "Cabling and rooms, not traffic content"
+              ],
+              [
+                "2 Data link",
+                "WPA2 and WPA3 on Wi-Fi; MACsec (IEEE 802.1AE) on Ethernet",
+                "Frames across one link"
+              ],
+              [
+                "3 Network",
+                "IPsec with AH, ESP, and IKE",
+                "IP packets, end to end or tunnel"
+              ],
+              [
+                "4 Transport",
+                "TCP and UDP do not encrypt",
+                "Nothing by themselves; TLS runs on top of TCP"
+              ],
+              [
+                "5 to 7",
+                "TLS/SSL, HTTPS, SSH, SNMPv3",
+                "Application or session data"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Layer 2 encryption is real. WPA2, WPA3, and MACsec protect a single link. IPsec at Layer 3 protects packets across the network."
+          }
+        ]
+      },
+      {
+        "id": "keys-and-hashes",
+        "title": "Symmetric, asymmetric, and hash",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Symmetric encryption uses one shared key for encryption and decryption. It is fast and suits bulk data.",
+              "Asymmetric encryption uses a public and private key pair. Data encrypted with the public key can be decrypted only with the matching private key.",
+              "A hash is a one-way function with a fixed-length output. It has no key and gives integrity, not confidentiality.",
+              "Encryption protects data in transit (moving across the network) and data at rest (stored on a disk or device)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pki",
+        "title": "PKI and certificates",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A certificate authority (CA) issues and signs digital certificates that bind a public key to an identity.",
+              "A PKI needs a trust anchor, usually a root CA that clients trust. Without a trusted root, certificates cannot be verified.",
+              "A self-signed certificate is signed by its own key. It is common on internal devices but is not trusted by outside clients by default.",
+              "A web of trust, as used by PGP, is a different trust model. It is not PKI."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "iam-terms",
+        "title": "Identity and access terms",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Authentication",
+                "Verifying who a user or device is"
+              ],
+              [
+                "Multifactor authentication (MFA)",
+                "Two or more different factor types, such as something you know and something you have"
+              ],
+              [
+                "Single sign-on (SSO)",
+                "One login for several services"
+              ],
+              [
+                "Authorization",
+                "Deciding what an authenticated identity may do"
+              ],
+              [
+                "Least privilege",
+                "Granting only the access needed for the task"
+              ],
+              [
+                "Role-based access control (RBAC)",
+                "Permissions assigned to roles, and users assigned to roles"
+              ],
+              [
+                "Nonrepudiation",
+                "Proof that a sender cannot later deny having sent a message, often provided by a digital signature"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Authentication proves identity. Nonrepudiation proves a sender cannot deny sending. Do not mix them up on the exam."
+          }
+        ]
+      },
+      {
+        "id": "aaa-protocols",
+        "title": "RADIUS, TACACS+, and LDAP",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "RADIUS uses UDP 1812 for authentication and UDP 1813 for accounting (RFC 2865 and RFC 2866). It encrypts only the password in the packet.",
+              "TACACS+ uses TCP 49 and encrypts the full payload. It separates authentication, authorization, and accounting.",
+              "LDAP uses TCP 389; LDAPS uses TCP 636 with TLS. LDAP is a directory service that stores user and group information."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "snmp-security",
+        "title": "SNMP security",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "SNMP has a manager (the network management system) that polls and an agent on each managed device that answers.",
+              "Polls go to UDP 161. Traps, which are unsolicited alerts from the agent, go to UDP 162.",
+              "SNMP v1 and v2c authenticate only with community strings, which are sent in clear text.",
+              "SNMP v3 adds authentication and encryption, so use it wherever the network allows it."
+            ]
           }
         ]
       }
