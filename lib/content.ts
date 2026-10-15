@@ -9,6 +9,7 @@ import type {
   Flashcard,
   Lab,
   Question,
+  Concept,
   StudyFocus,
   Topic,
   TopicGroup,
@@ -29,6 +30,36 @@ export const groupLabels: Record<TopicGroup, string> = {
   weak: "Weak areas",
   reference: "Quick reference",
 };
+
+export const conceptLabels: Record<Concept, string> = {
+  "networking-concepts": "Networking concepts (N10-009 domain 1.0)",
+  implementation: "Network implementation (domain 2.0)",
+  security: "Security (domain 4.0)",
+  troubleshooting: "Troubleshooting (domain 5.0)",
+  hardware: "Hardware and storage",
+  "operating-systems": "Operating systems",
+  reference: "Quick reference and weak areas",
+};
+
+export const conceptOrder: Concept[] = [
+  "networking-concepts",
+  "implementation",
+  "security",
+  "troubleshooting",
+  "hardware",
+  "operating-systems",
+  "reference",
+];
+
+export function getTopicsByConcept(focus: StudyFocus = "all") {
+  return conceptOrder
+    .map((concept) => ({
+      concept,
+      label: conceptLabels[concept],
+      topics: getTopics(focus).filter((topic) => topic.concept === concept),
+    }))
+    .filter((group) => group.topics.length > 0);
+}
 
 export function getTopic(id: string): Topic | undefined {
   return topics.find((topic) => topic.id === id);
