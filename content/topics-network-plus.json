@@ -2220,5 +2220,182 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-risk-compliance",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "security",
+    "title": "Risk, Threats, and Compliance",
+    "chapter": "Network+ · Risk and compliance",
+    "summary": "The CIA triad, threat and vulnerability terms, zero-day, defense in depth, EDR, CRL and AIA revocation checks, and compliance with GDPR, PCI DSS, and data locality.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "4.1 Explain basic network security concepts: the CIA triad, risk, vulnerability, exploit, and threat.",
+              "4.1 Audits and regulatory compliance: data locality, PCI DSS, and GDPR.",
+              "4.1 Certificates: PKI and revocation checking through CRL and AIA."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cia",
+        "title": "The CIA triad",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Element",
+              "Goal",
+              "Example controls"
+            ],
+            "rows": [
+              [
+                "Confidentiality",
+                "Only authorized people can see the data",
+                "Locks, encryption, authentication, firewalls"
+              ],
+              [
+                "Integrity",
+                "Data is accurate and not altered without authorization",
+                "Hashes, checksums, digital signatures, AH"
+              ],
+              [
+                "Availability",
+                "Systems and data are accessible when needed",
+                "Redundant systems, backups, restore procedures"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Backups raise availability only if you can restore them within the time you need. Plan both the restore point and the restore time."
+          }
+        ]
+      },
+      {
+        "id": "threats-and-vulnerabilities",
+        "title": "Threat, risk, vulnerability, exploit",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Threat",
+                "A potential danger or opportunity for a security event, internal or external"
+              ],
+              [
+                "Vulnerability",
+                "A weakness in a system, configuration, or process"
+              ],
+              [
+                "Exploit",
+                "Code or a technique that takes advantage of a vulnerability"
+              ],
+              [
+                "Risk",
+                "The likelihood that a threat will exploit a vulnerability, and the impact if it does"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "CVE (Common Vulnerabilities and Exposures) is a standard naming system for publicly known vulnerabilities, maintained by MITRE.",
+              "A ransomware attack by an outside threat actor, a denial-of-service attack, and exploiting a web server are external threats. A virus introduced by plugging in an unknown USB drive is an inadvertent insider threat."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A zero-day vulnerability is a weakness the vendor does not yet have a patch for. A zero-day exploit is code that uses such a weakness."
+          }
+        ]
+      },
+      {
+        "id": "defense-in-depth",
+        "title": "Defense in depth and controls",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "No single control is perfect. Defense in depth layers several controls so that one failure does not expose everything.",
+              "Physical controls: doors, locks, fences, cameras.",
+              "Technical controls: firewalls, encryption, directory services such as Active Directory.",
+              "Administrative controls: training, awareness, policies, and access log reviews.",
+              "EDR (endpoint detection and response) is the modern successor to traditional antivirus. It detects zero-day activity by analyzing behavior and patterns, often using machine learning, rather than relying only on known signatures."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "revocation",
+        "title": "Checking whether a certificate is revoked",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A certificate revocation list (CRL) is published by the certificate authority. It lists certificates that were revoked before their expiration date.",
+              "The certificate includes a CRL distribution point that tells the client where to download the list.",
+              "The Authority Information Access (AIA) extension tells the client where to fetch the issuing CA's certificate.",
+              "OCSP (Online Certificate Status Protocol) is an online alternative that asks the CA about one certificate instead of downloading a full list."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "compliance",
+        "title": "Compliance and data location",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Standard or concept",
+              "What it covers"
+            ],
+            "rows": [
+              [
+                "GDPR",
+                "European Union law that governs how consumer personal data is used and protected"
+              ],
+              [
+                "PCI DSS",
+                "Payment Card Industry Data Security Standard. Protects cardholder data for organizations that take card payments"
+              ],
+              [
+                "Data locality",
+                "Rules that require certain data to be stored or processed within a specific country or region"
+              ],
+              [
+                "SOX",
+                "US federal law that governs financial reporting and the keeping of financial records"
+              ],
+              [
+                "HIPAA",
+                "US law that protects patient health information"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Audits check compliance over time, not just at one point. Policies, processes, and procedures are what make compliance repeatable."
+          }
+        ]
+      }
+    ]
   }
 ]
