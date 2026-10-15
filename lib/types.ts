@@ -5,6 +5,15 @@ export type TopicGroup =
   | "weak"
   | "reference";
 
+export type Concept =
+  | "networking-concepts"
+  | "implementation"
+  | "security"
+  | "troubleshooting"
+  | "hardware"
+  | "operating-systems"
+  | "reference";
+
 export type ExamCode = "220-1201" | "220-1202" | "n10-009";
 export type StudyFocus = ExamCode | "all";
 
@@ -26,6 +35,7 @@ export type Section = {
 export type Topic = {
   id: string;
   group: TopicGroup;
+  concept: Concept;
   examCodes: ExamCode[];
   title: string;
   chapter: string;
