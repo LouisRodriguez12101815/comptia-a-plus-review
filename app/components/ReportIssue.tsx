@@ -30,6 +30,11 @@ export function ReportIssue() {
   const [reporter, setReporter] = useState("");
   const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const alertRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status.kind === "error") alertRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [status]);
 
   const open = useCallback((prefill?: { item?: string; category?: Category }) => {
     const selected = typeof window !== "undefined" ? window.getSelection()?.toString().trim() ?? "" : "";
@@ -176,7 +181,7 @@ export function ReportIssue() {
               <p className="text-xs text-slate-500">Reports become public GitHub issues. Do not include personal information.</p>
 
               {status.kind === "error" && (
-                <div className="rounded-xl border border-orange-400/40 bg-orange-400/10 p-3 text-sm text-orange-100" role="alert">
+                <div ref={alertRef} className="rounded-xl border border-orange-400/40 bg-orange-400/10 p-3 text-sm text-orange-100" role="alert">
                   <p>{status.message}</p>
                   {status.fallbackUrl && (
                     <a href={status.fallbackUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-orange-200 underline">
