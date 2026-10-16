@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Straight-through or crossover?</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 14px}
+.verdict{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px}
+.verdict p{margin:8px 0 0}
+.vrow{display:flex;flex-wrap:wrap;gap:6px}
+.big{font-weight:700;font-size:17px}
+.stage{overflow-x:auto;margin-top:12px}
+#pins{width:100%;max-width:520px;min-width:300px;display:block}
+.svh{font:600 13px system-ui,sans-serif;fill:var(--ink)}
+.svt{font:12px ui-monospace,Menlo,monospace;fill:var(--muted)}
+.pin{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+.w{stroke-width:3;fill:none}.w.ok{stroke:var(--good)}.w.no{stroke:var(--bad)}.w.fix{stroke:var(--warm);stroke-dasharray:6 4}
+.mc{width:100%;border-radius:8px;font-size:13px;min-height:36px;padding:4px 8px}
+.mc.s{background:var(--good-soft)}.mc.x{background:var(--warm-soft)}
+.mc.on{outline:3px solid var(--accent);outline-offset:1px}
+td{padding:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Straight-through or crossover?</h1>
+<p class="lede">Pick the two devices at the ends of the cable. The page sorts each into its group, wires the pins, and checks the classroom layer shortcut against the real rule.</p>
+
+<div class="card">
+ <div class="row2">
+  <div><div class="lab">End A</div><div class="ctrls" id="ea" role="group" aria-label="Device at end A"></div></div>
+  <div><div class="lab">End B</div><div class="ctrls" id="eb" role="group" aria-label="Device at end B"></div></div>
+ </div>
+ <div class="lab">Cable on the bench</div>
+ <div class="ctrls" id="cb" role="group" aria-label="Cable type"></div>
+ <div class="ctrls"><button type="button" id="mdix" aria-pressed="false">Auto-MDIX: off</button></div>
+ <div class="verdict" id="verdict" aria-live="polite"></div>
+ <div class="stage"><svg id="pins" viewBox="0 0 420 230" role="img" aria-label="Pin wiring diagram"></svg></div>
+ <p class="sc" id="pinnote"></p>
+</div>
+
+<div class="card">
+ <h2 class="sec">Every pair at a glance</h2>
+ <p class="hint">Click a cell to load that pair above. Cells marked with a ! are where the layer shortcut gives the wrong cable.</p>
+ <div class="tbl"><table id="mx"></table></div>
+ <p class="sc">Fix for the shortcut: count the hub as a switch. PCs and routers are one group (MDI), switches and hubs the other (MDI-X). Different groups, straight-through. Same group, crossover.</p>
+</div>
+
+<div class="card">
+ <h2 class="sec">Cable drill</h2>
+ <p class="q" id="dq"></p>
+ <div class="opts" id="dopts"></div>
+ <div class="fb" id="dfb" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:10px;align-items:center"><button type="button" id="dnext" class="go">Next pair</button><span class="sc" id="dsc"></span></div>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    o.fb.className='fb '+(ok?'good':'bad');
+    o.fb.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why;
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const DEV=[{n:'PC',g:'MDI',layer:3,odd:1},{n:'Router',g:'MDI',layer:3,odd:1},{n:'Switch',g:'MDI-X',layer:2,odd:0},{n:'Hub',g:'MDI-X',layer:1,odd:1}];
+const CAB=['Straight-through','Crossover'];
+let A=0,B=2,C=null,auto=false;
+function correct(a,b){return DEV[a].g===DEV[b].g?1:0}
+function shortcut(a,b){const x=DEV[a],y=DEV[b];
+ if((x.n==='PC'&&y.n==='Hub')||(x.n==='Hub'&&y.n==='PC'))return [0,'PC to hub is the board\'s one exception: straight-through'];
+ if(x.layer===y.layer)return [1,'same layer ('+x.layer+'), so crossover'];
+ if(x.odd!==y.odd)return [0,'even to odd ('+x.layer+' and '+y.layer+'), so straight-through'];
+ return [1,'odd to odd ('+x.layer+' and '+y.layer+'), so crossover'];}
+DEV.forEach((d,i)=>{[['ea',v=>A=v],['eb',v=>B=v]].forEach(([id,set])=>{const b=document.createElement('button');b.type='button';b.textContent=d.n;b.onclick=()=>{set(i);C=null;draw()};$(id).appendChild(b)})});
+CAB.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{C=i;draw()};$('cb').appendChild(b)});
+$('mdix').onclick=()=>{auto=!auto;draw()};
+function pinsOf(g){return g==='MDI'?{1:'TX',2:'TX',3:'RX',6:'RX'}:{1:'RX',2:'RX',3:'TX',6:'TX'}}
+function drawPins(a,b,cab){
+ const s=$('pins'),pa=pinsOf(DEV[a].g),pb=pinsOf(DEV[b].g),y=p=>28+(p-1)*25,xl=96,xr=324;
+ const map=cab?{1:3,2:6,3:1,6:2}:{1:1,2:2,3:3,6:6};let bad=0,h='';
+ h+='<text x="'+xl+'" y="14" text-anchor="end" class="svh">'+DEV[a].n+' ('+DEV[a].g+')</text><text x="'+xr+'" y="14" class="svh">'+DEV[b].n+' ('+DEV[b].g+')</text>';
+ for(let p=1;p<=8;p++){
+  h+='<circle cx="'+xl+'" cy="'+y(p)+'" r="5" class="pin"/><circle cx="'+xr+'" cy="'+y(p)+'" r="5" class="pin"/>';
+  h+='<text x="'+(xl-12)+'" y="'+(y(p)+4)+'" text-anchor="end" class="svt">'+(pa[p]?pa[p]+' ':'')+p+'</text>';
+  h+='<text x="'+(xr+12)+'" y="'+(y(p)+4)+'" class="svt">'+p+(pb[p]?' '+pb[p]:'')+'</text>';}
+ [1,2,3,6].forEach(p=>{const q=map[p],ok=pa[p]!==pb[q];if(!ok)bad++;
+  h+='<line x1="'+xl+'" y1="'+y(p)+'" x2="'+xr+'" y2="'+y(q)+'" class="w '+(ok?'ok':(auto?'fix':'no'))+'"/>';});
+ s.innerHTML=h;return bad;}
+function draw(){
+ press($('ea'),A);press($('eb'),B);const right=correct(A,B);const cab=C===null?right:C;press($('cb'),cab);
+ $('mdix').setAttribute('aria-pressed',auto?'true':'false');$('mdix').textContent='Auto-MDIX: '+(auto?'on':'off');
+ const bad=drawPins(A,B,cab),sc=shortcut(A,B),scOk=sc[0]===right,x=DEV[A],y=DEV[B];
+ const same=x.g===y.g;
+ let h='<div class="vrow"><span class="tag">'+x.n+': '+x.g+'</span><span class="tag">'+y.n+': '+y.g+'</span><span class="tag '+(same?'w':'g')+'">'+(same?'Like devices':'Unlike devices')+'</span></div>';
+ h+='<p class="big">Correct cable: '+CAB[right]+'</p>';
+ if(cab!==right)h+=auto?'<p class="tag g">Works anyway: Auto-MDIX swaps transmit and receive inside the port.</p>':'<p class="tag b">With a '+CAB[cab].toLowerCase()+' cable the link stays down: transmit meets transmit (TX/RX transposed).</p>';
+ h+='<p class="sc"><strong>Layer shortcut says:</strong> '+sc[1]+'. '+(scOk?'<span class="tag g">Matches</span>':'<span class="tag b">Wrong here</span> '+x.n+' is '+x.g+' and '+y.n+' is '+y.g+', so the real answer is '+CAB[right].toLowerCase()+'.')+'</p>';
+ $('verdict').innerHTML=h;
+ $('pinnote').textContent=bad&&!auto?'Red lines: a transmit pin wired to a transmit pin (or receive to receive). Nothing gets through.':bad?'Dashed lines would fail on old gear; Auto-MDIX corrects them.':'Every transmit pin lands on a receive pin, so the link comes up. 10/100 uses pins 1, 2, 3, and 6.';
+ drawMx();}
+function drawMx(){let h='<tr><th scope="col">From \\ To</th>'+DEV.map(d=>'<th scope="col">'+d.n+' <span class="sc">('+d.g+')</span></th>').join('')+'</tr>';
+ DEV.forEach((r,i)=>{h+='<tr><th scope="row">'+r.n+'</th>';DEV.forEach((c,j)=>{const k=correct(i,j),w=shortcut(i,j)[0]!==k,on=(i===A&&j===B);
+  h+='<td><button type="button" class="mc '+(k?'x':'s')+(on?' on':'')+'" data-i="'+i+'" data-j="'+j+'" aria-label="'+r.n+' to '+c.n+': '+CAB[k]+(w?', shortcut wrong':'')+'">'+(k?'Cross':'Straight')+(w?' !':'')+'</button></td>'});h+='</tr>'});
+ $('mx').innerHTML=h;[...$('mx').querySelectorAll('button')].forEach(b=>b.onclick=()=>{A=+b.dataset.i;B=+b.dataset.j;C=null;draw()});}
+draw();
+const items=[];
+DEV.forEach((x,i)=>DEV.forEach((y,j)=>{if(j<i)return;const k=correct(i,j),w=shortcut(i,j)[0]!==k;
+ items.push({q:'No Auto-MDIX. Which cable connects a '+x.n.toLowerCase()+' to a '+y.n.toLowerCase()+'?',o:CAB.slice(),a:k,
+  why:x.n+' is '+x.g+' and '+y.n+' is '+y.g+(x.g===y.g?', like devices, so the pairs must cross.':', unlike devices, so the switch-side port already crosses.')+(w?' The layer shortcut gets this one wrong.':'')})}));
+(function(){const o=['Auto-MDIX','Spanning Tree','PoE','Port security'];items.push({q:'Which port feature makes either cable type work?',o,a:0,why:'Auto-MDIX detects the pairs and swaps transmit and receive internally.'})})();
+Deck({items,q:$('dq'),opts:$('dopts'),fb:$('dfb'),next:$('dnext'),score:$('dsc')});
+</script>
+</body>
+</html>

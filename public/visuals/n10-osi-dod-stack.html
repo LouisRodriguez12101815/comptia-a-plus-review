@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OSI and DoD layer stack</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.stackgrid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:10px;margin-top:12px}
+.stack{display:flex;flex-direction:column;gap:4px}
+.layer{display:grid;grid-template-columns:2.2em 1fr auto;align-items:center;gap:8px;border-radius:8px;text-align:left;padding:8px 12px;color:var(--ink);border:2px solid transparent;min-height:42px}
+.layer[aria-pressed="true"]{border-color:var(--accent);background:var(--surface)!important;color:var(--ink)}
+.layer .num{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--muted)}
+.layer .word{font-size:13px;font-style:italic;color:var(--muted)}
+.dod{display:flex;flex-direction:column;gap:4px}
+.dodh{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:center;height:16px}
+.dl{display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;font-size:13px;font-weight:600;padding:6px;border:2px solid transparent;flex-basis:0}
+.dl.on{border-color:var(--accent)}
+.detail{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px}
+.detail p{margin:6px 0 0}
+.dt{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.big{font-weight:700;font-size:16px}
+.pdu p{margin:6px 0}
+.wrapbar{display:flex;flex-wrap:wrap;gap:3px;margin:10px 0}
+.seg{padding:8px 10px;border-radius:6px;font-size:13px;font-weight:600;font-family:ui-monospace,Menlo,monospace}
+.seg.d{background:var(--l7)}.seg.h4{background:var(--l4)}.seg.h3{background:var(--l3)}.seg.h2{background:var(--l2)}.seg.b{background:var(--accent-soft);word-break:break-all}
+@media (max-width:520px){.stackgrid{grid-template-columns:minmax(0,1fr) 7.5em}.layer{grid-template-columns:1.6em 1fr;padding:6px 8px}.layer .word{grid-column:2;font-size:12px}.dl{font-size:11px;padding:4px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>OSI and DoD layer stack</h1>
+<p class="lede">Click a layer to see its PDU, what it does, the devices that work there, and the DoD layer that covers it. Switch the mnemonic to read the stack from either end.</p>
+
+<div class="card">
+ <div class="lab">Mnemonic</div>
+ <div class="ctrls" id="mn" role="group" aria-label="Mnemonic direction"></div>
+ <div class="stackgrid">
+  <div class="stack" id="stack" role="group" aria-label="OSI layers"></div>
+  <div class="dod" id="dod" aria-hidden="false"></div>
+ </div>
+ <div class="detail" id="detail" aria-live="polite"></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">Encapsulation, one step at a time</h2>
+ <p class="hint">Data moves down the stack on the sender. Each layer wraps what it got from above, and the PDU name changes.</p>
+ <div class="ctrls"><button type="button" id="prev">Back</button><button type="button" id="next" class="go">Next layer</button><button type="button" id="reset">Start over</button></div>
+ <div class="pdu" id="pdu" aria-live="polite"></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">Layer drill</h2>
+ <p class="hint">Numbers, names, PDUs, and DoD matches in random order.</p>
+ <p class="q" id="dq"></p>
+ <div class="opts" id="dopts"></div>
+ <div class="fb" id="dfb" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:10px;align-items:center"><button type="button" id="dnext" class="go">Next question</button><span class="sc" id="dsc"></span></div>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    o.fb.className='fb '+(ok?'good':'bad');
+    o.fb.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why;
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const L=[
+ {n:1,name:'Physical',pdu:'Bits',job:'Signals on copper, fiber, or radio.',dev:'Hubs, repeaters, cables, connectors',dod:'Network Access',up:'Please',down:'Processing',c:'--l2'},
+ {n:2,name:'Data Link',pdu:'Frame',job:'MAC addressing and delivery on the local segment.',dev:'Switches, bridges, NICs',dod:'Network Access',up:'Do',down:'Data',c:'--l2'},
+ {n:3,name:'Network',pdu:'Packet',job:'IP addressing and routing between networks.',dev:'Routers, IP, ICMP',dod:'Internet',up:'Not',down:'Need',c:'--l3'},
+ {n:4,name:'Transport',pdu:'Segment',job:'End-to-end delivery and port numbers. TCP is reliable, UDP is fast.',dev:'TCP, UDP',dod:'Host-to-Host',up:'Throw',down:'To',c:'--l4'},
+ {n:5,name:'Session',pdu:'Data',job:'Sets up, manages, and tears down sessions.',dev:'Session setup, RPC',dod:'Process/Application',up:'Sausage',down:'Seem',c:'--l7'},
+ {n:6,name:'Presentation',pdu:'Data',job:'Formats, translates, compresses, and encrypts.',dev:'TLS encryption, JPEG, ASCII',dod:'Process/Application',up:'Pizza',down:'People',c:'--l7'},
+ {n:7,name:'Application',pdu:'Data',job:'Network services the application uses.',dev:'HTTP, DNS, SMTP, FTP',dod:'Process/Application',up:'Away',down:'All',c:'--l7'}];
+const D=[{name:'Process/Application',span:[5,7],c:'--l7'},{name:'Host-to-Host',span:[4,4],c:'--l4'},{name:'Internet',span:[3,3],c:'--l3'},{name:'Network Access',span:[1,2],c:'--l2'}];
+let sel=4,dir=0;
+const MN=['Bottom up: Please Do Not Throw Sausage Pizza Away','Top down: All People Seem To Need Data Processing'];
+MN.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{dir=i;press($('mn'),i);draw()};$('mn').appendChild(b)});press($('mn'),0);
+function draw(){
+ const st=$('stack');st.innerHTML='<div class="dodh">OSI model</div>';
+ L.slice().reverse().forEach(l=>{const b=document.createElement('button');b.type='button';b.className='layer';b.style.background='var('+l.c+')';
+  b.setAttribute('aria-pressed',l.n===sel?'true':'false');
+  b.innerHTML='<span class="num">'+l.n+'</span><span class="nm">'+l.name+'</span><span class="word">'+(dir?l.down:l.up)+'</span>';
+  b.onclick=()=>{sel=l.n;draw()};st.appendChild(b)});
+ const dd=$('dod');dd.innerHTML='<div class="dodh">DoD model</div>';
+ D.forEach(d=>{const k=d.span[1]-d.span[0]+1,on=sel>=d.span[0]&&sel<=d.span[1];
+  const e=document.createElement('div');e.className='dl'+(on?' on':'');e.style.flexGrow=k;e.style.background='var('+d.c+')';
+  e.textContent=d.name;dd.appendChild(e)});
+ const l=L[sel-1],d=D.find(x=>sel>=x.span[0]&&sel<=x.span[1]);
+ const span=d.span[0]===d.span[1]?'only this layer, one to one':'OSI layers '+d.span[1]+' to '+d.span[0];
+ $('detail').innerHTML='<div class="dt"><span class="big">Layer '+l.n+' · '+l.name+'</span> <span class="tag">PDU: '+l.pdu+'</span></div>'
+  +'<p>'+l.job+'</p><p class="sc"><strong>Devices and examples:</strong> '+l.dev+'</p>'
+  +'<p class="sc"><strong>DoD layer:</strong> '+d.name+' ('+span+'). <strong>Mnemonic word:</strong> '+l.up+' (bottom up), '+l.down+' (top down).</p>';
+}
+draw();
+
+const STEPS=[
+ {lay:7,txt:'<strong>Layers 7 to 5 (Process/Application):</strong> the browser hands the request down. The PDU is called data.',parts:[['Data','d']]},
+ {lay:4,txt:'<strong>Layer 4 Transport (Host-to-Host):</strong> TCP adds a header with source and destination ports. Now it is a segment.',parts:[['TCP header','h4'],['Data','d']]},
+ {lay:3,txt:'<strong>Layer 3 Network (Internet):</strong> IP adds source and destination IP addresses. Now it is a packet.',parts:[['IP header','h3'],['TCP header','h4'],['Data','d']]},
+ {lay:2,txt:'<strong>Layer 2 Data Link (Network Access):</strong> Ethernet adds MAC addresses in front and an FCS trailer for error checking. Now it is a frame.',parts:[['MAC header','h2'],['IP header','h3'],['TCP header','h4'],['Data','d'],['FCS','h2']]},
+ {lay:1,txt:'<strong>Layer 1 Physical (Network Access):</strong> the frame goes onto the wire as bits. The receiver reverses every step going up.',parts:[['1011 0010 0110 1100 0001 1110 0101 …','b']]}];
+let sp=0;
+function step(){const s=STEPS[sp];
+ $('pdu').innerHTML='<p>'+s.txt+'</p><div class="wrapbar">'+s.parts.map(p=>'<span class="seg '+p[1]+'">'+p[0]+'</span>').join('')+'</div><p class="sc">Step '+(sp+1)+' of '+STEPS.length+'</p>';
+ $('prev').disabled=sp===0;$('next').disabled=sp===STEPS.length-1;sel=s.lay===7?7:s.lay;draw();}
+$('prev').onclick=()=>{if(sp>0){sp--;step()}};$('next').onclick=()=>{if(sp<STEPS.length-1){sp++;step()}};$('reset').onclick=()=>{sp=0;step()};
+step();sel=4;draw();
+
+const names=L.map(l=>l.name),items=[];
+L.forEach(l=>{
+ const o=shuffle(names.filter(n=>n!==l.name)).slice(0,3).concat(l.name);const s=shuffle(o);
+ items.push({q:'Which OSI layer is number '+l.n+'?',o:s,a:s.indexOf(l.name),why:'Layer '+l.n+' is '+l.name+'. Bottom up: Please Do Not Throw Sausage Pizza Away.'});
+});
+[['Segment',4],['Packet',3],['Frame',2],['Bits',1]].forEach(([p,n])=>{const o=shuffle(['Transport','Network','Data Link','Physical']);
+ items.push({q:'Which OSI layer uses the PDU called a '+p.toLowerCase()+'?',o,a:o.indexOf(L[n-1].name),why:p+' belongs to layer '+n+', '+L[n-1].name+'. Going down: data, segment, packet, frame, bits.'})});
+[['Host-to-Host','Transport'],['Internet','Network']].forEach(([d,o1])=>{const o=shuffle(['Transport','Network','Session','Data Link']);
+ items.push({q:'The DoD '+d+' layer maps to which OSI layer?',o,a:o.indexOf(o1),why:'Only the middle two map one to one: Host-to-Host is Transport and Internet is Network.'})});
+(function(){const o=shuffle(['Data Link and Physical','Network and Data Link','Physical only','Transport and Network']);items.push({q:'The DoD Network Access layer covers which OSI layers?',o,a:o.indexOf('Data Link and Physical'),why:'Network Access is OSI layers 2 and 1. The OSI Network layer belongs to the DoD Internet layer.'})})();
+(function(){const o=shuffle(['Application, Presentation, Session','Application only','Application and Transport','Session and Transport']);items.push({q:'The DoD Process/Application layer covers which OSI layers?',o,a:o.indexOf('Application, Presentation, Session'),why:'The top DoD layer covers OSI 7, 6, and 5. Transport is Host-to-Host.'})})();
+(function(){const o=shuffle(['Switch','Router','Hub','Repeater']);items.push({q:'Which device forwards frames by MAC address at layer 2?',o,a:o.indexOf('Switch'),why:'Switches and bridges are layer 2. Hubs and repeaters are layer 1. Routers are layer 3.'})})();
+Deck({items,q:$('dq'),opts:$('dopts'),fb:$('dfb'),next:$('dnext'),score:$('dsc')});
+</script>
+</body>
+</html>
