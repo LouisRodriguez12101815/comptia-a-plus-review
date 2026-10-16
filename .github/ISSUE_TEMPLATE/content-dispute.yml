@@ -1,0 +1,48 @@
+name: Content dispute
+description: Report content on the review site that looks wrong, outdated, or unclear.
+title: "[Content dispute] "
+labels: ["content-dispute"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for checking the content. The site's authority is the current CompTIA exam objectives (N10-009, 220-1201, 220-1202). A source helps us fix it fast.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The page URL where you found it.
+      placeholder: https://comptia-a-plus-review.vercel.app/notes/n10-tcpip
+    validations:
+      required: true
+  - type: textarea
+    id: item
+    attributes:
+      label: Item disputed
+      description: Paste the sentence, question, flashcard, or visual name.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Wrong answer key
+        - Factual error
+        - Outdated for the current exam objectives
+        - Typo or unclear wording
+        - Broken visual, game, or lab
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: What is wrong and what it should say
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source or reference
+      description: Exam objective number, book page, RFC, or vendor documentation.

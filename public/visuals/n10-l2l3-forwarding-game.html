@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forwarding Decision Rush</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.hud{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:4px 0 10px;font-size:14px}
+.hud b{font-family:ui-monospace,Menlo,monospace;font-size:16px}
+.bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0 12px}
+.bar i{display:block;height:100%;background:var(--accent);width:100%;transition:width .25s linear}
+.cat{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--accent)}
+.scen{font-size:16px;font-weight:600;margin:6px 0 2px}
+.opts.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.opt{width:100%}
+.big{font-size:28px;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+.miss{font-size:14px;border-top:1px solid var(--line);padding:8px 0}
+.miss:first-child{border-top:0}
+.hide{display:none!important}
+.opt.good:disabled,.opt.bad:disabled{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Forwarding Decision Rush</h1>
+<p class="lede">Twelve quick calls about Layer 2 switches, Layer 3 switches, and routers. Pick the device, the address it reads, or what changes. Streaks of three or more earn bonus points.</p>
+
+<div class="card" id="intro">
+ <div class="lab">Mode</div>
+ <div class="ctrls" id="mode" role="group" aria-label="Mode">
+  <button type="button" data-m="practice" aria-pressed="true">Practice (no timer)</button>
+  <button type="button" data-m="timed" aria-pressed="false">Timed (15 s per call)</button>
+ </div>
+ <p class="hint" id="best"></p>
+ <button type="button" class="go" id="start">Start</button>
+</div>
+
+<div class="card hide" id="play">
+ <div class="hud"><span>Call <b id="n">1</b>/12</span><span>Score <b id="score">0</b></span><span>Streak <b id="streak">0</b></span><span id="tl" class="hide">Time <b id="time">15</b>s</span></div>
+ <div class="bar hide" id="barw"><i id="bar"></i></div>
+ <div class="cat" id="cat"></div>
+ <p class="scen" id="q"></p>
+ <div class="opts grid" id="opts"></div>
+ <div class="fb" id="fb" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:10px"><button type="button" class="go" id="nx" disabled>Next call</button></div>
+</div>
+
+<div class="card hide" id="done">
+ <h2 class="sec">Shift over</h2>
+ <p><span class="big" id="final">0</span> points · <span id="acc"></span></p>
+ <p class="hint" id="nb"></p>
+ <div class="lab">Review your misses</div>
+ <div id="misses"></div>
+ <div class="ctrls" style="margin-top:12px"><button type="button" class="go" id="again">Play again</button></div>
+</div>
+
+<script>
+const POOL=[
+ {c:"Which device?",q:"Forward a frame to a host in the same VLAN using only the destination MAC.",o:["Layer 2 switch","Router","Hub","DNS server"],a:0,e:"Same VLAN means same subnet: a Layer 2 switch forwards by destination MAC."},
+ {c:"Which device?",q:"Route between 20 VLANs at wire speed on 48 Ethernet ports in the campus core.",o:["Layer 2 switch","Layer 3 switch","Hub","Wireless AP"],a:1,e:"A Layer 3 (multilayer) switch routes between VLANs in hardware with high port density."},
+ {c:"Which device?",q:"Connect the office to the ISP and perform NAT and a site-to-site VPN.",o:["Layer 2 switch","Unmanaged switch","Router","Bridge"],a:2,e:"The edge router handles WAN links, NAT, and VPN. A Layer 3 switch usually does not replace it."},
+ {c:"Which address?",q:"A Layer 2 switch decides which port to use by reading the…",o:["Destination IP","Destination MAC","Source port","TTL"],a:1,e:"Layer 2 switches forward by destination MAC address from the MAC (CAM) table."},
+ {c:"Which address?",q:"A router decides where to forward a packet by reading the…",o:["Destination IP","Source MAC","VLAN tag","Destination MAC"],a:0,e:"Routers look up the destination IP in the routing table."},
+ {c:"What changes?",q:"A packet is routed from VLAN 10 to VLAN 20 by a Layer 3 switch. Which field stays the same?",o:["Source MAC","TTL","Destination IP","Destination MAC"],a:2,e:"Routing rewrites both MACs and decrements TTL. IP addresses stay the same unless NAT is used."},
+ {c:"What changes?",q:"A frame crosses a Layer 2 switch inside VLAN 10. What happens to the TTL?",o:["Drops by 1","Resets to 64","Nothing","Drops to 0"],a:2,e:"Switching never touches the IP header, so the TTL is unchanged."},
+ {c:"What changes?",q:"After one routed hop, what is a TTL of 64?",o:["64","65","0","63"],a:3,e:"Each routed hop decrements the TTL by 1: 64 becomes 63."},
+ {c:"What changes?",q:"When a router forwards a packet, the new source MAC is…",o:["The original sender's MAC","The router's outgoing interface MAC","The destination host's MAC","FF:FF:FF:FF:FF:FF"],a:1,e:"The router builds a new frame with its egress interface as source MAC."},
+ {c:"Fix it",q:"VLAN 10 and VLAN 20 hosts on one Layer 2 switch cannot reach each other. Best fix?",o:["Add a router or Layer 3 switch","Replace cables with crossover","Increase the MAC table size","Add a hub"],a:0,e:"Different VLANs need routing: router-on-a-stick or a Layer 3 switch with SVIs."},
+ {c:"Fix it",q:"SVIs exist on a Cisco Layer 3 switch, but VLANs still cannot reach each other. Missing command?",o:["spanning-tree portfast","switchport mode access","ip routing","no shutdown on VLAN 1"],a:2,e:"ip routing enables the routing engine on the Layer 3 switch."},
+ {c:"Fix it",q:"A host in VLAN 30 on a Layer 3 switch cannot leave its subnet. What should its default gateway be?",o:["The VLAN 30 SVI IP","The DNS server","The switch's MAC","0.0.0.0"],a:0,e:"Each VLAN's SVI address is the default gateway for hosts in that VLAN."},
+ {c:"Fix it",q:"The VLAN 40 SVI is down/down. Most likely cause?",o:["ip routing is on","No active port in VLAN 40 and no trunk carrying it","The SVI has an IP","DHCP is off"],a:1,e:"An SVI comes up only when its VLAN has at least one active access port or a trunk carrying it."},
+ {c:"Count it",q:"One Layer 2 switch, 24 ports, all in VLAN 1. How many broadcast domains?",o:["24","2","1","0"],a:2,e:"All ports in one VLAN share one broadcast domain (and each port is its own collision domain)."},
+ {c:"Count it",q:"A Layer 2 switch has VLANs 10, 20, and 30 with active ports. How many broadcast domains?",o:["1","3","24","6"],a:1,e:"Each VLAN is a separate broadcast domain."},
+ {c:"Count it",q:"A router has 4 active interfaces. How many broadcast domains does it create?",o:["4","1","8","2"],a:0,e:"Every router interface is its own broadcast domain."},
+ {c:"Which device?",q:"Inter-VLAN routing with one router interface and an 802.1Q subinterface per VLAN.",o:["Layer 3 switch","Router-on-a-stick","Hub","Bridge"],a:1,e:"Router-on-a-stick: one trunk link, one subinterface per VLAN."},
+ {c:"Which device?",q:"Unknown destination MAC arrives. This device floods the frame out every port in the VLAN except the ingress port.",o:["Router","Firewall","Layer 2 switch","Load balancer"],a:2,e:"Flooding unknown unicast within the VLAN is standard Layer 2 switch behavior."},
+ {c:"Which address?",q:"A Layer 2 switch LEARNS which port a host is on by reading the…",o:["Destination MAC","Source IP","Default gateway","Source MAC"],a:3,e:"The switch records each frame's source MAC and ingress port in its MAC address table."},
+ {c:"What changes?",q:"A frame leaves a trunk port toward another switch. What may be added?",o:["A new destination IP","An 802.1Q VLAN tag","A lower TTL","NAT translation"],a:1,e:"Trunks carry 802.1Q tags that identify the VLAN; the addresses stay the same."},
+ {c:"Fix it",q:"Which command turns a Layer 3 switch port into a routed port with its own IP?",o:["no switchport","switchport trunk","vlan 99","ip helper-address"],a:0,e:"no switchport makes the port a Layer 3 routed port."},
+ {c:"Which device?",q:"Works at OSI Layers 2 and 3 at the same time.",o:["Hub","Repeater","Layer 3 (multilayer) switch","Patch panel"],a:2,e:"A multilayer switch switches at Layer 2 and routes at Layer 3."}
+];
+const $=id=>document.getElementById(id);
+let mode="practice",deck=[],k=0,score=0,streak=0,right=0,misses=[],timer=null,left=15,locked=false;
+const KEY="frd-best";const getBest=()=>{try{return+localStorage.getItem(KEY)||0}catch(e){return 0}};const setBest=v=>{try{localStorage.setItem(KEY,v)}catch(e){}};
+function showBest(){const b=getBest();$("best").textContent=b?`Your best score in this browser: ${b}`:"Score 10 per correct call, +5 bonus while your streak is 3 or more."}
+document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll("#mode button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function start(){deck=sh(POOL).slice(0,12).map(x=>{const idx=sh([0,1,2,3]);return{...x,o:idx.map(i=>x.o[i]),a:idx.indexOf(x.a)}});k=0;score=0;streak=0;right=0;misses=[];
+ $("intro").classList.add("hide");$("done").classList.add("hide");$("play").classList.remove("hide");
+ $("tl").classList.toggle("hide",mode!=="timed");$("barw").classList.toggle("hide",mode!=="timed");show()}
+function show(){const x=deck[k];locked=false;$("n").textContent=k+1;$("score").textContent=score;$("streak").textContent=streak;$("cat").textContent=x.c;$("q").textContent=x.q;$("fb").className="fb";$("fb").textContent="";$("nx").disabled=true;
+ $("opts").innerHTML="";x.o.forEach((t,i)=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=t;b.onclick=()=>pick(i);$("opts").appendChild(b)});
+ $("q").setAttribute("tabindex","-1");$("q").focus({preventScroll:true});
+ if(mode==="timed"){left=15;tick();clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);pick(-1)}},1000)}}
+function tick(){$("time").textContent=left;$("bar").style.width=(left/15*100)+"%"}
+function pick(i){if(locked)return;locked=true;clearInterval(timer);const x=deck[k];const btns=[...$("opts").children];btns.forEach((b,j)=>{b.disabled=true;if(j===x.a)b.classList.add("good");else if(j===i)b.classList.add("bad")});
+ if(i===x.a){streak++;right++;const pts=10+(streak>=3?5:0);score+=pts;$("fb").className="fb good";$("fb").textContent=`Correct (+${pts}). ${x.e}`}
+ else{streak=0;misses.push(x);$("fb").className="fb bad";$("fb").textContent=(i<0?"Time's up. ":"Not quite. ")+`Answer: ${x.o[x.a]}. ${x.e}`}
+ $("score").textContent=score;$("streak").textContent=streak;$("nx").disabled=false;$("nx").textContent=k===deck.length-1?"See results":"Next call";$("nx").focus()}
+$("nx").onclick=()=>{k++;if(k<deck.length)show();else end()};
+function end(){$("play").classList.add("hide");$("done").classList.remove("hide");$("final").textContent=score;$("acc").textContent=`${right} of ${deck.length} correct`;
+ const b=getBest();if(score>b){setBest(score);$("nb").textContent="New best score in this browser."}else $("nb").textContent=`Best: ${b}`;
+ $("misses").innerHTML=misses.length?misses.map(x=>`<div class="miss"><strong>${x.q}</strong><br>Answer: ${x.o[x.a]}. ${x.e}</div>`).join(""):'<p class="hint">No misses. Try timed mode.</p>'}
+$("start").onclick=start;$("again").onclick=start;showBest();
+</script>
+</div>
+</body>
+</html>

@@ -1057,5 +1057,289 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "inter-vlan-l3-switch",
+    "title": "Lab 04 — Inter-VLAN Routing on a Layer 3 Switch",
+    "subtitle": "Junior network engineer portfolio · Cisco Packet Tracer",
+    "status": "Build lab · about 30 minutes · no download yet",
+    "summary": "Two departments share one building but sit in different VLANs and cannot reach each other. Turn a Layer 3 switch into their gateway: create VLANs, add an SVI per VLAN, enable ip routing, trunk to an access switch, and add a routed uplink to the edge router. Then break it three ways and fix it.",
+    "image": "/labs/inter-vlan-l3-switch/topology.svg",
+    "imageAlt": "Topology: edge router R1 on top, Layer 3 switch MLS1 in the middle with SVIs for VLAN 10 and 20, access switch SW2 with PC1 and PC2 in VLAN 10 on a trunk, and PC3 and SRV1 in VLAN 20 on MLS1 access ports.",
+    "imagePosition": "center",
+    "imageCaption": "MLS1 (a Catalyst 3650 in Packet Tracer) routes between VLAN 10 and VLAN 20 with SVIs and uplinks to R1 on a routed port.",
+    "skills": [
+      "Cisco Packet Tracer",
+      "VLANs and 802.1Q trunks",
+      "SVIs and ip routing",
+      "Routed ports",
+      "Layer 2 vs Layer 3 troubleshooting",
+      "CompTIA Network+",
+      "CCNA"
+    ],
+    "relatedTopicIds": [
+      "n10-l2-l3-switching",
+      "n10-ch11",
+      "n10-ch9"
+    ],
+    "sections": [
+      {
+        "id": "ticket",
+        "title": "The ticket",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "“Sales (VLAN 10) can’t open the file server in Engineering (VLAN 20). They’re plugged into the same switch closet.” Same building, same switches, different VLANs: this is a routing problem, not a cabling one."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Goal: PC1 in VLAN 10 can ping SRV1 in VLAN 20, and both VLANs can reach R1.",
+              "Rule: routing happens on MLS1 (the Layer 3 switch), not by adding a router-on-a-stick."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Before you start, predict: when PC1 pings SRV1, which device rewrites the MAC addresses and lowers the TTL? (Answer at the end.)"
+          }
+        ]
+      },
+      {
+        "id": "addressing",
+        "title": "Devices and addressing",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Device",
+              "Interface",
+              "VLAN or mode",
+              "Address",
+              "Gateway"
+            ],
+            "rows": [
+              [
+                "PC1",
+                "Fa0",
+                "Access VLAN 10 (on SW2)",
+                "10.1.10.20/24",
+                "10.1.10.1"
+              ],
+              [
+                "PC2",
+                "Fa0",
+                "Access VLAN 10 (on SW2)",
+                "10.1.10.21/24",
+                "10.1.10.1"
+              ],
+              [
+                "PC3",
+                "Fa0",
+                "Access VLAN 20 (on MLS1)",
+                "10.1.20.30/24",
+                "10.1.20.1"
+              ],
+              [
+                "SRV1",
+                "Fa0",
+                "Access VLAN 20 (on MLS1)",
+                "10.1.20.100/24",
+                "10.1.20.1"
+              ],
+              [
+                "MLS1",
+                "Vlan10 (SVI)",
+                "—",
+                "10.1.10.1/24",
+                "—"
+              ],
+              [
+                "MLS1",
+                "Vlan20 (SVI)",
+                "—",
+                "10.1.20.1/24",
+                "—"
+              ],
+              [
+                "MLS1",
+                "Gi1/0/24",
+                "Routed port (no switchport)",
+                "10.1.99.2/30",
+                "Default route to 10.1.99.1"
+              ],
+              [
+                "MLS1 ↔ SW2",
+                "Gi1/0/1 ↔ Gi0/1",
+                "802.1Q trunk",
+                "—",
+                "—"
+              ],
+              [
+                "R1",
+                "G0/0",
+                "Routed",
+                "10.1.99.1/30",
+                "Routes back to 10.1.10.0/24 and 10.1.20.0/24"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "build-mls",
+        "title": "Step 1: Build VLANs and SVIs on MLS1",
+        "blocks": [
+          {
+            "type": "code",
+            "text": "enable\nconfigure terminal\nhostname MLS1\nvlan 10\n name SALES\nvlan 20\n name ENGINEERING\nexit\n!\ninterface range gigabitEthernet1/0/2 - 3\n switchport mode access\n switchport access vlan 20\n!\ninterface vlan 10\n ip address 10.1.10.1 255.255.255.0\n no shutdown\ninterface vlan 20\n ip address 10.1.20.1 255.255.255.0\n no shutdown\n!\nip routing"
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "vlan 10 / vlan 20 create the VLANs in the VLAN database.",
+              "interface vlan 10 creates the SVI: the Layer 3 gateway for VLAN 10.",
+              "ip routing turns the switch's routing engine on. Leave it out on purpose later in the break/fix."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "trunk",
+        "title": "Step 2: Trunk to the access switch",
+        "blocks": [
+          {
+            "type": "code",
+            "text": "! MLS1\ninterface gigabitEthernet1/0/1\n switchport trunk encapsulation dot1q\n switchport mode trunk\n!\n! SW2\nenable\nconfigure terminal\nhostname SW2\nvlan 10\n name SALES\ninterface gigabitEthernet0/1\n switchport mode trunk\ninterface range fastEthernet0/1 - 2\n switchport mode access\n switchport access vlan 10"
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "On many Layer 3 switches (including the 3560 in Packet Tracer) the trunk will not form until you set switchport trunk encapsulation dot1q. Newer models support only 802.1Q and do not need the command."
+          }
+        ]
+      },
+      {
+        "id": "uplink",
+        "title": "Step 3: Routed uplink to R1",
+        "blocks": [
+          {
+            "type": "code",
+            "text": "! MLS1\ninterface gigabitEthernet1/0/24\n no switchport\n ip address 10.1.99.2 255.255.255.252\n no shutdown\nip route 0.0.0.0 0.0.0.0 10.1.99.1\n!\n! R1\ninterface gigabitEthernet0/0\n ip address 10.1.99.1 255.255.255.252\n no shutdown\nip route 10.1.10.0 255.255.255.0 10.1.99.2\nip route 10.1.20.0 255.255.255.0 10.1.99.2"
+          },
+          {
+            "type": "paragraph",
+            "text": "no switchport turns the port into a routed port, so it behaves like a router interface. R1 needs static routes back to both VLAN subnets, or replies from R1 would have nowhere to go."
+          }
+        ]
+      },
+      {
+        "id": "verification",
+        "title": "Step 4: Verify",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Command (where)",
+              "What healthy looks like"
+            ],
+            "rows": [
+              [
+                "show vlan brief (MLS1, SW2)",
+                "VLAN 10 and 20 exist; access ports listed in the right VLAN"
+              ],
+              [
+                "show interfaces trunk (MLS1)",
+                "Gi1/0/1 trunking, encapsulation 802.1q, VLAN 10 allowed and active"
+              ],
+              [
+                "show ip interface brief (MLS1)",
+                "Vlan10, Vlan20, and Gi1/0/24 are up/up with the right IPs"
+              ],
+              [
+                "show ip route (MLS1)",
+                "C 10.1.10.0/24 Vlan10, C 10.1.20.0/24 Vlan20, C 10.1.99.0/30, S* 0.0.0.0/0 via 10.1.99.1"
+              ],
+              [
+                "ping 10.1.20.100 (PC1)",
+                "Replies. The first may time out while ARP resolves."
+              ],
+              [
+                "tracert 10.1.20.100 (PC1)",
+                "First hop 10.1.10.1 (the SVI), then the server: one routed hop"
+              ],
+              [
+                "ping 10.1.99.1 (PC1)",
+                "Replies from R1"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "break-fix",
+        "title": "Step 5: Break it, then fix it",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Break",
+              "Symptom",
+              "Why",
+              "Fix"
+            ],
+            "rows": [
+              [
+                "no ip routing on MLS1",
+                "PC1 can ping 10.1.10.1 but not SRV1",
+                "SVIs answer locally, but the switch no longer routes between them",
+                "ip routing"
+              ],
+              [
+                "Set PC1's gateway to 10.1.20.1",
+                "PC1 can reach PC2 but nothing off its subnet",
+                "The gateway must be in the host's own subnet: the VLAN 10 SVI",
+                "Gateway 10.1.10.1"
+              ],
+              [
+                "shutdown Gi0/1 on SW2",
+                "Vlan10 SVI goes down/down on MLS1; VLAN 10 is isolated",
+                "An SVI needs at least one active port or trunk in its VLAN",
+                "no shutdown on the trunk"
+              ],
+              [
+                "Remove R1's route to 10.1.20.0/24",
+                "VLAN 20 cannot ping R1; VLAN 10 still can",
+                "Pings reach R1, but R1 has no return path",
+                "Add the static route back"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Work each break bottom up: is the link up (show interfaces trunk), is the SVI up (show ip interface brief), is routing on (show ip route), is the host's gateway right (ipconfig)?"
+          }
+        ]
+      },
+      {
+        "id": "debrief",
+        "title": "Debrief",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Answer to the warm-up: MLS1 rewrites the MAC addresses and decrements the TTL. The IP addresses of PC1 and SRV1 never change.",
+              "Compare with router-on-a-stick: the same result, but every inter-VLAN packet would cross one router link twice.",
+              "Interview line: “I configured inter-VLAN routing on a Layer 3 switch with SVIs and a routed uplink, then troubleshot SVI, trunk, gateway, and return-route failures.”"
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Study notes: Layer 2 Switches, Layer 3 Switches, and Routers (Network+), and Chapter 11 for VLANs and trunks."
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { reportContent } from "@/app/components/ReportIssue";
 
 /*
  * Visual picker used on every Visuals page and on the Network+ chapter pages.
@@ -490,6 +491,13 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
                 Open full screen <span aria-hidden="true">{"\u2197"}</span>
                 <span className="cv-sr"> (opens in a new tab)</span>
               </a>
+              <button
+                type="button"
+                className="cv-btn"
+                onClick={() => reportContent(`Visual ${current.file}: ${current.title}`, "Broken visual, game, or lab")}
+              >
+                Dispute this visual
+              </button>
               {multi && current.notesHref ? (
                 <a className="cv-btn" href={current.notesHref}>
                   Read this chapter&rsquo;s notes

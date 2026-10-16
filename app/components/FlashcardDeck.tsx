@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
+import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getFlashcards, getTopics } from "@/lib/content";
 import {
@@ -162,6 +163,13 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
               className="rounded-full border border-slate-600 px-4 py-2 text-sm"
             >
               Previous
+            </button>
+            <button
+              type="button"
+              onClick={() => reportContent(`Flashcard ${card.id}: ${card.front} / ${card.back}`, "Factual error")}
+              className="min-h-11 px-2 text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200"
+            >
+              Dispute this card
             </button>
           </div>
         </>

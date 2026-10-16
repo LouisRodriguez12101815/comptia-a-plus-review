@@ -5821,5 +5821,621 @@
     "answer": 0,
     "explanation": "A rogue AP is an unauthorized access point plugged into your network. Bots and botnets are infected hosts, not hardware you find on the wire.",
     "weak": true
+  },
+  {
+    "id": "q-n10sw-01",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Which address does a Layer 2 switch use to forward a frame?",
+    "choices": [
+      "Destination IP address",
+      "Destination MAC address",
+      "Source IP address",
+      "Destination port number"
+    ],
+    "answer": 1,
+    "explanation": "A Layer 2 switch reads the destination MAC address and looks it up in its MAC address table. It does not read IP addresses or ports.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-02",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "A Layer 2 switch receives a frame whose destination MAC is not in its MAC address table. What does it do?",
+    "choices": [
+      "Drops the frame",
+      "Sends an ARP request",
+      "Floods the frame out every port in that VLAN except the one it arrived on",
+      "Forwards it to the default gateway"
+    ],
+    "answer": 2,
+    "explanation": "An unknown unicast is flooded out every port in the same VLAN except the ingress port. When the destination replies, the switch learns its MAC and port.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-03",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Which device can route traffic between VLANs AND switch frames at wire speed on 48 Ethernet ports?",
+    "choices": [
+      "Hub",
+      "Layer 2 switch",
+      "Bridge",
+      "Layer 3 switch"
+    ],
+    "answer": 3,
+    "explanation": "A Layer 3 (multilayer) switch switches inside each VLAN and routes between VLANs in hardware. A Layer 2 switch and a bridge cannot route; a hub does neither.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-04",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "A packet is routed by a Layer 3 switch from VLAN 10 to VLAN 20. Which field stays the same?",
+    "choices": [
+      "Destination IP address",
+      "Source MAC address",
+      "Destination MAC address",
+      "TTL"
+    ],
+    "answer": 0,
+    "explanation": "Routing rewrites the Layer 2 header (both MACs) and decrements the TTL. The source and destination IP addresses stay the same unless NAT is used.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-05",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "On a Layer 3 switch, what should a host in VLAN 20 use as its default gateway?",
+    "choices": [
+      "The switch's management IP in VLAN 1",
+      "The edge router's WAN address",
+      "The IP address of the VLAN 20 SVI",
+      "The DNS server"
+    ],
+    "answer": 2,
+    "explanation": "Each VLAN's SVI is the routed interface for that subnet, so hosts in VLAN 20 point their default gateway at the VLAN 20 SVI.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-06",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "A technician creates SVIs for VLAN 10 and VLAN 20 on a Cisco Layer 3 switch. Hosts can ping their own SVI but not hosts in the other VLAN. Which command is most likely missing?",
+    "choices": [
+      "switchport mode trunk",
+      "ip routing",
+      "spanning-tree portfast",
+      "vlan database"
+    ],
+    "answer": 1,
+    "explanation": "ip routing enables the routing engine. Without it the SVIs respond locally but the switch does not route between VLANs.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-07",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Which job is a router usually better at than a Layer 3 switch?",
+    "choices": [
+      "High port density for access ports",
+      "Switching frames within one VLAN",
+      "Learning MAC addresses",
+      "NAT and VPN to the internet over WAN interfaces"
+    ],
+    "answer": 3,
+    "explanation": "Routers sit at the edge and handle NAT, VPN, and WAN links. Layer 3 switches are built for fast inter-VLAN routing with many Ethernet ports.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-08",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "How many broadcast domains does a single Layer 2 switch with all 24 ports in VLAN 1 have?",
+    "choices": [
+      "One",
+      "24",
+      "Two",
+      "Zero"
+    ],
+    "answer": 0,
+    "explanation": "All ports in one VLAN form one broadcast domain. Each port is its own collision domain, so there are 24 collision domains but one broadcast domain.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-09",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "A Layer 2 switch has three VLANs configured with ports in each. How many broadcast domains are there?",
+    "choices": [
+      "One",
+      "Three",
+      "One per port",
+      "None, switches do not have broadcast domains"
+    ],
+    "answer": 1,
+    "explanation": "Each VLAN is its own broadcast domain, so three VLANs give three broadcast domains.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-10",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Which statement about a Layer 2 switch is TRUE?",
+    "choices": [
+      "It decrements the TTL of every frame",
+      "It rewrites the source MAC to its own MAC",
+      "It forwards frames without changing the MAC or IP addresses",
+      "It forwards broadcasts to the default gateway only"
+    ],
+    "answer": 2,
+    "explanation": "Switching leaves the MAC addresses, IP addresses, and TTL untouched. Only routing rewrites MACs and decrements TTL.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-11",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "What is router-on-a-stick?",
+    "choices": [
+      "A wireless router mounted on a pole",
+      "A router used only for management",
+      "A Layer 3 switch with routed ports",
+      "One router interface with an 802.1Q subinterface per VLAN on a trunk link"
+    ],
+    "answer": 3,
+    "explanation": "Router-on-a-stick uses a single physical router interface on a trunk, with one 802.1Q subinterface per VLAN, to route between VLANs.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-12",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Which command turns a Cisco Layer 3 switch port into a routed port that behaves like a router interface?",
+    "choices": [
+      "no switchport",
+      "switchport access vlan 99",
+      "ip helper-address",
+      "interface vlan 99"
+    ],
+    "answer": 0,
+    "explanation": "no switchport removes the port from Layer 2 switching so it can take an IP address directly as a routed port.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-13",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "At which OSI layer does a multilayer switch perform inter-VLAN routing?",
+    "choices": [
+      "Layer 1",
+      "Layer 2",
+      "Layer 3",
+      "Layer 7"
+    ],
+    "answer": 2,
+    "explanation": "Routing between VLANs uses IP addresses, which is Layer 3 (Network). The same switch also switches at Layer 2 within each VLAN.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-14",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Two PCs plug into the same Layer 2 switch, one in VLAN 10 and one in VLAN 30. They cannot ping each other. What is needed?",
+    "choices": [
+      "A crossover cable",
+      "A hub between them",
+      "A larger MAC address table",
+      "A router or Layer 3 switch to route between the VLANs"
+    ],
+    "answer": 3,
+    "explanation": "Different VLANs are different subnets and broadcast domains. A router or Layer 3 switch must route between them.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-15",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "Which table does a Layer 2 switch build by reading the SOURCE MAC of incoming frames?",
+    "choices": [
+      "Routing table",
+      "MAC address (CAM) table",
+      "ARP cache",
+      "NAT table"
+    ],
+    "answer": 1,
+    "explanation": "The switch learns by recording each frame's source MAC and ingress port in its MAC address (CAM) table.",
+    "weak": false
+  },
+  {
+    "id": "q-n10sw-16",
+    "topicId": "n10-l2-l3-switching",
+    "prompt": "An SVI for VLAN 40 shows down/down even though the VLAN exists. What is the most likely cause?",
+    "choices": [
+      "No port assigned to VLAN 40 (and no trunk carrying it) is up",
+      "ip routing is enabled",
+      "The SVI has an IP address",
+      "Spanning tree is running"
+    ],
+    "answer": 0,
+    "explanation": "An SVI comes up only when its VLAN exists and at least one access port in that VLAN or a trunk carrying it is up.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-01",
+    "topicId": "n10-tcpip",
+    "prompt": "Which TCP/IP layer maps to OSI Layer 4?",
+    "choices": [
+      "Transport (Host-to-Host)",
+      "Internet",
+      "Application",
+      "Link"
+    ],
+    "answer": 0,
+    "explanation": "The TCP/IP Transport (DoD Host-to-Host) layer is OSI Layer 4, where TCP and UDP live.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-02",
+    "topicId": "n10-tcpip",
+    "prompt": "A client sends SYN with seq=100. The server replies SYN/ACK with seq=300. What acknowledgment number does the server send?",
+    "choices": [
+      "100",
+      "300",
+      "101",
+      "301"
+    ],
+    "answer": 2,
+    "explanation": "The ack number is the next byte expected: the client's sequence number plus one, because a SYN counts as one. So ack=101.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-03",
+    "topicId": "n10-tcpip",
+    "prompt": "Which protocol number in the IPv4 header identifies UDP?",
+    "choices": [
+      "6",
+      "1",
+      "50",
+      "17"
+    ],
+    "answer": 3,
+    "explanation": "Protocol 17 is UDP. 6 is TCP, 1 is ICMP, and 50 is ESP.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-04",
+    "topicId": "n10-tcpip",
+    "prompt": "Which is a characteristic of UDP?",
+    "choices": [
+      "Three-way handshake",
+      "Connectionless with no acknowledgments",
+      "Windowing for flow control",
+      "Guaranteed in-order delivery"
+    ],
+    "answer": 1,
+    "explanation": "UDP is connectionless: it sends without a handshake, acknowledgments, ordering, or retransmission. The other options describe TCP.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-05",
+    "topicId": "n10-tcpip",
+    "prompt": "Which port range holds the temporary source ports a client picks for outgoing connections?",
+    "choices": [
+      "0 to 1023",
+      "1024 to 49151",
+      "49152 to 65535",
+      "65536 and above"
+    ],
+    "answer": 2,
+    "explanation": "Dynamic (ephemeral) ports are 49152 to 65535. Well-known are 0 to 1023 and registered are 1024 to 49151.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-06",
+    "topicId": "n10-tcpip",
+    "prompt": "What does a router do to the IPv4 TTL field at each hop?",
+    "choices": [
+      "Decrements it by 1",
+      "Resets it to 64",
+      "Doubles it",
+      "Leaves it unchanged"
+    ],
+    "answer": 0,
+    "explanation": "Every router decrements the TTL by 1 and drops the packet at 0, returning ICMP Time Exceeded. traceroute relies on this.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-07",
+    "topicId": "n10-tcpip",
+    "prompt": "Which service uses UDP 69?",
+    "choices": [
+      "NTP",
+      "Syslog",
+      "SNMP",
+      "TFTP"
+    ],
+    "answer": 3,
+    "explanation": "TFTP uses UDP 69. NTP is UDP 123, syslog is UDP 514, and SNMP is UDP 161/162.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-08",
+    "topicId": "n10-tcpip",
+    "prompt": "An administrator must replace Telnet with an encrypted alternative. Which port should be allowed?",
+    "choices": [
+      "23",
+      "22",
+      "443",
+      "3389"
+    ],
+    "answer": 1,
+    "explanation": "SSH on TCP 22 is the encrypted replacement for Telnet on TCP 23.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-09",
+    "topicId": "n10-tcpip",
+    "prompt": "Which sequence correctly closes a TCP connection gracefully?",
+    "choices": [
+      "SYN, SYN/ACK, ACK",
+      "RST, ACK",
+      "FIN, ACK, FIN, ACK",
+      "ACK, FIN"
+    ],
+    "answer": 2,
+    "explanation": "A graceful close takes four segments: FIN, ACK, FIN, ACK, because each side closes its own direction. RST aborts instead.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-10",
+    "topicId": "n10-tcpip",
+    "prompt": "Which port does LDAPS use?",
+    "choices": [
+      "636",
+      "389",
+      "445",
+      "587"
+    ],
+    "answer": 0,
+    "explanation": "LDAPS (LDAP over TLS) uses 636. Plain LDAP is 389.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-11",
+    "topicId": "n10-tcpip",
+    "prompt": "DNS normally answers name lookups over UDP. When does DNS use TCP 53?",
+    "choices": [
+      "Never",
+      "Only for reverse lookups",
+      "For every query from a Windows client",
+      "For zone transfers and responses too large for UDP"
+    ],
+    "answer": 3,
+    "explanation": "DNS uses UDP 53 for normal queries and TCP 53 for zone transfers and large responses.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-12",
+    "topicId": "n10-tcpip",
+    "prompt": "Which protocol has no port numbers because it rides directly on IP?",
+    "choices": [
+      "DHCP",
+      "ICMP",
+      "SNMP",
+      "NTP"
+    ],
+    "answer": 1,
+    "explanation": "ICMP is IP protocol 1 and has no ports. DHCP, SNMP, and NTP all run over UDP ports.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-13",
+    "topicId": "n10-tcpip",
+    "prompt": "Which IPSec protocol provides encryption?",
+    "choices": [
+      "AH",
+      "IKE",
+      "ESP",
+      "GRE"
+    ],
+    "answer": 2,
+    "explanation": "ESP (Encapsulating Security Payload) encrypts and provides integrity. AH authenticates without encrypting, IKE negotiates keys, and GRE is an unencrypted tunnel.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-14",
+    "topicId": "n10-tcpip",
+    "prompt": "Which traffic type sends to one shared address so that the nearest of several servers answers?",
+    "choices": [
+      "Anycast",
+      "Multicast",
+      "Broadcast",
+      "Unicast"
+    ],
+    "answer": 0,
+    "explanation": "Anycast assigns the same address to many hosts and routing delivers to the nearest one.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-15",
+    "topicId": "n10-tcpip",
+    "prompt": "Which pair of ports does DHCP use?",
+    "choices": [
+      "UDP 53/54",
+      "TCP 67/68",
+      "UDP 161/162",
+      "UDP 67/68"
+    ],
+    "answer": 3,
+    "explanation": "DHCP uses UDP 67 on the server and UDP 68 on the client.",
+    "weak": false
+  },
+  {
+    "id": "q-n10tcp-16",
+    "topicId": "n10-tcpip",
+    "prompt": "A VoIP phone uses SIP over TLS. Which port is it using?",
+    "choices": [
+      "5060",
+      "5061",
+      "3389",
+      "1433"
+    ],
+    "answer": 1,
+    "explanation": "SIP is 5060; SIP over TLS is 5061. 3389 is RDP and 1433 is SQL Server.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-01",
+    "topicId": "n10-html-http",
+    "prompt": "At which OSI layer does HTTP operate?",
+    "choices": [
+      "Layer 7 Application",
+      "Layer 4 Transport",
+      "Layer 3 Network",
+      "Layer 6 Presentation"
+    ],
+    "answer": 0,
+    "explanation": "HTTP is an Application layer (Layer 7) protocol. It rides on TCP at Layer 4.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-02",
+    "topicId": "n10-html-http",
+    "prompt": "Which port and transport does HTTPS use by default?",
+    "choices": [
+      "UDP 80",
+      "TCP 80",
+      "TCP 443",
+      "TCP 8443"
+    ],
+    "answer": 2,
+    "explanation": "HTTPS uses TCP 443 by default (HTTP/3 adds UDP 443). Plain HTTP is TCP 80.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-03",
+    "topicId": "n10-html-http",
+    "prompt": "A user gets an HTTP 404 Not Found. What does this prove?",
+    "choices": [
+      "DNS failed",
+      "The firewall blocked TCP 443",
+      "The TLS certificate expired",
+      "The network path works and the server answered, but the page does not exist"
+    ],
+    "answer": 3,
+    "explanation": "Any HTTP status code means DNS, TCP, and the server all worked. 404 means that path does not exist on the server.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-04",
+    "topicId": "n10-html-http",
+    "prompt": "Which HTTP status code means the server application itself failed?",
+    "choices": [
+      "301",
+      "500",
+      "404",
+      "200"
+    ],
+    "answer": 1,
+    "explanation": "500 Internal Server Error is a server-side application failure. 301 is a redirect, 404 is not found, 200 is success.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-05",
+    "topicId": "n10-html-http",
+    "prompt": "What does HTML stand for?",
+    "choices": [
+      "High Transfer Markup Logic",
+      "Host Text Messaging Language",
+      "HyperText Markup Language",
+      "Hyperlink Transport Mode Layer"
+    ],
+    "answer": 2,
+    "explanation": "HTML is HyperText Markup Language: a markup language that describes page structure.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-06",
+    "topicId": "n10-html-http",
+    "prompt": "Which HTTP method is normally used when a browser submits a login form?",
+    "choices": [
+      "GET",
+      "HEAD",
+      "DELETE",
+      "POST"
+    ],
+    "answer": 3,
+    "explanation": "Forms that send data, such as a login, normally use POST. GET retrieves, HEAD returns headers only, DELETE removes a resource.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-07",
+    "topicId": "n10-html-http",
+    "prompt": "Which HTML element creates a link that triggers a new HTTP request when clicked?",
+    "choices": [
+      "<a href=\"...\">",
+      "<p>",
+      "<title>",
+      "<h1>"
+    ],
+    "answer": 0,
+    "explanation": "The anchor element <a> with an href attribute is a hyperlink. Clicking it makes the browser request the linked URL.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-08",
+    "topicId": "n10-html-http",
+    "prompt": "A browser shows Connection refused when opening a website. Where should you look first?",
+    "choices": [
+      "The page's HTML",
+      "Whether the web service is listening on that port",
+      "The DNS A record",
+      "The user's monitor"
+    ],
+    "answer": 1,
+    "explanation": "Connection refused means the host was reached but nothing accepted the TCP connection on that port, so check the web service and port.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-09",
+    "topicId": "n10-html-http",
+    "prompt": "What happens right after DNS resolves a website's name and before any HTML is sent?",
+    "choices": [
+      "The browser renders the DOM",
+      "The server sends a 200 OK",
+      "A TCP three-way handshake (and TLS for HTTPS)",
+      "The browser runs JavaScript"
+    ],
+    "answer": 2,
+    "explanation": "After DNS, the browser opens a TCP connection with SYN, SYN/ACK, ACK, then negotiates TLS for HTTPS, then sends the HTTP request.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-10",
+    "topicId": "n10-html-http",
+    "prompt": "Which language controls how a web page LOOKS (colors, fonts, layout)?",
+    "choices": [
+      "HTML",
+      "JavaScript",
+      "SQL",
+      "CSS"
+    ],
+    "answer": 3,
+    "explanation": "CSS handles presentation. HTML is structure, JavaScript is behavior, and SQL is a database query language.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-11",
+    "topicId": "n10-html-http",
+    "prompt": "A proxy in front of a web server returns 502 Bad Gateway. What does that mean?",
+    "choices": [
+      "The proxy got an invalid response from the server behind it",
+      "The user typed the wrong URL",
+      "DNS is down",
+      "The browser cache is full"
+    ],
+    "answer": 0,
+    "explanation": "502 Bad Gateway comes from a proxy, load balancer, or gateway that could not get a valid response from the upstream server.",
+    "weak": false
+  },
+  {
+    "id": "q-n10web-12",
+    "topicId": "n10-html-http",
+    "prompt": "Which command shows only the HTTP status line and headers for a URL?",
+    "choices": [
+      "ping -t",
+      "curl -I",
+      "nslookup",
+      "ipconfig /all"
+    ],
+    "answer": 1,
+    "explanation": "curl -I sends a HEAD request and prints the status line and headers. ping, nslookup, and ipconfig do not speak HTTP.",
+    "weak": false
   }
 ]

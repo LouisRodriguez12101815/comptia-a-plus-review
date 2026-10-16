@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
+import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { TrackBar } from "@/app/components/TrackBar";
 import "./globals.css";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <TrackBar />
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );

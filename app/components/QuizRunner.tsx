@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
+import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getQuestions, getTopics } from "@/lib/content";
 import { recordQuiz } from "@/lib/progress";
@@ -230,6 +231,13 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           {current.explanation}
         </p>
       )}
+      <button
+        type="button"
+        onClick={() => reportContent(`Question ${current.id}: ${current.prompt}`, "Wrong answer key")}
+        className="block min-h-11 text-left text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200"
+      >
+        Dispute this question
+      </button>
       <button
         type="button"
         onClick={() => {

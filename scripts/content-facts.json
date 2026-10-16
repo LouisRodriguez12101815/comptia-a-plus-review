@@ -712,6 +712,100 @@
         "notes",
         "card"
       ]
+    },
+    {
+      "id": "routing-rewrites-mac-not-ip",
+      "topics": [
+        "n10-l2-l3-switching"
+      ],
+      "statement": "Routing (router or Layer 3 switch) rewrites both MACs and decrements TTL; source and destination IP stay the same without NAT. Layer 2 switching changes none of them.",
+      "source": "N10-009 1.1 and 2.1; RFC 1812 5.2.4 / 5.3.1",
+      "require": [
+        "MAC addresses change",
+        "decrements the TTL"
+      ],
+      "forbid": [
+        {
+          "pattern": "Layer 2 switch[^.\\n]{0,40}(?:decrements|lowers|reduces) (?:the )?TTL",
+          "reason": "a Layer 2 switch does not touch the TTL"
+        },
+        {
+          "pattern": "rout(?:ed|ing)[^.\\n]{0,40}changes? the (?:source and destination |destination )?IP",
+          "reason": "routing does not change IP addresses (NAT does)"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "svi-ip-routing",
+      "topics": [
+        "n10-l2-l3-switching"
+      ],
+      "statement": "Inter-VLAN routing on a Cisco Layer 3 switch needs an SVI per VLAN and the ip routing command",
+      "source": "N10-009 2.2 (SVI); Cisco IOS configuration",
+      "require": [
+        "switch virtual interface",
+        "ip routing"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "tcp-handshake-order",
+      "topics": [
+        "n10-tcpip"
+      ],
+      "statement": "TCP three-way handshake is SYN, SYN/ACK, ACK; graceful close is FIN, ACK, FIN, ACK",
+      "source": "RFC 9293 section 3.5; N10-009 1.4",
+      "require": [
+        "SYN, SYN/ACK, ACK",
+        "FIN, ACK, FIN, ACK"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "port-ranges",
+      "topics": [
+        "n10-tcpip"
+      ],
+      "statement": "Well-known 0-1023, registered 1024-49151, dynamic 49152-65535",
+      "source": "IANA RFC 6335",
+      "require": [
+        "0 to 1023",
+        "1024 to 49151",
+        "49152 to 65535"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "https-port",
+      "topics": [
+        "n10-tcpip",
+        "n10-html-http"
+      ],
+      "statement": "HTTP is TCP 80 and HTTPS is TCP 443",
+      "source": "N10-009 objective 1.4",
+      "require": [
+        "443"
+      ],
+      "forbid": [
+        {
+          "pattern": "HTTPS\\s+(?:uses\\s+|on\\s+|is\\s+)?(?:TCP\\s+|port\\s+)?(?:80|8080)\\b",
+          "reason": "HTTPS is 443"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
     }
   ],
   "computed": [
