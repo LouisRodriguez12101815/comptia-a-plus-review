@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Port Rush</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.hud{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:4px 0 10px;font-size:14px}
+.hud b{font-family:ui-monospace,Menlo,monospace;font-size:16px}
+.bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0 12px}
+.bar i{display:block;height:100%;background:var(--accent);width:100%;transition:width .25s linear}
+.cat{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--accent)}
+.scen{font-size:16px;font-weight:600;margin:6px 0 2px}
+.opts.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.opt{width:100%}
+.big{font-size:28px;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+.miss{font-size:14px;border-top:1px solid var(--line);padding:8px 0}
+.miss:first-child{border-top:0}
+.hide{display:none!important}
+.opt.good:disabled,.opt.bad:disabled{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Port Rush</h1>
+<p class="lede">Fifteen rapid calls on the N10-009 port list: name the port, name the protocol, or pick the transport. Ten points per hit and a bonus while your streak is three or more.</p>
+
+<div class="card" id="intro">
+ <div class="lab">Mode</div>
+ <div class="ctrls" id="mode" role="group" aria-label="Mode">
+  <button type="button" data-m="practice" aria-pressed="true">Practice (no timer)</button>
+  <button type="button" data-m="timed" aria-pressed="false">Timed (10 s per call)</button>
+ </div>
+ <p class="hint" id="best"></p>
+ <button type="button" class="go" id="start">Start</button>
+</div>
+
+<div class="card hide" id="play">
+ <div class="hud"><span>Call <b id="n">1</b>/15</span><span>Score <b id="score">0</b></span><span>Streak <b id="streak">0</b></span><span id="tl" class="hide">Time <b id="time">10</b>s</span></div>
+ <div class="bar hide" id="barw"><i id="bar"></i></div>
+ <div class="cat" id="cat"></div>
+ <p class="scen" id="q"></p>
+ <div class="opts grid" id="opts"></div>
+ <div class="fb" id="fb" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:10px"><button type="button" class="go" id="nx" disabled>Next call</button></div>
+</div>
+
+<div class="card hide" id="done">
+ <h2 class="sec">Results</h2>
+ <p><span class="big" id="final">0</span> points · <span id="acc"></span></p>
+ <p class="hint" id="nb"></p>
+ <div class="lab">Review your misses</div>
+ <div id="misses"></div>
+ <div class="ctrls" style="margin-top:12px"><button type="button" class="go" id="again">Play again</button></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">The full list</h2>
+ <div class="tbl"><table><thead><tr><th>Port</th><th>Protocol</th><th>Transport</th></tr></thead><tbody id="ref"></tbody></table></div>
+</div>
+
+<script>
+const P=[["20/21","FTP","TCP","File transfer, clear text"],["22","SSH","TCP","Encrypted remote shell"],["22","SFTP","TCP","File transfer over SSH"],["23","Telnet","TCP","Clear-text remote shell"],["25","SMTP","TCP","Mail between servers"],["53","DNS","UDP and TCP","Name resolution"],["67/68","DHCP","UDP","Address assignment"],["69","TFTP","UDP","Trivial file transfer"],["80","HTTP","TCP","Web, clear text"],["123","NTP","UDP","Time sync"],["161/162","SNMP","UDP","Monitoring; 162 is traps"],["389","LDAP","TCP","Directory queries"],["443","HTTPS","TCP","Web over TLS"],["445","SMB","TCP","Windows file sharing"],["514","Syslog","UDP","Log collection"],["587","SMTPS","TCP","Secure mail submission"],["636","LDAPS","TCP","LDAP over TLS"],["1433","SQL Server","TCP","Microsoft SQL Server"],["3389","RDP","TCP","Remote Desktop"],["5060/5061","SIP","TCP and UDP","VoIP signaling; 5061 is TLS"]];
+const $=id=>document.getElementById(id);
+$("ref").innerHTML=P.map(p=>`<tr><td class="mono">${p[0]}</td><td>${p[1]} <span class="sc">· ${p[3]}</span></td><td>${p[2]}</td></tr>`).join("");
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const uniqPorts=[...new Set(P.map(p=>p[0]))];
+function make(){const kind=Math.random();const p=P[Math.floor(Math.random()*P.length)];
+ if(kind<.42){const wrong=sh(uniqPorts.filter(x=>x!==p[0])).slice(0,3);const o=sh([p[0],...wrong]);return{c:"Name the port",q:`${p[1]} (${p[3]}) uses which port?`,o,a:o.indexOf(p[0]),e:`${p[1]} is ${p[2]} ${p[0]}.`}}
+ if(kind<.84){const owners=P.filter(x=>x[0]===p[0]).map(x=>x[1]);const wrong=sh([...new Set(P.map(x=>x[1]).filter(x=>!owners.includes(x)))]).slice(0,3);const o=sh([p[1],...wrong]);return{c:"Name the protocol",q:`Port ${p[0]} (${p[2]}) belongs to…`,o,a:o.indexOf(p[1]),e:`${p[0]} is ${owners.join(" and ")}: ${p[3]}.`}}
+ const o=["TCP","UDP","TCP and UDP","Neither, it has no port"];return{c:"Pick the transport",q:`${p[1]} on ${p[0]} normally runs over…`,o,a:o.indexOf(p[2]),e:`${p[1]} uses ${p[2]}. ${p[2]==="UDP"?"Short request/response or streaming: no handshake needed.":p[2]==="TCP"?"It needs reliable, ordered delivery.":"Both are used, depending on the message."}`}}
+let mode="practice",deck=[],k=0,score=0,streak=0,right=0,misses=[],timer=null,left=10,locked=false;
+const KEY="port-rush-best";const getBest=()=>{try{return+localStorage.getItem(KEY)||0}catch(e){return 0}};const setBest=v=>{try{localStorage.setItem(KEY,v)}catch(e){}};
+function showBest(){const b=getBest();$("best").textContent=b?`Your best score in this browser: ${b}`:"Tip: learn the secure pairs first: 23 to 22, 80 to 443, 389 to 636, 5060 to 5061."}
+document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll("#mode button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+function start(){deck=[];const seen=new Set();while(deck.length<15){const x=make();if(seen.has(x.q))continue;seen.add(x.q);deck.push(x)}k=0;score=0;streak=0;right=0;misses=[];
+ $("intro").classList.add("hide");$("done").classList.add("hide");$("play").classList.remove("hide");$("tl").classList.toggle("hide",mode!=="timed");$("barw").classList.toggle("hide",mode!=="timed");show()}
+function show(){const x=deck[k];locked=false;$("n").textContent=k+1;$("score").textContent=score;$("streak").textContent=streak;$("cat").textContent=x.c;$("q").textContent=x.q;$("fb").className="fb";$("fb").textContent="";$("nx").disabled=true;
+ $("opts").innerHTML="";x.o.forEach((t,i)=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=t;b.onclick=()=>pick(i);$("opts").appendChild(b)});
+ $("q").setAttribute("tabindex","-1");$("q").focus({preventScroll:true});
+ if(mode==="timed"){left=10;tick();clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);pick(-1)}},1000)}}
+function tick(){$("time").textContent=left;$("bar").style.width=(left/10*100)+"%"}
+function pick(i){if(locked)return;locked=true;clearInterval(timer);const x=deck[k];[...$("opts").children].forEach((b,j)=>{b.disabled=true;if(j===x.a)b.classList.add("good");else if(j===i)b.classList.add("bad")});
+ if(i===x.a){streak++;right++;const pts=10+(streak>=3?5:0);score+=pts;$("fb").className="fb good";$("fb").textContent=`Correct (+${pts}). ${x.e}`}
+ else{streak=0;misses.push(x);$("fb").className="fb bad";$("fb").textContent=(i<0?"Time's up. ":"Not quite. ")+`Answer: ${x.o[x.a]}. ${x.e}`}
+ $("score").textContent=score;$("streak").textContent=streak;$("nx").disabled=false;$("nx").textContent=k===deck.length-1?"See results":"Next call";$("nx").focus()}
+$("nx").onclick=()=>{k++;if(k<deck.length)show();else end()};
+function end(){$("play").classList.add("hide");$("done").classList.remove("hide");$("final").textContent=score;$("acc").textContent=`${right} of ${deck.length} correct`;
+ const b=getBest();if(score>b){setBest(score);$("nb").textContent="New best score in this browser."}else $("nb").textContent=`Best: ${b}`;
+ $("misses").innerHTML=misses.length?misses.map(x=>`<div class="miss"><strong>${x.q}</strong><br>Answer: ${x.o[x.a]}. ${x.e}</div>`).join(""):'<p class="hint">No misses. Try timed mode.</p>'}
+$("start").onclick=start;$("again").onclick=start;showBest();
+</script>
+</div>
+</body>
+</html>

@@ -653,6 +653,159 @@
         "notes",
         "card"
       ]
+    },
+    {
+      "id": "osi-layer-order",
+      "topics": [
+        "n10-osi-models"
+      ],
+      "statement": "OSI layers 1 to 7: Physical, Data Link, Network, Transport, Session, Presentation, Application",
+      "source": "N10-009 objective 1.1; class whiteboard mnemonic",
+      "require": [
+        "Please Do Not Throw Sausage Pizza Away",
+        "All People Seem To Need Data Processing"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "osi-dod-mapping",
+      "topics": [
+        "n10-osi-models"
+      ],
+      "statement": "DoD Host-to-Host = Transport, Internet = Network, Network Access = Data Link + Physical",
+      "source": "Course slides ch06, slide 8 (DoD Model)",
+      "require": [
+        "Host-to-Host",
+        "Network Access"
+      ],
+      "forbid": [
+        {
+          "pattern": "Internet[^\\n]{0,40}(?:maps to|=)[^\\n]{0,20}Transport",
+          "reason": "the DoD Internet layer maps to OSI Network, not Transport"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "osi-router-hub-cable",
+      "topics": [
+        "n10-osi-models"
+      ],
+      "statement": "Router to hub uses straight-through (MDI to MDI-X); switch to hub uses crossover",
+      "source": "MDI/MDI-X rule (Professor Messer N10-008 2.3); corrects the whiteboard layer shortcut",
+      "require": [
+        "Router to hub",
+        "Switch to hub"
+      ],
+      "forbid": [
+        {
+          "pattern": "[Rr]outer to hub[,:]?\\s+(?:uses\\s+)?(?:a\\s+)?[Cc]rossover",
+          "reason": "router (MDI) to hub (MDI-X) is straight-through"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "routing-rewrites-mac-not-ip",
+      "topics": [
+        "n10-l2-l3-switching"
+      ],
+      "statement": "Routing (router or Layer 3 switch) rewrites both MACs and decrements TTL; source and destination IP stay the same without NAT. Layer 2 switching changes none of them.",
+      "source": "N10-009 1.1 and 2.1; RFC 1812 5.2.4 / 5.3.1",
+      "require": [
+        "MAC addresses change",
+        "decrements the TTL"
+      ],
+      "forbid": [
+        {
+          "pattern": "Layer 2 switch[^.\\n]{0,40}(?:decrements|lowers|reduces) (?:the )?TTL",
+          "reason": "a Layer 2 switch does not touch the TTL"
+        },
+        {
+          "pattern": "rout(?:ed|ing)[^.\\n]{0,40}changes? the (?:source and destination |destination )?IP",
+          "reason": "routing does not change IP addresses (NAT does)"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
+    },
+    {
+      "id": "svi-ip-routing",
+      "topics": [
+        "n10-l2-l3-switching"
+      ],
+      "statement": "Inter-VLAN routing on a Cisco Layer 3 switch needs an SVI per VLAN and the ip routing command",
+      "source": "N10-009 2.2 (SVI); Cisco IOS configuration",
+      "require": [
+        "switch virtual interface",
+        "ip routing"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "tcp-handshake-order",
+      "topics": [
+        "n10-tcpip"
+      ],
+      "statement": "TCP three-way handshake is SYN, SYN/ACK, ACK; graceful close is FIN, ACK, FIN, ACK",
+      "source": "RFC 9293 section 3.5; N10-009 1.4",
+      "require": [
+        "SYN, SYN/ACK, ACK",
+        "FIN, ACK, FIN, ACK"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "port-ranges",
+      "topics": [
+        "n10-tcpip"
+      ],
+      "statement": "Well-known 0-1023, registered 1024-49151, dynamic 49152-65535",
+      "source": "IANA RFC 6335",
+      "require": [
+        "0 to 1023",
+        "1024 to 49151",
+        "49152 to 65535"
+      ],
+      "kinds": [
+        "notes"
+      ]
+    },
+    {
+      "id": "https-port",
+      "topics": [
+        "n10-tcpip",
+        "n10-html-http"
+      ],
+      "statement": "HTTP is TCP 80 and HTTPS is TCP 443",
+      "source": "N10-009 objective 1.4",
+      "require": [
+        "443"
+      ],
+      "forbid": [
+        {
+          "pattern": "HTTPS\\s+(?:uses\\s+|on\\s+|is\\s+)?(?:TCP\\s+|port\\s+)?(?:80|8080)\\b",
+          "reason": "HTTPS is 443"
+        }
+      ],
+      "kinds": [
+        "notes",
+        "card"
+      ]
     }
   ],
   "computed": [
@@ -851,7 +1004,8 @@
     "n10-ch8",
     "n10-ch9",
     "n10-ch10",
-    "n10-ch11"
+    "n10-ch11",
+    "n10-osi-models"
   ],
   "answerKeys": {
     "q-n10c8-01": "126",
@@ -991,6 +1145,44 @@
     "q-n10risk-12": "Fingerprint",
     "q-n10risk-13": "GDPR",
     "q-n10risk-14": "Role-based access control",
-    "q-n10risk-15": "TLS"
+    "q-n10risk-15": "TLS",
+    "q-n10osi-01": "Transport",
+    "q-n10osi-02": "Physical to Application",
+    "q-n10osi-03": "Host-to-Host",
+    "q-n10osi-04": "Data Link and Physical",
+    "q-n10osi-05": "Application, Presentation, and Session",
+    "q-n10osi-06": "Network",
+    "q-n10osi-07": "Four",
+    "q-n10osi-08": "Packet",
+    "q-n10osi-09": "Straight-through",
+    "q-n10osi-10": "Crossover",
+    "q-n10osi-11": "Crossover",
+    "q-n10osi-12": "Straight-through",
+    "q-n10osi-13": "Crossover",
+    "q-n10osi-14": "Crossover",
+    "q-n10osi-15": "Auto-MDIX",
+    "q-n10osi-16": "Pins 1 and 2 with pins 3 and 6",
+    "q-n10osi-17": "No link, because transmit meets transmit",
+    "q-n10osi-18": "Switch",
+    "q-cls-047": "Straight-through",
+    "q-cls-048": "Host to switch",
+    "q-cls-049": "4",
+    "q-cls-050": "Data Link, Physical, Network",
+    "q-cls-051": "Physical",
+    "q-cls-052": "Transport",
+    "q-cls-053": "Network",
+    "q-cls-054": "Network",
+    "q-cls-055": "Please Do Not Throw Sausage Pizza Away.",
+    "q-cls-083": "232",
+    "q-cls-084": "Class A",
+    "q-cls-085": "24 bits",
+    "q-cls-086": "8 subnets, 8,190 hosts each",
+    "q-cls-087": "21.237.192.0/19",
+    "q-cls-088": "True",
+    "q-cls-089": "189.190.152.127/26",
+    "q-cls-090": "184.204.149.192/28",
+    "q-cls-091": "2",
+    "q-cls-092": "Split horizon",
+    "q-cls-093": "Spanning Tree Protocol"
   }
 }

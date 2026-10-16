@@ -1,5 +1,1275 @@
 [
   {
+    "id": "n10-osi-models",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "networking-concepts",
+    "title": "OSI Model, DoD Model, and Cable Types",
+    "chapter": "Network+ · OSI and DoD models",
+    "summary": "The seven OSI layers and their PDUs, two mnemonics, how the four-layer DoD (TCP/IP) model maps onto OSI, and how to pick a straight-through or crossover cable using MDI and MDI-X.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1.1 Explain concepts related to the OSI reference model: Layer 1 Physical through Layer 7 Application.",
+              "5.2 Troubleshoot cabling and physical interface issues: improper termination and transmitter (TX)/receiver (RX) transposed.",
+              "The DoD (TCP/IP) model and the straight-through versus crossover rule come from the course slides and whiteboard. N10-009 does not list them by name, but they explain how the layers map to real protocols and why a link with the wrong cable stays down."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "osi-layers",
+        "title": "The seven OSI layers",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Layer",
+              "Name",
+              "PDU",
+              "What happens here",
+              "Devices and examples"
+            ],
+            "rows": [
+              [
+                "7",
+                "Application",
+                "Data",
+                "The interface to network services an application uses",
+                "HTTP, DNS, SMTP, FTP"
+              ],
+              [
+                "6",
+                "Presentation",
+                "Data",
+                "Formats, translates, compresses, and encrypts data",
+                "TLS encryption, JPEG, ASCII"
+              ],
+              [
+                "5",
+                "Session",
+                "Data",
+                "Sets up, manages, and tears down sessions between hosts",
+                "Session setup and teardown, RPC"
+              ],
+              [
+                "4",
+                "Transport",
+                "Segment",
+                "End-to-end delivery, port numbers, reliable (TCP) or fast (UDP)",
+                "TCP, UDP"
+              ],
+              [
+                "3",
+                "Network",
+                "Packet",
+                "Logical (IP) addressing and routing between networks",
+                "Routers, IP, ICMP"
+              ],
+              [
+                "2",
+                "Data Link",
+                "Frame",
+                "Physical (MAC) addressing and delivery on the local segment",
+                "Switches, bridges, NICs"
+              ],
+              [
+                "1",
+                "Physical",
+                "Bits",
+                "Signals on the wire, fiber, or radio",
+                "Hubs, repeaters, cables, connectors"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Data, segment, packet, frame, bits: that is the PDU order going down the stack (encapsulation). The receiver reverses it going up (de-encapsulation)."
+          }
+        ]
+      },
+      {
+        "id": "mnemonics",
+        "title": "Mnemonics for the layer order",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Direction",
+              "Mnemonic",
+              "Layers"
+            ],
+            "rows": [
+              [
+                "Bottom up, 1 to 7",
+                "Please Do Not Throw Sausage Pizza Away",
+                "Physical, Data Link, Network, Transport, Session, Presentation, Application"
+              ],
+              [
+                "Top down, 7 to 1",
+                "All People Seem To Need Data Processing",
+                "Application, Presentation, Session, Transport, Network, Data Link, Physical"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Know both directions. Exam questions name a layer by number or by name, so be able to go from 4 to Transport and from Network to 3 without counting on your fingers."
+          }
+        ]
+      },
+      {
+        "id": "dod-model",
+        "title": "The DoD model compared with OSI",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The DoD model is a condensed version of the OSI model with four layers instead of seven. It is the model the TCP/IP protocol suite was built on, so the two are often used interchangeably in conversation."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "DoD layer",
+              "OSI layers it covers",
+              "OSI layer numbers"
+            ],
+            "rows": [
+              [
+                "Process/Application",
+                "Application, Presentation, Session",
+                "7, 6, 5"
+              ],
+              [
+                "Host-to-Host",
+                "Transport",
+                "4"
+              ],
+              [
+                "Internet",
+                "Network",
+                "3"
+              ],
+              [
+                "Network Access",
+                "Data Link, Physical",
+                "2, 1"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Only the middle two map one to one: Host-to-Host is Transport and Internet is Network. The top DoD layer swallows three OSI layers and the bottom one swallows two."
+          }
+        ]
+      },
+      {
+        "id": "cable-rule",
+        "title": "Straight-through or crossover: the real rule",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An Ethernet port either transmits on pins 1 and 2 and receives on 3 and 6 (MDI, used by PCs, servers, and routers) or the reverse (MDI-X, used by switches and hubs). A link works only when one side's transmit pair lands on the other side's receive pair."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Unlike devices (one MDI, one MDI-X): straight-through cable. The switch or hub port already does the crossing.",
+              "Like devices (both MDI or both MDI-X): crossover cable, which swaps pins 1 and 2 with 3 and 6.",
+              "A straight-through cable has the same standard on both ends (T568B to T568B, or T568A to T568A). A crossover has T568A on one end and T568B on the other."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Connection",
+              "Groups",
+              "Cable"
+            ],
+            "rows": [
+              [
+                "PC to switch",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "PC to hub",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "Router to switch",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "Router to hub",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "Switch to switch",
+                "MDI-X to MDI-X",
+                "Crossover"
+              ],
+              [
+                "Switch to hub",
+                "MDI-X to MDI-X",
+                "Crossover"
+              ],
+              [
+                "Hub to hub",
+                "MDI-X to MDI-X",
+                "Crossover"
+              ],
+              [
+                "PC to PC",
+                "MDI to MDI",
+                "Crossover"
+              ],
+              [
+                "Router to router",
+                "MDI to MDI",
+                "Crossover"
+              ],
+              [
+                "PC to router",
+                "MDI to MDI",
+                "Crossover"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "layer-shortcut",
+        "title": "The classroom layer shortcut, corrected",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The whiteboard shortcut uses each device's OSI layer: router 3, switch 2, hub 1. Even to odd is straight-through, odd to odd is crossover, same layer is crossover, with PC to hub as the only exception (straight-through)."
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "The shortcut gets two pairs wrong. Router to hub is odd to odd, but it uses straight-through, the same as PC to hub. Switch to hub is even to odd, but it uses crossover. Fix: count the hub as a switch. Then PCs and routers are one group, switches and hubs are the other, and different groups use straight-through while the same group uses crossover."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Shortcut still correct for: PC to switch, router to switch, switch to switch, router to router, PC to router, PC to PC, hub to hub.",
+              "Memory hook: PCs and routers talk like computers (MDI). Switches and hubs are the middlemen (MDI-X). Different jobs, straight cable. Same job, cross the cable."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "auto-mdix",
+        "title": "Auto-MDIX and troubleshooting",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Auto-MDIX (automatic medium-dependent interface crossover) lets a port detect the pairs and swap transmit and receive internally, so most modern gigabit ports work with either cable.",
+              "Without Auto-MDIX, the wrong cable means transmit meets transmit. The link light stays off. N10-009 objective 5.2 calls this TX/RX transposed.",
+              "Gigabit Ethernet uses all four pairs. A full gigabit crossover also swaps pins 4 and 5 with 7 and 8, but Auto-MDIX is required by the 1000BASE-T standard, so in practice a straight-through cable works.",
+              "Packet Tracer and the exam can still test the cable rule even when the gear would bring the link up on its own."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "exam-essentials",
+        "title": "Exam essentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Recite the OSI layers both ways: Please Do Not Throw Sausage Pizza Away (1 to 7) and All People Seem To Need Data Processing (7 to 1).",
+              "Match each PDU to its layer: segment 4, packet 3, frame 2, bits 1.",
+              "Map DoD to OSI: Process/Application 5 to 7, Host-to-Host 4, Internet 3, Network Access 1 and 2.",
+              "Unlike devices use straight-through; like devices use crossover. PCs and routers are MDI; switches and hubs are MDI-X.",
+              "Auto-MDIX makes either cable work, and the wrong cable without it shows up as TX/RX transposed."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-l2-l3-switching",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "implementation",
+    "title": "Layer 2 Switches, Layer 3 Switches, and Routers",
+    "chapter": "Network+ · Switching and routing devices",
+    "summary": "What a Layer 2 switch, a Layer 3 (multilayer) switch, and a router each look at, what they change in a frame or packet, how a Layer 3 switch routes between VLANs with SVIs, and when you still need a router.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1.1 OSI reference model: Layer 2 Data Link and Layer 3 Network.",
+              "1.2 Networking appliances: router and switch (physical and virtual).",
+              "2.1 Routing technologies: static and dynamic routing, the routing table.",
+              "2.2 Switching technologies: VLAN, VLAN database, switch virtual interface (SVI), 802.1Q tagging.",
+              "Related notes: Chapter 11 (switching and VLANs) and Chapter 9 (IP routing)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "three-devices",
+        "title": "Three devices, one question: what do they read?",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Every forwarding device answers the same question: where does this go next? The difference is which address it reads to decide, and which table it looks it up in."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Device",
+              "OSI layer",
+              "Forwards by",
+              "Table it keeps",
+              "Splits up",
+              "Typical job"
+            ],
+            "rows": [
+              [
+                "Layer 2 switch",
+                "2 Data Link",
+                "Destination MAC address",
+                "MAC address table (CAM table)",
+                "Collision domains (every port); one broadcast domain per VLAN",
+                "Connects hosts in the same subnet or VLAN at the access layer"
+              ],
+              [
+                "Layer 3 switch (multilayer)",
+                "2 and 3",
+                "MAC inside a VLAN; destination IP between VLANs",
+                "MAC address table plus a routing table",
+                "Collision domains and broadcast domains (one per VLAN or routed port)",
+                "Fast inter-VLAN routing in the distribution or core layer"
+              ],
+              [
+                "Router",
+                "3 Network",
+                "Destination IP address",
+                "Routing table",
+                "Broadcast domains (every interface)",
+                "Joins different networks: LAN to WAN, edge to the internet, NAT and VPN"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A Layer 2 switch never reads the IP address to make a forwarding decision. If the destination is in a different subnet, a Layer 2 switch alone cannot get it there: something at Layer 3 (a router or a Layer 3 switch) must route it."
+          }
+        ]
+      },
+      {
+        "id": "layer2-forwarding",
+        "title": "How a Layer 2 switch forwards a frame",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1. Learn: record the frame's source MAC address and the port it arrived on in the MAC address table.",
+              "2. Look up: find the destination MAC address in the table.",
+              "3. Forward or filter: send the frame out the one port that matches. If the destination is on the same port it came in on, drop it (filter).",
+              "4. Flood: if the destination MAC is unknown, or the frame is a broadcast (FF:FF:FF:FF:FF:FF), send it out every port in that VLAN except the one it came in on."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A Layer 2 switch does not change the frame. The source MAC, destination MAC, IP addresses, and TTL leave exactly as they arrived (an 802.1Q tag may be added or removed on a trunk, but the addresses stay the same)."
+          },
+          {
+            "type": "paragraph",
+            "text": "Because a Layer 2 switch floods broadcasts to every port in a VLAN, the whole VLAN is one broadcast domain. VLANs are how you split a Layer 2 switch into several broadcast domains, and traffic between those VLANs needs routing."
+          }
+        ]
+      },
+      {
+        "id": "layer3-switching",
+        "title": "How a Layer 3 switch routes between VLANs",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A Layer 3 switch is a switch with a routing engine built into its hardware. It still switches frames inside each VLAN at Layer 2. For each VLAN you create a switch virtual interface (SVI), a virtual Layer 3 interface with an IP address, and hosts in that VLAN use the SVI as their default gateway."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Host A (VLAN 10, 10.1.10.20) wants Host B (VLAN 20, 10.1.20.30). B is in a different subnet, so A sends the frame to its default gateway: the destination MAC is the VLAN 10 SVI's MAC.",
+              "2. The switch sees its own MAC as the destination, so it hands the packet to the routing engine.",
+              "3. The routing engine looks up 10.1.20.30 in the routing table and finds the directly connected VLAN 20 network.",
+              "4. It decrements the TTL by 1 and recalculates the IPv4 header checksum.",
+              "5. It builds a new Layer 2 header: source MAC is the VLAN 20 SVI, destination MAC is Host B (found with ARP).",
+              "6. The frame is switched out the VLAN 20 port toward Host B."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "When traffic is routed, the MAC addresses change at every hop and the TTL goes down by one. The source and destination IP addresses stay the same (unless NAT is involved). This is true for a router and for a Layer 3 switch."
+          },
+          {
+            "type": "code",
+            "text": "! Cisco example: inter-VLAN routing on a Layer 3 switch\nip routing\n!\nvlan 10\n name USERS\nvlan 20\n name SERVERS\n!\ninterface vlan 10\n ip address 10.1.10.1 255.255.255.0\n no shutdown\ninterface vlan 20\n ip address 10.1.20.1 255.255.255.0\n no shutdown\n!\ninterface gigabitEthernet1/0/24\n no switchport\n ip address 10.1.99.2 255.255.255.252"
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "ip routing turns on the routing engine. Without it the SVIs answer pings but the switch will not route between VLANs.",
+              "An SVI is up only when the VLAN exists and at least one port in that VLAN (or a trunk carrying it) is up.",
+              "no switchport turns a physical port into a routed port, which acts like a router interface (useful for an uplink to an edge router)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "l3-vs-router",
+        "title": "Layer 3 switch or router?",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Factor",
+              "Layer 3 switch",
+              "Router"
+            ],
+            "rows": [
+              [
+                "Port count and type",
+                "Many Ethernet ports (24 or 48), high port density",
+                "Fewer ports, often different WAN interface types"
+              ],
+              [
+                "Forwarding",
+                "Hardware (ASIC) forwarding at wire speed between VLANs",
+                "Software or specialized hardware; built for features more than port density"
+              ],
+              [
+                "Best at",
+                "Routing between VLANs inside a campus or data center",
+                "Connecting to the WAN and internet: NAT, VPN, firewall, WAN links, BGP to an ISP"
+              ],
+              [
+                "Cost per port",
+                "Low",
+                "High"
+              ],
+              [
+                "Where it sits",
+                "Distribution or core layer",
+                "Network edge"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Exam trap: a Layer 3 switch can route, but it usually does not replace the edge router. Features such as NAT to the internet, site-to-site VPN, and WAN interfaces are router (or firewall) jobs in most designs."
+          },
+          {
+            "type": "paragraph",
+            "text": "Inter-VLAN routing can be done two ways. With router-on-a-stick, one router interface connects to a switch trunk and uses an 802.1Q subinterface per VLAN; all routed traffic crosses that one link and back. With a Layer 3 switch, each VLAN gets an SVI and routing happens inside the switch, which scales much better."
+          }
+        ]
+      },
+      {
+        "id": "domains",
+        "title": "Collision and broadcast domains by device",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Device",
+              "Collision domains",
+              "Broadcast domains"
+            ],
+            "rows": [
+              [
+                "Hub",
+                "One for all ports",
+                "One"
+              ],
+              [
+                "Layer 2 switch, one VLAN",
+                "One per port",
+                "One"
+              ],
+              [
+                "Layer 2 switch, several VLANs",
+                "One per port",
+                "One per VLAN"
+              ],
+              [
+                "Layer 3 switch",
+                "One per port",
+                "One per VLAN or routed port"
+              ],
+              [
+                "Router",
+                "One per interface",
+                "One per interface"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Count broadcast domains by counting router interfaces (or VLANs). Count collision domains by counting switch and router ports. Hubs never split anything."
+          }
+        ]
+      },
+      {
+        "id": "exam-traps",
+        "title": "Exam traps",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Layer 2 switch = MAC addresses. Router = IP addresses. Layer 3 switch = both.",
+              "Switches do not decrement TTL when they switch a frame. Routing (router or Layer 3 switch) does.",
+              "Hosts in different VLANs cannot talk without routing, even when they plug into the same switch.",
+              "The default gateway for a host on a Layer 3 switch is the SVI address of its VLAN.",
+              "A multilayer switch is the same thing as a Layer 3 switch. Some vendors also sell Layer 4 to 7 switches (for example load balancers) that read port numbers or application data.",
+              "Unknown unicast and broadcast frames are flooded within the VLAN, not to every port on the switch."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-tcpip",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "networking-concepts",
+    "title": "TCP/IP: The Suite, TCP vs UDP, and Ports",
+    "chapter": "Network+ · TCP/IP suite",
+    "summary": "The four layers of the TCP/IP suite, what the IPv4 header carries, TCP versus UDP, the three-way handshake and teardown with sequence numbers, port ranges, and the N10-009 port list with its transport protocol.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1.1 OSI reference model: Layer 3 Network and Layer 4 Transport.",
+              "1.4 Common networking ports, protocols, services, and traffic types: the port list, IP protocol types (ICMP, TCP, UDP, GRE, IPSec AH/ESP/IKE), and unicast, multicast, anycast, broadcast.",
+              "Related notes: OSI Model, DoD Model, and Cable Types (the DoD model is the TCP/IP model)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "four-layers",
+        "title": "The four TCP/IP layers",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "TCP/IP (DoD) layer",
+              "OSI layers",
+              "PDU",
+              "Protocols"
+            ],
+            "rows": [
+              [
+                "Application (Process/Application)",
+                "7, 6, 5",
+                "Data",
+                "HTTP, HTTPS, DNS, DHCP, SSH, SMTP, FTP, SNMP"
+              ],
+              [
+                "Transport (Host-to-Host)",
+                "4",
+                "Segment (TCP) or datagram (UDP)",
+                "TCP, UDP"
+              ],
+              [
+                "Internet",
+                "3",
+                "Packet",
+                "IPv4, IPv6, ICMP, IPSec, GRE"
+              ],
+              [
+                "Link (Network Access)",
+                "2, 1",
+                "Frame, then bits",
+                "Ethernet, Wi-Fi (802.11), ARP"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "TCP/IP is a suite named after its two most important protocols. IP gets a packet to the right host; TCP or UDP gets the data to the right application on that host using a port number."
+          }
+        ]
+      },
+      {
+        "id": "ip-header",
+        "title": "What the IPv4 header carries",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Field",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "Version",
+                "4 for IPv4"
+              ],
+              [
+                "TTL (time to live)",
+                "Decremented by 1 at every router hop; the packet is dropped at 0 and the router sends an ICMP Time Exceeded message (this is how traceroute works)"
+              ],
+              [
+                "Protocol",
+                "Which protocol is inside: 1 ICMP, 6 TCP, 17 UDP, 47 GRE, 50 ESP, 51 AH"
+              ],
+              [
+                "Header checksum",
+                "Error check on the header only; recalculated at every hop because TTL changes"
+              ],
+              [
+                "Source and destination IP",
+                "Logical addresses of the sending and receiving hosts; unchanged end to end without NAT"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "IP is connectionless and best effort: it does not promise delivery or order. Reliability, if it is needed, comes from TCP above it."
+          }
+        ]
+      },
+      {
+        "id": "tcp-vs-udp",
+        "title": "TCP versus UDP",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "",
+              "TCP",
+              "UDP"
+            ],
+            "rows": [
+              [
+                "Connection",
+                "Connection-oriented (three-way handshake first)",
+                "Connectionless (just sends)"
+              ],
+              [
+                "Reliability",
+                "Sequence numbers, acknowledgments, retransmission",
+                "No acknowledgments or retransmission"
+              ],
+              [
+                "Ordering",
+                "Reassembles in order",
+                "No ordering"
+              ],
+              [
+                "Flow control",
+                "Windowing (receiver advertises how much it can take)",
+                "None"
+              ],
+              [
+                "Header size",
+                "20 bytes minimum",
+                "8 bytes"
+              ],
+              [
+                "Used by",
+                "HTTP/HTTPS, SSH, SMTP, FTP, RDP, SMB, LDAP",
+                "DNS queries, DHCP, TFTP, NTP, SNMP, syslog, VoIP and streaming"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Pick UDP when speed and low overhead matter more than guaranteed delivery (voice, video, quick request/response like DNS). Pick TCP when every byte must arrive in order (web pages, file transfers, email)."
+          }
+        ]
+      },
+      {
+        "id": "handshake",
+        "title": "The three-way handshake and teardown",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1. SYN: the client sends SYN with its initial sequence number, for example seq=100.",
+              "2. SYN/ACK: the server replies with its own sequence number (seq=300) and acknowledges the client's (ack=101).",
+              "3. ACK: the client acknowledges the server (seq=101, ack=301). The connection is established and data can flow."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "The acknowledgment number is always the next byte the receiver expects: the other side's sequence number plus the bytes received (a SYN or FIN counts as one)."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Graceful close: FIN, ACK, FIN, ACK (each side closes its own direction, so it takes four segments).",
+              "RST (reset) aborts a connection at once, for example when a port is closed or a firewall rejects it.",
+              "If an ACK does not arrive in time, TCP retransmits the segment."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Exam trap: the handshake is SYN, SYN/ACK, ACK. Host 1 sends SYN, Host 2 sends SYN/ACK, Host 1 sends the final ACK. A flood of SYNs that never complete is a SYN flood (a denial-of-service attack)."
+          }
+        ]
+      },
+      {
+        "id": "port-ranges",
+        "title": "Port ranges and sockets",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Range",
+              "Name",
+              "Used for"
+            ],
+            "rows": [
+              [
+                "0 to 1023",
+                "Well-known ports",
+                "Standard server services (HTTP 80, HTTPS 443)"
+              ],
+              [
+                "1024 to 49151",
+                "Registered ports",
+                "Vendor applications (SQL Server 1433, RDP 3389)"
+              ],
+              [
+                "49152 to 65535",
+                "Dynamic (ephemeral) ports",
+                "Temporary client-side source ports"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "A socket is an IP address plus a port, for example 192.168.1.20:51544 talking to 203.0.113.10:443. The client picks a random ephemeral source port; the server listens on the well-known port."
+          }
+        ]
+      },
+      {
+        "id": "ports",
+        "title": "N10-009 port list with transport",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Port",
+              "Protocol",
+              "Transport",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "20/21",
+                "FTP",
+                "TCP",
+                "File transfer (20 data, 21 control); clear text"
+              ],
+              [
+                "22",
+                "SSH and SFTP",
+                "TCP",
+                "Encrypted remote shell and secure file transfer"
+              ],
+              [
+                "23",
+                "Telnet",
+                "TCP",
+                "Clear-text remote shell (avoid)"
+              ],
+              [
+                "25",
+                "SMTP",
+                "TCP",
+                "Sending email between mail servers"
+              ],
+              [
+                "53",
+                "DNS",
+                "UDP and TCP",
+                "Name lookups use UDP; zone transfers and large replies use TCP"
+              ],
+              [
+                "67/68",
+                "DHCP",
+                "UDP",
+                "Server 67, client 68"
+              ],
+              [
+                "69",
+                "TFTP",
+                "UDP",
+                "Simple file transfer, no authentication"
+              ],
+              [
+                "80",
+                "HTTP",
+                "TCP",
+                "Web, clear text"
+              ],
+              [
+                "123",
+                "NTP",
+                "UDP",
+                "Time sync"
+              ],
+              [
+                "161/162",
+                "SNMP",
+                "UDP",
+                "161 polling, 162 traps"
+              ],
+              [
+                "389",
+                "LDAP",
+                "TCP (and UDP)",
+                "Directory queries"
+              ],
+              [
+                "443",
+                "HTTPS",
+                "TCP (HTTP/3 uses UDP)",
+                "Web over TLS"
+              ],
+              [
+                "445",
+                "SMB",
+                "TCP",
+                "Windows file and printer sharing"
+              ],
+              [
+                "514",
+                "Syslog",
+                "UDP",
+                "Log messages to a collector"
+              ],
+              [
+                "587",
+                "SMTPS (SMTP submission with TLS)",
+                "TCP",
+                "Clients sending email securely"
+              ],
+              [
+                "636",
+                "LDAPS",
+                "TCP",
+                "LDAP over TLS"
+              ],
+              [
+                "1433",
+                "SQL Server",
+                "TCP",
+                "Microsoft SQL Server"
+              ],
+              [
+                "3389",
+                "RDP",
+                "TCP (and UDP)",
+                "Remote Desktop"
+              ],
+              [
+                "5060/5061",
+                "SIP",
+                "TCP and UDP",
+                "VoIP call setup (5061 is SIP over TLS)"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Secure pairs to memorize: Telnet 23 becomes SSH 22, HTTP 80 becomes HTTPS 443, LDAP 389 becomes LDAPS 636, SIP 5060 becomes 5061, and FTP 20/21 is replaced by SFTP 22."
+          }
+        ]
+      },
+      {
+        "id": "ip-types",
+        "title": "IP protocol types and traffic types",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "What it is"
+            ],
+            "rows": [
+              [
+                "ICMP (protocol 1)",
+                "Error and diagnostic messages: ping (echo request/reply), TTL exceeded, destination unreachable. No ports."
+              ],
+              [
+                "GRE (protocol 47)",
+                "Generic Routing Encapsulation: tunnels other packets inside IP, no encryption by itself"
+              ],
+              [
+                "IPSec AH (protocol 51)",
+                "Authentication Header: integrity and authentication, no encryption"
+              ],
+              [
+                "IPSec ESP (protocol 50)",
+                "Encapsulating Security Payload: encryption plus integrity"
+              ],
+              [
+                "IKE (UDP 500)",
+                "Internet Key Exchange: negotiates the IPSec security associations"
+              ],
+              [
+                "Unicast",
+                "One sender to one receiver"
+              ],
+              [
+                "Multicast",
+                "One sender to a group that joined (224.0.0.0/4 in IPv4)"
+              ],
+              [
+                "Anycast",
+                "One address shared by many hosts; the nearest one answers (common for DNS root servers)"
+              ],
+              [
+                "Broadcast",
+                "One sender to every host in the subnet (IPv4 only; IPv6 has no broadcast)"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "ICMP, GRE, ESP, and AH are protocols that ride directly on IP. They have IP protocol numbers, not TCP or UDP port numbers."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-html-http",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "networking-concepts",
+    "title": "HTML and HTTP: What a Browser Actually Gets",
+    "chapter": "Network+ · Web basics (supplemental)",
+    "summary": "Supplemental: what happens between typing a URL and seeing a page (DNS, TCP, TLS, HTTP), HTTP methods and status codes, and the HTML a server sends back, so you can tell a network fault from a web page fault.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Why this is here",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1.1 OSI reference model: HTTP is a Layer 7 (Application) protocol.",
+              "1.4 Ports and protocols: HTTP 80 and HTTPS 443 over TCP.",
+              "5.0 Troubleshooting: telling a DNS, connection, or TLS problem apart from a server or page problem."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Supplemental: HTML itself is not an N10-009 exam objective. It is here so you can see what the Application layer actually carries and read a status code like a technician."
+          }
+        ]
+      },
+      {
+        "id": "url-to-page",
+        "title": "From URL to page, step by step",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1. DNS: the browser resolves the host name (www.example.com) to an IP address, usually over UDP 53.",
+              "2. TCP: it opens a connection to that IP on port 443 with the three-way handshake (SYN, SYN/ACK, ACK).",
+              "3. TLS: client and server agree on encryption and the server proves its identity with a certificate.",
+              "4. HTTP request: the browser sends GET / with headers such as Host and User-Agent.",
+              "5. HTTP response: the server returns a status line (HTTP/1.1 200 OK), headers (Content-Type: text/html), and the HTML body.",
+              "6. Render: the browser parses the HTML into a DOM tree, then makes more requests for the CSS, JavaScript, and images the HTML points to."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Each failure shows up differently. DNS failure: the name cannot be resolved. TCP failure: connection refused or timed out. TLS failure: a certificate warning. Server reached but page missing: an HTTP status code such as 404."
+          }
+        ]
+      },
+      {
+        "id": "methods-status",
+        "title": "HTTP methods and status codes",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "GET",
+                "Retrieve a resource (a page, an image)"
+              ],
+              [
+                "POST",
+                "Send data to the server (a form submission)"
+              ],
+              [
+                "PUT",
+                "Replace a resource"
+              ],
+              [
+                "DELETE",
+                "Remove a resource"
+              ],
+              [
+                "HEAD",
+                "Same as GET but only the headers, no body"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Code",
+              "Class",
+              "What it tells a technician"
+            ],
+            "rows": [
+              [
+                "200 OK",
+                "2xx success",
+                "The request worked"
+              ],
+              [
+                "301 / 302",
+                "3xx redirect",
+                "The page moved (301 permanent, 302 temporary); the browser follows the Location header"
+              ],
+              [
+                "304 Not Modified",
+                "3xx",
+                "Use the cached copy"
+              ],
+              [
+                "401 Unauthorized",
+                "4xx client error",
+                "Authentication required or failed"
+              ],
+              [
+                "403 Forbidden",
+                "4xx",
+                "Authenticated or not, access is denied"
+              ],
+              [
+                "404 Not Found",
+                "4xx",
+                "The server is reachable but that path does not exist"
+              ],
+              [
+                "500 Internal Server Error",
+                "5xx server error",
+                "The application on the server failed"
+              ],
+              [
+                "502 Bad Gateway / 504 Gateway Timeout",
+                "5xx",
+                "A proxy or load balancer could not get a good or timely answer from the server behind it"
+              ],
+              [
+                "503 Service Unavailable",
+                "5xx",
+                "The server is overloaded or down for maintenance"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Any HTTP status code means the network path worked: DNS resolved, TCP connected, and the server answered. A 404 or 500 is not a network outage."
+          }
+        ]
+      },
+      {
+        "id": "html-basics",
+        "title": "HTML in one page",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "HTML (HyperText Markup Language) is a markup language, not a programming language. It describes the structure of a page with elements. An element is an opening tag, content, and a closing tag; attributes inside the opening tag add details."
+          },
+          {
+            "type": "code",
+            "text": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <title>Help desk status</title>\n    <link rel=\"stylesheet\" href=\"style.css\">\n  </head>\n  <body>\n    <h1>Network status</h1>\n    <p>All systems <strong>up</strong>.</p>\n    <a href=\"https://example.com/tickets\">Open a ticket</a>\n    <img src=\"map.png\" alt=\"Office network map\">\n  </body>\n</html>"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Tag",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "<html>, <head>, <body>",
+                "Document root, metadata (not shown), visible content"
+              ],
+              [
+                "<title>",
+                "Text in the browser tab"
+              ],
+              [
+                "<h1> to <h6>",
+                "Headings, largest to smallest"
+              ],
+              [
+                "<p>",
+                "Paragraph"
+              ],
+              [
+                "<a href=\"...\">",
+                "Link to another page (a new HTTP request when clicked)"
+              ],
+              [
+                "<img src=\"...\" alt=\"...\">",
+                "Image (another HTTP request); alt text is read by screen readers"
+              ],
+              [
+                "<ul>, <ol>, <li>",
+                "Bulleted list, numbered list, list item"
+              ],
+              [
+                "<table>, <tr>, <td>",
+                "Table, row, cell"
+              ],
+              [
+                "<form>, <input>, <button>",
+                "A form; submitting it usually sends a POST request"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Layer of a web page",
+              "Language",
+              "Job"
+            ],
+            "rows": [
+              [
+                "Structure",
+                "HTML",
+                "What is on the page"
+              ],
+              [
+                "Presentation",
+                "CSS",
+                "How it looks"
+              ],
+              [
+                "Behavior",
+                "JavaScript",
+                "What it does when you interact"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "troubleshoot-web",
+        "title": "Troubleshooting a website from the network side",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Likely layer",
+              "First check"
+            ],
+            "rows": [
+              [
+                "Server not found / DNS_PROBE error",
+                "DNS",
+                "nslookup or dig the host name"
+              ],
+              [
+                "Connection timed out",
+                "Network or firewall",
+                "ping, tracert, check firewall rules for TCP 443"
+              ],
+              [
+                "Connection refused",
+                "Transport (nothing listening)",
+                "Is the web service running on that port?"
+              ],
+              [
+                "Certificate warning",
+                "TLS",
+                "Certificate expired, wrong name, or untrusted CA; check the system clock"
+              ],
+              [
+                "404 Not Found",
+                "Application",
+                "Wrong URL or missing page; the network is fine"
+              ],
+              [
+                "500 or 503",
+                "Application on the server",
+                "Server logs; the network is fine"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Browser developer tools (F12) > Network tab shows every request, its status code, and its timing.",
+              "curl -I https://example.com shows only the status line and headers (a HEAD request).",
+              "View Source (Ctrl+U) shows the raw HTML the server sent."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "n10-ch7",
     "group": "networking",
     "examCodes": [

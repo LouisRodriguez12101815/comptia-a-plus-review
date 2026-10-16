@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laser printer EP process</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.stage{overflow-x:auto;margin-top:12px}
+#ep{width:100%;max-width:640px;min-width:320px;display:block}
+.frame{fill:var(--bg);stroke:var(--line)}
+.lbl{font:600 15px Georgia,serif;fill:var(--ink)}
+.sm{font:12px system-ui,sans-serif;fill:var(--muted)}
+.drum{fill:var(--surface);stroke:var(--muted);stroke-width:2}
+.drum.charged{stroke:var(--accent);stroke-width:3}
+.chg{font:700 16px ui-monospace,monospace;fill:var(--accent)}
+.chg.off{fill:var(--muted)}
+.toner{fill:none;stroke:var(--ink);stroke-width:8;stroke-linecap:round}
+.toner2{fill:var(--ink);opacity:.55}.toner2.fused{opacity:1}
+.laser{stroke:var(--bad);stroke-width:3;stroke-dasharray:8 4}
+.roll{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.hop{fill:var(--warm-soft);stroke:var(--warm);stroke-width:2}
+.paper{fill:var(--surface);stroke:var(--muted)}
+.fuser{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2}
+.blade{stroke:var(--warm);stroke-width:5;stroke-linecap:round}
+.mem{fill:var(--accent-soft);stroke:var(--accent)}
+.detail{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px}
+.detail p{margin:6px 0 0}
+.big{font-weight:700;font-size:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Laser printer EP process</h1>
+<p class="lede">Step one page through the seven electrophotographic (EP) steps. Watch what happens to the drum, the toner, and the paper at each stage.</p>
+
+<div class="card">
+ <div class="ctrls" id="steps" role="group" aria-label="EP steps"></div>
+ <div class="stage"><svg id="ep" viewBox="0 0 560 220" role="img" aria-label="Laser printer drum diagram"></svg></div>
+ <div class="detail" id="detail" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:10px"><button type="button" id="prev">Back</button><button type="button" id="next" class="go">Next step</button></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">Put the steps in order</h2>
+ <p class="hint">Click the steps in the order they happen. Hook: People Can't Ever Do The Funky Chicken.</p>
+ <div class="ctrls" id="pool"></div>
+ <p class="q" id="built" aria-live="polite"></p>
+ <div class="fb" id="ofb" aria-live="polite">Click the first step.</div>
+ <div class="ctrls" style="margin-top:10px"><button type="button" id="oreset">Shuffle and restart</button></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">Printer drill</h2>
+ <p class="q" id="dq"></p>
+ <div class="opts" id="dopts"></div>
+ <div class="fb" id="dfb" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:10px;align-items:center"><button type="button" id="dnext" class="go">Next question</button><span class="sc" id="dsc"></span></div>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function press(group,i){[...group.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i?'true':'false'))}
+function Deck(o){
+ let order=shuffle(o.items.map((_,i)=>i)),pos=0,right=0,tot=0,locked=false;
+ function render(){
+  const it=o.items[order[pos]];locked=false;
+  o.q.innerHTML=it.q;o.opts.innerHTML='';o.fb.className='fb';o.fb.textContent='Pick an answer to see the reason.';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+   b.onclick=()=>{if(locked)return;locked=true;tot++;const ok=i===it.a;if(ok)right++;
+    [...o.opts.children].forEach((c,j)=>{if(j===it.a)c.classList.add('good');else if(j===i)c.classList.add('bad')});
+    o.fb.className='fb '+(ok?'good':'bad');
+    o.fb.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. ')+'The answer is '+esc(it.o[it.a])+'.</strong> '+it.why;
+    o.score.textContent=right+' / '+tot+' correct'};
+   o.opts.appendChild(b)});
+ }
+ o.next.onclick=()=>{pos++;if(pos>=order.length){order=shuffle(o.items.map((_,i)=>i));pos=0}render()};
+ o.score.textContent='0 / 0 correct';render();
+}
+
+const ST=[
+ {n:'Processing',k:'P',t:'The printer receives the job and builds the whole page image in memory (a bitmap) before anything moves.',trap:'Happens before charging. A page too complex for memory can fail here.'},
+ {n:'Charging',k:'C',t:'The primary charge roller (or corona wire) puts a uniform strong negative charge on the photosensitive drum.',trap:'Charging comes before the laser, so the laser has something to discharge.'},
+ {n:'Exposing',k:'E',t:'The laser sweeps across the drum and discharges only the spots where the image will be. This writes the image onto the drum.',trap:'The laser step. Quiz trap: it is not transferring.'},
+ {n:'Developing',k:'D',t:'Negatively charged toner sticks only to the discharged spots, so the image now appears in toner on the drum.',trap:'Toner goes on the drum here, not on the paper yet.'},
+ {n:'Transferring',k:'T',t:'The transfer roller gives the paper a positive charge that pulls the toner off the drum onto the page. A static eliminator strip then removes the charge from the paper.',trap:'Drum to paper. No laser involved.'},
+ {n:'Fusing',k:'F',t:'The fuser heats the page (about 165 to 180 °C) and presses the melted toner into the paper fibers.',trap:'Toner that smears off means the fuser is failing.'},
+ {n:'Cleaning',k:'C',t:'A rubber blade scrapes leftover toner off the drum, and an erase lamp removes the remaining charge so the next page starts fresh.',trap:'Ghost images point to cleaning problems.'}];
+let s=0;
+ST.forEach((x,i)=>{const b=document.createElement('button');b.type='button';b.textContent=(i+1)+' '+x.n;b.onclick=()=>{s=i;draw()};$('steps').appendChild(b)});
+function svg(){
+ const ang=s*40,drum=s>=1&&s<=4,img=s>=2&&s<=4,toner=s>=3&&s<=4,paperT=s>=4,fused=s>=5;let h='';
+ h+='<rect x="8" y="8" width="544" height="204" rx="12" class="frame"/>';
+ h+='<text x="24" y="34" class="lbl">'+(s+1)+'. '+ST[s].n+'</text>';
+ // drum
+ h+='<circle cx="200" cy="112" r="62" class="drum'+(drum?' charged':'')+'"/>';
+ if(drum){for(let i=0;i<12;i++){const a=i*30*Math.PI/180,x=200+50*Math.cos(a),y=112+50*Math.sin(a);const hit=img&&(i===10||i===11||i===0);h+='<text x="'+x.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="middle" class="chg'+(hit?' off':'')+'">'+(hit?'·':'−')+'</text>'}}
+ if(toner)h+='<path d="M 236 70 A 62 62 0 0 1 262 112" class="toner"/>';
+ // laser
+ if(s===2)h+='<line x1="380" y1="40" x2="250" y2="74" class="laser"/><text x="384" y="44" class="sm">Laser</text>';
+ // charge roller / toner hopper / transfer
+ if(s===1)h+='<circle cx="150" cy="40" r="14" class="roll"/><text x="104" y="24" class="sm">Charge roller</text>';
+ if(s===3)h+='<rect x="276" y="96" width="60" height="40" rx="6" class="hop"/><text x="280" y="152" class="sm">Toner</text>';
+ // paper path
+ h+='<rect x="120" y="186" width="'+(fused?400:300)+'" height="10" rx="2" class="paper"/>';
+ if(paperT)h+='<rect x="'+(fused?380:230)+'" y="186" width="34" height="10" class="toner2'+(fused?' fused':'')+'"/>';
+ if(s===4)h+='<circle cx="200" cy="200" r="0"/><text x="140" y="180" class="sm">Transfer roller (+)</text>';
+ if(s===5)h+='<circle cx="460" cy="178" r="14" class="fuser"/><circle cx="460" cy="206" r="10" class="roll"/><text x="480" y="160" class="sm">Fuser (heat)</text>';
+ if(s===6)h+='<line x1="140" y1="150" x2="162" y2="160" class="blade"/><text x="70" y="168" class="sm">Cleaning blade</text>';
+ if(s===0)h+='<rect x="380" y="60" width="140" height="80" rx="8" class="mem"/><text x="450" y="104" text-anchor="middle" class="sm">Page image in RAM</text>';
+ $('ep').innerHTML=h;
+}
+function draw(){press($('steps'),s);svg();const x=ST[s];
+ $('detail').innerHTML='<div class="big">Step '+(s+1)+' of 7 · '+x.n+'</div><p>'+x.t+'</p><p class="sc"><strong>Exam note:</strong> '+x.trap+'</p>';
+ $('prev').disabled=s===0;$('next').disabled=s===6;}
+$('prev').onclick=()=>{if(s>0){s--;draw()}};$('next').onclick=()=>{if(s<6){s++;draw()}};draw();
+
+let built=[];
+function pool(){const p=$('pool');p.innerHTML='';shuffle(ST.map((x,i)=>i)).forEach(i=>{const b=document.createElement('button');b.type='button';b.textContent=ST[i].n;b.onclick=()=>pick(i,b);p.appendChild(b)});built=[];$('built').textContent='';$('ofb').className='fb';$('ofb').textContent='Click the first step.'}
+function pick(i,b){const need=built.length;if(i!==need){$('ofb').className='fb bad';$('ofb').innerHTML='<strong>Not yet.</strong> Step '+(need+1)+' comes next. '+ST[need].n+' '+(need===0?'starts it all.':'follows '+ST[need-1].n+'.');return}
+ built.push(i);b.disabled=true;$('built').textContent=built.map(j=>ST[j].n).join(' → ');
+ $('ofb').className='fb good';$('ofb').innerHTML=built.length===7?'<strong>All seven in order.</strong> Processing, charging, exposing, developing, transferring, fusing, cleaning.':'<strong>Correct.</strong> Now step '+(built.length+1)+'.'}
+$('oreset').onclick=pool;pool();
+
+const items=[
+ {q:'Which EP step uses a laser to discharge areas of the drum?',o:['Exposing','Transferring','Developing','Cleaning'],a:0,why:'The laser writes the image during exposing.'},
+ {q:'In which step does toner first stick to the drum?',o:['Charging','Developing','Transferring','Fusing'],a:1,why:'Developing puts toner on the discharged spots of the drum.'},
+ {q:'Which step moves toner from the drum to the paper?',o:['Fusing','Exposing','Transferring','Processing'],a:2,why:'The transfer roller charges the paper so it pulls the toner off the drum.'},
+ {q:'Toner rubs off the printed page. Which part is failing?',o:['Laser','Fuser','Cleaning blade','Charge roller'],a:1,why:'The fuser melts toner into the paper. If it fails, toner smears.'},
+ {q:'A faint copy of the previous page appears on the next one. Which step is at fault?',o:['Cleaning','Processing','Fusing','Exposing'],a:0,why:'Ghosting means leftover toner or charge was not cleaned from the drum.'},
+ {q:'Which printer is best for multipart (triplicate) forms?',o:['Laser','Inkjet','Thermal','Dot-matrix'],a:3,why:'Only an impact printer presses through carbon copies.'},
+ {q:'A new printer prints garbled text. Likely cause?',o:['Wrong driver','Worn print head','Wrong IP address','Low toner'],a:0,why:'Garbled characters mean the wrong printer language, so the wrong driver.'},
+ {q:'Which feature shows which users printed specific jobs?',o:['Badging','Secured prints','Audit logs','User authentication'],a:2,why:'Audit logs record the user and job history.'}];
+Deck({items,q:$('dq'),opts:$('dopts'),fb:$('dfb'),next:$('dnext'),score:$('dsc')});
+</script>
+</body>
+</html>

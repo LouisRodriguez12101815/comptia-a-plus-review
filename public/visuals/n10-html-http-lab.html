@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>From URL to page: HTTP and HTML lab</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.hud{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:4px 0 10px;font-size:14px}
+.hud b{font-family:ui-monospace,Menlo,monospace;font-size:16px}
+.bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0 12px}
+.bar i{display:block;height:100%;background:var(--accent);width:100%;transition:width .25s linear}
+.cat{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--accent)}
+.scen{font-size:16px;font-weight:600;margin:6px 0 2px}
+.opts.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.opt{width:100%}
+.big{font-size:28px;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+.miss{font-size:14px;border-top:1px solid var(--line);padding:8px 0}
+.miss:first-child{border-top:0}
+.hide{display:none!important}
+.flow{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fs{display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:8px;align-items:start;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:14px}
+.fs .no{font-family:ui-monospace,Menlo,monospace;color:var(--muted)}
+.fs.ok{border-color:var(--good);background:var(--good-soft)}
+.fs.stop{border-color:var(--bad);background:var(--bad-soft)}
+.fs.skip{opacity:.4}
+.fs .w{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.screen{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.screen .urlbar{background:var(--accent-soft);padding:6px 10px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;overflow-wrap:anywhere}
+.screen .page{padding:14px;background:var(--surface);min-height:70px;font-size:14px}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;margin-top:10px}
+textarea{width:100%;min-height:260px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical}
+textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+iframe.prev{width:100%;min-height:260px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.tree{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;max-height:240px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;white-space:pre}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;max-width:100%}
+.opt.good:disabled,.opt.bad:disabled{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>From URL to page: HTTP and HTML lab</h1>
+<p class="lede">Supplemental to Network+: see every step between typing a URL and seeing a page, break one step to see the symptom a user reports, then write some HTML and watch what the browser builds from it.</p>
+
+<div class="card">
+ <h2 class="sec">1. Load a page, then break it</h2>
+ <p class="hint">Choose a fault. The steps turn green until the one that fails, and the browser window shows what the user sees.</p>
+ <div class="ctrls"><label class="sc" for="fault" style="align-self:center">Fault:</label><select id="fault"></select><button type="button" class="go" id="load">Load https://www.example.com</button></div>
+ <div class="flow" id="flow"></div>
+ <div class="screen" aria-live="polite"><div class="urlbar">https://www.example.com/</div><div class="page" id="page">Press Load.</div></div>
+ <div class="fb" id="diag"></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">2. HTML playground</h2>
+ <p class="hint">Edit the HTML. The preview runs in a locked sandbox (no scripts). The tree shows the DOM the browser builds, and the counter shows how many extra HTTP requests this page would trigger.</p>
+ <div class="ctrls" id="snips"></div>
+ <div class="pg">
+  <div><label class="lab" for="src">Your HTML</label><textarea id="src" spellcheck="false"></textarea></div>
+  <div><div class="lab">Preview</div><iframe class="prev" id="prev" sandbox="" title="HTML preview"></iframe></div>
+ </div>
+ <div class="pg">
+  <div><div class="lab">DOM tree</div><div class="tree" id="tree" aria-live="polite"></div></div>
+  <div><div class="lab">Extra requests after the HTML arrives</div><div class="fb" id="reqs"></div></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2 class="sec">3. Status code triage</h2>
+ <p class="hint">A user reports a symptom. Is it the network, or the web server?</p>
+ <p class="q" id="tq"></p>
+ <div class="opts" id="topts"></div>
+ <div class="fb" id="tfb" aria-live="polite"></div>
+ <div class="ctrls" style="margin-top:8px"><button type="button" id="tnext">Next ticket</button><span class="sc" id="tsc"></span></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const STEPS=[["DNS lookup","www.example.com → 203.0.113.10 (UDP 53)"],["TCP handshake","SYN → SYN/ACK → ACK on TCP 443"],["TLS handshake","certificate for www.example.com checked, keys agreed"],["HTTP request","GET / HTTP/1.1 · Host: www.example.com"],["HTTP response","HTTP/1.1 200 OK · Content-Type: text/html"],["Render","parse HTML into the DOM, then fetch style.css and logo.png"]];
+const F=[
+ {n:"No fault",stop:-1,page:"<strong>Example Site</strong><br>Welcome! The page loaded.",d:"Every step worked: DNS, TCP, TLS, HTTP 200, render."},
+ {n:"DNS server unreachable",stop:0,page:"This site can't be reached. <span class='mono'>DNS_PROBE_FINISHED_NXDOMAIN</span>",w:"no answer for www.example.com",d:"The name never resolved, so no TCP connection was attempted. Check DNS settings with ipconfig /all and nslookup www.example.com."},
+ {n:"Firewall drops TCP 443",stop:1,page:"This site can't be reached. <span class='mono'>ERR_CONNECTION_TIMED_OUT</span>",w:"SYN sent… no SYN/ACK",d:"DNS worked, but the SYN got no reply. A silent drop (firewall, routing, or host down) causes a timeout. Check the path with tracert and the firewall rules for TCP 443."},
+ {n:"Web service stopped",stop:1,page:"This site can't be reached. <span class='mono'>ERR_CONNECTION_REFUSED</span>",w:"SYN → RST",d:"The host answered with a RST: it is reachable but nothing is listening on 443. Start the web service or check the port."},
+ {n:"Certificate expired",stop:2,page:"Your connection is not private. <span class='mono'>NET::ERR_CERT_DATE_INVALID</span>",w:"certificate expired",d:"TCP worked, but TLS failed the certificate check. Renew the certificate (and confirm the client's clock is correct)."},
+ {n:"Page deleted",stop:4,page:"<strong>404 Not Found</strong><br>The requested URL was not found on this server.",w:"HTTP/1.1 404 Not Found",d:"The network is fine: DNS, TCP, TLS, and HTTP all worked. The server says the path does not exist. Fix the link or restore the page."},
+ {n:"Application crashed",stop:4,page:"<strong>500 Internal Server Error</strong>",w:"HTTP/1.1 500 Internal Server Error",d:"The network is fine. The application on the server failed. Check the server's application logs."},
+ {n:"Backend behind load balancer down",stop:4,page:"<strong>502 Bad Gateway</strong>",w:"HTTP/1.1 502 Bad Gateway",d:"The load balancer or proxy answered, but it could not get a valid response from the server behind it."}];
+F.forEach((f,k)=>{const o=document.createElement("option");o.value=k;o.textContent=f.n;$("fault").appendChild(o)});
+function paintFlow(upto,f){$("flow").innerHTML=STEPS.map((s,k)=>{let c="",w=s[1];if(k<upto)c="ok";else if(k===upto){c=f.stop===k?"stop":"ok";if(f.stop===k)w=f.w}else c="skip";return`<div class="fs ${c}"><span class="no">${k+1}</span><div><strong>${s[0]}</strong><div class="w">${esc(w)}</div></div></div>`}).join("")}
+paintFlow(-1,F[0]);let busy=false;
+$("load").onclick=()=>{if(busy)return;busy=true;const f=F[+$("fault").value];const last=f.stop<0?STEPS.length-1:f.stop;let k=0;$("page").textContent="Loading…";$("diag").className="fb";$("diag").textContent="";
+ const iv=setInterval(()=>{paintFlow(k,f);if(k>=last){clearInterval(iv);busy=false;$("page").innerHTML=f.page;$("diag").className="fb "+(f.stop<0?"good":f.stop>=4?"":"bad");$("diag").textContent=(f.stop>=4?"Network OK, server problem. ":f.stop<0?"":"Network-side failure. ")+f.d}k++},450)};
+// Playground
+const START=`<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Help desk status</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Network status</h1>
+    <p>All systems <strong>up</strong>.</p>
+    <ul>
+      <li>Core switch: OK</li>
+      <li>Edge router: OK</li>
+    </ul>
+    <a href="https://example.com/tickets">Open a ticket</a>
+  </body>
+</html>`;
+const SN=[["Heading","<h2>Outages</h2>"],["Paragraph","<p>No outages reported.</p>"],["Image","<img src=\"map.png\" alt=\"Office network map\" width=\"120\">"],["Link","<a href=\"/faq.html\">FAQ</a>"],["Table","<table border=\"1\">\n  <tr><th>Port</th><th>Service</th></tr>\n  <tr><td>443</td><td>HTTPS</td></tr>\n</table>"],["Form","<form method=\"post\" action=\"/ticket\">\n  <input name=\"issue\" placeholder=\"Describe the issue\">\n  <button>Submit</button>\n</form>"],["Script (blocked)","<script src=\"app.js\"><\/script>"]];
+$("src").value=START;
+SN.forEach(([l,c])=>{const b=document.createElement("button");b.type="button";b.textContent="+ "+l;b.onclick=()=>{const t=$("src");const v=t.value;const at=v.lastIndexOf("</body>");t.value=at>=0?v.slice(0,at)+"    "+c.replace(/\n/g,"\n    ")+"\n  "+v.slice(at):v+"\n"+c;upd()};$("snips").appendChild(b)});
+function walk(n,d,out){if(out.length>80)return;if(n.nodeType===1){const a=[...n.attributes].map(x=>` ${x.name}="${x.value}"`).join("");out.push("  ".repeat(d)+"<"+n.tagName.toLowerCase()+a+">");[...n.childNodes].forEach(c=>walk(c,d+1,out))}else if(n.nodeType===3&&n.textContent.trim())out.push("  ".repeat(d)+'"'+n.textContent.trim().slice(0,40)+'"')}
+let tmr;function upd(){clearTimeout(tmr);tmr=setTimeout(()=>{const v=$("src").value;$("prev").srcdoc=v.replace(/<link\b[^>]*>/gi,"").replace(/(<img\b[^>]*?)\ssrc="[^"]*"/gi,'$1 src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%2260%22%3E%3Crect width=%22120%22 height=%2260%22 fill=%22%23cbd5e1%22/%3E%3Ctext x=%2260%22 y=%2235%22 font-size=%2212%22 text-anchor=%22middle%22%3Eimage%3C/text%3E%3C/svg%3E"');const doc=new DOMParser().parseFromString(v,"text/html");const out=[];walk(doc.documentElement,0,out);$("tree").textContent=out.join("\n");
+ const r=[];doc.querySelectorAll("link[href]").forEach(e=>r.push(`GET ${e.getAttribute("href")} (stylesheet)`));doc.querySelectorAll("img[src]").forEach(e=>r.push(`GET ${e.getAttribute("src")} (image)`));doc.querySelectorAll("script[src]").forEach(e=>r.push(`GET ${e.getAttribute("src")} (script)`));
+ const links=doc.querySelectorAll("a[href]").length,forms=doc.querySelectorAll("form").length;
+ $("reqs").innerHTML=(r.length?`<strong>${r.length}</strong> automatic request${r.length>1?"s":""}:<br><span class="mono">${r.map(esc).join("<br>")}</span>`:"No automatic requests: the HTML is the whole page.")+`<br><br>Plus ${links} link${links===1?"":"s"} (a new GET only when clicked)${forms?` and ${forms} form${forms>1?"s":""} (a POST when submitted)`:""}.`},200)}
+$("src").addEventListener("input",upd);upd();
+// Triage
+const T=[
+ ["User sees 404 Not Found.","Server reached; page missing",["Server reached; page missing","DNS failure","Firewall blocking 443","Bad cable"],"Any status code means the network path worked. 404 is a missing path on the server."],
+ ["User sees ERR_CONNECTION_TIMED_OUT.","No reply to the SYN: path or firewall",["No reply to the SYN: path or firewall","Server reached; page missing","Application error","Expired certificate"],"A timeout means the SYN got no answer: check routing, firewalls, and whether the host is up."],
+ ["User sees 503 Service Unavailable.","Server overloaded or in maintenance",["Server overloaded or in maintenance","DNS failure","Port 443 blocked","Wrong default gateway"],"5xx codes come from the server side; the network delivered the request."],
+ ["User sees DNS_PROBE_FINISHED_NXDOMAIN.","The name did not resolve",["The name did not resolve","The server crashed","The page moved","The certificate expired"],"NXDOMAIN means DNS said the name does not exist (or could not be resolved). No TCP connection was tried."],
+ ["User sees ERR_CONNECTION_REFUSED.","Host reached but nothing listening on the port",["Host reached but nothing listening on the port","DNS failure","404 page missing","Packet loss on Wi-Fi"],"The host replied with a TCP RST: it is reachable, but the web service is not listening."],
+ ["Browser shows the page but follows a 301 first.","The page moved permanently; the browser redirected",["The page moved permanently; the browser redirected","The server crashed","DNS failure","TLS failure"],"301 is a permanent redirect; the browser follows the Location header to the new URL."],
+ ["Users see 401 Unauthorized on the intranet.","Authentication needed or failed",["Authentication needed or failed","The network is down","The page is missing","Port 80 is blocked"],"401 means the server wants valid credentials."]];
+let tk=-1,tr=0,tt=0;const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function tq(){tk=(tk+1)%T.length;const [q,a,o,e]=T[tk];$("tq").textContent=q;$("tfb").className="fb";$("tfb").textContent="";$("topts").innerHTML="";
+ sh(o).forEach(t=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=t;b.onclick=()=>{[...$("topts").children].forEach(x=>{x.disabled=true;if(x.textContent===a)x.classList.add("good")});tt++;if(t===a){tr++;$("tfb").className="fb good";$("tfb").textContent="Correct. "+e}else{b.classList.add("bad");$("tfb").className="fb bad";$("tfb").textContent="Not quite. "+e}$("tsc").textContent=`${tr} of ${tt} right`};$("topts").appendChild(b)})}
+$("tnext").onclick=tq;tq();
+</script>
+</div>
+</body>
+</html>

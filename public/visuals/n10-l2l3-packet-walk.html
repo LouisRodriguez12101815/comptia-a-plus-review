@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Layer 2 or Layer 3: follow the frame</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--l7:#dfe9d6;--l4:#d6e6ea;--l3:#e6e2cf;--l2:#f2dfcf;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--l7:#26331f;--l4:#1f3138;--l3:#33301f;--l2:#3a2a1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2.sec{font:600 18px/1.3 Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.hint{font-size:14px;color:var(--muted);margin:0 0 10px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card+.card{margin-top:14px}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--accent-soft);min-height:44px}
+.fb.good{background:var(--good-soft)}.fb.bad{background:var(--bad-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border-radius:10px;text-align:left;padding:8px 12px;line-height:1.35}
+.opt.good{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.q{font-weight:600;font-size:15px;margin-top:4px}
+.sc{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.w{background:var(--warm-soft);color:var(--warm)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.topo{display:flex;align-items:stretch;gap:6px;margin:14px 0 4px;flex-wrap:wrap}
+.node{flex:1 1 120px;min-width:0;border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);text-align:center;transition:border-color .2s,background .2s}
+.node.on{border-color:var(--accent);background:var(--accent-soft)}
+.node.fail{border-color:var(--bad);background:var(--bad-soft)}
+.node .nm{font-weight:700;font-size:14px}
+.node .sub{font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace;overflow-wrap:anywhere}
+.link{align-self:center;color:var(--muted);font-size:18px}
+.hdr td.chg{background:var(--warm-soft);color:var(--warm);font-weight:700}
+.hdr td.mono{overflow-wrap:anywhere}
+.step{font-size:14px;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);min-height:64px}
+.step.bad{background:var(--bad-soft)}.step.good{background:var(--good-soft)}
+.prog{font-size:13px;color:var(--muted);margin-left:auto;align-self:center}
+@media (max-width:560px){.link{display:none}.node{flex-basis:45%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Layer 2 or Layer 3: follow the frame</h1>
+<p class="lede">Pick a path and step through it. Watch which device reads which address, and which header fields change (highlighted) when a packet is switched versus routed.</p>
+
+<div class="card">
+ <div class="lab">Path</div>
+ <div class="ctrls" id="sc" role="group" aria-label="Scenario"></div>
+ <div class="topo" id="topo" aria-hidden="true"></div>
+ <div class="ctrls" style="margin-top:10px"><button type="button" id="prev">Back</button><button type="button" id="next" class="go">Next step</button><button type="button" id="reset">Start over</button><span class="prog" id="prog"></span></div>
+ <div class="step" id="step" aria-live="polite"></div>
+ <div class="lab">Headers on the wire at this step</div>
+ <div class="tbl"><table class="hdr"><thead><tr><th>Field</th><th>Value</th><th>Layer</th></tr></thead><tbody id="hdr"></tbody></table></div>
+</div>
+
+<div class="card">
+ <h2 class="sec">The rule in one table</h2>
+ <div class="tbl"><table><thead><tr><th>When a packet is…</th><th>MAC addresses</th><th>IP addresses</th><th>TTL</th></tr></thead><tbody>
+ <tr><td>Switched (Layer 2 switch, or a Layer 3 switch inside one VLAN)</td><td>Unchanged</td><td>Unchanged</td><td>Unchanged</td></tr>
+ <tr><td>Routed (router, or a Layer 3 switch between VLANs)</td><td>Rewritten at every hop</td><td>Unchanged (unless NAT)</td><td>Minus 1 per hop</td></tr>
+ </tbody></table></div>
+</div>
+
+<script>
+const M={A:"00:50:56:0A:00:20",B:"00:50:56:0A:00:30",C:"00:50:56:14:00:30",S10:"00:1B:2C:00:00:0A",S20:"00:1B:2C:00:00:14",R:"00:1E:7A:00:00:01",BC:"FF:FF:FF:FF:FF:FF"};
+const IP={A:"10.1.10.20",B:"10.1.10.30",C:"10.1.20.30"};
+const N={A:{nm:"Host A",sub:"10.1.10.20 · VLAN 10"},B:{nm:"Host B",sub:"10.1.10.30 · VLAN 10"},C:{nm:"Host C",sub:"10.1.20.30 · VLAN 20"},
+ L2:{nm:"Layer 2 switch",sub:"MAC table only"},L3:{nm:"Layer 3 switch",sub:"SVI 10: 10.1.10.1 · SVI 20: 10.1.20.1"},R:{nm:"Router",sub:"G0/0.10 10.1.10.1 · G0/0.20 10.1.20.1"}};
+function h(o){return Object.assign({vlan:"10",smac:M.A,dmac:M.B,sip:IP.A,dip:IP.B,ttl:"64",note:""},o)}
+const S=[
+ {id:"same",label:"Same VLAN, Layer 2 switch",nodes:["A","L2","B"],steps:[
+  {at:"A",t:"Host A compares 10.1.10.30 with its own /24 network. Same subnet, so it delivers directly. ARP (a broadcast flooded within VLAN 10) returns Host B's MAC.",hd:h({})},
+  {at:"L2",t:"The switch learns Host A's MAC on the ingress port, finds Host B's MAC in its MAC address table, and forwards the frame out that one port. It never reads the IP header.",hd:h({})},
+  {at:"B",k:"good",t:"Host B receives the frame exactly as Host A sent it. Nothing was rewritten and the TTL is still 64: switching does not touch the addresses.",hd:h({})}]},
+ {id:"l2fail",label:"Different VLAN, Layer 2 switch only",nodes:["A","L2","C"],steps:[
+  {at:"A",t:"Host C (10.1.20.30) is in another subnet, so Host A must send to its default gateway 10.1.10.1. It ARPs for the gateway's MAC.",hd:h({dmac:M.BC,sip:IP.A,dip:"10.1.10.1 (ARP target)",note:"ARP"})},
+  {at:"L2",t:"The switch floods the ARP broadcast, but only to ports in VLAN 10. Host C's VLAN 20 port never sees it, and no device owns 10.1.10.1.",hd:h({dmac:M.BC,dip:"10.1.10.1 (ARP target)",note:"ARP"})},
+  {at:"C",k:"bad",fail:true,t:"No reply. The ping fails. A Layer 2 switch cannot move traffic between VLANs, even on the same physical switch. Fix: add a router (router-on-a-stick) or a Layer 3 switch with SVIs.",hd:h({dmac:"(unknown)",dip:IP.C,note:"never sent"})}]},
+ {id:"l3",label:"Different VLAN, Layer 3 switch (SVI)",nodes:["A","L3","C"],steps:[
+  {at:"A",t:"Host C is remote, so Host A addresses the frame to its default gateway: the destination MAC is the VLAN 10 SVI. The destination IP is still Host C.",hd:h({dmac:M.S10,dip:IP.C}),chg:["dmac"]},
+  {at:"L3",t:"The frame is addressed to the switch itself, so it goes to the routing engine. Lookup: 10.1.20.0/24 is directly connected on Vlan20. TTL drops to 63, and a new Layer 2 header is built from the VLAN 20 SVI to Host C's MAC (from ARP).",hd:h({vlan:"20",smac:M.S20,dmac:M.C,dip:IP.C,ttl:"63"}),chg:["vlan","smac","dmac","ttl"]},
+  {at:"C",k:"good",t:"Host C receives it. Both MACs changed and TTL is 63, but the source and destination IPs are the same ones Host A wrote. That is routing, done inside the switch at wire speed.",hd:h({vlan:"20",smac:M.S20,dmac:M.C,dip:IP.C,ttl:"63"})}]},
+ {id:"stick",label:"Different VLAN, router-on-a-stick",nodes:["A","L2","R","C"],steps:[
+  {at:"A",t:"Host A sends to its default gateway, the router's G0/0.10 subinterface.",hd:h({dmac:M.R,dip:IP.C}),chg:["dmac"]},
+  {at:"L2",t:"The switch forwards the frame up the trunk to the router and adds an 802.1Q tag for VLAN 10. The addresses are untouched.",hd:h({vlan:"10 (802.1Q tag)",dmac:M.R,dip:IP.C}),chg:["vlan"]},
+  {at:"R",t:"The router receives on G0/0.10, routes to G0/0.20, decrements TTL to 63, rewrites the MACs (router to Host C), and sends it back down the same trunk tagged VLAN 20.",hd:h({vlan:"20 (802.1Q tag)",smac:M.R,dmac:M.C,dip:IP.C,ttl:"63"}),chg:["vlan","smac","dmac","ttl"]},
+  {at:"L2",t:"The switch removes the tag and forwards the frame out Host C's VLAN 20 access port. Notice the traffic crossed the one trunk link twice.",hd:h({vlan:"20",smac:M.R,dmac:M.C,dip:IP.C,ttl:"63"}),chg:["vlan"]},
+  {at:"C",k:"good",t:"Host C receives it: same result as the Layer 3 switch, but every inter-VLAN packet hairpins through one router port. That is why Layer 3 switches scale better inside a campus.",hd:h({vlan:"20",smac:M.R,dmac:M.C,dip:IP.C,ttl:"63"})}]}
+];
+let cur=0,i=0;
+const $=id=>document.getElementById(id);
+function renderSc(){$("sc").innerHTML="";S.forEach((s,k)=>{const b=document.createElement("button");b.type="button";b.textContent=s.label;b.setAttribute("aria-pressed",k===cur);b.onclick=()=>{cur=k;i=0;renderSc();render()};$("sc").appendChild(b)})}
+function render(){const s=S[cur],st=s.steps[i];
+ $("topo").innerHTML=s.nodes.map((n,k)=>(k?'<span class="link">→</span>':"")+`<div class="node ${n===st.at?(st.fail?"fail":"on"):""}"><div class="nm">${N[n].nm}</div><div class="sub">${N[n].sub}</div></div>`).join("");
+ $("step").className="step"+(st.k?" "+st.k:"");$("step").innerHTML=`<strong>${N[st.at].nm}:</strong> ${st.t}`;
+ const c=st.chg||[],d=st.hd;
+ const rows=[["vlan","VLAN","2"],["smac","Source MAC","2"],["dmac","Destination MAC","2"],["sip","Source IP","3"],["dip","Destination IP","3"],["ttl","TTL","3"]];
+ $("hdr").innerHTML=rows.map(([k,l,L])=>`<tr><td>${l}${c.includes(k)?' <span class="tag w">${i?"changed":"look"}</span>':""}</td><td class="mono ${c.includes(k)?"chg":""}">${d[k]}</td><td>Layer ${L}</td></tr>`).join("")+(d.note?`<tr><td>Note</td><td>${d.note}</td><td></td></tr>`:"");
+ $("prog").textContent=`Step ${i+1} of ${s.steps.length}`;$("prev").disabled=i===0;$("next").disabled=i===s.steps.length-1}
+$("prev").onclick=()=>{if(i>0){i--;render()}};$("next").onclick=()=>{if(i<S[cur].steps.length-1){i++;render()}};$("reset").onclick=()=>{i=0;render()};
+renderSc();render();
+</script>
+</div>
+</body>
+</html>
