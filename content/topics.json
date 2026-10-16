@@ -1,5 +1,127 @@
 [
   {
+    "id": "core1-ch1-motherboards",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Motherboards, Processors, and BIOS",
+    "chapter": "Core 1 · Chapter 1",
+    "summary": "Form factors, CPU cooling, overclocking, ARM vs x86, virtualization support, CMOS battery and password jumpers, and RAM symptoms.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1201 domain 3.0 Hardware: motherboards, CPUs, BIOS/UEFI settings, and add-on cards.",
+              "220-1201 domain 5.0 Hardware and network troubleshooting: motherboards, RAM, CPU, and power."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "form-factors",
+        "title": "Motherboard form factors",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Form factor",
+              "Use"
+            ],
+            "rows": [
+              [
+                "ATX",
+                "Full-size desktop standard"
+              ],
+              [
+                "mini-ITX / ITX",
+                "Small case, low power consumption"
+              ],
+              [
+                "AT",
+                "Obsolete predecessor of ATX"
+              ],
+              [
+                "Laptop",
+                "Proprietary. Order the board for the exact model"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The motherboard holds the buses and chipset that let every other component communicate."
+          }
+        ]
+      },
+      {
+        "id": "cpu",
+        "title": "Processors and cooling",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The CPU executes program instructions: arithmetic, logic, control, and I/O.",
+              "Overclocking runs the CPU faster than its rated clock speed. Hyper-Threading and multiple cores add parallel work instead.",
+              "ARM processors (RISC, low power) are preferred for phones and tablets. x86 and x64 dominate desktops. LGA is a socket type, not an architecture.",
+              "Thermal paste goes between the CPU and the heat sink to fill microscopic gaps. The heat sink and fan do the cooling."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "virtualization-support",
+        "title": "Hardware support for virtualization",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The CPU must support hardware virtualization (Intel VT-x or AMD-V).",
+              "The BIOS/UEFI must support it and have it enabled."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Class quiz answer: CPU and BIOS. RAM and the motherboard are tempting, but the two that must explicitly support virtualization are the processor and the firmware."
+          }
+        ]
+      },
+      {
+        "id": "cmos",
+        "title": "BIOS, CMOS battery, and passwords",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The CMOS battery keeps the real-time clock and settings when the PC is unplugged. A PC that loses its date and time after power loss needs a new CMOS battery.",
+              "If the PC sits on a UPS and still loses power in an outage, the UPS also needs repair.",
+              "The CMOS clear (password reset) jumper erases forgotten BIOS and boot passwords."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ram-symptoms",
+        "title": "Recognizing RAM problems",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "POST beep codes during startup point to memory failures.",
+              "Random BSODs that the OS recovers from can be RAM. Distended capacitors point to the motherboard or power supply instead."
+            ]
+          }
+        ]
+      }
+    ],
+    "concept": "hardware"
+  },
+  {
     "id": "core1-ch2",
     "group": "core1",
     "examCodes": [
@@ -1017,6 +1139,191 @@
               "DB-9 is a legacy serial connector — used for serial ports, not drives.",
               "Molex is also NOT a peripheral input-device connector; input devices use USB, D-sub, or 1/8-inch audio jacks.",
               "Speed ranking: Serial (kbps, slowest) << USB 2.0 < eSATA (6 Gbps) < USB 3.x < USB4 = Thunderbolt 3/4 (40 Gbps)."
+            ]
+          }
+        ]
+      }
+    ],
+    "concept": "hardware"
+  },
+  {
+    "id": "core1-printers",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Printers and the Laser (EP) Process",
+    "chapter": "Core 1 · Printers",
+    "summary": "Impact printers for multipart forms, the seven EP steps, audit logs, garbled output, and alignment.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1201 domain 3.0 Hardware: install, configure, and maintain laser, inkjet, thermal, and impact printers.",
+              "220-1201 domain 5.0 Hardware and network troubleshooting: printers."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "printer-types",
+        "title": "Choosing a printer type",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Best for"
+            ],
+            "rows": [
+              [
+                "Impact (dot-matrix)",
+                "Multipart forms printed in duplicate or triplicate"
+              ],
+              [
+                "Laser",
+                "Fast, high-volume office printing"
+              ],
+              [
+                "Inkjet",
+                "Photos and low-volume color"
+              ],
+              [
+                "Thermal",
+                "Receipts and labels"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ep-process",
+        "title": "The seven EP (laser) imaging steps",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Step",
+              "What happens"
+            ],
+            "rows": [
+              [
+                "1 Processing",
+                "The printer builds the page image in memory"
+              ],
+              [
+                "2 Charging",
+                "The drum gets a uniform negative charge"
+              ],
+              [
+                "3 Exposing",
+                "The laser discharges the areas that will hold the image"
+              ],
+              [
+                "4 Developing",
+                "Toner sticks to the discharged areas of the drum"
+              ],
+              [
+                "5 Transferring",
+                "The transfer roller pulls toner from the drum onto the paper"
+              ],
+              [
+                "6 Fusing",
+                "Heat and pressure melt the toner onto the paper"
+              ],
+              [
+                "7 Cleaning",
+                "Leftover toner and charge are removed from the drum"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Memory hook: People Can't Ever Do The Funky Chicken. The laser step is Exposing, not Transferring."
+          }
+        ]
+      },
+      {
+        "id": "printer-troubleshooting",
+        "title": "Printer troubleshooting and security",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Garbled text: the wrong printer driver.",
+              "Misaligned output: run the printer's maintenance or calibration utility first.",
+              "Audit logs show which user printed which job. Badging and secured prints control who can release a job.",
+              "Garbled output is a driver issue, not a worn print head."
+            ]
+          }
+        ]
+      }
+    ],
+    "concept": "hardware"
+  },
+  {
+    "id": "core1-virtualization",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Virtualization Basics",
+    "chapter": "Core 1 · Virtualization",
+    "summary": "Type 1 and Type 2 hypervisors, sandboxes, and what virtualization can and cannot do.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1201 domain 4.0 Virtualization and cloud computing: hypervisors and virtualization concepts."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hypervisors",
+        "title": "Hypervisor types",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Runs on",
+              "Performance"
+            ],
+            "rows": [
+              [
+                "Type 1 (bare metal)",
+                "Directly on the hardware",
+                "Best, used in data centers"
+              ],
+              [
+                "Type 2 (hosted)",
+                "On top of a host OS such as Windows",
+                "More overhead, used on desktops"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "uses",
+        "title": "What virtualization gives you",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "One physical host provides resources for many virtual machines.",
+              "A sandbox VM is an isolated environment for development or security testing.",
+              "A VM cannot outperform the hardware it runs on, and it cannot add resources the host does not have."
             ]
           }
         ]

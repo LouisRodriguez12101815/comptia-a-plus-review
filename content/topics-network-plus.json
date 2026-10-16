@@ -1,5 +1,311 @@
 [
   {
+    "id": "n10-osi-models",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "concept": "networking-concepts",
+    "title": "OSI Model, DoD Model, and Cable Types",
+    "chapter": "Network+ · OSI and DoD models",
+    "summary": "The seven OSI layers and their PDUs, two mnemonics, how the four-layer DoD (TCP/IP) model maps onto OSI, and how to pick a straight-through or crossover cable using MDI and MDI-X.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "1.1 Explain concepts related to the OSI reference model: Layer 1 Physical through Layer 7 Application.",
+              "5.2 Troubleshoot cabling and physical interface issues: improper termination and transmitter (TX)/receiver (RX) transposed.",
+              "The DoD (TCP/IP) model and the straight-through versus crossover rule come from the course slides and whiteboard. N10-009 does not list them by name, but they explain how the layers map to real protocols and why a link with the wrong cable stays down."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "osi-layers",
+        "title": "The seven OSI layers",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Layer",
+              "Name",
+              "PDU",
+              "What happens here",
+              "Devices and examples"
+            ],
+            "rows": [
+              [
+                "7",
+                "Application",
+                "Data",
+                "The interface to network services an application uses",
+                "HTTP, DNS, SMTP, FTP"
+              ],
+              [
+                "6",
+                "Presentation",
+                "Data",
+                "Formats, translates, compresses, and encrypts data",
+                "TLS encryption, JPEG, ASCII"
+              ],
+              [
+                "5",
+                "Session",
+                "Data",
+                "Sets up, manages, and tears down sessions between hosts",
+                "Session setup and teardown, RPC"
+              ],
+              [
+                "4",
+                "Transport",
+                "Segment",
+                "End-to-end delivery, port numbers, reliable (TCP) or fast (UDP)",
+                "TCP, UDP"
+              ],
+              [
+                "3",
+                "Network",
+                "Packet",
+                "Logical (IP) addressing and routing between networks",
+                "Routers, IP, ICMP"
+              ],
+              [
+                "2",
+                "Data Link",
+                "Frame",
+                "Physical (MAC) addressing and delivery on the local segment",
+                "Switches, bridges, NICs"
+              ],
+              [
+                "1",
+                "Physical",
+                "Bits",
+                "Signals on the wire, fiber, or radio",
+                "Hubs, repeaters, cables, connectors"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Data, segment, packet, frame, bits: that is the PDU order going down the stack (encapsulation). The receiver reverses it going up (de-encapsulation)."
+          }
+        ]
+      },
+      {
+        "id": "mnemonics",
+        "title": "Mnemonics for the layer order",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Direction",
+              "Mnemonic",
+              "Layers"
+            ],
+            "rows": [
+              [
+                "Bottom up, 1 to 7",
+                "Please Do Not Throw Sausage Pizza Away",
+                "Physical, Data Link, Network, Transport, Session, Presentation, Application"
+              ],
+              [
+                "Top down, 7 to 1",
+                "All People Seem To Need Data Processing",
+                "Application, Presentation, Session, Transport, Network, Data Link, Physical"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Know both directions. Exam questions name a layer by number or by name, so be able to go from 4 to Transport and from Network to 3 without counting on your fingers."
+          }
+        ]
+      },
+      {
+        "id": "dod-model",
+        "title": "The DoD model compared with OSI",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The DoD model is a condensed version of the OSI model with four layers instead of seven. It is the model the TCP/IP protocol suite was built on, so the two are often used interchangeably in conversation."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "DoD layer",
+              "OSI layers it covers",
+              "OSI layer numbers"
+            ],
+            "rows": [
+              [
+                "Process/Application",
+                "Application, Presentation, Session",
+                "7, 6, 5"
+              ],
+              [
+                "Host-to-Host",
+                "Transport",
+                "4"
+              ],
+              [
+                "Internet",
+                "Network",
+                "3"
+              ],
+              [
+                "Network Access",
+                "Data Link, Physical",
+                "2, 1"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Only the middle two map one to one: Host-to-Host is Transport and Internet is Network. The top DoD layer swallows three OSI layers and the bottom one swallows two."
+          }
+        ]
+      },
+      {
+        "id": "cable-rule",
+        "title": "Straight-through or crossover: the real rule",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An Ethernet port either transmits on pins 1 and 2 and receives on 3 and 6 (MDI, used by PCs, servers, and routers) or the reverse (MDI-X, used by switches and hubs). A link works only when one side's transmit pair lands on the other side's receive pair."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Unlike devices (one MDI, one MDI-X): straight-through cable. The switch or hub port already does the crossing.",
+              "Like devices (both MDI or both MDI-X): crossover cable, which swaps pins 1 and 2 with 3 and 6.",
+              "A straight-through cable has the same standard on both ends (T568B to T568B, or T568A to T568A). A crossover has T568A on one end and T568B on the other."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Connection",
+              "Groups",
+              "Cable"
+            ],
+            "rows": [
+              [
+                "PC to switch",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "PC to hub",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "Router to switch",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "Router to hub",
+                "MDI to MDI-X",
+                "Straight-through"
+              ],
+              [
+                "Switch to switch",
+                "MDI-X to MDI-X",
+                "Crossover"
+              ],
+              [
+                "Switch to hub",
+                "MDI-X to MDI-X",
+                "Crossover"
+              ],
+              [
+                "Hub to hub",
+                "MDI-X to MDI-X",
+                "Crossover"
+              ],
+              [
+                "PC to PC",
+                "MDI to MDI",
+                "Crossover"
+              ],
+              [
+                "Router to router",
+                "MDI to MDI",
+                "Crossover"
+              ],
+              [
+                "PC to router",
+                "MDI to MDI",
+                "Crossover"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "layer-shortcut",
+        "title": "The classroom layer shortcut, corrected",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The whiteboard shortcut uses each device's OSI layer: router 3, switch 2, hub 1. Even to odd is straight-through, odd to odd is crossover, same layer is crossover, with PC to hub as the only exception (straight-through)."
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "The shortcut gets two pairs wrong. Router to hub is odd to odd, but it uses straight-through, the same as PC to hub. Switch to hub is even to odd, but it uses crossover. Fix: count the hub as a switch. Then PCs and routers are one group, switches and hubs are the other, and different groups use straight-through while the same group uses crossover."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Shortcut still correct for: PC to switch, router to switch, switch to switch, router to router, PC to router, PC to PC, hub to hub.",
+              "Memory hook: PCs and routers talk like computers (MDI). Switches and hubs are the middlemen (MDI-X). Different jobs, straight cable. Same job, cross the cable."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "auto-mdix",
+        "title": "Auto-MDIX and troubleshooting",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Auto-MDIX (automatic medium-dependent interface crossover) lets a port detect the pairs and swap transmit and receive internally, so most modern gigabit ports work with either cable.",
+              "Without Auto-MDIX, the wrong cable means transmit meets transmit. The link light stays off. N10-009 objective 5.2 calls this TX/RX transposed.",
+              "Gigabit Ethernet uses all four pairs. A full gigabit crossover also swaps pins 4 and 5 with 7 and 8, but Auto-MDIX is required by the 1000BASE-T standard, so in practice a straight-through cable works.",
+              "Packet Tracer and the exam can still test the cable rule even when the gear would bring the link up on its own."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "exam-essentials",
+        "title": "Exam essentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Recite the OSI layers both ways: Please Do Not Throw Sausage Pizza Away (1 to 7) and All People Seem To Need Data Processing (7 to 1).",
+              "Match each PDU to its layer: segment 4, packet 3, frame 2, bits 1.",
+              "Map DoD to OSI: Process/Application 5 to 7, Host-to-Host 4, Internet 3, Network Access 1 and 2.",
+              "Unlike devices use straight-through; like devices use crossover. PCs and routers are MDI; switches and hubs are MDI-X.",
+              "Auto-MDIX makes either cable work, and the wrong cable without it shows up as TX/RX transposed."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "n10-ch7",
     "group": "networking",
     "examCodes": [
