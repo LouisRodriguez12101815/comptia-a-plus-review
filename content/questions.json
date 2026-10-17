@@ -5769,7 +5769,7 @@
   {
     "id": "q-cls-101",
     "topicId": "n10-risk-compliance",
-    "prompt": "A command-and-control (C2) server is part of which attack?",
+    "prompt": "Confirmed compromised hosts receive a C2 instruction and then simultaneously exhaust one service with requests. Which attack describes that observed action?",
     "choices": [
       "Ping of death",
       "DDoS",
@@ -5777,7 +5777,7 @@
       "Malware"
     ],
     "answer": 1,
-    "explanation": "A C2 server sends commands to the bots in a botnet, which is how a DDoS is launched. Ping of death is a single malformed packet.",
+    "explanation": "Many compromised hosts disrupting one service support DDoS. C2 is not unique to DDoS: malware can use it for other tasks, so the observed resource-exhaustion action supplies the distinguishing evidence.",
     "weak": true
   },
   {
@@ -5797,7 +5797,7 @@
   {
     "id": "q-cls-103",
     "topicId": "n10-risk-compliance",
-    "prompt": "Which attack adopts another system's MAC address to receive data meant for that system?",
+    "prompt": "Forged ARP replies associate a gateway’s IP address with an attacker-controlled MAC, changing the victim’s cache. Which attack is demonstrated?",
     "choices": [
       "IP spoofing",
       "URL spoofing",
@@ -5805,7 +5805,7 @@
       "ARP spoofing/poisoning"
     ],
     "answer": 3,
-    "explanation": "ARP poisoning maps the attacker's MAC to a victim's IP so traffic goes to the attacker.",
+    "explanation": "ARP spoofing/poisoning supplies false IP-to-MAC information. Merely adopting another interface’s MAC is MAC spoofing and is not by itself ARP poisoning. No forged DNS, URL, or certificate data is described.",
     "weak": false
   },
   {
@@ -6659,5 +6659,345 @@
     ],
     "answer": 2,
     "explanation": "A repeatable no-signal idle interval supports an auto-off/sleep setting. A dead pixel and keystone do not shut off power. Without lamp or thermal evidence, lamp replacement is premature; verify timer behavior against the manual."
+  },
+  {
+    "id": "q-n10c21-01",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A service receives simultaneous disruptive requests from hundreds of compromised endpoints. Investigation confirms resource exhaustion, not a link failure. Which classification best captures the source pattern?",
+    "choices": [
+      "DDoS",
+      "ARP poisoning",
+      "Tailgating",
+      "DNS cache poisoning"
+    ],
+    "answer": 0,
+    "explanation": "Many sources disrupt availability, so DDoS fits. ARP and DNS attacks change bindings or name data; tailgating is physical access. C2 traffic alone would not supply this evidence.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-02",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A victim receives large DNS replies it never requested. Captures at reflectors show small queries with the victim’s forged source address. Which pair describes the mechanism?",
+    "choices": [
+      "MAC flooding and VLAN hopping",
+      "Reflection and amplification",
+      "Phishing and shoulder surfing",
+      "ARP poisoning and NAC"
+    ],
+    "answer": 1,
+    "explanation": "Reflection and amplification both apply. The forged return address reflects replies to the victim, and larger replies amplify traffic. Distribution is a separate property; MAC flooding concerns switch learning, not DNS response size.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-03",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "An access port suddenly learns thousands of changing source MAC addresses. The switch begins flooding more unknown-destination frames inside that VLAN. What is the strongest working theory?",
+    "choices": [
+      "Evil twin",
+      "DNS spoofing",
+      "MAC flooding",
+      "Dumpster diving"
+    ],
+    "answer": 2,
+    "explanation": "The evidence concerns pressure on MAC learning, which supports MAC flooding. Unknown unicast flooding is normally VLAN-scoped and can also have benign causes; correlate the source port before containment.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-04",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A user port shares a trunk’s untagged native VLAN. A reviewed capture shows nested VLAN tags and the outer tag is removed along the path. Which attack mechanism is being tested?",
+    "choices": [
+      "DHCP exhaustion",
+      "Credential phishing",
+      "C2 beaconing",
+      "Double-tag VLAN hopping"
+    ],
+    "answer": 3,
+    "explanation": "The specified tag processing can expose an inner target VLAN tag. This is conditional on the path and configuration; it does not show a guaranteed two-way connection or describe every VLAN-hopping method.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-05",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A host receives forged ARP replies claiming the approved gateway IP belongs to an unfamiliar MAC. Its cache changes to that binding. What has been demonstrated?",
+    "choices": [
+      "ARP cache poisoning",
+      "MAC spoofing alone",
+      "DNSSEC validation",
+      "A distributed request flood"
+    ],
+    "answer": 0,
+    "explanation": "False ARP information changed an IP-to-MAC binding. MAC spoofing alone would only change the presented interface address and does not require a forged ARP message. Confirm the gateway baseline before declaring malicious intent.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-06",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A controlled test changes a NIC’s presented MAC to an allowed address. No false ARP messages are sent. Which conclusion is justified?",
+    "choices": [
+      "ARP poisoning is proven",
+      "MAC spoofing can undermine an address-only allowlist",
+      "The DNS cache is poisoned",
+      "802.1X credentials have been broken"
+    ],
+    "answer": 1,
+    "explanation": "Copying a presented address is MAC spoofing and weakens MAC-only admission. It does not establish forged ARP bindings, DNS manipulation, or compromise of cryptographic authentication.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-07",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "Several clients using one resolver are redirected to a fake payroll site. That resolver’s cache contains an unauthorized address; authoritative data and the approved change record disagree. Which finding is supported?",
+    "choices": [
+      "Native-VLAN mismatch",
+      "Shoulder surfing",
+      "DNS cache poisoning",
+      "Port-security violation"
+    ],
+    "answer": 2,
+    "explanation": "Persisted false name data in the resolver supports cache poisoning. Determine how it entered the cache; these observations do not establish a VLAN, physical-observation, or port-admission issue.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-08",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A validly signed DNS zone is checked through a trusted DNSSEC validation chain. An analyst claims the lookup is now hidden from observers. What correction is needed?",
+    "choices": [
+      "DNSSEC replaces application authentication",
+      "DNSSEC blocks every outage",
+      "DNSSEC encrypts only the returned address",
+      "DNSSEC validates origin and integrity; query confidentiality needs a separate mechanism"
+    ],
+    "answer": 3,
+    "explanation": "DNSSEC does not encrypt queries. Validation of signed data and confidential transport solve different problems; neither makes every endpoint safe or prevents resource exhaustion.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-09",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "Only newly renewed clients get an unexpected gateway and resolver. Captures trace their leases to an unauthorized server on a desk port. What should the team investigate first?",
+    "choices": [
+      "Rogue DHCP",
+      "A broken monitor",
+      "Tailgating as the proven cause",
+      "A compromised certificate authority"
+    ],
+    "answer": 0,
+    "explanation": "Unauthorized lease settings directly support rogue DHCP. Preserve lease/server/port evidence, isolate through the response plan, and review DHCP snooping. The observations do not identify a physical intruder or a CA compromise.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-10",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "An employee plugs an unapproved AP into a wall jack. It uses a new SSID rather than copying the company network. Which term fits the established fact?",
+    "choices": [
+      "Evil twin necessarily",
+      "Rogue AP",
+      "DNS poisoning",
+      "NTP amplification"
+    ],
+    "answer": 1,
+    "explanation": "The AP is unauthorized, so rogue AP is established. An evil twin requires impersonation; a new SSID does not show that. No DNS or NTP evidence is supplied.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-11",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "An off-site AP deliberately copies the corporate wireless identity and lures a test client. It is not connected to corporate Ethernet. Which finding is justified?",
+    "choices": [
+      "It cannot be an attack without a wired connection",
+      "It proves ransomware",
+      "It is an evil twin",
+      "It must use a different channel from every legitimate AP"
+    ],
+    "answer": 2,
+    "explanation": "The deliberate wireless impersonation establishes an evil twin in this authored case. A wired corporate connection or particular channel is not a requirement. Merely finding a duplicate SSID would be insufficient evidence.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-12",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A workstation’s application password was stolen. No packet evidence, endpoint analysis, or user interview is available. What is the most defensible next statement?",
+    "choices": [
+      "ARP poisoning is certain",
+      "An on-path relay is certain",
+      "The application must contain a zero-day",
+      "The mechanism is undetermined; investigate phishing, endpoints, and the network path"
+    ],
+    "answer": 3,
+    "explanation": "The mechanism is undetermined; investigate phishing, endpoints, and the network path. One affected workstation is compatible with several causes. Collect distinguishing evidence rather than grading an unsupported attack label as fact; an exploit’s novelty cannot be inferred from credential theft.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-13",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A staff member receives a fake benefits message linking to a credential page. No file downloads or executes. Which response best matches the demonstrated threat?",
+    "choices": [
+      "Report the phishing and verify through a known independent channel",
+      "Rely on a malware scan as proof the message is safe",
+      "Disable ARP on every host",
+      "Assume that any HTTPS lock proves the site is legitimate"
+    ],
+    "answer": 0,
+    "explanation": "This is credential phishing without demonstrated malware. Independent verification and reporting address deception. Endpoint protection is useful but cannot certify every message, and HTTPS authenticates a site identity rather than its honesty.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-14",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A visitor follows a badge holder through a locked network-closet entrance without being checked. What control directly addresses that access failure?",
+    "choices": [
+      "A larger DNS cache",
+      "Individual access checks and escorted visitor procedures",
+      "A replacement NTP server",
+      "Longer Ethernet frames"
+    ],
+    "answer": 1,
+    "explanation": "Tailgating bypasses individual physical authorization. Visitor checks address that mechanism; a camera may provide evidence but does not itself authorize entry. DNS, time, and frame-size changes do not fix it.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-15",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A contractor reads a printed password recovered from discarded paperwork. Which prevention best matches this information source?",
+    "choices": [
+      "Trunk negotiation",
+      "ARP inspection only",
+      "Approved secure disposal of sensitive records",
+      "A public guest SSID"
+    ],
+    "answer": 2,
+    "explanation": "Discarded information is the source in dumpster diving. Secure disposal reduces that exposure. Neither switching features nor guest connectivity removes sensitive paper from waste.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-16",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "An observer watches a technician enter a cabinet PIN. Which immediate protective habit targets this method?",
+    "choices": [
+      "Rotate the native VLAN",
+      "Install a larger MAC table",
+      "Change the DNS TTL",
+      "Shield entry and prevent unauthorized viewing"
+    ],
+    "answer": 3,
+    "explanation": "Shoulder surfing obtains information through observation. Shielding and access positioning address that channel. Changing network parameters does not prevent the observer seeing a PIN.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-17",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A laptop authenticates successfully through 802.1X, but company policy also requires current endpoint protection before normal access. Which additional capability evaluates that requirement?",
+    "choices": [
+      "NAC posture checking with supported enforcement/remediation",
+      "MAC allowlisting alone",
+      "An SSID rename",
+      "A camera at the exit"
+    ],
+    "answer": 0,
+    "explanation": "Authentication and health compliance are separate. A supported NAC posture policy can check the required endpoint state and limit access; an address, network name, or camera does not prove current protection.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-18",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "On a classic Cisco IOS routed interface, separate IP ACLs are attached inbound and outbound. A reviewer says that two directions on one interface are forbidden. Which correction applies?",
+    "choices": [
+      "No ACL can ever be reused",
+      "The documented limit is one per interface, protocol, and direction",
+      "One ACL permits only one destination port",
+      "All switch vendors have identical ACL limits"
+    ],
+    "answer": 1,
+    "explanation": "Classic IOS documents the direction-qualified limit; separate inbound and outbound application is allowed. Lists can have several entries and be reused. Other platforms and ACL types require their own documentation.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-19",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "Guests and managed staff use separate VLANs, but unrestricted inter-VLAN routing lets guests reach staff administration ports. Which change addresses the missing boundary?",
+    "choices": [
+      "Rename the guest VLAN",
+      "Trust the guest SSID because it has a portal",
+      "Enforce and test explicit allowed/denied flows at the routed boundary",
+      "Add a honeypot as the only access control"
+    ],
+    "answer": 2,
+    "explanation": "VLAN separation alone does not restrict routed access. Enforced ACL/firewall policy closes the demonstrated path; names, an AUP portal, or a decoy do not substitute for boundary control.",
+    "weak": false
+  },
+  {
+    "id": "q-n10c21-20",
+    "topicId": "n10-ch21",
+    "examCodes": [
+      "n10-009"
+    ],
+    "prompt": "A monitored decoy starts receiving unexpected outbound connection attempts. What should a prepared defensive design provide?",
+    "choices": [
+      "Real production credentials to make the decoy realistic",
+      "Unrestricted access to the control network",
+      "Automatic proof that all production systems are safe",
+      "Isolation, outbound restrictions, and an assigned response process"
+    ],
+    "answer": 3,
+    "explanation": "A honeypot or honeynet is an observation aid that may be compromised. Containment and response ownership limit its ability to harm real assets. Decoy activity does not establish the safety of production systems.",
+    "weak": false
   }
 ]
