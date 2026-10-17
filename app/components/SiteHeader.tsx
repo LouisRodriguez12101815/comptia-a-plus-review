@@ -26,7 +26,7 @@ export function SiteHeader() {
           aria-label="Certification tracks"
         >
           {tracks.map((track) => {
-            const active = !onGame && current?.id === track.id;
+            const active = !onGame && pathname !== "/coverage" && current?.id === track.id;
             return (
               <Link
                 key={track.id}
@@ -42,6 +42,13 @@ export function SiteHeader() {
               </Link>
             );
           })}
+          <Link
+            href="/coverage"
+            aria-current={pathname === "/coverage" ? "page" : undefined}
+            className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname === "/coverage" ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
+          >
+            Coverage
+          </Link>
           <Link
             href="/practice-games"
             aria-current={onGame ? "page" : undefined}
