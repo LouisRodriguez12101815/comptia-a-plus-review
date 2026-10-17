@@ -1,6 +1,6 @@
 # Display troubleshooting content verification
 
-Reviewed on October 17, 2026 in the managed Linux workspace, branch `work`, base commit `70fdac402a73850bd017c691c9262709e30bba78`. This record describes the content package based on that commit, not a deployed release. The initial branch was `work`; the package is prepared for review on `content/core1-display-troubleshooting`. The initial working tree was clean. Objective 5.3 was still `missing` with no topic mapping; no earlier implementation was duplicated.
+Reviewed on October 17, 2026 in the managed Linux workspace, branch `work`, base commit `70fdac402a73850bd017c691c9262709e30bba78`. This record describes the content package based on that commit, not a deployed release. The initial branch was `work`; the package is prepared for review on `content/core1-display-troubleshooting-review`. The initial working tree was clean. Objective 5.3 was still `missing` with no topic mapping; no earlier implementation was duplicated.
 
 ## Scope and workflow
 
@@ -161,3 +161,6 @@ The following is a separate follow-up backlog. These fixes are excluded from the
 | DISPLAY-F04 / P2 | Existing quiz skips per-question feedback. `QuizRunner.tsx` `submit()` advances immediately; the explanation display branch is bypassed during normal progression. | Open `/quiz?topic=core1-ch2`, start, note the prompt, select a choice, and click Check answer. Observe the next prompt immediately. Complete with a wrong answer; its explanation appears only in final missed-answer review. Reproduced on the existing topic during preparation. | A separately scoped quiz fix should show correct/incorrect reasoning before deliberate Next, preserve grading/progress identity, and verify the final-question flow. The written 5.3 lab already supplies result/feedback sections independently. |
 
 No GitHub issues or unrelated fixes were created as part of this backlog record. Objective 5.4 implementation is excluded from this PR.
+
+
+Publication note: the remote branch `content/core1-display-troubleshooting` already contained a different implementation at `8630baf` in open draft PR #60. A normal push was rejected; no force push or overwrite was attempted. That branch and PR are preserved. This reviewed package is published separately on `content/core1-display-troubleshooting-review` against `main`.
