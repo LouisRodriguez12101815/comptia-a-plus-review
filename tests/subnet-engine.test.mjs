@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {subnetData as data} from '../lib/subnet/catalog.ts';
 import {address,dotted,calculate,cidr,cleanedTypedText,smallestPrefix,equalSubnetCount} from '../lib/subnet/ipv4.ts';
-import {designGrade,detectiveGrade,orderGrade,orderView} from '../lib/subnet/grading.ts';
+import {designGrade,detectiveGrade,orderGrade,orderView,rankedRequirements} from '../lib/subnet/grading.ts';
 const fromFixture=m=>Object.fromEntries(m.verifiedFixture.map(f=>[f.id,{cidr:f.cidr,gateway:f.first,peer:f.last}]));
 for(const e of [...data.exercises,data.transferExercise])test(`verified source/boundary arithmetic: ${e.id} ${e.ip}/${e.prefix}`,()=>{
  const actual=calculate(e.ip,e.prefix);for(const [key,value] of Object.entries(e.expected))assert.equal(actual[key],value,key);
@@ -45,6 +45,20 @@ for(const m of data.missions)test(`VLSM ${m.id}: verified fixture and alternate 
  const swapped=[ids[1],ids[0],...ids.slice(2)];
  assert.deepEqual(orderView(swapped,m.requirements).firstTwo.map(item=>item.id),[ids[1],ids[0]]);
  assert.equal(orderGrade(m,ids),true);
+ if(m.id==='vlan-6'){
+  const before=m.requirements.map(r=>r.id);
+  const facts=rankedRequirements(m.requirements);
+  assert.deepEqual(m.requirements.map(r=>r.id),before);
+  assert.deepEqual(facts.ranked.map(item=>`${item.id} ${item.hosts}`),['A 210','B 125','C 95','D 52','L1 2','L2 2','L3 2']);
+  assert.deepEqual(facts.links,['L1','L2','L3']);
+  assert.deepEqual(rankedRequirements([]),{ranked:[],links:[]});
+  assert.deepEqual(rankedRequirements([m.requirements[0]]).ranked.map(item=>item.id),['A']);
+  assert.deepEqual(rankedRequirements([m.requirements[0]]).links,[]);
+  const tied=rankedRequirements([{id:'Z',hosts:80,kind:'lan'},{id:'A',hosts:80,kind:'lan'},{id:'M',hosts:2,kind:'link'}]);
+  assert.deepEqual(tied.ranked.map(item=>item.id),['A','Z','M']);
+  assert.deepEqual(tied.links,['M']);
+  assert.equal(orderGrade(m,ids),true);
+ }
 });
 test('capacity, overlap, alignment, outside parent, reserved/duplicate interfaces and insufficient parent are rejected specifically',()=>{
  const m=data.missions[0],f=fromFixture(m);const failing=(id,update,pattern)=>{const a=structuredClone(f);a[id]={...a[id],...update};assert.ok(designGrade(m,a).errors.some(e=>pattern.test(e.reason)));};
