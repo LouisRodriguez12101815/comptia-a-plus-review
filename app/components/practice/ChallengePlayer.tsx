@@ -5,7 +5,7 @@ import { NextPractice } from "@/app/components/practice/NextPractice";
 import { useEffect, useRef, useState } from "react";
 import { ComponentArt } from "@/app/components/practice/ComponentArt";
 import { PacketDiagram } from "@/app/components/practice/PacketDiagram";
-import { advance, isComplete, newSession, restoreSession, shuffle, solved, submit, summarize, requestHint } from "@/lib/practice/session";
+import { advance, isComplete, newSession, readinessLine, restoreSession, shuffle, solved, submit, summarize, requestHint } from "@/lib/practice/session";
 import type { Challenge, Choice, Session, Source } from "@/lib/practice/types";
 
 const button = "rounded-xl border border-cyan-300 bg-cyan-300 px-5 py-3 font-semibold text-slate-950 hover:bg-cyan-200 disabled:opacity-50";
@@ -48,12 +48,14 @@ export function ChallengePlayer({ challenge, sources }: { challenge: Challenge; 
     </section> : <>
       <section aria-label="Practice progress" className="space-y-2 rounded-2xl border border-slate-700 bg-slate-900 p-4">
         <p>Score {summary?.points} · Completed {summary?.completed}/{challenge.rounds.length} · First-attempt accuracy {summary?.firstAttemptAccuracy === null ? "—" : `${summary?.firstAttemptAccuracy}%`} · Hints {summary?.hints} · Retries {summary?.retries}</p>
+        <p>Readiness: {readinessLine(summary?.completed, challenge.rounds.length, summary?.hints)}</p>
         <progress aria-label="Challenge completion" value={summary?.completed} max={challenge.rounds.length} className="h-3 w-full accent-teal-400" />
       </section>
       {isComplete(session, challenge) ? <section className="space-y-5 rounded-2xl border border-teal-300/30 bg-slate-900 p-6" aria-label="Challenge debrief">
         <h2 ref={heading} tabIndex={-1} className="text-2xl font-bold">Practice debrief</h2>
         <p>Final completion {summary?.completed}/{challenge.rounds.length}. First attempts {summary?.firstCorrect}/{summary?.attempted} correct. Hints {summary?.hints}. Points record practice, not mastery.</p>
         <p>Score math: {summary?.fullAwards} × 100 + {summary?.hintedAwards} × 75 = {summary?.points}</p>
+        <p>Readiness: {readinessLine(summary?.completed, challenge.rounds.length, summary?.hints)}</p>
         <h3 className="text-xl font-semibold">Matched on first attempt without hints</h3>
         <ul className="space-y-1 text-sm">{summary?.rows.filter((row) => row.firstAttemptCorrect && !row.hintUsed).map((row) => <li key={row.round.id}>✓ {row.round.title}: {row.round.objective}</li>)}</ul>
         {!summary?.rows.some((row) => row.firstAttemptCorrect && !row.hintUsed) && <p>No unaided first-attempt matches yet. Completed retries are still useful practice.</p>}

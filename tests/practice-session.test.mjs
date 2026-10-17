@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { challenges, sources } from '../lib/practice/catalog.ts';
-import { advance, isComplete, newSession, requestHint, restoreSession, shuffle, solved, submit, summarize } from '../lib/practice/session.ts';
+import { advance, isComplete, newSession, readinessLine, requestHint, restoreSession, shuffle, solved, submit, summarize } from '../lib/practice/session.ts';
 
 for (const challenge of challenges) {
   test(`${challenge.id}: content IDs, sources and learning objectives cover every scored match`, async () => {
@@ -47,6 +47,7 @@ for (const challenge of challenges) {
     assert.equal(summarize(failed, challenge).points, 0);
     assert.equal(summarize(failed, challenge).fullAwards, 0);
     assert.equal(summarize(failed, challenge).hintedAwards, 0);
+    assert.equal(readinessLine(summarize(failed, challenge).completed, challenge.rounds.length, summarize(failed, challenge).hints), 'this run is not finished.');
     state = requestHint(failed, challenge);
     assert.equal(requestHint(state, challenge), state);
     state = submit(state, challenge, first.id, first.correctAnswerId);
@@ -66,6 +67,7 @@ for (const challenge of challenges) {
     assert.equal(report.fullAwards * 100 + report.hintedAwards * 75, report.points);
     assert.equal(report.firstCorrect, challenge.rounds.length - 1);
     assert.equal(report.hints, 1);
+    assert.equal(readinessLine(report.completed, challenge.rounds.length, report.hints), 'finished with a hint.');
     assert.deepEqual(report.recommendations, [{ objective: first.objective, sourceIds: first.sourceIds }]);
     assert.equal(report.rows[0].misconceptions[0].explanation, wrong.explanation);
     assert.equal(advance(state, challenge), state);
@@ -103,4 +105,20 @@ test('hint use is separate from first-attempt accuracy and a clean completion yi
   assert.equal(clean.fullAwards, game.rounds.length);
   assert.equal(clean.hintedAwards, 0);
   assert.equal(clean.fullAwards * 100 + clean.hintedAwards * 75, clean.points);
+  assert.equal(readinessLine(report.completed, game.rounds.length, report.hints), 'finished with a hint.');
+  assert.equal(readinessLine(clean.completed, game.rounds.length, clean.hints), 'finished with no hints.');
+});
+test('readiness keeps the first true branch and does not treat zero as missing', () => {
+  const total = challenges[0].rounds.length;
+  assert.equal(readinessLine(total, total, 0), 'finished with no hints.');
+  assert.equal(readinessLine(total, total, 1), 'finished with a hint.');
+  assert.equal(readinessLine(total - 1, total, 0), 'this run is not finished.');
+  assert.equal(readinessLine(total, total, 0), 'finished with no hints.');
+  assert.equal(readinessLine(total + 1, total, 0), 'this run is not finished.');
+  assert.equal(readinessLine(null, total, 0), 'this run is not finished.');
+  assert.equal(readinessLine(total, total, null), 'this run is not finished.');
+  assert.equal(readinessLine(total, total, ''), 'this run is not finished.');
+  assert.equal(readinessLine(0, 0, 0), 'this run is not finished.');
+  assert.equal(readinessLine(String(total), total, 0), 'this run is not finished.');
+  assert.equal(readinessLine(total, total, '0'), 'this run is not finished.');
 });
