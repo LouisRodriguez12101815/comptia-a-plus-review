@@ -1589,15 +1589,15 @@
   {
     "id": "q-141",
     "topicId": "core1-ch3-peripherals",
-    "prompt": "How do you connect a DVI-A interface on a peripheral to a DVI-D interface on the computer?",
+    "prompt": "A computer has a DVI-D output and a display accepts only analog DVI-A. Which solution can convert the signal?",
     "choices": [
-      "With a DVI-I cable",
-      "With a cable that is terminated on one end with a DVI-A connector and on the other end with a DVI-D connector",
-      "You wouldn't interconnect those two interfaces",
-      "With a standard DVI cable"
+      "A passive DVI-I cable alone",
+      "A passive cable with DVI-D and DVI-A ends",
+      "An active digital-to-analog converter compatible with the source and display",
+      "A standard DVI-D cable alone"
     ],
-    "answer": 1,
-    "explanation": "DVI-A (analog) and DVI-D (digital) are incompatible; you need a cable or adapter with the matching ends.",
+    "answer": 2,
+    "explanation": "DVI-D provides only digital video; the analog display needs active digital-to-analog conversion in that direction. None of the passive cables listed creates an analog signal from a digital-only source.",
     "weak": false
   },
   {
@@ -6437,5 +6437,261 @@
     "answer": 1,
     "explanation": "curl -I sends a HEAD request and prints the status line and headers. ping, nslookup, and ipconfig do not speak HTTP.",
     "weak": false
+  },
+  {
+    "id": "q-c1-display-01",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A monitor shows its OSD normally. Its input is HDMI 1, but the laptop cable is in HDMI 2. What should you do FIRST?",
+    "choices": [
+      "Reinstall the GPU driver",
+      "Select HDMI 2 in the monitor menu",
+      "Replace the LCD panel",
+      "Replace the projector lamp"
+    ],
+    "answer": 1,
+    "explanation": "Select the input that matches the connected port. Reinstalling the driver or replacing the panel is premature when the input mismatch is visible. A monitor has no projector lamp to replace."
+  },
+  {
+    "id": "q-c1-display-02",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A display loses signal when its cable is moved. The input and supported display mode are correct. What is the BEST next test?",
+    "choices": [
+      "Raise the refresh rate",
+      "Reinstall Windows",
+      "Replace the graphics card",
+      "Reseat/inspect the connection and test a known-good compatible cable"
+    ],
+    "answer": 3,
+    "explanation": "Movement-related loss suggests a physical connection problem. Inspect and substitute the cable before costly GPU replacement or OS changes. Raising refresh can increase bandwidth demands and does not repair a loose connection."
+  },
+  {
+    "id": "q-c1-display-03",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A lamp-based projector has no light output. Its manual identifies the indicator as lamp failure; cap and mute are already ruled out. What should happen next?",
+    "choices": [
+      "Follow the shutdown, unplugging, cooling, and approved lamp-replacement procedure",
+      "Reset the lamp timer without replacing the failed lamp",
+      "Immediately remove the hot lamp",
+      "Disable the temperature cutoff"
+    ],
+    "answer": 0,
+    "explanation": "A confirmed failed lamp requires approved service after safe shutdown and cooling. A timer reset only records usage; it cannot repair a lamp. Hot removal risks injury, and bypassing thermal protection is unsafe."
+  },
+  {
+    "id": "q-c1-display-04",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "Both a projector’s own menu and the slides are uniformly blurry. The laptop display is sharp. What is the BEST first adjustment?",
+    "choices": [
+      "Change the laptop audio output",
+      "Replace the HDMI cable immediately",
+      "Adjust projector focus",
+      "Increase keystone correction to its maximum"
+    ],
+    "answer": 2,
+    "explanation": "The projector’s own menu bypasses the laptop signal, so focus is the first adjustment for uniform optical blur. Audio is unrelated, and cable replacement lacks evidence. Excessive keystone may reduce sharpness rather than fix focus."
+  },
+  {
+    "id": "q-c1-display-05",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A static logo remains visible on an OLED across different inputs. What is the BEST response?",
+    "choices": [
+      "Replace the HDMI cable",
+      "Run the display at maximum brightness continuously",
+      "Change DNS settings",
+      "Use manufacturer panel care and screen sleep, reduce static content, and assess persistent damage for service"
+    ],
+    "answer": 3,
+    "explanation": "A persistent static outline suggests retention or burn-in. Panel care may help retention; permanent burn-in may require service. Cable and DNS changes cannot repair panel wear, and high-brightness static use can worsen it."
+  },
+  {
+    "id": "q-c1-display-06",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "One black dot stays at the same location in the monitor’s built-in solid-color tests with the computer disconnected. What is MOST likely?",
+    "choices": [
+      "A dead pixel or subpixel in the display",
+      "The wrong HDMI input",
+      "A corrupt Windows profile",
+      "An incorrect default audio device"
+    ],
+    "answer": 0,
+    "explanation": "A fixed dark defect in the display’s independent tests points to a dead pixel/subpixel. Source input, Windows, and audio settings do not control those internal test images. Document it and check the manufacturer pixel policy."
+  },
+  {
+    "id": "q-c1-display-07",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A monitor’s built-in test is clean. Windows flickers after installing an app, while Task Manager stays stable. Which cause should you investigate FIRST?",
+    "choices": [
+      "A burnt-out projector lamp",
+      "The newly installed incompatible app",
+      "A permanently dead pixel",
+      "Projector keystone settings"
+    ],
+    "answer": 1,
+    "explanation": "Microsoft’s Task Manager comparison points toward an incompatible app when Task Manager remains stable but the rest flickers. A dead pixel is a fixed dot, not app-dependent flicker; projector lamp and geometry controls do not fit the evidence."
+  },
+  {
+    "id": "q-c1-display-08",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A VGA-connected monitor has a strong color tint. Its internal test colors are normal, and the fault disappears with a known-good cable. Which component is implicated?",
+    "choices": [
+      "The monitor panel",
+      "The Windows audio driver",
+      "The original VGA cable or its connector",
+      "The projector lamp"
+    ],
+    "answer": 2,
+    "explanation": "The defect follows the original cable; damaged analog connections can affect color channels. Normal internal colors and a stable replacement cable argue against the panel. Audio drivers and lamps do not explain this cable-dependent tint."
+  },
+  {
+    "id": "q-c1-display-09",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "HDMI video works on a projector with functioning speakers. The computer’s audio output is still set to its internal speakers. What should you do FIRST?",
+    "choices": [
+      "Replace the HDMI port",
+      "Replace the projector bulb",
+      "Increase video resolution",
+      "Select the projector/HDMI audio output and verify mute/volume"
+    ],
+    "answer": 3,
+    "explanation": "The output route is the visible mismatch. Select it and check volume before replacing hardware. Resolution and bulb replacement do not correct audio routing, even though HDMI can carry audio and video."
+  },
+  {
+    "id": "q-c1-display-10",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A backlit laptop LCD is very dim at full brightness. A flashlight reveals a faint desktop, and an external monitor is normal. What is the BEST conclusion?",
+    "choices": [
+      "The internal LCD illumination path needs further diagnosis",
+      "The GPU is conclusively dead",
+      "The laptop must have a failed CCFL inverter",
+      "The projector input is wrong"
+    ],
+    "answer": 0,
+    "explanation": "The LCD is forming an image but lacks normal illumination. Diagnose the backlight/power path; the test alone does not identify the exact part. Not all LCDs use CCFL inverters, and neither a dead GPU nor projector input follows from this evidence."
+  },
+  {
+    "id": "q-c1-display-11",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A projector shuts off after warming up, shows a temperature warning, and has a dust-blocked intake. What is the BEST next action?",
+    "choices": [
+      "Reset the lamp timer",
+      "Allow cooling and restore airflow/filter condition according to its manual",
+      "Disable automatic thermal shutdown",
+      "Replace the video cable first"
+    ],
+    "answer": 1,
+    "explanation": "Warm-up timing plus a thermal warning and obstruction supports cooling-path investigation. A timer reset and video cable swap do not address overheating. Bypassing the protection risks damage; persistent faults or a failed fan require service."
+  },
+  {
+    "id": "q-c1-display-12",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A TV shows a sharp desktop but cuts off the outer edges. Source resolution is supported. Which setting should you check FIRST?",
+    "choices": [
+      "Lamp timer",
+      "Audio balance",
+      "Overscan or fit-to-screen",
+      "Lens focus"
+    ],
+    "answer": 2,
+    "explanation": "Overscan can crop desktop edges; fit-to-screen restores the full frame. Focus changes sharpness, not cropping. Lamp timers and audio balance are unrelated to the image boundaries."
+  },
+  {
+    "id": "q-c1-display-13",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A projector image is sharp but trapezoidal because the projector points upward at the screen. What is the BEST first correction?",
+    "choices": [
+      "Square and level the projector, then apply residual keystone correction if needed",
+      "Replace the GPU",
+      "Reset the lamp counter",
+      "Increase speaker volume"
+    ],
+    "answer": 0,
+    "explanation": "Physical alignment addresses the geometry; keystone can correct remaining trapezoid distortion. A GPU replacement lacks evidence, while lamp counters and audio volume cannot correct shape. Focus would address blur, not this sharp trapezoid."
+  },
+  {
+    "id": "q-c1-display-14",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "The same laptop and monitor are stable on direct HDMI, but flash through a USB-C dock. What should you test NEXT?",
+    "choices": [
+      "Replace the monitor panel",
+      "Replace all components at once",
+      "Reinstall the OS immediately",
+      "Check dock power and substitute dock-path components one at a time"
+    ],
+    "answer": 3,
+    "explanation": "The stable direct path narrows investigation toward the dock, power, adapter, or cable. Change one variable so the result identifies the fault. Replacing the monitor or OS is premature; changing everything loses diagnostic evidence."
+  },
+  {
+    "id": "q-c1-display-15",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A laptop sends a good picture over VGA, but there is no sound from the projector. What is the BEST solution for this connection?",
+    "choices": [
+      "Replace the projector lamp",
+      "Configure a separate supported audio connection and select the right output",
+      "Increase the VGA refresh rate",
+      "Use a passive VGA gender changer for audio"
+    ],
+    "answer": 1,
+    "explanation": "VGA carries video without audio. Use a separate supported audio route and check output/mute/volume. A lamp or refresh-rate change does not add audio, and a passive gender changer cannot create an audio channel."
+  },
+  {
+    "id": "q-c1-display-16",
+    "topicId": "core1-display-troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "prompt": "A projector is stable during presentations but powers off after exactly 10 minutes without an input signal. It has no thermal warning. What should you check FIRST?",
+    "choices": [
+      "A dead pixel",
+      "A failed lamp",
+      "No-signal sleep/auto-off settings",
+      "Keystone correction"
+    ],
+    "answer": 2,
+    "explanation": "A repeatable no-signal idle interval supports an auto-off/sleep setting. A dead pixel and keystone do not shut off power. Without lamp or thermal evidence, lamp replacement is premature; verify timer behavior against the manual."
   }
 ]

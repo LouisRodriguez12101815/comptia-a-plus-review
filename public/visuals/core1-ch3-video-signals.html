@@ -78,7 +78,7 @@ svg{display:block;width:100%;height:auto}
 <div class="wrap">
 
 <h1>Video signal lab</h1>
-<p class="lede">Connect connectors to monitors and see which signal actually gets through. Then build a DVI cable and trade resolution for refresh rate.</p>
+<p class="lede">Connect connectors to monitors and see which signal actually gets through. Then match compatible DVI signals and trade resolution for refresh rate.</p>
 <div class="card">
  <div class="lab">1. Pick a monitor input</div>
  <div class="ctrls" id="mon" role="group" aria-label="Monitor type">
@@ -89,7 +89,8 @@ svg{display:block;width:100%;height:auto}
  <div class="out" id="co" aria-live="polite"></div>
 </div>
 <div class="card sec"><div class="lab">2. Multi-answer</div><div id="mq"></div></div>
-<div class="card sec"><div class="lab">3. Build the DVI cable</div>
+<div class="card sec"><div class="lab">3. Match compatible DVI signals</div>
+ <p class="why">DVI-D is digital-only; an analog-only DVI-A/VGA display needs active digital-to-analog conversion in the correct direction. Matching cable ends alone cannot convert the signal. DVI-I can provide analog when the source supports it.</p>
  <div class="ctrls" id="goal" role="group" aria-label="Goal"></div>
  <div class="row2">
   <div><div class="lab">Cable end 1</div><div class="ctrls" id="e1"></div></div>
@@ -164,7 +165,7 @@ C.forEach(function(c,i){var b=document.createElement('button');b.type='button';b
 Array.prototype.forEach.call($('mon').children,function(b){b.onclick=function(){mon=b.dataset.m;Array.prototype.forEach.call($('mon').children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});showC()}});
 showC();
 multi('mq','Which TWO connectors are for analog monitors?',['VGA','HDMI','DVI-A','DVI-D','DisplayPort'],['VGA','DVI-A'],'VGA and DVI-A are the analog-monitor connectors. HDMI, DisplayPort, and DVI-D are digital.');
-var G=[{l:'DVI-A device to DVI-D device',a:'A',b:'D',w:'To connect DVI-A to DVI-D you need a cable terminated A on one end and D on the other.'},{l:'DVI-D device to DVI-D device',a:'D',b:'D',w:'Both devices are digital DVI-D, so a D to D cable matches both ends.'}];
+var G=[{l:'Analog-capable DVI-I source to DVI-A display',a:'I',b:'A',w:'These endpoints share analog video. A compatible passive connection uses the analog pins; it does not convert digital video.'},{l:'DVI-D device to DVI-D device',a:'D',b:'D',w:'Both devices are digital DVI-D, so a D to D cable matches both ends.'}];
 var gi=0,p1=null,p2=null;
 function tg(el,key){['A','D','I'].forEach(function(v){var b=document.createElement('button');b.type='button';b.textContent='DVI-'+v;b.setAttribute('aria-pressed','false');b.onclick=function(){if(key===1)p1=v;else p2=v;Array.prototype.forEach.call(el.children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')})};el.appendChild(b)})}
 tg($('e1'),1);tg($('e2'),2);

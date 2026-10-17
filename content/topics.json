@@ -1064,7 +1064,7 @@
               "Analog-monitor connectors: VGA (D-sub 15-pin) and DVI-A. A multi-answer question asking for analog monitor connectors wants both.",
               "HDMI carries digital video plus audio; mini-HDMI is a smaller variant; both are fine for projectors.",
               "DisplayPort also carries digital audio and video, using a 20-pin connector.",
-              "DVI variants: DVI-A analog only, DVI-D digital only, DVI-I integrated (both). To connect DVI-A to DVI-D you need a cable terminated A on one end and D on the other.",
+              "DVI variants: DVI-A analog only, DVI-D digital only, DVI-I integrated (both). DVI-D is digital and DVI-A is analog: connecting them requires an active converter in the correct signal direction, not merely a cable with matching ends.",
               "Thunderbolt combines DisplayPort video with PCIe data on one cable. Thunderbolt 2 uses the oval mini-DisplayPort shape; Thunderbolt 3 and 4 use USB-C.",
               "Lower monitor resolution frees bandwidth, so the maximum supported refresh rate tends to increase."
             ]
@@ -1538,5 +1538,294 @@
       }
     ],
     "concept": "networking-concepts"
+  },
+  {
+    "id": "core1-display-troubleshooting",
+    "group": "core1",
+    "concept": "troubleshooting",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Video, Projector, and Display Troubleshooting",
+    "chapter": "Core 1 · Objective 5.3",
+    "summary": "Diagnose no signal, image quality, panel defects, missing audio, and projector lamp or thermal faults using evidence before replacing parts.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam focus and prerequisites",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Objective 5.3 asks you to troubleshoot video, projector, and display problems in a scenario. Verified against CompTIA A+ Core 1 (220-1201), objectives document version 4.0, pages 3 and 12, on October 17, 2026. Domain 5.0 is 28% of the exam; objective 5.3 alone is not assigned that weight."
+          },
+          {
+            "type": "paragraph",
+            "text": "Review Peripherals, Video Connectors, and USB (core1-ch3-peripherals), section Video connectors and signal types, for connector identification. Review Expansion Cards, Storage, Power Supplies (core1-ch2) for GPU installation. This lesson applies that knowledge to fault isolation."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Choose the BEST next action from the evidence: check simple settings and isolate one component at a time. A symptom suggests a cause; it rarely proves which part failed. These are original practice scenarios, not actual exam questions."
+          }
+        ]
+      },
+      {
+        "id": "isolation",
+        "title": "Start with power, input, and the signal path",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Ask what changed, when the issue occurs, whether it affects one app or all output, and whether the computer completes startup. Check display power, brightness, sleep, and the on-screen display (OSD) menu. A working OSD shows the display can render its own menu; it does not prove the external video path works.",
+              "Match the selected display input to the physical port: HDMI 1 is different from HDMI 2. Enable the intended external display using Duplicate or Extend as required. Verify the cable is plugged into the intended active GPU output.",
+              "Inspect and reseat external connections; check bent pins, connector damage, strain, and adapter direction. Never force a connector. Substitute a known-good, compatible cable, then bypass docks/adapters, then test another source or display, changing one variable per test.",
+              "Run the monitor built-in diagnostic/self-test using its manual. A defect present in the internal test with the computer disconnected points toward the display. A clean internal test shifts investigation to the source, cable, adapter, or settings; intermittent faults still require retesting."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "First checks",
+              "What the result means"
+            ],
+            "rows": [
+              [
+                "Incorrect input source",
+                "OSD works, but HDMI 1 shows no signal while the cable is in HDMI 2: select HDMI 2.",
+                "An image after selection resolves an input mismatch without replacing hardware."
+              ],
+              [
+                "Physical cabling issues",
+                "Inspect/reseat; use a known-good cable and bypass the adapter or dock. Confirm ports and cables support the intended mode.",
+                "A stable direct connection isolates the removed path, not automatically the monitor or GPU."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A matching connector shape does not guarantee signal compatibility. DVI-D to an analog DVI-A/VGA display needs active digital-to-analog conversion in the correct direction; a passive cable cannot create an analog signal. USB-C video also requires a compatible video-capable port, cable, and adapter."
+          }
+        ]
+      },
+      {
+        "id": "image-quality",
+        "title": "Fuzzy, flashing, and incorrect-color images",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Diagnostic action",
+              "Repair or next step"
+            ],
+            "rows": [
+              [
+                "Fuzzy image",
+                "On a flat panel, check native resolution; on a projector, display its own menu/test pattern and adjust focus. Inspect lens cleanliness and placement.",
+                "Use native resolution where supported; focus or clean the lens per the manual. Excessive digital keystone can reduce sharpness. Analog VGA may need auto-adjust/tracking."
+              ],
+              [
+                "Flashing screen",
+                "Inspect the connection, use a supported refresh rate/resolution, and bypass the dock. Compare another cable/source and the internal test.",
+                "If only Windows flickers after a driver change, investigate the driver. If Task Manager stays stable while other windows flicker, an incompatible app is more likely. Hardware remains possible."
+              ],
+              [
+                "Incorrect color display",
+                "Compare the OSD/internal test with source content; reset unintended color/HDR/profile settings and inspect connections, especially analog pins.",
+                "A missing color that disappears with a known-good cable implicates the cable. Wrong colors in an internal test warrant display service. Do not replace a panel merely because an app uses a color filter."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Resolution is pixels per frame; refresh rate is frames per second (Hz). Use modes supported by the whole path. Lowering the mode can diagnose a bandwidth or compatibility problem, but does not identify the failing component by itself."
+          }
+        ]
+      },
+      {
+        "id": "panel-defects",
+        "title": "Burn-in, dead pixels, and dim displays",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Distinguishing evidence",
+              "Appropriate response"
+            ],
+            "rows": [
+              [
+                "Display burn-in",
+                "A persistent outline of a static logo remains on different content. Temporary image retention may fade; permanent burn-in does not.",
+                "Use manufacturer panel-care features as directed, reduce static high-brightness content, and enable screen sleep. Assess persistent damage for service; a new cable cannot repair worn pixels."
+              ],
+              [
+                "Dead pixels",
+                "A tiny fixed black dot remains at the same panel location across solid-color built-in tests. A stuck subpixel may remain colored or bright.",
+                "Document the location/count and consult the manufacturer pixel policy. Do not promise software will revive a dead pixel or press on the screen."
+              ],
+              [
+                "Dim image",
+                "Check brightness, power-saving settings, and ambient light. On a backlit LCD, a faint image visible under a flashlight suggests an illumination fault.",
+                "Investigate the backlight or its power circuitry through approved service. An inverter applies to older CCFL backlights, not every LCD; OLED pixels emit their own light. On a projector, check eco mode, lens, and lamp age."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A normal external display with a dim laptop LCD narrows the problem toward the internal display path, but does not distinguish the panel, internal cable, or illumination circuitry without further tests."
+          }
+        ]
+      },
+      {
+        "id": "projectors",
+        "title": "Projector lamps and intermittent shutdown",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Evidence to collect",
+              "Next action"
+            ],
+            "rows": [
+              [
+                "Burnt-out bulb",
+                "A lamp-based projector powers up but produces no light; its manual identifies the lamp-status warning. Check lens cap, A/V mute, and lamp-cover seating too.",
+                "If lamp failure is confirmed, replace the approved lamp module following the manual, then reset its usage timer. Laser/LED projectors do not use the same replaceable bulb."
+              ],
+              [
+                "Intermittent projector shutdown",
+                "Record temperature/lamp indicators and time to failure. Check blocked vents, dirty filters, fan operation, and room temperature. Also check sleep timers/no-signal shutdown and power stability.",
+                "A hot unit with a temperature warning suggests thermal shutdown: allow cooling and restore airflow/clean filters per the manual. Escalate a faulty fan or persistent fault. A timer-triggered shutdown requires settings changes instead."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "For lamp service, follow the model-specific shutdown and cooling procedure, disconnect power before opening the lamp compartment, and wait the specified cooling period (some Epson models require at least one hour). Use the correct module; handle broken glass and disposal as directed. Do not bypass thermal protection or open a display power supply."
+          },
+          {
+            "type": "paragraph",
+            "text": "Verify the fix under the original conditions: run the projector beyond its former shutdown interval, check indicators and airflow, and confirm a stable image. Record the cause, repair, and preventive maintenance."
+          }
+        ]
+      },
+      {
+        "id": "geometry-audio",
+        "title": "Sizing, distortion, and missing audio",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Separate these causes",
+              "Best next checks"
+            ],
+            "rows": [
+              [
+                "Sizing issues",
+                "A complete but small projected image differs from cropped edges or stretched content. A higher resolution is not always the fix.",
+                "For small projection, check distance and optical zoom. For cropped edges, check overscan/fit. For stretched content, match aspect ratio. Adjust desktop scaling when only text/UI size is wrong."
+              ],
+              [
+                "Distorted image",
+                "A trapezoid suggests projector angle; wavy lines or scrambled output suggest a signal/settings fault.",
+                "Square and level the projector to the screen, then use keystone for residual geometry correction. For electronic distortion, compare the internal pattern, a known-good cable, and a supported mode."
+              ],
+              [
+                "Audio issues",
+                "A working picture does not prove the audio route works. HDMI/DisplayPort can carry audio; VGA and standard DVI connections do not carry audio.",
+                "Check source output device, app/system mute and volume, display speakers/volume, and the adapter audio capability. Use separate audio for a VGA path. Confirm the display actually has speakers."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Keystone corrects trapezoidal shape; focus corrects optical blur; aspect ratio corrects stretch; zoom/distance changes projected size. Identify the symptom before choosing a control."
+          }
+        ]
+      },
+      {
+        "id": "scenarios",
+        "title": "Worked practical scenarios",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Scenario and evidence",
+              "Action and explanation",
+              "Verify"
+            ],
+            "rows": [
+              [
+                "Conference-room screen: its menu is visible, laptop is connected to HDMI 2, input says HDMI 1.",
+                "Select HDMI 2. The evidence supports wrong input before driver reinstall or lamp replacement.",
+                "Show a slide and confirm Duplicate/Extend matches the meeting need."
+              ],
+              [
+                "Projector text and its own menu are blurry; laptop screen is sharp.",
+                "Adjust projector focus and check placement/lens. An internal menu is generated without the laptop, so source resolution is not the first suspect.",
+                "Read text at center and corners; use native resolution for source slides afterward."
+              ],
+              [
+                "Projector stops after 12 minutes with a temperature warning and a blocked intake.",
+                "Let it cool and clear the obstruction per the manual. Check filter/fan operation; do not defeat the thermal cutoff.",
+                "Run longer than 12 minutes in normal conditions; escalate if warnings return."
+              ],
+              [
+                "Direct HDMI is stable, but the same laptop and monitor flash through a dock.",
+                "Check dock power and substitute its cable/adapter one at a time. Stable direct output points to the removed path, not a proven GPU failure.",
+                "Retest the intended resolution/refresh through the repaired dock."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Desk practice: with permission, record the working input, resolution, and refresh rate; deliberately select a different input, identify the symptom, and restore it. Then compare Duplicate and Extend and restore the original setup. Without hardware, write the expected observation and next action for each worked case. Do not create faults by blocking ventilation or damaging cables."
+          }
+        ]
+      },
+      {
+        "id": "exam-traps",
+        "title": "Exam traps and recall checklist",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "No signal: power/input/cable/output enablement first. An OSD is useful evidence, not a complete end-to-end test.",
+              "Ghost logo versus isolated dot: burn-in/retention versus dead or stuck pixels. Neither is repaired by changing resolution.",
+              "Dim versus absent: a faint LCD image suggests illumination; a projector lamp warning requires model-specific interpretation.",
+              "Shutdown after warming up plus temperature warning: cooling path. Shutdown after a fixed idle period without a thermal warning: investigate timers.",
+              "Select one next action based on stated evidence. After repair, verify the original workload and document what changed."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "You should be able to explain the likely cause, the safest confirming test, and why an alternative is premature for each symptom. Use this topic’s Quiz and Flashcards tools for recall practice."
+          }
+        ]
+      },
+      {
+        "id": "sources",
+        "title": "Sources and verification limits",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Scope source: CompTIA A+ 220-1201 V15 Exam Objectives, version 4.0, objective 5.3 (page 12) and domain weights (page 3): https://lecbyo.files.cmp.optimizely.com/download/34be017cb73211ef8985a6f347fbf652 . Retrieved October 17, 2026. The official symptom list defines scope; explanations and scenarios here are independently authored."
+          },
+          {
+            "type": "paragraph",
+            "text": "Manufacturer references and a symptom-by-symptom verification matrix are recorded in docs/display-troubleshooting-verification.md. Model-specific indicator colors, service procedures, supported modes, and pixel warranties must be checked in that device’s manual. Coverage means the main task is taught, not a guarantee that every possible exam scenario is included."
+          }
+        ]
+      }
+    ]
   }
 ]
