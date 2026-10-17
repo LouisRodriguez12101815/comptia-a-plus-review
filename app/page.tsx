@@ -50,6 +50,11 @@ export default function Home() {
         </div>
       </section>
 
+      <Link href="/coverage" className="block rounded-xl border border-teal-400/30 bg-teal-400/5 p-5 hover:border-teal-400">
+        <span className="font-semibold text-teal-200">Explore exam objective coverage →</span>
+        <span className="mt-2 block text-sm text-slate-300">Browse mapped study content and the next content gap. Preliminary coverage is a planning estimate.</span>
+      </Link>
+
       <section aria-labelledby="tracks-heading" className="space-y-4">
         <h2 id="tracks-heading" className="text-lg font-medium text-white">
           Choose your certification

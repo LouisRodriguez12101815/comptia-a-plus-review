@@ -22,7 +22,7 @@ export function TrackBar() {
   const pathname = usePathname();
   const [focus] = useStudyFocus();
 
-  if (pathname === "/" || isHubPath(pathname)) return null;
+  if (pathname === "/" || pathname === "/coverage" || isHubPath(pathname)) return null;
   const track = trackForPath(pathname, focus);
   if (!track) return null;
   const tools = toolStatuses(track);
