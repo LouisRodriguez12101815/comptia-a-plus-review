@@ -106,7 +106,11 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
         <button
           type="button"
           onClick={() => {
-            setOrder(shuffle(deck).map((item) => item.id));
+            setOrder(
+              topicId === DUE_MODE
+                ? shuffle(cards.map((item) => item.id))
+                : shuffle(deck).map((item) => item.id),
+            );
             setIndex(0);
             setFlipped(false);
           }}
