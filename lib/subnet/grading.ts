@@ -41,6 +41,12 @@ export function designGrade(mission: DesignMission, allocations: Record<string,A
   if(minimum>parent.size)errors.push({id:"parent",reason:`Insufficient parent space: minimum blocks need ${minimum} addresses, but the parent has ${parent.size}.`});
   return {ok:errors.length===0,errors,blocks,allocated,remaining:errors.length ? null : parent.size-allocated};
 }
+/** Display only. A set keeps each usable count once. A record looks up one requirement by id. Grading is unchanged. */
+export function requirementFacts(requirements: { id: string; hosts: number }[], lookupId = "A") {
+  const hostsById: Record<string, number> = {};
+  for (const requirement of requirements) if (!(requirement.id in hostsById)) hostsById[requirement.id] = requirement.hosts;
+  return { hostsById, uniqueHosts: [...new Set(requirements.map((requirement) => requirement.hosts))], lookupId, hosts: lookupId in hostsById ? hostsById[lookupId] : null };
+}
 export function orderGrade(mission: DesignMission, order:string[]) {
   return order.length===mission.requirements.length && new Set(order).size===order.length && order.every((id,i)=>{const r=mission.requirements.find(r=>r.id===id);const previous=mission.requirements.find(r=>r.id===order[i-1]);return !!r && (!previous||previous.hosts>=r.hosts);});
 }
