@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { challenges, sources } from '../lib/practice/catalog.ts';
-import { advance, isComplete, newSession, readinessLine, requestHint, restoreSession, shuffle, solved, submit, summarize } from '../lib/practice/session.ts';
+import { advance, isComplete, newSession, readinessLine, requestHint, restoreSession, shortWalk, shortWalkText, shuffle, solved, submit, summarize } from '../lib/practice/session.ts';
 
 for (const challenge of challenges) {
   test(`${challenge.id}: content IDs, sources and learning objectives cover every scored match`, async () => {
@@ -121,4 +121,50 @@ test('readiness keeps the first true branch and does not treat zero as missing',
   assert.equal(readinessLine(0, 0, 0), 'this run is not finished.');
   assert.equal(readinessLine(String(total), total, 0), 'this run is not finished.');
   assert.equal(readinessLine(total, total, '0'), 'this run is not finished.');
+});
+test('short walk skips hints, breaks after three, and the while ends when the index reaches the end', () => {
+  assert.deepEqual(shortWalk([]), { kept: [], skipped: 0, index: 0, exit: 'end', stoppedEarly: false });
+  assert.equal(shortWalkText([]), 'Short walk: none. Skipped 0 hinted rounds. Stopped because the round list ended.');
+  const one = shortWalk([{ title: 'Only', hintUsed: false }]);
+  assert.deepEqual(one.kept, ['Only']);
+  assert.equal(one.index, 1);
+  assert.equal(one.exit, 'end');
+  assert.equal(one.stoppedEarly, false);
+  const many = [
+    { title: 'A', hintUsed: false },
+    { title: 'B', hintUsed: false },
+    { title: 'C', hintUsed: false },
+    { title: 'D', hintUsed: false },
+  ];
+  const early = shortWalk(many);
+  assert.deepEqual(early.kept, ['A', 'B', 'C']);
+  assert.equal(early.exit, 'break');
+  assert.equal(early.stoppedEarly, true);
+  assert.equal(early.index, 3);
+  const skipped = shortWalk([
+    { title: 'Hinted', hintUsed: true },
+    { title: 'Kept', hintUsed: false },
+    { title: 'Also hinted', hintUsed: true },
+  ], 5);
+  assert.deepEqual(skipped.kept, ['Kept']);
+  assert.equal(skipped.skipped, 2);
+  assert.equal(skipped.exit, 'end');
+  assert.equal(skipped.index, 3);
+  const done = shortWalk(many, 10);
+  assert.equal(done.exit, 'end');
+  assert.equal(done.index, many.length);
+  assert.deepEqual(done.kept, ['A', 'B', 'C', 'D']);
+  const game = challenges[0];
+  let state = newSession(game);
+  state = requestHint(state, game);
+  for (const round of game.rounds) {
+    state = submit(state, game, round.id, round.correctAnswerId);
+    state = advance(state, game);
+  }
+  const report = summarize(state, game);
+  const text = shortWalkText(report.rows.map((row) => ({ title: row.round.title, hintUsed: row.hintUsed })));
+  const expected = game.rounds.slice(1, 4).map((round, index) => `${index + 1} ${round.title}`).join(', ');
+  assert.equal(text, `Short walk: ${expected}. Skipped 1 hinted round. Stopped after 3 unaided matches.`);
+  assert.equal(report.points, game.rounds.length * 100 - 25);
+  assert.equal(report.rows.length, game.rounds.length);
 });

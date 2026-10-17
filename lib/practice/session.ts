@@ -51,6 +51,34 @@ export function readinessLine(completed: unknown, total: unknown, hints: unknown
   if (finished && typeof hints === "number" && hints > 0) return "finished with a hint.";
   return "this run is not finished.";
 }
+/** Display only. The index increases every pass, so the while condition eventually fails. A hinted round is skipped. The walk breaks after stopAfter unaided titles. Points and the full match list are unchanged. */
+export function shortWalk(rows: { title: string; hintUsed: boolean }[], stopAfter = 3) {
+  const kept: string[] = [];
+  let skipped = 0;
+  let index = 0;
+  let exit: "break" | "end" = "end";
+  while (index < rows.length) {
+    const row = rows[index];
+    index += 1;
+    if (row.hintUsed) {
+      skipped += 1;
+      continue;
+    }
+    kept.push(row.title);
+    if (kept.length === stopAfter) {
+      exit = "break";
+      break;
+    }
+  }
+  return { kept, skipped, index, exit, stoppedEarly: exit === "break" && index < rows.length };
+}
+export function shortWalkText(rows: { title: string; hintUsed: boolean }[], stopAfter = 3) {
+  const walk = shortWalk(rows, stopAfter);
+  const list = walk.kept.length ? walk.kept.map((title, position) => `${position + 1} ${title}`).join(", ") : "none";
+  const skipLabel = walk.skipped === 1 ? "Skipped 1 hinted round." : `Skipped ${walk.skipped} hinted rounds.`;
+  const stopLabel = walk.stoppedEarly ? `Stopped after ${walk.kept.length} unaided matches.` : "Stopped because the round list ended.";
+  return `Short walk: ${list}. ${skipLabel} ${stopLabel}`;
+}
 /** Restore only a valid sequential session for this content revision; scores/accuracy are always recomputed. */
 export function restoreSession(raw: string | null, challenge: Challenge): Session | null {
   if (!raw) return null;
