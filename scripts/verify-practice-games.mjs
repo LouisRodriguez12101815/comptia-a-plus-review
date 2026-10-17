@@ -72,6 +72,7 @@ try {
     assert.match(await debrief.textContent(),new RegExp(`Final completion ${challenge.rounds.length}/${challenge.rounds.length}`));
     await debrief.getByText(`Review: ${challenge.rounds[0].objective}`,{exact:true}).waitFor();
     assert.ok((await debrief.textContent()).includes('Hints 1'));
+    assert.ok((await debrief.textContent()).includes(`Score math: ${challenge.rounds.length - 1} × 100 + 1 × 75 = ${(challenge.rounds.length - 1) * 100 + 75}`));
     assert.ok((await debrief.textContent()).includes(`${challenge.rounds.length-1}/${challenge.rounds.length} correct`));
     assert.equal(gameRequests.length,0,'Solo practice must not create rooms or call Twilio APIs');
     checks.push(`${challenge.id} (${phone?'phone / reduced motion':'desktop'}): every round completed, wrong choice and hint recovered, keyboard/tap, duplicate credit blocked, source-linked mistake debrief; ${index?'packet positions, frame addresses, TTL and transfer network':'native drag handlers, phone width, saved-session resume'}.`);

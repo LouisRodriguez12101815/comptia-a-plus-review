@@ -36,7 +36,9 @@ export function summarize(session: Session, challenge: Challenge) {
   });
   const attempted = rows.filter((row) => row.firstAttempt).length;
   const firstCorrect = rows.filter((row) => row.firstAttemptCorrect).length;
-  return { rows, points: rows.reduce((sum, row) => sum + row.points, 0), hints: rows.filter((row) => row.hintUsed).length,
+  const fullAwards = rows.filter((row) => row.points === 100).length;
+  const hintedAwards = rows.filter((row) => row.points === 75).length;
+  return { rows, points: rows.reduce((sum, row) => sum + row.points, 0), fullAwards, hintedAwards, hints: rows.filter((row) => row.hintUsed).length,
     completed: rows.filter((row) => row.complete).length, attempted, firstCorrect,
     retries: challenge.rounds.reduce((n, round) => n + Math.max(0, (session.receipts[round.id]?.attemptedIds.length ?? 0) - 1), 0),
     firstAttemptAccuracy: attempted ? Math.round(firstCorrect / attempted * 100) : null,
