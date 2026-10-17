@@ -45,6 +45,8 @@ for (const challenge of challenges) {
     const failed = submit(state, challenge, first.id, wrong.id);
     assert.equal(submit(failed, challenge, first.id, wrong.id), failed);
     assert.equal(summarize(failed, challenge).points, 0);
+    assert.equal(summarize(failed, challenge).fullAwards, 0);
+    assert.equal(summarize(failed, challenge).hintedAwards, 0);
     state = requestHint(failed, challenge);
     assert.equal(requestHint(state, challenge), state);
     state = submit(state, challenge, first.id, first.correctAnswerId);
@@ -59,6 +61,9 @@ for (const challenge of challenges) {
     const report = summarize(state, challenge);
     assert.equal(report.completed, challenge.rounds.length);
     assert.equal(report.points, challenge.rounds.length * 100 - 25);
+    assert.equal(report.fullAwards, challenge.rounds.length - 1);
+    assert.equal(report.hintedAwards, 1);
+    assert.equal(report.fullAwards * 100 + report.hintedAwards * 75, report.points);
     assert.equal(report.firstCorrect, challenge.rounds.length - 1);
     assert.equal(report.hints, 1);
     assert.deepEqual(report.recommendations, [{ objective: first.objective, sourceIds: first.sourceIds }]);
@@ -91,6 +96,11 @@ test('hint use is separate from first-attempt accuracy and a clean completion yi
   const game=challenges[0]; let state=newSession(game); state=requestHint(state,game);
   for(const round of game.rounds) {state=submit(state,game,round.id,round.correctAnswerId);state=advance(state,game);}
   const report=summarize(state,game);assert.equal(report.firstAttemptAccuracy,100);assert.equal(report.hints,1);assert.equal(report.recommendations.length,1);
+  assert.equal(report.fullAwards * 100 + report.hintedAwards * 75, report.points);
   state=newSession(game);for(const round of game.rounds) {state=submit(state,game,round.id,round.correctAnswerId);state=advance(state,game);}
-  assert.deepEqual(summarize(state,game).recommendations,[]);
+  const clean=summarize(state,game);
+  assert.deepEqual(clean.recommendations,[]);
+  assert.equal(clean.fullAwards, game.rounds.length);
+  assert.equal(clean.hintedAwards, 0);
+  assert.equal(clean.fullAwards * 100 + clean.hintedAwards * 75, clean.points);
 });

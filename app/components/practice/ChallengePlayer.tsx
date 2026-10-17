@@ -53,6 +53,7 @@ export function ChallengePlayer({ challenge, sources }: { challenge: Challenge; 
       {isComplete(session, challenge) ? <section className="space-y-5 rounded-2xl border border-teal-300/30 bg-slate-900 p-6" aria-label="Challenge debrief">
         <h2 ref={heading} tabIndex={-1} className="text-2xl font-bold">Practice debrief</h2>
         <p>Final completion {summary?.completed}/{challenge.rounds.length}. First attempts {summary?.firstCorrect}/{summary?.attempted} correct. Hints {summary?.hints}. Points record practice, not mastery.</p>
+        <p>Score math: {summary?.fullAwards} × 100 + {summary?.hintedAwards} × 75 = {summary?.points}</p>
         <h3 className="text-xl font-semibold">Matched on first attempt without hints</h3>
         <ul className="space-y-1 text-sm">{summary?.rows.filter((row) => row.firstAttemptCorrect && !row.hintUsed).map((row) => <li key={row.round.id}>✓ {row.round.title}: {row.round.objective}</li>)}</ul>
         {!summary?.rows.some((row) => row.firstAttemptCorrect && !row.hintUsed) && <p>No unaided first-attempt matches yet. Completed retries are still useful practice.</p>}
