@@ -10,4 +10,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Exam coverage
 
-When asked what study content to add next, or whether the site covers A+ Core 1 (220-1201), A+ Core 2 (220-1202), or Network+ (N10-009), run `npm run report:objectives`. Recommend gap 1 under "Gaps, heaviest domain first". Read that objective in `content/objectives.json` before writing. After a new notes topic teaches an objective, update its `status` and `topics`, then run the report again. Do not paste CompTIA objective PDFs into the site.
+When asked what study content to add next, or whether the site covers A+ Core 1 (220-1201), A+ Core 2 (220-1202), or Network+ (N10-009), follow `.agents/skills/exam-coverage-reviewer/SKILL.md`. The record is `content/objectives.json`. The ranked gaps come from `npm run report:objectives`.

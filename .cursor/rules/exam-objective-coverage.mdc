@@ -1,16 +1,10 @@
 ---
-description: When recommending the next CompTIA study page, use the exam objective coverage report
+description: When recommending the next CompTIA study page, use the exam-coverage-reviewer skill and content/objectives.json
 alwaysApply: true
 ---
 
 # Next study content
 
-When the user asks what content to add, what the site is missing, or how the notes align with A+ Core 1 (220-1201), A+ Core 2 (220-1202), or Network+ (N10-009):
+When the user asks what content to add, what the site is missing, or how the notes align with A+ Core 1 (220-1201), A+ Core 2 (220-1202), or Network+ (N10-009), follow `.agents/skills/exam-coverage-reviewer/SKILL.md`.
 
-1. Run `npm run report:objectives`.
-2. Recommend gap 1 under "Gaps, heaviest domain first". That line is the next page.
-3. Read that objective in `content/objectives.json` before writing. Use its `note` and `topics`.
-4. Do not paste official CompTIA objective PDFs into the site.
-5. After adding a notes topic, set that objective's `status` and `topics` in `content/objectives.json`, then run the report again.
-
-`covered` means a notes topic teaches the main task. `partial` means the mapped topics are incomplete. `missing` means there is no topic. A quiz item alone does not make an objective covered.
+The coverage record is `content/objectives.json`. Ranked gaps come from `npm run report:objectives`. Gap 1 is the next page.
