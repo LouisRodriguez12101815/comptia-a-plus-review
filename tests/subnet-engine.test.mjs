@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {subnetData as data} from '../lib/subnet/catalog.ts';
 import {address,dotted,calculate,cidr,cleanedTypedText,smallestPrefix,equalSubnetCount} from '../lib/subnet/ipv4.ts';
-import {designGrade,detectiveGrade,orderGrade,orderView,rankedRequirements} from '../lib/subnet/grading.ts';
+import {designGrade,detectiveGrade,orderGrade,orderView,rankedRequirements,requirementFacts} from '../lib/subnet/grading.ts';
 const fromFixture=m=>Object.fromEntries(m.verifiedFixture.map(f=>[f.id,{cidr:f.cidr,gateway:f.first,peer:f.last}]));
 for(const e of [...data.exercises,data.transferExercise])test(`verified source/boundary arithmetic: ${e.id} ${e.ip}/${e.prefix}`,()=>{
  const actual=calculate(e.ip,e.prefix);for(const [key,value] of Object.entries(e.expected))assert.equal(actual[key],value,key);
@@ -58,6 +58,18 @@ for(const m of data.missions)test(`VLSM ${m.id}: verified fixture and alternate 
   assert.deepEqual(tied.ranked.map(item=>item.id),['A','Z','M']);
   assert.deepEqual(tied.links,['M']);
   assert.equal(orderGrade(m,ids),true);
+  const counts=requirementFacts(m.requirements);
+  assert.equal(m.requirements.filter(r=>r.hosts===2).length,3);
+  assert.deepEqual(counts.uniqueHosts,[210,125,95,52,2]);
+  assert.equal(counts.hostsById.A,210);
+  assert.equal(counts.hosts,210);
+  assert.equal('L1' in counts.hostsById,true);
+  const missing=requirementFacts(m.requirements,'Z');
+  assert.equal(missing.hosts,null);
+  assert.equal('Z' in missing.hostsById,false);
+  assert.deepEqual(requirementFacts([]).uniqueHosts,[]);
+  assert.equal(requirementFacts([]).hosts,null);
+  assert.deepEqual(requirementFacts([m.requirements[0]]).uniqueHosts,[210]);
  }
 });
 test('capacity, overlap, alignment, outside parent, reserved/duplicate interfaces and insufficient parent are rejected specifically',()=>{

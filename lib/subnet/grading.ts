@@ -47,6 +47,12 @@ export function orderView(order: string[], requirements: { id: string }[]) {
   const items = order.filter((id) => known.has(id)).map((id, index) => ({ index, id }));
   return { items, firstTwo: items.slice(0, 2) };
 }
+/** Display only. A set keeps each usable count once. A record looks up one requirement by id. Grading is unchanged. */
+export function requirementFacts(requirements: { id: string; hosts: number }[], lookupId = "A") {
+  const hostsById: Record<string, number> = {};
+  for (const requirement of requirements) if (!(requirement.id in hostsById)) hostsById[requirement.id] = requirement.hosts;
+  return { hostsById, uniqueHosts: [...new Set(requirements.map((requirement) => requirement.hosts))], lookupId, hosts: lookupId in hostsById ? hostsById[lookupId] : null };
+}
 /** Display only. Ranked is a new list: usable count high to low, then id A to Z. Links are the filtered link ids. The input order is not changed. */
 export function rankedRequirements(requirements: { id: string; hosts: number; kind: string }[]) {
   const ranked = [...requirements].sort((a, b) => b.hosts - a.hosts || a.id.localeCompare(b.id));
