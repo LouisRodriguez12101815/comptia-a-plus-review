@@ -5,13 +5,15 @@ description: Audit and test server-authoritative multiplayer progression, eviden
 
 # Shared State Regression Tester
 
+Before applying this workflow, read the [workflow contract](../../../docs/skills/README.md#workflow-contract) for authorization, source authority, explicit loading and tool fallbacks. Apply only sections relevant to the requested scope.
+
 ## Scope and safeguards
 
 - Follow `AGENTS.md` and applicable nested instructions; read the relevant installed Next.js guide before application code changes.
 - Keep work within the authorized task. Inspect and report before modifying code unless implementation is requested; do not require another approval for work already authorized.
 - Preserve Guided Demo, Twilio integration, server-authoritative scoring, reconnects, duplicate protection and the daily cost guard. Add no services or dependencies without a task-specific reason.
 - Never request or expose secret values. Never log credentials, tokens, cookies or request headers. Record only sanitized operation names, status codes, failure reasons and request IDs; do not dump API payloads or raw provider errors.
-- Distinguish code inspection, automated tests, local browser testing, deployed browser testing and physical-device verification. Report unavailable tools and unperformed checks. Do not merge pull requests.
+- Distinguish code inspection, automated tests, local browser testing, deployed browser testing and physical-device verification. Report unavailable tools and unperformed checks. This workflow does not authorize shipping.
 
 ## Establish the target and state contract
 
@@ -39,8 +41,8 @@ Build a matrix with precondition, player action, server invariant, rendered outc
 - `scripts/verify-outage-ops-client.mjs` and `scripts/verify-outage-ops-host-evidence.mjs` are supplemental fixture/bridge checks; inspect their interception before citing results. They cannot replace the primary real-route walkthrough.
 - For an authorized configured dedicated test deployment, use `npm run test:e2e -- --url <dedicated-test-origin>` without `--mock-sync`, adding an available browser path if required. Obtain configuration through approved environment mechanisms, never secret values in chat. Do not run `scripts/setup-twilio-sync.mjs` merely to audit: provisioning mutates provider configuration.
 - Existing primary browser timeout coverage uses actual elapsed server time; injected-clock regression tests supplement it. A desktop/phone viewport pair is not two physical devices. Never claim laptop-and-phone success until both devices joined the same deployed room, discovered evidence, submitted and advanced.
-- For authorized fixes, run relevant regressions, `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`; rerun the affected complete browser trace.
+- For authorized shared-state application fixes, run relevant regressions, `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`; rerun the affected complete browser trace.
 
 ## Report
 
-Store detailed invariant matrices, sanitized reproduction steps and results in `docs/`; update the existing audit backlog only when documentation edits are authorized. For each finding record severity, route/mode, expected versus observed behavior, evidence, proposed correction, regression and remaining verification. Mark verified only when the reproduction stops failing in the named environment. Recommend one highest-impact fix with a concrete definition of done. A passing mock or deployment status does not close deployed-service or physical-device checks.
+Return detailed invariant matrices, sanitized reproduction steps and results inline for read-only assessment. Store them in `docs/` or update the existing audit backlog only when documentation edits are authorized. For each finding record severity, route/mode, expected versus observed behavior, evidence, proposed correction, regression and remaining verification. Mark verified only when the reproduction stops failing in the named environment. Recommend one highest-impact fix with a concrete definition of done. A passing mock or deployment status does not close deployed-service or physical-device checks.
