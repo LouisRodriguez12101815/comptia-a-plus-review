@@ -1064,7 +1064,7 @@
               "Analog-monitor connectors: VGA (D-sub 15-pin) and DVI-A. A multi-answer question asking for analog monitor connectors wants both.",
               "HDMI carries digital video plus audio; mini-HDMI is a smaller variant; both are fine for projectors.",
               "DisplayPort also carries digital audio and video, using a 20-pin connector.",
-              "DVI variants: DVI-A analog only, DVI-D digital only, DVI-I integrated (both). To connect DVI-A to DVI-D you need a cable terminated A on one end and D on the other.",
+              "DVI variants: DVI-A analog only, DVI-D digital only, DVI-I integrated (both). A passive cable cannot translate DVI-A analog video into DVI-D digital video or the reverse. Use a compatible active converter for the source-to-display direction, or a direct connection with matching signal formats. Check supported modes and power requirements.",
               "Thunderbolt combines DisplayPort video with PCIe data on one cable. Thunderbolt 2 uses the oval mini-DisplayPort shape; Thunderbolt 3 and 4 use USB-C.",
               "Lower monitor resolution frees bandwidth, so the maximum supported refresh rate tends to increase."
             ]
@@ -1538,5 +1538,213 @@
       }
     ],
     "concept": "networking-concepts"
+  },
+  {
+    "id": "core1-display-troubleshooting",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Troubleshoot Video, Projector, and Display Problems",
+    "chapter": "Core 1 · Objective 5.3",
+    "summary": "Use symptoms and controlled tests to isolate input, cable, image, audio, pixel, lamp, and thermal problems.",
+    "concept": "troubleshooting",
+    "sections": [
+      {
+        "id": "isolate-display-path",
+        "title": "Isolate the display path",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A+ Core 1 (220-1201), objective 5.3 asks you to diagnose video, projector, and display problems from a scenario. Start with the observed symptom, choose a test that separates possible causes, then use its result to decide what to do next."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Ask what changed and whether the fault affects one display, every display, one application, or even the display’s own menu. Record the symptom before changing settings.",
+              "Check power and open the monitor or projector menu. A visible menu shows that the device can display its own interface; it does not prove that the computer, input port, cable, or lamp brightness is healthy.",
+              "A computer that does not complete startup needs startup diagnosis too. A powered monitor saying “no signal” does not by itself prove the GPU has failed.",
+              "Test one variable at a time. Keep the source, display mode, and ports unchanged when substituting a known-good cable. Then try another output or another computer if needed. Record what stayed constant."
+            ]
+          },
+          {
+            "type": "code",
+            "text": "Computer output → cable / compatible converter → selected display input → image\nAudio output selection → supported connection → speaker / amplifier"
+          },
+          {
+            "type": "paragraph",
+            "text": "Prerequisite: Peripherals, Video Connectors, and USB (Core 1 Chapter 3). The existing Video signal lab practices signal compatibility; this lesson adds diagnosis."
+          }
+        ]
+      },
+      {
+        "id": "input-cables-adapters",
+        "title": "Input, cables, and adapter direction",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Incorrect input source: compare the physical socket label with the selected input. If the cable enters HDMI 1 while the projector is listening to HDMI 2, select HDMI 1 and retest before replacing hardware.",
+              "Physical cabling issues: inspect for loose connectors, damaged pins or strain. Reseat safely, then substitute a known-good compatible cable. Bypass a dock or adapter to isolate it when a direct connection is available.",
+              "Check that the computer is sending an image to the external display. In Windows, use Win+P and select Duplicate or Extend as intended. On systems with a discrete GPU, verify which output is active using the system documentation.",
+              "DVI-A carries analog video; DVI-D carries digital video. Changing the connector ends on a passive cable does not translate one signal into the other. DVI-I includes analog and digital connections, but the source must actually provide the signal used by the display.",
+              "An active converter contains electronics that translate signals. A DVI-D computer output feeding a DVI-A display input needs supported digital-to-analog conversion. The reverse path needs analog-to-digital conversion. Check the specified input, output, resolution, refresh rate, connectors, and power requirements; do not assume the adapter works backward.",
+              "Prefer a direct, compatible connection when possible. A USB-C-shaped port alone does not guarantee video support; check the source port and adapter specifications."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Matching plugs are not proof of compatibility. Never force connectors or remove pins. A passive DVI-A-to-DVI-D cable is not a solution to analog/digital incompatibility."
+          }
+        ]
+      },
+      {
+        "id": "clarity-size-distortion",
+        "title": "Fuzzy images, sizing, and distortion",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Fuzzy image: on a monitor, check the recommended/native resolution and supported refresh rate first. On a projector, compare its own menu or test pattern with computer text. If both are blurry, inspect focus, lens condition, projection distance, and placement using that model’s guide.",
+              "Sizing issues: identify whether the image is cropped, stretched, too small, or merely has large text. Compare source resolution, OS scaling, display aspect ratio, and projector zoom settings. A shape stretched sideways suggests an aspect-ratio mismatch rather than a failed lamp.",
+              "Distorted image: a trapezoid-shaped projection suggests placement or keystone geometry. Reposition the projector square to the screen where possible and use the documented correction controls. Excessive correction can reduce clarity.",
+              "Use only modes supported by the entire source/cable/adapter/display path. If the issue began after a mode change, return to a known-supported mode. Lower resolution can reduce bandwidth demand, but it does not guarantee an arbitrary refresh rate.",
+              "Retest readable text and a familiar shape after each change. Avoid using brightness or buying a lamp as a generic fix for blur or geometry."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "flashing-color",
+        "title": "Flashing screens and incorrect colors",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Flashing screen: check connection stability and a supported display mode. Try a known-good cable or a direct connection, holding other conditions steady. If the problem follows one cable, investigate that cable rather than declaring the monitor defective.",
+              "If flashing began immediately after a graphics-driver update and the hardware path has been checked, consider the manufacturer-supported driver rollback procedure. Document the previous version and retest. Timing is evidence for a theory, not proof.",
+              "Incorrect color display: compare the display’s own menu/test pattern with the source image. Inspect the cable and connectors, then compare source and display color settings or try a known-good source. A color fault on one connection is not enough to diagnose a damaged panel.",
+              "If the display’s self-test also looks wrong without the computer attached, consult the display service guide. Do not promise that a driver reinstall will fix an internal display fault."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dim-pixels-burn-in",
+        "title": "Dim images, pixel defects, and retained images",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Dim image: check brightness, power-saving settings, ambient light, and whether the display’s own menu is also dim. For a projector, check its documented image/power mode and placement. A progressively darkening lamp-based projector may need lamp service, but dimness alone does not prove lamp failure.",
+              "Dead pixels are dark points that stay off; stuck pixels or subpixels may stay bright or colored. Compare solid light and dark test screens or the manufacturer’s built-in display test. Record the position and number of persistent dots and compare the model’s support policy. A dot fixed on the panel across independent sources points toward the display.",
+              "Temporary image retention can fade after content changes or a manufacturer-directed rest/conditioning procedure. Burn-in describes lasting image wear or discoloration. A logo visible after an image changes is not, on its own, enough to tell which condition you have.",
+              "Identify the panel technology and model. Use only that manufacturer’s supported prevention or maintenance features. Avoid long static images and unnecessary high brightness; use an appropriate display-off timeout. Escalate a persistent afterimage rather than guaranteeing a pixel-refresh cure."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Model-specific examples: Dell’s Latitude 7320/7350 Detachable guidance recommends a powered-off recovery period for LCD retention. That is not a universal timer or a cure for permanent OLED wear. Dell’s pixel policy warns against pressure and unofficial pixel-fixing tools; warranty thresholds vary by model."
+          },
+          {
+            "type": "paragraph",
+            "text": "Do not press or rub pixels, dismantle a panel, or promise that software repairs a dead pixel. Panel replacement and warranty eligibility require the manufacturer’s assessment."
+          }
+        ]
+      },
+      {
+        "id": "projector-lamp-thermal",
+        "title": "Projector lamp faults and intermittent shutdown",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Burnt-out bulb: first establish that this is a lamp-based projector, not a laser/LED model. Check the selected input, image mute/lens cover where applicable, and the model’s lamp/status indications. Use its fault chart to distinguish a lamp fault from power, input, or thermal trouble.",
+              "Intermittent projector shutdown: record the elapsed time and warning indicators. Check whether a sleep timer explains the shutdown. If the manual identifies a thermal warning, stop use, allow cooling as directed, and inspect external ventilation and filter maintenance requirements. Do not keep restarting it to defeat protection.",
+              "Dim output that worsens over time can support investigating lamp age after settings and environment checks. Lamp hours are supporting evidence, not a universal failure threshold.",
+              "For a confirmed lamp-service requirement, obtain the exact approved part and model-specific instructions. Follow the documented shutdown/cool-down and power-disconnection procedure before authorized servicing. Never open a hot lamp compartment or disassemble a lamp."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Model-specific service example: Epson EX9270 / PowerLite 994F, 1290, and FH54+ guide CPD65864 says to turn off and unplug the projector and allow at least one hour for its lamp to cool. It warns about broken glass, mercury-containing lamps, and touching lamp glass. Use your own model’s guide; this is not a hands-on lamp-replacement exercise. Escalate damaged lamps or inaccessible ceiling-mounted units."
+          },
+          {
+            "type": "paragraph",
+            "text": "After an authorized replacement, secure the cover and reset the lamp timer only as the model guide directs for the new lamp. A timer reset alone does not restore an old lamp or repair a shutdown fault."
+          }
+        ]
+      },
+      {
+        "id": "display-audio",
+        "title": "Video works, but audio does not",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Confirm that the monitor/projector has speakers or an intended external audio system. A picture on a display without speakers does not imply there should be sound from it.",
+              "HDMI and DisplayPort can carry audio with video, but Windows must send audio to the intended output device. Check the selected output, mute, volume, and application output before replacing a working video cable.",
+              "VGA does not carry audio. When the image path uses VGA, plan a separate supported audio connection if sound is needed. Check converter specifications rather than assuming every video adapter also passes audio.",
+              "Test a known audio sample. If another output plays it, investigate routing and the intended speaker path; if neither works, broaden audio diagnosis. Verify both picture and sound after the change."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verify-document-transfer",
+        "title": "Verify the fix and apply it to a different case",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Retest the original symptom with the same application, display mode, and connection. Where intermittent behavior matters, observe a representative period rather than claiming a brief picture proves a permanent fix.",
+              "Write: symptom → test and held-constant conditions → observed result → supported decision → verification. Separate observations from assumptions.",
+              "Practice: open the Labs catalog and choose “Display-path isolation” (/labs/display-path-isolation). Use the equipment or paper route. Record first reasoning, hints, retries, and an unaided transfer answer separately; completion is not exam readiness."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Evidence",
+              "Useful next test",
+              "What it can tell you"
+            ],
+            "rows": [
+              [
+                "Menu works; source missing",
+                "Check selected input and source output",
+                "Separates input/routing from a completely dark display"
+              ],
+              [
+                "Flashing disappears with one cable change",
+                "Repeat with conditions held constant",
+                "Implicates the original cable path"
+              ],
+              [
+                "Picture works; audio goes to headset",
+                "Select intended speaker output and retest",
+                "Checks audio routing independently of video"
+              ],
+              [
+                "Dot remains in display self-test",
+                "Record and compare manufacturer policy",
+                "Supports panel-level escalation"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Transfer: a second computer and known-good direct cable still show the same dark dot during the display’s built-in test. Explain why changing the first computer’s driver is now a weak next step, what you would record, and which support policy you would consult."
+          },
+          {
+            "type": "paragraph",
+            "text": "Source basis: CompTIA 220-1201 V15 objectives document 4.0, section 5.3; Microsoft display/audio troubleshooting; Dell video connection, pixel, and LCD-retention guidance; Epson image and lamp guidance. Exact URLs, model limits, and verification evidence are recorded in docs/display-troubleshooting-verification.md."
+          }
+        ]
+      }
+    ]
   }
 ]

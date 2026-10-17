@@ -1589,15 +1589,15 @@
   {
     "id": "q-141",
     "topicId": "core1-ch3-peripherals",
-    "prompt": "How do you connect a DVI-A interface on a peripheral to a DVI-D interface on the computer?",
+    "prompt": "A computer has a digital-only DVI-D output and a display has an analog-only DVI-A input. What must you verify before connecting them?",
     "choices": [
-      "With a DVI-I cable",
-      "With a cable that is terminated on one end with a DVI-A connector and on the other end with a DVI-D connector",
-      "You wouldn't interconnect those two interfaces",
-      "With a standard DVI cable"
+      "That a passive cable has one DVI-D end and one DVI-A end",
+      "That an active digital-to-analog converter supports this source-to-display direction and the required modes",
+      "That a DVI-I cable will create the missing analog signal",
+      "That an analog-to-digital converter can simply be used backward"
     ],
     "answer": 1,
-    "explanation": "DVI-A (analog) and DVI-D (digital) are incompatible; you need a cable or adapter with the matching ends.",
+    "explanation": "DVI-D sends digital video; DVI-A needs analog video. An active digital-to-analog converter must support the computer-to-display direction, required resolution/refresh rate, connectors, and power. Passive matching ends or a DVI-I cable cannot create a missing signal, and the reverse converter is not interchangeable.",
     "weak": false
   },
   {
@@ -6437,5 +6437,83 @@
     "answer": 1,
     "explanation": "curl -I sends a HEAD request and prints the status line and headers. ping, nslookup, and ipconfig do not speak HTTP.",
     "weak": false
+  },
+  {
+    "id": "q-core1-display-01",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A projector displays its own menu and “HDMI 2: no signal.” A laptop is already duplicating its screen through a cable plugged into HDMI 1. What should you do first?",
+    "choices": [
+      "Replace the lamp",
+      "Select HDMI 1 on the projector",
+      "Reinstall the laptop OS",
+      "Replace the graphics card"
+    ],
+    "answer": 1,
+    "explanation": "Select HDMI 1: the selected input differs from the connected socket. The visible menu does not prove every component is healthy, but the mismatch is direct evidence for this low-impact check. Lamp, OS, and GPU replacement do not address that evidence."
+  },
+  {
+    "id": "q-core1-display-02",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A monitor flashes with cable A. With the same computer, ports, supported mode, and monitor, cable B works consistently. What is the best-supported conclusion?",
+    "choices": [
+      "The panel must be replaced",
+      "The resolution is definitely too high",
+      "The original cable path is implicated",
+      "Every graphics driver is faulty"
+    ],
+    "answer": 2,
+    "explanation": "The original cable path is implicated because cable substitution is the only stated change. Retest to confirm. This does not prove a panel fault, an unsupported mode, or a driver fault; those alternatives are weaker under the controlled conditions."
+  },
+  {
+    "id": "q-core1-display-03",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A projector has functioning built-in speakers and shows HDMI video. It is unmuted, but Windows is sending audio to a disconnected headset. What is the best next action?",
+    "choices": [
+      "Select the projector as the audio output and play a test sample",
+      "Buy a higher-resolution HDMI cable",
+      "Replace the lamp",
+      "Change the projector focus"
+    ],
+    "answer": 0,
+    "explanation": "Select the projector audio output and retest sound. The selected headset explains the evidence. HDMI can carry audio, but picture alone does not verify routing. Cable resolution, lamp, and focus do not correct the stated output selection."
+  },
+  {
+    "id": "q-core1-display-04",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A lamp-based projector repeatedly shuts down. Its own model manual identifies the observed warning as overheating, not a lamp fault. What should you do next?",
+    "choices": [
+      "Reset lamp hours and keep restarting",
+      "Disable the thermal protection",
+      "Replace the video cable before checking the warning",
+      "Stop use, allow documented cooling, and check external ventilation/filter guidance"
+    ],
+    "answer": 3,
+    "explanation": "Stop use and follow the model’s cooling and ventilation/filter guidance. The manual supplies the thermal interpretation; warning colors are not universal. Resetting hours does not repair cooling, disabling protection is inappropriate, and a video cable does not explain the documented thermal warning."
+  },
+  {
+    "id": "q-core1-display-05",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A dark dot remains at exactly the same screen position with a second computer, a known-good direct cable, and the monitor’s built-in test. What is the best next step?",
+    "choices": [
+      "Install the first computer’s graphics driver again",
+      "Record the dot position/count and consult the monitor’s pixel support policy",
+      "Press firmly on the dark dot",
+      "Promise that a pixel-refresh application will restore it"
+    ],
+    "answer": 1,
+    "explanation": "Record the dot position/count and consult the monitor’s pixel support policy. Persistence in the built-in test points toward the display rather than the first computer’s driver. Pressure can damage the panel, and software is not a supported guarantee for dead pixels. Replacement eligibility depends on the model and policy."
+  },
+  {
+    "id": "q-core1-display-06",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A projector’s own menu and a computer image are both uniformly blurry, while their outlines remain rectangular. The model guide permits manual focus. Which first check best matches the evidence?",
+    "choices": [
+      "Replace the computer OS",
+      "Increase speaker volume",
+      "Adjust focus and check documented projection distance",
+      "Assume permanent OLED burn-in"
+    ],
+    "answer": 2,
+    "explanation": "Adjust focus and check projection distance because even the projector’s own menu is blurry. The computer OS is not generating that menu. Volume concerns audio, and a retained static image is a different symptom. If focus fails, continue the documented optical/placement checks; this test does not prove a failed lamp."
   }
 ]
