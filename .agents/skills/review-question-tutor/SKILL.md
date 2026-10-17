@@ -1,43 +1,42 @@
 ---
 name: review-question-tutor
-description: "Use when the user shares review or quiz questions for a course chapter and wants them ingested, quizzed back and forth, explained, and turned into visualizations saved to a project."
+description: "Use when the user supplies chapter review questions and wants one-question-at-a-time tutoring, explanations and targeted visual support, inline or in authorized local files."
 ---
 
 # Review Question Tutor
 
-Use this skill when the user uploads or pastes review questions (for example from a textbook chapter) and wants to study them through conversation.
+Before applying this workflow, read the [workflow contract](../../../docs/skills/README.md#workflow-contract) for authorization, source authority, explicit loading and tool fallbacks. Apply only sections relevant to the requested scope.
 
-## 1. Ingest the questions
+Use this for conversational study of supplied review questions, not automatic site authoring or publishing.
 
-- Read the uploaded file in full (RTF, DOCX, PDF, or pasted text).
-- Save the questions and answer key to the attached project as `review/<chapter>-<topic>.md` using `project_write`. Keep the question numbering and choice letters. Put the answer key and a one-line rationale per answer at the bottom.
-- Tell the user in one or two sentences what was saved and how many questions there are. Do not paste the full set back into chat.
-- Clean obvious typos in the saved version, but never change the substance of a question or answer.
+## 1. Ingest and verify
+
+- Read the supplied file or pasted questions using available tools. If extraction is incomplete or unavailable, say which parts are unreadable; do not claim a full read.
+- Keep original numbering, choice identity and supplied keys distinguishable from verified answers. Flag disputed or ambiguous keys **before grading**. Use `certification-content-verifier` and applicable sources to resolve them; if unresolved, mark unverified, explain the uncertainty and defer scoring rather than grading against a questionable key. Do not silently change the source question.
+- Return a short intake summary inline by default. Save a question/answer record only when file writing is authorized, using supported local-file tools and an agreed destination. Suggested templates, not required existing paths: `review/<chapter>-<topic>.md` and `review/progress.md`.
+- State exactly what was read or saved. The `project_write` tool is not assumed available; no saved-file claim is permitted without an actual write. Do not ingest exam dumps or reproduce an unauthorized question collection.
 
 ## 2. Run the quiz back and forth
 
-- Ask one question at a time. Never send more than one question per turn.
-- Keep every conversational turn under 450 characters, including explanations. Put longer material in an artifact instead of chat.
-- Wait for the user's answer before grading. Grade in one of three ways: correct (confirm and add one reinforcing fact), partly correct (name the missing piece), or wrong (give the correct answer and the single reason it is correct, then move on).
-- If the user says "not sure" or "none", teach the core idea in one or two sentences before the next question. Do not just reveal the letter.
-- Track which concepts the user missed in this session and keep a short running list in the project doc or a `review/progress.md` file.
-- Cover the concepts in rotation so that topics that repeat across questions get revisited, not just the first occurrence.
+- Ask one question at a time. Never send more than one question per conversational turn, and wait for the user's answer before grading.
+- Keep normal tutoring turns under 450 characters. For a source dispute or explanation needing more room, give a brief summary and offer longer inline material or an authorized local note; do not require an artifact tool.
+- Grade verified questions as correct (one reinforcing fact), partly correct (name the missing piece), or wrong (explain the correct answer and why). Avoid answer-letter-only feedback.
+- If the user says "not sure" or "none", teach the core idea before continuing. Rotate recurring concepts rather than presenting every repetition consecutively.
+- Track misses, assistance and retries in conversation. Persist progress only when authorized; do not infer mastery from completion or score.
 
-## 3. Build visualizations for missed concepts
+## 3. Support missed concepts
 
-- When the user misses a concept twice, or asks for a diagram, build an interactive HTML visualization. Load the artifact-design skill first.
-- Each visualization should show the real mechanism (for example, frame flow across switches, or state changes over time), with controls the user can click through.
-- Publish it with the Artifact tool and also save it to the project under `visualizations/<topic>.html` with `project_write` so it can be referenced later.
-- Tell the user in one sentence what the visualization shows. Do not paste the URL unless asked.
+- When a concept is missed twice or a diagram is requested, provide a targeted explanation or accessible text diagram first. Use an interactive visual only when it helps the learning task and its creation is authorized.
+- Do not assume Artifact, `artifact-design`, publishing, or project-storage tools exist. With no such tools, use inline teaching; for an authorized HTML file, follow the repository's existing visual conventions in `docs/adding-visuals.md` and use available local tools. Use network-diagram guidance only for networking diagrams.
+- Verify the depicted mechanism and provide a text equivalent. Report rendering/browser checks only if actually performed. Saving HTML is not publishing it; publishing requires separate explicit authorization and an available tool.
 
 ## 4. Close out a topic
 
-- When a topic's questions are done, summarize in no more than five short lines: what the user got right, what to revisit, and which visualization covers it.
-- Ask at most one question about what to study next.
+- Summarize in at most five short lines: demonstrated correct answers, concepts to revisit, unresolved keys and any actual supporting visual/note.
+- Ask at most one question about what to study next. For site-content recommendations, follow `AGENTS.md`'s coverage report rule rather than treating a missed question as coverage evidence.
 
 ## Rules
 
-- Never grade a question before the user answers it.
-- Never write more than one question per turn.
-- Keep the 450-character limit for conversational turns.
-- Cite the source of any factual claim from the course material when you can, such as the chapter or question number.
+- Never grade before an answer, or score an unresolved key as verified.
+- Cite source chapter/question and primary evidence when resolving claims; distinguish objective scope from technical behavior.
+- This workflow does not authorize site edits, progress-file writes, dependency installation, commits, pushes, publication or merges.
