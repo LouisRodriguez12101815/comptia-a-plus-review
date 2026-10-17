@@ -35,5 +35,11 @@ export function equalSubnetCount(parent: number, child: number) {
   if (child < parent) throw new Error("A child prefix must be at least as long as its explicit parent prefix.");
   return 2 ** (child-parent);
 }
+/** Display only. Grading still trims and parses on its own; this does not accept or reject an answer. */
+export function cleanedTypedText(raw: string): { typed: string; cleaned: string; pieces: string[] } {
+  const cleaned = raw.trim();
+  const pieces = cleaned ? (cleaned.includes("/") ? cleaned.split("/") : cleaned.split(".")) : [];
+  return { typed: raw, cleaned, pieces };
+}
 export const overlaps = (a: {start:number;end:number}, b: {start:number;end:number}) => a.start <= b.end && b.start <= a.end;
 export const contained = (child: {start:number;end:number}, parent: {start:number;end:number}) => child.start >= parent.start && child.end <= parent.end;

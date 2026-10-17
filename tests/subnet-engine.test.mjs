@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {subnetData as data} from '../lib/subnet/catalog.ts';
-import {address,dotted,calculate,cidr,smallestPrefix,equalSubnetCount} from '../lib/subnet/ipv4.ts';
+import {address,dotted,calculate,cidr,cleanedTypedText,smallestPrefix,equalSubnetCount} from '../lib/subnet/ipv4.ts';
 import {designGrade,detectiveGrade,orderGrade} from '../lib/subnet/grading.ts';
 const fromFixture=m=>Object.fromEntries(m.verifiedFixture.map(f=>[f.id,{cidr:f.cidr,gateway:f.first,peer:f.last}]));
 for(const e of [...data.exercises,data.transferExercise])test(`verified source/boundary arithmetic: ${e.id} ${e.ip}/${e.prefix}`,()=>{
@@ -17,6 +17,15 @@ test('unsigned arithmetic includes high octets, /0 and upper IPv4 boundary witho
  for(const bad of ['172.16.9.256','-1.0.0.0','1.2.3','1.2.3.4.5','1e2.0.0.1','01.2.3.4','1.2.3.x'])assert.throws(()=>address(bad));
  for(const p of [-1,31,32,33,2.5,NaN])assert.throws(()=>calculate('1.2.3.4',p));
  assert.throws(()=>cidr('10.0.0.1/24'),/Misalignment/);assert.throws(()=>cidr('10.0.0.0/no'));
+});
+test('typed address text is trimmed then split without changing the grade',()=>{
+ assert.deepEqual(cleanedTypedText('192.168.1.1'),{typed:'192.168.1.1',cleaned:'192.168.1.1',pieces:['192','168','1','1']});
+ assert.deepEqual(cleanedTypedText('  192.168.1.1 '),{typed:'  192.168.1.1 ',cleaned:'192.168.1.1',pieces:['192','168','1','1']});
+ assert.deepEqual(cleanedTypedText(''),{typed:'',cleaned:'',pieces:[]});
+ assert.deepEqual(cleanedTypedText(' AB '),{typed:' AB ',cleaned:'AB',pieces:['AB']});
+ assert.deepEqual(cleanedTypedText('  10.0.0.0/24 '),{typed:'  10.0.0.0/24 ',cleaned:'10.0.0.0/24',pieces:['10.0.0.0','24']});
+ const exercise=data.exercises[0];
+ assert.equal(detectiveGrade(exercise,'bounds',{network:'  '+exercise.expected.network+' ',broadcast:exercise.expected.broadcast}).ok,true);
 });
 test('CIDR and equal-size subnet counts require explicit parent; no historical class inference',()=>{
  assert.equal(equalSubnetCount(8,24),65536);assert.equal(equalSubnetCount(24,27),8);assert.equal(equalSubnetCount(16,20),16);
