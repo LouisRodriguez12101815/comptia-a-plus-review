@@ -18,8 +18,9 @@ export default async function FlashcardsPage({
       <div>
         <h1 className="text-3xl font-semibold text-white">Flashcards</h1>
         <p className="mt-2 text-slate-400">
-          Flip a card, then mark known or still learning. Your exam focus and status are
-          saved in this browser only.
+          Flip a card, then rate how well you knew it: Again, Hard, Good, or Easy. Choose
+          Due for review to study only the cards scheduled for today. Your exam focus and
+          progress are saved in this browser only.
         </p>
       </div>
       {topic === "n10-ch9" && <MissionReturnLink />}

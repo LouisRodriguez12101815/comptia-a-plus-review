@@ -41,11 +41,22 @@ export function designGrade(mission: DesignMission, allocations: Record<string,A
   if(minimum>parent.size)errors.push({id:"parent",reason:`Insufficient parent space: minimum blocks need ${minimum} addresses, but the parent has ${parent.size}.`});
   return {ok:errors.length===0,errors,blocks,allocated,remaining:errors.length ? null : parent.size-allocated};
 }
+/** Display only. Index 0 is the first requirement; firstTwo is order[0:2]. Grading is unchanged. */
+export function orderView(order: string[], requirements: { id: string }[]) {
+  const known = new Set(requirements.map((item) => item.id));
+  const items = order.filter((id) => known.has(id)).map((id, index) => ({ index, id }));
+  return { items, firstTwo: items.slice(0, 2) };
+}
 /** Display only. A set keeps each usable count once. A record looks up one requirement by id. Grading is unchanged. */
 export function requirementFacts(requirements: { id: string; hosts: number }[], lookupId = "A") {
   const hostsById: Record<string, number> = {};
   for (const requirement of requirements) if (!(requirement.id in hostsById)) hostsById[requirement.id] = requirement.hosts;
   return { hostsById, uniqueHosts: [...new Set(requirements.map((requirement) => requirement.hosts))], lookupId, hosts: lookupId in hostsById ? hostsById[lookupId] : null };
+}
+/** Display only. Ranked is a new list: usable count high to low, then id A to Z. Links are the filtered link ids. The input order is not changed. */
+export function rankedRequirements(requirements: { id: string; hosts: number; kind: string }[]) {
+  const ranked = [...requirements].sort((a, b) => b.hosts - a.hosts || a.id.localeCompare(b.id));
+  return { ranked: ranked.map((item) => ({ id: item.id, hosts: item.hosts })), links: ranked.filter((item) => item.kind === "link").map((item) => item.id) };
 }
 export function orderGrade(mission: DesignMission, order:string[]) {
   return order.length===mission.requirements.length && new Set(order).size===order.length && order.every((id,i)=>{const r=mission.requirements.find(r=>r.id===id);const previous=mission.requirements.find(r=>r.id===order[i-1]);return !!r && (!previous||previous.hosts>=r.hosts);});
