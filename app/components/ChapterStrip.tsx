@@ -6,7 +6,9 @@ import { chapterTools } from "@/lib/chapter";
  * marked, and a tool with nothing in it yet is shown as unavailable instead of
  * leading to an empty page.
  */
-export function ChapterStrip({ topicId, current }: { topicId: string; current: "notes" }) {
+export type ChapterStep = "notes" | "flashcards" | "quiz";
+
+export function ChapterStrip({ topicId, current }: { topicId: string; current: ChapterStep }) {
   const tools = chapterTools(topicId);
   if (!tools.length) return null;
   return (
