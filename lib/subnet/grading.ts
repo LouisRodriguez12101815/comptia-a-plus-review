@@ -41,6 +41,12 @@ export function designGrade(mission: DesignMission, allocations: Record<string,A
   if(minimum>parent.size)errors.push({id:"parent",reason:`Insufficient parent space: minimum blocks need ${minimum} addresses, but the parent has ${parent.size}.`});
   return {ok:errors.length===0,errors,blocks,allocated,remaining:errors.length ? null : parent.size-allocated};
 }
+/** Display only. Index 0 is the first requirement; firstTwo is order[0:2]. Grading is unchanged. */
+export function orderView(order: string[], requirements: { id: string }[]) {
+  const known = new Set(requirements.map((item) => item.id));
+  const items = order.filter((id) => known.has(id)).map((id, index) => ({ index, id }));
+  return { items, firstTwo: items.slice(0, 2) };
+}
 export function orderGrade(mission: DesignMission, order:string[]) {
   return order.length===mission.requirements.length && new Set(order).size===order.length && order.every((id,i)=>{const r=mission.requirements.find(r=>r.id===id);const previous=mission.requirements.find(r=>r.id===order[i-1]);return !!r && (!previous||previous.hosts>=r.hosts);});
 }
