@@ -49,6 +49,7 @@ try {
       assert.equal(await correct.isEnabled(),false);
       const progress=page.getByRole('region',{name:'Practice progress',exact:true});
       const points=75+step*100;assert.match(await progress.textContent(),new RegExp(`Score ${points} `));
+      assert.ok((await progress.textContent()).includes(step + 1 === challenge.rounds.length ? 'Readiness: finished with a hint.' : 'Readiness: this run is not finished.'));
       await correct.evaluate(button=>button.click()); // Disabled button cannot award duplicate credit.
       assert.match(await progress.textContent(),new RegExp(`Score ${points} `));
       if(index){
@@ -73,6 +74,7 @@ try {
     await debrief.getByText(`Review: ${challenge.rounds[0].objective}`,{exact:true}).waitFor();
     assert.ok((await debrief.textContent()).includes('Hints 1'));
     assert.ok((await debrief.textContent()).includes(`Score math: ${challenge.rounds.length - 1} × 100 + 1 × 75 = ${(challenge.rounds.length - 1) * 100 + 75}`));
+    assert.ok((await debrief.textContent()).includes('Readiness: finished with a hint.'));
     assert.ok((await debrief.textContent()).includes(`${challenge.rounds.length-1}/${challenge.rounds.length} correct`));
     assert.equal(gameRequests.length,0,'Solo practice must not create rooms or call Twilio APIs');
     checks.push(`${challenge.id} (${phone?'phone / reduced motion':'desktop'}): every round completed, wrong choice and hint recovered, keyboard/tap, duplicate credit blocked, source-linked mistake debrief; ${index?'packet positions, frame addresses, TTL and transfer network':'native drag handlers, phone width, saved-session resume'}.`);

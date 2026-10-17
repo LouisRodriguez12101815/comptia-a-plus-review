@@ -44,6 +44,13 @@ export function summarize(session: Session, challenge: Challenge) {
     firstAttemptAccuracy: attempted ? Math.round(firstCorrect / attempted * 100) : null,
     recommendations: rows.filter((row) => row.misconceptions.length || row.hintUsed).map((row) => ({ objective: row.round.objective, sourceIds: row.round.sourceIds })) };
 }
+/** Display only. First true branch wins, as in Python if / elif / else. The clean branch is finished and hints === 0. Zero is a real count; null, "", and a non-number are not. Points are unchanged. */
+export function readinessLine(completed: unknown, total: unknown, hints: unknown): string {
+  const finished = typeof completed === "number" && typeof total === "number" && total > 0 && completed === total;
+  if (finished && typeof hints === "number" && hints === 0) return "finished with no hints.";
+  if (finished && typeof hints === "number" && hints > 0) return "finished with a hint.";
+  return "this run is not finished.";
+}
 /** Restore only a valid sequential session for this content revision; scores/accuracy are always recomputed. */
 export function restoreSession(raw: string | null, challenge: Challenge): Session | null {
   if (!raw) return null;
