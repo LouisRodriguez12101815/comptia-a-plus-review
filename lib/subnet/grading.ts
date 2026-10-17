@@ -47,6 +47,11 @@ export function orderView(order: string[], requirements: { id: string }[]) {
   const items = order.filter((id) => known.has(id)).map((id, index) => ({ index, id }));
   return { items, firstTwo: items.slice(0, 2) };
 }
+/** Display only. Ranked is a new list: usable count high to low, then id A to Z. Links are the filtered link ids. The input order is not changed. */
+export function rankedRequirements(requirements: { id: string; hosts: number; kind: string }[]) {
+  const ranked = [...requirements].sort((a, b) => b.hosts - a.hosts || a.id.localeCompare(b.id));
+  return { ranked: ranked.map((item) => ({ id: item.id, hosts: item.hosts })), links: ranked.filter((item) => item.kind === "link").map((item) => item.id) };
+}
 export function orderGrade(mission: DesignMission, order:string[]) {
   return order.length===mission.requirements.length && new Set(order).size===order.length && order.every((id,i)=>{const r=mission.requirements.find(r=>r.id===id);const previous=mission.requirements.find(r=>r.id===order[i-1]);return !!r && (!previous||previous.hosts>=r.hosts);});
 }
