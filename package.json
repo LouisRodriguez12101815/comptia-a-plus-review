@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test:game": "node --import ./tests/register.mjs --test --test-isolation=none tests/outage-ops-*.test.mjs",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "npm run test:game && npm run test:practice && npm run test:subnet && npm run test:content && npm run test:report",
+    "test": "npm run test:game && npm run test:practice && npm run test:subnet && npm run test:content && npm run test:report && npm run test:objectives",
     "test:e2e": "node --import ./tests/register.mjs scripts/verify-outage-ops-e2e.mjs",
     "test:practice": "node --import ./tests/register.mjs --test --test-isolation=none tests/practice-*.test.mjs",
     "test:e2e:practice": "node --import ./tests/register.mjs scripts/verify-practice-games.mjs",
@@ -19,7 +19,9 @@
     "check:content": "node scripts/check-content.mjs",
     "test:content": "node --test --test-isolation=none tests/content-check.test.mjs",
     "test:report": "node --import ./tests/register.mjs --test --test-isolation=none tests/report-issue.test.mjs",
-    "test:a11y": "node scripts/verify-a11y.mjs"
+    "test:a11y": "node scripts/verify-a11y.mjs",
+    "report:objectives": "node scripts/objective-coverage.mjs",
+    "test:objectives": "node --test --test-isolation=none tests/objectives.test.mjs"
   },
   "dependencies": {
     "next": "16.3.5",
