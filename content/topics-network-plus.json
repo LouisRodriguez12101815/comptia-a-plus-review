@@ -3667,5 +3667,367 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-ch21",
+    "group": "networking",
+    "concept": "security",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Common attacks and defensive decisions",
+    "chapter": "Network+ · Chapter 21",
+    "summary": "Recognize attack mechanisms, explain their impact, and choose layered defenses from evidence rather than a single symptom. Includes original scenarios and a paper incident exercise.",
+    "sections": [
+      {
+        "id": "scope",
+        "title": "What this chapter teaches",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "For Network+ N10-009, this chapter teaches objective 4.2 attack types and network impact. It also develops selected 4.1 concepts (physical security, deception, segmentation) and 4.3 defenses. It complements the existing security and risk notes; it is not a complete security configuration course."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Explain what the attacker changes: availability, address bindings, name resolution, trust, or human decisions.",
+              "Separate an observation from a conclusion; name a second piece of evidence that would test the theory.",
+              "Choose a control that interrupts that mechanism, then explain its limits."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Open Visuals in the chapter study strip for the source guide, links to related notes, the existing switch-learning visual, and the guided defensive exercise. The source guide records primary references; the supplied chapter is reference material, not an authoritative answer key."
+          }
+        ]
+      },
+      {
+        "id": "availability",
+        "title": "DoS, DDoS, reflection, and amplification",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A denial-of-service attack prevents legitimate use by exhausting bandwidth, connection state, processing capacity, or another resource. A distributed attack uses multiple sources. Reflection and amplification describe mechanisms, so an attack can be distributed, reflected, and amplified at the same time."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Mechanism",
+              "What happens",
+              "Impact and defensive decision"
+            ],
+            "rows": [
+              [
+                "Direct DoS / DDoS",
+                "One source or many sources send disruptive traffic or requests.",
+                "Legitimate traffic loses capacity; compare utilization and service logs, then coordinate filtering and upstream mitigation."
+              ],
+              [
+                "Reflection",
+                "Requests carry the victim’s spoofed source address; third-party servers reply to the victim.",
+                "Reply traffic reaches a host that did not request it; restrict exposed reflectors and apply source-address validation at network boundaries."
+              ],
+              [
+                "Amplification",
+                "A request induces a larger response or repeated responses.",
+                "A small attack input creates greater victim load. DNS and vulnerable NTP services can be abused; amplification is not a fixed number of megabytes."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Botnets can receive command-and-control (C2) instructions, but C2 also supports other malware activity. Neither a C2 connection nor an outage alone proves DDoS. A local firewall cannot recover an upstream link already saturated; involve the provider and incident-response team. Equipment theft or destructive firmware changes can also deny service, but they are mechanisms with different evidence, not proof of a packet flood."
+          }
+        ]
+      },
+      {
+        "id": "switching-attacks",
+        "title": "MAC flooding and VLAN hopping",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A switch normally learns source MAC addresses and forwards using destination MAC addresses. MAC flooding feeds many fabricated source addresses into the learning process to pressure the forwarding table. Unknown destinations may then be flooded within a VLAN, exposing traffic or consuming capacity. Exact overflow behavior depends on the switch; it does not guarantee access to every frame or every VLAN."
+          },
+          {
+            "type": "paragraph",
+            "text": "VLAN hopping attempts to cross a VLAN boundary without the intended routed policy. Switch spoofing abuses unwanted trunk negotiation. Double tagging can expose an inner VLAN tag after the outer native-VLAN tag is removed along a susceptible trunk path. It depends on topology and tagging behavior; it is not a universal two-way session or a synonym for all VLAN hopping."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Keep user ports explicitly in access mode and disable unwanted trunk negotiation where supported.",
+              "Use a native VLAN not assigned to user access ports, consistent trunk settings, and appropriate allowed-VLAN restrictions. Verify current platform guidance before changing tagging.",
+              "Port-security MAC limits can reduce address-table abuse; violation actions and support vary. MAC addresses can be spoofed, so an allowed address is not strong identity proof."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "arp",
+        "title": "ARP spoofing, poisoning, and MAC spoofing",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "ARP resolves an IPv4 address to a link-layer address on the local network. Forged ARP messages can claim that the gateway’s IP belongs to the attacker’s MAC. Spoofing describes the false claim; poisoning describes the resulting false cache binding. These terms commonly overlap."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Changing an interface to use somebody else’s MAC address is MAC spoofing. It is not, by itself, ARP poisoning. ARP poisoning requires false address-resolution information; the attacker can retain their own MAC while claiming the gateway’s IP."
+          },
+          {
+            "type": "paragraph",
+            "text": "The resulting traffic redirection can enable interception, manipulation, or a black hole. Compare the gateway binding with an approved baseline and correlate captures, switch-port data, and change records. Redundancy or a legitimate hardware replacement can also change a binding. Dynamic ARP inspection can validate messages using trusted bindings; DHCP snooping, static hosts, and trusted-port configuration need platform-specific planning."
+          }
+        ]
+      },
+      {
+        "id": "dns",
+        "title": "DNS spoofing and cache poisoning",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "DNS spoofing supplies a forged name-resolution answer. Cache poisoning leaves false data in a resolver cache, potentially redirecting later clients until the record is removed or expires. A redirected login can steal credentials or interrupt service. A single wrong answer does not establish where the bad information originated."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Compare the client’s resolver and response with the approved resolver, authoritative data, and the change history. Preserve evidence before clearing caches.",
+              "DNSSEC validation checks signed DNS data for origin authenticity and integrity when a valid trust chain exists. It does not encrypt DNS queries.",
+              "Encrypted DNS transports protect a connection to a resolver; they do not make a malicious resolver trustworthy. Validate TLS server identities at the application too."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rogue-services",
+        "title": "Rogue DHCP, rogue APs, and evil twins",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Threat",
+              "Distinguishing evidence",
+              "Impact / response"
+            ],
+            "rows": [
+              [
+                "Rogue DHCP",
+                "An unauthorized server supplies a lease with unexpected router or DNS options.",
+                "Clients can be redirected or disconnected. Identify the source port, compare approved scopes, and use correctly configured DHCP snooping where supported."
+              ],
+              [
+                "Rogue access point",
+                "An unauthorized AP provides wireless access, sometimes through an employee’s wired connection.",
+                "It can bypass admission policy. Compare inventory, controller data, and physical findings; remove or isolate it through the response process."
+              ],
+              [
+                "Evil twin",
+                "An AP impersonates a legitimate wireless network to attract clients.",
+                "It can intercept or redirect sessions. A matching SSID alone proves neither legitimacy nor an attack; legitimate APs share SSIDs. Verify inventory and authentication settings."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "An evil twin need not use a particular channel or connect to the victim organization’s wired LAN. A rogue AP need not copy an SSID. Use managed wireless profiles and server-certificate validation for enterprise authentication; do not teach users to ignore certificate errors. Wireless monitoring and physical investigation complement access controls."
+          }
+        ]
+      },
+      {
+        "id": "on-path",
+        "title": "On-path attacks and the evidence threshold",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An on-path attacker is positioned between communicating systems and can relay, observe, or alter traffic. Older sources call this man-in-the-middle. ARP poisoning, malicious DHCP settings, or an evil twin may create that position, but each requires supporting evidence. DNS redirection may instead take the client directly to an impostor service; that alone does not prove transparent relaying."
+          },
+          {
+            "type": "paragraph",
+            "text": "Correctly validated TLS provides confidentiality and integrity for application data across an untrusted path. It does not fix a compromised endpoint, stop all outages, or legitimize a certificate warning. Stolen credentials from one workstation could result from phishing, malware, credential reuse, or interception. Investigate rather than naming on-path solely from that symptom."
+          }
+        ]
+      },
+      {
+        "id": "social-engineering",
+        "title": "Social engineering and physical access",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "What the attacker exploits",
+              "Defensive response"
+            ],
+            "rows": [
+              [
+                "Phishing",
+                "A deceptive message or site prompts a credential entry, payment, or malicious download.",
+                "Verify through a separately known channel; report the message; combine training, filtering, updates, and phishing-resistant MFA where available."
+              ],
+              [
+                "Dumpster diving",
+                "Discarded documents or media disclose useful information.",
+                "Use approved secure disposal and protect waste containing sensitive material."
+              ],
+              [
+                "Shoulder surfing",
+                "Someone observes a screen, keypad, or other sensitive entry.",
+                "Shield the entry and screen; control positioning and access."
+              ],
+              [
+                "Tailgating",
+                "Someone follows an authorized person through a controlled entrance without independent authorization.",
+                "Use visitor procedures and individual access checks; report safely rather than physically confronting someone."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Cameras provide observation and evidence, while locks restrict physical access. Neither replaces a response process. Protect network closets, racks, and exposed jacks. Terms such as piggybacking are used inconsistently across sources; describe whether access was authorized instead of grading solely on that distinction."
+          }
+        ]
+      },
+      {
+        "id": "malware",
+        "title": "Malware, ransomware, and layered prevention",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Malware is software used for malicious activity. A virus attaches to a host file, a worm can propagate between systems, a Trojan misrepresents its purpose, and spyware or a keylogger can collect information. A bot may receive C2 instructions. These categories can overlap."
+          },
+          {
+            "type": "paragraph",
+            "text": "Ransomware may encrypt data for extortion and can be accompanied by data theft. Shared storage and reachable systems increase the blast radius. Report and contain according to the incident plan, preserve evidence, and use tested recovery sources; paying or running a cleaner is not a recovery guarantee."
+          },
+          {
+            "type": "paragraph",
+            "text": "Combine supported endpoint protection, patching, least privilege, segmentation, email/web controls, and tested protected backups. Product labels such as antivirus and antimalware do not prove exact capability. Phishing may involve no malware at all, so no generic endpoint tool guarantees protection against every deceptive message. Changing default passwords removes a known credential; it does not eliminate guessing attacks. Add suitable authentication and rate limiting."
+          }
+        ]
+      },
+      {
+        "id": "admission",
+        "title": "Hardening, admission, and key management",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Control",
+              "Use it for",
+              "Limit / validation"
+            ],
+            "rows": [
+              [
+                "Disable unused ports and services; change defaults",
+                "Reduce exposed functions and known credentials.",
+                "Keep required management access and a rollback path; update supported software and test authorized functions."
+              ],
+              [
+                "Port security / MAC filtering",
+                "Limit learned addresses or apply an address-based allowlist.",
+                "Address spoofing can bypass address-only identity assumptions."
+              ],
+              [
+                "802.1X",
+                "Control network admission using authenticated users or devices through an authenticator and authentication service.",
+                "Identity authentication alone does not establish current antivirus or patch status."
+              ],
+              [
+                "NAC posture policy",
+                "Restrict or remediate devices failing defined security checks.",
+                "Endpoint agents, supported products, licensing, and enforcement features vary; test noncompliant and compliant devices."
+              ],
+              [
+                "Key management",
+                "Protect secrets through generation, storage, controlled use, rotation, revocation, and retirement.",
+                "Do not share private keys or publish real credentials in a lab; follow the applicable certificate and device lifecycle."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "For example, admit an authenticated staff laptop to normal services only after the supported posture check passes; send a noncompliant device to limited remediation services. This is a policy example, not a runnable vendor configuration."
+          }
+        ]
+      },
+      {
+        "id": "rules-zones",
+        "title": "Security rules, zones, and segmentation",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An ACL evaluates traffic against rules such as source, destination, protocol, and transport port. On classic Cisco IOS interface IP ACLs, specify inbound or outbound relative to the interface; one ACL per interface, protocol, and direction is a platform rule, not a universal limit on every ACL. A list can be reused on multiple interfaces. Test rule order, permitted flows, denied flows, return traffic, and logging."
+          },
+          {
+            "type": "paragraph",
+            "text": "URL filtering controls access based on destinations or URL policy; content filtering evaluates categories or inspected content. Encryption and product capabilities affect visibility. Neither policy name proves all phishing or malware will be blocked."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Zone or device class",
+              "Reason to separate",
+              "Example permitted flow"
+            ],
+            "rows": [
+              [
+                "Guest / BYOD",
+                "Visitors and personally owned devices need different access from managed staff systems.",
+                "Internet access and required infrastructure only; deny internal administration by default."
+              ],
+              [
+                "IoT / IIoT",
+                "Small devices and industrial sensors can have constrained update and authentication options.",
+                "Only required collectors and management paths."
+              ],
+              [
+                "OT / ICS / SCADA",
+                "Operational technology controls physical processes; industrial control systems and supervisory monitoring have safety and availability constraints.",
+                "Approved control or telemetry paths through managed boundaries; coordinate changes with process owners."
+              ],
+              [
+                "Screened subnet",
+                "Place public-facing services between external and more sensitive internal zones.",
+                "Public HTTPS to a web service; only explicitly required backend access."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A VLAN separates broadcast domains. It does not automatically restrict routed traffic. Enforce zone policy with appropriate ACLs/firewalls; “trusted” describes a policy zone, not permission to skip identity checks. Never experiment on production industrial equipment."
+          }
+        ]
+      },
+      {
+        "id": "deception",
+        "title": "Honeypots and honeynets",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A honeypot is a monitored decoy designed to attract suspicious interaction. A honeynet groups decoy systems into a network. They can improve detection and investigation, but do not replace production controls. Isolate them from real assets, restrict outbound access, and assign monitoring and response ownership; do not put real secrets in a decoy."
+          }
+        ]
+      },
+      {
+        "id": "practice",
+        "title": "Practice and transfer",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use the chapter flashcards for distinctions, then answer the original scenario quiz with a reason for rejecting the closest alternative.",
+              "Open the chapter source guide through Visuals and follow the Defensive evidence triage link. The exercise uses fictional observations, progressive hints, a debrief, retries, and a changed transfer case.",
+              "Keep your first attempt, hints used, and revised answer separate. Completion and a correct quiz sitting do not establish exam readiness."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Sources and correction decisions are recorded in docs/network-plus-ch21-verification.md. Scope was checked against the official N10-009 V9 objectives document version 6.0, section 4, retrieved 2026-10-17. Official objectives describe scope; technical behavior is supported by the RFC, NIST, Cisco, and MITRE references linked from the study guide."
+          }
+        ]
+      }
+    ]
   }
 ]

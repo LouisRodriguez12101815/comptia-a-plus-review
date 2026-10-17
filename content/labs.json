@@ -1469,5 +1469,181 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "defensive-evidence-triage",
+    "title": "Defensive evidence triage",
+    "subtitle": "Network+ · Chapter 21 · Written exercise",
+    "summary": "Use fictional lease, ARP, and resolver evidence to choose a bounded response. No attack tools, live traffic, or production changes are required.",
+    "skills": [
+      "Evidence versus inference",
+      "Rogue DHCP",
+      "ARP bindings",
+      "Layered defense",
+      "Transfer check"
+    ],
+    "relatedTopicIds": [
+      "n10-ch21",
+      "n10-security",
+      "n10-risk-compliance",
+      "networking-dns-dhcp",
+      "n10-ch11"
+    ],
+    "sections": [
+      {
+        "id": "entry",
+        "title": "1. Set up your evidence sheet",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Paper alternative: copy the evidence and response columns onto paper. A text editor works too. Allow 20–30 minutes; no software installation, packet injection, passwords, or access to a real network is needed. Prerequisites: DHCP options, local ARP, DNS, and VLAN boundaries."
+          },
+          {
+            "type": "paragraph",
+            "text": "For each phase, write observation → theory → next discriminating check → least disruptive authorized action → validation. Record your first answer before opening the hints or reading the debrief below. This is self-checked written practice; the site does not score or save it."
+          }
+        ]
+      },
+      {
+        "id": "phase-one",
+        "title": "2. First decision: identify what changed",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Fictional record",
+              "Observation"
+            ],
+            "rows": [
+              [
+                "Approved baseline",
+                "Gateway 10.21.10.1; resolver 10.21.10.53; DHCP server 10.21.10.2."
+              ],
+              [
+                "Renewed client",
+                "A lease from 10.21.10.77 supplies gateway 10.21.10.77 and resolver 10.21.10.77."
+              ],
+              [
+                "Unaffected client",
+                "An older valid lease still uses the approved options."
+              ],
+              [
+                "Switch inventory",
+                "10.21.10.77 is traced to an unapproved desktop service on an access port."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Write your leading mechanism and the two strongest supporting observations. Choose one next check and an authorized containment action. Explain why this does not yet demonstrate ARP poisoning. Do not assume every record is malicious just because it differs from a baseline."
+          }
+        ]
+      },
+      {
+        "id": "phase-two",
+        "title": "3. New evidence: test a second theory",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Reveal after your first decision: the approved gateway’s ARP binding remains unchanged on both clients. A resolver log on the unauthorized service records a substituted payroll answer; there is no evidence that the approved resolver’s cache changed. The response lead authorizes isolating the unapproved service while retaining evidence."
+          },
+          {
+            "type": "paragraph",
+            "text": "Revise your theory. Is DNS response spoofing supported? Is poisoning of the approved resolver established? Describe how to restore approved client settings and verify an allowed service after containment. Name one thing still unknown; do not conclude an on-path relay occurred without evidence that traffic was forwarded."
+          }
+        ]
+      },
+      {
+        "id": "hints",
+        "title": "4. Progressive hints and a recoverable retry",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Hint 1: Compare the lease source and options before inspecting application symptoms. Which source supplied the route and resolver?",
+              "Hint 2: ARP poisoning needs a false IP-to-MAC binding; a changed DHCP router option is a different observation.",
+              "Hint 3: A false answer from an unauthorized resolver is not evidence that the approved resolver cached it. Choose controls for the demonstrated mechanism."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "If stuck, retain your first response, note the hint number, and retry with a different evidence-based explanation. Reading a debrief is assisted completion; do not overwrite your first attempt or call it mastery."
+          }
+        ]
+      },
+      {
+        "id": "debrief",
+        "title": "5. Debrief and response checks",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Evidence",
+              "Decision",
+              "Consequence / check"
+            ],
+            "rows": [
+              [
+                "Unauthorized leases change router and DNS options.",
+                "Treat rogue DHCP as the leading supported mechanism; preserve lease and source-port records, then isolate as authorized.",
+                "Prevent further offers while retaining evidence. Review DHCP snooping against approved server/relay paths before applying it."
+              ],
+              [
+                "Gateway ARP binding matches baseline.",
+                "Do not label this record ARP poisoning.",
+                "Use additional captures or change records if a competing theory remains."
+              ],
+              [
+                "Unauthorized resolver substitutes an answer.",
+                "DNS spoofing is supported; poisoning of the approved cache is unproven.",
+                "Restore approved settings through the response process, renew affected leases, and verify resolver, route, and legitimate application identity."
+              ],
+              [
+                "Containment complete.",
+                "Verify approved clients still receive valid leases and can reach required services.",
+                "Check both a permitted service and a prohibited path. Investigate any remaining symptoms separately."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "A strong response names the evidence, preserves it, constrains the action to authorization, and checks recovery. Clearing every cache or resetting every switch first destroys context and can introduce outages. Review the related DHCP, switch, security, and Chapter 21 notes below before retrying."
+          }
+        ]
+      },
+      {
+        "id": "transfer",
+        "title": "6. Transfer case: changed conditions",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A different client has an approved lease and uses the approved resolver. Captures now show forged ARP replies associating the real gateway IP with an unauthorized MAC. Write a fresh theory, the distinguishing evidence, a suitable control to evaluate, and one benign possibility you would rule out. Complete this without the earlier hints."
+          },
+          {
+            "type": "paragraph",
+            "text": "Self-check after answering: false ARP messages and a changed cache support ARP poisoning. Validate against gateway redundancy and authorized changes, locate the source, and evaluate dynamic ARP inspection with correct trusted bindings and static-host handling. DHCP snooping alone is not a promise that every ARP message is validated."
+          }
+        ]
+      },
+      {
+        "id": "acceptance",
+        "title": "7. Completion criteria",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Explain why changed lease options, false ARP bindings, and poisoned DNS cache entries are different evidence.",
+              "Choose a mechanism-specific control and state at least one limitation or deployment assumption.",
+              "Record first attempt, hint use, revision, and unaided transfer separately.",
+              "Verify recovery and boundary policy with allowed and denied cases; identify what the evidence still cannot establish."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "All addresses, logs, sequence, authorizations, and results in this exercise are authored assumptions. There is no real incident, attack execution, automated grading, or demonstrated learner-outcome measurement."
+          }
+        ]
+      }
+    ]
   }
 ]

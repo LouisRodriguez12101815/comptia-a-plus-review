@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 21: attack evidence and study guide</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--panel:#fff;--ink:#172033;--line:#64748b;--accent:#075985}
+@media(prefers-color-scheme:dark){:root{--bg:#0f172a;--panel:#172033;--ink:#f1f5f9;--line:#94a3b8;--accent:#7dd3fc}}
+:root[data-theme="dark"]{--bg:#0f172a;--panel:#172033;--ink:#f1f5f9;--line:#94a3b8;--accent:#7dd3fc}
+:root[data-theme="light"]{--bg:#f8fafc;--panel:#fff;--ink:#172033;--line:#64748b;--accent:#075985}
+*{box-sizing:border-box}body{margin:0;padding:20px;font:16px/1.6 system-ui,sans-serif;background:var(--bg);color:var(--ink)}main{max-width:900px;margin:auto}h1{line-height:1.2;font-size:clamp(1.6rem,5vw,2.4rem)}h2{font-size:1.3rem}a{color:var(--accent);text-underline-offset:3px;overflow-wrap:anywhere}a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}nav a{display:inline-block;min-height:44px;padding:8px}section,details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:20px 0}li{margin:8px 0}summary{cursor:pointer;min-height:44px;padding:8px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}.tile{border-left:4px solid var(--accent);padding:8px 12px}p{max-width:76ch}
+</style>
+</head>
+<body><main>
+<h1>Attack evidence: identify the layer that changed</h1>
+<p>Network+ N10-009 · Chapter 21. These are evidence distinctions, not proof from a single symptom. Read the lesson, then practice with the fictional written exercise.</p>
+<nav aria-label="Chapter study tools">
+<a href="/notes/n10-ch21" target="_top">Chapter lesson</a>
+<a href="/flashcards?topic=n10-ch21" target="_top">Flashcards</a>
+<a href="/quiz?topic=n10-ch21" target="_top">Scenario quiz</a>
+<a href="/labs/defensive-evidence-triage" target="_top">Defensive evidence triage exercise</a>
+</nav>
+<section aria-labelledby="layers"><h2 id="layers">Observation → mechanism → impact</h2><div class="grid">
+<div class="tile"><h3>Lease options</h3><p>An unauthorized DHCP service supplies a different router or resolver. Clients may lose service or take an attacker-controlled path.</p></div>
+<div class="tile"><h3>IP-to-MAC binding</h3><p>Forged ARP messages associate a legitimate IP with an attacker-controlled MAC. That supports ARP poisoning, not merely copying an interface address.</p></div>
+<div class="tile"><h3>Name-resolution data</h3><p>A forged DNS answer may redirect a connection. Establish where false data persists before identifying a particular poisoned cache.</p></div>
+<div class="tile"><h3>Wireless identity</h3><p>An evil twin impersonates a network. A duplicate SSID by itself is insufficient: legitimate APs can share it too.</p></div>
+</div></section>
+<section aria-labelledby="connections"><h2 id="connections">Connect this chapter to existing material</h2><ul>
+<li><a href="/notes/n10-security" target="_top">Encryption, certificates, and identity</a>: explain what authenticated encryption can protect.</li>
+<li><a href="/notes/n10-risk-compliance" target="_top">Risk, CIA, and defense in depth</a>: describe impact and layered controls.</li>
+<li><a href="/notes/networking-dns-dhcp" target="_top">DNS and DHCP foundations</a>: compare an observation with normal service behavior.</li>
+<li><a href="/notes/n10-ch11" target="_top">Switching and VLAN foundations</a>: review source learning and VLAN boundaries. Platform-specific statements in older notes still need their own review.</li>
+<li><a href="/visuals/ch11-switch-learning.html">Existing switch-learning visual</a>: send a frame, then reverse source and destination to observe learning. It models normal forwarding, not a MAC-flood attack.</li>
+<li><a href="/visuals/ch11-dot1q-tag.html">Existing 802.1Q tag visual</a>: locate the VLAN ID. It does not simulate double tagging or establish a defense by itself.</li>
+</ul></section>
+<section aria-labelledby="sources"><h2 id="sources">Primary references and scope</h2><p>Source links open a new tab. Reviewed 2026-10-17. The supplied RTF informed topic selection; the public lesson and practice are newly authored. Official objectives establish scope; standards and applicable technical guidance support behavior.</p><ul>
+<li><a href="https://lecbyo.files.cmp.optimizely.com/download/35a7403ab73211ef9dcda6f347fbf652" target="_blank" rel="noopener noreferrer">CompTIA N10-009 V9 objectives, document v6.0</a>, section 4 (PDF page 12): 4.2 attack families; selected 4.1 and 4.3 concepts.</li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc4732.html#section-3" target="_blank" rel="noopener noreferrer">RFC 4732 §3</a>: reflection/amplification and mitigation limits.</li>
+<li><a href="https://www.cisco.com/c/en/us/support/docs/switches/lan-switch-software/222274-troubleshoot-dynamic-arp-inspection-dai.html" target="_blank" rel="noopener noreferrer">Cisco DAI guide, ARP Poisoning</a>: false ARP bindings and inspection.</li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc2132.html#section-3.5" target="_blank" rel="noopener noreferrer">RFC 2132 §§3.5, 3.8</a>: DHCP router and DNS options.</li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc4033.html#section-4" target="_blank" rel="noopener noreferrer">RFC 4033 §§3–4</a>: DNSSEC authenticity/integrity, without confidentiality.</li>
+<li><a href="https://attack.mitre.org/techniques/T1557/004/" target="_blank" rel="noopener noreferrer">MITRE ATT&amp;CK T1557.004</a>: evil-twin impersonation.</li>
+<li><a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-83r1.pdf" target="_blank" rel="noopener noreferrer">NIST SP 800-83 Rev.1 §§2–3</a>: malware, phishing distinctions, layered prevention.</li>
+<li><a href="https://www.cisco.com/en/US/docs/ios-xml/ios/sec_data_acl/configuration/15-1mt/IP_Access_List_Overview.html" target="_blank" rel="noopener noreferrer">Cisco IOS 15.1 IP ACL overview</a>: direction-qualified platform limits.</li>
+<li><a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r3.pdf" target="_blank" rel="noopener noreferrer">NIST SP 800-82 Rev.3 §5.2</a>: OT physical and network security.</li>
+</ul><p>The repository’s docs/network-plus-ch21-verification.md records the complete claim-source map, candidate-key corrections, authored assumptions, and validation limits. Content coverage is not learner readiness.</p></section>
+<details><summary>Try one distinction before opening the exercise</summary><p>A new lease supplies an unauthorized resolver, but the approved resolver’s cache has not been inspected. You can investigate rogue DHCP; you cannot yet assert poisoning of the approved cache. Name the evidence you would collect next.</p></details>
+</main></body></html>
