@@ -1,6 +1,6 @@
-# Repository-local gameplay skills
+# Repository-local agent skills
 
-These four skills provide focused workflows for the CompTIA Review website. `SKILL.md` contains reusable instructions; detailed findings, source evidence, specifications and regression matrices belong in `docs/`, with the target commit, environment and date. Preserve existing audit records and distinguish historical findings from current reproductions.
+The four gameplay skills below provide focused workflows for the CompTIA Review website. `SKILL.md` contains reusable instructions; detailed findings, source evidence, specifications and regression matrices belong in `docs/`, with the target commit, environment and date. Preserve existing audit records and distinguish historical findings from current reproductions.
 
 Start with **content verification and shared-state regression testing**: correct answer keys and possible progression are prerequisites for new mechanics. Then design a bounded learning loop and the diagrams needed to support it.
 
@@ -10,6 +10,22 @@ Start with **content verification and shared-state regression testing**: correct
 | [shared-state-regression-tester](../../.agents/skills/shared-state-regression-tester/SKILL.md) | Trace real room APIs, canonical evidence, reconnects, scoring and recovery when multiplayer is stuck or needs regression coverage. |
 | [learning-challenge-designer](../../.agents/skills/learning-challenge-designer/SKILL.md) | Specify a complete solo learning loop, feedback, hints, retries and a different transfer problem after facts are verified. |
 | [network-diagram-designer](../../.agents/skills/network-diagram-designer/SKILL.md) | Specify source-backed, accessible topology, packet-path and VLSM allocation visuals that agree with evidence and validation. |
+
+### Content and project workflows
+
+These three skills are the ones used to add and maintain the site's study content. They were written for an AI assistant session where the author supplies notes and review questions; they contain no credentials or personal data.
+
+| Skill | Responsibility and trigger |
+| --- | --- |
+| [review-question-tutor](../../.agents/skills/review-question-tutor/SKILL.md) | Ingest a chapter's review questions, quiz the learner one question at a time, and build visualizations for missed concepts. Source of most `public/visuals/` pages. |
+| [content-fact-check](../../.agents/skills/content-fact-check/SKILL.md) | Run `npm run check:content`, review chapters against the official objectives and primary references, verify findings, fix confirmed errors and pin them in `scripts/content-facts.json`. See [content-fact-check.md](../content-fact-check.md). |
+| [comptia-site-pm](../../.agents/skills/comptia-site-pm/SKILL.md) | Pick the next item to build from the UI/UX audit backlog, and score pull requests against accessibility gates and audit alignment. |
+
+### Agents
+
+| Agent | Used by | Responsibility |
+| --- | --- | --- |
+| [chapter-fact-reviewer](../../.agents/agents/chapter-fact-reviewer.md) | content-fact-check | Report-only, one-per-chapter reviewer that classifies claims as ERROR, UNSUPPORTED, CONFLICT or BACKGROUND. Never edits the repo. |
 
 ## Copy/paste invocations
 
@@ -35,7 +51,7 @@ These examples authorize inspection and reports. When implementation is requeste
 
 A project-manager workflow, when available, coordinates scope, priorities, dependencies and delivery. A gameplay auditor traces what a learner can actually see and do from entry to debrief, identifies blockers, and ranks the next fix. These four skills supply specialist evidence for those workflows: source correctness, state invariants, challenge design and diagram accuracy.
 
-Neither a project-manager nor a gameplay-auditor skill is installed in this repository by this change. Use an available or user-provided workflow rather than assuming a callable integration. Existing gameplay findings are in [the audit backlog](../gameplay-audit.md); multiplayer architecture is in [the room guide](../outage-ops-multiplayer.md).
+The project-manager workflow is `comptia-site-pm` (above). No gameplay-auditor skill is installed. Use an available or user-provided workflow rather than assuming a callable integration. Existing gameplay findings are in [the audit backlog](../gameplay-audit.md); multiplayer architecture is in [the room guide](../outage-ops-multiplayer.md).
 
 ## Checks and their evidence limits
 
