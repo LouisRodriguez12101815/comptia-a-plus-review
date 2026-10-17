@@ -1589,15 +1589,15 @@
   {
     "id": "q-141",
     "topicId": "core1-ch3-peripherals",
-    "prompt": "A computer has a DVI-D output and a display accepts only analog DVI-A. Which solution can convert the signal?",
+    "prompt": "A computer has a digital-only DVI-D output and a display has an analog-only DVI-A input. What must you verify before connecting them?",
     "choices": [
-      "A passive DVI-I cable alone",
-      "A passive cable with DVI-D and DVI-A ends",
-      "An active digital-to-analog converter compatible with the source and display",
-      "A standard DVI-D cable alone"
+      "That a passive cable has one DVI-D end and one DVI-A end",
+      "That an active digital-to-analog converter supports this source-to-display direction and the required modes",
+      "That a DVI-I cable will create the missing analog signal",
+      "That an analog-to-digital converter can simply be used backward"
     ],
-    "answer": 2,
-    "explanation": "DVI-D provides only digital video; the analog display needs active digital-to-analog conversion in that direction. None of the passive cables listed creates an analog signal from a digital-only source.",
+    "answer": 1,
+    "explanation": "DVI-D sends digital video; DVI-A needs analog video. An active digital-to-analog converter must support the computer-to-display direction, required resolution/refresh rate, connectors, and power. Passive matching ends or a DVI-I cable cannot create a missing signal, and the reverse converter is not interchangeable.",
     "weak": false
   },
   {
@@ -6439,36 +6439,82 @@
     "weak": false
   },
   {
-    "id": "q-c1-display-01",
+    "id": "q-core1-display-01",
     "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "A monitor shows its OSD normally. Its input is HDMI 1, but the laptop cable is in HDMI 2. What should you do FIRST?",
+    "prompt": "A projector displays its own menu and “HDMI 2: no signal.” A laptop is already duplicating its screen through a cable plugged into HDMI 1. What should you do first?",
     "choices": [
-      "Reinstall the GPU driver",
-      "Select HDMI 2 in the monitor menu",
-      "Replace the LCD panel",
-      "Replace the projector lamp"
+      "Replace the lamp",
+      "Select HDMI 1 on the projector",
+      "Reinstall the laptop OS",
+      "Replace the graphics card"
     ],
     "answer": 1,
-    "explanation": "Select the input that matches the connected port. Reinstalling the driver or replacing the panel is premature when the input mismatch is visible. A monitor has no projector lamp to replace."
+    "explanation": "Select HDMI 1: the selected input differs from the connected socket. The visible menu does not prove every component is healthy, but the mismatch is direct evidence for this low-impact check. Lamp, OS, and GPU replacement do not address that evidence."
   },
   {
-    "id": "q-c1-display-02",
+    "id": "q-core1-display-02",
     "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "A display loses signal when its cable is moved. The input and supported display mode are correct. What is the BEST next test?",
+    "prompt": "A monitor flashes with cable A. With the same computer, ports, supported mode, and monitor, cable B works consistently. What is the best-supported conclusion?",
     "choices": [
-      "Raise the refresh rate",
-      "Reinstall Windows",
-      "Replace the graphics card",
-      "Reseat/inspect the connection and test a known-good compatible cable"
+      "The panel must be replaced",
+      "The resolution is definitely too high",
+      "The original cable path is implicated",
+      "Every graphics driver is faulty"
+    ],
+    "answer": 2,
+    "explanation": "The original cable path is implicated because cable substitution is the only stated change. Retest to confirm. This does not prove a panel fault, an unsupported mode, or a driver fault; those alternatives are weaker under the controlled conditions."
+  },
+  {
+    "id": "q-core1-display-03",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A projector has functioning built-in speakers and shows HDMI video. It is unmuted, but Windows is sending audio to a disconnected headset. What is the best next action?",
+    "choices": [
+      "Select the projector as the audio output and play a test sample",
+      "Buy a higher-resolution HDMI cable",
+      "Replace the lamp",
+      "Change the projector focus"
+    ],
+    "answer": 0,
+    "explanation": "Select the projector audio output and retest sound. The selected headset explains the evidence. HDMI can carry audio, but picture alone does not verify routing. Cable resolution, lamp, and focus do not correct the stated output selection."
+  },
+  {
+    "id": "q-core1-display-04",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A lamp-based projector repeatedly shuts down. Its own model manual identifies the observed warning as overheating, not a lamp fault. What should you do next?",
+    "choices": [
+      "Reset lamp hours and keep restarting",
+      "Disable the thermal protection",
+      "Replace the video cable before checking the warning",
+      "Stop use, allow documented cooling, and check external ventilation/filter guidance"
     ],
     "answer": 3,
-    "explanation": "Movement-related loss suggests a physical connection problem. Inspect and substitute the cable before costly GPU replacement or OS changes. Raising refresh can increase bandwidth demands and does not repair a loose connection."
+    "explanation": "Stop use and follow the model’s cooling and ventilation/filter guidance. The manual supplies the thermal interpretation; warning colors are not universal. Resetting hours does not repair cooling, disabling protection is inappropriate, and a video cable does not explain the documented thermal warning."
+  },
+  {
+    "id": "q-core1-display-05",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A dark dot remains at exactly the same screen position with a second computer, a known-good direct cable, and the monitor’s built-in test. What is the best next step?",
+    "choices": [
+      "Install the first computer’s graphics driver again",
+      "Record the dot position/count and consult the monitor’s pixel support policy",
+      "Press firmly on the dark dot",
+      "Promise that a pixel-refresh application will restore it"
+    ],
+    "answer": 1,
+    "explanation": "Record the dot position/count and consult the monitor’s pixel support policy. Persistence in the built-in test points toward the display rather than the first computer’s driver. Pressure can damage the panel, and software is not a supported guarantee for dead pixels. Replacement eligibility depends on the model and policy."
+  },
+  {
+    "id": "q-core1-display-06",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A projector’s own menu and a computer image are both uniformly blurry, while their outlines remain rectangular. The model guide permits manual focus. Which first check best matches the evidence?",
+    "choices": [
+      "Replace the computer OS",
+      "Increase speaker volume",
+      "Adjust focus and check documented projection distance",
+      "Assume permanent OLED burn-in"
+    ],
+    "answer": 2,
+    "explanation": "Adjust focus and check projection distance because even the projector’s own menu is blurry. The computer OS is not generating that menu. Volume concerns audio, and a retained static image is a different symptom. If focus fails, continue the documented optical/placement checks; this test does not prove a failed lamp."
   },
   {
     "id": "q-c1-display-03",
@@ -6487,22 +6533,6 @@
     "explanation": "A confirmed failed lamp requires approved service after safe shutdown and cooling. A timer reset only records usage; it cannot repair a lamp. Hot removal risks injury, and bypassing thermal protection is unsafe."
   },
   {
-    "id": "q-c1-display-04",
-    "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "Both a projector’s own menu and the slides are uniformly blurry. The laptop display is sharp. What is the BEST first adjustment?",
-    "choices": [
-      "Change the laptop audio output",
-      "Replace the HDMI cable immediately",
-      "Adjust projector focus",
-      "Increase keystone correction to its maximum"
-    ],
-    "answer": 2,
-    "explanation": "The projector’s own menu bypasses the laptop signal, so focus is the first adjustment for uniform optical blur. Audio is unrelated, and cable replacement lacks evidence. Excessive keystone may reduce sharpness rather than fix focus."
-  },
-  {
     "id": "q-c1-display-05",
     "topicId": "core1-display-troubleshooting",
     "examCodes": [
@@ -6517,22 +6547,6 @@
     ],
     "answer": 3,
     "explanation": "A persistent static outline suggests retention or burn-in. Panel care may help retention; permanent burn-in may require service. Cable and DNS changes cannot repair panel wear, and high-brightness static use can worsen it."
-  },
-  {
-    "id": "q-c1-display-06",
-    "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "One black dot stays at the same location in the monitor’s built-in solid-color tests with the computer disconnected. What is MOST likely?",
-    "choices": [
-      "A dead pixel or subpixel in the display",
-      "The wrong HDMI input",
-      "A corrupt Windows profile",
-      "An incorrect default audio device"
-    ],
-    "answer": 0,
-    "explanation": "A fixed dark defect in the display’s independent tests points to a dead pixel/subpixel. Source input, Windows, and audio settings do not control those internal test images. Document it and check the manufacturer pixel policy."
   },
   {
     "id": "q-c1-display-07",
@@ -6565,54 +6579,6 @@
     ],
     "answer": 2,
     "explanation": "The defect follows the original cable; damaged analog connections can affect color channels. Normal internal colors and a stable replacement cable argue against the panel. Audio drivers and lamps do not explain this cable-dependent tint."
-  },
-  {
-    "id": "q-c1-display-09",
-    "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "HDMI video works on a projector with functioning speakers. The computer’s audio output is still set to its internal speakers. What should you do FIRST?",
-    "choices": [
-      "Replace the HDMI port",
-      "Replace the projector bulb",
-      "Increase video resolution",
-      "Select the projector/HDMI audio output and verify mute/volume"
-    ],
-    "answer": 3,
-    "explanation": "The output route is the visible mismatch. Select it and check volume before replacing hardware. Resolution and bulb replacement do not correct audio routing, even though HDMI can carry audio and video."
-  },
-  {
-    "id": "q-c1-display-10",
-    "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "A backlit laptop LCD is very dim at full brightness. A flashlight reveals a faint desktop, and an external monitor is normal. What is the BEST conclusion?",
-    "choices": [
-      "The internal LCD illumination path needs further diagnosis",
-      "The GPU is conclusively dead",
-      "The laptop must have a failed CCFL inverter",
-      "The projector input is wrong"
-    ],
-    "answer": 0,
-    "explanation": "The LCD is forming an image but lacks normal illumination. Diagnose the backlight/power path; the test alone does not identify the exact part. Not all LCDs use CCFL inverters, and neither a dead GPU nor projector input follows from this evidence."
-  },
-  {
-    "id": "q-c1-display-11",
-    "topicId": "core1-display-troubleshooting",
-    "examCodes": [
-      "220-1201"
-    ],
-    "prompt": "A projector shuts off after warming up, shows a temperature warning, and has a dust-blocked intake. What is the BEST next action?",
-    "choices": [
-      "Reset the lamp timer",
-      "Allow cooling and restore airflow/filter condition according to its manual",
-      "Disable automatic thermal shutdown",
-      "Replace the video cable first"
-    ],
-    "answer": 1,
-    "explanation": "Warm-up timing plus a thermal warning and obstruction supports cooling-path investigation. A timer reset and video cable swap do not address overheating. Bypassing the protection risks damage; persistent faults or a failed fan require service."
   },
   {
     "id": "q-c1-display-12",
