@@ -3,6 +3,7 @@ import { focusForTopic } from "@/lib/chapter";
 import { getTopic } from "@/lib/content";
 import { MissionReturnLink } from "@/app/components/practice/MissionReturnLink";
 import { FlashcardDeck } from "@/app/components/FlashcardDeck";
+import { ChapterStrip } from "@/app/components/ChapterStrip";
 
 export const metadata = { title: "Flashcards | CompTIA Review" };
 
@@ -23,6 +24,7 @@ export default async function FlashcardsPage({
           progress are saved in this browser only.
         </p>
       </div>
+      {chapter && <ChapterStrip topicId={chapter.id} current="flashcards" />}
       {topic === "n10-ch9" && <MissionReturnLink />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       <FlashcardDeck initialTopic={topic ?? "all"} />

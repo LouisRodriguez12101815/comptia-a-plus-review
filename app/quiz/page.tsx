@@ -2,6 +2,7 @@ import { EnsureTopicFocus } from "@/app/components/EnsureTopicFocus";
 import { focusForTopic } from "@/lib/chapter";
 import { getTopic } from "@/lib/content";
 import { QuizRunner } from "@/app/components/QuizRunner";
+import { ChapterStrip } from "@/app/components/ChapterStrip";
 
 export const metadata = { title: "Practice quiz | CompTIA Review" };
 
@@ -21,6 +22,7 @@ export default async function QuizPage({
           exam focus, check each answer, and review every miss.
         </p>
       </div>
+      {chapter && <ChapterStrip topicId={chapter.id} current="quiz" />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       <QuizRunner initialTopic={topic ?? "all"} />
     </div>
