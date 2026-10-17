@@ -8,9 +8,13 @@ import { getFlashcards, getTopics } from "@/lib/content";
 import {
   getProgressSnapshot,
   getServerProgressSnapshot,
-  markCard,
+  rateCard,
   subscribeProgress,
 } from "@/lib/progress";
+import { gradeLabels, isDue, type ReviewGrade } from "@/lib/study/schedule";
+
+const DUE_MODE = "due";
+const grades: ReviewGrade[] = ["again", "hard", "good", "easy"];
 import type { Flashcard, StudyFocus } from "@/lib/types";
 
 function shuffle<T>(items: T[]) {
@@ -37,16 +41,24 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
   const [flipped, setFlipped] = useState(false);
   const [order, setOrder] = useState<string[]>([]);
 
-  const deck = useMemo(() => getFlashcards(topicId, activeFocus), [topicId, activeFocus]);
+  const deck = useMemo(
+    () => getFlashcards(topicId === DUE_MODE ? "all" : topicId, activeFocus),
+    [topicId, activeFocus],
+  );
+  const dueCards = useMemo(
+    () => getFlashcards("all", activeFocus).filter((item) => isDue(progress.schedules[item.id])),
+    [activeFocus, progress.schedules],
+  );
   const topicOptions = getTopics(activeFocus);
   const cards = useMemo(() => {
     const byId = new Map(deck.map((card) => [card.id, card]));
     const ordered = order
       .map((id) => byId.get(id))
       .filter((card): card is Flashcard => Boolean(card));
+    if (topicId === DUE_MODE) return ordered;
     const orderedIds = new Set(ordered.map((card) => card.id));
     return [...ordered, ...deck.filter((card) => !orderedIds.has(card.id))];
-  }, [deck, order]);
+  }, [deck, order, topicId]);
   const currentIndex = cards.length ? index % cards.length : 0;
   const card = cards[currentIndex];
   const knownCount = cards.filter((item) => progress.knownCards[item.id]).length;
@@ -75,13 +87,16 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
           aria-label="Choose a flashcard deck"
           value={topicId}
           onChange={(event) => {
-            setTopicId(event.target.value);
+            const next = event.target.value;
+            setTopicId(next);
             resetDeck();
+            if (next === DUE_MODE) setOrder(dueCards.map((item) => item.id));
           }}
           className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"
         >
           <option value="all">All focused cards</option>
           <option value="weak">Weak areas only</option>
+          <option value={DUE_MODE}>Due for review ({dueCards.length})</option>
           {topicOptions.map((topic) => (
             <option key={topic.id} value={topic.id}>
               {topic.chapter}: {topic.title}
@@ -104,12 +119,15 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
 
       {!card ? (
         <p className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-slate-400">
-          No cards are tagged for this combination yet. Choose All focused cards or switch exam focus.
+          {topicId === DUE_MODE
+            ? "Nothing is due right now. Come back later, or study another deck."
+            : "No cards are tagged for this combination yet. Choose All focused cards or switch exam focus."}
         </p>
       ) : (
         <>
           <p className="text-sm text-slate-400">
             Card {currentIndex + 1} of {cards.length} · Marked known on this device: {knownCount}
+            {topicId === DUE_MODE ? " · Review session" : ""}
           </p>
 
           <button
@@ -128,32 +146,46 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
             <p className="mt-3 text-xl leading-relaxed text-white">
               {flipped ? card.back : card.front}
             </p>
-            <p className="mt-8 text-sm text-slate-500">Tap to flip</p>
+            <p className="mt-8 text-sm text-slate-500">
+              {flipped ? "Rate how well you knew it below" : "Tap to flip, then rate yourself"}
+            </p>
           </button>
 
+          {flipped ? (
+            <div className="space-y-2">
+              <p className="text-sm text-slate-400">How well did you know it? Each rating sets when it comes back.</p>
+              <div className="flex flex-wrap gap-2">
+                {grades.map((grade) => {
+                  return (
+                    <button
+                      key={grade}
+                      type="button"
+                      onClick={() => {
+                        rateCard(card.id, grade);
+                        setFlipped(false);
+                        if (topicId === DUE_MODE) {
+                          setOrder((prev) => prev.filter((id) => id !== card.id));
+                        } else {
+                          setIndex((value) => (value + 1) % cards.length);
+                        }
+                      }}
+                      className={
+                        grade === "good" || grade === "easy"
+                          ? "rounded-full bg-teal-500 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-teal-400"
+                          : "rounded-full border border-slate-600 px-4 py-2 text-sm hover:border-orange-400"
+                      }
+                    >
+                      {gradeLabels[grade]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">Flip the card to rate it.</p>
+          )}
+
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                markCard(card.id, false);
-                setFlipped(false);
-                setIndex((value) => (value + 1) % cards.length);
-              }}
-              className="rounded-full border border-slate-600 px-4 py-2 text-sm hover:border-orange-400"
-            >
-              Still learning
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                markCard(card.id, true);
-                setFlipped(false);
-                setIndex((value) => (value + 1) % cards.length);
-              }}
-              className="rounded-full bg-teal-500 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-teal-400"
-            >
-              I know this
-            </button>
             <button
               type="button"
               onClick={() => {

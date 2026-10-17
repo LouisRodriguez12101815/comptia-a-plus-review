@@ -1,5 +1,6 @@
 import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "@/lib/exams";
 import type { StudyFocus } from "@/lib/types";
+import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from "@/lib/study/schedule";
 
 export type QuizAttempt = {
   topicId: string;
@@ -14,6 +15,8 @@ export type Progress = {
   knownCards: Record<string, boolean>;
   unknownCards: Record<string, boolean>;
   quizAttempts: QuizAttempt[];
+  /** FSRS schedule per flashcard id (see lib/study/schedule.ts). */
+  schedules: Record<string, StoredSchedule>;
 };
 
 const KEY = "comptia-a-plus-review-progress-v1";
@@ -25,6 +28,7 @@ function createEmptyProgress(): Progress {
     knownCards: {},
     unknownCards: {},
     quizAttempts: [],
+    schedules: {},
   };
 }
 
@@ -43,6 +47,7 @@ function parseProgress(raw: string | null): Progress {
       knownCards: parsed.knownCards ?? {},
       unknownCards: parsed.unknownCards ?? {},
       quizAttempts: parsed.quizAttempts ?? [],
+      schedules: parsed.schedules ?? {},
     };
   } catch {
     return createEmptyProgress();
@@ -121,4 +126,29 @@ export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
   };
   saveProgress(next);
   return next;
+}
+
+/** Record a review grade: updates the FSRS schedule and the known/unknown counts. */
+export function rateCard(cardId: string, grade: ReviewGrade, now: Date = new Date()) {
+  const current = loadProgress();
+  const schedules = {
+    ...current.schedules,
+    [cardId]: reviewCard(current.schedules[cardId], grade, now),
+  };
+  const next = { ...current, schedules, ...markedCounts(current, cardId, isKnownGrade(grade)) };
+  saveProgress(next);
+  return next;
+}
+
+function markedCounts(current: Progress, cardId: string, known: boolean) {
+  const knownCards = { ...current.knownCards };
+  const unknownCards = { ...current.unknownCards };
+  if (known) {
+    knownCards[cardId] = true;
+    delete unknownCards[cardId];
+  } else {
+    unknownCards[cardId] = true;
+    delete knownCards[cardId];
+  }
+  return { knownCards, unknownCards };
 }
