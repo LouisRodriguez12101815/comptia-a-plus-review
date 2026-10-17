@@ -168,6 +168,7 @@ var G=[
  {l:'DVI-D source → DVI-A display',strategy:'active',direction:'digital-analog',w:'DVI-D sends digital video; DVI-A needs analog video. Use supported active digital-to-analog conversion, not merely matching cable ends.'},
  {l:'DVI-A source → DVI-D display',strategy:'active',direction:'analog-digital',w:'DVI-A sends analog video; DVI-D needs digital video. Use supported active analog-to-digital conversion. A converter for the opposite direction is not interchangeable.'},
  {l:'DVI-D source → DVI-D display',strategy:'direct',direction:'none',w:'Both ends use digital DVI-D. A compatible direct DVI-D cable needs no signal conversion. Check the modes supported by the whole path.'}];
+G.push({l:'Analog-capable DVI-I source → DVI-A display',strategy:'direct',direction:'none',w:'The source explicitly supplies analog through DVI-I. A compatible passive analog cable can route that existing signal to DVI-A; it does not convert a digital-only source. Check the connector/pin compatibility and supported mode.'});
 var gi=0,p1=null,p2=null;
 function tg(el,key,options){options.forEach(function(v){var b=document.createElement('button');b.type='button';b.textContent=v[1];b.setAttribute('aria-pressed','false');b.onclick=function(){if(key===1)p1=v[0];else p2=v[0];Array.prototype.forEach.call(el.children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')})};el.appendChild(b)})}
 tg($('e1'),1,[['passive','Passive cable with unlike signal ends'],['active','Compatible active converter'],['direct','Direct cable with matching signals']]);

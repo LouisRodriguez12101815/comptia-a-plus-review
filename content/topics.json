@@ -1556,7 +1556,7 @@
         "blocks": [
           {
             "type": "paragraph",
-            "text": "A+ Core 1 (220-1201), objective 5.3 asks you to diagnose video, projector, and display problems from a scenario. Start with the observed symptom, choose a test that separates possible causes, then use its result to decide what to do next."
+            "text": "A+ Core 1 (220-1201), objective 5.3 asks you to diagnose video, projector, and display problems from a scenario. Start with the observed symptom, choose a test that separates possible causes, then use its result to decide what to do next. Domain 5.0 carries 28% of the exam; that percentage is not a separate weight for objective 5.3."
           },
           {
             "type": "bullets",
@@ -1564,7 +1564,8 @@
               "Ask what changed and whether the fault affects one display, every display, one application, or even the display’s own menu. Record the symptom before changing settings.",
               "Check power and open the monitor or projector menu. A visible menu shows that the device can display its own interface; it does not prove that the computer, input port, cable, or lamp brightness is healthy.",
               "A computer that does not complete startup needs startup diagnosis too. A powered monitor saying “no signal” does not by itself prove the GPU has failed.",
-              "Test one variable at a time. Keep the source, display mode, and ports unchanged when substituting a known-good cable. Then try another output or another computer if needed. Record what stayed constant."
+              "Test one variable at a time. Keep the source, display mode, and ports unchanged when substituting a known-good cable. Then try another output or another computer if needed. Record what stayed constant.",
+              "Use the manufacturer’s built-in diagnostic pattern to isolate the display from the computer path. A persistent defect in an independent test supports display-level service; a clean test shifts investigation to the source path but does not rule out an intermittent display fault."
             ]
           },
           {
@@ -1608,6 +1609,7 @@
             "items": [
               "Fuzzy image: on a monitor, check the recommended/native resolution and supported refresh rate first. On a projector, compare its own menu or test pattern with computer text. If both are blurry, inspect focus, lens condition, projection distance, and placement using that model’s guide.",
               "Sizing issues: identify whether the image is cropped, stretched, too small, or merely has large text. Compare source resolution, OS scaling, display aspect ratio, and projector zoom settings. A shape stretched sideways suggests an aspect-ratio mismatch rather than a failed lamp.",
+              "Match each control to the symptom: distance and optical zoom for a small projected frame; fit-to-screen or overscan/display-area controls for cropped edges where the model supports them; aspect ratio for stretched shapes; desktop scaling for text/UI size. Names and availability differ by model. Focus changes sharpness, not cropping.",
               "Distorted image: a trapezoid-shaped projection suggests placement or keystone geometry. Reposition the projector square to the screen where possible and use the documented correction controls. Excessive correction can reduce clarity.",
               "Use only modes supported by the entire source/cable/adapter/display path. If the issue began after a mode change, return to a known-supported mode. Lower resolution can reduce bandwidth demand, but it does not guarantee an arbitrary refresh rate.",
               "Retest readable text and a familiar shape after each change. Avoid using brightness or buying a lamp as a generic fix for blur or geometry."
@@ -1624,6 +1626,7 @@
             "items": [
               "Flashing screen: check connection stability and a supported display mode. Try a known-good cable or a direct connection, holding other conditions steady. If the problem follows one cable, investigate that cable rather than declaring the monitor defective.",
               "If flashing began immediately after a graphics-driver update and the hardware path has been checked, consider the manufacturer-supported driver rollback procedure. Document the previous version and retest. Timing is evidence for a theory, not proof.",
+              "For Windows-only flicker, compare Task Manager with the rest of the screen. Microsoft’s diagnostic guidance makes an incompatible app more likely when Task Manager stays stable while other windows flash; when it flickers too, investigate the display driver. These are diagnostic clues, not proof that hardware is healthy.",
               "Incorrect color display: compare the display’s own menu/test pattern with the source image. Inspect the cable and connectors, then compare source and display color settings or try a known-good source. A color fault on one connection is not enough to diagnose a damaged panel.",
               "If the display’s self-test also looks wrong without the computer attached, consult the display service guide. Do not promise that a driver reinstall will fix an internal display fault."
             ]
@@ -1706,32 +1709,36 @@
             ]
           },
           {
+            "type": "paragraph",
+            "text": "Worked examples: compare the evidence with the proposed action and verification. Then attempt the separate guided lab and its changed audio problem before reading its feedback."
+          },
+          {
             "type": "table",
             "headers": [
-              "Evidence",
-              "Useful next test",
-              "What it can tell you"
+              "Scenario and evidence",
+              "Action and explanation",
+              "Verify"
             ],
             "rows": [
               [
-                "Menu works; source missing",
-                "Check selected input and source output",
-                "Separates input/routing from a completely dark display"
+                "Conference-room screen: its menu is visible, laptop is connected to HDMI 2, input says HDMI 1.",
+                "Select HDMI 2. The evidence supports wrong input before driver reinstall or lamp replacement.",
+                "Show a slide and confirm Duplicate/Extend matches the meeting need."
               ],
               [
-                "Flashing disappears with one cable change",
-                "Repeat with conditions held constant",
-                "Implicates the original cable path"
+                "Projector text and its own menu are blurry; laptop screen is sharp.",
+                "Adjust projector focus and check placement/lens. An internal menu is generated without the laptop, so source resolution is not the first suspect.",
+                "Read text at center and corners; use native resolution for source slides afterward."
               ],
               [
-                "Picture works; audio goes to headset",
-                "Select intended speaker output and retest",
-                "Checks audio routing independently of video"
+                "Projector stops after 12 minutes with a temperature warning and a blocked intake.",
+                "Let it cool and clear the obstruction per the manual. Check filter/fan operation; do not defeat the thermal cutoff.",
+                "Run longer than 12 minutes in normal conditions; escalate if warnings return."
               ],
               [
-                "Dot remains in display self-test",
-                "Record and compare manufacturer policy",
-                "Supports panel-level escalation"
+                "Direct HDMI is stable, but the same laptop and monitor flash through a dock.",
+                "Check dock power and substitute its cable/adapter one at a time. Stable direct output points to the removed path, not a proven GPU failure.",
+                "Retest the intended resolution/refresh through the repaired dock."
               ]
             ]
           },
@@ -1741,7 +1748,7 @@
           },
           {
             "type": "paragraph",
-            "text": "Source basis: CompTIA 220-1201 V15 objectives document 4.0, section 5.3; Microsoft display/audio troubleshooting; Dell video connection, pixel, and LCD-retention guidance; Epson image and lamp guidance. Exact URLs, model limits, and verification evidence are recorded in docs/display-troubleshooting-verification.md."
+            "text": "Source basis: CompTIA 220-1201 V15 objectives document 4.0, section 5.3; Microsoft display/audio/flicker guidance; Dell display diagnostics, connection, pixel, and retention guidance; Epson image and lamp guidance; Samsung image-sizing guidance. Exact URLs, reconciliation choices, and current validation are recorded in docs/display-troubleshooting-reconciliation.md. Historical verification records remain available separately."
           }
         ]
       }

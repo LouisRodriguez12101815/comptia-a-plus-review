@@ -1,3 +1,5 @@
+> Historical record for the PR #61 package merged into main at 574a21b. Counts and PR status below describe that earlier review. See [the reconciliation record](display-troubleshooting-reconciliation.md) for current content, PR status, decisions, and validation.
+
 # Display troubleshooting content verification
 
 Reviewed on October 17, 2026 in the managed Linux workspace, branch `work`, base commit `70fdac402a73850bd017c691c9262709e30bba78`. This record describes the content package based on that commit, not a deployed release. The initial branch was `work`; the package is prepared for review on `content/core1-display-troubleshooting-review`. The initial working tree was clean. Objective 5.3 was still `missing` with no topic mapping; no earlier implementation was duplicated.
