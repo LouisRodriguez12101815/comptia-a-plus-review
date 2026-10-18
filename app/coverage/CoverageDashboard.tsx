@@ -62,6 +62,7 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
               <p className="mt-3 text-2xl font-semibold">~{stats.weighted}% <span className="text-sm font-normal text-slate-300">weighted coverage</span></p>
               <p className="mt-2 text-sm text-slate-300">{stats.covered} covered · {stats.partial} partial · {stats.missing} missing</p>
               <p className="mt-1 text-xs text-slate-400">{stats.total} objectives · unaffected by filters</p>
+              <Link href={`/test?exam=${item.code}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200">Take a timed test</Link>
             </article>;
           })}
         </div>
