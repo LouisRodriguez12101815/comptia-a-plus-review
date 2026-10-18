@@ -1753,5 +1753,761 @@
         ]
       }
     ]
+  },
+  {
+    "id": "core1-ch4-mobile-hardware",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Laptop and Mobile-Device Hardware",
+    "chapter": "Core 1 · Chapter 4",
+    "summary": "Inspect model-specific laptop parts, plan safe replacement, compare mobile connections and accessories, and distinguish legacy CCFL inverters from modern display designs.",
+    "concept": "hardware",
+    "sections": [
+      {
+        "id": "scope",
+        "title": "What to inspect and what to verify",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Use the exact product name, model or service tag, configuration, warranty terms, and the manufacturer’s support site before ordering a part. A symptom narrows the search; it does not prove that a component is defective. First record the user’s report, reproduce only safe symptoms, check status or built-in diagnostics, and compare the result with the service guide for that model."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Use the manufacturer’s service manual and parts list for connector locations, compatible part numbers, screw order, battery disconnect procedures, ESD precautions, and post-repair tests. Similar-looking models can use different parts or service sequences.",
+              "Do not force a connector or part because it nearly fits. Verify model, generation, keying, connector, firmware support, and part number first.",
+              "The practice lab is a written planning exercise. It does not authorize opening a device or performing service on a real product."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "battery-and-power",
+        "title": "Battery health, safety, and power adapters",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Area",
+              "What to monitor or compare",
+              "Decision boundary"
+            ],
+            "rows": [
+              [
+                "Battery",
+                "Manufacturer OS health message, diagnostic result, observed runtime, charging behavior, age/use history, and any visible case deformation.",
+                "Capacity naturally changes with battery age and conditions. A health percentage or one short runtime test is not a universal replacement threshold. Use the named model’s diagnostic and service guidance."
+              ],
+              [
+                "Battery servicing",
+                "Follow the model-specific repair guide, required tools, power-down and isolation steps, parts list, and disposal route.",
+                "If a battery is swollen, leaking, punctured, unusually hot, odorous, or otherwise damaged, stop use and charging when it is safe to do so; do not press, bend, pierce, or try to remove it. Escalate using the manufacturer’s safety/service instructions."
+              ],
+              [
+                "Calibration",
+                "Some vendors describe a gauge recalibration or diagnostic for particular models and symptoms.",
+                "Calibration may update reported capacity; it cannot restore chemically worn capacity. Do not routinely deep-discharge lithium-ion batteries or promise that a cycle will fix short runtime. Use calibration only when the applicable vendor procedure calls for it."
+              ],
+              [
+                "Barrel adapter",
+                "Confirm approved part/connector, voltage, polarity, current/power rating, and model recognition.",
+                "Matching wattage alone is insufficient. Connector and electrical requirements must match; an adapter can also be rejected or limited by a model-specific identification circuit."
+              ],
+              [
+                "USB-C adapter",
+                "Confirm that the device’s port supports charging, the charger offers a compatible USB Power Delivery profile, the cable supports the needed current/power, and the negotiated power meets the model’s needs.",
+                "A larger wattage rating does not force that power into a device, but compatibility still depends on supported voltage/current, cable, port, and product requirements. A low-power source can charge slowly or fail under load."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "memory-storage",
+        "title": "Memory and storage replacement",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Component",
+              "Compare before ordering",
+              "Check after authorized replacement"
+            ],
+            "rows": [
+              [
+                "Laptop RAM",
+                "SO-DIMM versus DIMM; DDR generation and module keying; supported capacity, speed and rank; ECC versus non-ECC; channel population rules in the model manual. DDR generations are not interchangeable even when a module looks similar.",
+                "Firmware/OS recognizes the expected capacity and channel mode; run the manufacturer’s memory test if available."
+              ],
+              [
+                "HDD/SSD",
+                "2.5-inch versus M.2 or another model-specific form factor; SATA versus PCIe/NVMe interface; physical length, key, thermal requirements, encryption and data-protection plan.",
+                "Firmware and OS detect the intended drive; confirm boot/data integrity and approved encryption/recovery access. Do not erase or migrate data without authorization."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A form factor is not an interface: M.2 is a physical module format. Check whether the particular slot and drive use SATA, PCIe/NVMe, or the model’s supported combination."
+          }
+        ]
+      },
+      {
+        "id": "keyboard-input-and-touch",
+        "title": "Keyboard, pointing devices, and touch input",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Keys may be individual service parts, a keyboard assembly, or part of a top case; the replacement scope is model-dependent. Before replacing, distinguish a single damaged key from a connection, setting, liquid-damage, or system-wide input issue.",
+              "Trackpads, pointing sticks, drawing pads, and touchscreens serve different input roles. A palm contacting a trackpad can move the pointer while typing; use an available palm-rejection or disable-touchpad setting as a reversible test before proposing hardware replacement.",
+              "A digitizer detects pen/touch input. On many current products it is bonded or integrated with the display assembly, not a separately replaceable add-on. Use the model’s part list.",
+              "Calibration is not a universal first repair. Use the OS or manufacturer calibration/validation tool only when that model supports it and the measured symptom calls for it."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wireless-security-components",
+        "title": "Wireless cards, antennas, privacy, and sensors",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Part or feature",
+              "Inspection clue",
+              "Replacement or test note"
+            ],
+            "rows": [
+              [
+                "Wireless card",
+                "Adapter absent, errors, or connection symptoms. Check OS state, airplane mode, driver, and approved diagnostics before opening the device.",
+                "Match supported form factor, interface, radio bands, firmware/BIOS support, and the manufacturer’s part list."
+              ],
+              [
+                "Wi-Fi antennas",
+                "Weak or intermittent signal may involve antenna lead seating, damage, routing, or environment; it does not prove a failed card.",
+                "Record each antenna lead/label and route through the model’s guide. Preserve placement and avoid pinching a coax lead at hinges or covers."
+              ],
+              [
+                "Biometrics and near-field scanners",
+                "Fingerprint/face reader or NFC reader may be a sensor, cable, module, or integrated assembly.",
+                "Check privacy settings, enrollment, app access, drivers/firmware, and model compatibility. “Near-field scanner” does not mean any RFID/NFC reader is a drop-in part."
+              ],
+              [
+                "Camera and microphone",
+                "Check physical shutter/mute switch, OS privacy permission, selected device, conferencing-app setting, and built-in diagnostics.",
+                "Only then assess the cable or integrated display/top-case assembly using the model guide."
+              ],
+              [
+                "Physical privacy/security",
+                "Privacy shutter/filter and cable-lock provisions vary by product.",
+                "Confirm the device actually has the relevant feature. A software screen lock protects access; it does not physically prevent theft."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "display-types-and-backlight",
+        "title": "Display technologies and the legacy inverter",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Display design",
+              "How it produces an image/light",
+              "Service distinction"
+            ],
+            "rows": [
+              [
+                "LCD: TN, IPS, VA",
+                "Liquid crystals modulate light from a backlight. TN, IPS and VA are LCD panel modes with different viewing, response, contrast and color behavior; model implementations vary.",
+                "An LCD has a backlight system. Older CCFL-backlit LCDs use a high-voltage inverter to drive the fluorescent lamp."
+              ],
+              [
+                "LED-backlit LCD",
+                "Still an LCD panel; LEDs provide the backlight.",
+                "A modern LED-backlit LCD uses an LED driver/power circuit, not the old CCFL lamp inverter described in many legacy texts. Verify the exact service manual."
+              ],
+              [
+                "OLED",
+                "Pixels emit their own light; there is no separate LCD backlight.",
+                "Do not diagnose an OLED as a failed LCD backlight/inverter. Inspect the exact panel assembly and diagnostics."
+              ],
+              [
+                "Mini-LED LCD",
+                "LCD image layer with a dense LED backlight and local-dimming zones.",
+                "Mini-LED names the backlight approach; it does not mean each pixel is an OLED emitter."
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Attribute",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Resolution",
+                "Number of addressable pixels; native panel resolution and operating mode must be compatible."
+              ],
+              [
+                "Pixel density",
+                "Pixels per unit length/area; depends on resolution and physical panel size."
+              ],
+              [
+                "Refresh rate",
+                "How often the display can refresh, in hertz; the panel, graphics path, cable/dock and selected mode all constrain it."
+              ],
+              [
+                "Color gamut",
+                "Range of colors a display can reproduce; compare a stated gamut standard and coverage, not an unqualified “more colors” claim."
+              ],
+              [
+                "Touchscreen/digitizer",
+                "Touch sensing may be a bonded assembly; identify what the model actually replaces and how it validates touch after service."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "“The inverter is in every laptop LCD” is outdated. The inverter description applies to a CCFL backlight. Modern LED LCDs use LED-driver circuitry; OLED has no separate backlight. Never order an inverter without confirming that the exact panel uses CCFL."
+          }
+        ]
+      },
+      {
+        "id": "connections",
+        "title": "Mobile connection methods",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Typical role",
+              "Compatibility check"
+            ],
+            "rows": [
+              [
+                "USB-A, USB-C, miniUSB, microUSB",
+                "Wired data and/or power, depending on device, cable and port. USB-C names a connector shape, not a guaranteed data rate, video feature, or charging power.",
+                "Check host and accessory function, cable capability, supported protocol, and whether the port accepts power."
+              ],
+              [
+                "Lightning",
+                "Apple device connector on supported models and accessories.",
+                "Verify exact model/connector and cable/accessory certification. It is not interchangeable with USB-C merely because both can carry power/data."
+              ],
+              [
+                "Bluetooth",
+                "Short-range radio for headsets, keyboards, mice and other accessories; supported personal-area networking can also provide tethering.",
+                "Both endpoints, profiles, operating system, pairing state and sometimes carrier settings must support the intended use. Pair and test; Bluetooth tethering is possible on supported combinations."
+              ],
+              [
+                "NFC",
+                "Very short-range tap/near-field exchange such as tags, contactless interactions, or handing pairing/configuration data to another radio.",
+                "NFC can help start a pairing or share a small record; it is not a general high-throughput continuous link for every headset or internet connection."
+              ],
+              [
+                "Wi-Fi hotspot/tethering",
+                "A mobile device shares an internet connection as a Wi-Fi access point; some combinations support USB or Bluetooth tethering.",
+                "Check carrier/service-plan permission, data allowance, security settings, client support, and the sharing device’s battery."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "accessories-and-docking",
+        "title": "Accessories, docks, and port replicators",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Accessory",
+              "Use",
+              "Selection check"
+            ],
+            "rows": [
+              [
+                "Stylus / drawing pad",
+                "Pen input or drawing surface; active stylus features can include pressure, tilt or palm rejection.",
+                "The screen digitizer, protocol, pen model and software must support the desired features. A capacitive stylus does not provide every active-pen function."
+              ],
+              [
+                "Headset / speakers / webcam",
+                "Private or shared audio and video input/output.",
+                "Confirm connector, Bluetooth profile, USB class/driver, OS permissions and selected app device."
+              ],
+              [
+                "Docking station",
+                "A model-compatible dock can expose ports, displays, network and power through a supported connection.",
+                "Check laptop host support, dock model, required USB-C/Thunderbolt features, display limits, firmware and power budget. The word “dock” alone guarantees no particular capability."
+              ],
+              [
+                "Port replicator",
+                "Repeats a subset of available ports, often for a model-specific connector or supported host interface.",
+                "Distinguish simple port replication from a dock with extra controllers, display capability or storage bays."
+              ],
+              [
+                "Trackpad / drawing pad / track point",
+                "Alternative pointing or pen-input controls.",
+                "Check OS settings and host compatibility; a pointing accessory is not the same thing as an internal digitizer."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mobile-network-and-app-support",
+        "title": "Basic mobile connectivity and application support",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A connection method is only part of mobile-device support. On the named device, check airplane mode, Wi-Fi or cellular-data state, the selected network, SIM/eSIM activation where applicable, hotspot availability, Bluetooth pairing, and the application’s permitted network/device access. Menu names differ by OS release, carrier and mobile-device-management policy."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Use Wi-Fi for a known WLAN; use cellular data only when the plan and data cap allow it. A hotspot shares a connection and can consume the phone’s plan and battery.",
+              "For Bluetooth: enable it at both ends, put the accessory into pairing mode, select the correct device, enter a PIN only if that pairing flow requires it, then test the intended service/profile.",
+              "For a managed/BYOD device, a corporate policy or MDM profile may control Wi-Fi, apps, certificates, camera, or sync settings. Do not bypass policy; confirm the administrator’s intended configuration.",
+              "Test the target application with an approved account and data source. A successful Wi-Fi association does not prove that mail, cloud sync, location, or a business app is configured correctly."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "safe-service-and-verification",
+        "title": "Safe replacement planning and verification",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Record model, serial/service tag, symptom, diagnostic result, current part/firmware, data-protection and authorization status. Locate the exact manufacturer service manual and approved replacement part before opening anything.",
+              "Use the model’s shutdown, external-power removal, battery isolation, ESD, tool, adhesive, cable-routing and fastener instructions. Pause and escalate if damage, swelling, unknown connector routing, or a missing procedure makes the step unsafe.",
+              "After authorized work, reassemble to the guide, run the required firmware/diagnostic or calibration procedure, verify the component and intended user workflow, and document the part and test result.",
+              "The accompanying inspection lab is paper-first. It uses a public manufacturer service guide to plan a repair, but requires no real opening, battery handling, calibration cycle, live account, or part order."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "objective-boundaries",
+        "title": "What this chapter does not establish",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "This chapter teaches the full listed Core 1 objectives 1.1 and 1.2, and supports basic 1.3 and hardware comparison objective 3.1. It does not teach the full symptom-based troubleshooting list in objective 5.4. Isolated battery, touch, or adapter checks do not establish full mobile-device troubleshooting coverage."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core1-ch9-wireless-soho",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Wireless Networking and SOHO Setup",
+    "chapter": "Core 1 · Chapter 9",
+    "summary": "Compare Wi-Fi generations, bands, channels and security; plan an authorized small-office/home network; assign IP settings and isolate common connection symptoms.",
+    "concept": "networking-concepts",
+    "sections": [
+      {
+        "id": "network-and-internet-types",
+        "title": "Network scope and internet access types",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A network type describes the scope or role of the network; an internet access type describes the provider’s last-mile connection. A household can have a WLAN inside its LAN while reaching the internet over fiber, cable, DSL, satellite, cellular or fixed wireless."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Typical scope or role"
+            ],
+            "rows": [
+              [
+                "PAN",
+                "A person’s nearby devices, often joined by Bluetooth."
+              ],
+              [
+                "LAN",
+                "A local site or building network, wired or wireless."
+              ],
+              [
+                "WLAN",
+                "A LAN whose access is wireless (commonly Wi-Fi)."
+              ],
+              [
+                "MAN",
+                "A metropolitan-area network spanning a city or regional area."
+              ],
+              [
+                "WAN",
+                "A network spanning large geographic areas; the internet is a public example."
+              ],
+              [
+                "SAN",
+                "A dedicated network connecting servers to storage."
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Internet access",
+              "Useful comparison points"
+            ],
+            "rows": [
+              [
+                "Fiber",
+                "Optical access through an ONT; available rates, symmetry, price and handoff depend on provider and plan."
+              ],
+              [
+                "Cable",
+                "Broadband over a cable-provider network; actual upload/download rates and shared-segment behavior depend on service design and plan."
+              ],
+              [
+                "DSL",
+                "Digital service over telephone copper; rate and availability depend strongly on loop length and provider technology."
+              ],
+              [
+                "Satellite",
+                "Useful where terrestrial access is unavailable; latency, weather, capacity and orbit/plan affect experience."
+              ],
+              [
+                "Cellular",
+                "3G/4G/5G mobile-network access; coverage, signal, congestion, plan and device bands affect service."
+              ],
+              [
+                "WISP / fixed wireless",
+                "A provider uses a fixed wireless link to reach a customer premise; line of sight, obstructions, spectrum, weather and the provider plan matter."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Do not rank “fiber is always fastest” or “satellite is always slowest” without the offered plan and conditions. Compare actual availability, rates, latency, upload needs, reliability and cost for the scenario."
+          }
+        ]
+      },
+      {
+        "id": "wi-fi-generations",
+        "title": "802.11 generations and supported bands",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Wi-Fi name / IEEE family",
+              "Common supported band(s)",
+              "Study distinction"
+            ],
+            "rows": [
+              [
+                "Legacy 802.11a",
+                "5 GHz",
+                "Legacy OFDM standard; region and hardware limit channels."
+              ],
+              [
+                "802.11b / 802.11g",
+                "2.4 GHz",
+                "Legacy 2.4 GHz clients; the 2.4 GHz band is shared with other devices and often crowded."
+              ],
+              [
+                "Wi-Fi 4 / 802.11n",
+                "2.4 and/or 5 GHz",
+                "Band support depends on the client/AP. MIMO and channel width affect link rates."
+              ],
+              [
+                "Wi-Fi 5 / 802.11ac",
+                "5 GHz",
+                "Wider channels and MIMO features can raise theoretical PHY rates; device streams and configuration matter."
+              ],
+              [
+                "Wi-Fi 6 / 802.11ax",
+                "2.4 and 5 GHz",
+                "Adds efficiency features including OFDMA and BSS coloring; it does not make every client faster in every environment."
+              ],
+              [
+                "Wi-Fi 6E",
+                "6 GHz extension of 802.11ax",
+                "A 6 GHz radio and an allowed regional channel plan are needed at both AP and client."
+              ],
+              [
+                "Wi-Fi 7 / 802.11be",
+                "2.4, 5 and/or 6 GHz depending on the device",
+                "MLO, wider channels up to 320 MHz in supported 6 GHz configurations, and other features require matching AP/client capability and local spectrum rules."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "A version label is not a guarantee that every AP has every radio or channel width. Check the AP and client specification sheets. A dual-band client cannot use 6 GHz; a Wi-Fi 6E/7-capable client still needs an AP and regulatory configuration that supports the band."
+          }
+        ]
+      },
+      {
+        "id": "bands-widths-and-channels",
+        "title": "Bands, channel widths, and regional rules",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Band",
+              "Planning tradeoff",
+              "Channel-width / rule reminder"
+            ],
+            "rows": [
+              [
+                "2.4 GHz",
+                "Often reaches farther through common indoor obstacles, but has fewer practical channels and more competing devices.",
+                "Common 20 MHz plans in the U.S. use 1, 6 and 11; this is not a worldwide rule. Channel availability, spacing, power and widths vary by country and device."
+              ],
+              [
+                "5 GHz",
+                "Usually offers more channel choices and can support wider channels, with propagation and obstruction limits that depend on the environment.",
+                "DFS may apply on particular channels. APs may need to listen for radar and vacate a channel. Supported channels and widths vary by regulatory domain."
+              ],
+              [
+                "6 GHz",
+                "Offers additional spectrum for supported newer devices, often with less legacy congestion; walls and range still matter.",
+                "Available frequencies, power classes, indoor/outdoor rules, channel counts and widths are jurisdiction-specific. Do not copy a U.S. channel plan into another country."
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "A 20/40/80/160 MHz channel occupies more or less spectrum. Wider channels can increase a compatible link’s PHY rate but leave fewer choices and may overlap more neighboring networks. Choose a width from local conditions and device support, not a maximum setting by default.",
+              "Use the AP’s correct country/regulatory setting and its current documentation. Never enable channels or transmit power that the jurisdiction does not allow.",
+              "A “non-overlapping” three-channel plan assumes a particular band, width and region. Scan the environment and consider adjacent/co-channel interference, not just a memorized channel list."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wi-fi-performance-features",
+        "title": "How Wi-Fi efficiency features actually help",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Feature",
+              "What it does",
+              "What it does not promise"
+            ],
+            "rows": [
+              [
+                "MIMO / MU-MIMO",
+                "Uses multiple antennas/spatial streams; multi-user operation can serve compatible clients in parallel under supported conditions.",
+                "The number of antennas printed on a box is not a guarantee of client speed or coverage."
+              ],
+              [
+                "Beamforming",
+                "Uses transmission/feedback techniques to improve energy or signal quality toward a client.",
+                "It is not only a range feature: better link quality can help performance. It does not guarantee a particular range, data rate or wall penetration."
+              ],
+              [
+                "OFDMA (Wi-Fi 6/7)",
+                "Allocates resource units so an AP can schedule multiple compatible clients within a channel, improving efficiency for some traffic patterns.",
+                "It is not a promise that each client receives the headline aggregate rate or that a single client’s peak throughput always increases."
+              ],
+              [
+                "BSS coloring (Wi-Fi 6)",
+                "A color in the PHY header helps compatible devices distinguish their own BSS from an overlapping BSS; spatial reuse may allow transmission over a sufficiently weak neighboring signal.",
+                "It does not remove radio interference or make all overlapping-channel traffic harmless. Thresholds, compatibility and RF conditions matter."
+              ],
+              [
+                "DFS (selected 5 GHz channels)",
+                "Regulatory mechanism for sharing some spectrum with radar; equipment detects radar and changes or stops channel use as required.",
+                "DFS is not a Wi-Fi-n-only feature and is not simply a tool that finds any “empty channel.” Availability and channel-change behavior vary by region and product."
+              ],
+              [
+                "MLO (Wi-Fi 7)",
+                "Compatible multi-link devices can use multiple links under supported operating modes.",
+                "Both endpoints, software, selected bands, configuration and RF conditions constrain behavior; “Wi-Fi 7” alone does not prove simultaneous use of all bands."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "PHY/link rate is not application throughput. Actual transfer speed also depends on the client and AP radios, streams, channel width, signal, distance/walls, contention, retries, protocol overhead, wired backhaul and ISP plan. Headline maxima are theoretical configuration limits, not user guarantees."
+          }
+        ]
+      },
+      {
+        "id": "bluetooth-nfc-rfid",
+        "title": "Bluetooth, NFC, and RFID",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Technology",
+              "Main role in this scope",
+              "Avoid this mix-up"
+            ],
+            "rows": [
+              [
+                "Bluetooth",
+                "2.4 GHz short-range device networking for accessories; supported PAN profiles and OS/carrier features may allow tethering.",
+                "It is not Wi-Fi, but supported Bluetooth tethering can share internet. Do not claim Bluetooth can never tether."
+              ],
+              [
+                "NFC",
+                "Tap/near-field transfer or reading tags, commonly 13.56 MHz; can pass setup or Bluetooth-pairing information.",
+                "NFC is very short range and not a substitute for a continuous high-throughput Wi-Fi/Bluetooth audio link."
+              ],
+              [
+                "RFID",
+                "Family of radio systems for identification or data exchange with tags; operating bands and protocols vary.",
+                "There is no single RFID frequency range. NFC uses a defined 13.56 MHz interface and overlaps the broader RFID ecosystem, but terms are not interchangeable in every context."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wireless-security",
+        "title": "Authentication, encryption, and MAC filtering",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Mode",
+              "Authentication / key establishment",
+              "Protection note"
+            ],
+            "rows": [
+              [
+                "WEP / WPA-TKIP",
+                "Legacy security/key methods.",
+                "Weak/deprecated; do not choose for a new SOHO WLAN. TKIP limits modern high-throughput modes on many clients."
+              ],
+              [
+                "WPA2-Personal",
+                "Shared passphrase (PSK).",
+                "Commonly pairs with AES-CCMP. WPA2 plus “AES” does not uniquely identify WPA3. Avoid legacy TKIP mode."
+              ],
+              [
+                "WPA2-Enterprise",
+                "802.1X/EAP with an authentication service such as RADIUS.",
+                "The enterprise mode and cipher suite must be selected and supported; it is not simply the home passphrase mode."
+              ],
+              [
+                "WPA3-Personal",
+                "SAE password-based authentication/key establishment.",
+                "Cipher and compatibility details depend on the certified mode; WPA3 is not the name of a single cipher."
+              ],
+              [
+                "WPA3-Enterprise",
+                "802.1X/EAP authentication; standard and 192-bit security configurations exist.",
+                "The EAP method, certificates, cipher suite, AP and client configuration all matter."
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Select a security mode both AP and clients support; prefer current WPA3 where practical, or WPA2-Personal with AES-CCMP for a legacy-compatible SOHO environment. Keep a strong WLAN credential separate from router administration.",
+              "A MAC allowlist can reduce casual unknown-device association in a controlled setup, but MAC addresses are observable and can be copied. It is not cryptographic device identity or a substitute for WLAN authentication.",
+              "Changing an SSID does not provide encryption. Avoid placing personal or sensitive identifying details in its name; use authentication and encryption settings to protect access."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "soho-topology",
+        "title": "SOHO topology and configuration sequence",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A simple household path is provider handoff → cable modem or ONT → router/firewall → integrated switch and access point → wired and wireless clients. Many retail gateways combine these functions. The router is normally the client’s default gateway; the DHCP service may run on that router and provide or forward DNS settings."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Before making a live change, document the approved ISP handoff, existing address plan, SSID/security mode, management access, DHCP pool/reservations, important static hosts, and recovery method. This lesson’s lab uses a fictional configuration only.",
+              "Secure management: change default administrative credentials, keep router firmware current through the vendor’s supported path, use a protected management interface, and disable remote administration or convenience features that are not needed. The SSID is a label, not a secret.",
+              "Choose AP placement and radio settings using site constraints, supported bands, local regulations, a Wi-Fi scan and client capability. Give a guest network limited access when the router supports an appropriate separate guest boundary.",
+              "Configure only the network functions the model and ISP support. NAT translates IPv4 addresses in common home deployments; it does not replace the router firewall or correct an unsafe policy."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "client-addressing",
+        "title": "Client addressing: DHCP, gateway, DNS, and verification",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Setting",
+              "What the client uses it for",
+              "Typical SOHO source"
+            ],
+            "rows": [
+              [
+                "IP address + subnet mask/prefix",
+                "Identifies the host and which destinations are considered local.",
+                "DHCP lease or a documented static assignment. Avoid duplicate addresses."
+              ],
+              [
+                "Default gateway",
+                "Next hop for traffic leaving the local subnet.",
+                "Usually the router’s LAN address. A missing or wrong gateway can allow local communication but break off-subnet traffic."
+              ],
+              [
+                "DNS resolver",
+                "Maps names to addresses.",
+                "Router forwarder or approved DNS server supplied by DHCP or configured statically. Wrong DNS can make names fail while a known IP path works."
+              ],
+              [
+                "DHCP",
+                "Leases client settings such as IP, mask, router and DNS.",
+                "Router or designated DHCP server with a valid scope. A reservation ties a client identifier to a chosen lease but still uses DHCP."
+              ],
+              [
+                "APIPA / IPv4 link-local",
+                "169.254.0.0/16 is selected when automatic IPv4 configuration lacks a usable DHCP lease.",
+                "Treat it as evidence that needs investigation; check WLAN association, cabling, DHCP availability/scope and relay path. It does not prove one unique root cause."
+              ],
+              [
+                "IPv6",
+                "Uses IPv6 addresses/prefixes and a default route; hosts may learn configuration through router advertisements and/or DHCPv6 according to the network.",
+                "Do not apply IPv4 APIPA, private-range, or NAT assumptions to IPv6. Verify the actual host and router configuration."
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Verify in order: physical/Wi-Fi link and SSID/security → valid address and mask/prefix → gateway reachability → DNS lookup → intended application/service. Use an authorized client command/status view; record exactly which step fails.",
+              "For IPv4, RFC 1918 private ranges are 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16. Public addresses are provider/routing assignments, not values to invent for a private LAN."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "coverage-limits",
+        "title": "Coverage boundary and safe practice",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "This chapter teaches the listed 220-1201 wireless technology scope, the IP-addressing subtopics in objective 2.6, and the listed internet/network types in 2.7. The configuration lab is simulated on paper. It does not authorize edits to a live router, ISP account, enterprise network, or service configuration. Network symptom practice adds to objective 5.5 but does not by itself cover every 5.5 issue."
+          }
+        ]
+      }
+    ]
   }
 ]

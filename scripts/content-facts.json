@@ -823,6 +823,69 @@
           "reason": "Interface MAC spoofing alone does not establish false ARP bindings."
         }
       ]
+    },
+    {
+      "id": "core1-mobile-ccfl-inverter",
+      "topics": [
+        "core1-ch4-mobile-hardware"
+      ],
+      "statement": "A CCFL-backlit LCD uses an inverter; LED-backlit LCDs use LED-driver circuitry and OLED has no separate backlight.",
+      "source": "Analog Devices MAX8722C CCFL inverter documentation (https://www.analog.com/en/products/max8722c.html); Texas Instruments TPS68000 LED backlight driver (https://www.ti.com/product/TPS68000); manufacturer model guide required for service.",
+      "require": [
+        "CCFL-backlit LCDs?[^\\n]{0,180}inverter",
+        "LED-backlit LCD[^\\n]{0,180}(?:LED driver|LED-driver)",
+        "OLED[^\\n]{0,120}no separate (?:LCD )?backlight"
+      ]
+    },
+    {
+      "id": "core1-mobile-adapter-compatibility",
+      "topics": [
+        "core1-ch4-mobile-hardware"
+      ],
+      "statement": "Adapter compatibility depends on model-supported voltage, connector or PD profile, cable and device requirements; wattage alone is insufficient.",
+      "source": "USB-IF USB Power Delivery overview https://www.usb.org/usb-charger-pd; Apple Power Adapter guide https://support.apple.com/en-us/109509; HP power adapter guidance https://support.hp.com/us-en/document/ish_2025983-1502949-16.",
+      "require": [
+        "Matching wattage alone is insufficient",
+        "compatible USB Power Delivery profile"
+      ],
+      "forbid": [
+        {
+          "pattern": "higher wattage[^\\n]{0,80}always safe",
+          "reason": "Compatibility depends on electrical and product requirements, not wattage alone."
+        }
+      ]
+    },
+    {
+      "id": "core1-wireless-bt-tethering",
+      "topics": [
+        "core1-ch9-wireless-soho"
+      ],
+      "statement": "Bluetooth PAN support and some mobile operating systems support tethering over Bluetooth; it is platform and service dependent.",
+      "source": "Bluetooth SIG Personal Area Networking Profile 1.0 https://www.bluetooth.com/specifications/specs/personal-area-networking-profile-1-0/; Apple iPhone Personal Hotspot guide https://support.apple.com/guide/iphone/share-your-internet-connection-iph45447ca6/27/ios/27.",
+      "require": [
+        "supported Bluetooth tethering can share internet",
+        "Do not claim Bluetooth can never tether"
+      ]
+    },
+    {
+      "id": "core1-wireless-security-and-throughput",
+      "topics": [
+        "core1-ch9-wireless-soho"
+      ],
+      "statement": "WPA2-Personal commonly pairs a shared passphrase with AES-CCMP; WPA3-Personal uses SAE; advertised PHY rates are not guaranteed client throughput.",
+      "source": "Wi-Fi Alliance WPA3 announcement https://www.globenewswire.com/fr/news-release/2018/06/26/1529297/0/en/wi-fi-alliance-introduces-wi-fi-certified-wpa3-security.html; Microsoft WLAN authentication/cipher schema https://learn.microsoft.com/en-us/windows/win32/nativewifi/wlan-profileschema-authencryption-security-element; Intel Wi-Fi throughput guide https://www.intel.com/content/www/us/en/support/articles/000059666/wireless.html.",
+      "require": [
+        "WPA2-Personal",
+        "AES-CCMP",
+        "SAE password-based authentication",
+        "PHY/link rate is not application throughput"
+      ],
+      "forbid": [
+        {
+          "pattern": "WPA2[^\\n]{0,50}always WPA3",
+          "reason": "WPA2 and WPA3 identify distinct authentication/security modes."
+        }
+      ]
     }
   ],
   "computed": [
@@ -1023,7 +1086,9 @@
     "n10-ch10",
     "n10-ch11",
     "n10-osi-models",
-    "n10-ch21"
+    "n10-ch21",
+    "core1-ch4-mobile-hardware",
+    "core1-ch9-wireless-soho"
   ],
   "answerKeys": {
     "q-n10c8-01": "126",
@@ -1223,6 +1288,34 @@
     "q-n10c21-17": "NAC posture checking with supported enforcement/remediation",
     "q-n10c21-18": "The documented limit is one per interface, protocol, and direction",
     "q-n10c21-19": "Enforce and test explicit allowed/denied flows at the routed boundary",
-    "q-n10c21-20": "Isolation, outbound restrictions, and an assigned response process"
+    "q-n10c21-20": "Isolation, outbound restrictions, and an assigned response process",
+    "q-c1-mobile-01": "The exact model/configuration’s manufacturer service guide and parts list",
+    "q-c1-mobile-02": "Do not install it; select a module matching the model’s supported generation and specifications",
+    "q-c1-mobile-03": "Whether the model’s slot supports that form factor and interface (for example, SATA or PCIe/NVMe)",
+    "q-c1-mobile-04": "Follow the documented model-specific gauge procedure and reassess; do not promise it restores capacity",
+    "q-c1-mobile-05": "Stop use/charging when safe and follow the manufacturer’s battery-safety/service process without pressing or puncturing it",
+    "q-c1-mobile-06": "That the port accepts charging, charger and cable support a compatible USB-PD profile, and model power requirements are met",
+    "q-c1-mobile-07": "A CCFL inverter that drives the fluorescent backlight",
+    "q-c1-mobile-08": "The app’s selected camera and OS/app privacy permission",
+    "q-c1-mobile-09": "Check the antenna lead seating and model-specific routing for pinching or damage",
+    "q-c1-mobile-10": "Bluetooth tethering, configured on both devices and then tested",
+    "q-c1-mobile-11": "It can exchange pairing/setup information before the supported Bluetooth link is used",
+    "q-c1-mobile-12": "Check that the exact laptop port, dock, cable, display modes and power budget support the required functions",
+    "q-c1-wireless-01": "The client negotiates a compatible mode it supports; the Wi-Fi 6 label does not guarantee the laptop’s speed or range",
+    "q-c1-wireless-02": "That the AP and client both support the 6 GHz mode and the selected country/regulatory configuration permits the channel",
+    "q-c1-wireless-03": "Use the new regulatory domain, the AP’s supported channels and a local scan to select a permitted channel",
+    "q-c1-wireless-04": "Wider channels can raise compatible PHY rates but consume more spectrum and leave fewer channel choices",
+    "q-c1-wireless-05": "The AP follows the regional DFS procedure, which can require stopping or changing channel use",
+    "q-c1-wireless-06": "Beamforming can improve signal quality toward the client and may improve performance, but does not guarantee a rate or range",
+    "q-c1-wireless-07": "It gives frames a color so compatible stations can distinguish BSSs and may enable spatial reuse under signal thresholds",
+    "q-c1-wireless-08": "OFDMA",
+    "q-c1-wireless-09": "PHY rate is not application throughput; overhead, contention, retries, signal, client/AP capability, backhaul and ISP plan matter",
+    "q-c1-wireless-10": "SAE",
+    "q-c1-wireless-11": "No; identify the negotiated authentication/key-management mode separately because AES-CCMP can be used with WPA2 and WPA3 modes",
+    "q-c1-wireless-12": "It can match presented addresses for an administrative filter, but a MAC can be copied so this is not strong authentication",
+    "q-c1-wireless-13": "Choose a supported WPA3-Personal or WPA2-Personal AES-CCMP mode with a strong WLAN passphrase",
+    "q-c1-wireless-14": "Fiber, because the listed plan provides 300 Mbps upstream versus 35 Mbps for the listed cable plan",
+    "q-c1-wireless-15": "Check Wi-Fi association and the DHCP lease/server, scope and path",
+    "q-cls-023": "Swollen or damaged battery"
   }
 }
