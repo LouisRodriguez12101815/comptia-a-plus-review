@@ -41,6 +41,23 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
         </div>
       </header>
 
+      {track.focus && track.focus !== "all" ? (
+        <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5">
+          <div>
+            <h2 id="test-mode-heading" className="text-lg font-medium text-white">Timed test mode</h2>
+            <p className="mt-1 max-w-xl text-sm text-slate-300">
+              A practice exam weighted by the {track.code} objective domains, with a countdown on every question at real exam pace.
+            </p>
+          </div>
+          <Link
+            href={`/test?exam=${track.focus}`}
+            className="inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
+          >
+            Start a timed test
+          </Link>
+        </section>
+      ) : null}
+
       <section aria-labelledby="tools-heading" className="space-y-4">
         <h2 id="tools-heading" className="text-lg font-medium text-white">
           Study tools
