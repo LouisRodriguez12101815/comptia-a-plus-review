@@ -53,17 +53,17 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
   <div class="ctrls" id="std" role="group" aria-label="PoE standard"></div>
   <p class="lab">Device on the port</p>
   <div class="ctrls" id="dev" role="group" aria-label="Device"></div>
-  <p class="lab">Power budget for this port (scaled to 25.5 W)</p>
+  <p class="lab">Power available at the device (scaled to 25.5 W)</p>
   <div style="height:22px;border-radius:999px;background:var(--line);overflow:hidden"><div id="bud" style="height:100%;background:var(--accent)"></div></div>
   <div id="bl" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
   <div class="out" id="out" aria-live="polite"></div>
-  <p class="answer"><strong>Written lab 5 (802.3at).</strong> 802.3at delivers 25.5 W to a PoE device, and 802.3af provides 15.4 W. The device power draws shown here are examples.</p>
+  <p class="answer"><strong>Written lab 5 (802.3at).</strong> 802.3at delivers 25.5 W to the powered device (30 W leaves the switch port), and 802.3af delivers 12.95 W to the device (15.4 W at the port). The device power draws shown here are examples.</p>
 </div>
 
 </div>
 <script>
 
-const std={af:{n:'802.3af',w:15.4},at:{n:'802.3at',w:25.5}};
+const std={af:{n:'802.3af',w:12.95},at:{n:'802.3at',w:25.5}};
 const devs={phone:{n:'IP phone',w:6},ap:{n:'Wireless access point',w:13},cam:{n:'PTZ camera',w:22}};
 let s='af', d='phone';
 function btns(id,items,cur,fn){
