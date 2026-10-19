@@ -35,3 +35,11 @@ chapter with no visuals shows under "Coming soon" until you add some.
 Network+ chapters 9, 10, and 11 keep their visuals in
 `content/network-plus/ch9.json`, `ch10.json`, and `ch11.json`, and they also show
 on their own chapter pages.
+
+## Draw the fact, then check it
+
+Visuals should show what the exam tests (a connector face, a sequence, a scale), not
+restate notes in boxes. `npm run audit:visuals` lists the wordiest visuals by exam
+weight. When you redraw one, follow `.agents/skills/exam-visual-designer/SKILL.md`:
+add a `visual-facts` block naming each claim's objective and source, and run
+`npm run audit:visuals -- --check`.

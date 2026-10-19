@@ -72,16 +72,40 @@ svg{display:block;width:100%;height:auto}
 .brow .tr i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s}
 .brow .tm{text-align:right;font-weight:600}
 @media (max-width:480px){.brow{grid-template-columns:84px 1fr 74px}}
+.fig{margin:10px 0 0}
+.fig svg{max-width:560px;margin:0 auto}
+.fig figcaption{font-size:13px;color:var(--muted);margin-top:6px;max-width:70ch}
+.hous{fill:var(--bg);stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+.shield{fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:5 3}
+.pin{fill:var(--line);stroke:var(--muted);stroke-width:1}
+.pin.p{fill:var(--warm-soft);stroke:var(--warm);stroke-width:2}
+.pin.d{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.pin.g{fill:var(--surface);stroke:var(--muted);stroke-width:2}
+.plab{fill:var(--muted);font:600 13px system-ui,sans-serif}
+.plab.p{fill:var(--warm)}.plab.d{fill:var(--accent)}
+.ttl{fill:var(--ink);font:600 15px system-ui,sans-serif}
+.key{fill:none;stroke:var(--bad);stroke-width:2}
+.keyt{fill:var(--bad);font:600 12px system-ui,sans-serif}
+.axis{stroke:var(--line);stroke-width:1}
+.axt{fill:var(--muted);font:13px system-ui,sans-serif}
+.bar{fill:var(--accent)}
+.bar.rng{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.bl{fill:var(--ink);font:600 13px system-ui,sans-serif}
+.bv{fill:var(--muted);font:600 13px system-ui,sans-serif}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <h1>What does this connector carry?</h1>
-<p class="lede">For each connector decide whether it carries power, data, or both, then rank the interfaces by speed.</p>
+<p class="lede">Learn each connector by its face: pin count, shape and key. Predict what it carries, then see the pins light up.</p>
 <div class="card">
  <div class="lab">1. Pick a connector</div>
  <div class="ctrls" id="cons" role="group" aria-label="Connectors"></div>
+ <figure class="fig">
+  <div class="stage" tabindex="0" role="region" aria-label="Connector face drawing"><svg id="face" viewBox="24 0 330 150" role="img" aria-label="Pick a connector to see its face."></svg></div>
+  <figcaption id="facecap">Front view of the plug, schematic. Pin rows, counts and keys follow the standard; sizes are not to scale between connectors.</figcaption>
+ </figure>
  <div class="row2">
   <div><div class="lab">Carries power?</div><div class="ctrls"><button type="button" class="tg" data-k="p" data-v="1" aria-pressed="false">Yes</button><button type="button" class="tg" data-k="p" data-v="0" aria-pressed="false">No</button></div></div>
   <div><div class="lab">Carries data?</div><div class="ctrls"><button type="button" class="tg" data-k="d" data-v="1" aria-pressed="false">Yes</button><button type="button" class="tg" data-k="d" data-v="0" aria-pressed="false">No</button></div></div>
@@ -94,10 +118,45 @@ svg{display:block;width:100%;height:auto}
  <div class="ctrls"><button type="button" id="es">Plug in the eSATA cable</button><button type="button" id="ep">Also plug in its own power</button></div>
  <div class="out" id="eo" aria-live="polite"></div>
 </div>
-<div class="card sec"><div class="lab">3. Rank by speed</div><div id="rk"></div></div>
+<div class="card sec"><div class="lab">3. Rank by speed</div><div id="rk"></div>
+ <div class="ctrls" style="margin-top:10px"><button type="button" id="showscale" aria-expanded="false" aria-controls="scalefig">Show the speed scale</button></div>
+ <figure class="fig" id="scalefig" hidden>
+  <div class="stage" tabindex="0" role="region" aria-label="Speed scale chart"><svg id="scale" viewBox="0 0 340 262" role="img" aria-label="Maximum speeds on a log scale: serial about 115 kbps, USB 2.0 480 Mbps, USB 3.x 5 to 20 Gbps, eSATA 6 Gbps, USB4 and Thunderbolt 3 and 4 at 40 Gbps."></svg></div>
+  <figcaption>Maximum signaling rate on a log scale: each gridline is ten times the one before. USB 3.x is a range (3.0 = 5, 3.1 = 10, 3.2 Gen 2x2 = 20 Gbps), so eSATA's 6 Gbps sits inside it.</figcaption>
+ </figure>
+</div>
 <div class="card sec"><div class="lab">4. Test yourself</div><div id="qz"></div></div>
 
 </div>
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "Molex is a 4-pin power-only connector for PATA and optical drives: +12 V, ground, ground, +5 V.",
+      "objectives": ["220-1201 3.2", "220-1201 3.6"],
+      "sources": ["notes core1-ch3-peripherals: Power and storage connectors", "Intel ATX12V Power Supply Design Guide: peripheral (4-pin) connector pinout"] },
+    { "claim": "SATA power is a 15-pin L-keyed connector supplying 3.3 V, 5 V and 12 V; it carries no data.",
+      "objectives": ["220-1201 3.2", "220-1201 3.6"],
+      "sources": ["notes core1-ch3-peripherals: Power and storage connectors", "Serial ATA Revision 3.x: power segment pin definitions"] },
+    { "claim": "SATA data is a 7-pin L-keyed connector: two differential pairs and three grounds; no power.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["Serial ATA Revision 3.x: signal segment pin definitions"] },
+    { "claim": "eSATA uses the same 7 signal pins in a shielded connector without the L key, runs at up to 6 Gbps and supplies no power.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Power and storage connectors", "Serial ATA Revision 3.x: external (eSATA) connector"] },
+    { "claim": "DB-9 (DE-9) is a 9-pin D-sub serial connector, 5 pins over 4, carrying data only.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Power and storage connectors", "TIA-232 9-pin (DE-9) assignment"] },
+    { "claim": "Maximum rates: serial about 115 kbps, USB 2.0 480 Mbps, USB 3.0 5 Gbps, USB 3.1 10 Gbps, USB 3.2 Gen 2x2 20 Gbps, eSATA 6 Gbps, USB4 and Thunderbolt 3/4 40 Gbps.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: USB speeds and port colors", "USB-IF USB 3.2 and USB4 specifications", "Intel Thunderbolt 3/4 technology briefs", "16550 UART common maximum 115.2 kbps"] }
+  ],
+  "simplifications": [
+    "Connector faces are schematic and not to scale between connectors.",
+    "SATA power pin 11 (staggered spin-up/activity) is drawn in the ground group 10 to 12.",
+    "Serial is drawn at 115.2 kbps, the common PC UART maximum; RS-232 itself does not fix one rate."
+  ]
+}
+</script>
 <script>
 
 function $(id){return document.getElementById(id)}
@@ -140,16 +199,50 @@ function rank(id,items,order,ask){var root=$(id),placed=[],miss=0;
  draw()}
 
 var K=[
- {n:'Molex',p:1,d:0,x:'Molex is a legacy 4-pin power connector for PATA and optical drives. Power only, no data.'},
- {n:'SATA power',p:1,d:0,x:'SATA power goes to modern drives. It is the power side only.'},
- {n:'eSATA',p:0,d:1,x:'eSATA extends SATA data externally at up to 6 Gbps but supplies NO power.'},
- {n:'DB-9',p:0,d:1,x:'DB-9 is a legacy serial connector used for serial ports, not drives.'}];
+ {n:'Molex',p:1,d:0,pins:4,key:'two chamfered corners',x:'Molex is a legacy 4-pin power connector for PATA and optical drives. Power only, no data: +12 V, two grounds, +5 V.'},
+ {n:'SATA power',p:1,d:0,pins:15,key:'L-shaped key',x:'SATA power is the wide 15-pin L-keyed plug for modern drives. It supplies 3.3 V, 5 V and 12 V, and no data.'},
+ {n:'SATA data',p:0,d:1,pins:7,key:'L-shaped key',x:'SATA data is the narrow 7-pin L-keyed plug: two signal pairs and three grounds. No power, so the drive also needs SATA power.'},
+ {n:'eSATA',p:0,d:1,pins:7,key:'no L key, shielded',x:'eSATA uses the same 7 data pins in a shielded plug with no L key. Up to 6 Gbps, and it supplies NO power.'},
+ {n:'DB-9',p:0,d:1,pins:9,key:'D-shaped shell',x:'DB-9 (DE-9) is the 9-pin D-sub serial connector: 5 pins over 4. Data only, used for serial ports, not drives.'}];
+function pinsRow(xs,y,roles,labels,shape){var h='';xs.forEach(function(x,i){var r=roles?roles[i]:'';
+  h+=shape==='c'?'<circle class="pin '+r+'" cx="'+x+'" cy="'+y+'" r="11"/>':'<rect class="pin '+r+'" x="'+(x-4)+'" y="'+(y-11)+'" width="8" height="22" rx="1.5"/>';
+  if(labels&&labels[i])h+='<text class="plab '+r+'" x="'+x+'" y="'+(y+(shape==='c'?32:30))+'" text-anchor="middle">'+labels[i]+'</text>'});return h}
+function face(i,show){var k=K[i],h='',R=function(a){return show?a:null};
+ h+='<text class="ttl" x="30" y="22">'+k.n+' · '+k.pins+' pins</text>';
+ if(k.n==='Molex'){
+  h+='<path class="hous" d="M70 60 L78 52 H282 L290 60 V122 H70 Z"/>';
+  h+=pinsRow([115,158,202,245],78,R(['p','g','g','p']),R(['+12 V','GND','GND','+5 V']),'c');
+  h+='<text class="keyt" x="180" y="44" text-anchor="middle">chamfered corners</text>';
+ }else if(k.n==='SATA power'){
+  h+='<path class="hous" d="M36 62 H332 V98 H58 V118 H36 Z"/>';
+  var xs=[],ro=[],lb=[];for(var j=0;j<15;j++){xs.push(72+j*17.5);ro.push(j<3?'p':j<6?'g':j<9?'p':j<12?'g':'p');lb.push('')}
+  h+=pinsRow(xs,80,R(ro),null,'r');
+  if(show)[['3.3 V',0,'p'],['GND',3,'g'],['5 V',6,'p'],['GND',9,'g'],['12 V',12,'p']].forEach(function(g){h+='<text class="plab '+g[2]+'" x="'+(72+(g[1]+1)*17.5)+'" y="114" text-anchor="middle">'+g[0]+'</text>'});
+  h+='<text class="keyt" x="36" y="138">L key</text>';
+ }else if(k.n==='SATA data'||k.n==='eSATA'){
+  if(k.n==='SATA data')h+='<path class="hous" d="M96 62 H284 V98 H118 V118 H96 Z"/>';
+  else h+='<rect class="shield" x="84" y="48" width="212" height="64" rx="4"/><rect class="hous" x="96" y="62" width="188" height="36" rx="2"/>';
+  h+=pinsRow([130,152,174,196,218,240,262],80,R(['g','d','d','g','d','d','g']),R(['G','A+','A−','G','B−','B+','G']),'r');
+  h+=k.n==='SATA data'?'<text class="keyt" x="96" y="138">L key</text>':'<text class="keyt" x="190" y="134" text-anchor="middle">shielded · no L key</text>';
+ }else{
+  h+='<path class="hous" d="M62 46 Q60 40 66 40 H294 Q300 40 298 46 L278 116 Q276 122 270 122 H90 Q84 122 82 116 Z"/>';
+  h+=pinsRow([110,145,180,215,250],66,R(['d','d','d','d','g']),null,'c');
+  h+=pinsRow([127.5,162.5,197.5,232.5],98,R(['d','d','d','d']),null,'c');
+  [1,2,3,4,5].forEach(function(n,j){h+='<text class="plab" x="'+(110+j*35)+'" y="70" text-anchor="middle">'+n+'</text>'});
+  [6,7,8,9].forEach(function(n,j){h+='<text class="plab" x="'+(127.5+j*35)+'" y="102" text-anchor="middle">'+n+'</text>'});
+  h+='<text class="keyt" x="180" y="144" text-anchor="middle">D-shaped shell</text>';
+ }
+ if(show)h+='<text class="plab p" x="348" y="22" text-anchor="end">'+(k.p?'POWER':'')+(k.p&&k.d?' + ':'')+'</text><text class="plab d" x="348" y="'+(k.p?40:22)+'" text-anchor="end">'+(k.d?'DATA':'')+'</text>';
+ $('face').innerHTML=h;
+ $('face').setAttribute('aria-label',k.n+': '+k.pins+' pins, '+k.key+'. '+(show?(k.p?'Carries power':'No power')+', '+(k.d?'carries data.':'no data.'):'Answer below to reveal what the pins carry.'));
+}
 var cur=-1,ans={p:null,d:null};
-K.forEach(function(k,i){var b=document.createElement('button');b.type='button';b.textContent=k.n;b.setAttribute('aria-pressed','false');b.onclick=function(){cur=i;ans={p:null,d:null};Array.prototype.forEach.call($('cons').children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});Array.prototype.forEach.call(document.querySelectorAll('.tg'),function(t){t.setAttribute('aria-pressed','false')});$('out').className='out';$('out').textContent=k.n+' selected. Answer both questions.'};$('cons').appendChild(b)});
+K.forEach(function(k,i){var b=document.createElement('button');b.type='button';b.textContent=k.n;b.setAttribute('aria-pressed','false');b.onclick=function(){cur=i;ans={p:null,d:null};Array.prototype.forEach.call($('cons').children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});Array.prototype.forEach.call(document.querySelectorAll('.tg'),function(t){t.setAttribute('aria-pressed','false')});face(i,false);$('out').className='out';$('out').textContent=k.n+': '+k.pins+' pins, '+k.key+'. Does it carry power? Data?'};$('cons').appendChild(b)});
 Array.prototype.forEach.call(document.querySelectorAll('.tg'),function(b){b.onclick=function(){ans[b.dataset.k]=+b.dataset.v;Array.prototype.forEach.call(document.querySelectorAll('.tg[data-k="'+b.dataset.k+'"]'),function(x){x.setAttribute('aria-pressed',x===b?'true':'false')})}});
 $('ck').onclick=function(){var o=$('out');if(cur<0||ans.p===null||ans.d===null){o.className='out';o.textContent='Pick a connector and answer both questions.';return}
- var k=K[cur],ok=ans.p===k.p&&ans.d===k.d;o.className='out '+(ok?'okbox':'nobox');
+ var k=K[cur],ok=ans.p===k.p&&ans.d===k.d;o.className='out '+(ok?'okbox':'nobox');face(cur,true);
  o.innerHTML='<strong>'+(ok?'Correct. ':'Not quite. Correct answer: power '+(k.p?'yes':'no')+', data '+(k.d?'yes':'no')+'. ')+'</strong>'+esc(k.x)};
+$('cons').children[0].click();
 var s1=false,p1=false;
 function ex(){var o=$('eo');if(!s1&&!p1){o.className='out';o.textContent='Nothing connected yet.';return}
  if(s1&&!p1){o.className='out nobox';o.innerHTML='<strong>It stays dead.</strong> eSATA carries data only and supplies NO power. The drive needs its own power.'}
@@ -158,11 +251,22 @@ function ex(){var o=$('eo');if(!s1&&!p1){o.className='out';o.textContent='Nothin
 $('es').onclick=function(){s1=true;ex()};$('ep').onclick=function(){p1=true;ex()};
 rank('rk',[
  {k:'u4',label:'USB4 / Thunderbolt 3 or 4',sub:'40 Gbps',why:'USB4 and Thunderbolt 3/4 tie at 40 Gbps, the fastest.'},
- {k:'u3',label:'USB 3.x',sub:'5 to 10 Gbps',why:'USB 3.x is faster than eSATA but slower than 40 Gbps.'},
- {k:'es',label:'eSATA',sub:'6 Gbps',why:'eSATA reaches up to 6 Gbps, slower than USB4 and Thunderbolt 3.'},
- {k:'u2',label:'USB 2.0',sub:'480 Mbps',why:'USB 2.0 is 480 Mbps, below eSATA.'},
- {k:'se',label:'Serial (DB-9)',sub:'kbps',why:'Serial speeds are in kbps, the slowest of all.'}
-],['u4','u3','es','u2','se'],'Rank from fastest to slowest.');
+ {k:'u31',label:'USB 3.1',sub:'10 Gbps',why:'USB 3.1 (SuperSpeed+) is 10 Gbps, faster than eSATA.'},
+ {k:'es',label:'eSATA',sub:'6 Gbps',why:'eSATA reaches up to 6 Gbps: faster than USB 3.0 (5 Gbps) but slower than USB 3.1.'},
+ {k:'u30',label:'USB 3.0',sub:'5 Gbps',why:'USB 3.0 (SuperSpeed) is 5 Gbps, just under eSATA. Saying "USB 3.x beats eSATA" is only true from USB 3.1 up.'},
+ {k:'u2',label:'USB 2.0',sub:'480 Mbps',why:'USB 2.0 is 480 Mbps, about a tenth of USB 3.0.'},
+ {k:'se',label:'Serial (DB-9)',sub:'~115 kbps',why:'Serial runs in kbps, the slowest of all.'}
+],['u4','u31','es','u30','u2','se'],'Rank from fastest to slowest.');
+var SP=[{n:'Serial (DB-9)',lo:115.2e3,hi:115.2e3,v:'~115 kbps'},{n:'USB 2.0',lo:480e6,hi:480e6,v:'480 Mbps'},{n:'USB 3.x',lo:5e9,hi:20e9,v:'5–20 Gbps'},{n:'eSATA',lo:6e9,hi:6e9,v:'6 Gbps'},{n:'USB4 / TB 3–4',lo:40e9,hi:40e9,v:'40 Gbps'}];
+(function(){var x0=10,x1=330,lmin=5,lmax=11,X=function(b){return x0+(Math.log10(b)-lmin)/(lmax-lmin)*(x1-x0)},h='',bottom=8+SP.length*46;
+ for(var d=lmin;d<=lmax;d++){var gx=X(Math.pow(10,d));h+='<line class="axis" x1="'+gx+'" x2="'+gx+'" y1="4" y2="'+bottom+'"/>';
+  if((d-lmin)%2===0)h+='<text class="axt" x="'+gx+'" y="'+(bottom+18)+'" text-anchor="'+(d===lmin?'start':d===lmax?'end':'middle')+'">'+{5:'100 kbps',7:'10 Mbps',9:'1 Gbps',11:'100 Gbps'}[d]+'</text>'}
+ SP.forEach(function(r,i){var y=8+i*46,by=y+20,end=X(r.hi);h+='<text class="bl" x="'+x0+'" y="'+(y+13)+'">'+r.n+'</text>';
+  h+='<rect class="bar" x="'+x0+'" y="'+by+'" width="'+Math.max(2,X(r.lo)-x0)+'" height="18" rx="2"/>';
+  if(r.hi>r.lo){h+='<rect class="bar rng" x="'+X(r.lo)+'" y="'+by+'" width="'+(X(r.hi)-X(r.lo))+'" height="18"/><line stroke="var(--accent)" stroke-width="1.5" x1="'+X(10e9)+'" x2="'+X(10e9)+'" y1="'+by+'" y2="'+(by+18)+'"/>'}
+  h+='<text class="bv" x="'+x1+'" y="'+(y+13)+'" text-anchor="end">'+r.v+'</text>'});
+ $('scale').innerHTML=h})();
+$('showscale').onclick=function(){var f=$('scalefig'),open=f.hidden;f.hidden=!open;this.setAttribute('aria-expanded',open?'true':'false');this.textContent=open?'Hide the speed scale':'Show the speed scale'};
 quiz('qz',[
  {q:'Which connector is NOT used for peripheral input devices?',o:['USB','Molex','1/8 inch audio jack'],a:1,why:'Input devices use USB, D-sub, or 1/8-inch audio jacks. Molex is a drive power connector.'},
  {q:'Which legacy 4-pin connector powers PATA and optical drives?',o:['Molex','DB-9','eSATA'],a:0,why:'Molex is power only, for PATA and optical drives.'},
