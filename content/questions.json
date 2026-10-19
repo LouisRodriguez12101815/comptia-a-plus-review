@@ -215,11 +215,11 @@
     "prompt": "A printer will not install because Windows cannot talk to the USB controller. Which tool is the right first hardware console?",
     "choices": [
       "services.msc",
-      "devmgmt.msc",
       "Indexing Options",
-      "USMT"
+      "USMT",
+      "devmgmt.msc"
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "Device Manager (devmgmt.msc) is for hardware and drivers, not services or search indexing.",
     "weak": false
   },
@@ -230,10 +230,10 @@
     "choices": [
       "Application",
       "Setup",
-      "Security",
-      "Indexing"
+      "Indexing",
+      "Security"
     ],
-    "answer": 2,
+    "answer": 3,
     "explanation": "Security logs cover logon attempts and permission denials.",
     "weak": false
   },
@@ -536,12 +536,12 @@
     "topicId": "networking-dns-dhcp",
     "prompt": "Which ports does DHCP use?",
     "choices": [
-      "TCP 80 and 443",
       "UDP 67 and 68",
+      "TCP 80 and 443",
       "TCP 25 and 587",
       "UDP 53 only"
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "DHCP: UDP 67 server, 68 client. DNS is typically UDP/TCP 53.",
     "weak": false
   },
@@ -551,11 +551,11 @@
     "prompt": "What does DORA stand for?",
     "choices": [
       "Deny, Offer, Route, Allow",
-      "Discover, Offer, Request, Acknowledge",
       "DNS, OSPF, RIP, ARP",
+      "Discover, Offer, Request, Acknowledge",
       "Disk, Optical, RAID, Array"
     ],
-    "answer": 1,
+    "answer": 2,
     "explanation": "DHCP handshake: Discover, Offer, Request, Acknowledge.",
     "weak": false
   },
@@ -565,11 +565,11 @@
     "prompt": "ipconfig /all shows 169.254.32.10. What does that mean?",
     "choices": [
       "A valid DHCP lease from the router",
-      "APIPA — DHCP failed",
       "A public IPv6 address",
-      "A successful WDS capture"
+      "A successful WDS capture",
+      "APIPA — DHCP failed"
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "169.254.x.x is APIPA. The client could not get a real DHCP address.",
     "weak": true
   },
@@ -833,11 +833,11 @@
     "prompt": "A 220-1201-style question: an office run needs 10 Gb/s over a 90 m cable. Cheapest cable that works?",
     "choices": [
       "Cat 5e",
-      "Cat 6",
       "Cat 6a",
+      "Cat 6",
       "RG-6"
     ],
-    "answer": 2,
+    "answer": 1,
     "explanation": "Cat 6 only guarantees 10 Gb/s to 55 m. Cat 6a does 10 Gb/s at 100 m; Cat 5e tops at 1 Gb/s.",
     "weak": true
   },
@@ -846,12 +846,12 @@
     "topicId": "networking-cabling",
     "prompt": "A switch must power a new IP camera without an outlet nearby. Which standard supplies the most wattage?",
     "choices": [
+      "802.3bt",
       "802.3af",
       "802.3at",
-      "802.3bt",
       "802.11ac"
     ],
-    "answer": 2,
+    "answer": 0,
     "explanation": "802.3bt (PoE++) provides roughly 60–100 W; af is 15.4 W and at is 30 W. 802.11ac is Wi-Fi, not PoE.",
     "weak": false
   },
@@ -889,11 +889,11 @@
     "prompt": "Which connector is most common on modern fiber patch cables?",
     "choices": [
       "BNC",
-      "F-connector",
       "LC",
+      "F-connector",
       "RJ-11"
     ],
-    "answer": 2,
+    "answer": 1,
     "explanation": "LC is the small latching connector used on most modern fiber gear. SC is push-pull, ST is legacy bayonet, F/BNC are coax.",
     "weak": false
   },
@@ -1296,10 +1296,10 @@
     "choices": [
       "NTFS",
       "exFAT",
-      "FAT32",
-      "HFS+"
+      "HFS+",
+      "FAT32"
     ],
-    "answer": 2,
+    "answer": 3,
     "explanation": "FAT32 can be read and written by both Windows and Mac computers, making it the guide's cross-platform pick.",
     "weak": false
   },
@@ -1308,12 +1308,12 @@
     "topicId": "core2-ch2",
     "prompt": "Which command-line utility can be used to schedule a remote computer shutdown?",
     "choices": [
+      "shutdown",
       "taskkill",
       "tasklist",
-      "shutdown",
       "rundll32"
     ],
-    "answer": 2,
+    "answer": 0,
     "explanation": "shutdown.exe (for example shutdown /i) schedules a shutdown of a remote computer.",
     "weak": true
   },
@@ -1947,11 +1947,11 @@
     "prompt": "Which device repeats every frame it receives out of all other ports?",
     "choices": [
       "Switch",
-      "Hub",
       "Router",
-      "Bridge"
+      "Bridge",
+      "Hub"
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "A hub (aka repeater) broadcasts every received frame out of every other port, creating one giant collision domain.",
     "weak": false
   },
@@ -1960,12 +1960,12 @@
     "topicId": "networking-devices",
     "prompt": "What allows a switch to forward frames one-to-one?",
     "choices": [
-      "Its ASIC and MAC address table",
       "Its routing table",
       "CSMA/CD",
-      "Its uplink port"
+      "Its uplink port",
+      "Its ASIC and MAC address table"
     ],
-    "answer": 0,
+    "answer": 3,
     "explanation": "The ASIC (programming chip) builds a MAC address table (CAM table) so the switch can send unicast directly to the right port.",
     "weak": false
   },
@@ -1976,10 +1976,10 @@
     "choices": [
       "DNS",
       "DHCP",
-      "ARP",
-      "ICMP"
+      "ICMP",
+      "ARP"
     ],
-    "answer": 2,
+    "answer": 3,
     "explanation": "ARP (Address Resolution Protocol) broadcasts asking for every device's IP and MAC; the switch stores the answers in its MAC table. arp -a shows the cache.",
     "weak": false
   },
@@ -7695,6 +7695,258 @@
     ],
     "answer": 0,
     "explanation": "A tray that is not recognized is a configuration or driver problem. Check the tray settings and driver before any hardware work.",
+    "weak": false
+  },
+  {
+    "id": "q-ch13-18",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A laptop's screen looks warped and fuzzy, but an external monitor connected to the same laptop shows a clean image. What is the most likely cause?",
+    "choices": [
+      "The video card",
+      "The motherboard",
+      "The laptop's built-in display",
+      "The video driver"
+    ],
+    "answer": 2,
+    "explanation": "If the external monitor is clean, the video card, driver and motherboard are producing a good signal, so the fault is in the laptop's own display. A bad driver or GPU would distort both screens.",
+    "weak": false
+  },
+  {
+    "id": "q-ch13-19",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A ceiling projector shuts down partway through a meeting and will not power back on for about an hour. What should you check first?",
+    "choices": [
+      "Dust clogging the air filter, which causes overheating",
+      "The mounting bracket",
+      "The input source setting",
+      "The auto power-off timer"
+    ],
+    "answer": 0,
+    "explanation": "Shutting down mid-use and staying off until it cools is a thermal shutdown. A clogged air filter is a common cause. The input source cannot shut the projector off, and an auto power-off timer only acts after inactivity.",
+    "weak": false
+  },
+  {
+    "id": "q-ch13-20",
+    "topicId": "core1-display-troubleshooting",
+    "prompt": "A laptop sends video over HDMI to a conference-room display, but the video plays with no sound. Audio works when the laptop is unplugged. What should you check first?",
+    "choices": [
+      "Switch to a DVI cable",
+      "Restart the A/V system",
+      "Restart the laptop",
+      "The laptop's audio output device and mute setting"
+    ],
+    "answer": 3,
+    "explanation": "HDMI carries audio, so the likely cause is the laptop still sending sound to its own speakers, or the output being muted. DVI carries no audio, so switching cables makes it worse; restarts are not the first step for a setting.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-01",
+    "topicId": "core2-security-hardening",
+    "prompt": "A contractor will need a Windows account for three months only. Which setting best makes sure the account stops working when the contract ends?",
+    "choices": [
+      "Disable the Guest account",
+      "Set an account expiration date",
+      "Restrict login times",
+      "Set a BIOS/UEFI password"
+    ],
+    "answer": 1,
+    "explanation": "An expiration date disables the account automatically on the end date. Login-time restrictions only limit hours of the day, and the Guest account and firmware password are unrelated to this account. (Objective 2.7)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-02",
+    "topicId": "core2-security-hardening",
+    "prompt": "Malware is spreading through the office from USB drives that start a program as soon as they are inserted. Which setting addresses this?",
+    "choices": [
+      "Disable AutoRun and AutoPlay",
+      "Enable the Guest account",
+      "Increase the screen-lock timeout",
+      "Set a password expiration policy"
+    ],
+    "answer": 0,
+    "explanation": "AutoRun and AutoPlay launch content from removable media automatically. Disabling them stops the drive from starting the program. Password and screen-lock settings do not affect removable media. (Objective 2.7)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-03",
+    "topicId": "core2-security-hardening",
+    "prompt": "A technician wants to stop users from booting a laptop from a USB drive to get around Windows sign-in. What should the technician configure?",
+    "choices": [
+      "Encrypting File System on the user folders",
+      "Account lockout",
+      "A BIOS/UEFI password and a locked boot order",
+      "A screen saver with a password"
+    ],
+    "answer": 2,
+    "explanation": "Booting from other media happens before Windows loads, so the control belongs in firmware: a BIOS/UEFI password stops users from changing the boot order. Windows settings like lockout and screen locks never run in that case. (Objective 2.7)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-04",
+    "topicId": "core2-security-hardening",
+    "prompt": "Security logs show thousands of password guesses against workstation accounts. Which control stops these guesses from succeeding?",
+    "choices": [
+      "Password expiration",
+      "Disabling unused services",
+      "A screen-lock timeout",
+      "Account lockout after a set number of failed attempts"
+    ],
+    "answer": 3,
+    "explanation": "Lockout blocks the account after a few wrong passwords, which ends a guessing attack. Expiration only limits how long a stolen password works; it does not stop guessing. (Objective 2.7)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-05",
+    "topicId": "core2-security-hardening",
+    "prompt": "A user needs to step away from a desk for a few minutes. What is the best practice?",
+    "choices": [
+      "Lock the workstation, for example with Windows+L",
+      "Turn off the monitor",
+      "Unplug the network cable",
+      "Close all open applications"
+    ],
+    "answer": 0,
+    "explanation": "Locking the session requires a password to get back in while keeping work open. Turning off the monitor leaves the session open to anyone who sits down. (Objective 2.7)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-06",
+    "topicId": "core2-security-hardening",
+    "prompt": "A company phone holding sensitive data was lost and will not be recovered. What is the best way to protect the data?",
+    "choices": [
+      "Change the office Wi-Fi password",
+      "Remotely wipe the phone",
+      "Disable Bluetooth on other company phones",
+      "Turn on a locator application"
+    ],
+    "answer": 1,
+    "explanation": "A remote wipe erases the data on the lost device. A locator helps when you expect to get the device back, and the other actions do not touch the lost phone. (Objective 2.8)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-07",
+    "topicId": "core2-security-hardening",
+    "prompt": "Employees use their own phones for company email. The company must require a screen lock and encryption on those phones. What should it use?",
+    "choices": [
+      "A locator application",
+      "A remote backup application",
+      "Mobile device management with a configuration profile",
+      "A content filter"
+    ],
+    "answer": 2,
+    "explanation": "MDM pushes configuration profiles that enforce screen locks and encryption on many devices, including personal (BYOD) phones through a work profile. The other tools do not enforce settings. (Objective 2.8)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-08",
+    "topicId": "core2-security-hardening",
+    "prompt": "A phone erases itself after ten wrong PIN entries. Which security method is this?",
+    "choices": [
+      "Remote backup",
+      "Patch management",
+      "Locator application",
+      "Failed-login attempt restriction"
+    ],
+    "answer": 3,
+    "explanation": "Limiting failed logins, here by wiping after ten attempts, stops someone from guessing the PIN. Remote backup, patching and locators do not react to wrong PINs. (Objective 2.8)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-09",
+    "topicId": "core2-security-hardening",
+    "prompt": "Which policy lets employees use phones they personally own for company work?",
+    "choices": [
+      "Bring your own device (BYOD)",
+      "Corporate-owned devices",
+      "Kiosk mode",
+      "A guest network"
+    ],
+    "answer": 0,
+    "explanation": "BYOD means the employee owns the device and uses it for work, usually with MDM managing a work profile. Corporate-owned devices belong to the company. (Objective 2.8)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-10",
+    "topicId": "core2-security-hardening",
+    "prompt": "Which step protects a phone against security flaws that the vendor has already fixed?",
+    "choices": [
+      "Installing a locator application",
+      "Applying OS and app updates",
+      "Switching to a pattern lock",
+      "Turning on remote backup"
+    ],
+    "answer": 1,
+    "explanation": "Applying OS and app updates (patch management) installs the vendor's fixes for known flaws. A lock, a locator and backups protect against other risks, not unpatched vulnerabilities. (Objective 2.8)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-11",
+    "topicId": "core2-security-hardening",
+    "prompt": "A company is disposing of laptops with solid-state drives. Which method will NOT reliably destroy the data on those drives?",
+    "choices": [
+      "Shredding",
+      "Drilling",
+      "Degaussing",
+      "Incineration"
+    ],
+    "answer": 2,
+    "explanation": "Degaussing works on magnetic media such as hard drives and tapes. SSDs store data in flash memory, so a magnetic field does not erase them. Physical destruction works on any media. (Objective 2.9)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-12",
+    "topicId": "core2-security-hardening",
+    "prompt": "Hard drives will be reused by another department, and their old data must not be recoverable. What should the technician do?",
+    "choices": [
+      "Run a quick format",
+      "Delete the files and empty the Recycle Bin",
+      "Degauss the drives",
+      "Wipe the drives with an overwrite or secure-erase tool"
+    ],
+    "answer": 3,
+    "explanation": "Wiping overwrites the data and keeps the drive usable. A quick format and deleting files leave data recoverable, and degaussing usually leaves a hard drive unusable. (Objective 2.9)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-13",
+    "topicId": "core2-security-hardening",
+    "prompt": "A third-party recycling vendor destroys a company's old drives. Which document proves the destruction happened?",
+    "choices": [
+      "Certificate of destruction",
+      "Service-level agreement",
+      "Acceptable use policy",
+      "Purchase order"
+    ],
+    "answer": 0,
+    "explanation": "The vendor issues a certificate of destruction or recycling as proof. An SLA defines service levels, and an acceptable use policy covers employee behavior. (Objective 2.9)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-14",
+    "topicId": "core2-security-hardening",
+    "prompt": "What does a standard (quick) format do to the data already on a drive?",
+    "choices": [
+      "Overwrites every sector with zeros",
+      "Removes the file system records but leaves the data recoverable",
+      "Physically damages the platters",
+      "Encrypts the existing data"
+    ],
+    "answer": 1,
+    "explanation": "A quick format writes a new, empty file system; the old data stays on the drive until it is overwritten, so recovery tools can find it. Zero-filling is what a low-level format or wipe does. (Objective 2.9)",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-15",
+    "topicId": "core2-security-hardening",
+    "prompt": "What is the usual result of degaussing a magnetic hard drive?",
+    "choices": [
+      "The drive can be reformatted and reused",
+      "Only the partition table is removed",
+      "The data is destroyed, and the drive is usually unusable",
+      "The data is encrypted"
+    ],
+    "answer": 2,
+    "explanation": "Degaussing scrambles the magnetic data, including the information the drive needs to operate, so the drive usually cannot be reused. Use a wipe instead when the drive must be reused. (Objective 2.9)",
     "weak": false
   }
 ]

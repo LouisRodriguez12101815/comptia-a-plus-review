@@ -69,8 +69,13 @@ export function checkFacts(html, objectiveKeys) {
     if (!Array.isArray(fact.sources) || fact.sources.length === 0) problems.push(`${at} has no sources`);
   }
   for (const [i, s] of (data.simplifications ?? []).entries()) if (typeof s !== 'string' || !s) problems.push(`simplifications[${i}] must be text`);
-  if (!/<figure[\s>]/i.test(html) || !/role="img"/.test(html)) problems.push('revised visual needs a <figure> with an svg role="img"');
-  if (!/<figcaption[\s>]/i.test(html)) problems.push('revised visual needs a <figcaption>');
+  if (data.kind === 'exercise') {
+    if (!/<label[\s>]/i.test(html)) problems.push('exercise needs a <label> for each control');
+    if (!/aria-live=/.test(html)) problems.push('exercise needs an aria-live region for feedback');
+  } else {
+    if (!/<figure[\s>]/i.test(html) || !/role="img"/.test(html)) problems.push('revised visual needs a <figure> with an svg role="img"');
+    if (!/<figcaption[\s>]/i.test(html)) problems.push('revised visual needs a <figcaption>');
+  }
   return problems;
 }
 

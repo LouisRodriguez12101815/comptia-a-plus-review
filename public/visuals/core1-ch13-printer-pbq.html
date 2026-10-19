@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Printer symptom match</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:row}
+li{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);display:grid;gap:8px;min-width:0;counter-increment:row}
+li.good{border-color:var(--good);background:var(--good-soft)}
+li.bad{border-color:var(--bad);background:var(--bad-soft)}
+.sym{font-weight:600}
+.sym::before{content:counter(row) ". ";color:var(--muted)}
+.type{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-left:6px}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;width:100%;max-width:100%}
+.why{font-size:14px;margin:0}
+.why[hidden]{display:none}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Printer symptom match</h1>
+<p class="lede">A performance-based drill for 220-1201 objective 5.6. Pick the most likely cause or first fix for each symptom, then check your answers. There are more answers than symptoms, so the last one is not free.</p>
+<section class="card" aria-labelledby="h-drill">
+<h2 id="h-drill" class="sr">Symptoms</h2>
+<ol id="rows"></ol>
+<div class="ctrls">
+<button type="button" class="primary" id="check">Check answers</button>
+<button type="button" id="retry">Try again</button>
+<button type="button" id="show">Show answers</button>
+</div>
+<p class="out" id="out" role="status" aria-live="polite">Choose an answer for each symptom.</p>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "kind": "exercise",
+  "facts": [
+    { "claim": "A vertical line repeated on every laser-printed page comes from a groove or scratch on the EP drum.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] },
+    { "claim": "Faint images of earlier pages on laser output (ghosting) point to a bad erasure lamp or a broken cleaning blade.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] },
+    { "claim": "A blank horizontal line through each line of impact-printer text means a printhead pin is not firing.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] },
+    { "claim": "Garbled print usually comes from a wrong or corrupted print driver.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] },
+    { "claim": "Jobs stuck in the queue while the printer is online are cleared by stopping and restarting the print spooler.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Print queue and spooler"] },
+    { "claim": "A multipage misfeed comes from damp paper or pickup tension that needs adjusting.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] },
+    { "claim": "Blank laser pages point to a transfer corona that is not working.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Print queue and spooler"] },
+    { "claim": "Wrong page orientation is fixed in the job's printing preferences.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] },
+    { "claim": "Faded prints point to low toner or ink, or a worn ribbon.", "objectives": ["220-1201 5.6"], "sources": ["notes core1-ch13-mobile-printer-troubleshooting: Printer symptoms (5.6)"] }
+  ]
+}
+</script>
+<script>
+(function(){
+  var ITEMS = [
+    {s:"A vertical black line on every page", t:"Laser", a:"A groove or scratch on the EP drum", w:"The damaged spot on the drum collects toner and prints it in the same place on every page."},
+    {s:"A faint image of the previous page on new pages", t:"Laser", a:"A bad erasure lamp or a broken cleaning blade", w:"Those parts clear the drum between pages. If they fail, the old image stays on the drum."},
+    {s:"A blank horizontal line through every line of text", t:"Impact", a:"A printhead pin that is not firing", w:"Each pin prints one row of dots. A dead pin leaves the same row empty in every line."},
+    {s:"Random characters instead of the document", t:"Any", a:"A wrong or corrupted print driver", w:"The driver translates the document for the printer. Reinstall or update the correct driver first."},
+    {s:"Fifty jobs stuck in the queue; the printer is online", t:"Any", a:"Stop and restart the print spooler", w:"The spooler service holds the jobs. Restarting it clears a frozen queue."},
+    {s:"Two or three sheets pulled through for each page", t:"Inkjet or laser", a:"Damp paper or pickup tension that needs adjusting", w:"Damp sheets stick together, and wrong pickup tension grabs more than one."},
+    {s:"Completely blank pages come out", t:"Laser", a:"A transfer corona that is not working", w:"Without the transfer charge, toner never moves from the drum to the paper."},
+    {s:"Every page prints rotated 90 degrees", t:"Any", a:"The job's printing preferences", w:"Orientation is a printing preference. The spooler and queue only hold and list jobs."},
+    {s:"Print is evenly light across the whole page", t:"Any", a:"Low toner or ink, or a worn ribbon", w:"Even fading means the printer is running out of what it prints with."}
+  ];
+  var EXTRA = ["A failing fuser assembly", "A tray set to envelopes"];
+  var rows = document.getElementById("rows"), out = document.getElementById("out");
+  function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  var options = [];
+  function build(){
+    options = shuffle(ITEMS.map(function(i){ return i.a; }).concat(EXTRA));
+    rows.innerHTML = "";
+    ITEMS.forEach(function(it, n){
+      var li = document.createElement("li");
+      var id = "pick-" + n;
+      li.innerHTML = '<label class="sym" for="' + id + '"></label><select id="' + id + '"><option value="">Choose a cause or fix</option></select><p class="why" hidden></p>';
+      var lab = li.querySelector("label"); lab.textContent = it.s;
+      var tag = document.createElement("span"); tag.className = "type"; tag.textContent = it.t; lab.appendChild(tag);
+      var sel = li.querySelector("select");
+      options.forEach(function(o){ var op = document.createElement("option"); op.value = o; op.textContent = o; sel.appendChild(op); });
+      rows.appendChild(li);
+    });
+  }
+  function mark(showAll){
+    var right = 0, blank = 0;
+    ITEMS.forEach(function(it, n){
+      var li = rows.children[n], sel = li.querySelector("select"), why = li.querySelector(".why");
+      if (showAll) sel.value = it.a;
+      if (!sel.value){ blank++; li.className = ""; why.hidden = true; return; }
+      var ok = sel.value === it.a; if (ok) right++;
+      li.className = ok ? "good" : "bad";
+      why.hidden = false;
+      why.textContent = (ok ? "Correct. " : "Not this one. The answer is: " + it.a + ". ") + it.w;
+    });
+    out.textContent = showAll ? "All answers shown. Use Try again to practise without them." :
+      right + " of " + ITEMS.length + " correct" + (blank ? ", " + blank + " left blank." : ".") + (right === ITEMS.length ? " Well done." : " Use Try again to clear only the wrong rows.");
+  }
+  document.getElementById("check").addEventListener("click", function(){ mark(false); });
+  document.getElementById("show").addEventListener("click", function(){ mark(true); });
+  document.getElementById("retry").addEventListener("click", function(){
+    var keep = ITEMS.map(function(it, n){ var v = rows.children[n].querySelector("select").value; return v === it.a ? v : ""; });
+    build();
+    keep.forEach(function(v, n){ rows.children[n].querySelector("select").value = v; if (v) rows.children[n].className = "good"; });
+    out.textContent = "Wrong rows cleared and answers shuffled. Correct rows are kept.";
+  });
+  build();
+})();
+</script>
+</body>
+</html>

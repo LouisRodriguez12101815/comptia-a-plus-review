@@ -2530,6 +2530,10 @@
             "text": "Objective 5.4 asks you to troubleshoot common mobile-device problems from a scenario. Start with the symptom, rule out the simplest cause, and treat any battery, heat, or liquid problem as a safety issue before a repair question."
           },
           {
+            "type": "paragraph",
+            "text": "Power, heat and physical damage:"
+          },
+          {
             "type": "table",
             "headers": [
               "Symptom",
@@ -2549,10 +2553,6 @@
                 "Swap in a known-good cable and adapter, then inspect the port"
               ],
               [
-                "Poor or no connectivity",
-                "Confirm airplane mode is off and the radio is enabled, then check the carrier"
-              ],
-              [
                 "Liquid damage",
                 "Power off and do not charge; inspect the liquid indicators and the device"
               ],
@@ -2561,12 +2561,29 @@
                 "Close heavy apps, remove the case, and check charging and surroundings"
               ],
               [
-                "Digitizer issues",
-                "Restart; if touch still fails, the digitizer or screen needs replacement"
-              ],
-              [
                 "Physically damaged ports",
                 "Inspect the port; repair or replace it"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Input, connectivity and software:"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "First check or fix"
+            ],
+            "rows": [
+              [
+                "Poor or no connectivity",
+                "Confirm airplane mode is off and the radio is enabled, then check the carrier"
+              ],
+              [
+                "Digitizer issues",
+                "Restart; if touch still fails, the digitizer or screen needs replacement"
               ],
               [
                 "Malware",
@@ -2627,6 +2644,10 @@
             "text": "Objective 5.6 asks you to match printer symptoms to the component or setting that causes them. The printer type matters: laser, impact, and inkjet printers fail in different parts of the process."
           },
           {
+            "type": "paragraph",
+            "text": "Print quality:"
+          },
+          {
             "type": "table",
             "headers": [
               "Symptom",
@@ -2650,16 +2671,33 @@
                 "Low toner or ink, or a worn ribbon"
               ],
               [
+                "Residue from previous pages (laser)",
+                "Bad erasure lamp or broken cleaning blade"
+              ],
+              [
+                "Blank pages (laser)",
+                "Transfer corona not working, so toner never reaches the paper"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Paper handling, queue, settings and hardware:"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Likely cause or first fix"
+            ],
+            "rows": [
+              [
                 "Paper not feeding or jams",
                 "Debris in the feed path or worn pickup rollers"
               ],
               [
                 "Multipage misfeed",
                 "Damp paper, or pickup tension that needs adjusting"
-              ],
-              [
-                "Residue from previous pages (laser)",
-                "Bad erasure lamp or broken cleaning blade"
               ],
               [
                 "Multiple prints pending or a frozen queue",
@@ -2686,6 +2724,11 @@
                 "Confirm the printer's IP address, network link, and queue"
               ]
             ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Read the printer type in the question first. A line down the page means the EP drum on a laser printer but a printhead pin on an impact printer."
           }
         ]
       },
@@ -2705,7 +2748,215 @@
           {
             "type": "callout",
             "kind": "critical",
-            "text": "Lines or residue on laser output point to the EP drum, the cleaning blade, or the erasure lamp. Do not confuse these with the transfer corona wire, which causes blank pages."
+            "text": "Lines or residue on laser output point to the EP drum, the cleaning blade or the erasure lamp. Blank pages point to the transfer corona instead."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-security-hardening",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Workstation, Mobile and Data-Disposal Security",
+    "chapter": "Core 2 · Security hardening",
+    "summary": "Pick the account setting, mobile control or destruction method that stops the specific risk in a scenario.",
+    "concept": "security",
+    "sections": [
+      {
+        "id": "workstation-hardening",
+        "title": "Workstation hardening (2.7)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Objective 2.7 asks you to pick the setting that blocks a specific risk on a Windows workstation. Match the risk to the control."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Risk",
+              "Control"
+            ],
+            "rows": [
+              [
+                "Someone guesses passwords repeatedly",
+                "Account lockout after a set number of failed attempts"
+              ],
+              [
+                "A temporary worker keeps access after the contract ends",
+                "Account expiration date"
+              ],
+              [
+                "Accounts used outside business hours",
+                "Restrict login times"
+              ],
+              [
+                "Anyone can sign in without a password",
+                "Disable the Guest account"
+              ],
+              [
+                "Malware runs from a USB drive when it is inserted",
+                "Disable AutoRun and AutoPlay"
+              ],
+              [
+                "Someone boots from USB to bypass Windows or changes firmware settings",
+                "Set a BIOS/UEFI password and lock the boot order"
+              ],
+              [
+                "A stolen laptop's drive is read in another computer",
+                "Data-at-rest encryption, such as BitLocker"
+              ],
+              [
+                "An unattended desk with an open session",
+                "Lock the screen (Windows+L) and set a screen-lock timeout"
+              ],
+              [
+                "Attackers try the built-in administrator account",
+                "Rename it or change its default password, and use least privilege"
+              ],
+              [
+                "Unneeded services expose more attack surface",
+                "Disable unused services"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Passwords: long, with mixed character types, unique to each system, and changed when policy requires.",
+              "End users: lock the screen when stepping away, log off when finished, keep laptops physically secured, and never write passwords or personal data where others can see them."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Account lockout stops repeated guessing; password expiration does not. Expiration only limits how long a stolen password stays useful."
+          }
+        ]
+      },
+      {
+        "id": "mobile-security",
+        "title": "Securing mobile devices (2.8)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Objective 2.8 asks how to protect a phone or tablet and the company data on it, before and after it is lost."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Method"
+            ],
+            "rows": [
+              [
+                "Stop a casual finder from opening the device",
+                "Screen lock: PIN, pattern, fingerprint or face"
+              ],
+              [
+                "Stop repeated guessing of the lock",
+                "Failed-login restriction, such as a wipe after a set number of attempts"
+              ],
+              [
+                "Protect data if the storage is read directly",
+                "Device encryption"
+              ],
+              [
+                "Find a missing device",
+                "Locator application"
+              ],
+              [
+                "Erase data on a device that will not be recovered",
+                "Remote wipe"
+              ],
+              [
+                "Keep data when a device is lost or replaced",
+                "Remote backup application"
+              ],
+              [
+                "Close known security holes",
+                "Patch management: OS and app updates"
+              ],
+              [
+                "Block malware and unsafe content",
+                "Endpoint security: anti-malware and content filtering"
+              ],
+              [
+                "Enforce lock, encryption and app rules on many devices",
+                "Mobile device management (MDM) with configuration profiles"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "BYOD (bring your own device): the employee owns the phone, and MDM usually manages only a work profile.",
+              "Corporate-owned: the company owns and fully manages the device."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Locate first if the device may be recovered; remote wipe when it will not be, or when it holds sensitive data at risk."
+          }
+        ]
+      },
+      {
+        "id": "data-destruction",
+        "title": "Data destruction and disposal (2.9)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Objective 2.9 asks you to choose between destroying media and wiping it for reuse, and to know which methods work on which media."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "What it does",
+              "Media can be reused?"
+            ],
+            "rows": [
+              [
+                "Shredding, drilling, incineration",
+                "Physically destroys the drive or media",
+                "No"
+              ],
+              [
+                "Degaussing",
+                "A strong magnetic field erases magnetic media (hard drives, tapes). It does not work on SSDs or flash",
+                "No, a degaussed hard drive is usually unusable"
+              ],
+              [
+                "Erasing or wiping (overwrite, secure erase)",
+                "Overwrites the data so it cannot be recovered",
+                "Yes"
+              ],
+              [
+                "Low-level format",
+                "Rewrites the drive's sectors (zero-fill)",
+                "Yes"
+              ],
+              [
+                "Standard (quick) format",
+                "Removes the file system records; data stays recoverable",
+                "Yes, but not secure"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Outsourcing: a third-party destruction or recycling vendor provides a certificate of destruction or recycling as proof.",
+              "Follow regulatory and environmental requirements for how data and hardware are disposed of."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Degaussing does not erase an SSD. Use secure erase or physical destruction for solid-state media."
           }
         ]
       }

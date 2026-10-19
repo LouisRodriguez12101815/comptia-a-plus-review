@@ -24,7 +24,7 @@ Read [the workflow contract](../../WORKFLOW.md) first. Visual rules come from [e
 4. "Check answers" marks each row correct or incorrect with its reason. "Try again" clears only the wrong rows. "Show answers" reveals all.
 5. Shuffle answer order on load and on retry.
 6. Use the navy console tokens, 44 px minimum targets, visible focus, and no horizontal scroll at 390 px.
-7. Add a `visual-facts` block that lists the item facts and objective ids.
+7. Add a `visual-facts` block with `"kind": "exercise"` that lists the item facts and objective ids. The audit then checks for labels and a live feedback region instead of a figure.
 8. Register the page in `content/track-visuals.json` under the topic, with a group name such as "Practice".
 
 ## Check
