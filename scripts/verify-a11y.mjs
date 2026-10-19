@@ -31,6 +31,12 @@ const pages = [
   '/labs/inter-vlan-l3-switch',
   '/practice-games',
   '/quiz',
+  '/test',
+  '/test?exam=220-1201',
+  '/coverage',
+  '/visuals/core1-ch1-motherboard-map.html',
+  '/visuals/core1-ch3-connectors.html',
+  '/visuals/core1-ch3-video-signals.html',
 ];
 
 const browser = await chromium.launch(browserPath ? { executablePath: browserPath } : {});

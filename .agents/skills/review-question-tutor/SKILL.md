@@ -28,6 +28,7 @@ Use this for conversational study of supplied review questions, not automatic si
 
 - When a concept is missed twice or a diagram is requested, provide a targeted explanation or accessible text diagram first. Use an interactive visual only when it helps the learning task and its creation is authorized.
 - Do not assume Artifact, `artifact-design`, publishing, or project-storage tools exist. With no such tools, use inline teaching; for an authorized HTML file, follow the repository's existing visual conventions in `docs/adding-visuals.md` and use available local tools. Use network-diagram guidance only for networking diagrams.
+- Diagram requests route to the visual skills: `hardware-diagram-designer` for PC hardware pictures, `network-diagram-designer` for networking diagrams, and `exam-visual-designer` for other chapter visuals. Those skills own the fact block and checks.
 - Verify the depicted mechanism and provide a text equivalent. Report rendering/browser checks only if actually performed. Saving HTML is not publishing it; publishing requires separate explicit authorization and an available tool.
 
 ## 4. Close out a topic
