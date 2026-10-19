@@ -72,6 +72,18 @@ svg{display:block;width:100%;height:auto}
 .brow .tr i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s}
 .brow .tm{text-align:right;font-weight:600}
 @media (max-width:480px){.brow{grid-template-columns:84px 1fr 74px}}
+.fig{margin:10px 0 0}
+.fig svg{max-width:520px;margin:0 auto}
+.fig figcaption{font-size:13px;color:var(--muted);margin-top:6px;max-width:70ch}
+.hous{fill:var(--bg);stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+.zone{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3}
+.pin{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+.pin.a{fill:var(--warm-soft);stroke:var(--warm);stroke-width:2}
+.pin.d{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.blade{fill:var(--muted)}
+.plab{fill:var(--muted);font:600 13px system-ui,sans-serif}
+.plab.a{fill:var(--warm)}.plab.d{fill:var(--accent)}
+.ttl{fill:var(--ink);font:600 15px system-ui,sans-serif}
 </style>
 </head>
 <body>
@@ -86,6 +98,10 @@ svg{display:block;width:100%;height:auto}
   <button type="button" data-m="digital" aria-pressed="false">Digital-only monitor</button></div>
  <div class="lab">Tap a connector to try it</div>
  <div class="ctrls" id="cons" role="group" aria-label="Connectors"></div>
+ <figure class="fig">
+  <div class="stage" tabindex="0" role="region" aria-label="Connector face drawing"><svg id="face" viewBox="20 0 320 160" role="img" aria-label="Tap a connector to see its face."></svg></div>
+  <figcaption>Front view of each plug, schematic. Orange pins carry analog video, blue pins digital. Pin counts follow the standards; sizes are not to scale between connectors.</figcaption>
+ </figure>
  <div class="out" id="co" aria-live="polite"></div>
 </div>
 <div class="card sec"><div class="lab">2. Multi-answer</div><div id="mq"></div></div>
@@ -107,6 +123,37 @@ svg{display:block;width:100%;height:auto}
 <div class="card sec"><div class="lab">Test yourself</div><div id="qz"></div></div>
 
 </div>
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "VGA is analog video on a DE-15 (D-sub) connector: 15 pins in three rows of five; pins 1 to 3 carry red, green and blue.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Video connectors and signal types", "VESA DDC / VGA DE-15 pin assignment"] },
+    { "claim": "DVI-I carries analog and digital: 24 grid pins plus C1 to C4 analog pins around the flat C5 blade (24+5).",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Video connectors and signal types", "DDWG DVI 1.0 specification: connector pin assignments"] },
+    { "claim": "DVI-D is digital only: dual link has 24 grid pins and the blade with no C1 to C4 pins (24+1); single link has 18+1.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Video connectors and signal types", "DDWG DVI 1.0 specification: connector pin assignments"] },
+    { "claim": "DVI-A is analog only: 12 grid pins plus the five analog contacts (12+5).",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Video connectors and signal types", "DDWG DVI 1.0 specification: connector pin assignments"] },
+    { "claim": "HDMI Type A is digital video and audio on 19 pins in two staggered rows (10 over 9).",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Video connectors and signal types", "HDMI 1.4 specification: Type A connector"] },
+    { "claim": "DisplayPort is digital video and audio on a 20-pin connector with one cut corner.",
+      "objectives": ["220-1201 3.2"],
+      "sources": ["notes core1-ch3-peripherals: Video connectors and signal types", "VESA DisplayPort standard: standard connector"] }
+  ],
+  "simplifications": [
+    "Connector faces are schematic and not to scale between connectors.",
+    "DVI grid pins are tinted by section (digital); a few of them carry DDC, +5 V, ground or hot-plug detect.",
+    "DVI-A's 12 grid pins are drawn as a region with their count, not individual positions.",
+    "DVI-D is drawn dual link (24+1).",
+    "Only VGA's color pins are tinted; sync, DDC and ground pins are left neutral."
+  ]
+}
+</script>
 <script>
 
 function $(id){return document.getElementById(id)}
@@ -155,14 +202,44 @@ var C=[
  {n:'DVI-I',a:1,d:1,x:'DVI-I is integrated: it carries both analog and digital.'},
  {n:'HDMI',a:0,d:1,x:'HDMI is digital video plus audio. Mini-HDMI is a smaller variant, and both are fine for projectors.'},
  {n:'DisplayPort',a:0,d:1,x:'DisplayPort is digital audio and video over a 20-pin connector.'}];
+function circ(x,y,c){return '<circle class="pin '+(c||'')+'" cx="'+x+'" cy="'+y+'" r="8"/>'}
+function sq(x,y,c){return '<rect class="pin '+(c||'')+'" x="'+(x-4)+'" y="'+(y-6)+'" width="8" height="12" rx="1.5"/>'}
+function dvi(grid,analog){var h='<path class="hous" d="M40 46 H312 V110 L296 126 H56 L40 110 Z"/>';
+ if(grid==='zone')h+='<rect class="zone" x="62" y="52" width="164" height="64" rx="4"/><text class="plab" x="144" y="89" text-anchor="middle">12 pins</text>';
+ else for(var r=0;r<3;r++)for(var c=0;c<8;c++)h+=sq(74+c*20,64+r*20,'d');
+ h+='<rect class="blade" x="248" y="82" width="44" height="5" rx="1"/>';
+ if(analog){[[256,68],[284,68],[256,100],[284,100]].forEach(function(p){h+=sq(p[0],p[1],'a')});h+='<text class="plab a" x="270" y="146" text-anchor="middle">C1–C4 analog</text>'}
+ else h+='<text class="plab" x="270" y="146" text-anchor="middle">blade only</text>';
+ if(grid!=='zone')h+='<text class="plab d" x="144" y="146" text-anchor="middle">24 digital</text>';
+ return h}
+var FACE={
+ 'VGA':{pins:'15',draw:function(){var h='<path class="hous" d="M70 46 Q68 40 74 40 H286 Q292 40 290 46 L272 120 Q270 126 264 126 H96 Q90 126 88 120 Z"/>';
+  [120,150,180,210,240].forEach(function(x,i){h+=circ(x,62,i<3?'a':'')});
+  [105,135,165,195,225].forEach(function(x){h+=circ(x,84,'')});
+  [120,150,180,210,240].forEach(function(x){h+=circ(x,106,'')});
+  h+='<text class="plab a" x="120" y="66" text-anchor="middle" style="font-size:10px">R</text><text class="plab a" x="150" y="66" text-anchor="middle" style="font-size:10px">G</text><text class="plab a" x="180" y="66" text-anchor="middle" style="font-size:10px">B</text>';
+  return h+'<text class="plab" x="180" y="148" text-anchor="middle">DE-15 · 3 rows of 5</text>'}},
+ 'DVI-A':{pins:'12 + 5',draw:function(){return dvi('zone',true)}},
+ 'DVI-D':{pins:'24 + 1',draw:function(){return dvi('full',false)}},
+ 'DVI-I':{pins:'24 + 5',draw:function(){return dvi('full',true)}},
+ 'HDMI':{pins:'19',draw:function(){var h='<path class="hous" d="M50 50 H310 V86 L284 116 H76 L50 86 Z"/>';
+  for(var i=0;i<10;i++)h+=sq(90+i*20,72,'d');for(var j=0;j<9;j++)h+=sq(100+j*20,96,'d');
+  return h+'<text class="plab d" x="180" y="146" text-anchor="middle">Type A · 10 over 9</text>'}},
+ 'DisplayPort':{pins:'20',draw:function(){var h='<path class="hous" d="M50 50 H310 V116 H76 L50 92 Z"/>';
+  for(var i=0;i<10;i++){h+=sq(90+i*22,72,'d');h+=sq(90+i*22,96,'d')}
+  return h+'<text class="plab d" x="180" y="146" text-anchor="middle">2 rows of 10 · one cut corner</text>'}}};
+function drawFace(i){var c=C[i],f=FACE[c.n],kind=c.a&&c.d?'analog + digital':c.a?'analog':'digital';
+ $('face').innerHTML='<text class="ttl" x="40" y="24">'+c.n+' · '+f.pins+' pins</text><text class="plab '+(c.a&&!c.d?'a':'d')+'" x="320" y="24" text-anchor="end">'+kind.toUpperCase()+'</text>'+f.draw();
+ $('face').setAttribute('aria-label',c.n+' connector face: '+f.pins+' pins, '+kind+' video.')}
 var mon='analog',last=-1;
 function showC(){Array.prototype.forEach.call($('cons').children,function(b,i){b.classList.remove('right','wrong');if(i===last)b.classList.add((mon==='analog'?C[i].a:C[i].d)?'right':'wrong')});
  if(last<0){$('co').className='out';$('co').textContent='Tap a connector.';return}
  var c=C[last],ok=mon==='analog'?c.a:c.d;$('co').className='out '+(ok?'okbox':'nobox');
  $('co').innerHTML='<strong>'+c.n+' on a '+mon+' monitor: '+(ok?'picture works.':'no picture.')+'</strong> '+esc(c.x)+(mon==='analog'&&c.n==='DVI-I'?' This assumes the source supplies analog through DVI-I and the cable routes that signal to the display.':'')}
-C.forEach(function(c,i){var b=document.createElement('button');b.type='button';b.textContent=c.n;b.onclick=function(){last=i;showC()};$('cons').appendChild(b)});
+C.forEach(function(c,i){var b=document.createElement('button');b.type='button';b.textContent=c.n;b.onclick=function(){last=i;drawFace(i);showC()};$('cons').appendChild(b)});
 Array.prototype.forEach.call($('mon').children,function(b){b.onclick=function(){mon=b.dataset.m;Array.prototype.forEach.call($('mon').children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});showC()}});
 showC();
+drawFace(0);
 multi('mq','Which TWO connectors are for analog monitors?',['VGA','HDMI','DVI-A','DVI-D','DisplayPort'],['VGA','DVI-A'],'VGA and DVI-A are the analog-monitor connectors. HDMI, DisplayPort, and DVI-D are digital.');
 var G=[
  {l:'DVI-D source → DVI-A display',strategy:'active',direction:'digital-analog',w:'DVI-D sends digital video; DVI-A needs analog video. Use supported active digital-to-analog conversion, not merely matching cable ends.'},

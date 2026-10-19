@@ -13,12 +13,13 @@ Start with content verification when claims or exam mappings are affected. Apply
 
 ### Content and project workflows
 
-These three skills are the ones used to add and maintain the site's study content. They were written for an AI assistant session where the author supplies notes and review questions; they contain no credentials or personal data.
+These skills are the ones used to add and maintain the site's study content. They were written for an AI assistant session where the author supplies notes and review questions; they contain no credentials or personal data.
 
 | Skill | Responsibility and trigger |
 | --- | --- |
 | [review-question-tutor](../../.agents/skills/review-question-tutor/SKILL.md) | Ingest a chapter's review questions, quiz the learner one question at a time, and build visualizations for missed concepts. Source of most `public/visuals/` pages. |
 | [content-fact-check](../../.agents/skills/content-fact-check/SKILL.md) | Run `npm run check:content`, review chapters against the official objectives and primary references, verify findings; when implementation is authorized, fix confirmed errors and pin them in `scripts/content-facts.json`. See [content-fact-check.md](../content-fact-check.md). |
+| [exam-visual-designer](../../.agents/skills/exam-visual-designer/SKILL.md) | Pick word-heavy visuals with `npm run audit:visuals`, verify the facts they teach, and redraw them as source-backed SVG figures with a checked fact block. |
 | [comptia-site-pm](../../.agents/skills/comptia-site-pm/SKILL.md) | Follow AGENTS.md for content priorities; use currently verified audit findings for UI work and scope-aware PR review. |
 
 ### Agents
@@ -76,6 +77,10 @@ Use $learning-challenge-designer to specify one next-hop troubleshooting mission
 ```
 
 ```text
+Use $exam-visual-designer to redraw public/visuals/core1-ch3-connectors.html. List its facts with objective keys and sources first, then draw connector faces from verified pin counts. Report fact errors found in the old version.
+```
+
+```text
 Use $network-diagram-designer to review the Follow the Packet diagrams against their sources and explicit IPv4/Ethernet/ARP/NAT assumptions. Propose structured data, readable mobile labels and text equivalents without revealing future answers. Do not modify code yet.
 ```
 
@@ -93,6 +98,7 @@ Inspect `package.json` and the relevant script before use; record actual results
 
 | Check | Existing command or path | Requirements and limits |
 | --- | --- | --- |
+| Visual fact blocks | `npm run audit:visuals -- --check` | Validates fact-block JSON, objective keys and figure markup. Does not prove the drawing matches the claims; compare the rendered page with the sources. |
 | Independent IPv4 fixtures | `python3 scripts/verify-subnet-fixtures.py` | Python standard library; independent of the JavaScript engine. Does not verify unreadable original handwriting. |
 | Logic regressions | `npm run test:game`, `npm run test:practice`, `npm run test:subnet`, `npm test` | Installed project dependencies; subnet suite also needs Python. Tests prove specified behavior, not improved learning. |
 | Implementation checks | `npm run lint`, `npm run typecheck`, `npm run build` | Run for authorized application changes and follow `AGENTS.md`. A documentation-only skill addition does not demonstrate application behavior. |
