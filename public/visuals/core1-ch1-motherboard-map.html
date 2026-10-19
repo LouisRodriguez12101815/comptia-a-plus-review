@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motherboard map</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#ffffff;--ink:#1d1f24;--muted:#5d6270;--line:#d9d5cc;--accent:#1f5f7a;--accent-soft:#dcebf1;--good:#2f6b4f;--good-soft:#dcebe3;--bad:#9a3b2e;--bad-soft:#f3dcd8;--warm:#7a4e1d;--warm-soft:#f2e6d6;--pcb:#e6efe8;--pcb-line:#9db8a5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--pcb:#1b2a22;--pcb-line:#3d5c48;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171c;--surface:#1e2129;--ink:#ece9e1;--muted:#a3a8b5;--line:#353a46;--accent:#7fc0da;--accent-soft:#223640;--good:#8fd0ae;--good-soft:#223a2e;--bad:#f0a494;--bad-soft:#3d2623;--warm:#e0b07a;--warm-soft:#3a2f22;--pcb:#1b2a22;--pcb-line:#3d5c48;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;margin-bottom:16px}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:38px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.stage{overflow-x:auto;border-radius:10px}
+.stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+figure{margin:0}
+figcaption{font-size:13px;color:var(--muted);margin-top:6px;max-width:72ch}
+#board{display:block;width:100%;min-width:600px;height:auto}
+#ff{display:block;width:100%;max-width:520px;height:auto;margin:0 auto}
+.out{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out.ok{background:var(--good-soft)}.out.no{background:var(--bad-soft)}
+.out h3{margin:0 0 4px;font-size:15px}
+.out ul{margin:6px 0 0;padding-left:20px}
+.out .trap{margin:6px 0 0}
+.q{font-weight:600;margin:4px 0 2px}
+.mini{font-size:13px;color:var(--muted);margin:0 0 8px}
+.sc{font-size:13px;color:var(--muted)}
+/* board drawing */
+.pcb{fill:var(--pcb);stroke:var(--pcb-line);stroke-width:2}
+.hole{fill:var(--bg);stroke:var(--pcb-line);stroke-width:1.5}
+.part{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+.part.dark{fill:var(--line)}
+.part.slotA{fill:var(--accent-soft);stroke:var(--accent)}
+.pinr{fill:var(--muted)}
+.lbl{fill:var(--ink);font:600 12px system-ui,sans-serif;pointer-events:none;paint-order:stroke;stroke:var(--pcb);stroke-width:4px;stroke-linejoin:round}
+.lbl.sm{font-size:11px;fill:var(--muted)}
+.hide-labels .lbl{display:none}
+.hot{cursor:pointer;outline:none}
+.hot .hit{fill:transparent;stroke:transparent;stroke-width:3;rx:4}
+.hot:hover .hit{stroke:var(--accent)}
+.hot:focus-visible .hit{stroke:var(--accent);stroke-dasharray:4 3;fill:var(--accent-soft);fill-opacity:.35}
+.hot.sel .hit{stroke:var(--accent);fill:var(--accent-soft);fill-opacity:.45}
+.hot.right .hit{stroke:var(--good);fill:var(--good-soft);fill-opacity:.6;stroke-width:4}
+.hot.wrong .hit{stroke:var(--bad);fill:var(--bad-soft);fill-opacity:.6;stroke-width:4}
+.ffo{fill:none;stroke-width:2.5}
+.ffl,.ffd{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+.ffl{font:600 13px system-ui,sans-serif}
+.ffd{font:12px system-ui,sans-serif;fill:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Motherboard map</h1>
+<p class="lede">Learn where each slot, header, and connector sits on a typical ATX board. Explore with labels, then hide them and find parts from exam-style prompts and symptoms.</p>
+
+<div class="card">
+ <div class="ctrls" role="group" aria-label="Mode">
+  <button type="button" data-mode="explore" aria-pressed="true">Explore</button>
+  <button type="button" data-mode="install" aria-pressed="false">Find it: install</button>
+  <button type="button" data-mode="trouble" aria-pressed="false">Find it: troubleshoot</button>
+ </div>
+ <p class="q" id="prompt" aria-live="polite"></p>
+ <figure>
+  <div class="stage" tabindex="0" role="region" aria-label="Motherboard diagram. Scroll sideways if it is wider than the screen. Tab to each part.">
+   <svg id="board" viewBox="0 0 610 488" role="img" aria-label="Typical ATX motherboard layout, top view, rear I/O on the left."></svg>
+  </div>
+  <figcaption>Schematic top view of a typical ATX board (305 × 244 mm), rear I/O on the left. Real boards move headers around; the slot, socket, and connector types are what the exam tests. Board labels use the short names printed on real boards. On a phone, scroll the board sideways. Tab to a part and press Enter, or tap it.</figcaption>
+ </figure>
+ <div class="ctrls" style="margin-top:10px"><button type="button" id="next" hidden>Next prompt</button><span class="sc" id="score"></span></div>
+ <div class="out" id="out" aria-live="polite">Tap any part to see what it is and what the exam asks about it.</div>
+</div>
+
+<div class="card">
+ <h2>Form factors to scale</h2>
+ <p class="mini">Same scale, aligned at the rear I/O corner. A smaller board fits a larger case; a larger board does not fit a smaller one.</p>
+ <figure>
+  <svg id="ff" viewBox="0 0 360 300" role="img" aria-label="ATX 305 by 244 millimetres, microATX 244 by 244, mini-ITX 170 by 170, drawn to the same scale."></svg>
+  <figcaption>ATX 12 × 9.6 in (305 × 244 mm), microATX 9.6 × 9.6 in (244 × 244 mm), mini-ITX 6.7 × 6.7 in (170 × 170 mm). Mini-ITX suits small, low-power builds; laptops use proprietary boards ordered by exact model.</figcaption>
+ </figure>
+</div>
+</div>
+
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "ATX boards are 305 x 244 mm, microATX 244 x 244 mm, and mini-ITX 170 x 170 mm.",
+      "objectives": ["220-1201 3.5"],
+      "sources": ["notes core1-ch1-motherboards: Motherboard form factors", "Intel ATX specification 2.2; microATX and Mini-ITX form factor specifications"] },
+    { "claim": "Main power is a 24-pin ATX connector (+3.3 V, +5 V, +12 V); CPU power is a separate 4- or 8-pin 12 V (EPS12V/ATX12V) connector near the CPU.",
+      "objectives": ["220-1201 3.5", "220-1201 3.6"],
+      "sources": ["notes core1-ch2: Power supplies", "Intel ATX12V/EPS12V power supply design guides", "Professor Messer 220-1201 3.5 Motherboard Connections"] },
+    { "claim": "Graphics cards go in the PCIe x16 slot; the slot supplies up to 75 W and 6-pin (75 W) and 8-pin (150 W) PCIe cables add more; a smaller card fits a larger slot.",
+      "objectives": ["220-1201 3.5"],
+      "sources": ["notes core1-ch2: Expansion slots and interfaces", "PCI-SIG PCI Express Card Electromechanical specification", "Professor Messer 220-1201 3.5 Motherboard Connections"] },
+    { "claim": "DDR4 and DDR5 desktop modules are 288-pin DIMMs keyed by notch position; dual channel uses matched pairs in the slots the board manual names.",
+      "objectives": ["220-1201 3.3"],
+      "sources": ["JEDEC DDR4 and DDR5 UDIMM module standards", "motherboard manuals (slot population tables)"] },
+    { "claim": "M.2 slots hold SSDs that use NVMe (PCIe) or SATA, depending on the slot's key and support; SATA ports are 7-pin L-keyed data connectors at up to 6 Gbps.",
+      "objectives": ["220-1201 3.4", "220-1201 3.5"],
+      "sources": ["notes core1-ch2: Expansion slots and interfaces", "PCI-SIG M.2 specification", "Serial ATA Revision 3.x"] },
+    { "claim": "LGA sockets have pins in the socket (Intel, AMD AM5); PGA puts pins on the CPU (AMD AM4). The CPU must match the socket.",
+      "objectives": ["220-1201 3.5"],
+      "sources": ["notes core1-ch1-motherboards: Processors and cooling", "Intel and AMD socket documentation"] },
+    { "claim": "The CMOS battery keeps the real-time clock and settings while unplugged; wrong date and time after power loss means replace it. The clear-CMOS jumper resets settings and BIOS passwords.",
+      "objectives": ["220-1201 3.5", "220-1201 5.1"],
+      "sources": ["notes core1-ch1-motherboards: BIOS, CMOS battery, and passwords"] },
+    { "claim": "UEFI settings include boot order, Secure Boot, TPM, virtualization (VT-x/AMD-V), passwords, and fan and temperature monitoring.",
+      "objectives": ["220-1201 3.5", "220-1201 4.1"],
+      "sources": ["CompTIA A+ 220-1201 exam objectives 3.5", "notes core1-ch1-motherboards: Hardware support for virtualization"] },
+    { "claim": "Headers: front panel (power and reset switches, power and HDD LEDs), USB 2.0 (9 pins), USB 3.x (19 pins), front audio, fan (3-pin DC or 4-pin PWM), and TPM.",
+      "objectives": ["220-1201 3.5"],
+      "sources": ["Professor Messer 220-1201 3.5 Motherboard Connections", "Intel Front Panel I/O Connectivity Design Guide"] },
+    { "claim": "Symptoms: POST beeps with no video after adding memory point to RAM; overheating shutdowns point to cooling; front ports dead with rear ports working point to the internal header.",
+      "objectives": ["220-1201 5.1"],
+      "sources": ["notes core1-ch1-motherboards: Recognizing RAM problems", "CompTIA A+ 220-1201 exam objectives 5.1"] }
+  ],
+  "simplifications": [
+    "Board layout is a typical ATX arrangement, not a specific model; header positions vary between boards.",
+    "Slot and connector sizes are schematic; only the board outline and form-factor figure are to scale.",
+    "The second x16 slot is drawn full length; many boards wire it as x4 or x8 electrically.",
+    "Beep code meanings vary by firmware vendor; the drill only links the symptom to the component to check first."
+  ]
+}
+</script>
+<script>
+var $=function(id){return document.getElementById(id)};
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+/* One data table drives the drawing, the labels, the explore panel and both drills. */
+var P=[
+ {id:'io',n:'Rear I/O panel',s:'Rear I/O',x:6,y:30,w:34,h:196,lx:52,ly:128,an:'middle',vert:1,
+  what:'Ports soldered to the board that show through the back of the case.',
+  facts:['USB, RJ45 network, audio jacks, and video outputs.','Video outputs here use the CPU’s integrated graphics.'],
+  trap:'With a graphics card installed, plug the monitor into the card, not the board.'},
+ {id:'eps',n:'CPU power (8-pin)',s:'CPU 8-pin',x:58,y:8,w:44,h:20,lx:108,ly:23,an:'start',
+  what:'4- or 8-pin 12 V CPU power (EPS12V / ATX12V), next to the CPU voltage regulators.',
+  facts:['Separate from the 24-pin main power cable.','No CPU power cable: the PC powers on but does not POST.'],
+  trap:'The 8-pin PCIe graphics cable looks similar but is keyed differently. Never force it.'},
+ {id:'socket',n:'CPU socket',s:'CPU socket',x:170,y:62,w:130,h:130,lx:235,ly:77,an:'middle',
+  what:'Holds the processor. The CPU must match the socket and chipset.',
+  facts:['LGA: pins in the socket (Intel, AMD AM5). PGA: pins on the CPU (AMD AM4).','Thermal paste goes between the CPU and the heat sink.','Multi-socket boards hold two or more CPUs (servers).'],
+  trap:'LGA is a socket type, not a CPU architecture (x64 and ARM are architectures).'},
+ {id:'cpufan',n:'CPU_FAN header',s:'CPU_FAN',x:304,y:24,w:30,h:12,lx:319,ly:18,an:'middle',
+  what:'Powers the CPU cooler fan and reports its speed.',
+  facts:['3-pin (voltage control) or 4-pin (PWM speed control).','UEFI monitors it and can warn or halt at 0 RPM.'],
+  trap:'Cooler fan on a case-fan header: the board may report a CPU fan error.'},
+ {id:'dimm',n:'RAM slots (DIMM)',s:'RAM (DIMM)',x:372,y:14,w:80,h:262,lx:412,ly:290,an:'middle',
+  what:'Four memory slots. Desktop DDR4 and DDR5 are both 288-pin DIMMs.',
+  facts:['A notch keys each DDR generation: they are not interchangeable.','Dual channel: install matched pairs in the slots the manual names (often A2 and B2, shaded here).','Laptops use smaller SO-DIMMs.'],
+  trap:'Same pin count does not mean compatible. DDR4 will not fit a DDR5 slot.'},
+ {id:'atx24',n:'24-pin ATX power',s:'24-pin',x:556,y:96,w:32,h:110,lx:572,ly:222,an:'middle',
+  what:'Main power from the PSU: +3.3 V, +5 V, +12 V.',
+  facts:['Older boards used 20 pins; a 20+4 cable fits both.','Keyed and latched so it fits one way.'],
+  trap:'A PSU converts wall AC to DC. These pins are all DC.'},
+ {id:'usb3',n:'USB 3.x header',s:'USB 3',x:556,y:244,w:32,h:44,lx:572,ly:304,an:'middle',
+  what:'Internal header for the case’s front USB 3 ports.',
+  facts:['19 pins in a 20-position keyed block.','USB 2.0 front ports use the smaller 9-pin header.'],
+  trap:'Front USB dead but rear USB works: check this cable first.'},
+ {id:'pcie16a',n:'PCIe x16 slot',s:'PCIe x16',x:52,y:296,w:262,h:16,lx:183,ly:290,an:'middle',
+  what:'The longest slot, with the most lanes. Graphics cards go here.',
+  facts:['The slot supplies up to 75 W.','Bigger GPUs add 6-pin (75 W) or 8-pin (150 W) PCIe power cables.','PCIe is serial and point-to-point; sizes are x1, x4, x8, x16.'],
+  trap:'No such thing as PCIe x32 or x128 on a desktop slot.'},
+ {id:'m2',n:'M.2 slot',s:'M.2',x:120,y:330,w:190,h:16,lx:215,ly:362,an:'middle',
+  what:'An SSD lies flat and screws down. No cables.',
+  facts:['Carries NVMe (PCIe) or SATA, depending on the slot.','Check the key (M key for NVMe) and the protocols the board supports.'],
+  trap:'M.2 is a form factor, NVMe is a protocol. An M.2 SSD can be SATA.'},
+ {id:'pcie1',n:'PCIe x1 slot',s:'PCIe x1',x:52,y:372,w:66,h:14,lx:85,ly:402,an:'middle',
+  what:'Shortest PCIe slot: network, sound, capture, and USB cards.',
+  facts:['A smaller card fits a larger slot (x1 card in an x16 slot).','Not the reverse: an x16 card does not fit an x1 slot.'],
+  trap:'Legacy PCI slots are a different, parallel bus.'},
+ {id:'pcie16b',n:'2nd PCIe x16 slot',s:'PCIe x16 (2nd)',x:52,y:420,w:262,h:16,lx:183,ly:414,an:'middle',
+  what:'Full-length slot, often wired as x4 or x8 electrically.',
+  facts:['Use the top x16 slot for the graphics card.','The manual lists how many lanes each slot gets.'],
+  trap:'Full length does not always mean 16 lanes.'},
+ {id:'chipset',n:'Chipset',s:'Chipset',x:400,y:318,w:84,h:70,lx:442,ly:312,an:'middle',
+  what:'The Platform Controller Hub under a heat sink.',
+  facts:['Links the CPU to SATA ports, extra USB, and extra PCIe lanes.','Sets which CPUs and features (overclocking) the board supports.'],
+  trap:'The chipset routes traffic; it does not run programs. That is the CPU.'},
+ {id:'sata',n:'SATA ports',s:'SATA',x:556,y:326,w:32,h:84,lx:572,ly:424,an:'middle',
+  what:'Data connectors for 2.5″ and 3.5″ drives and optical drives.',
+  facts:['7-pin, L-keyed, up to 6 Gbps (SATA III).','Power comes separately from the PSU’s 15-pin SATA power cable.'],
+  trap:'SATA data carries no power. eSATA is the external version.'},
+ {id:'battery',n:'CMOS battery',s:'CMOS battery',x:330,y:396,w:40,h:40,lx:350,ly:390,an:'middle',circle:1,
+  what:'CR2032 3 V coin cell for the real-time clock and settings.',
+  facts:['Wrong date and time after unplugging: replace it.','Removing it for a while also clears settings.'],
+  trap:'A UPS does not fix a dead CMOS battery.'},
+ {id:'clr',n:'Clear CMOS jumper',s:'CLR_CMOS',x:382,y:440,w:28,h:12,lx:396,ly:472,an:'middle',
+  what:'Resets UEFI settings and BIOS passwords to defaults.',
+  facts:['Use it with the PC unplugged.','Labeled CLR_CMOS or JBAT on most boards.'],
+  trap:'Clearing CMOS does not erase the drive or remove a drive-encryption key.'},
+ {id:'bios',n:'BIOS/UEFI chip',s:'BIOS',x:426,y:410,w:30,h:30,lx:441,ly:404,an:'middle',
+  what:'Flash chip that holds the firmware. Updating the BIOS rewrites it.',
+  facts:['Settings: boot order, USB permissions, passwords.','Security: Secure Boot, TPM, HSM support.','Virtualization (Intel VT-x, AMD-V) and fan and temperature monitoring.'],
+  trap:'Virtualization needs both the CPU and the UEFI setting enabled.'},
+ {id:'tpm',n:'TPM header',s:'TPM',x:236,y:452,w:44,h:12,lx:258,ly:446,an:'middle',
+  what:'Connects a plug-in Trusted Platform Module.',
+  facts:['TPM stores keys for drive encryption (BitLocker) and Secure Boot checks.','Many CPUs build it in as firmware TPM (Intel PTT, AMD fTPM).','Windows 11 requires TPM 2.0.'],
+  trap:'An HSM is a separate, usually external, key-storage device.'},
+ {id:'audio',n:'Front audio header',s:'AUDIO',x:12,y:452,w:44,h:12,lx:34,ly:446,an:'middle',
+  what:'Case headphone and microphone jacks.',
+  facts:['Labeled HD_AUDIO or AAFP.'],trap:'Rear jacks work, front do not: check this cable.'},
+ {id:'sysfan',n:'SYS_FAN header',s:'SYS_FAN',x:136,y:452,w:30,h:12,lx:151,ly:446,an:'middle',
+  what:'Case fan power and speed sensing.',facts:['Same 3-pin or 4-pin style as CPU_FAN.'],trap:'Case airflow problems cause overheating too.'},
+ {id:'usb2',n:'USB 2.0 header',s:'USB 2',x:476,y:452,w:36,h:12,lx:494,ly:446,an:'middle',
+  what:'Header for two front USB 2.0 ports.',facts:['9 pins in a 10-position block.'],trap:'It is not the same as the 19-pin USB 3 header.'},
+ {id:'fpanel',n:'Front panel header',s:'F_PANEL',x:530,y:446,w:58,h:20,lx:559,ly:440,an:'middle',
+  what:'Case buttons and lights.',
+  facts:['Power switch, reset switch, power LED, HDD activity LED.','Pin labels are printed on the board. LEDs have polarity; switches do not.'],
+  trap:'Power button does nothing but the PSU tests fine: check these wires.'}
+];
+var byId={};P.forEach(function(p){byId[p.id]=p});
+
+var DECKS={
+ install:[
+  {q:'Install a graphics card where it gets the most bandwidth.',a:['pcie16a'],w:'The top PCIe x16 slot has the most lanes. Add 6- or 8-pin PCIe power if the card has the sockets.'},
+  {q:'Where does the 8-pin CPU power cable plug in?',a:['eps'],w:'The 4/8-pin 12 V CPU connector sits near the top, by the CPU voltage regulators.'},
+  {q:'Connect the PSU’s main power cable.',a:['atx24'],w:'The 24-pin ATX connector carries +3.3, +5 and +12 V DC.'},
+  {q:'Install an NVMe SSD with no cables.',a:['m2'],w:'NVMe SSDs in the M.2 form factor screw flat to the board.'},
+  {q:'Connect a 2.5″ SATA SSD’s data cable.',a:['sata'],w:'SATA data uses the 7-pin L-keyed ports. Power comes from the PSU.'},
+  {q:'Wire the case power button and HDD activity light.',a:['fpanel'],w:'The front panel header takes the switch and LED wires.'},
+  {q:'Make the case’s front USB 3 ports work.',a:['usb3'],w:'The 19-pin USB 3.x header feeds the front USB 3 ports.'},
+  {q:'Add two matching memory modules for dual channel.',a:['dimm'],w:'DIMM slots: use the matched pair the manual names.'},
+  {q:'Add a plug-in TPM module so BitLocker can store keys.',a:['tpm'],w:'The TPM header takes a discrete module. Many CPUs also offer firmware TPM.'},
+  {q:'Connect the cooler fan so the UEFI can monitor it.',a:['cpufan'],w:'CPU_FAN reports speed; the firmware can warn or shut down at 0 RPM.'},
+  {q:'Install an x1 network card.',a:['pcie1','pcie16a','pcie16b'],w:'An x1 card fits the x1 slot, and also any larger PCIe slot.'},
+  {q:'Plug a monitor into the integrated graphics.',a:['io'],w:'Integrated-graphics video outputs are on the rear I/O panel.'},
+  {q:'Which chip do you rewrite when you flash the BIOS?',a:['bios'],w:'The firmware lives in the BIOS/UEFI flash chip.'},
+  {q:'Which part links the CPU to the SATA ports and extra USB?',a:['chipset'],w:'The chipset (PCH) connects the CPU to SATA, USB and extra PCIe lanes.'}
+ ],
+ trouble:[
+  {q:'The date and time reset every time the PC is unplugged.',a:['battery'],w:'Replace the CMOS battery (CR2032).'},
+  {q:'A user forgot the BIOS password. Reset the firmware settings.',a:['clr','battery'],w:'Use the clear-CMOS jumper (removing the battery also works on many boards).'},
+  {q:'The PC shuts down after a few minutes under load. CPU temperature reads 100 °C.',a:['socket','cpufan'],w:'Check the cooler: reseat it on the socket with fresh thermal paste and confirm the CPU_FAN header spins the fan.'},
+  {q:'After adding memory the PC beeps at startup and shows no video.',a:['dimm'],w:'POST beep codes after a memory change point to RAM: reseat it and check the type and pairing.'},
+  {q:'A new graphics card shows a black screen; the card fans never spin.',a:['pcie16a'],w:'Reseat the card in the x16 slot and connect its PCIe power cables.'},
+  {q:'Pressing the case power button does nothing, but the PSU passes a tester.',a:['fpanel','atx24'],w:'Check the front panel switch wiring and that the 24-pin is fully latched.'},
+  {q:'Front USB ports are dead. The rear USB ports work.',a:['usb3','usb2'],w:'Check the internal USB header cable.'},
+  {q:'A hypervisor says hardware virtualization is unavailable on a supported CPU.',a:['bios'],w:'Enable Intel VT-x or AMD-V in the UEFI setup.'},
+  {q:'The Windows 11 upgrade says TPM 2.0 is missing.',a:['bios','tpm'],w:'Enable firmware TPM (PTT or fTPM) in the UEFI, or install a TPM module on the header.'},
+  {q:'The monitor shows nothing; it is plugged into the rear I/O, but a graphics card is installed.',a:['pcie16a'],w:'Move the cable to the graphics card’s outputs. Integrated outputs are usually disabled when a card is present.'}
+ ]
+};
+
+var NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+
+function drawBoard(){
+ var s=$('board');s.innerHTML='';
+ el('rect',{x:2,y:2,width:606,height:484,rx:6,class:'pcb'},s);
+ [[14,14],[594,14],[14,474],[594,474],[300,240],[594,240]].forEach(function(h){el('circle',{cx:h[0],cy:h[1],r:5,class:'hole'},s)});
+ P.forEach(function(p){
+  var g=el('g',{class:'hot','data-id':p.id,tabindex:'0',role:'button','aria-label':p.n},s);
+  // the part itself
+  if(p.id==='dimm'){for(var i=0;i<4;i++){el('rect',{x:p.x+4+i*19,y:p.y+4,width:12,height:p.h-8,rx:2,class:'part'+(i%2===1?' slotA':'')},g)}}
+  else if(p.id==='socket'){el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:6,class:'part'},g);el('rect',{x:p.x+18,y:p.y+18,width:p.w-36,height:p.h-36,rx:3,class:'part dark'},g);
+   for(var r=0;r<6;r++)for(var c=0;c<6;c++)el('circle',{cx:p.x+30+c*14,cy:p.y+30+r*14,r:1.6,class:'pinr'},g)}
+  else if(p.circle){el('circle',{cx:p.x+p.w/2,cy:p.y+p.h/2,r:p.w/2-2,class:'part'},g);el('text',{x:p.x+p.w/2,y:p.y+p.h/2+4,'text-anchor':'middle',class:'lbl sm'},g).textContent='3V'}
+  else if(p.id==='sata'){for(var k=0;k<4;k++)el('rect',{x:p.x,y:p.y+k*21,width:p.w,height:16,rx:2,class:'part dark'},g)}
+  else if(p.id==='atx24'){el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:3,class:'part'},g);for(var m=0;m<12;m++){el('rect',{x:p.x+5,y:p.y+5+m*8.4,width:8,height:6,class:'pinr'},g);el('rect',{x:p.x+19,y:p.y+5+m*8.4,width:8,height:6,class:'pinr'},g)}}
+  else if(p.id==='eps'){el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:3,class:'part'},g);for(var e2=0;e2<4;e2++){el('rect',{x:p.x+5+e2*9.5,y:p.y+3,width:6,height:6,class:'pinr'},g);el('rect',{x:p.x+5+e2*9.5,y:p.y+11,width:6,height:6,class:'pinr'},g)}}
+  else if(p.id==='chipset'){el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:6,class:'part dark'},g);for(var f=0;f<5;f++)el('line',{x1:p.x+10,x2:p.x+p.w-10,y1:p.y+12+f*11,y2:p.y+12+f*11,stroke:'var(--muted)','stroke-width':2},g)}
+  else if(p.id==='io'){el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:3,class:'part dark'},g);[[40,22],[70,14],[92,14],[118,22],[150,30]].forEach(function(b){el('rect',{x:p.x+6,y:p.y+b[0]-10,width:p.w-12,height:b[1],rx:2,class:'part'},g)})}
+  else {el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:3,class:'part'+(/pcie|m2/.test(p.id)?' dark':'')},g)}
+  el('rect',{x:p.x-4,y:p.y-4,width:p.w+8,height:p.h+8,rx:5,class:'hit'},g);
+  var t=el('text',{x:p.lx,y:p.ly,'text-anchor':p.an||'middle',class:'lbl'},s);
+  if(p.vert){t.setAttribute('transform','rotate(-90 '+p.lx+' '+p.ly+')');t.setAttribute('y',p.ly+4)}
+  t.textContent=p.s||p.n;
+  g.addEventListener('click',function(){pick(p.id)});
+  g.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick(p.id)}});
+ });
+}
+function marks(map){[].forEach.call(document.querySelectorAll('.hot'),function(g){g.classList.remove('sel','right','wrong');var c=map[g.getAttribute('data-id')];if(c)g.classList.add(c)})}
+
+var mode='explore',deck=[],di=0,locked=false,right=0,tried=0;
+function setMode(m){mode=m;[].forEach.call(document.querySelectorAll('[data-mode]'),function(b){b.setAttribute('aria-pressed',b.getAttribute('data-mode')===m?'true':'false')});
+ $('board').classList.toggle('hide-labels',m!=='explore');marks({});
+ if(m==='explore'){$('prompt').textContent='';$('next').hidden=true;$('score').textContent='';$('out').className='out';$('out').textContent='Tap any part to see what it is and what the exam asks about it.';return}
+ deck=shuffle(DECKS[m]);di=0;right=0;tried=0;ask()}
+function ask(){locked=false;marks({});var d=deck[di];$('prompt').textContent=(di+1)+' of '+deck.length+': '+d.q;$('next').hidden=true;$('out').className='out';$('out').textContent='Labels are hidden. Tap the part you would use or check.';$('score').textContent=right+' / '+tried+' correct'}
+function explain(p,cls,lead){var h='<h3>'+(lead||'')+esc(p.n)+'</h3><div>'+esc(p.what)+'</div><ul>'+p.facts.map(function(f){return '<li>'+esc(f)+'</li>'}).join('')+'</ul><p class="trap"><strong>Exam trap:</strong> '+esc(p.trap)+'</p>';$('out').className='out'+(cls?' '+cls:'');$('out').innerHTML=h}
+function pick(id){var p=byId[id];
+ if(mode==='explore'){var m={};m[id]='sel';marks(m);explain(p);$('board').setAttribute('aria-label','Typical ATX motherboard. Selected: '+p.n+'.');return}
+ if(locked)return;locked=true;tried++;var d=deck[di],ok=d.a.indexOf(id)>=0,m2={};
+ d.a.forEach(function(a){m2[a]='right'});if(!ok)m2[id]='wrong';marks(m2);if(ok)right++;
+ var ans=byId[d.a[0]];
+ $('out').className='out '+(ok?'ok':'no');
+ $('out').innerHTML='<h3>'+(ok?'Correct: ':'Not quite. You picked '+esc(p.n)+'. Answer: ')+esc(d.a.map(function(a){return byId[a].n}).join(' or '))+'</h3><div>'+esc(d.w)+'</div><p class="trap"><strong>Exam trap:</strong> '+esc(ans.trap)+'</p>';
+ $('score').textContent=right+' / '+tried+' correct';
+ $('next').hidden=false;$('next').textContent=di+1<deck.length?'Next prompt':'Start over';$('next').focus()}
+$('next').onclick=function(){di++;if(di>=deck.length){setMode(mode);return}ask()};
+[].forEach.call(document.querySelectorAll('[data-mode]'),function(b){b.onclick=function(){setMode(b.getAttribute('data-mode'))}});
+
+function drawFF(){var s=$('ff'),k=1.05,x0=12,y0=12,h='';
+ [['ATX',305,244,'var(--accent)'],['microATX',244,244,'var(--warm)'],['mini-ITX',170,170,'var(--good)']].forEach(function(f,i){
+  var w=f[1]*k,hh=f[2]*k;h+='<rect class="ffo" x="'+x0+'" y="'+y0+'" width="'+w+'" height="'+hh+'" rx="3" stroke="'+f[3]+'"'+(i===1?' stroke-dasharray="7 4"':'')+'/>';
+  var ty=i===1?y0+22:y0+hh-24;h+='<text class="ffl" fill="'+f[3]+'" x="'+(x0+w-8)+'" y="'+ty+'" text-anchor="end">'+f[0]+'</text><text class="ffd" x="'+(x0+w-8)+'" y="'+(ty+15)+'" text-anchor="end">'+f[1]+' × '+f[2]+' mm</text>'});
+ h+='<rect x="'+x0+'" y="'+(y0+10)+'" width="10" height="70" fill="var(--muted)" opacity=".5"/><text class="ffd" x="'+(x0+16)+'" y="'+(y0+50)+'">rear I/O</text>';
+ s.innerHTML=h}
+
+drawBoard();drawFF();setMode('explore');
+</script>
+</body>
+</html>

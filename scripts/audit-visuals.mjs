@@ -17,7 +17,8 @@ const read = (path) => readFileSync(new URL(path, root), 'utf8');
 const readJson = (path) => JSON.parse(read(path));
 
 const SHAPE = /<(rect|circle|path|line|polygon|ellipse|polyline)\b/gi;
-const SHAPE_NS = /createElementNS\([^)]*['"](rect|circle|path|line|polygon|ellipse|polyline)/g;
+// Shapes built in script: createElementNS(ns, 'rect') or a helper such as el('rect', {...}).
+const SHAPE_NS = /\(\s*(?:[\w.]+\s*,\s*)?['"](rect|circle|path|line|polygon|ellipse|polyline)['"]/g;
 const FACTS = /<script\s+type="application\/json"\s+id="visual-facts">([\s\S]*?)<\/script>/i;
 
 function countWords(html) {
