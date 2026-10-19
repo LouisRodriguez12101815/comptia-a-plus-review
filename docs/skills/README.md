@@ -20,6 +20,7 @@ These skills are the ones used to add and maintain the site's study content. The
 | [review-question-tutor](../../.agents/skills/review-question-tutor/SKILL.md) | Ingest a chapter's review questions, quiz the learner one question at a time, and build visualizations for missed concepts. Source of most `public/visuals/` pages. |
 | [content-fact-check](../../.agents/skills/content-fact-check/SKILL.md) | Run `npm run check:content`, review chapters against the official objectives and primary references, verify findings; when implementation is authorized, fix confirmed errors and pin them in `scripts/content-facts.json`. See [content-fact-check.md](../content-fact-check.md). |
 | [exam-visual-designer](../../.agents/skills/exam-visual-designer/SKILL.md) | Pick word-heavy visuals with `npm run audit:visuals`, verify the facts they teach, and redraw them as source-backed SVG figures with a checked fact block. |
+| [hardware-diagram-designer](../../.agents/skills/hardware-diagram-designer/SKILL.md) | Build interactive motherboard and hardware diagrams that drill the seven Core 1 hardware question types (identify, pick the slot, compatibility, power, firmware setting, symptom, install order). |
 | [comptia-site-pm](../../.agents/skills/comptia-site-pm/SKILL.md) | Follow AGENTS.md for content priorities; use currently verified audit findings for UI work and scope-aware PR review. |
 
 ### Agents
