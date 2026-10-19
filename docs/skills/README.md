@@ -1,5 +1,7 @@
 # Repository-local agent skills
 
+Claude uses its own copies in [`.claude/`](../../.claude/README.md); this page and `.agents/` are for other assistants.
+
 The four gameplay skills below provide focused workflows for the CompTIA Review website. `SKILL.md` contains reusable instructions; detailed findings, source evidence, specifications and regression matrices belong in `docs/`, with the target commit, environment and date. Preserve existing audit records and distinguish historical findings from current reproductions.
 
 Start with content verification when claims or exam mappings are affected. Apply shared-state regression testing only to multiplayer/shared-state work, learning-loop design to practice, and network-diagram guidance to networking visuals. Do not add features or dependencies merely to use a skill.
