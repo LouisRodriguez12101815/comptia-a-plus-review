@@ -1,13 +1,16 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { NotesSearch } from "@/app/components/NotesSearch";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getTopics, getTopicsByConcept } from "@/lib/content";
-import { examLabel } from "@/lib/exams";
 
 export function NotesCatalog() {
+  const t = useTranslations("notesCatalog");
+  const tExams = useTranslations("exams");
+  const tConcepts = useTranslations("concepts");
   const [focus, setFocus] = useStudyFocus();
   const focusedTopics = getTopics(focus);
   const groups = getTopicsByConcept(focus);
@@ -20,15 +23,15 @@ export function NotesCatalog() {
       <NotesSearch focus={focus} />
       <section className="space-y-3">
         <div>
-          <h2 className="text-lg font-medium text-white">{examLabel(focus)}</h2>
+          <h2 className="text-lg font-medium text-white">{tExams(`${focus}.label`)}</h2>
           <p className="mt-1 text-sm text-slate-400">
-            {focusedTopics.length} matching topics, grouped by concept.
+            {t("topicCount", { count: focusedTopics.length })}
           </p>
         </div>
         {groups.map((group) => (
           <div key={group.concept} className="space-y-3">
             <h3 className="pt-2 text-sm font-semibold uppercase tracking-wide text-slate-300">
-              {group.label}
+              {tConcepts(group.concept)}
             </h3>
             <ul className="space-y-3">
               {group.topics.map((topic) => (

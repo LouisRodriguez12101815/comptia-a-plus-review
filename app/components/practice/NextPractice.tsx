@@ -1,5 +1,6 @@
 "use client";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useMemo, useSyncExternalStore } from "react";
 import { nextHopMission } from "@/lib/practice/mission-catalog";
 import { emptyMission, missionSummary, restoreMission } from "@/lib/practice/mission";
@@ -11,6 +12,7 @@ const legacyKey = "practice-game:follow-packet:v1";
 function legacySnapshot() { try { return localStorage.getItem(legacyKey); } catch { return null; } }
 function subscribeLegacy(listener: () => void) { const onStorage = () => listener(); window.addEventListener("storage", onStorage); return () => window.removeEventListener("storage", onStorage); }
 export function NextPractice() {
+  const t = useTranslations("nextPractice");
   const raw = useSyncExternalStore(subscribeMission,getMissionSnapshot,getMissionServerSnapshot);
   const legacy = useSyncExternalStore(subscribeLegacy,legacySnapshot,getMissionServerSnapshot);
   const record = useMemo(() => restoreMission(raw,nextHopMission) ?? emptyMission(nextHopMission),[raw]);
@@ -18,12 +20,12 @@ export function NextPractice() {
   const challenge = getChallenge("follow-packet")!;
   const old = restoreSession(legacy,challenge);
   const missed = old ? summarize(old,challenge).rows.filter((r) => relevant.has(r.round.id) && (r.misconceptions.length || r.hintUsed)) : [];
-  return <section aria-label="Next practice recommendation" className="space-y-3 rounded-2xl border border-teal-300/40 bg-slate-900 p-5">
-    <h2 className="text-xl font-semibold">What should I practice next?</h2>
-    <p className="font-semibold text-cyan-100">Topic mission: Next-hop troubleshooting</p>
-    <p className="text-sm text-slate-300">{summary.recommendation?.mistakes.length ? `Your mission mistakes or hints suggest: ${summary.recommendation.label}.` : missed.length ? `Packet practice recorded difficulty with ${missed.map((r) => r.round.title).join(", ")}. Review the next-hop notes, then test the principle in a new fault scenario.` : summary.achievements.length === 3 ? "All three independent applications are recorded. Try the lab to check the principle outside these questions." : "Practice a diagnostic test, interpret the next hop, and verify a repair. Completion and independent application are tracked separately."}</p>
-    <p className="text-xs text-slate-300">Network+ N10-009 · Routing/addressing/troubleshooting · Solo · 3 objectives. First focused mission; recommendations cover this topic only.</p>
-    <Link href="/practice-games/next-hop-mission" className="inline-block rounded-xl bg-cyan-300 px-5 py-3 font-semibold text-slate-950">{raw ? "Continue next-hop mission" : "Start next-hop mission"}</Link>
-    <Link href="/notes/n10-ch9#mac-arp" className="ml-4 inline-block py-2 text-cyan-200 underline">Review next-hop notes</Link>
+  return <section aria-label={t("aria")} className="space-y-3 rounded-2xl border border-teal-300/40 bg-slate-900 p-5">
+    <h2 className="text-xl font-semibold">{t("heading")}</h2>
+    <p className="font-semibold text-cyan-100">{t("topic")}</p>
+    <p className="text-sm text-slate-300">{summary.recommendation?.mistakes.length ? t("suggestMistakes", { label: summary.recommendation.label }) : missed.length ? t("packetDifficulty", { titles: missed.map((r) => r.round.title).join(", ") }) : summary.achievements.length === 3 ? t("allApplications") : t("defaultRecommendation")}</p>
+    <p className="text-xs text-slate-300">{t("meta")}</p>
+    <Link href="/practice-games/next-hop-mission" className="inline-block rounded-xl bg-cyan-300 px-5 py-3 font-semibold text-slate-950">{raw ? t("continueMission") : t("startMission")}</Link>
+    <Link href="/notes/n10-ch9#mac-arp" className="ml-4 inline-block py-2 text-cyan-200 underline">{t("reviewNotes")}</Link>
   </section>;
 }

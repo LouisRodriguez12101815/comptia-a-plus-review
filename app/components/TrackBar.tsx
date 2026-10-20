@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { StatusIcon, ToolIcon } from "@/app/components/icons";
 import { TrackLink } from "@/app/components/TrackLink";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
@@ -19,6 +20,7 @@ function isActive(toolId: string, pathname: string): boolean {
  * so a learner can move between tools without going back to the landing page.
  */
 export function TrackBar() {
+  const t = useTranslations("tracks");
   const pathname = usePathname();
   const [focus] = useStudyFocus();
 
@@ -32,15 +34,15 @@ export function TrackBar() {
       <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:py-3">
         <p className="hidden text-sm text-slate-400 sm:block">
           <Link href="/" className="hover:text-white">
-            Home
+            {t("home")}
           </Link>
           <span aria-hidden="true"> / </span>
           <Link href={track.href} className="font-medium text-slate-100 hover:text-white">
-            {track.label}
+            {t(`${track.id}.label`)}
           </Link>
         </p>
         <nav
-          aria-label={`${track.short} study tools`}
+          aria-label={t("toolsLabel", { track: t(`${track.id}.short`) })}
           className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 text-sm sm:mx-0 sm:flex-wrap sm:overflow-visible sm:p-0"
         >
           {tools.map((tool) => {
@@ -52,8 +54,8 @@ export function TrackBar() {
                   className="inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-dashed border-slate-700 px-3 py-1.5 text-slate-500"
                 >
                   <ToolIcon id={tool.id} width={16} height={16} />
-                  {tool.label}
-                  <span className="sr-only">: coming soon</span>
+                  {t(`tools.${tool.id}.label`)}
+                  <span className="sr-only">{t("comingSoonSr")}</span>
                 </span>
               );
             }
@@ -70,7 +72,7 @@ export function TrackBar() {
                 }`}
               >
                 <ToolIcon id={tool.id} width={16} height={16} />
-                {tool.label}
+                {t(`tools.${tool.id}.label`)}
                 {tool.state === "elsewhere" ? (
                   <span className="text-xs text-slate-400">
                     <StatusIcon kind="elsewhere" className="inline" /> CCNA
@@ -78,7 +80,7 @@ export function TrackBar() {
                 ) : null}
                 {tool.state === "soon" ? (
                   <span className="inline-flex items-center gap-1 text-xs text-slate-400">
-                    <StatusIcon kind="soon" className="inline" /> Soon
+                    <StatusIcon kind="soon" className="inline" /> {t("soon")}
                   </span>
                 ) : null}
               </TrackLink>

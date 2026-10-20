@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import VisualLibrary from "@/app/components/VisualLibrary";
 import { getTrack, type TrackId } from "@/lib/tracks";
@@ -36,14 +37,9 @@ const css = `
 .cvp .empty-links a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 `;
 
-const emptyCopy: Record<TrackId, string> = {
-  core1: "Visuals for Core 1 are being added chapter by chapter.",
-  core2: "Visuals for Core 2 are being added chapter by chapter.",
-  networking: "Visuals for Network+ are being added chapter by chapter.",
-  ccna: "CCNA does not have interactive visuals yet. The Packet Tracer labs are ready now and each one includes its own topology.",
-};
-
-export function TrackVisuals({ trackId }: { trackId: TrackId }) {
+export async function TrackVisuals({ trackId }: { trackId: TrackId }) {
+  const t = await getTranslations("trackVisuals");
+  const tTrack = await getTranslations("tracks");
   const track = getTrack(trackId);
   const chapters = visualChapters(track.focus);
   const total = chapters.reduce((sum, chapter) => sum + chapter.visuals.length, 0);
@@ -56,26 +52,26 @@ export function TrackVisuals({ trackId }: { trackId: TrackId }) {
         <style>{css}</style>
         <header>
           <p className="eyebrow">
-            {track.label} · <span style={{ fontFamily: "var(--font-plex-mono), ui-monospace, monospace", textTransform: "none" }}>{track.code}</span>
+            {tTrack(`${track.id}.label`)} · <span style={{ fontFamily: "var(--font-plex-mono), ui-monospace, monospace", textTransform: "none" }}>{track.code}</span>
           </p>
-          <h1 id="visuals-title">Visuals</h1>
+          <h1 id="visuals-title">{t("title")}</h1>
           <p className="lede">
             {total > 0
-              ? `${total} interactive visuals across ${readyCount} ${readyCount === 1 ? "chapter" : "chapters"}. Go through them in order with Next, or open a chapter and jump to any topic.`
-              : "Interactive diagrams and simulators that make each chapter easier to picture."}
+              ? t("ledeReady", { total, readyCount })
+              : t("ledeEmpty")}
           </p>
         </header>
 
         {total > 0 ? (
           <div className="card">
-            <h2 id="visuals-heading">Interactive visuals</h2>
-            <p className="muted">Each visual is interactive, and you can open it full screen.</p>
+            <h2 id="visuals-heading">{t("interactiveVisuals")}</h2>
+            <p className="muted">{t("interactiveVisualsBody")}</p>
             <VisualLibrary chapters={chapters} />
           </div>
         ) : (
           <div className="card">
-            <h2>No visuals yet</h2>
-            <p className="muted">{emptyCopy[trackId]}</p>
+            <h2>{t("noVisuals")}</h2>
+            <p className="muted">{t(`emptyCopy.${trackId}`)}</p>
             {chapters.length > 0 ? (
               <ul className="empty-list">
                 {chapters.map((chapter) => (
@@ -83,15 +79,15 @@ export function TrackVisuals({ trackId }: { trackId: TrackId }) {
                     <strong>
                       {chapter.label}: {chapter.title}
                     </strong>
-                    Coming soon
+                    {t("comingSoon")}
                   </li>
                 ))}
               </ul>
             ) : null}
             <div className="empty-links">
-              {track.focus ? <Link href="/notes">Read the notes</Link> : null}
-              {track.id === "ccna" ? <Link href="/labs">Open the labs</Link> : null}
-              <Link href={track.href}>Back to {track.short}</Link>
+              {track.focus ? <Link href="/notes">{t("readNotes")}</Link> : null}
+              {track.id === "ccna" ? <Link href="/labs">{t("openLabs")}</Link> : null}
+              <Link href={track.href}>{t("backTo", { track: tTrack(`${track.id}.short`) })}</Link>
             </div>
           </div>
         )}

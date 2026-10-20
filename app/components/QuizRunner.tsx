@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
@@ -43,6 +44,7 @@ function answerLabel(question: Question, pick: number | number[] | undefined) {
 }
 
 export function QuizRunner({ initialTopic }: { initialTopic: string }) {
+  const t = useTranslations("quizRunner");
   const [focus, setFocus] = useStudyFocus();
   const [topicId, setTopicId] = useState(initialTopic);
   const [started, setStarted] = useState(false);
@@ -109,13 +111,13 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           <ExamFocusPicker focus={focus} onChange={changeFocus} />
         </section>
         <select
-          aria-label="Choose a quiz"
+          aria-label={t("chooseQuiz")}
           value={topicId}
           onChange={(event) => setTopicId(event.target.value)}
           className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 sm:w-auto"
         >
-          <option value="all">Mixed focused quiz</option>
-          <option value="weak">Weak areas only</option>
+          <option value="all">{t("mixedFocused")}</option>
+          <option value="weak">{t("weakOnly")}</option>
           {topicOptions.map((topic) => (
             <option key={topic.id} value={topic.id}>
               {topic.chapter}: {topic.title}
@@ -123,8 +125,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           ))}
         </select>
         <p className="text-sm text-slate-400">
-          {pool.length} original practice questions in this focused pool. A sitting uses up to 15,
-          shuffled. Scores stay on this device.
+          {t("poolSummary", { count: pool.length })}
         </p>
         <button
           type="button"
@@ -132,7 +133,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           disabled={pool.length === 0}
           className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400 disabled:opacity-40"
         >
-          Start quiz
+          {t("startQuiz")}
         </button>
       </div>
     );
@@ -145,17 +146,17 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
     return (
       <div className="space-y-6">
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6">
-          <p className="text-sm text-teal-300">Score</p>
+          <p className="text-sm text-teal-300">{t("score")}</p>
           <p className="mt-2 text-4xl font-semibold text-white">
             {correctCount}/{quiz.length}
           </p>
           <p className="mt-2 text-slate-400">
-            {Math.round((correctCount / quiz.length) * 100)}% on this device
+            {t("percentOnDevice", { percent: Math.round((correctCount / quiz.length) * 100) })}
           </p>
         </div>
         {missed.length > 0 && (
           <section className="space-y-4">
-            <h2 className="text-lg font-medium text-white">Review missed questions</h2>
+            <h2 className="text-lg font-medium text-white">{t("reviewMissed")}</h2>
             {missed.map((question) => (
               <article
                 key={question.id}
@@ -163,10 +164,10 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
               >
                 <p className="font-medium text-white">{question.prompt}</p>
                 <p className="mt-2 text-sm text-red-300">
-                  Your answer: {answerLabel(question, answers[question.id])}
+                  {t("yourAnswer", { answer: answerLabel(question, answers[question.id]) })}
                 </p>
                 <p className="mt-1 text-sm text-teal-200">
-                  Correct: {answerLabel(question, question.answer)}
+                  {t("correctAnswer", { answer: answerLabel(question, question.answer) })}
                 </p>
                 <p className="mt-2 text-sm text-slate-400">{question.explanation}</p>
               </article>
@@ -181,7 +182,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
           }}
           className="rounded-full border border-slate-600 px-4 py-2 text-sm"
         >
-          Another quiz
+          {t("anotherQuiz")}
         </button>
       </div>
     );
@@ -192,9 +193,12 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-slate-400">
-        Question {index + 1} of {quiz.length}
-        {current.weak ? " · Weak area" : ""}
-        {multi ? " · Select all that apply" : ""}
+        {t("questionProgress", {
+          current: index + 1,
+          total: quiz.length,
+          weak: current.weak ? "yes" : "no",
+          multi: multi ? "yes" : "no",
+        })}
       </p>
       <h2 className="text-xl font-medium text-white">{current.prompt}</h2>
       <ul className="space-y-2">
@@ -236,7 +240,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
         onClick={() => reportContent(`Question ${current.id}: ${current.prompt}`, "Wrong answer key")}
         className="block min-h-11 text-left text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200"
       >
-        Dispute this question
+        {t("disputeQuestion")}
       </button>
       <button
         type="button"
@@ -255,7 +259,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
         disabled={!revealed && picked.length === 0}
         className="rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400 disabled:opacity-40"
       >
-        {!revealed ? "Check answer" : index + 1 === quiz.length ? "Finish" : "Next"}
+        {!revealed ? t("checkAnswer") : index + 1 === quiz.length ? t("finish") : t("next")}
       </button>
     </div>
   );

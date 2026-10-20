@@ -12,7 +12,6 @@ import type {
   Concept,
   StudyFocus,
   Topic,
-  TopicGroup,
 } from "@/lib/types";
 
 export const topics = [
@@ -22,24 +21,6 @@ export const topics = [
 export const flashcards = flashcardsJson as Flashcard[];
 export const questions = questionsJson as Question[];
 export const labs = labsJson as Lab[];
-
-export const groupLabels: Record<TopicGroup, string> = {
-  core1: "Core 1",
-  core2: "Core 2",
-  networking: "Networking",
-  weak: "Weak areas",
-  reference: "Quick reference",
-};
-
-export const conceptLabels: Record<Concept, string> = {
-  "networking-concepts": "Networking concepts (N10-009 domain 1.0)",
-  implementation: "Network implementation (domain 2.0)",
-  security: "Security (domain 4.0)",
-  troubleshooting: "Troubleshooting (domain 5.0)",
-  hardware: "Hardware and storage",
-  "operating-systems": "Operating systems",
-  reference: "Quick reference and weak areas",
-};
 
 export const conceptOrder: Concept[] = [
   "networking-concepts",
@@ -55,7 +36,6 @@ export function getTopicsByConcept(focus: StudyFocus = "all") {
   return conceptOrder
     .map((concept) => ({
       concept,
-      label: conceptLabels[concept],
       topics: getTopics(focus).filter((topic) => topic.concept === concept),
     }))
     .filter((group) => group.topics.length > 0);

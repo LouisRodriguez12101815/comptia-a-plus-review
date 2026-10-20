@@ -1,11 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/app/components/LocaleSwitcher";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { tracks, trackForPath } from "@/lib/tracks";
 
 export function SiteHeader() {
+  const t = useTranslations("header");
+  const tTracks = useTranslations("tracks");
   const pathname = usePathname();
   const [focus] = useStudyFocus();
   const current = trackForPath(pathname, focus);
@@ -14,16 +17,19 @@ export function SiteHeader() {
   return (
     <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:py-4">
-        <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
-          <span
-            aria-hidden="true"
-            className="inline-block h-2.5 w-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(34,211,238,.6)]"
-          />
-          CompTIA Review
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
+            <span
+              aria-hidden="true"
+              className="inline-block h-2.5 w-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(34,211,238,.6)]"
+            />
+            CompTIA Review
+          </Link>
+          <LocaleSwitcher />
+        </div>
         <nav
           className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 text-sm sm:mx-0 sm:flex-wrap sm:overflow-visible sm:p-0"
-          aria-label="Certification tracks"
+          aria-label={t("tracksLabel")}
         >
           {tracks.map((track) => {
             const active = !onGame && pathname !== "/coverage" && pathname !== "/test" && current?.id === track.id;
@@ -38,7 +44,7 @@ export function SiteHeader() {
                     : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"
                 }`}
               >
-                {track.short}
+                {tTracks(`${track.id}.short`)}
               </Link>
             );
           })}
@@ -47,14 +53,14 @@ export function SiteHeader() {
             aria-current={pathname === "/coverage" ? "page" : undefined}
             className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname === "/coverage" ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
           >
-            Coverage
+            {t("coverage")}
           </Link>
           <Link
             href="/test"
             aria-current={pathname === "/test" ? "page" : undefined}
             className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname === "/test" ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
           >
-            Test mode
+            {t("testMode")}
           </Link>
           <Link
             href="/practice-games"
@@ -65,7 +71,7 @@ export function SiteHeader() {
                 : "border-amber-400/60 bg-amber-400/10 text-amber-100 hover:bg-amber-400/20"
             }`}
           >
-            Practice Games
+            {t("practiceGames")}
           </Link>
         </nav>
       </div>
