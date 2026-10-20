@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {useEffect,useRef,useState} from 'react';
 import {subnetData as data} from '@/lib/subnet/catalog';
-import {calculate,cidr,cleanedTypedText,smallestPrefix} from '@/lib/subnet/ipv4';
+import {calculate,checkTypedAddress,cidr,cleanedTypedText,smallestPrefix,type TypedProblem} from '@/lib/subnet/ipv4';
 import {designReason,detectiveSteps,orderView,rankedRequirements,requirementFacts,type Feedback} from '@/lib/subnet/grading';
 import {activeStage,allocations,getConcept,getExercise,getMission,grade,hintRun,newRun,restoreRun,runSummary,stages,submitRun,type Answers,type Run} from '@/lib/subnet/session';
 import {shuffle} from '@/lib/practice/session';
@@ -21,7 +21,9 @@ export function SubnetGame(){
   function orderSummary(order:string, requirements:{id:string}[]){const {items,firstTwo}=orderView(order.split(',').filter(Boolean),requirements);return <p className="text-sm text-slate-300">{t('orderSummary',{items:items.length?items.map(item=>`${item.index} ${item.id}`).join(', '):t('none'),firstTwo:firstTwo.length?firstTwo.map(item=>item.id).join(', '):t('none')})}</p>;}
   function hostFacts(requirements:{id:string;hosts:number}[]){const facts=requirementFacts(requirements);return <p className="text-sm text-slate-300">{t('hostFacts',{unique:facts.uniqueHosts.length?facts.uniqueHosts.join(', '):t('none'),lookup:facts.hosts===null?t('lookupMissing',{id:facts.lookupId}):t('lookupHosts',{id:facts.lookupId,hosts:facts.hosts})})}</p>;}
   function rankedSummary(requirements:{id:string;hosts:number;kind:string}[]){const {ranked,links}=rankedRequirements(requirements);return <p className="text-sm text-slate-300">{t('rankedSummary',{ranked:ranked.length?ranked.map(item=>`${item.id} ${item.hosts}`).join(', '):t('none'),links:links.length?links.join(', '):t('none')})}</p>;}
-  function typedCleaning(raw:string){if(!raw)return null;const {typed,cleaned,pieces}=cleanedTypedText(raw);return <p className="mt-1 text-xs text-slate-300">{t('typedCleaning',{typed,cleaned,pieces:pieces.length?pieces.join(' · '):t('nothing')})}</p>;}
+  function problemText(p:TypedProblem){if(p.code==='notNumber'&&p.piece==='')return t('typedProblem.emptyPart',{octet:p.octet});return t(`typedProblem.${p.code}` as never,p as never);}
+  function typedCheck(raw:string){const check=checkTypedAddress(raw);return check.route==='ok'?<p data-typed-check="ok" className="mt-1 text-xs text-teal-200">{t('typedCheckOk',{address:check.address??''})}</p>:<p data-typed-check="bad" className="mt-1 text-xs text-amber-200">{t('typedCheckBad',{problems:check.problems.map(problemText).join('; ')})}</p>;}
+  function typedCleaning(raw:string){if(!raw)return null;const {typed,cleaned,pieces}=cleanedTypedText(raw);return <><p className="mt-1 text-xs text-slate-300">{t('typedCleaning',{typed,cleaned,pieces:pieces.length?pieces.join(' · '):t('nothing')})}</p>{typedCheck(raw)}</>;}
   function feedbackText(f:Feedback){return f.key?tg(f.key as never,f.values as never):f.text;}
   function stageLabel(id:string){return detectiveIds.includes(id)?t(`detective.${id}.label` as never):t(`stageNames.${id}` as never);}
   function save(next:Run){setRun(next);try{localStorage.setItem(key,JSON.stringify(next));}catch{setNotice(t('storageUnavailable'));}}

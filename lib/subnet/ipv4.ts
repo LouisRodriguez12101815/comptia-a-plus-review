@@ -41,5 +41,54 @@ export function cleanedTypedText(raw: string): { typed: string; cleaned: string;
   const pieces = cleaned ? (cleaned.includes("/") ? cleaned.split("/") : cleaned.split(".")) : [];
   return { typed: raw, cleaned, pieces };
 }
+/** Class 10: a specific error for one octet, like Python's ValueError from int("abc"). */
+export class OctetError extends Error {
+  readonly problem: TypedProblem;
+  constructor(problem: TypedProblem) { super(problem.code); this.name = "OctetError"; this.problem = problem; }
+}
+export type TypedProblem =
+  | { code: "notText" }
+  | { code: "empty" }
+  | { code: "pieceCount"; count: number }
+  | { code: "notNumber"; octet: number; piece: string }
+  | { code: "leadingZero"; octet: number; piece: string }
+  | { code: "outOfRange"; octet: number; piece: string };
+export type TypedCheck = { route: "ok" | "bad"; address: string | null; problems: TypedProblem[]; finished: boolean };
+/** Like int(piece): returns a number or throws OctetError. It never returns NaN. */
+export function toOctet(piece: string, octet: number): number {
+  if (!/^\d+$/.test(piece)) throw new OctetError({ code: "notNumber", octet, piece });
+  if (piece.length > 1 && piece.startsWith("0")) throw new OctetError({ code: "leadingZero", octet, piece });
+  const value = Number(piece);
+  if (value > 255) throw new OctetError({ code: "outOfRange", octet, piece });
+  return value;
+}
+/**
+ * Display only, like validate_lead: collects every problem instead of stopping at the first.
+ * route "ok" goes to the success sentence, "bad" to the problem list (the LangGraph ok/bad edge).
+ * Grading never calls this; a padded or wrong answer is still graded by the existing rules.
+ */
+export function checkTypedAddress(raw: unknown): TypedCheck {
+  const result: TypedCheck = { route: "bad", address: null, problems: [], finished: false };
+  try {
+    if (typeof raw !== "string") { result.problems.push({ code: "notText" }); return result; }
+    const cleaned = raw.trim();
+    if (!cleaned) { result.problems.push({ code: "empty" }); return result; }
+    const pieces = cleaned.split(".");
+    if (pieces.length !== 4) result.problems.push({ code: "pieceCount", count: pieces.length });
+    const octets: number[] = [];
+    pieces.slice(0, 4).forEach((piece, i) => {
+      try {
+        octets.push(toOctet(piece, i + 1));
+      } catch (error) {
+        if (error instanceof OctetError) result.problems.push(error.problem);
+        else throw error; // anything unexpected is not ours to hide
+      }
+    });
+    if (!result.problems.length) { result.route = "ok"; result.address = octets.join("."); }
+    return result;
+  } finally {
+    result.finished = true; // runs on every path, even after return, like Python's finally
+  }
+}
 export const overlaps = (a: {start:number;end:number}, b: {start:number;end:number}) => a.start <= b.end && b.start <= a.end;
 export const contained = (child: {start:number;end:number}, parent: {start:number;end:number}) => child.start >= parent.start && child.end <= parent.end;
