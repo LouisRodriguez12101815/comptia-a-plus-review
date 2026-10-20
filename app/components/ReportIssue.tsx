@@ -15,7 +15,7 @@ type Status =
   | { kind: "idle" }
   | { kind: "sending" }
   | { kind: "done"; issueUrl: string | null }
-  | { kind: "error"; message: string; fallbackUrl?: string };
+  | { kind: "error"; message: string; errors?: string[]; fallbackUrl?: string };
 
 const field =
   "mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-teal-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400";
@@ -80,12 +80,12 @@ export function ReportIssue() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = (await res.json().catch(() => ({}))) as { issueUrl?: string | null; error?: string; fallbackUrl?: string };
+      const data = (await res.json().catch(() => ({}))) as { issueUrl?: string | null; error?: string; errors?: string[]; fallbackUrl?: string };
       if (res.ok) {
         setStatus({ kind: "done", issueUrl: data.issueUrl ?? null });
         reset();
       } else {
-        setStatus({ kind: "error", message: data.error ?? t("genericError"), fallbackUrl: data.fallbackUrl });
+        setStatus({ kind: "error", message: data.error ?? t("genericError"), errors: Array.isArray(data.errors) ? data.errors : undefined, fallbackUrl: data.fallbackUrl });
       }
     } catch {
       setStatus({
@@ -187,7 +187,13 @@ export function ReportIssue() {
 
               {status.kind === "error" && (
                 <div ref={alertRef} className="rounded-xl border border-orange-400/40 bg-orange-400/10 p-3 text-sm text-orange-100" role="alert">
-                  <p>{status.message}</p>
+                  {status.errors && status.errors.length > 1 ? (
+                    <ul className="list-disc space-y-1 pl-5">
+                      {status.errors.map((e) => <li key={e}>{e}</li>)}
+                    </ul>
+                  ) : (
+                    <p>{status.message}</p>
+                  )}
                   {status.fallbackUrl && (
                     <a href={status.fallbackUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-orange-200 underline">
                       {t("openOnGithub")}

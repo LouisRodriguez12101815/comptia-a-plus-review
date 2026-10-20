@@ -32,35 +32,94 @@ function createEmptyProgress(): Progress {
   };
 }
 
+/** Why the saved progress could not be used as-is. Shown once on the dashboard. */
+export type ProgressProblem = "storageUnavailable" | "unreadable" | "repaired";
+
+const BACKUP_KEY = `${KEY}:unreadable-backup`;
 const serverProgress = createEmptyProgress();
 let cachedRaw: string | null | undefined;
 let cachedProgress = createEmptyProgress();
+let problems: ProgressProblem[] = [];
 
-function parseProgress(raw: string | null): Progress {
-  if (!raw) return createEmptyProgress();
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === "object" && !Array.isArray(value);
+
+function flags(value: unknown): { value: Record<string, boolean>; repaired: boolean } {
+  if (value === undefined) return { value: {}, repaired: false };
+  if (!isRecord(value)) return { value: {}, repaired: true };
+  const entries = Object.entries(value).filter((entry): entry is [string, true] => entry[1] === true);
+  return { value: Object.fromEntries(entries), repaired: entries.length !== Object.keys(value).length };
+}
+
+function isAttempt(value: unknown): value is QuizAttempt {
+  return isRecord(value) && typeof value.topicId === "string" && Number.isFinite(value.correct) && Number.isFinite(value.total)
+    && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at);
+}
+
+/**
+ * Python Class 10 pattern: try the conversion, catch the specific failure, keep what is valid,
+ * and report what happened instead of failing silently. Exported for tests.
+ */
+export function parseProgress(raw: string | null): { progress: Progress; problems: ProgressProblem[] } {
+  if (!raw) return { progress: createEmptyProgress(), problems: [] };
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(raw) as Partial<Progress>;
-    return {
-      studyFocus: isStudyFocus(parsed.studyFocus)
-        ? parsed.studyFocus
-        : DEFAULT_STUDY_FOCUS,
-      knownCards: parsed.knownCards ?? {},
-      unknownCards: parsed.unknownCards ?? {},
-      quizAttempts: parsed.quizAttempts ?? [],
-      schedules: parsed.schedules ?? {},
-    };
+    parsed = JSON.parse(raw);
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    return { progress: createEmptyProgress(), problems: ["unreadable"] };
+  }
+  if (!isRecord(parsed)) return { progress: createEmptyProgress(), problems: ["unreadable"] };
+  const known = flags(parsed.knownCards), unknown = flags(parsed.unknownCards);
+  const attempts = Array.isArray(parsed.quizAttempts) ? parsed.quizAttempts : [];
+  const quizAttempts = attempts.filter(isAttempt);
+  const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
+  const repaired = known.repaired || unknown.repaired
+    || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
+    || quizAttempts.length !== attempts.length
+    || (parsed.schedules !== undefined && !isRecord(parsed.schedules));
+  return {
+    progress: {
+      studyFocus: isStudyFocus(parsed.studyFocus) ? parsed.studyFocus : DEFAULT_STUDY_FOCUS,
+      knownCards: known.value,
+      unknownCards: unknown.value,
+      quizAttempts,
+      schedules,
+    },
+    problems: repaired ? ["repaired"] : [],
+  };
+}
+
+function readStored(): { raw: string | null; unavailable: boolean } {
+  try {
+    return { raw: window.localStorage.getItem(KEY), unavailable: false };
   } catch {
-    return createEmptyProgress();
+    return { raw: null, unavailable: true };
   }
 }
 
 export function getProgressSnapshot(): Progress {
   if (typeof window === "undefined") return serverProgress;
-  const raw = window.localStorage.getItem(KEY);
+  const { raw, unavailable } = readStored();
+  if (unavailable) {
+    if (!problems.includes("storageUnavailable")) problems = ["storageUnavailable"];
+    return cachedProgress;
+  }
   if (raw === cachedRaw) return cachedProgress;
   cachedRaw = raw;
-  cachedProgress = parseProgress(raw);
+  const result = parseProgress(raw);
+  if (result.problems.includes("unreadable") && raw) {
+    // Keep the bad text so nothing is lost when the next save overwrites the main key.
+    try { window.localStorage.setItem(BACKUP_KEY, raw); } catch { /* storage full or blocked: nothing more to do */ }
+  }
+  problems = result.problems;
+  cachedProgress = result.progress;
   return cachedProgress;
+}
+
+/** Problems found the last time progress was read or saved. Empty when everything loaded cleanly. */
+export function getProgressProblems(): ProgressProblem[] {
+  return problems;
 }
 
 export function getServerProgressSnapshot(): Progress {
@@ -88,10 +147,16 @@ export function loadProgress(): Progress {
 
 export function saveProgress(progress: Progress) {
   const raw = JSON.stringify(progress);
-  window.localStorage.setItem(KEY, raw);
-  cachedRaw = raw;
-  cachedProgress = progress;
-  listeners.forEach((listener) => listener());
+  try {
+    window.localStorage.setItem(KEY, raw);
+    cachedRaw = raw;
+  } catch {
+    // Private window, blocked or full storage: keep studying in memory and say so.
+    problems = ["storageUnavailable"];
+  } finally {
+    cachedProgress = progress;
+    listeners.forEach((listener) => listener());
+  }
 }
 
 export function setStudyFocus(studyFocus: StudyFocus) {

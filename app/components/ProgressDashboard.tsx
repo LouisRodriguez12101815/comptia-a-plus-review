@@ -4,10 +4,14 @@ import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { getFlashcards, getQuestions, getTopics } from "@/lib/content";
 import {
+  getProgressProblems,
   getProgressSnapshot,
   getServerProgressSnapshot,
   subscribeProgress,
+  type ProgressProblem,
 } from "@/lib/progress";
+
+const noProblems: ProgressProblem[] = [];
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 
 export function ProgressDashboard() {
@@ -19,6 +23,7 @@ export function ProgressDashboard() {
     getProgressSnapshot,
     getServerProgressSnapshot,
   );
+  const problems = useSyncExternalStore(subscribeProgress, getProgressProblems, () => noProblems);
   const cards = getFlashcards("all", focus);
   const practiceQuestions = getQuestions("all", focus);
   const focusedTopics = getTopics(focus);
@@ -30,6 +35,12 @@ export function ProgressDashboard() {
   });
 
   return (
+    <>
+    {problems.length > 0 && (
+      <p role="status" className="mb-4 rounded-xl border border-amber-300/50 bg-amber-300/10 p-3 text-sm text-amber-100">
+        {t(`problem.${problems[0]}`)}
+      </p>
+    )}
     <div className="grid gap-4 sm:grid-cols-3">
       <Stat
         label={t("cardsKnown", { exam: tExams(`${focus}.shortLabel`) })}
@@ -50,6 +61,7 @@ export function ProgressDashboard() {
         </p>
       </div>
     </div>
+    </>
   );
 }
 
