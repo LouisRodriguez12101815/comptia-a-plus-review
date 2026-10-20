@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cloud metering, elasticity and availability</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#8a5a00;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c26b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c26b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px;display:grid;gap:16px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 18px/1.3 Georgia,serif;margin:0 0 8px}
+.lede{margin:0;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+figure{margin:0}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--ink);font-family:inherit}
+svg .m{fill:var(--muted)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;cursor:pointer;max-width:100%}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin:12px 0 0;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.trap{margin:0;padding:10px 14px;border-left:4px solid var(--warm);background:var(--surface);border-radius:6px;font-size:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.fx{transition:opacity .25s,stroke-width .25s}}
+.arrow{fill:none;stroke:var(--line);stroke-width:4}
+.arrow.on{stroke:var(--accent);stroke-width:7}
+.arrow.on.eg{stroke:var(--warm)}
+.tag{fill:var(--surface);stroke:var(--line)}
+.dim{opacity:.55}
+.demand{fill:none;stroke:var(--ink);stroke-width:3}
+.cap{fill:none;stroke:var(--accent);stroke-width:3}
+.short{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1}
+.idle{fill:var(--accent-soft);stroke:none}
+.bar{fill:var(--accent)}
+.grid{stroke:var(--line);stroke-width:1}
+.dr{display:grid;gap:8px}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<h1>Cloud metering, elasticity and availability</h1>
+<p class="lede">For 220-1201 objective 4.2. See which way data moves and what it costs, how capacity follows demand, and what an uptime percentage allows.</p>
+</header>
+
+<section class="card" aria-labelledby="h1">
+<h2 id="h1">Ingress and egress</h2>
+<div class="ctrls" role="group" aria-label="Pick a scenario" id="scn"></div>
+<figure>
+<svg id="svgA" viewBox="0 0 640 250" role="img" aria-label="Office and cloud with two arrows: ingress into the cloud, usually free; egress out of the cloud, often charged per GB.">
+<rect x="10" y="70" width="140" height="110" rx="10" fill="var(--accent-soft)" stroke="var(--line)"/>
+<text x="80" y="130" text-anchor="middle" font-size="26" font-weight="600">Office</text>
+<rect x="490" y="70" width="140" height="110" rx="10" fill="var(--accent-soft)" stroke="var(--line)"/>
+<text x="560" y="130" text-anchor="middle" font-size="26" font-weight="600">Cloud</text>
+<g id="aIn" class="fx"><path class="arrow" d="M155 100H480"/><path d="M480 88l16 12-16 12z" fill="var(--muted)"/>
+<text x="320" y="52" text-anchor="middle" font-size="22" font-weight="600">Ingress: into the cloud</text>
+<rect class="tag" x="215" y="70" width="210" height="36" rx="18"/><text x="320" y="95" text-anchor="middle" font-size="22">usually free</text></g>
+<g id="aEg" class="fx"><path class="arrow eg" d="M485 160H160"/><path d="M160 148l-16 12 16 12z" fill="var(--muted)"/>
+<text x="320" y="236" text-anchor="middle" font-size="22" font-weight="600">Egress: out of the cloud</text>
+<rect class="tag" x="185" y="168" width="270" height="36" rx="18"/><text x="320" y="193" text-anchor="middle" font-size="22">often charged per GB</text></g>
+</svg>
+<figcaption>Uploading is ingress, usually free. Downloading or restoring from the cloud is egress, often charged per GB. Metered utilization means you are billed for what you use, not a flat fee.</figcaption>
+</figure>
+<p class="out" id="outA" role="status" aria-live="polite">Pick a scenario to light the arrow.</p>
+</section>
+
+<section class="card" aria-labelledby="h2">
+<h2 id="h2">Elasticity: capacity follows demand</h2>
+<div class="ctrls" role="group" aria-label="Capacity type">
+<button type="button" id="bFixed" aria-pressed="true">Fixed capacity</button>
+<button type="button" id="bElastic" aria-pressed="false">Elastic capacity</button>
+</div>
+<figure>
+<svg id="svgB" viewBox="0 0 640 290" role="img" aria-label="Demand over time with fixed capacity.">
+<g id="chartB"></g>
+</svg>
+<figcaption>Illustrative shape only: the time and demand scales are unitless, not measured data. Elastic capacity grows for the peak (extra servers for a holiday sale) and is released afterward.</figcaption>
+</figure>
+<p class="out" id="outB" role="status" aria-live="polite"></p>
+</section>
+
+<section class="card" aria-labelledby="h3">
+<h2 id="h3">Availability: what an uptime percentage allows</h2>
+<figure>
+<svg id="svgC" viewBox="0 0 640 290" role="img" aria-label="Dot chart of downtime allowed per year on a log minutes axis, each extra nine moves the dot one gridline left: 99 percent about 3.65 days, 99.9 percent about 8.76 hours, 99.99 percent about 52.6 minutes, 99.999 percent about 5.26 minutes.">
+<g id="chartC"></g>
+</svg>
+<figcaption>Each dot marks yearly downtime on a log scale. Each gridline is 10 times more minutes, so each extra nine moves the dot one gridline to the left. Distance between dots is not proportional to the downtime.</figcaption>
+</figure>
+<p class="trap"><strong>Trap:</strong> a traffic spike is elasticity. An uptime promise is availability.</p>
+</section>
+
+<section class="card" aria-labelledby="h4">
+<h2 id="h4">Predict, then reveal</h2>
+<p id="q" style="margin:0 0 10px"></p>
+<div class="ctrls" role="group" aria-label="Your answer" id="opts"></div>
+<p class="out" id="outD" role="status" aria-live="polite">Choose a term, then read why.</p>
+<div class="ctrls" style="margin:12px 0 0"><button type="button" id="next">Next scenario</button></div>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "kind": "interactive",
+  "facts": [
+    { "claim": "Ingress is data into the cloud (upload) and is usually free.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Metered utilization"] },
+    { "claim": "Egress is data out of the cloud (download or restore) and is often charged per GB.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Metered utilization"] },
+    { "claim": "Metered utilization means usage is measured and billed for what you use, not a flat fee.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Metered utilization"] },
+    { "claim": "Restoring a large backup to the office triggers egress charges.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Metered utilization"] },
+    { "claim": "Elasticity means resources grow and shrink quickly with demand, such as extra servers for a holiday sale released afterward.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Elasticity and availability"] },
+    { "claim": "Availability means the service is up when needed, often stated as an uptime percentage such as 99.99 percent.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Elasticity and availability"] },
+    { "claim": "Yearly downtime allowed: 99 percent about 3.65 days, 99.9 percent about 8.76 hours, 99.99 percent about 52.6 minutes, 99.999 percent about 5.26 minutes.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Elasticity and availability"] },
+    { "claim": "A traffic spike is elasticity; an uptime promise is availability.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Elasticity and availability"] }
+  ],
+  "simplifications": [
+    "The demand and capacity chart is an illustrative shape with unitless axes, not measured data.",
+    "Cost tags are the general pattern in the notes; a given provider's pricing can differ.",
+    "Downtime is drawn as dots on a log scale, so distance between dots does not show relative downtime; minutes per year are the notes' figures converted (3.65 days = 5,256 minutes, 8.76 hours = 525.6 minutes).",
+    "The notes do not say a fixed-capacity setup wastes idle capacity, so the elasticity chart shows only the shortfall at the peak and does not draw unused capacity."
+  ]
+}
+</script>
+<script>
+(function(){
+  var NS="http://www.w3.org/2000/svg";
+  function el(n,a,t){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;return e;}
+  function pressGroup(box,btns,idx){btns.forEach(function(b,i){b.setAttribute("aria-pressed",i===idx?"true":"false");});}
+
+  /* A: ingress/egress */
+  var SC=[
+    {t:"Upload data to the cloud",d:"in",w:"Ingress: data going into the cloud. Usually free."},
+    {t:"Restore a large backup to the office",d:"out",w:"Egress: the data leaves the cloud for the office. Often charged per GB, so a large restore can cost real money."},
+    {t:"Download a file from the cloud",d:"out",w:"Egress: downloads leave the cloud. Often charged per GB."},
+    {t:"Back up office files to the cloud",d:"in",w:"Ingress: the data goes into the cloud. Usually free."}
+  ];
+  var scn=document.getElementById("scn"),sb=[];
+  var aIn=document.getElementById("aIn"),aEg=document.getElementById("aEg"),outA=document.getElementById("outA"),svgA=document.getElementById("svgA");
+  function setArrows(d){
+    aIn.classList.toggle("dim",d==="out");aEg.classList.toggle("dim",d==="in");
+    aIn.querySelector(".arrow").classList.toggle("on",d==="in");aEg.querySelector(".arrow").classList.toggle("on",d==="out");
+  }
+  SC.forEach(function(s,i){
+    var b=document.createElement("button");b.type="button";b.textContent=s.t;b.setAttribute("aria-pressed","false");
+    b.addEventListener("click",function(){
+      pressGroup(scn,sb,i);setArrows(s.d);outA.textContent=s.t+". "+s.w;
+      svgA.setAttribute("aria-label","Office and cloud. "+(s.d==="in"?"Ingress arrow into the cloud is highlighted: usually free.":"Egress arrow out of the cloud is highlighted: often charged per GB."));
+    });
+    scn.appendChild(b);sb.push(b);
+  });
+
+  /* B: elasticity */
+  var X0=60,X1=620,Y0=235,Y1=44;
+  function px(t){return X0+(X1-X0)*t/100;}
+  function py(v){return Y0-(Y0-Y1)*v/100;}
+  function demand(t){var d=30+55*Math.exp(-Math.pow((t-55)/14,2));return d;}
+  var pts=[];for(var t=0;t<=100;t+=2)pts.push(t);
+  var FIXED=60;
+  function elasticCap(t){return Math.min(100,Math.ceil((demand(t)+4)/10)*10);}
+  var g=document.getElementById("chartB"),outB=document.getElementById("outB"),svgB=document.getElementById("svgB");
+  function drawB(mode){
+    g.innerHTML="";
+    g.appendChild(el("line",{x1:X0,y1:Y0,x2:X1,y2:Y0,stroke:"var(--muted)"}));
+    g.appendChild(el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--muted)"}));
+    g.appendChild(el("text",{x:X1,y:272,"text-anchor":"end","font-size":22,"class":"m"},"Time (unitless, illustrative)"));
+    g.appendChild(el("text",{x:14,y:24,"font-size":22,"class":"m"},"Demand and capacity"));
+    var cap=function(t){return mode==="fixed"?FIXED:elasticCap(t);};
+    /* shaded areas */
+    var short="",idle="";
+    pts.forEach(function(t){var d=demand(t),c=cap(t);
+      if(d>c)short+=(short?"L":"M")+px(t)+" "+py(d);
+    });
+    var sp="",ip="";
+    var up=[],dn=[];
+    pts.forEach(function(t){var d=demand(t),c=cap(t);if(d>c){up.push([t,d,c]);}});
+    if(up.length){var top=up.map(function(p){return px(p[0])+","+py(p[1]);}).join(" L"),bot=up.slice().reverse().map(function(p){return px(p[0])+","+py(p[2]);}).join(" L");
+      g.appendChild(el("path",{d:"M"+top+" L"+bot+"Z","class":"short"}));}
+    var cp="";pts.forEach(function(t,i){cp+=(i?"L":"M")+px(t)+" "+py(cap(t));});
+    g.appendChild(el("path",{d:cp,"class":"cap"}));
+    var dp="";pts.forEach(function(t,i){dp+=(i?"L":"M")+px(t)+" "+py(demand(t));});
+    g.appendChild(el("path",{d:dp,"class":"demand"}));
+    var peak=up.length;
+    g.appendChild(el("text",{x:px(2),y:py(demand(0))-28,"font-size":22},"Demand"));
+    g.appendChild(el("text",{x:px(2),y:py(cap(0))+(mode==="fixed"?-8:34),"font-size":22,fill:"var(--accent)",style:"fill:var(--accent)"},mode==="fixed"?"Fixed capacity":"Elastic capacity"));
+    if(mode==="fixed"){g.appendChild(el("text",{x:px(55),y:py(95)-4,"text-anchor":"middle","font-size":22,style:"fill:var(--bad)"},"Demand exceeds capacity"));}
+    else{g.appendChild(el("text",{x:px(55),y:py(100)+26,"text-anchor":"middle","font-size":22,"class":"m"},"Capacity grows for the peak"));g.appendChild(el("text",{x:X1,y:208,"text-anchor":"end","font-size":22,"class":"m"},"Released afterward"));}
+    var msg=mode==="fixed"?"Fixed capacity: at the peak, demand rises above what is provisioned (shaded). Capacity does not change.":"Elastic capacity: capacity rises with demand at the peak and drops back afterward, so you use and pay for extra servers only while needed.";
+    outB.textContent=msg;
+    svgB.setAttribute("aria-label",msg+" Scales are unitless and illustrative.");
+  }
+  var bF=document.getElementById("bFixed"),bE=document.getElementById("bElastic");
+  bF.addEventListener("click",function(){pressGroup(null,[bF,bE],0);drawB("fixed");});
+  bE.addEventListener("click",function(){pressGroup(null,[bF,bE],1);drawB("elastic");});
+  drawB("fixed");
+
+  /* C: uptime (dot plot on a log axis) */
+  var UP=[["99%","\u2248 3.65 days = 5,256 min",5256,"about 3.65 days"],["99.9%","\u2248 8.76 hours = 525.6 min",525.6,"about 8.76 hours"],["99.99%","\u2248 52.6 minutes",52.6,"about 52.6 minutes"],["99.999%","\u2248 5.26 minutes",5.26,"about 5.26 minutes"]];
+  var c=document.getElementById("chartC");
+  var CX0=112,CX1=568,lo=Math.log10(1),hi=Math.log10(10000);
+  function bx(m){return CX0+(CX1-CX0)*(Math.log10(m)-lo)/(hi-lo);}
+  [[1,"1 min"],[10,"10 min"],[100,"100 min"],[1000,"1,000 min"],[10000,"10,000 min"]].forEach(function(p){
+    var x=bx(p[0]);c.appendChild(el("line",{x1:x,y1:10,x2:x,y2:210,"class":"grid"}));
+    c.appendChild(el("text",{x:x,y:236,"text-anchor":"middle","font-size":22,"class":"m"},p[1]));
+  });
+  c.appendChild(el("text",{x:CX1+40,y:276,"text-anchor":"end","font-size":22,"class":"m"},"Downtime per year, log scale"));
+  UP.forEach(function(u,i){var y=20+i*48,x=bx(u[2]),cy=y+16;
+    c.appendChild(el("text",{x:4,y:y+24,"font-size":22,"font-weight":600},u[0]));
+    c.appendChild(el("circle",{cx:x,cy:cy,r:11,"class":"bar"}));
+    var left=x>400;
+    c.appendChild(el("text",{x:left?x-20:x+20,y:y+24,"text-anchor":left?"end":"start","font-size":22},u[1]));
+  });
+
+  /* drill */
+  var Q=[
+    {s:"A shop adds extra servers for a holiday sale and releases them afterward.",a:"Elasticity",w:"Capacity grows and shrinks quickly with demand."},
+    {s:"A contract promises 99.99 percent uptime.",a:"Availability",w:"An uptime percentage describes availability, about 52.6 minutes of downtime per year."},
+    {s:"A large backup is restored from the cloud to the office and the bill shows a per-GB charge.",a:"Egress",w:"The data leaves the cloud, and egress is often charged per GB."},
+    {s:"Extra servers are added when traffic suddenly spikes and are released when it ends.",a:"Elasticity",w:"A traffic spike is elasticity. Do not pick availability just because the site stayed up."},
+    {s:"Staff upload files to cloud storage.",a:"Ingress",w:"Data going into the cloud is ingress, usually free."}
+  ];
+  var CH=["Elasticity","Availability","Ingress","Egress"],qi=-1,done=false;
+  var qEl=document.getElementById("q"),opts=document.getElementById("opts"),outD=document.getElementById("outD");
+  CH.forEach(function(n){var b=document.createElement("button");b.type="button";b.textContent=n;b.setAttribute("aria-pressed","false");
+    b.addEventListener("click",function(){var it=Q[qi];opts.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
+      outD.textContent=(n===it.a?"Correct: ":"Not "+n+". The answer is "+it.a+". ")+(n===it.a?it.a+". ":"")+it.w;});
+    opts.appendChild(b);});
+  function nextQ(){qi=(qi+1)%Q.length;qEl.textContent="Scenario: "+Q[qi].s+" Which term is it?";
+    opts.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed","false");});outD.textContent="Choose a term, then read why.";}
+  document.getElementById("next").addEventListener("click",nextQ);
+  nextQ();
+})();
+</script>
+</body>
+</html>
