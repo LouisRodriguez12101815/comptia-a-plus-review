@@ -1,8 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { getFlashcards, getQuestions, getTopics } from "@/lib/content";
-import { examShortLabel } from "@/lib/exams";
 import {
   getProgressSnapshot,
   getServerProgressSnapshot,
@@ -11,6 +11,8 @@ import {
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 
 export function ProgressDashboard() {
+  const t = useTranslations("progressDashboard");
+  const tExams = useTranslations("exams");
   const [focus] = useStudyFocus();
   const progress = useSyncExternalStore(
     subscribeProgress,
@@ -29,19 +31,22 @@ export function ProgressDashboard() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      <Stat label={`${examShortLabel(focus)} cards known`} value={`${known} / ${cards.length}`} />
-      <Stat label="Practice questions" value={`${practiceQuestions.length}`} />
       <Stat
-        label="Latest matching quiz"
+        label={t("cardsKnown", { exam: tExams(`${focus}.shortLabel`) })}
+        value={`${known} / ${cards.length}`}
+      />
+      <Stat label={t("practiceQuestions")} value={`${practiceQuestions.length}`} />
+      <Stat
+        label={t("latestQuiz")}
         value={
           last
             ? `${last.correct}/${last.total} (${Math.round((last.correct / last.total) * 100)}%)`
-            : "Not taken yet"
+            : t("notTakenYet")
         }
       />
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 sm:col-span-3">
         <p className="text-sm text-slate-400">
-          {focusedTopics.length} relevant note chapters · Progress and exam priority stay in this browser only.
+          {t("chaptersNote", { count: focusedTopics.length })}
         </p>
       </div>
     </div>

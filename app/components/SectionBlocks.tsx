@@ -1,6 +1,8 @@
+import { getTranslations } from "next-intl/server";
 import type { Block } from "@/lib/types";
 
-export function SectionBlocks({ blocks }: { blocks: Block[] }) {
+export async function SectionBlocks({ blocks }: { blocks: Block[] }) {
+  const t = await getTranslations("sectionBlocks");
   return (
     <div className="space-y-4">
       {blocks.map((block, index) => {
@@ -53,7 +55,7 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
             <pre
               key={index}
               tabIndex={0}
-              aria-label="Code example"
+              aria-label={t("codeExample")}
               className="overflow-x-auto rounded-xl bg-slate-950 p-4 text-sm text-teal-100"
             >
               {block.text}
@@ -65,7 +67,7 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
             key={index}
             role="region"
             tabIndex={0}
-            aria-label={`Table: ${block.headers.join(", ")}`}
+            aria-label={t("tableLabel", { headers: block.headers.join(", ") })}
             className="overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
           >
             <table className="min-w-full border-collapse text-left text-sm">
@@ -76,7 +78,7 @@ export function SectionBlocks({ blocks }: { blocks: Block[] }) {
                       key={header}
                       className="border-b border-slate-700 px-3 py-2 font-medium text-slate-300"
                     >
-                      {header || <span className="sr-only">Item</span>}
+                      {header || <span className="sr-only">{t("itemHeader")}</span>}
                     </th>
                   ))}
                 </tr>

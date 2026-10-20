@@ -6,7 +6,7 @@
 <title>Power over Ethernet budget</title>
 <style>
 :root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:dark}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
@@ -53,17 +53,17 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
   <div class="ctrls" id="std" role="group" aria-label="PoE standard"></div>
   <p class="lab">Device on the port</p>
   <div class="ctrls" id="dev" role="group" aria-label="Device"></div>
-  <p class="lab">Power budget for this port (scaled to 25.5 W)</p>
+  <p class="lab">Power available at the device (scaled to 25.5 W)</p>
   <div style="height:22px;border-radius:999px;background:var(--line);overflow:hidden"><div id="bud" style="height:100%;background:var(--accent)"></div></div>
   <div id="bl" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
   <div class="out" id="out" aria-live="polite"></div>
-  <p class="answer"><strong>Written lab 5 (802.3at).</strong> 802.3at delivers 25.5 W to a PoE device, and 802.3af provides 15.4 W. The device power draws shown here are examples.</p>
+  <p class="answer"><strong>Written lab 5 (802.3at).</strong> 802.3at delivers 25.5 W to the powered device (30 W leaves the switch port), and 802.3af delivers 12.95 W to the device (15.4 W at the port). The device power draws shown here are examples.</p>
 </div>
 
 </div>
 <script>
 
-const std={af:{n:'802.3af',w:15.4},at:{n:'802.3at',w:25.5}};
+const std={af:{n:'802.3af',w:12.95},at:{n:'802.3at',w:25.5}};
 const devs={phone:{n:'IP phone',w:6},ap:{n:'Wireless access point',w:13},cam:{n:'PTZ camera',w:22}};
 let s='af', d='phone';
 function btns(id,items,cur,fn){

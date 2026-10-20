@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cantReachWebsiteIncident } from "@/lib/game/incidents";
 import { MultiplayerRoom } from "@/app/components/game/MultiplayerRoom";
 import { NetworkDiagram } from "@/app/components/game/NetworkDiagram";
@@ -11,6 +12,13 @@ import { shuffleAnswers } from "@/lib/game/answers";
 import type { IncidentChoice } from "@/lib/game/types";
 
 type Screen = "menu" | "guided" | "create" | "join";
+
+const missionSteps = [
+  { number: "01", key: "scope" },
+  { number: "02", key: "test" },
+  { number: "03", key: "repair" },
+  { number: "04", key: "verify" },
+] as const;
 
 function LowPolyNetwork() {
   return (
@@ -27,6 +35,7 @@ function LowPolyNetwork() {
 }
 
 export function OutageOps() {
+  const t = useTranslations("outageOps");
   const incident = cantReachWebsiteIncident;
   const [screen, setScreen] = useState<Screen>("menu");
   const [stepIndex, setStepIndex] = useState(0);
@@ -94,11 +103,11 @@ export function OutageOps() {
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button onClick={() => setScreen("menu")} className="text-sm text-cyan-200 hover:text-white">
-            ← Mission select
+            {t("missionSelect")}
           </button>
           <div className="flex items-center gap-3 text-sm">
-            <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-cyan-100">Score {score}</span>
-            <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-emerald-100">Uptime {uptime}%</span>
+            <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-cyan-100">{t("score", { score })}</span>
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-emerald-100">{t("uptime", { uptime })}</span>
           </div>
         </div>
 
@@ -108,24 +117,24 @@ export function OutageOps() {
 
         {complete ? (
           <section className="overflow-hidden rounded-[2rem] border border-teal-300/30 bg-slate-900/90 p-6 shadow-2xl shadow-cyan-950/40 sm:p-9">
-            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-teal-300">Incident resolved</p>
-            <h1 className="mt-3 text-3xl font-semibold text-white">Ticket closed. The site is back.</h1>
-            <p className="mt-3 text-slate-300">Mentor debrief: the strongest technicians prove each layer and verify the exact symptom after the repair.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-teal-300">{t("incidentResolved")}</p>
+            <h1 className="mt-3 text-3xl font-semibold text-white">{t("ticketClosed")}</h1>
+            <p className="mt-3 text-slate-300">{t("mentorDebrief")}</p>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {incident.debrief.map((item) => (
                 <li key={item} className="rounded-2xl border border-slate-700 bg-slate-950/70 p-4 text-sm text-slate-200">{item}</li>
               ))}
             </ul>
             <div className="mt-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white">Incident reconstruction</h2>
-              {incident.steps.map((round, index) => <article key={round.title} className="text-sm text-slate-200"><h3 className="font-semibold">{round.title}</h3><p>{roundLearning(incident, index).learned}</p>{decisions.filter((d) => d.stepIndex === index && d.answerId !== round.correctAnswerId).map((d) => <p key={d.answerId} className="text-amber-100">Review: {round.choices.find((c) => c.id === d.answerId)?.explanation}</p>)}</article>)}
-              <p className="text-slate-200"><strong>Transfer question:</strong> {transferQuestion(incident.id)}</p>
-              <p className="text-sm text-slate-300">Points record practice contributions, not mastery. Execute the verification in the source lab.</p>
+              <h2 className="text-xl font-semibold text-white">{t("reconstruction")}</h2>
+              {incident.steps.map((round, index) => <article key={round.title} className="text-sm text-slate-200"><h3 className="font-semibold">{round.title}</h3><p>{roundLearning(incident, index).learned}</p>{decisions.filter((d) => d.stepIndex === index && d.answerId !== round.correctAnswerId).map((d) => <p key={d.answerId} className="text-amber-100">{t("review", { explanation: round.choices.find((c) => c.id === d.answerId)?.explanation ?? "" })}</p>)}</article>)}
+              <p className="text-slate-200"><strong>{t("transferQuestionLabel")}</strong> {transferQuestion(incident.id)}</p>
+              <p className="text-sm text-slate-300">{t("pointsRecord")}</p>
               {learningFor(incident).sources.map((source) => <a key={source.href} href={source.href} className="block text-sm text-cyan-200 underline">{source.title}</a>)}
             </div>
             <div className="mt-7 flex flex-wrap gap-3">
-              <button onClick={resetGuidedDemo} className="rounded-full bg-cyan-300 px-5 py-2.5 font-semibold text-slate-950 hover:bg-cyan-200">Replay guided demo</button>
-              <button onClick={() => setScreen("create")} className="rounded-full border border-cyan-300/50 px-5 py-2.5 font-semibold text-cyan-100 hover:bg-cyan-300/10">Create a live room</button>
+              <button onClick={resetGuidedDemo} className="rounded-full bg-cyan-300 px-5 py-2.5 font-semibold text-slate-950 hover:bg-cyan-200">{t("replayGuided")}</button>
+              <button onClick={() => setScreen("create")} className="rounded-full border border-cyan-300/50 px-5 py-2.5 font-semibold text-cyan-100 hover:bg-cyan-300/10">{t("createLiveRoom")}</button>
             </div>
           </section>
         ) : (
@@ -134,11 +143,11 @@ export function OutageOps() {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">{step.eyebrow}</p>
               <h1 className="mt-2 text-3xl font-semibold text-white">{step.title}</h1>
               <p className="mt-3 max-w-2xl text-slate-300">{stepIndex === 0 ? incident.ticket : step.prompt}</p>
-              {stepIndex === 0 && <p className="mt-2 text-sm text-cyan-100">Objective: {incident.objective}</p>}
+              {stepIndex === 0 && <p className="mt-2 text-sm text-cyan-100">{t("objective", { objective: incident.objective })}</p>}
             </div>
             <div className="space-y-5 p-6 sm:p-8">
               {step.evidence && <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl border border-cyan-400/20 bg-slate-950 p-4 font-mono text-sm text-cyan-100">{step.evidence}</pre>}
-              <p className="text-cyan-100"><strong>Round objective:</strong> {roundLearning(incident, stepIndex).goal}</p>
+              <p className="text-cyan-100"><strong>{t("roundObjective")}</strong> {roundLearning(incident, stepIndex).goal}</p>
               <NetworkDiagram diagram={networkDiagramFor(incident.id, evidenceItemsFor(incident, stepIndex).map((i) => ({ ...i, discovered: true })), learningFor(incident).sources)!} />
               <h2 className="text-lg font-semibold text-white">{step.prompt}</h2>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -161,19 +170,19 @@ export function OutageOps() {
               </div>
 
               {!selected && (
-                <button onClick={() => setHintVisible(true)} className="text-sm font-medium text-amber-200 hover:text-amber-100">Ask Mentor for a hint (−25 on this decision)</button>
+                <button onClick={() => setHintVisible(true)} className="text-sm font-medium text-amber-200 hover:text-amber-100">{t("askHint")}</button>
               )}
-              {hintVisible && !selected && <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-50"><strong>Mentor:</strong> {step.hint}</div>}
+              {hintVisible && !selected && <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-50"><strong>{t("mentor")}</strong> {step.hint}</div>}
               {selected && (
                 <div role="status" aria-live="polite" className={`rounded-2xl border p-5 ${isCorrect ? "border-emerald-300/30 bg-emerald-400/10" : "border-rose-300/30 bg-rose-400/10"}`}>
-                  <p className="font-semibold text-white">{isCorrect ? "Correct diagnostic move" : "Not the best next move"}</p>
+                  <p className="font-semibold text-white">{isCorrect ? t("correctMove") : t("notBestMove")}</p>
                   <p className="mt-2 text-sm text-slate-200">{selectedAnswer?.explanation}</p>
-                  <p className="mt-2 text-sm text-cyan-100"><strong>Mentor reasoning:</strong> {step.explanation}</p>
-                  {isCorrect && <><p className="mt-2 text-sm text-cyan-100"><strong>Consequence / next test:</strong> {roundLearning(incident, stepIndex).result}</p><p className="mt-2 text-sm"><strong>What we learned:</strong> {roundLearning(incident, stepIndex).learned}</p></>}
-                  {!isCorrect && <p className="mt-3 text-sm text-amber-100"><strong>Mentor hint:</strong> {step.hint}</p>}
+                  <p className="mt-2 text-sm text-cyan-100"><strong>{t("mentorReasoning")}</strong> {step.explanation}</p>
+                  {isCorrect && <><p className="mt-2 text-sm text-cyan-100"><strong>{t("consequenceLabel")}</strong> {roundLearning(incident, stepIndex).result}</p><p className="mt-2 text-sm"><strong>{t("whatWeLearned")}</strong> {roundLearning(incident, stepIndex).learned}</p></>}
+                  {!isCorrect && <p className="mt-3 text-sm text-amber-100"><strong>{t("mentorHintLabel")}</strong> {step.hint}</p>}
                   <div className="mt-4 flex flex-wrap gap-3">
-                    {!isCorrect && <button onClick={tryAgain} className="rounded-full border border-cyan-300 px-5 py-2 font-semibold text-cyan-100 hover:bg-cyan-300/10">Try again</button>}
-                    {isCorrect && <button onClick={advance} className="rounded-full bg-white px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-100">Continue →</button>}
+                    {!isCorrect && <button onClick={tryAgain} className="rounded-full border border-cyan-300 px-5 py-2 font-semibold text-cyan-100 hover:bg-cyan-300/10">{t("tryAgain")}</button>}
+                    {isCorrect && <button onClick={advance} className="rounded-full bg-white px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-100">{t("continue")}</button>}
                   </div>
                 </div>
               )}
@@ -192,29 +201,29 @@ export function OutageOps() {
     <div className="space-y-10 pb-10">
       <section className="grid items-center gap-8 lg:grid-cols-[1.05fr_.95fr]">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Multiplayer CompTIA training</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">{t("eyebrow")}</p>
           <h1 className="mt-3 text-5xl font-black tracking-tight text-white sm:text-6xl">Outage <span className="text-amber-400">Ops</span></h1>
-          <p className="mt-4 max-w-xl text-lg text-slate-300">Diagnose the incident, protect company uptime, and prove the repair. Play a guided mission now or assemble a 2–8 player response team.</p>
+          <p className="mt-4 max-w-xl text-lg text-slate-300">{t("intro")}</p>
           <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-cyan-100">No login</span>
-            <span className="rounded-full border border-teal-300/30 bg-teal-300/10 px-3 py-1 text-teal-100">Phone friendly</span>
-            <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-amber-100">Original scenarios</span>
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-cyan-100">{t("chipNoLogin")}</span>
+            <span className="rounded-full border border-teal-300/30 bg-teal-300/10 px-3 py-1 text-teal-100">{t("chipPhone")}</span>
+            <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-amber-100">{t("chipScenarios")}</span>
           </div>
         </div>
         <LowPolyNetwork />
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <ModeCard eyebrow="Start instantly" title="Guided Demo" description="Walk the DNS incident with a mentor bot and learn why each troubleshooting step matters." action="Begin training" accent="cyan" onClick={resetGuidedDemo} />
-        <ModeCard eyebrow="2–8 responders" title="Create Room" description="Share a room code and lead a synchronized DNS incident with your team." action="Create a room" accent="teal" onClick={() => setScreen("create")} />
-        <ModeCard eyebrow="Room code" title="Join Team" description="Enter the code from your host and join from any phone or laptop." action="Join a room" accent="amber" onClick={() => setScreen("join")} />
+        <ModeCard eyebrow={t("guidedEyebrow")} title={t("guidedTitle")} description={t("guidedDescription")} action={t("guidedAction")} accent="cyan" onClick={resetGuidedDemo} />
+        <ModeCard eyebrow={t("createEyebrow")} title={t("createTitle")} description={t("createDescription")} action={t("createAction")} accent="teal" onClick={() => setScreen("create")} />
+        <ModeCard eyebrow={t("joinEyebrow")} title={t("joinTitle")} description={t("joinDescription")} action={t("joinAction")} accent="amber" onClick={() => setScreen("join")} />
       </section>
 
       <section className="rounded-[2rem] border border-slate-700 bg-slate-900/70 p-6 sm:p-8">
-        <h2 className="text-2xl font-semibold text-white">How a mission works</h2>
+        <h2 className="text-2xl font-semibold text-white">{t("howTitle")}</h2>
         <ol className="mt-5 grid gap-4 sm:grid-cols-4">
-          {[["01", "Scope", "Find who and what is affected."], ["02", "Test", "Choose the strongest next diagnostic."], ["03", "Repair", "Fix the root cause, not the symptom."], ["04", "Verify", "Repeat the failed test and close the ticket."]].map(([number, title, copy]) => (
-            <li key={number} className="rounded-2xl border border-slate-700 bg-slate-950/60 p-4"><span className="font-mono text-sm text-cyan-300">{number}</span><h3 className="mt-2 font-semibold text-white">{title}</h3><p className="mt-1 text-sm text-slate-400">{copy}</p></li>
+          {missionSteps.map(({ number, key }) => (
+            <li key={number} className="rounded-2xl border border-slate-700 bg-slate-950/60 p-4"><span className="font-mono text-sm text-cyan-300">{number}</span><h3 className="mt-2 font-semibold text-white">{t(`steps.${key}.title`)}</h3><p className="mt-1 text-sm text-slate-400">{t(`steps.${key}.copy`)}</p></li>
           ))}
         </ol>
       </section>

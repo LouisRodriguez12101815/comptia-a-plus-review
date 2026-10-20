@@ -1,6 +1,6 @@
 import { subnetData } from "@/lib/subnet/catalog";
 import { calculate, cidr } from "@/lib/subnet/ipv4";
-import { designGrade, designReason, detectiveGrade, detectiveSteps, orderGrade } from "@/lib/subnet/grading";
+import { designGrade, designReason, detectiveGrade, detectiveSteps, orderGrade, type Feedback } from "@/lib/subnet/grading";
 import type { Allocation, DesignMission } from "@/lib/subnet/types";
 export type Answers=Record<string,string>;
 export type Run={version:number;activity:"detective"|"architect";mode:"guided"|"challenge";id:string;receipts:Record<string,{attempts:Answers[];hintUsed:boolean}>;draft:Answers};
@@ -10,28 +10,28 @@ export const getMission=(run:Run)=>subnetData.missions.find(m=>m.id===run.id)!;
 export const getConcept=(run:Run)=>subnetData.concepts[Math.max(0,subnetData.exercises.findIndex(e=>e.id===run.id))%subnetData.concepts.length];
 export function stages(run:Run){return [...(run.activity==='detective'?detectiveSteps.map(s=>s.id):['order','prefixes','allocation','reason']),'concept'];}
 export function allocations(answers:Answers):Record<string,Allocation>{return Object.fromEntries(Object.keys(answers).filter(k=>k.endsWith('.cidr')).map(k=>{const id=k.slice(0,-5);return [id,{cidr:answers[k],gateway:answers[id+'.gateway']??'',peer:answers[id+'.peer']??''}];}));}
-export function grade(run:Run,stage:string,answers:Answers):{ok:boolean;errors:string[]}{
-  if(stage==='concept'){const c=getConcept(run).choices.find(c=>c.id===answers.choice);return {ok:!!c?.correct,errors:c&&!c.correct?[c.explanation]:c?[]:['Choose the justified concept answer.']};}
+export function grade(run:Run,stage:string,answers:Answers):{ok:boolean;errors:Feedback[]}{
+  if(stage==='concept'){const c=getConcept(run).choices.find(c=>c.id===answers.choice);return {ok:!!c?.correct,errors:c&&!c.correct?[{text:c.explanation}]:c?[]:[{text:'Choose the justified concept answer.',key:'chooseConcept'}]};}
   if(run.activity==='detective')return detectiveGrade(getExercise(run),stage,answers);
   const mission=getMission(run);
-  if(stage==='order')return {ok:orderGrade(mission,(answers.order??'').split(',')),errors:orderGrade(mission,(answers.order??'').split(','))?[]:['Use each requirement once, from largest usable count to smallest. Equal-count links can be in any order.']};
+  if(stage==='order')return {ok:orderGrade(mission,(answers.order??'').split(',')),errors:orderGrade(mission,(answers.order??'').split(','))?[]:[{text:'Use each requirement once, from largest usable count to smallest. Equal-count links can be in any order.',key:'orderRule'}]};
   if(stage==='prefixes'){
-    const errors:string[]=[];let total=0;
+    const errors:Feedback[]=[];let total=0;
     for(const r of mission.requirements){try{if(!/^\d+$/.test(answers[r.id]??''))throw new Error('Enter a prefix.');const n=calculate('0.0.0.0',Number(answers[r.id]));total+=n.size;
-      if(n.capacity<r.hosts)errors.push(`${r.id}: /${n.prefix} gives ${n.capacity} usable, below ${r.hosts}. Reserve network/broadcast.`);
-      if(r.kind==='link'&&n.prefix!==30)errors.push(`${r.id}: links must use /30 in this mission.`);
-    }catch(e){errors.push(`${r.id}: ${(e as Error).message}`);}}
-    if(total>cidr(mission.parent).size)errors.push('Insufficient space: your chosen block sizes together exceed the parent. Reconsider oversized LANs.');
+      if(n.capacity<r.hosts)errors.push({text:`${r.id}: /${n.prefix} gives ${n.capacity} usable, below ${r.hosts}. Reserve network/broadcast.`,key:'lanCapacity',values:{id:r.id,prefix:n.prefix,capacity:n.capacity,hosts:r.hosts}});
+      if(r.kind==='link'&&n.prefix!==30)errors.push({text:`${r.id}: links must use /30 in this mission.`,key:'linkPrefix',values:{id:r.id}});
+    }catch(e){const message=(e as Error).message;errors.push(message==='Enter a prefix.'?{text:`${r.id}: ${message}`,key:'prefixMissing',values:{id:r.id}}:{text:`${r.id}: ${message}`,key:'prefixError',values:{id:r.id,message}});}}
+    if(total>cidr(mission.parent).size)errors.push({text:'Insufficient space: your chosen block sizes together exceed the parent. Reconsider oversized LANs.',key:'insufficientSpace'});
     return {ok:errors.length===0,errors};
   }
   if(stage==='allocation'){
-    const result=designGrade(mission,allocations(answers));const errors=result.errors.map(e=>`${e.id}: ${e.reason}`);
+    const result=designGrade(mission,allocations(answers));const errors:Feedback[]=result.errors.map(e=>({text:`${e.id}: ${e.reason}`,key:e.key,values:e.values}));
     const selected=run.receipts.prefixes?.attempts.at(-1);
-    for(const r of mission.requirements)if(answers[r.id+'.cidr']?.split('/')[1]!==selected?.[r.id])errors.push(`${r.id}: use the prefix you selected in the preceding step.`);
+    for(const r of mission.requirements)if(answers[r.id+'.cidr']?.split('/')[1]!==selected?.[r.id])errors.push({text:`${r.id}: use the prefix you selected in the preceding step.`,key:'prefixMismatch',values:{id:r.id}});
     return {ok:errors.length===0,errors};
   }
-  if(stage==='reason'){const c=designReason.choices.find(c=>c.id===answers.choice);return {ok:!!c?.correct,errors:c&&!c.correct?[c.explanation]:c?[]:['Choose a verification explanation.']};}
-  return {ok:false,errors:['Unknown stage.']};
+  if(stage==='reason'){const c=designReason.choices.find(c=>c.id===answers.choice);return {ok:!!c?.correct,errors:c&&!c.correct?[{text:c.explanation,key:`reasonChoices.${c.id}.explanation`}]:c?[]:[{text:'Choose a verification explanation.',key:'chooseVerification'}]};}
+  return {ok:false,errors:[{text:'Unknown stage.',key:'unknownStage'}]};
 }
 export const activeStage=(run:Run)=>stages(run).find(s=>{const a=run.receipts[s]?.attempts.at(-1);return !a||!grade(run,s,a).ok;});
 const fingerprint=(answers:Answers)=>JSON.stringify(Object.entries(answers).map(([k,v])=>[k,v.trim()]).sort(([a],[b])=>a.localeCompare(b)));

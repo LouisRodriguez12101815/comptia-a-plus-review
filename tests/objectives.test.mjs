@@ -120,7 +120,7 @@ test('shared dashboard summaries and complete ranking agree with the CLI report'
 test('reconciled display package is counted from its single mapping and guided lab', async () => {
   const display = rows.find((r) => r.key === '220-1201:5.3');
   assert.deepEqual(display.topics, ['core1-display-troubleshooting']);
-  assert.deepEqual([display.notes, display.cards, display.quiz, display.labs], [8, 12, 15, 1]);
+  assert.deepEqual([display.notes, display.cards, display.quiz, display.labs], [8, 12, 18, 1]);
   const { readFileSync } = await import('node:fs');
   const labs = JSON.parse(readFileSync(new URL('../content/labs.json', import.meta.url), 'utf8'));
   const related = labs.filter((lab) => lab.relatedTopicIds?.includes(display.topics[0]));

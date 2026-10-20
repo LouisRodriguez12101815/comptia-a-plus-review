@@ -70,10 +70,10 @@ export const tracks: Track[] = [
 ];
 
 export const networkingChapters = [
-  { href: "/network-plus/ch9", label: "Chapter 9", title: "Introduction to IP Routing" },
-  { href: "/network-plus/ch10", label: "Chapter 10", title: "Routing Protocols" },
-  { href: "/network-plus/ch11", label: "Chapter 11", title: "Switching and Virtual LANs" },
-];
+  { id: "ch9", href: "/network-plus/ch9", label: "Chapter 9", title: "Introduction to IP Routing" },
+  { id: "ch10", href: "/network-plus/ch10", label: "Chapter 10", title: "Routing Protocols" },
+  { id: "ch11", href: "/network-plus/ch11", label: "Chapter 11", title: "Switching and Virtual LANs" },
+] as const;
 
 export const toolMeta: {
   id: ToolId;
@@ -114,6 +114,19 @@ export const toolMeta: {
   },
 ];
 
+export type ChipText = {
+  key:
+    | "chapters"
+    | "visuals"
+    | "cards"
+    | "questions"
+    | "labs"
+    | "comingSoon"
+    | "inCcnaTrack"
+    | "allTracks";
+  count?: number;
+};
+
 export type ToolStatus = {
   id: ToolId;
   label: string;
@@ -121,8 +134,8 @@ export type ToolStatus = {
   href: string;
   /** ready: has content here. soon: nothing yet. shared: same for every track. elsewhere: lives in another track. */
   state: "ready" | "soon" | "shared" | "elsewhere";
-  /** Short text shown on the status chip next to its icon. */
-  chip: string;
+  /** Status chip text next to its icon. The UI translates the key and fills in the count. */
+  chip: ChipText;
   /** Exam focus to store when the tool opens. */
   focus: StudyFocus | null;
   /** A tool marked "soon" is normally not a link. This keeps it one, because its page explains what is coming. */
@@ -174,10 +187,6 @@ export function trackCounts(track: Track) {
   };
 }
 
-function plural(count: number, word: string): string {
-  return `${count} ${word}${count === 1 ? "" : "s"}`;
-}
-
 export function toolStatuses(track: Track): ToolStatus[] {
   const counts = trackCounts(track);
   return toolMeta.map((tool): ToolStatus => {
@@ -192,35 +201,35 @@ export function toolStatuses(track: Track): ToolStatus[] {
     switch (tool.id) {
       case "notes":
         return counts.topics > 0
-          ? { ...base, state: "ready", chip: plural(counts.topics, "chapter") }
-          : { ...base, state: "soon", chip: "Coming soon" };
+          ? { ...base, state: "ready", chip: { key: "chapters", count: counts.topics } }
+          : { ...base, state: "soon", chip: { key: "comingSoon" } };
       case "visuals": {
         const visuals = visualCounts(track.focus);
         const href = `${track.href}/visuals`;
         return visuals.visuals > 0
-          ? { ...base, href, openable: true, state: "ready", chip: plural(visuals.visuals, "visual") }
-          : { ...base, href, openable: true, state: "soon", chip: "Coming soon" };
+          ? { ...base, href, openable: true, state: "ready", chip: { key: "visuals", count: visuals.visuals } }
+          : { ...base, href, openable: true, state: "soon", chip: { key: "comingSoon" } };
       }
       case "flashcards":
         return counts.cards > 0
-          ? { ...base, state: "ready", chip: plural(counts.cards, "card") }
-          : { ...base, state: "soon", chip: "Coming soon" };
+          ? { ...base, state: "ready", chip: { key: "cards", count: counts.cards } }
+          : { ...base, state: "soon", chip: { key: "comingSoon" } };
       case "quiz":
         return counts.questions > 0
-          ? { ...base, state: "ready", chip: plural(counts.questions, "question") }
-          : { ...base, state: "soon", chip: "Coming soon" };
+          ? { ...base, state: "ready", chip: { key: "questions", count: counts.questions } }
+          : { ...base, state: "soon", chip: { key: "comingSoon" } };
       case "labs":
         return track.id === "ccna"
-          ? { ...base, state: "ready", chip: plural(counts.labs, "lab") }
+          ? { ...base, state: "ready", chip: { key: "labs", count: counts.labs } }
           : {
               ...base,
               href: "/ccna",
               focus: null,
               state: "elsewhere",
-              chip: "In the CCNA track",
+              chip: { key: "inCcnaTrack" },
             };
       case "game":
-        return { ...base, state: "shared", chip: "All tracks" };
+        return { ...base, state: "shared", chip: { key: "allTracks" } };
     }
   });
 }

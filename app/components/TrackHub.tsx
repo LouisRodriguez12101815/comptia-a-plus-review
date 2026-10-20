@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { DeviceIcon, ToolIcon } from "@/app/components/icons";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
@@ -10,7 +11,10 @@ import { getTrack, networkingChapters, splitTopics, toolStatuses, type TrackId }
 const tileBase =
   "flex h-full flex-col gap-3 rounded-2xl border p-5 transition";
 
-export function TrackHub({ trackId }: { trackId: TrackId }) {
+export async function TrackHub({ trackId }: { trackId: TrackId }) {
+  const t = await getTranslations("trackHub");
+  const tTrack = await getTranslations("tracks");
+  const tChapter = await getTranslations("networkChapters");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
   const { own, shared } = splitTopics(track);
@@ -22,10 +26,10 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
       <header className="space-y-4">
         <p className="text-sm text-slate-400">
           <Link href="/" className="hover:text-white">
-            Home
+            {tTrack("home")}
           </Link>
           <span aria-hidden="true"> / </span>
-          <span className="text-slate-100">{track.short}</span>
+          <span className="text-slate-100">{tTrack(`${track.id}.short`)}</span>
         </p>
         <div className="flex items-start gap-4">
           <div className="hidden shrink-0 rounded-2xl border border-slate-800 bg-slate-900 p-3 text-teal-400 sm:block">
@@ -33,10 +37,13 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
           </div>
           <div className="space-y-2">
             <p className="text-sm uppercase tracking-wide text-teal-300">
-              Certification track · <span className="font-mono normal-case">{track.code}</span>
+              {t.rich("certificationTrack", {
+                code: track.code,
+                mono: (chunks) => <span className="font-mono normal-case">{chunks}</span>,
+              })}
             </p>
-            <h1 className="text-3xl font-semibold tracking-tight text-white">{track.label}</h1>
-            <p className="max-w-2xl text-slate-300">{track.description}</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-white">{tTrack(`${track.id}.label`)}</h1>
+            <p className="max-w-2xl text-slate-300">{tTrack(`${track.id}.description`)}</p>
           </div>
         </div>
       </header>
@@ -44,23 +51,23 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
       {track.focus && track.focus !== "all" ? (
         <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5">
           <div>
-            <h2 id="test-mode-heading" className="text-lg font-medium text-white">Timed test mode</h2>
+            <h2 id="test-mode-heading" className="text-lg font-medium text-white">{t("testModeTitle")}</h2>
             <p className="mt-1 max-w-xl text-sm text-slate-300">
-              A practice exam weighted by the {track.code} objective domains, with a countdown on every question at real exam pace.
+              {t("testModeBody", { code: track.code })}
             </p>
           </div>
           <Link
             href={`/test?exam=${track.focus}`}
             className="inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
           >
-            Start a timed test
+            {t("startTest")}
           </Link>
         </section>
       ) : null}
 
       <section aria-labelledby="tools-heading" className="space-y-4">
         <h2 id="tools-heading" className="text-lg font-medium text-white">
-          Study tools
+          {t("studyTools")}
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => {
@@ -70,11 +77,11 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
                   <span className="text-teal-400">
                     <ToolIcon id={tool.id} width={26} height={26} />
                   </span>
-                  <StatusChip state={tool.state}>{tool.chip}</StatusChip>
+                  <StatusChip state={tool.state}>{tTrack(`chips.${tool.chip.key}`, { count: tool.chip.count ?? 0 })}</StatusChip>
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-white">{tool.label}</p>
-                  <p className="mt-1 text-sm text-slate-400">{tool.blurb}</p>
+                  <p className="text-lg font-medium text-white">{tTrack(`tools.${tool.id}.label`)}</p>
+                  <p className="mt-1 text-sm text-slate-400">{tTrack(`tools.${tool.id}.blurb`)}</p>
                 </div>
               </>
             );
@@ -107,10 +114,10 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
         <section aria-labelledby="chapters-heading" className="space-y-4">
           <div>
             <h2 id="chapters-heading" className="text-lg font-medium text-white">
-              Chapter visuals
+              {t("chapterVisualsTitle")}
             </h2>
             <p className="mt-1 text-sm text-slate-400">
-              Interactive diagrams and simulators for each Network+ chapter.
+              {t("chapterVisualsBody")}
             </p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-3">
@@ -120,8 +127,8 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
                   href={chapter.href}
                   className="block h-full rounded-2xl border border-slate-800 bg-slate-900 p-4 hover:border-teal-400"
                 >
-                  <p className="text-xs uppercase tracking-wide text-teal-300">{chapter.label}</p>
-                  <p className="mt-1 font-medium text-white">{chapter.title}</p>
+                  <p className="text-xs uppercase tracking-wide text-teal-300">{tChapter(`${chapter.id}.label`)}</p>
+                  <p className="mt-1 font-medium text-white">{tChapter(`${chapter.id}.title`)}</p>
                 </Link>
               </li>
             ))}
@@ -133,10 +140,10 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
         <section aria-labelledby="labs-heading" className="space-y-4">
           <div>
             <h2 id="labs-heading" className="text-lg font-medium text-white">
-              Packet Tracer labs
+              {t("labsTitle")}
             </h2>
             <p className="mt-1 text-sm text-slate-400">
-              Notes, flashcards, and quizzes for CCNA are not written yet. The labs are ready now.
+              {t("labsBody")}
             </p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2">
@@ -162,7 +169,7 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
 
           <section aria-labelledby="notes-heading" className="space-y-4">
             <h2 id="notes-heading" className="text-lg font-medium text-white">
-              Chapters in this track
+              {t("chaptersInTrack")}
             </h2>
             <ul className="grid gap-3 sm:grid-cols-2">
               {own.map((topic) => (
@@ -172,8 +179,7 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
                     className="block h-full rounded-2xl border border-slate-800 bg-slate-900 p-4 hover:border-teal-400"
                   >
                     <p className="text-xs uppercase tracking-wide text-teal-300">
-                      {topic.chapter}
-                      {topic.weak ? " · Weak area" : ""}
+                      {topic.weak ? t("weakArea", { chapter: topic.chapter }) : topic.chapter}
                     </p>
                     <p className="mt-1 font-medium text-white">{topic.title}</p>
                     <p className="mt-2 text-sm text-slate-400">{topic.summary}</p>
@@ -187,10 +193,10 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
             <section aria-labelledby="shared-heading" className="space-y-4">
               <div>
                 <h2 id="shared-heading" className="text-lg font-medium text-white">
-                  Shared with other tracks
+                  {t("sharedTitle")}
                 </h2>
                 <p className="mt-1 text-sm text-slate-400">
-                  These chapters count toward more than one exam, so they appear in each track.
+                  {t("sharedBody")}
                 </p>
               </div>
               <ul className="grid gap-3 sm:grid-cols-2">
@@ -203,7 +209,7 @@ export function TrackHub({ trackId }: { trackId: TrackId }) {
                       <p className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-teal-300">
                         {topic.chapter}
                         <span className="rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 normal-case tracking-normal text-cyan-200">
-                          Also in {alsoIn.join(", ")}
+                          {t("alsoIn", { tracks: alsoIn.join(", ") })}
                         </span>
                       </p>
                       <p className="mt-1 font-medium text-white">{topic.title}</p>

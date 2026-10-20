@@ -1,33 +1,35 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { searchNotes } from "@/lib/content";
 import type { StudyFocus } from "@/lib/types";
 
 export function NotesSearch({ focus }: { focus: StudyFocus }) {
+  const t = useTranslations("notesSearch");
   const [query, setQuery] = useState("");
   const results = useMemo(() => searchNotes(query, focus), [query, focus]);
 
   return (
     <section className="space-y-3">
       <label className="block text-sm font-medium text-slate-200" htmlFor="notes-search">
-        Search focused notes
+        {t("label")}
       </label>
       <input
         id="notes-search"
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Try RAID, DHCP, BitLocker, or bootrec"
+        placeholder={t("placeholder")}
         className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none placeholder:text-slate-500 focus:border-teal-400"
       />
       {query.trim() && (
         <div className="space-y-2">
-          <p className="text-sm text-slate-400">{results.length} matching sections</p>
+          <p className="text-sm text-slate-400">{t("matchCount", { count: results.length })}</p>
           {results.length === 0 ? (
             <p className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-400">
-              No match in this exam focus. Try another term or switch to All.
+              {t("noMatch")}
             </p>
           ) : (
             <ul className="space-y-2">

@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { categories, githubIssueUrl, limits, type Category } from "@/lib/report/issue";
 
@@ -20,6 +21,7 @@ const field =
   "mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-teal-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400";
 
 export function ReportIssue() {
+  const t = useTranslations("reportIssue");
   const pathname = usePathname();
   const dialog = useRef<HTMLDialogElement>(null);
   const openedAt = useRef(0);
@@ -83,12 +85,12 @@ export function ReportIssue() {
         setStatus({ kind: "done", issueUrl: data.issueUrl ?? null });
         reset();
       } else {
-        setStatus({ kind: "error", message: data.error ?? "Something went wrong.", fallbackUrl: data.fallbackUrl });
+        setStatus({ kind: "error", message: data.error ?? t("genericError"), fallbackUrl: data.fallbackUrl });
       }
     } catch {
       setStatus({
         kind: "error",
-        message: "Could not send the report.",
+        message: t("sendFailed"),
         fallbackUrl: githubIssueUrl({ category, page: pathname, item, claim, source }, window.location.origin),
       });
     }
@@ -101,7 +103,7 @@ export function ReportIssue() {
         onClick={() => open()}
         className="inline-flex min-h-11 items-center gap-2 rounded-full border border-amber-400/60 bg-amber-400/10 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-400/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
       >
-        <span aria-hidden="true">⚑</span> Report an error on this page
+        <span aria-hidden="true">⚑</span> {t("trigger")}
       </button>
 
       <dialog
@@ -116,17 +118,20 @@ export function ReportIssue() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 id="report-title" className="text-lg font-semibold text-white">
-                Dispute this content
+                {t("title")}
               </h2>
               <p className="mt-1 text-sm text-slate-400">
-                Files a GitHub issue for the maintainers. Page: <span className="font-mono text-slate-300">{pathname}</span>
+                {t.rich("intro", {
+                  page: pathname,
+                  path: (chunks) => <span className="font-mono text-slate-300">{chunks}</span>,
+                })}
               </p>
             </div>
             <button
               type="button"
               onClick={() => dialog.current?.close()}
               className="min-h-11 min-w-11 rounded-full border border-slate-700 text-slate-300 hover:border-teal-400"
-              aria-label="Close"
+              aria-label={t("close")}
             >
               ✕
             </button>
@@ -134,22 +139,22 @@ export function ReportIssue() {
 
           {status.kind === "done" ? (
             <div className="space-y-3 rounded-xl border border-teal-400/40 bg-teal-400/10 p-4 text-sm" role="status">
-              <p className="font-medium text-teal-100">Thanks. Your report was filed.</p>
+              <p className="font-medium text-teal-100">{t("filed")}</p>
               {status.issueUrl && (
                 <a href={status.issueUrl} target="_blank" rel="noopener noreferrer" className="text-teal-300 underline">
-                  Follow the issue on GitHub
+                  {t("followIssue")}
                 </a>
               )}
               <div>
                 <button type="button" onClick={() => dialog.current?.close()} className="mt-2 rounded-full bg-teal-500 px-4 py-2 font-medium text-slate-950">
-                  Done
+                  {t("done")}
                 </button>
               </div>
             </div>
           ) : (
             <>
               <label className="block text-sm">
-                Category
+                {t("category")}
                 <select className={field} value={category} onChange={(e) => setCategory(e.target.value as Category)}>
                   {categories.map((c) => (
                     <option key={c}>{c}</option>
@@ -157,19 +162,19 @@ export function ReportIssue() {
                 </select>
               </label>
               <label className="block text-sm">
-                Which item? <span className="text-slate-500">(paste the sentence, question, or card; highlighted text fills this in)</span>
+                {t.rich("itemLabel", { hint: (chunks) => <span className="text-slate-500">{chunks}</span> })}
                 <textarea required minLength={3} maxLength={limits.item} rows={2} className={field} value={item} onChange={(e) => setItem(e.target.value)} />
               </label>
               <label className="block text-sm">
-                What is wrong, and what should it say?
+                {t("claimLabel")}
                 <textarea required minLength={15} maxLength={limits.claim} rows={4} className={field} value={claim} onChange={(e) => setClaim(e.target.value)} />
               </label>
               <label className="block text-sm">
-                Source or reference <span className="text-slate-500">(objective number, book page, RFC, vendor doc)</span>
+                {t.rich("sourceLabel", { hint: (chunks) => <span className="text-slate-500">{chunks}</span> })}
                 <input maxLength={limits.source} className={field} value={source} onChange={(e) => setSource(e.target.value)} placeholder="N10-009 objective 1.4" />
               </label>
               <label className="block text-sm">
-                Your name or GitHub handle <span className="text-slate-500">(optional, shown publicly)</span>
+                {t.rich("reporterLabel", { hint: (chunks) => <span className="text-slate-500">{chunks}</span> })}
                 <input maxLength={limits.reporter} className={field} value={reporter} onChange={(e) => setReporter(e.target.value)} />
               </label>
               <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
@@ -178,14 +183,14 @@ export function ReportIssue() {
                   <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
                 </label>
               </div>
-              <p className="text-xs text-slate-500">Reports become public GitHub issues. Do not include personal information.</p>
+              <p className="text-xs text-slate-500">{t("publicNotice")}</p>
 
               {status.kind === "error" && (
                 <div ref={alertRef} className="rounded-xl border border-orange-400/40 bg-orange-400/10 p-3 text-sm text-orange-100" role="alert">
                   <p>{status.message}</p>
                   {status.fallbackUrl && (
                     <a href={status.fallbackUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-orange-200 underline">
-                      Open this report on GitHub instead (prefilled)
+                      {t("openOnGithub")}
                     </a>
                   )}
                 </div>
@@ -197,10 +202,10 @@ export function ReportIssue() {
                   disabled={status.kind === "sending"}
                   className="min-h-11 rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400 disabled:opacity-50"
                 >
-                  {status.kind === "sending" ? "Filing…" : "File the report"}
+                  {status.kind === "sending" ? t("filing") : t("fileReport")}
                 </button>
                 <button type="button" onClick={() => dialog.current?.close()} className="min-h-11 rounded-full border border-slate-600 px-5 py-2 text-sm">
-                  Cancel
+                  {t("cancel")}
                 </button>
               </div>
             </>

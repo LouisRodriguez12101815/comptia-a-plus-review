@@ -45,10 +45,17 @@ export function summarize(session: Session, challenge: Challenge) {
     recommendations: rows.filter((row) => row.misconceptions.length || row.hintUsed).map((row) => ({ objective: row.round.objective, sourceIds: row.round.sourceIds })) };
 }
 /** Display only. First true branch wins, as in Python if / elif / else. The clean branch is finished and hints === 0. Zero is a real count; null, "", and a non-number are not. Points are unchanged. */
-export function readinessLine(completed: unknown, total: unknown, hints: unknown): string {
+export function readinessState(completed: unknown, total: unknown, hints: unknown): "cleanFinish" | "hintedFinish" | "unfinished" {
   const finished = typeof completed === "number" && typeof total === "number" && total > 0 && completed === total;
-  if (finished && typeof hints === "number" && hints === 0) return "finished with no hints.";
-  if (finished && typeof hints === "number" && hints > 0) return "finished with a hint.";
+  if (finished && typeof hints === "number" && hints === 0) return "cleanFinish";
+  if (finished && typeof hints === "number" && hints > 0) return "hintedFinish";
+  return "unfinished";
+}
+/** English form of readinessState, kept for non-UI callers. UI uses readinessState with translated text. */
+export function readinessLine(completed: unknown, total: unknown, hints: unknown): string {
+  const state = readinessState(completed, total, hints);
+  if (state === "cleanFinish") return "finished with no hints.";
+  if (state === "hintedFinish") return "finished with a hint.";
   return "this run is not finished.";
 }
 /** Display only. The index increases every pass, so the while condition eventually fails. A hinted round is skipped. The walk breaks after stopAfter unaided titles. Points and the full match list are unchanged. */

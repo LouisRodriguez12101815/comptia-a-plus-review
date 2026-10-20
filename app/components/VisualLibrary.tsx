@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { reportContent } from "@/app/components/ReportIssue";
 
 /*
@@ -178,6 +179,7 @@ function Groups({
   seen: Set<string>;
   onPick: (item: Item) => void;
 }) {
+  const t = useTranslations("visualLibrary");
   const groups = [...new Set(items.map((v) => v.group))];
   return (
     <>
@@ -189,7 +191,7 @@ function Groups({
             <p id={labelId} className="cv-group-label">
               <span>{group}</span>
               <span className="cv-count">
-                {inGroup.length} {inGroup.length === 1 ? "visual" : "visuals"}
+                {t("visualCount", { count: inGroup.length })}
               </span>
             </p>
             <ol aria-labelledby={labelId} className="cv-items">
@@ -209,11 +211,11 @@ function Groups({
                       </span>
                       <span className="cv-title">{v.title}</span>
                       {active ? (
-                        <span className="cv-tag">Viewing</span>
+                        <span className="cv-tag">{t("viewing")}</span>
                       ) : viewed ? (
                         <span className="cv-done">
                           <Check />
-                          <span className="cv-sr">Viewed</span>
+                          <span className="cv-sr">{t("viewed")}</span>
                         </span>
                       ) : null}
                     </button>
@@ -229,6 +231,7 @@ function Groups({
 }
 
 export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
+  const t = useTranslations("visualLibrary");
   const { ready, soon, flat } = useMemo(() => {
     const readyChapters = chapters.filter((c) => c.visuals.length > 0);
     const soonChapters = chapters.filter((c) => c.visuals.length === 0);
@@ -329,7 +332,9 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
       <style>{css}</style>
 
       <p className="cv-sr" role="status" aria-live="polite">
-        {`Showing ${multi ? `${current.chapterLabel}, ` : ""}visual ${current.inChapter} of ${current.chapterCount}: ${current.title}`}
+        {multi
+          ? t("showingInChapter", { chapter: current.chapterLabel, index: current.inChapter, count: current.chapterCount, title: current.title })
+          : t("showing", { index: current.inChapter, count: current.chapterCount, title: current.title })}
       </p>
 
       <div className="cv-bar">
@@ -341,23 +346,25 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
           onClick={() => setOpen((o) => !o)}
         >
           <span aria-hidden="true">{open ? "\u2715" : "\u2630"}</span>
-          {open ? "Close the list" : `Browse all ${total} visuals`}
+          {open ? t("closeList") : t("browseAll", { count: total })}
         </button>
         <p className="cv-pos">
           <strong>
-            {multi ? `${current.chapterLabel} · ` : ""}Visual {current.inChapter} of {current.chapterCount}
+            {multi
+              ? t("positionInChapter", { chapter: current.chapterLabel, index: current.inChapter, count: current.chapterCount })
+              : t("position", { index: current.inChapter, count: current.chapterCount })}
           </strong>
           <span>
             {" "}
-            · {multi ? chapterViewed : seenCount} viewed
+            · {t("viewedCount", { count: multi ? chapterViewed : seenCount })}
           </span>
         </p>
         <div className="cv-steps">
           <button type="button" className="cv-btn" onClick={() => go(index - 1)} disabled={!prev}>
-            <span aria-hidden="true">{"\u2190"}</span> Previous
+            <span aria-hidden="true">{"\u2190"}</span> {t("previous")}
           </button>
           <button type="button" className="cv-btn cv-primary" onClick={() => go(index + 1)} disabled={!next}>
-            Next <span aria-hidden="true">{"\u2192"}</span>
+            {t("next")} <span aria-hidden="true">{"\u2192"}</span>
           </button>
         </div>
       </div>
@@ -366,7 +373,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
         <nav
           id={listId}
           ref={listRef}
-          aria-label={multi ? "Visuals by chapter" : "Chapter visuals"}
+          aria-label={multi ? t("navChapters") : t("navSingle")}
           className="cv-list"
           onKeyDown={(e) => {
             if (e.key === "Escape") setOpen(false);
@@ -395,8 +402,8 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
                         <span className="cv-chap-label">{chapter.label}</span>
                         <span className="cv-chap-title">{chapter.title}</span>
                         <span className="cv-chap-meta">
-                          {items.length} {items.length === 1 ? "visual" : "visuals"} · {viewed} viewed
-                          {isCurrent ? <span className="cv-sr"> (current chapter)</span> : null}
+                          {t("chapterMeta", { count: items.length, viewed })}
+                          {isCurrent ? <span className="cv-sr"> {t("currentChapter")}</span> : null}
                         </span>
                       </span>
                     </button>
@@ -425,9 +432,9 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
           {soon.length > 0 ? (
             <section className="cv-group cv-soon" aria-labelledby="cv-soon-label">
               <p id="cv-soon-label" className="cv-group-label">
-                <span>Coming soon</span>
+                <span>{t("comingSoon")}</span>
                 <span className="cv-count">
-                  {soon.length} {soon.length === 1 ? "chapter" : "chapters"}
+                  {t("chapterCount", { count: soon.length })}
                 </span>
               </p>
               <ul className="cv-soon-list">
@@ -437,7 +444,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
                     <span>
                       <span className="cv-soon-label">{chapter.label}</span>
                       <span className="cv-soon-title">{chapter.title}</span>
-                      <span className="cv-sr"> (no visuals yet)</span>
+                      <span className="cv-sr"> {t("noVisualsYet")}</span>
                     </span>
                   </li>
                 ))}
@@ -447,7 +454,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
 
           <div className="cv-foot">
             <span>
-              {seenCount} of {total} viewed
+              {t("viewedOf", { seen: seenCount, total })}
             </span>
             {seenCount > 1 ? (
               <button
@@ -459,7 +466,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
                   notifySeen();
                 }}
               >
-                Clear viewed marks
+                {t("clearViewed")}
               </button>
             ) : null}
           </div>
@@ -477,7 +484,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
             <p className="cv-text">{text}</p>
             {covers ? (
               <p className="cv-covers">
-                <strong>{/^Notes:/i.test(covers) ? "From the notes:" : "Covers:"}</strong>{" "}
+                <strong>{/^Notes:/i.test(covers) ? t("fromNotes") : t("covers")}</strong>{" "}
                 {covers.replace(/^Notes:\s*/i, "")}
               </p>
             ) : null}
@@ -488,19 +495,19 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open full screen <span aria-hidden="true">{"\u2197"}</span>
-                <span className="cv-sr"> (opens in a new tab)</span>
+                {t("openFullScreen")} <span aria-hidden="true">{"\u2197"}</span>
+                <span className="cv-sr"> {t("opensNewTab")}</span>
               </a>
               <button
                 type="button"
                 className="cv-btn"
                 onClick={() => reportContent(`Visual ${current.file}: ${current.title}`, "Broken visual, game, or lab")}
               >
-                Dispute this visual
+                {t("dispute")}
               </button>
               {multi && current.notesHref ? (
                 <a className="cv-btn" href={current.notesHref}>
-                  Read this chapter&rsquo;s notes
+                  {t("readChapterNotes")}
                 </a>
               ) : null}
             </div>
@@ -511,7 +518,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
           <div className="cv-next">
             {next ? (
               <button type="button" className="cv-upnext" onClick={() => go(index + 1)}>
-                <span className="cv-upnext-label">{nextIsNewChapter ? "Up next · new chapter" : "Up next"}</span>
+                <span className="cv-upnext-label">{nextIsNewChapter ? t("upNextNewChapter") : t("upNext")}</span>
                 <span className="cv-upnext-title">
                   {nextIsNewChapter ? `${next.chapterLabel}: ` : ""}
                   {next.title} <span aria-hidden="true">{"\u2192"}</span>
@@ -519,7 +526,7 @@ export default function VisualLibrary({ chapters }: { chapters: Chapter[] }) {
               </button>
             ) : (
               <p className="cv-end">
-                <Check /> That is the last visual{multi ? " in this track" : " in this chapter"}.
+                <Check /> {t(multi ? "lastInTrack" : "lastInChapter")}
               </p>
             )}
           </div>

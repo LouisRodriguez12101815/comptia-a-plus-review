@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
@@ -11,7 +12,7 @@ import {
   rateCard,
   subscribeProgress,
 } from "@/lib/progress";
-import { gradeLabels, isDue, type ReviewGrade } from "@/lib/study/schedule";
+import { isDue, type ReviewGrade } from "@/lib/study/schedule";
 
 const DUE_MODE = "due";
 const grades: ReviewGrade[] = ["again", "hard", "good", "easy"];
@@ -27,6 +28,7 @@ function shuffle<T>(items: T[]) {
 }
 
 export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
+  const t = useTranslations("flashcardDeck");
   const [focus, setFocus] = useStudyFocus();
   // A linked Chapter 9 review must not become empty under a saved Core 1 focus.
   const [topicFocus, setTopicFocus] = useState<StudyFocus | null>(initialTopic === "n10-ch9" ? "n10-009" : null);
@@ -84,7 +86,7 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <select
-          aria-label="Choose a flashcard deck"
+          aria-label={t("chooseDeck")}
           value={topicId}
           onChange={(event) => {
             const next = event.target.value;
@@ -94,9 +96,9 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
           }}
           className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"
         >
-          <option value="all">All focused cards</option>
-          <option value="weak">Weak areas only</option>
-          <option value={DUE_MODE}>Due for review ({dueCards.length})</option>
+          <option value="all">{t("allFocused")}</option>
+          <option value="weak">{t("weakOnly")}</option>
+          <option value={DUE_MODE}>{t("dueForReview", { count: dueCards.length })}</option>
           {topicOptions.map((topic) => (
             <option key={topic.id} value={topic.id}>
               {topic.chapter}: {topic.title}
@@ -117,21 +119,20 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
           disabled={deck.length === 0}
           className="rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-teal-400 disabled:opacity-40"
         >
-          Shuffle
+          {t("shuffle")}
         </button>
       </div>
 
       {!card ? (
         <p className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-slate-400">
-          {topicId === DUE_MODE
-            ? "Nothing is due right now. Come back later, or study another deck."
-            : "No cards are tagged for this combination yet. Choose All focused cards or switch exam focus."}
+          {topicId === DUE_MODE ? t("nothingDue") : t("noCards")}
         </p>
       ) : (
         <>
           <p className="text-sm text-slate-400">
-            Card {currentIndex + 1} of {cards.length} · Marked known on this device: {knownCount}
-            {topicId === DUE_MODE ? " · Review session" : ""}
+            {topicId === DUE_MODE
+              ? t("cardStatusDue", { current: currentIndex + 1, total: cards.length, known: knownCount })
+              : t("cardStatus", { current: currentIndex + 1, total: cards.length, known: knownCount })}
           </p>
 
           <button
@@ -141,23 +142,23 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
           >
             {card.weak && (
               <span className="mb-3 inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-200">
-                Weak area
+                {t("weakArea")}
               </span>
             )}
             <p className="text-xs uppercase tracking-wide text-teal-300">
-              {flipped ? "Answer" : "Prompt"}
+              {flipped ? t("answerSide") : t("promptSide")}
             </p>
             <p className="mt-3 text-xl leading-relaxed text-white">
               {flipped ? card.back : card.front}
             </p>
             <p className="mt-8 text-sm text-slate-500">
-              {flipped ? "Rate how well you knew it below" : "Tap to flip, then rate yourself"}
+              {flipped ? t("rateHint") : t("flipHint")}
             </p>
           </button>
 
           {flipped ? (
             <div className="space-y-2">
-              <p className="text-sm text-slate-400">How well did you know it? Each rating sets when it comes back.</p>
+              <p className="text-sm text-slate-400">{t("ratePrompt")}</p>
               <div className="flex flex-wrap gap-2">
                 {grades.map((grade) => {
                   return (
@@ -179,14 +180,14 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
                           : "rounded-full border border-slate-600 px-4 py-2 text-sm hover:border-orange-400"
                       }
                     >
-                      {gradeLabels[grade]}
+                      {t(`grades.${grade}`)}
                     </button>
                   );
                 })}
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">Flip the card to rate it.</p>
+            <p className="text-sm text-slate-500">{t("flipToRate")}</p>
           )}
 
           <div className="flex flex-wrap gap-2">
@@ -198,14 +199,14 @@ export function FlashcardDeck({ initialTopic }: { initialTopic: string }) {
               }}
               className="rounded-full border border-slate-600 px-4 py-2 text-sm"
             >
-              Previous
+              {t("previous")}
             </button>
             <button
               type="button"
               onClick={() => reportContent(`Flashcard ${card.id}: ${card.front} / ${card.back}`, "Factual error")}
               className="min-h-11 px-2 text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200"
             >
-              Dispute this card
+              {t("disputeCard")}
             </button>
           </div>
         </>
