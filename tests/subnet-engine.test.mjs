@@ -95,3 +95,29 @@ test('larger-than-minimum LAN blocks remain acceptable when all constraints fit'
  const allocations=Object.fromEntries([['A','172.16.8.0/23','172.16.8.1'],['B','172.16.10.0/25','172.16.10.1'],['C','172.16.10.128/25','172.16.10.129'],['D','172.16.11.0/26','172.16.11.1'],['L1','172.16.11.64/30','172.16.11.65','172.16.11.66'],['L2','172.16.11.68/30','172.16.11.69','172.16.11.70'],['L3','172.16.11.72/30','172.16.11.73','172.16.11.74']].map(([id,cidr,gateway,peer])=>[id,{cidr,gateway,peer}]));
  assert.equal(designGrade(m,allocations).ok,true);
 });
+test('Class 10: typed address check routes ok or bad and always finishes',async()=>{
+ const {checkTypedAddress,toOctet,OctetError}=await import('../lib/subnet/ipv4.ts');
+ // normal
+ assert.deepEqual(checkTypedAddress('192.168.1.0'),{route:'ok',address:'192.168.1.0',problems:[],finished:true});
+ // messy but readable (Class 3 trimming still applies)
+ assert.equal(checkTypedAddress('  255.255.255.0 ').address,'255.255.255.0');
+ // boundaries: 0 and 255 pass, 256 fails
+ assert.equal(checkTypedAddress('0.0.0.0').route,'ok');assert.equal(checkTypedAddress('255.255.255.255').route,'ok');
+ assert.deepEqual(checkTypedAddress('10.0.0.256').problems,[{code:'outOfRange',octet:4,piece:'256'}]);
+ // ValueError analog: not a number
+ assert.deepEqual(checkTypedAddress('192.168.1.abc').problems,[{code:'notNumber',octet:4,piece:'abc'}]);
+ // several problems collected, not just the first (validate_lead style)
+ assert.deepEqual(checkTypedAddress('300.x.01.5').problems,[{code:'outOfRange',octet:1,piece:'300'},{code:'notNumber',octet:2,piece:'x'},{code:'leadingZero',octet:3,piece:'01'}]);
+ // wrong number of pieces, plus an empty piece
+ assert.deepEqual(checkTypedAddress('10.0.0').problems,[{code:'pieceCount',count:3}]);
+ assert.deepEqual(checkTypedAddress('10..0.1').problems,[{code:'notNumber',octet:2,piece:''}]);
+ assert.equal(checkTypedAddress('1.2.3.4.5').problems[0].code,'pieceCount');
+ // missing value (KeyError analog) and wrong type
+ assert.deepEqual(checkTypedAddress('   '),{route:'bad',address:null,problems:[{code:'empty'}],finished:true});
+ for(const bad of [undefined,null,42,true,{}])assert.deepEqual(checkTypedAddress(bad),{route:'bad',address:null,problems:[{code:'notText'}],finished:true});
+ // the octet converter raises a specific error type, like int()
+ assert.equal(toOctet('7',1),7);assert.throws(()=>toOctet('abc',1),OctetError);
+ // grading is untouched: the check never decides correctness
+ const exercise=data.exercises[0];
+ assert.equal(detectiveGrade(exercise,'bounds',{network:'not.an.ip.x',broadcast:exercise.expected.broadcast}).ok,false);
+});
