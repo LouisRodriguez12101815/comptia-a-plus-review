@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     return json({ error: "That was fast. Take a moment to review the report, then submit again." }, 400);
 
   const result = validateReport(data);
-  if (!result.ok) return json({ error: result.error }, 400);
+  if (!result.ok) return json({ error: result.error, errors: result.errors }, 400);
   const report = result.report;
 
   const repo = process.env.GITHUB_ISSUES_REPO || DEFAULT_REPO;

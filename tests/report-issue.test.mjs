@@ -52,3 +52,19 @@ test('rate limiter allows max per window then resets', () => {
   assert.equal(allow('b', 20), true);
   assert.equal(allow('a', 2000), true);
 });
+
+test('Class 10: every problem is collected, not just the first', () => {
+  const r = validateReport({ ...good, category: 'Spam', item: 'x', claim: 'wrong' });
+  assert.equal(r.ok, false);
+  assert.deepEqual(r.errors, [
+    'Choose a category.',
+    'Say which item is wrong (paste the text, question, or card).',
+    'Explain what is wrong and what it should say (at least 15 characters).',
+  ]);
+  assert.equal(r.error, r.errors.join(' '));
+  // one problem still gives one message
+  assert.deepEqual(validateReport({ ...good, claim: 'wrong' }).errors, ['Explain what is wrong and what it should say (at least 15 characters).']);
+  // wrong types are reported, not thrown
+  for (const bad of [null, 'text', 42, [], undefined]) assert.deepEqual(validateReport(bad).errors, ['Send the report as a JSON object.']);
+  assert.equal(validateReport({ ...good, item: 12345 }).errors[0], 'Say which item is wrong (paste the text, question, or card).');
+});

@@ -30,30 +30,42 @@ export type DisputeReport = {
 
 export const limits = { page: 300, pageTitle: 200, item: 600, claim: 4000, source: 1000, reporter: 80 } as const;
 
-export type ValidationResult = { ok: true; report: DisputeReport } | { ok: false; error: string };
+export type ValidationResult = { ok: true; report: DisputeReport } | { ok: false; error: string; errors: string[] };
 
 const clean = (value: unknown, max: number) =>
   typeof value === "string" ? value.replace(/\r\n?/g, "\n").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "").trim().slice(0, max) : "";
 
+/**
+ * Checks every field and collects every problem, like validate_lead in Python Class 10,
+ * so the visitor fixes the form once instead of one error per submit.
+ * `error` joins the list for callers that show a single sentence.
+ */
 export function validateReport(input: unknown): ValidationResult {
-  if (!input || typeof input !== "object") return { ok: false, error: "Send the report as a JSON object." };
+  const fail = (errors: string[]): ValidationResult => ({ ok: false, error: errors.join(" "), errors });
+  if (!input || typeof input !== "object" || Array.isArray(input)) return fail(["Send the report as a JSON object."]);
   const raw = input as Record<string, unknown>;
+  const errors: string[] = [];
   const category = categories.find((c) => c === raw.category);
-  if (!category) return { ok: false, error: "Choose a category." };
+  if (!category) errors.push("Choose a category.");
   const page = clean(raw.page, limits.page);
-  if (!page.startsWith("/")) return { ok: false, error: "The page path is missing." };
-  const report: DisputeReport = {
-    category,
-    page,
-    pageTitle: clean(raw.pageTitle, limits.pageTitle),
-    item: clean(raw.item, limits.item),
-    claim: clean(raw.claim, limits.claim),
-    source: clean(raw.source, limits.source),
-    reporter: clean(raw.reporter, limits.reporter),
+  if (!page.startsWith("/")) errors.push("The page path is missing.");
+  const item = clean(raw.item, limits.item);
+  if (item.length < 3) errors.push("Say which item is wrong (paste the text, question, or card).");
+  const claim = clean(raw.claim, limits.claim);
+  if (claim.length < 15) errors.push("Explain what is wrong and what it should say (at least 15 characters).");
+  if (errors.length || !category) return fail(errors);
+  return {
+    ok: true,
+    report: {
+      category,
+      page,
+      pageTitle: clean(raw.pageTitle, limits.pageTitle),
+      item,
+      claim,
+      source: clean(raw.source, limits.source),
+      reporter: clean(raw.reporter, limits.reporter),
+    },
   };
-  if (report.item.length < 3) return { ok: false, error: "Say which item is wrong (paste the text, question, or card)." };
-  if (report.claim.length < 15) return { ok: false, error: "Explain what is wrong and what it should say (at least 15 characters)." };
-  return { ok: true, report };
 }
 
 /** Neutralise markdown that could ping people, close the quote, or inject HTML into the issue. */
