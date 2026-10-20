@@ -1274,7 +1274,7 @@
     ],
     "title": "Virtualization Basics",
     "chapter": "Core 1 · Virtualization",
-    "summary": "Type 1 and Type 2 hypervisors, sandboxes, and what virtualization can and cannot do.",
+    "summary": "Why VMs are used, what a VM needs, VM networking, VDI, containers, Type 1 versus Type 2 hypervisors, and enabling Hyper-V.",
     "sections": [
       {
         "id": "objectives",
@@ -1283,33 +1283,8 @@
           {
             "type": "bullets",
             "items": [
-              "220-1201 domain 4.0 Virtualization and cloud computing: hypervisors and virtualization concepts."
-            ]
-          }
-        ]
-      },
-      {
-        "id": "hypervisors",
-        "title": "Hypervisor types",
-        "blocks": [
-          {
-            "type": "table",
-            "headers": [
-              "Type",
-              "Runs on",
-              "Performance"
-            ],
-            "rows": [
-              [
-                "Type 1 (bare metal)",
-                "Directly on the hardware",
-                "Best, used in data centers"
-              ],
-              [
-                "Type 2 (hosted)",
-                "On top of a host OS such as Windows",
-                "More overhead, used on desktops"
-              ]
+              "220-1201 objective 4.1 (Explain virtualization concepts): purpose of VMs, VM requirements, VDI, containers and hypervisor types.",
+              "Cloud computing (objective 4.2) is in the Cloud Computing Concepts topic."
             ]
           }
         ]
@@ -1319,12 +1294,650 @@
         "title": "What virtualization gives you",
         "blocks": [
           {
+            "type": "paragraph",
+            "text": "The exam asks what virtualization can and cannot do. Virtualization breaks the one-to-one link between a physical computer and one operating system."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Statement",
+              "True?",
+              "Why"
+            ],
+            "rows": [
+              [
+                "One physical host runs many VMs",
+                "Yes",
+                "The host shares its CPU, RAM and storage among the guests"
+              ],
+              [
+                "A VM gives a safe lab for testing",
+                "Yes",
+                "A sandbox VM is isolated from the host and the network"
+              ],
+              [
+                "Fewer physical machines are needed",
+                "Yes",
+                "This saves hardware, power and space"
+              ],
+              [
+                "A VM is faster than its host hardware",
+                "No",
+                "A VM can never outperform the hardware it runs on"
+              ],
+              [
+                "A VM adds RAM or CPU the host lacks",
+                "No",
+                "Guests can only use what the host has"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: virtualization shares hardware, it never creates more of it."
+          }
+        ]
+      },
+      {
+        "id": "purpose",
+        "title": "Why people build VMs",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam gives a short scenario and asks which purpose it describes. Match the problem to the purpose."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Purpose",
+              "What it means",
+              "Typical case"
+            ],
+            "rows": [
+              [
+                "Sandbox",
+                "An isolated, throwaway environment that cannot reach the host or production network",
+                "Open a suspicious file or try unknown software"
+              ],
+              [
+                "Test and development",
+                "Run code on several OS versions without extra computers; snapshots let you roll back",
+                "A developer checks one app on Windows, Linux and macOS guests"
+              ],
+              [
+                "Legacy software or OS",
+                "Run an old application or OS that will not run on current hardware or a current OS",
+                "A 20-year-old line-of-business program"
+              ],
+              [
+                "Cross-platform virtualization",
+                "Run an application built for one OS on a machine that runs another",
+                "A Windows-only program on a Linux workstation, through a compatibility layer or a Windows VM"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: a sandbox is for testing and isolation. Legacy and cross-platform needs are about running software on a different OS or hardware, not about isolation."
+          }
+        ]
+      },
+      {
+        "id": "hypervisors",
+        "title": "Hypervisor types",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A hypervisor is the software that creates and manages VMs. The exam asks which type fits a scenario and what the drawback of Type 2 is."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Runs on",
+              "Typical use",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "Type 1 (bare metal)",
+                "Directly on the hardware, with no host OS",
+                "Servers and data centers; generally the best performance",
+                "Hyper-V, VMware ESXi"
+              ],
+              [
+                "Type 2 (hosted)",
+                "On top of a host OS such as Windows",
+                "Desktops and developer workstations",
+                "VirtualBox, VMware Workstation"
+              ]
+            ]
+          },
+          {
             "type": "bullets",
             "items": [
-              "One physical host provides resources for many virtual machines.",
-              "A sandbox VM is an isolated environment for development or security testing.",
-              "A VM cannot outperform the hardware it runs on, and it cannot add resources the host does not have."
+              "Type 2 drawback: the guests compete with the host OS for CPU, RAM and disk.",
+              "Pick Type 2 for a developer testing on three OSs from a Windows laptop.",
+              "Pick Type 1 for server virtualization."
             ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Hyper-V is a Type 1 hypervisor even though you switch it on from inside Windows. Once enabled, Windows runs as the root (parent) partition on top of the hypervisor."
+          }
+        ]
+      },
+      {
+        "id": "requirements",
+        "title": "What a VM needs from the host",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam names three requirements: security, network and storage. Plan RAM and CPU as well."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "What to plan"
+            ],
+            "rows": [
+              [
+                "Security",
+                "Every guest is a full OS and needs its own antivirus, patches and firewall. The host antivirus does not protect the guests."
+              ],
+              [
+                "Network",
+                "Each VM gets a virtual NIC. A virtual switch in the hypervisor connects the virtual NICs to the physical NIC."
+              ],
+              [
+                "Storage",
+                "Each VM uses a virtual disk file on the host, so the host needs free space for every guest."
+              ],
+              [
+                "RAM and CPU",
+                "Add the host OS needs to every running guest. A 4 GB host with a 2 GB guest needs at least 6 GB."
+              ],
+              [
+                "CPU support",
+                "The CPU needs SLAT. Hardware virtualization (Intel VT-x or AMD-V) and hardware DEP (Intel XD or AMD NX) must be turned on in BIOS/UEFI."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Intel VT-x is the CPU virtualization extension. VT-c (Virtualization Technology for Connectivity) is a different network-I/O feature. Microsoft's own Hyper-V enable page prints \"VT-c on Intel CPUs\", which is a documentation mistake, so do not teach VT-c as the CPU requirement."
+          }
+        ]
+      },
+      {
+        "id": "networking",
+        "title": "VM networking",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam asks how many virtual and physical parts a client-side setup needs. Each guest has its own virtual NIC, and the virtual switch joins them to the network."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "For three guests with Internet access",
+              "Count",
+              "Where it lives"
+            ],
+            "rows": [
+              [
+                "Virtual NICs",
+                "3",
+                "One per guest"
+              ],
+              [
+                "Virtual switch",
+                "1",
+                "In the hypervisor"
+              ],
+              [
+                "Physical NIC",
+                "1",
+                "In the host"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Network mode",
+              "What the guest gets"
+            ],
+            "rows": [
+              [
+                "Bridged (external)",
+                "Its own address on the physical LAN"
+              ],
+              [
+                "NAT",
+                "A private address, sharing the host address for outbound traffic"
+              ],
+              [
+                "Host-only or private",
+                "Connection to the host or other guests only, with no outside access"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: three guests do not need three physical NICs or three virtual switches. One virtual switch and one physical NIC is the cheapest design."
+          }
+        ]
+      },
+      {
+        "id": "vdi-containers",
+        "title": "VDI and containers",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam asks which technology fits: a full VM, a hosted desktop (VDI) or a container."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "What it is",
+              "Pick it when"
+            ],
+            "rows": [
+              [
+                "VDI (virtual desktop infrastructure)",
+                "Desktop OS instances run as VMs on central servers and users reach them from thin clients or other devices",
+                "Many users need managed, consistent desktops"
+              ],
+              [
+                "Container",
+                "One app plus its libraries and dependencies, packaged to run in isolation and sharing the host OS kernel",
+                "You must deploy one app quickly and the same way on many hosts"
+              ],
+              [
+                "Virtual machine",
+                "A whole computer with its own guest OS and kernel",
+                "You need a full separate OS"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Because VDI desktops live on central servers, IT builds, patches and secures them in one place.",
+              "Users still need a network connection to reach their desktop.",
+              "A container shares the host kernel, so it cannot supply an old or different OS the way a VM can."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A container is lighter and faster to start than a VM because it carries no kernel of its own. That is also why a Linux container needs a Linux kernel underneath."
+          }
+        ]
+      },
+      {
+        "id": "hyperv",
+        "title": "Enable Hyper-V in Windows 11",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam gives the requirements and asks for the steps in order. Check first, enable second, restart last."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Step",
+              "Action"
+            ],
+            "rows": [
+              [
+                "1",
+                "Confirm Windows 11 Pro or Enterprise. Home cannot run Hyper-V."
+              ],
+              [
+                "2",
+                "Confirm a 64-bit CPU with SLAT and at least 4 GB RAM, and turn on virtualization (VT-x or AMD-V) in BIOS/UEFI."
+              ],
+              [
+                "3",
+                "Open Turn Windows features on or off."
+              ],
+              [
+                "4",
+                "Tick the Hyper-V box."
+              ],
+              [
+                "5",
+                "Click OK and let Windows install the feature."
+              ],
+              [
+                "6",
+                "Restart the computer."
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Hyper-V is built into Windows as an optional feature. There is nothing to download.",
+              "Steps 1 and 2 are both checks, so either order is fine. Do both before you enable the feature."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: without the BIOS/UEFI virtualization setting, the Hyper-V box is missing or VMs will not start. Do not pick VT-c."
+          }
+        ]
+      }
+    ],
+    "concept": "hardware"
+  },
+  {
+    "id": "core1-cloud-computing",
+    "group": "core1",
+    "examCodes": [
+      "220-1201"
+    ],
+    "title": "Cloud Computing Concepts",
+    "chapter": "Core 1 · Cloud computing",
+    "summary": "Public, private, hybrid and community clouds; IaaS, PaaS and SaaS; and the cloud characteristics the exam names.",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1201 objective 4.2 (Summarize cloud-computing concepts): cloud models, service models and cloud characteristics."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "deployment-models",
+        "title": "Who the cloud is for",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam describes an organization and asks which cloud model fits. Decide who shares the cloud."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Model",
+              "Who uses it",
+              "Remember"
+            ],
+            "rows": [
+              [
+                "Public",
+                "Anyone who signs up with the provider",
+                "Usually cheapest, no hardware to buy, provider owns everything"
+              ],
+              [
+                "Private",
+                "One organization",
+                "Most control, can be on premises or hosted, you pay for the capacity"
+              ],
+              [
+                "Hybrid",
+                "One organization using private and public together",
+                "Keep sensitive data private, use public for extra capacity"
+              ],
+              [
+                "Community",
+                "Several organizations with shared needs, such as universities or hospitals",
+                "A small trusted group, often with a common compliance need"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: hybrid and community both mix things. Hybrid is one organization mixing private and public. Community is several organizations sharing one cloud."
+          }
+        ]
+      },
+      {
+        "id": "service-models",
+        "title": "What the provider supplies",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam asks which service model fits a need, or who is responsible for a layer. The more the provider supplies, the less you manage."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Provider supplies",
+              "Example"
+            ],
+            "rows": [
+              [
+                "IaaS",
+                "Virtual servers, storage and networking",
+                "Rent a virtual server or extra storage"
+              ],
+              [
+                "PaaS",
+                "IaaS plus OS, runtime and development tools",
+                "Deploy a web app without patching servers"
+              ],
+              [
+                "SaaS",
+                "A finished application",
+                "Web email or an online office suite"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Layer",
+              "IaaS",
+              "PaaS",
+              "SaaS"
+            ],
+            "rows": [
+              [
+                "Application",
+                "You",
+                "You",
+                "Provider"
+              ],
+              [
+                "Your data",
+                "You",
+                "You",
+                "You"
+              ],
+              [
+                "Runtime and OS",
+                "You",
+                "Provider",
+                "Provider"
+              ],
+              [
+                "Servers, storage, network",
+                "Provider",
+                "Provider",
+                "Provider"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "In IaaS the customer installs and patches the guest OS. In PaaS and SaaS the provider does."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Climb the stack: IaaS gives hardware, PaaS adds a platform for developers, SaaS gives the finished app."
+          }
+        ]
+      },
+      {
+        "id": "characteristics",
+        "title": "Sharing, tenancy and sync",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam names these characteristics and asks which one a scenario describes."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Characteristic",
+              "Meaning",
+              "Do not confuse with"
+            ],
+            "rows": [
+              [
+                "Shared resources",
+                "Customers draw on a pool of provider hardware and split the cost",
+                "Dedicated resources"
+              ],
+              [
+                "Dedicated resources",
+                "Hardware reserved for one customer alone",
+                "Shared resources"
+              ],
+              [
+                "Multitenancy",
+                "Several customers run on the same hardware with their data and apps kept separate",
+                "Dedicated resources"
+              ],
+              [
+                "File synchronization",
+                "The same files are kept identical on several devices through the cloud, such as iCloud Drive, Google Drive or OneDrive",
+                "Backup"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: multitenancy does not mean customers can see each other's data. The provider keeps tenants separated."
+          }
+        ]
+      },
+      {
+        "id": "metering",
+        "title": "Metered utilization",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam asks what a charge on a cloud bill is for. Usage is measured and billed, and data direction matters."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Direction",
+              "Cost"
+            ],
+            "rows": [
+              [
+                "Ingress",
+                "Data into the cloud (upload)",
+                "Usually free"
+              ],
+              [
+                "Egress",
+                "Data out of the cloud (download or restore)",
+                "Often charged per GB"
+              ],
+              [
+                "Metered utilization",
+                "Usage is measured and billed for what you use",
+                "Pay for use, not a flat fee"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Trap: egress is leaving the cloud. Uploading is ingress. Restoring a large backup back to the office triggers egress charges."
+          }
+        ]
+      },
+      {
+        "id": "scaling",
+        "title": "Elasticity and availability",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam separates two ideas: adding capacity fast (elasticity) and staying up (availability)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Characteristic",
+              "Meaning",
+              "Scenario"
+            ],
+            "rows": [
+              [
+                "Elasticity",
+                "Resources grow and shrink quickly with demand",
+                "Extra servers for a holiday sale, released afterward"
+              ],
+              [
+                "Availability",
+                "The service is up when needed, often stated as an uptime percentage",
+                "A contract promising 99.99 percent uptime"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Uptime",
+              "Downtime allowed per year"
+            ],
+            "rows": [
+              [
+                "99 percent",
+                "About 3.65 days"
+              ],
+              [
+                "99.9 percent",
+                "About 8.76 hours"
+              ],
+              [
+                "99.99 percent",
+                "About 52.6 minutes"
+              ],
+              [
+                "99.999 percent (five nines)",
+                "About 5.26 minutes"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Typical cloud benefits: quick scaling, lower upfront hardware cost and paying only for use.",
+              "A provider promises availability in its contract. No provider can guarantee zero downtime."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Trap: a traffic spike is elasticity. An uptime promise is availability."
           }
         ]
       }

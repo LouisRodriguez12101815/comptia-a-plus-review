@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who manages what: IaaS, PaaS, SaaS</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px;display:grid;gap:16px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 18px/1.3 Georgia,serif;margin:0 0 10px}
+.lede{margin:0;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;min-width:44px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+figure{margin:0}
+svg{display:block;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.s-text{font:600 22px system-ui,sans-serif;fill:var(--ink)}
+.s-tag{font:700 22px system-ui,sans-serif;fill:var(--ink)}
+.s-you{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.s-prov{fill:var(--bg);stroke:var(--muted);stroke-width:2;stroke-dasharray:6 4}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-top:8px}
+.q{font-weight:600;margin:0 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.out{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out.good{background:var(--good-soft)}
+.out.bad{background:var(--bad-soft)}
+.meta{font-size:13px;color:var(--muted);margin:0 0 6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<h1>Who manages what: IaaS, PaaS, SaaS</h1>
+<p class="lede">For 220-1201 objective 4.2. The more the provider supplies, the less you manage. Pick a model to see which layers are yours, then test yourself.</p>
+</header>
+
+<section class="card" aria-labelledby="h-pick">
+<h2 id="h-pick">Pick a service model</h2>
+<div class="seg" role="group" aria-label="Service model">
+<button type="button" data-m="0" aria-pressed="true">IaaS</button>
+<button type="button" data-m="1" aria-pressed="false">PaaS</button>
+<button type="button" data-m="2" aria-pressed="false">SaaS</button>
+</div>
+<figure>
+<svg id="stack" viewBox="0 0 640 300" role="img" aria-label=""></svg>
+<figcaption id="cap"></figcaption>
+</figure>
+<div class="key"><span><strong>YOU</strong>: you manage this layer (solid blue)</span><span><strong>PROVIDER</strong>: the provider manages it (dashed grey)</span></div>
+<p class="out" id="supplies" aria-live="polite"></p>
+</section>
+
+<section class="card" aria-labelledby="h-drill">
+<h2 id="h-drill">Predict, then reveal</h2>
+<p class="meta" id="progress"></p>
+<p class="q" id="q"></p>
+<div class="opts" id="opts" role="group" aria-label="Answer choices"></div>
+<p class="out" id="fb" role="status" aria-live="polite">Choose an answer. The diagram above will show the model behind it.</p>
+<div class="opts" style="margin-top:12px"><button type="button" class="primary" id="next" hidden>Next scenario</button><button type="button" id="again" hidden>Start over</button></div>
+</section>
+</main>
+
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "IaaS: the provider supplies virtual servers, storage and networking, for example renting a virtual server or extra storage.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] },
+    { "claim": "PaaS is IaaS plus the OS, runtime and development tools, for example deploying a web app without patching servers.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] },
+    { "claim": "SaaS: the provider supplies a finished application, for example web email or an online office suite.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] },
+    { "claim": "The application layer is managed by you in IaaS and PaaS and by the provider in SaaS.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] },
+    { "claim": "Your data is managed by you in IaaS, PaaS and SaaS.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] },
+    { "claim": "Runtime and OS are managed by you in IaaS and by the provider in PaaS and SaaS.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] },
+    { "claim": "Servers, storage and network are managed by the provider in IaaS, PaaS and SaaS.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: What the provider supplies (service-models)"] }
+  ],
+  "simplifications": ["Four layers only, as in the notes; real providers split some duties more finely.", "Layer heights are equal and do not show effort or cost."]
+}
+</script>
+<script>
+(function(){
+  var MODELS = ["IaaS","PaaS","SaaS"];
+  var SUPPLIES = [
+    "IaaS: the provider supplies virtual servers, storage and networking. Example: rent a virtual server or extra storage.",
+    "PaaS: IaaS plus the OS, runtime and development tools. Example: deploy a web app without patching servers.",
+    "SaaS: the provider supplies a finished application. Example: web email or an online office suite."
+  ];
+  // owner per model: 0 = you, 1 = provider
+  var LAYERS = [
+    {n:"Application", o:[0,0,1]},
+    {n:"Your data", o:[0,0,0]},
+    {n:"Runtime and OS", o:[0,1,1]},
+    {n:"Servers, storage, network", o:[1,1,1]}
+  ];
+  var QS = [
+    {q:"A team rents a virtual server and installs its own operating system. Which service model is this?", c:["IaaS","PaaS","SaaS"], a:0, m:0, w:"IaaS gives servers, storage and networking. The OS is still yours to install and patch."},
+    {q:"Developers upload web app code and let the provider patch the OS and runtime. Which model?", c:["IaaS","PaaS","SaaS"], a:1, m:1, w:"PaaS is IaaS plus OS, runtime and tools, so you deploy the app without patching servers."},
+    {q:"Staff read their mail in a web browser from a provider-run service. Which model?", c:["IaaS","PaaS","SaaS"], a:2, m:2, w:"Web email is a finished application, which is SaaS."},
+    {q:"In IaaS, who patches the guest operating system?", c:["Customer","Provider"], a:0, m:0, w:"In IaaS, Runtime and OS is your layer. The provider handles only servers, storage and network."},
+    {q:"In PaaS, who patches the operating system?", c:["Customer","Provider"], a:1, m:1, w:"In PaaS, Runtime and OS moves to the provider. You keep the application and your data."},
+    {q:"A company needs extra storage immediately and will manage everything above it. Which model?", c:["IaaS","PaaS","SaaS"], a:0, m:0, w:"Renting extra storage or a virtual server is the IaaS example."}
+  ];
+  var cur = 0, model = 0, answered = false;
+  var $ = function(id){ return document.getElementById(id); };
+  var svg = $("stack");
+  var NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs, text){ var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+
+  function draw(){
+    svg.innerHTML = "";
+    var parts = [];
+    LAYERS.forEach(function(l, i){
+      var y = 8 + i * 72, mine = l.o[model] === 0;
+      svg.appendChild(el("rect", {x:8, y:y, width:624, height:64, rx:8, "class": mine ? "s-you" : "s-prov"}));
+      svg.appendChild(el("text", {x:24, y:y + 40, "class":"s-text"}, l.n));
+      svg.appendChild(el("text", {x:616, y:y + 40, "text-anchor":"end", "class":"s-tag"}, mine ? "YOU" : "PROVIDER"));
+      parts.push(l.n + ": " + (mine ? "you manage" : "provider manages"));
+    });
+    var label = MODELS[model] + " responsibility stack. " + parts.join("; ") + ".";
+    svg.setAttribute("aria-label", label);
+    $("cap").textContent = MODELS[model] + ": " + parts.join(". ") + ".";
+    $("supplies").textContent = SUPPLIES[model];
+  }
+  function setModel(m){
+    model = m;
+    Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function(b){ b.setAttribute("aria-pressed", String(+b.getAttribute("data-m") === m)); });
+    draw();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function(b){
+    b.addEventListener("click", function(){ setModel(+b.getAttribute("data-m")); });
+  });
+
+  var score = 0;
+  function show(){
+    var it = QS[cur]; answered = false;
+    $("progress").textContent = "Scenario " + (cur + 1) + " of " + QS.length;
+    $("q").textContent = it.q;
+    var box = $("opts"); box.innerHTML = "";
+    it.c.forEach(function(c, i){
+      var b = document.createElement("button"); b.type = "button"; b.textContent = c;
+      b.addEventListener("click", function(){ pick(i); });
+      box.appendChild(b);
+    });
+    var fb = $("fb"); fb.className = "out"; fb.textContent = "Choose an answer. The diagram above will show the model behind it.";
+    $("next").hidden = true; $("again").hidden = true;
+  }
+  function pick(i){
+    if (answered) return; answered = true;
+    var it = QS[cur], ok = i === it.a; if (ok) score++;
+    Array.prototype.forEach.call($("opts").children, function(b, n){
+      b.disabled = true; b.setAttribute("aria-pressed", String(n === i));
+      if (n === it.a) b.textContent = it.c[n] + " (correct)";
+    });
+    var fb = $("fb"); fb.className = "out " + (ok ? "good" : "bad");
+    fb.textContent = (ok ? "Correct. " : "Not quite. The answer is " + it.c[it.a] + ". ") + it.w;
+    setModel(it.m);
+    if (cur < QS.length - 1) $("next").hidden = false;
+    else { fb.textContent += " Finished: " + score + " of " + QS.length + " correct."; $("again").hidden = false; }
+    (cur < QS.length - 1 ? $("next") : $("again")).focus();
+  }
+  $("next").addEventListener("click", function(){ cur++; show(); $("opts").firstChild.focus(); });
+  $("again").addEventListener("click", function(){ cur = 0; score = 0; show(); $("opts").firstChild.focus(); });
+  draw(); show();
+})();
+</script>
+</body>
+</html>

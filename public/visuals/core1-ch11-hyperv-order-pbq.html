@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enable Hyper-V in order</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:row}
+li{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);display:grid;gap:8px;min-width:0;counter-increment:row}
+li.good{border-color:var(--good);background:var(--good-soft)}
+li.bad{border-color:var(--bad);background:var(--bad-soft)}
+.sym{font-weight:600}
+.sym::before{content:counter(row) ". ";color:var(--muted)}
+.sym{overflow-wrap:anywhere}
+.type{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-left:6px}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;width:100%;max-width:100%}
+.why{font-size:14px;margin:0}
+.why[hidden]{display:none}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Enable Hyper-V in order</h1>
+<p class="lede">A performance-based drill for 220-1201 objective 4.1. Choose the step for each slot to enable Hyper-V in Windows 11. Eight options fill six slots, and two of them are wrong.</p>
+<section class="card" aria-labelledby="h-drill">
+<h2 id="h-drill" class="sr">Exercise</h2>
+<ol id="rows"></ol>
+<div class="ctrls">
+<button type="button" class="primary" id="check">Check answers</button>
+<button type="button" id="retry">Try again</button>
+<button type="button" id="show">Show answers</button>
+</div>
+<p class="out" id="out" role="status" aria-live="polite">Choose a step for each of the six slots.</p>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "kind": "exercise",
+  "facts": [
+    {
+      "claim": "Confirm Windows 11 Pro or Enterprise; Home cannot run Hyper-V. This check and the hardware/UEFI check are both done before enabling, in either order.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11"
+      ]
+    },
+    {
+      "claim": "Confirm a 64-bit CPU with SLAT and at least 4 GB RAM, and turn on virtualization (VT-x or AMD-V) in BIOS/UEFI. Steps 1 and 2 are both checks and are interchangeable.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11; What a VM needs from the host"
+      ]
+    },
+    {
+      "claim": "Open Turn Windows features on or off.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11"
+      ]
+    },
+    {
+      "claim": "Tick the Hyper-V box.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11"
+      ]
+    },
+    {
+      "claim": "Click OK and let Windows install the feature.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11"
+      ]
+    },
+    {
+      "claim": "Restart the computer last.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11"
+      ]
+    },
+    {
+      "claim": "VT-c is a network-I/O feature, not the CPU virtualization requirement; the CPU setting is Intel VT-x or AMD-V.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: What a VM needs from the host"
+      ]
+    },
+    {
+      "claim": "Hyper-V is built into Windows as an optional feature, turned on through Turn Windows features on or off; there is nothing to download.",
+      "objectives": [
+        "220-1201 4.1"
+      ],
+      "sources": [
+        "notes core1-virtualization: Enable Hyper-V in Windows 11"
+      ]
+    }
+  ],
+  "simplifications": [
+    "Steps 1 and 2 (edition check; hardware and BIOS/UEFI check) are interchangeable and the checker accepts either order for those two slots; steps 3 to 6 must be in the order shown.",
+    "The step wording is condensed from the notes; the notes also list hardware DEP among the CPU requirements, which this drill folds into the hardware check."
+  ]
+}
+</script>
+<script>
+(function(){
+  var STEPS = [
+    {t:"Confirm Windows 11 Pro or Enterprise", w:"Windows 11 Home cannot run Hyper-V, so confirm the edition before you enable the feature."},
+    {t:"Confirm a 64-bit CPU with SLAT and at least 4 GB RAM, and turn on virtualization (VT-x or AMD-V) in BIOS/UEFI", w:"This check and the edition check can be done in either order. Do both before enabling. Without the BIOS/UEFI setting the Hyper-V box is missing or VMs will not start."},
+    {t:"Open Turn Windows features on or off", w:"Hyper-V is an optional Windows feature, and this is the window where optional features are listed."},
+    {t:"Tick the Hyper-V box", w:"Select the feature in the list before you confirm."},
+    {t:"Click OK and let Windows install the feature", w:"Windows installs the feature only after you confirm with OK."},
+    {t:"Restart the computer", w:"Restart is last, once the feature is installed."}
+  ];
+  var DIS = [
+    {t:"Enable VT-c in BIOS/UEFI", w:"Distractor. VT-c is a network-I/O feature, not the CPU requirement. The CPU setting is Intel VT-x or AMD-V."},
+    {t:"Download and run a Hyper-V installer", w:"Distractor. Hyper-V is a built-in optional Windows feature, so there is nothing to download."}
+  ];
+  var rows = document.getElementById("rows"), out = document.getElementById("out");
+  var ALL = STEPS.concat(DIS);
+  function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function build(){
+    var opts = shuffle(ALL.map(function(s){ return s.t; }));
+    rows.innerHTML = "";
+    STEPS.forEach(function(st, n){
+      var li = document.createElement("li"), id = "slot-" + n;
+      li.innerHTML = '<label class="sym" for="' + id + '"></label><select id="' + id + '"><option value="">Choose the step</option></select><p class="why" hidden></p>';
+      li.querySelector("label").textContent = "Step " + (n + 1) + " of 6";
+      var sel = li.querySelector("select");
+      opts.forEach(function(o){ var op = document.createElement("option"); op.value = o; op.textContent = o; sel.appendChild(op); });
+      rows.appendChild(li);
+    });
+  }
+  function vals(){ return STEPS.map(function(s, n){ return rows.children[n].querySelector("select").value; }); }
+  function find(list, t){ for (var i = 0; i < list.length; i++) if (list[i].t === t) return i; return -1; }
+  function isRight(v, n){
+    if (!v[n]) return false;
+    if (n < 2){ var a = STEPS[0].t, b = STEPS[1].t; return (v[n] === a || v[n] === b) && (n === 0 || v[1] !== v[0]); }
+    return v[n] === STEPS[n].t;
+  }
+  function mark(showAll){
+    if (showAll) STEPS.forEach(function(s, n){ rows.children[n].querySelector("select").value = s.t; });
+    var v = vals(), right = 0, blank = 0, dup = 0, dis = 0;
+    STEPS.forEach(function(st, n){
+      var li = rows.children[n], why = li.querySelector(".why");
+      if (!v[n]){ blank++; li.className = ""; why.hidden = true; return; }
+      var ok = isRight(v, n), msg;
+      if (ok){ right++; msg = "Correct. " + STEPS[find(STEPS, v[n])].w; }
+      else {
+        var d = find(DIS, v[n]), k = find(STEPS, v[n]);
+        var twice = v.filter(function(x){ return x === v[n]; }).length > 1;
+        var slotInfo = n < 2 ? "Steps 1 and 2 are the two checks (edition, and hardware with BIOS/UEFI), in either order." : "This slot is: " + st.t + ". " + st.w;
+        if (d >= 0){ dis++; msg = "Not this one. " + DIS[d].w + " " + slotInfo; }
+        else { msg = (twice ? "This step is used twice. " : "") + "Wrong place. That step is " + (k < 2 ? "one of the two checks" : "number " + (k + 1)) + ". " + slotInfo; }
+        if (twice) dup++;
+      }
+      li.className = ok ? "good" : "bad";
+      why.hidden = false; why.textContent = msg;
+    });
+    out.textContent = showAll ? "Correct order shown. Use Try again to practise without it." :
+      right + " of 6 in the right place" + (blank ? ", " + blank + " left blank" : "") + (dis ? ", " + dis + " distractor" + (dis > 1 ? "s" : "") + " used" : "") + (dup ? ", a step used twice" : "") + "." + (right === 6 ? " Well done." : " Use Try again to clear only the wrong rows.");
+  }
+  document.getElementById("check").addEventListener("click", function(){ mark(false); });
+  document.getElementById("show").addEventListener("click", function(){ mark(true); });
+  document.getElementById("retry").addEventListener("click", function(){
+    var cur = vals(), keep = cur.map(function(x, n){ return isRight(cur, n) ? x : ""; });
+    build();
+    keep.forEach(function(x, n){ rows.children[n].querySelector("select").value = x; if (x) rows.children[n].className = "good"; });
+    out.textContent = "Wrong rows cleared and options shuffled. Correct rows are kept.";
+  });
+  build();
+})();
+</script>
+</body>
+</html>

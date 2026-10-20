@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Type 1 vs Type 2 hypervisor</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;margin-top:16px}
+.card:first-of-type{margin-top:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;min-height:44px;min-width:44px;text-align:left}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.opts{flex-direction:column;align-items:stretch}
+.out{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.okbox{background:var(--good-soft)}
+.nobox{background:var(--bad-soft)}
+.qt{font-weight:600;margin:4px 0 10px}
+.fig{margin:10px 0 0}
+.fig figcaption{font-size:13px;color:var(--muted);margin-top:6px;max-width:70ch}
+svg{display:block;width:100%;height:auto}
+.stage{overflow-x:auto}
+.stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:2}
+.bx.on{fill:var(--accent-soft);stroke:var(--accent)}
+.bx.good{fill:var(--good-soft);stroke:var(--good)}
+.bx.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-dasharray:6 4}
+.bx.dash{stroke-dasharray:6 4;fill:none}
+.tx{fill:var(--ink);font:600 13px system-ui,sans-serif}
+.tx2{fill:var(--muted);font:12px system-ui,sans-serif}
+.arr{stroke:var(--muted);stroke-width:3;fill:none}
+.arr.on{stroke:var(--good)}
+.arr.off{stroke:var(--bad);stroke-dasharray:5 4}
+.ttl{fill:var(--ink);font:600 15px system-ui,sans-serif}
+.sec h2{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Type 1 or Type 2 hypervisor?</h1>
+<p class="lede">The difference is what sits under the hypervisor: the hardware, or a host operating system. Predict the type for each scenario, then see the layer it lights up.</p>
+<div class="card">
+ <div class="lab">1. The two stacks</div>
+ <figure class="fig">
+  <div class="two">
+   <div class="stage" tabindex="0" role="region" aria-label="Type 1 stack drawing"><svg id="s1" viewBox="0 0 300 275" role="img" aria-label="Type 1 (bare metal): the hypervisor runs directly on the hardware with no host OS; virtual machines run on the hypervisor."></svg></div>
+   <div class="stage" tabindex="0" role="region" aria-label="Type 2 stack drawing"><svg id="s2" viewBox="0 0 300 275" role="img" aria-label="Type 2 (hosted): a host OS runs on the hardware, the hypervisor runs on top of the host OS, and virtual machines run on the hypervisor."></svg></div>
+  </div>
+  <figcaption>Type 1 runs directly on the hardware with no host OS. Type 2 runs on top of a host OS. Layers are schematic.</figcaption>
+ </figure>
+ <div class="ctrls"><button type="button" id="hv" aria-pressed="false">Show Hyper-V enabled in Windows</button></div>
+ <div class="out" id="hvo" aria-live="polite">Hyper-V is a Type 1 hypervisor even though you enable it from inside Windows.</div>
+</div>
+<div class="card sec">
+ <div class="lab">2. Predict, then reveal</div>
+ <p class="qt" id="q"></p>
+ <div class="ctrls opts" id="o"></div>
+ <div class="out" id="fb" aria-live="polite">Choose an answer.</div>
+ <div class="ctrls"><button type="button" id="nx" hidden>Next scenario</button></div>
+</div>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "A Type 1 (bare metal) hypervisor runs directly on the hardware with no host OS and generally gives the best performance.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: Hypervisor types"] },
+    { "claim": "Type 1 is used for servers and data centers; examples are Hyper-V and VMware ESXi.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: Hypervisor types"] },
+    { "claim": "A Type 2 (hosted) hypervisor runs on top of a host OS such as Windows and is used on desktops and developer workstations; examples are VirtualBox and VMware Workstation.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: Hypervisor types"] },
+    { "claim": "Type 2 drawback: the guests compete with the host OS for CPU, RAM and disk.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: Hypervisor types"] },
+    { "claim": "Hyper-V is Type 1 even though it is enabled from inside Windows; once enabled, Windows runs as the root (parent) partition on top of the hypervisor.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: Hypervisor types"] }
+  ],
+  "simplifications": [
+    "Layers are schematic, not to scale; three guest VMs are drawn only for illustration.",
+    "The Hyper-V toggle draws Windows as the root (parent) partition in the guest row, on top of the hypervisor, as in the notes; hardware requirements and enable steps are covered in the notes, not drawn.",
+    "The scenario wording is original; the notes state the facts above, not these exact phrasings."
+  ]
+}
+</script>
+<script>
+function $(id){return document.getElementById(id)}
+var hi={};
+function box(id,x,y,w,h,label,sub){var c=hi[id]||'';return '<g><rect class="bx '+c+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="8"/><text class="tx" x="'+(x+w/2)+'" y="'+(y+h/2+(sub?-1:5))+'" text-anchor="middle">'+label+'</text>'+(sub?'<text class="tx2" x="'+(x+w/2)+'" y="'+(y+h/2+14)+'" text-anchor="middle">'+sub+'</text>':'')+'</g>'}
+var root=false;
+function vms(p){var h='',r=root&&p==='t1',n=r?2:3,w=r?58:84,gap=6,i,x=12;
+ for(i=0;i<n;i++){h+=box(p+'vm',x,12,w,48,'Guest',null);x+=w+gap}
+ if(r)h+=box(p+'root',x,12,98,48,'Windows','root partition');return h}
+function draw(){
+ var a='<text class="ttl" x="150" y="0"></text>';
+ var s1='<text class="ttl" x="150" y="20" text-anchor="middle">Type 1 (bare metal)</text><g transform="translate(0,30)">'+
+  vms('t1')+box('t1hv',12,72,276,48,'Hypervisor',null)+box('t1hw',12,132,276,48,'Hardware','CPU, RAM, disk')+
+  '<text class="tx2" x="150" y="204" text-anchor="middle">No host OS in the stack</text><text class="tx2" x="150" y="222" text-anchor="middle">Servers and data centers</text></g>';
+ var s2='<text class="ttl" x="150" y="20" text-anchor="middle">Type 2 (hosted)</text><g transform="translate(0,30)">'+
+  vms('t2').replace(/12,48/,'12,48')+box('t2hv',12,72,276,40,'Hypervisor','a program on the host OS')+box('t2os',12,120,276,36,'Host OS (for example Windows)',null)+box('t2hw',12,164,276,36,'Hardware',null)+
+  '<text class="tx2" x="150" y="222" text-anchor="middle">Desktops and developer workstations</text></g>';
+ $('s1').innerHTML=s1;$('s2').innerHTML=s2}
+$('hv').onclick=function(){root=!root;this.setAttribute('aria-pressed',root?'true':'false');
+ $('hvo').textContent=root?'Windows now runs as the root (parent) partition on top of the hypervisor, drawn beside the guests. The hypervisor still runs directly on the hardware, so it is Type 1.':'Hyper-V is a Type 1 hypervisor even though you enable it from inside Windows.';
+ draw()};
+var Q=[
+ {q:'A company wants to consolidate many servers in a data center onto fewer physical hosts. Which hypervisor type fits?',a:0,hl:{t1hv:'good',t1hw:'on'},why:'Type 1 is used for servers and data centers and generally performs best. Examples: Hyper-V, VMware ESXi.'},
+ {q:'A support technician with one Windows 11 desktop must try an installer on Ubuntu and on Windows 10. Which hypervisor type fits?',a:1,hl:{t2os:'on',t2hv:'good'},why:'Type 2 suits desktops and developer workstations. Examples: VirtualBox, VMware Workstation.'},
+ {q:'The hypervisor runs on top of a host operating system such as Windows. Which type is it?',a:1,hl:{t2os:'on',t2hv:'good'},why:'A hypervisor on top of a host OS is Type 2 (hosted).'},
+ {q:'Guest VMs slow down because they compete with the host OS for CPU, RAM and disk. Which type has this drawback?',a:1,hl:{t2os:'bad',t2vm:'bad',t2hw:'on'},why:'This is the Type 2 drawback: the guests share the hardware with a full host OS.'},
+ {q:'The hypervisor runs with no host OS between it and the hardware. Which type is it?',a:0,hl:{t1hv:'good',t1hw:'on'},why:'Type 1 (bare metal) runs directly on the hardware.'}];
+var qi=0,done=false,names=['Type 1 (bare metal)','Type 2 (hosted)'];
+function ask(){var q=Q[qi];done=false;hi={};draw();$('q').textContent='Scenario '+(qi+1)+' of '+Q.length+': '+q.q;
+ $('fb').className='out';$('fb').textContent='Choose an answer.';$('nx').hidden=true;$('o').innerHTML='';
+ names.forEach(function(t,k){var b=document.createElement('button');b.type='button';b.textContent=t;
+  b.onclick=function(){if(done)return;done=true;var ok=k===q.a;b.classList.add(ok?'right':'wrong');if(!ok)$('o').children[q.a].classList.add('right');
+   hi=q.hl;draw();$('fb').className='out '+(ok?'okbox':'nobox');$('fb').textContent=(ok?'Correct. ':'Not quite. ')+'Answer: '+names[q.a]+'. '+q.why;
+   $('nx').hidden=false;$('nx').textContent=qi<Q.length-1?'Next scenario':'Start over';$('nx').focus()};
+  $('o').appendChild(b)})}
+$('nx').onclick=function(){qi=(qi+1)%Q.length;ask();$('o').firstChild.focus()};
+ask();
+</script>
+</body>
+</html>

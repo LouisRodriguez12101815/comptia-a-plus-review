@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Which cloud model?</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px;display:grid;gap:16px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 18px/1.3 Georgia,serif;margin:0 0 10px}
+.lede{margin:0;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;min-width:44px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+figure{margin:0}
+svg{display:block;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.s-text{font:600 22px system-ui,sans-serif;fill:var(--ink)}
+.s-tag{font:700 22px system-ui,sans-serif;fill:var(--ink)}
+.s-org{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.s-cloud{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.s-cloud2{fill:var(--bg);stroke:var(--muted);stroke-width:2;stroke-dasharray:6 4}
+.s-link{stroke:var(--ink);stroke-width:2;fill:none}
+.s-you{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.s-prov{fill:var(--bg);stroke:var(--muted);stroke-width:2;stroke-dasharray:6 4}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-top:8px}
+.q{font-weight:600;margin:0 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.out{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out.good{background:var(--good-soft)}
+.out.bad{background:var(--bad-soft)}
+.meta{font-size:13px;color:var(--muted);margin:0 0 6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<h1>Which cloud model?</h1>
+<p class="lede">For 220-1201 objective 4.2. Decide who shares the cloud. Pick a model to see who is inside it, then match scenarios to models.</p>
+</header>
+
+<section class="card" aria-labelledby="h-pick">
+<h2 id="h-pick">Who shares it?</h2>
+<div class="seg" role="group" aria-label="Deployment model">
+<button type="button" data-m="0" aria-pressed="true">Public</button>
+<button type="button" data-m="1" aria-pressed="false">Private</button>
+<button type="button" data-m="2" aria-pressed="false">Hybrid</button>
+<button type="button" data-m="3" aria-pressed="false">Community</button>
+</div>
+<figure>
+<svg id="pic" viewBox="0 0 640 260" role="img" aria-label=""></svg>
+<figcaption id="cap"></figcaption>
+</figure>
+<p class="out" id="rem" aria-live="polite"></p>
+<p class="out bad" style="background:var(--bad-soft)"><strong>Trap:</strong> hybrid is ONE organization mixing private and public. Community is SEVERAL organizations sharing one cloud.</p>
+</section>
+
+<section class="card" aria-labelledby="h-drill">
+<h2 id="h-drill">Predict, then reveal</h2>
+<p class="meta" id="progress"></p>
+<p class="q" id="q"></p>
+<div class="opts" id="opts" role="group" aria-label="Answer choices"></div>
+<p class="out" id="fb" role="status" aria-live="polite"></p>
+<div class="opts" style="margin-top:12px"><button type="button" class="primary" id="next" hidden>Next scenario</button><button type="button" id="again" hidden>Start over</button></div>
+</section>
+</main>
+
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "Public cloud: anyone who signs up with the provider can use it; usually the cheapest, with no hardware to buy, and the provider owns everything.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Who the cloud is for (deployment-models)"] },
+    { "claim": "Private cloud: used by one organization; gives the most control and can be on premises or hosted.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Who the cloud is for (deployment-models)"] },
+    { "claim": "Hybrid cloud: one organization using private and public together, keeping sensitive data private and using public for extra capacity.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Who the cloud is for (deployment-models)"] },
+    { "claim": "Community cloud: several organizations with shared needs, such as universities or hospitals, form a small trusted group, often with a common compliance need.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Who the cloud is for (deployment-models)"] },
+    { "claim": "Trap: hybrid is one organization mixing private and public; community is several organizations sharing one cloud.", "objectives": ["220-1201 4.2"], "sources": ["notes core1-cloud-computing: Who the cloud is for (deployment-models)"] }
+  ],
+  "simplifications": ["Organizations are drawn as generic buildings; the number shown in the public and community clouds is illustrative, not a real count.", "The hybrid link is drawn as a plain line; connection technology is not part of the fact."]
+}
+</script>
+<script>
+(function(){
+  var NAMES = ["Public","Private","Hybrid","Community"];
+  var REM = [
+    "Public: anyone who signs up with the provider. Usually cheapest, no hardware to buy, provider owns everything.",
+    "Private: one organization. Most control, can be on premises or hosted, you pay for the capacity.",
+    "Hybrid: one organization using private and public together. Sensitive data stays private, public gives extra capacity.",
+    "Community: several organizations with shared needs, such as universities or hospitals. A small trusted group, often with a common compliance need."
+  ];
+  var CAP = [
+    "Public cloud: many organizations, anyone who signs up, share the provider's cloud.",
+    "Private cloud: exactly one organization uses the cloud.",
+    "Hybrid cloud: one organization, Org A, uses a private cloud and a public cloud together.",
+    "Community cloud: several organizations with shared needs, a small trusted group, share one cloud."
+  ];
+  var QS = [
+    {q:"A startup has no hardware budget and wants to pay only for what it uses on a service open to anyone who signs up. Which model?", a:0, w:"Public: usually cheapest, no hardware to buy, open to anyone who signs up.", m:0},
+    {q:"A government agency's infrastructure is shared with no other organization. Which model?", a:1, w:"Private means one organization. Whether it is on premises or hosted does not change the model.", m:1},
+    {q:"A company runs payroll in its own private cloud and rents public capacity for its web store. Which model?", a:2, w:"Hybrid: ONE organization mixing private and public. Not community, because no other organization shares it.", m:2},
+    {q:"Five hospitals share one cloud built around a common compliance need. Which model?", a:3, w:"Community: SEVERAL organizations sharing one cloud. Not hybrid, because hybrid is a single organization.", m:3},
+    {q:"Several universities share one cloud built for their joint research and not open to anyone else. Which model?", a:3, w:"Community: universities are the notes' example of several organizations with shared needs.", m:3},
+    {q:"One company keeps its sensitive data in a private cloud and uses a public cloud for extra capacity. Which model?", a:2, w:"Hybrid: one organization, private for sensitive data, public for capacity. Mixing is not enough to make it community.", m:2},
+    {q:"A company wants the most control and may run the cloud on its own premises. Which model?", a:1, w:"Private gives the most control and can be on premises or hosted.", m:1},
+    {q:"An individual freelancer signs up online for storage and rents it by the month. Which model?", a:0, w:"Public: anyone who signs up can rent capacity from the provider, and there is no hardware to buy.", m:0}
+  ];
+  var $ = function(id){ return document.getElementById(id); };
+  var svg = $("pic"), NS = "http://www.w3.org/2000/svg", model = 0, cur = 0, score = 0, answered = false;
+  function el(name, attrs, text){ var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function cloud(x, y, w, h, cls, title){
+    svg.appendChild(el("rect", {x:x, y:y, width:w, height:h, rx:36, "class":cls}));
+    svg.appendChild(el("text", {x:x + w / 2, y:y + 30, "text-anchor":"middle", "class":"s-tag"}, title));
+  }
+  function org(x, y, label){
+    svg.appendChild(el("rect", {x:x, y:y, width:64, height:44, rx:6, "class":"s-org"}));
+    svg.appendChild(el("rect", {x:x + 10, y:y + 8, width:12, height:12, fill:"none", stroke:"currentColor"}));
+    svg.appendChild(el("text", {x:x + 32, y:y + 62, "text-anchor":"middle", "class":"s-text"}, label));
+  }
+  function draw(){
+    svg.innerHTML = "";
+    if (model === 0){
+      cloud(20, 10, 600, 240, "s-cloud", "PUBLIC CLOUD (provider owns it)");
+      ["Org A","Org B","Org C","Org D","Org E"].forEach(function(n, i){ org(48 + i * 112, 90, n); });
+      svg.appendChild(el("text", {x:320, y:226, "text-anchor":"middle", "class":"s-text"}, "Anyone who signs up"));
+    } else if (model === 1){
+      cloud(150, 10, 340, 240, "s-cloud", "PRIVATE CLOUD");
+      org(288, 90, "Org A");
+      svg.appendChild(el("text", {x:320, y:226, "text-anchor":"middle", "class":"s-text"}, "One organization only"));
+    } else if (model === 2){
+      cloud(10, 10, 220, 240, "s-cloud", "PRIVATE CLOUD");
+      cloud(410, 10, 220, 240, "s-cloud2", "PUBLIC CLOUD");
+      org(288, 90, "Org A");
+      svg.appendChild(el("path", {d:"M230 112 H 288 M352 112 H 410", "class":"s-link"}));
+      svg.appendChild(el("text", {x:120, y:226, "text-anchor":"middle", "class":"s-text"}, "Sensitive data"));
+      svg.appendChild(el("text", {x:520, y:226, "text-anchor":"middle", "class":"s-text"}, "Extra capacity"));
+      svg.appendChild(el("text", {x:320, y:190, "text-anchor":"middle", "class":"s-tag"}, "ONE"));
+      svg.appendChild(el("text", {x:320, y:214, "text-anchor":"middle", "class":"s-tag"}, "ORGANIZATION"));
+    } else {
+      cloud(60, 10, 520, 240, "s-cloud", "COMMUNITY CLOUD");
+      ["Hospital A","Hospital B","Hospital C"].forEach(function(n, i){ org(112 + i * 150, 90, n); });
+      svg.appendChild(el("text", {x:320, y:226, "text-anchor":"middle", "class":"s-text"}, "Several organizations, shared needs"));
+    }
+    svg.setAttribute("aria-label", CAP[model]);
+    $("cap").textContent = CAP[model];
+    $("rem").textContent = REM[model];
+  }
+  function setModel(m){
+    model = m;
+    Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function(b){ b.setAttribute("aria-pressed", String(+b.getAttribute("data-m") === m)); });
+    draw();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function(b){ b.addEventListener("click", function(){ setModel(+b.getAttribute("data-m")); }); });
+  function show(){
+    var it = QS[cur]; answered = false;
+    $("progress").textContent = "Scenario " + (cur + 1) + " of " + QS.length;
+    $("q").textContent = it.q;
+    var box = $("opts"); box.innerHTML = "";
+    NAMES.forEach(function(c, i){ var b = document.createElement("button"); b.type = "button"; b.textContent = c; b.addEventListener("click", function(){ pick(i); }); box.appendChild(b); });
+    $("fb").className = "out"; $("fb").textContent = "Choose a model. The diagram above will show the answer.";
+    $("next").hidden = true; $("again").hidden = true;
+  }
+  function pick(i){
+    if (answered) return; answered = true;
+    var it = QS[cur], ok = i === it.a; if (ok) score++;
+    Array.prototype.forEach.call($("opts").children, function(b, n){ b.disabled = true; b.setAttribute("aria-pressed", String(n === i)); if (n === it.a) b.textContent = NAMES[n] + " (correct)"; });
+    var fb = $("fb"); fb.className = "out " + (ok ? "good" : "bad");
+    fb.textContent = (ok ? "Correct. " : "Not quite. The answer is " + NAMES[it.a] + ". ") + it.w;
+    setModel(it.m);
+    if (cur < QS.length - 1){ $("next").hidden = false; $("next").focus(); }
+    else { fb.textContent += " Finished: " + score + " of " + QS.length + " correct."; $("again").hidden = false; $("again").focus(); }
+  }
+  $("next").addEventListener("click", function(){ cur++; show(); $("opts").firstChild.focus(); });
+  $("again").addEventListener("click", function(){ cur = 0; score = 0; show(); $("opts").firstChild.focus(); });
+  draw(); show();
+})();
+</script>
+</body>
+</html>

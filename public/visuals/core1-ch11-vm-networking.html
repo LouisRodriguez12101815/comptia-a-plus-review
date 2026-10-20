@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VM networking: virtual NIC, virtual switch, physical NIC</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;margin-top:16px}
+.card:first-of-type{margin-top:0}
+.lab{margin:12px 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.lab:first-child{margin-top:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;min-height:44px;min-width:44px;text-align:left}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.opts{flex-direction:column;align-items:stretch}
+.out{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.okbox{background:var(--good-soft)}
+.nobox{background:var(--bad-soft)}
+.qt{font-weight:600;margin:4px 0 10px}
+.fig{margin:10px 0 0}
+.fig figcaption{font-size:13px;color:var(--muted);margin-top:6px;max-width:70ch}
+svg{display:block;width:100%;height:auto}
+.stage{overflow-x:auto}
+.stage:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:2}
+.bx.on{fill:var(--accent-soft);stroke:var(--accent)}
+.bx.good{fill:var(--good-soft);stroke:var(--good)}
+.bx.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-dasharray:6 4}
+.bx.dash{stroke-dasharray:6 4;fill:none}
+.tx{fill:var(--ink);font:600 13px system-ui,sans-serif}
+.tx2{fill:var(--muted);font:13px system-ui,sans-serif}
+.unused{opacity:.45}
+.arr.unused{stroke:var(--muted);stroke-dasharray:5 4}
+.arr{stroke:var(--muted);stroke-width:3;fill:none}
+.arr.on{stroke:var(--good)}
+.arr.off{stroke:var(--bad);stroke-dasharray:5 4}
+.ttl{fill:var(--ink);font:600 15px system-ui,sans-serif}
+.sec h2{font:600 18px/1.3 Georgia,serif;margin:0 0 4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>How a VM reaches the network</h1>
+<p class="lede">Every guest has its own virtual NIC. One virtual switch joins them and, except in host-only mode, uses the host's physical NIC. Change the guest count and the network mode to see what changes.</p>
+<div class="card">
+ <div class="lab">1. Guests</div>
+ <div class="ctrls" id="gs" role="group" aria-label="Number of guests"></div>
+ <div class="lab">2. Network mode</div>
+ <div class="ctrls" id="ms" role="group" aria-label="Network mode"></div>
+ <figure class="fig">
+  <div class="stage" tabindex="0" role="region" aria-label="VM networking drawing, scrollable"><svg id="d" viewBox="0 0 360 366" role="img" aria-label="VM networking"></svg></div>
+  <figcaption>Guests connect through virtual NICs to one virtual switch in the hypervisor, which, except in host-only mode, uses the host's one physical NIC to reach the LAN. Schematic.</figcaption>
+ </figure>
+ <div class="out" id="out" aria-live="polite"></div>
+</div>
+<div class="card sec">
+ <div class="lab">3. Predict, then reveal</div>
+ <p class="qt">Three guests all need Internet access. What does the setup need?</p>
+ <div class="ctrls opts" id="o"></div>
+ <div class="out" id="fb" aria-live="polite">Choose an answer and the drawing switches to three guests.</div>
+ <p class="qt" style="margin-top:16px">Which mode gives the guest its own address on the physical LAN?</p>
+ <div class="ctrls opts" id="o2"></div>
+ <div class="out" id="fb2" aria-live="polite">Choose an answer.</div>
+</div>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "facts": [
+    { "claim": "Each guest VM has its own virtual NIC.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: VM networking", "notes core1-virtualization: What a VM needs from the host"] },
+    { "claim": "A virtual switch inside the hypervisor connects the virtual NICs to the host's physical NIC.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: What a VM needs from the host", "notes core1-virtualization: VM networking"] },
+    { "claim": "Three guests with Internet access need 3 virtual NICs, 1 virtual switch and 1 physical NIC, not 3 physical NICs or 3 virtual switches.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: VM networking"] },
+    { "claim": "Bridged (external): the guest gets its own address on the physical LAN.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: VM networking"] },
+    { "claim": "NAT: the guest gets a private address and shares the host address for outbound traffic.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: VM networking"] },
+    { "claim": "Host-only or private: the guest connects to the host or other guests only, with no outside access.",
+      "objectives": ["220-1201 4.1"],
+      "sources": ["notes core1-virtualization: VM networking"] }
+  ],
+  "simplifications": [
+    "Real products name the network modes differently; the three names here follow the notes.",
+    "The drawing shows one to four guests only so the layout fits; the facts do not set a limit.",
+    "In host-only mode the physical NIC and the switch-to-NIC link are drawn dimmed as unused, because the notes say host-only guests have no outside access; guest-to-guest and guest-to-host traffic is described in text, not drawn as a separate path.",
+    "Bridged and NAT both reach the LAN through the physical NIC; they differ in addressing (own LAN address versus a private address sharing the host address), shown in the guest labels and the caption."
+  ]
+}
+</script>
+<script>
+function $(id){return document.getElementById(id)}
+var n=3,mode=0;
+var M=[
+ {k:'Bridged (external)',lan:true,t:'The guest gets its own address on the physical LAN.',g:['own LAN','address'],sub:['Bridged: each guest has its own','address on the physical LAN']},
+ {k:'NAT',lan:true,t:'The guest gets a private address and shares the host address for outbound traffic.',g:['private addr.','shares host'],sub:['NAT: guests have private addresses','and share the host address outbound']},
+ {k:'Host-only or private',lan:false,t:'The guest reaches the host or other guests only. There is no outside access.',g:['host and','guests only'],sub:['Host-only: guests reach the host or','each other only, no outside access']}];
+function draw(){var h='',i,m=M[mode],cls=m.lan?'on':'unused',u=m.lan?'':' unused';
+ h+='<rect class="bx dash" x="4" y="4" width="352" height="260" rx="12"/><text class="tx2" x="12" y="254">Host computer</text>';
+ for(i=0;i<n;i++){var cx=360*(i+.5)/n,w=Math.min(84,360/n-10);
+  h+='<rect class="bx on" x="'+(cx-w/2)+'" y="16" width="'+w+'" height="64" rx="8"/><text class="tx" x="'+cx+'" y="34" text-anchor="middle">Guest '+(i+1)+'</text>';
+  h+='<text class="tx2" x="'+cx+'" y="51" text-anchor="middle">'+m.g[0]+'</text><text class="tx2" x="'+cx+'" y="68" text-anchor="middle">'+m.g[1]+'</text>';
+  h+='<line class="arr on" x1="'+cx+'" y1="80" x2="'+cx+'" y2="94"/>';
+  h+='<rect class="bx good" x="'+(cx-34)+'" y="94" width="68" height="26" rx="6"/><text class="tx" x="'+cx+'" y="112" text-anchor="middle">vNIC '+(i+1)+'</text>';
+  h+='<line class="arr on" x1="'+cx+'" y1="120" x2="'+cx+'" y2="140"/>'}
+ h+='<rect class="bx on" x="16" y="140" width="328" height="34" rx="8"/><text class="tx" x="180" y="162" text-anchor="middle">Virtual switch (in the hypervisor)</text>';
+ h+='<line class="arr '+cls+'" x1="180" y1="174" x2="180" y2="192"/>';
+ h+='<g class="'+u.trim()+'"><rect class="bx good" x="76" y="192" width="208" height="30" rx="6"/><text class="tx" x="180" y="212" text-anchor="middle">Physical NIC'+(m.lan?'':' (unused)')+'</text></g>';
+ h+='<line class="arr '+cls+'" x1="180" y1="222" x2="180" y2="278"/>';
+ if(!m.lan)h+='<text class="tx" style="fill:var(--bad)" x="196" y="188">No path out</text>';
+ h+='<rect class="bx '+(m.lan?'good':'bad')+'" x="90" y="278" width="180" height="40" rx="20"/><text class="tx" x="180" y="303" text-anchor="middle">Physical LAN</text>';
+ h+='<text class="tx2" x="180" y="338" text-anchor="middle">'+m.sub[0]+'</text><text class="tx2" x="180" y="356" text-anchor="middle">'+m.sub[1]+'</text>';
+ var d=$('d');d.innerHTML=h;
+ var cnt=n+' virtual NIC'+(n>1?'s':'')+', 1 virtual switch'+(m.lan?', 1 physical NIC.':'. The physical NIC is not used in this mode.');
+ var lbl=cnt+' Mode '+m.k+': '+(m.lan?'path to the physical LAN exists.':'no path to the physical LAN.');
+ d.setAttribute('aria-label',lbl);
+ $('out').className='out '+(m.lan?'okbox':'nobox');
+ $('out').innerHTML='<strong>'+cnt+'</strong> <strong>'+m.k+':</strong> '+m.t+' '+(m.lan?'Path to the LAN: yes.':'Path to the LAN: no.')}
+function group(id,items,get,set){var root=$(id);items.forEach(function(t,k){var b=document.createElement('button');b.type='button';b.textContent=t;
+ b.onclick=function(){set(k);sync()};root.appendChild(b)})}
+function sync(){Array.prototype.forEach.call($('gs').children,function(b,k){b.setAttribute('aria-pressed',(k+1===n)?'true':'false')});
+ Array.prototype.forEach.call($('ms').children,function(b,k){b.setAttribute('aria-pressed',k===mode?'true':'false')});draw()}
+group('gs',['1 guest','2 guests','3 guests','4 guests'],null,function(k){n=k+1});
+group('ms',M.map(function(m){return m.k}),null,function(k){mode=k});
+function drill(id,fbid,opts,a,why,onpick){var done=false;opts.forEach(function(t,k){var b=document.createElement('button');b.type='button';b.textContent=t;
+ b.onclick=function(){if(done)return;done=true;var ok=k===a;b.classList.add(ok?'right':'wrong');if(!ok)$(id).children[a].classList.add('right');
+  onpick();$(fbid).className='out '+(ok?'okbox':'nobox');$(fbid).textContent=(ok?'Correct. ':'Not quite. ')+'Answer: '+opts[a]+'. '+why};$(id).appendChild(b)})}
+drill('o','fb',['3 virtual NICs, 1 virtual switch, 1 physical NIC','3 virtual NICs, 3 virtual switches, 3 physical NICs','3 virtual NICs, 1 virtual switch, 3 physical NICs','3 virtual NICs, 3 virtual switches, 1 physical NIC'],0,'One virtual NIC per guest, one virtual switch in the hypervisor, and the host physical NIC. Three physical NICs or three switches are not needed.',function(){n=3;mode=0;sync()});
+drill('o2','fb2',['Bridged (external)','NAT','Host-only or private'],0,'Bridged gives the guest its own address on the physical LAN. NAT shares the host address; host-only has no outside access.',function(){mode=0;sync()});
+sync();
+</script>
+</body>
+</html>
