@@ -117,6 +117,74 @@
             ]
           }
         ]
+      },
+      {
+        "id": "ram-types-ecc",
+        "title": "Memory modules and ECC (objective 3.3)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The exam asks you to tell memory from storage, match a module to a system, and predict what ECC does in a board that does not support it."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "DIMM",
+                "Full-size memory module for desktops and servers"
+              ],
+              [
+                "SO-DIMM",
+                "Small-outline memory module for laptops and small PCs"
+              ],
+              [
+                "DDR4 vs DDR5",
+                "Different notch positions, so one generation cannot go in the other's slot"
+              ],
+              [
+                "ECC (unbuffered)",
+                "Extra bits let the memory controller detect and correct single-bit errors; used in servers and workstations"
+              ],
+              [
+                "ECC in a non-ECC board",
+                "Usually boots and runs as ordinary memory, but with no error correction"
+              ],
+              [
+                "Registered (buffered) ECC",
+                "Needs a board and CPU that support registered memory; a desktop board normally will not boot with it"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "HDD, SSD, NVMe and eMMC are storage, not system memory. If the question says memory installed in a desktop slot, the answer is a DIMM."
+          }
+        ]
+      },
+      {
+        "id": "headers-and-noises",
+        "title": "Headers and noises at power-on (objectives 3.5 and 5.1)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Motherboard headers are pin connectors for case parts: front-panel power and reset buttons, power and drive lights, front USB and audio, and CPU and case fans.",
+              "Gyroscopes and accelerometers belong to phones and tablets, not desktop motherboards. A scanner is an external peripheral.",
+              "A loud grinding, screeching or clicking sound needs a moving part. In a PC that means a hard disk drive (HDD) or a fan, including the fan inside the power supply.",
+              "SSDs, NVMe drives, the CPU and RAM have no moving parts, so they cannot screech."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A clicking or grinding HDD may be about to fail. Back up its data before anything else."
+          }
+        ]
       }
     ],
     "concept": "hardware"
@@ -164,6 +232,46 @@
         ]
       },
       {
+        "id": "m2-sata-sas",
+        "title": "M.2 keying and SATA vs SAS (objective 3.4)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Slot or controller",
+              "What fits or works"
+            ],
+            "rows": [
+              [
+                "M.2 slot with an M-key post",
+                "M-key modules and B+M-key modules (usually PCIe x4 NVMe)"
+              ],
+              [
+                "M.2 slot with a B-key post",
+                "B-key modules and B+M-key modules (usually SATA or PCIe x2)"
+              ],
+              [
+                "B+M-key module",
+                "Two notches, so it fits either slot type; it runs at the slower interface it supports, usually SATA"
+              ],
+              [
+                "SATA drive on a SAS controller",
+                "Works: SAS controllers and backplanes accept SATA drives"
+              ],
+              [
+                "SAS drive on a SATA controller",
+                "Does not work: a SATA controller cannot run SAS drives"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The key letter names the post in the slot. A module needs a notch where the slot has its post, so an M-key-only module will not fit a B-key slot."
+          }
+        ]
+      },
+      {
         "id": "optical",
         "title": "Optical media capacity",
         "blocks": [
@@ -194,7 +302,7 @@
             "items": [
               "Standard PC voltages: +3.3V DC, +5V DC, +12V DC, −12V DC (rarely used).",
               "Not standard: +4.3V, +8V, +110V as DC rail values.",
-              "Wattage varies (100W, 500W, 850W) and must match system needs. Voltage conversion stays AC→DC.",
+              "Wattage is the total output capacity (100W, 500W, 850W) and must cover the combined load of every part, so check it first when adding cards or drives. Voltage conversion stays AC→DC.",
               "Redundant PSU = backup if the primary fails; critical on servers. Often one on / one standby."
             ]
           }
@@ -228,6 +336,38 @@
               "PCIe cards are usually auto-detected; still install the correct driver.",
               "PCIe x128 is not a real standard. AGP is obsolete. Plain PCI is too slow for video."
             ]
+          }
+        ]
+      },
+      {
+        "id": "slow-drive-first-steps",
+        "title": "Slow drive: what to try first (objective 5.2)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "First step"
+            ],
+            "rows": [
+              [
+                "Opening and saving files is slow and the drive is nearly full",
+                "Free up space: remove unneeded files and apps. Keep roughly 10 to 15 percent free"
+              ],
+              [
+                "Still slow on a nearly empty HDD",
+                "Defragment the HDD (Windows Optimize Drives). SSDs get TRIM instead, not defragmentation"
+              ],
+              [
+                "Slow, with clicking, read errors or SMART warnings",
+                "Back up the data and plan to replace the drive"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Try the cheapest, least destructive fix first. Reinstalling the OS or replacing the drive comes after freeing space."
           }
         ]
       }
@@ -724,6 +864,54 @@
             ]
           }
         ]
+      },
+      {
+        "id": "network-servers",
+        "title": "Other services on the network (objective 2.3)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Server or appliance",
+              "Job"
+            ],
+            "rows": [
+              [
+                "Proxy server",
+                "Makes web requests for clients, so it can filter sites and cache content"
+              ],
+              [
+                "UTM (unified threat management)",
+                "One appliance with firewall, IDS/IPS, antimalware and content filtering"
+              ],
+              [
+                "Spam gateway",
+                "Filters incoming mail before it reaches the mail server"
+              ],
+              [
+                "Load balancer",
+                "Spreads requests across several servers"
+              ],
+              [
+                "NTP server",
+                "Keeps every device's clock in sync, so log and login timestamps line up"
+              ],
+              [
+                "Syslog server",
+                "Collects logs from many devices in one place"
+              ],
+              [
+                "AAA server (RADIUS, TACACS+)",
+                "Authentication, authorization and accounting for logins"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Block websites: proxy. One box with IDS/IPS: UTM. Matching timestamps: NTP."
+          }
+        ]
       }
     ],
     "concept": "implementation"
@@ -1014,7 +1202,7 @@
               "PoE delivers DC power over the same Ethernet cable that carries data.",
               "802.3af (PoE): up to 15.4 W at the switch.",
               "802.3at (PoE+): up to 30 W.",
-              "802.3bt (PoE++/4PPoE): up to about 60 W (Type 3) / 100 W (Type 4).",
+              "802.3bt (PoE++/4PPoE): up to 60 W (Type 3) or 90 W (Type 4) at the switch. The device receives less (about 51 W and 71 W) because of cable loss.",
               "Powers APs, IP cameras, VoIP phones — no outlet needed at the device."
             ]
           }
@@ -1032,6 +1220,46 @@
               "Loopback plug tricks a NIC into thinking it is connected — quick port test.",
               "Common faults: wrong pinout (T568 mismatch), bent/broken cable, runs over 100 m, EMI near motors/fluorescent lights (use STP or fiber), crosstalk from untwisted pairs left too long at the connector."
             ]
+          }
+        ]
+      },
+      {
+        "id": "plenum-and-link-lights",
+        "title": "Plenum cable and link lights (objectives 3.2 and 5.5)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Plenum space",
+                "Air-handling space, such as above a drop ceiling, that moves breathable air"
+              ],
+              [
+                "Plenum-rated (CMP) cable",
+                "Jacket that resists fire and gives off little toxic smoke; required in plenum spaces"
+              ],
+              [
+                "PVC jacket",
+                "Ordinary jacket that gives off toxic fumes when it burns; not allowed in plenum spaces"
+              ],
+              [
+                "Link light",
+                "Lit when the port detects a connection at the other end"
+              ],
+              [
+                "Activity light",
+                "Blinks as frames are sent or received"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "No link light on the switch port or the NIC points to the cable, the jack or the port. Check the lights before changing settings."
           }
         ]
       }
@@ -1140,6 +1368,11 @@
               "Molex is also NOT a peripheral input-device connector; input devices use USB, D-sub, or 1/8-inch audio jacks.",
               "Speed ranking: Serial (kbps, slowest) << USB 2.0 (480 Mbps) < USB 3.0 (5 Gbps) < eSATA (6 Gbps) < USB 3.1 (10 Gbps) < USB4 = Thunderbolt 3/4 (40 Gbps)."
             ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A legacy serial (console) cable has a DB-9 (strictly DE-9) connector on the computer end. RS-232 is the signaling standard, not the connector. Molex powers older IDE (PATA) and optical drives."
           }
         ]
       }
@@ -1221,7 +1454,7 @@
               ],
               [
                 "3 Exposing",
-                "The laser discharges the areas that will hold the image"
+                "The laser writes the page image by discharging the areas of the photosensitive drum that will hold toner"
               ],
               [
                 "4 Developing",
@@ -1260,6 +1493,63 @@
               "Audit logs show which user printed which job. Badging and secured prints control who can release a job.",
               "Garbled output is a driver issue, not a worn print head."
             ]
+          }
+        ]
+      },
+      {
+        "id": "maintenance-and-scan",
+        "title": "Maintenance by printer type and scan services (objectives 3.7 and 3.8)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Printer type",
+              "Routine maintenance"
+            ],
+            "rows": [
+              [
+                "Laser",
+                "Replace toner, apply the maintenance kit (fuser and rollers), calibrate, clean"
+              ],
+              [
+                "Inkjet",
+                "Clean the printheads, replace ink cartridges, calibrate (align), clear jams"
+              ],
+              [
+                "Thermal",
+                "Replace the special heat-sensitive paper, clean the heating element, remove debris. Faded or patchy receipts point to a dirty heating element or the wrong paper"
+              ],
+              [
+                "Impact",
+                "Replace the ribbon, replace the printhead, replace the paper"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Scan destination",
+              "Protocol or service"
+            ],
+            "rows": [
+              [
+                "Scan to email",
+                "SMTP sends the scan as an attachment"
+              ],
+              [
+                "Scan to a network folder",
+                "SMB saves the file to a shared folder"
+              ],
+              [
+                "Scan to cloud",
+                "The device uploads to a cloud storage account"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Toner belongs to laser printers, ribbons to impact printers, heating elements to thermal printers. Match the consumable to the type first."
           }
         ]
       }
@@ -2095,9 +2385,72 @@
               "UDP = User Datagram Protocol: connectionless, no handshake, no ACKs ('Hail Mary' pass). Used for streaming, music, VoIP, video calls — speed matters more than retransmission.",
               "Real-world mix: the initial YouTube connection is TCP (secured), then the stream itself switches to UDP.",
               "Port counts: 65,536 TCP + 65,536 UDP = 131,072 total.",
-              "Well-known/common ports: 0–1023 are assigned to protocols (20/21 FTP, 22 SSH, 23 Telnet, 25 SMTP, 53 DNS, 67/68 DHCP, 80 HTTP, 443 HTTPS, 3389 RDP).",
+              "Well-known/common ports: 0–1023 are assigned to protocols (20 FTP data / 21 FTP control, 22 SSH, 23 Telnet, 25 SMTP, 53 DNS, 67/68 DHCP, 80 HTTP, 443 HTTPS, 3389 RDP).",
               "Registered ports: software vendors register these (SQL 1433, QuickTime 1220, VLC 1234) so apps don't conflict. High/dynamic ports: used randomly for client connections (and security)."
             ]
+          }
+        ]
+      },
+      {
+        "id": "email-file-ports",
+        "title": "Email, file and management ports (objective 2.1)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Port",
+              "Protocol",
+              "Job"
+            ],
+            "rows": [
+              [
+                "25",
+                "SMTP",
+                "Sends mail between servers"
+              ],
+              [
+                "110",
+                "POP3",
+                "Client downloads mail, usually removing it from the server"
+              ],
+              [
+                "143",
+                "IMAP",
+                "Client reads mail that stays on the server and syncs across devices"
+              ],
+              [
+                "137-139",
+                "NetBIOS",
+                "Legacy Windows name and session services"
+              ],
+              [
+                "161/162",
+                "SNMP",
+                "Device monitoring; 162 is for traps"
+              ],
+              [
+                "389",
+                "LDAP",
+                "Directory lookups"
+              ],
+              [
+                "445",
+                "SMB/CIFS",
+                "Windows file and printer sharing"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Secure by design: SSH (22) and HTTPS (443). Telnet, FTP, HTTP, SMTP, POP3, IMAP and SNMPv1/v2c send data in clear text unless TLS or v3 is added.",
+              "Mail apps commonly send through port 587 (SMTP submission with STARTTLS) and read through 993 (IMAPS) or 995 (POP3S). These secure ports are common in practice even though the objective list names the plain ones."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "SMTP sends mail. POP3 and IMAP retrieve it. A question about a client getting mail from a server is never SMTP."
           }
         ]
       },
@@ -2525,6 +2878,25 @@
         ]
       },
       {
+        "id": "shared-memory-hinge",
+        "title": "Shared video memory and what runs through the hinge",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Integrated graphics uses shared video memory: part of system RAM is set aside for video. A laptop with 8 GB of RAM that gives 512 MB to graphics leaves 7.5 GB for the OS and apps.",
+              "The Wi-Fi antenna leads usually run from the wireless card in the base, through the hinge, and up around the display, because the lid is the highest point.",
+              "The webcam and microphone sit in the display bezel. Speakers are usually in the base."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Weak Wi-Fi right after a screen or hinge repair often means an antenna lead was pinched or left unplugged."
+          }
+        ]
+      },
+      {
         "id": "display-types-and-backlight",
         "title": "Display technologies and the legacy inverter",
         "blocks": [
@@ -2539,7 +2911,7 @@
               [
                 "LCD: TN, IPS, VA",
                 "Liquid crystals modulate light from a backlight. TN, IPS and VA are LCD panel modes with different viewing, response, contrast and color behavior; model implementations vary.",
-                "An LCD has a backlight system. Older CCFL-backlit LCDs use a high-voltage inverter to drive the fluorescent lamp."
+                "An LCD has a backlight system. Older CCFL-backlit LCDs use an inverter that converts the laptop's DC power to high-voltage AC for the fluorescent lamp. A dim image that is still visible under a flashlight points to the backlight or inverter."
               ],
               [
                 "LED-backlit LCD",
@@ -2689,7 +3061,7 @@
             "items": [
               "Use Wi-Fi for a known WLAN; use cellular data only when the plan and data cap allow it. A hotspot shares a connection and can consume the phone’s plan and battery.",
               "For Bluetooth: enable it at both ends, put the accessory into pairing mode, select the correct device, enter a PIN only if that pairing flow requires it, then test the intended service/profile.",
-              "For a managed/BYOD device, a corporate policy or MDM profile may control Wi-Fi, apps, certificates, camera, or sync settings. Do not bypass policy; confirm the administrator’s intended configuration.",
+              "For a managed/BYOD device, a corporate policy or MDM profile may control Wi-Fi, apps, certificates, camera, or sync settings. Mobile device management (MDM) enrolls company devices, pushes policy and can remotely wipe a lost device; BYOD is the policy for personal devices used for work. Do not bypass policy; confirm the administrator’s intended configuration.",
               "Test the target application with an approved account and data source. A successful Wi-Fi association does not prove that mail, cloud sync, location, or a business app is configured correctly."
             ]
           }
@@ -2987,6 +3359,36 @@
                 "There is no single RFID frequency range. NFC uses a defined 13.56 MHz interface and overlaps the broader RFID ecosystem, but terms are not interchangeable in every context."
               ]
             ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Bluetooth class",
+              "Typical range",
+              "Example"
+            ],
+            "rows": [
+              [
+                "Class 1",
+                "About 100 m",
+                "Industrial and long-range adapters"
+              ],
+              [
+                "Class 2",
+                "About 10 m",
+                "Headsets, keyboards, mice, phones"
+              ],
+              [
+                "Class 3",
+                "About 1 m",
+                "Very short-range devices"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Range, longest to shortest: Wi-Fi (802.11), Bluetooth, then NFC and RFID tags at a few centimeters."
           }
         ]
       },
@@ -3106,7 +3508,7 @@
             "type": "bullets",
             "items": [
               "Verify in order: physical/Wi-Fi link and SSID/security → valid address and mask/prefix → gateway reachability → DNS lookup → intended application/service. Use an authorized client command/status view; record exactly which step fails.",
-              "For IPv4, RFC 1918 private ranges are 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16. Public addresses are provider/routing assignments, not values to invent for a private LAN."
+              "For IPv4, RFC 1918 private ranges are 10.0.0.0/8, 172.16.0.0/12 (172.16.0.0 to 172.31.255.255) and 192.168.0.0/16. Private addresses are not routed on the public internet. Public addresses are provider/routing assignments, not values to invent for a private LAN."
             ]
           }
         ]

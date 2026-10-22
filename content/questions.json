@@ -8458,5 +8458,608 @@
     ],
     "explanation": "Cloud services scale quickly (elasticity) and avoid buying hardware up front (objective 4.2). Providers offer high availability but cannot guarantee zero downtime, and many providers charge for egress.",
     "weak": false
+  },
+  {
+    "id": "q-as1201-01",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A technician moves unbuffered ECC DIMMs from a workstation into a desktop whose motherboard does not support ECC. The DDR generation matches. What should the technician expect?",
+    "choices": [
+      "The slot keying will stop the modules from seating",
+      "The system will boot and use the memory, but without error correction",
+      "The motherboard will add error correction through a firmware update",
+      "The memory will only work in single-channel mode"
+    ],
+    "answer": 1,
+    "explanation": "Unbuffered ECC modules usually run in a non-ECC board as ordinary memory; the board just ignores the extra check bits, so there is no error correction (objective 3.3). The keying only blocks a different DDR generation, not ECC.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-02",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A laptop has two empty sockets for system memory under a bottom panel. Which part goes in them?",
+    "choices": [
+      "An M.2 NVMe SSD",
+      "An eMMC module",
+      "A SO-DIMM",
+      "A 2.5-inch SATA SSD"
+    ],
+    "answer": 2,
+    "explanation": "Laptop system memory uses SO-DIMMs, the small-outline version of the desktop DIMM (objective 3.3). NVMe, eMMC and SATA SSDs are storage, not memory.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-03",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A desktop has an NVMe boot drive, a mechanical data drive, a CPU cooler fan and a power supply. At power-on it makes a loud screeching sound. Which TWO parts could make it? (Choose two.)",
+    "choices": [
+      "The NVMe boot drive",
+      "The mechanical data drive",
+      "The CPU",
+      "The fan in the power supply"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "Only parts that move can screech: the HDD's spinning platters and heads, and fans such as the one in the PSU (objective 5.1). NVMe drives and CPUs have no moving parts.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-04",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A technician is connecting a new case to a motherboard. Which items plug into motherboard headers?",
+    "choices": [
+      "The CPU and its socket retention arm",
+      "Front-panel buttons and case fans",
+      "The RAM modules in their slots",
+      "An external flatbed scanner over USB"
+    ],
+    "answer": 1,
+    "explanation": "Headers are pin connectors for case parts such as front-panel buttons, lights, front USB and fans (objective 3.5). The CPU goes in a socket, RAM in slots, and a scanner is an external peripheral.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-05",
+    "topicId": "core1-ch2",
+    "prompt": "A motherboard's only M.2 slot has an M-key post. Which drive will fit it?",
+    "choices": [
+      "A B-key-only SATA module",
+      "An mSATA card",
+      "A B+M-key module",
+      "An A-key Wi-Fi card"
+    ],
+    "answer": 2,
+    "explanation": "A module needs a notch where the slot has its post. A B+M-key module has notches in both places, so it fits an M-key slot (objective 3.4). Fitting is not the same as working: most B+M modules are SATA, so the slot must also support SATA. A B-key-only module has no M notch.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-06",
+    "topicId": "core1-ch2",
+    "prompt": "A user buys an M-key-only NVMe drive for a laptop whose M.2 slot has a B-key post. What happens?",
+    "choices": [
+      "It fits and runs at SATA speed instead",
+      "It fits after a BIOS firmware update",
+      "It needs an extra SATA data cable",
+      "It does not fit the slot's B-key post"
+    ],
+    "answer": 3,
+    "explanation": "The M-key notch sits where an M-key slot has its post, so it collides with a B-key slot's post (objective 3.4). Only B-key or B+M-key modules fit a B-key slot; firmware cannot change the physical keying.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-07",
+    "topicId": "core1-ch2",
+    "prompt": "A server has a SAS controller with free bays. A technician has only SATA drives on hand. Which statement is true?",
+    "choices": [
+      "The SATA drives will work on the SAS controller",
+      "The SATA drives need a PATA adapter",
+      "SATA drives work only on a SATA controller",
+      "The SAS controller must be flashed to SATA mode"
+    ],
+    "answer": 0,
+    "explanation": "SAS controllers and backplanes accept SATA drives, although they run at SATA performance (objective 3.4). The reverse is not true: a SAS drive will not work on a SATA controller.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-08",
+    "topicId": "core1-ch2",
+    "prompt": "A customer is adding a second graphics card and two drives to a desktop. Which power supply specification matters most for supporting every part?",
+    "choices": [
+      "Fan diameter",
+      "Cable sleeve color",
+      "The 115/230 V input label",
+      "Total wattage rating"
+    ],
+    "answer": 3,
+    "explanation": "Wattage is the supply's output capacity, so it must cover the combined load of every component (objective 3.6). The input voltage label matters for the outlet, not for how many parts the supply can run.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-09",
+    "topicId": "core1-ch2",
+    "prompt": "Saving files on a desktop has become very slow. The HDD is 97 percent full and shows no SMART warnings. What should the technician try first?",
+    "choices": [
+      "Free up space on the drive",
+      "Replace the drive with a new one",
+      "Reinstall the operating system",
+      "Defragment, then reinstall the OS"
+    ],
+    "answer": 0,
+    "explanation": "A nearly full drive slows down, and freeing space is the cheapest, least destructive first step (objective 5.2). Defragmenting a 97 percent full drive works poorly; replacement and reinstalling come later.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-10",
+    "topicId": "networking-storage",
+    "prompt": "Which RAID level stripes data across drives but offers no fault tolerance?",
+    "choices": [
+      "RAID 1",
+      "RAID 5",
+      "RAID 0",
+      "RAID 10"
+    ],
+    "answer": 2,
+    "explanation": "RAID 0 stripes for speed and stores no redundant data, so one failed drive loses the whole array (objective 3.4). RAID 1, 5 and 10 each survive at least one drive failure.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-11",
+    "topicId": "networking-storage",
+    "prompt": "What do RAID 1, RAID 5 and RAID 10 all provide that RAID 0 does not? (Choose two.)",
+    "choices": [
+      "Redundant data stored across drives",
+      "Faster write speeds on every level",
+      "Continued operation after one drive fails",
+      "A copy that replaces a backup"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "These levels store redundant data (mirrors or parity), which gives fault tolerance: the array keeps running after a drive fails (objective 3.4). RAID 1 writes are not faster, and RAID never replaces a backup.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-12",
+    "topicId": "core1-ch3-peripherals",
+    "prompt": "A technician needs a legacy serial console cable for an older switch. Which connector is on the computer end?",
+    "choices": [
+      "RJ11",
+      "DB-9",
+      "Molex",
+      "DE-15"
+    ],
+    "answer": 1,
+    "explanation": "Legacy serial ports use the 9-pin DB-9 (strictly DE-9) connector (objective 3.2). DE-15 is VGA video, RJ11 is a phone connector and Molex carries power.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-13",
+    "topicId": "core1-ch3-peripherals",
+    "prompt": "Which video connector comes in analog-only, digital-only and combined versions?",
+    "choices": [
+      "HDMI",
+      "DisplayPort",
+      "VGA",
+      "DVI"
+    ],
+    "answer": 3,
+    "explanation": "DVI has DVI-A (analog), DVI-D (digital) and DVI-I (both) (objective 3.2). VGA is analog only, while HDMI and DisplayPort are digital only.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-14",
+    "topicId": "core1-ch3-peripherals",
+    "prompt": "A technician is installing an older IDE optical drive. Which connector supplies its power from the PSU?",
+    "choices": [
+      "Molex",
+      "DB-9",
+      "USB-C",
+      "eSATA"
+    ],
+    "answer": 0,
+    "explanation": "The 4-pin Molex connector powers legacy PATA drives and optical drives (objective 3.2). eSATA and USB-C are data connections and DB-9 is serial.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-15",
+    "topicId": "core1-ch4-mobile-hardware",
+    "prompt": "An older laptop with a CCFL-backlit screen shows a very dim image that is visible under a flashlight. Which part converts DC power to AC for the backlight?",
+    "choices": [
+      "Digitizer",
+      "Diffuser",
+      "Charging port",
+      "Inverter"
+    ],
+    "answer": 3,
+    "explanation": "CCFL backlights need AC, which the inverter makes from the laptop's DC supply (objective 1.1). A dim but visible image points to the backlight or inverter. The digitizer handles touch input.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-16",
+    "topicId": "core1-ch4-mobile-hardware",
+    "prompt": "A laptop has 16 GB of RAM and integrated graphics that reserves 2 GB of shared video memory. How much memory is left for the OS and apps?",
+    "choices": [
+      "16 GB",
+      "2 GB",
+      "14 GB",
+      "18 GB"
+    ],
+    "answer": 2,
+    "explanation": "Shared video memory comes out of system RAM, so 16 GB minus 2 GB leaves 14 GB (objective 1.1). It does not add to the total.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-17",
+    "topicId": "core1-ch4-mobile-hardware",
+    "prompt": "Wi-Fi signal on a laptop dropped sharply after the display assembly was replaced. Which component most likely runs through the hinge and was disturbed?",
+    "choices": [
+      "Antenna leads for the wireless card",
+      "Battery connector",
+      "Keyboard ribbon cable",
+      "Speaker wires"
+    ],
+    "answer": 0,
+    "explanation": "Wi-Fi antenna leads usually run from the wireless card in the base through the hinge into the lid (objective 1.1). The battery, keyboard and speakers are normally in the base.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-18",
+    "topicId": "core1-ch4-mobile-hardware",
+    "prompt": "A user wants a laptop accessory that adds ports and can hold a full-size internal drive. Which accessory fits?",
+    "choices": [
+      "Port replicator",
+      "Docking station",
+      "USB hub",
+      "NAS"
+    ],
+    "answer": 1,
+    "explanation": "A docking station can offer extra ports, expansion and sometimes drive bays (objective 1.2). A port replicator only repeats ports, and a NAS is network storage, not a laptop accessory.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-19",
+    "topicId": "core1-ch4-mobile-hardware",
+    "prompt": "Company phones must be enrolled so IT can push settings and remotely wipe a lost device. What does the company need?",
+    "choices": [
+      "BYOD",
+      "MDM",
+      "Bluetooth pairing",
+      "Synchronization"
+    ],
+    "answer": 1,
+    "explanation": "Mobile device management (MDM) enrolls devices and lets IT push policy and wipe them (objective 1.3). BYOD is a policy about personal devices, and synchronization only mirrors data.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-20",
+    "topicId": "core1-printers",
+    "prompt": "Which set of tasks is routine maintenance for an inkjet printer?",
+    "choices": [
+      "Replace toner, apply a maintenance kit",
+      "Clean the heating element, replace thermal paper",
+      "Clean the printheads, replace cartridges, calibrate",
+      "Replace the ribbon and printhead"
+    ],
+    "answer": 2,
+    "explanation": "Inkjet maintenance is cleaning and aligning (calibrating) the printheads, replacing ink cartridges and clearing jams (objective 3.8). Toner and maintenance kits are for laser printers, and ribbons for impact printers.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-21",
+    "topicId": "core1-printers",
+    "prompt": "In the laser imaging process, what does the laser itself do?",
+    "choices": [
+      "It melts the toner onto the paper",
+      "It charges the paper to attract toner",
+      "It writes the image onto the drum",
+      "It erases leftover charge on the drum"
+    ],
+    "answer": 2,
+    "explanation": "The laser discharges spots on the photosensitive drum to form the page image (objective 3.8). The fuser melts toner, the transfer roller or corona charges the paper, and the cleaning blade and erase lamp clear the drum.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-22",
+    "topicId": "core1-printers",
+    "prompt": "Staff want a multifunction printer to save scans straight to a shared folder on the file server. Which protocol does the printer use?",
+    "choices": [
+      "SMTP",
+      "SMB",
+      "SNMP",
+      "LDAP"
+    ],
+    "answer": 1,
+    "explanation": "Scan to a network folder uses SMB file sharing (objective 3.7). SMTP is for scan to email, SNMP monitors devices, and LDAP looks up directory entries.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-23",
+    "topicId": "core1-printers",
+    "prompt": "A receipt printer prints faded, patchy text. Which maintenance task fits this printer type?",
+    "choices": [
+      "Clean the heating element",
+      "Replace the toner cartridge",
+      "Replace the ribbon",
+      "Clean the inkjet printheads"
+    ],
+    "answer": 0,
+    "explanation": "Receipt printers are usually thermal, and a dirty heating element or wrong paper causes faded output (objective 3.8). Thermal printers use no toner, ribbon or ink.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-24",
+    "topicId": "networking-cabling",
+    "prompt": "Network cable must run through the air-return space above a drop ceiling. Which cable should be used?",
+    "choices": [
+      "Standard PVC patch cable",
+      "Plenum-rated (CMP) cable",
+      "Direct-burial cable",
+      "Shielded PVC cable"
+    ],
+    "answer": 1,
+    "explanation": "Plenum spaces move breathable air, so fire code requires plenum-rated cable whose jacket gives off little toxic smoke (objective 3.2). PVC gives off toxic fumes when it burns, shielded or not.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-25",
+    "topicId": "networking-cabling",
+    "prompt": "Which TWO are coaxial cable types? (Choose two.)",
+    "choices": [
+      "RG-6",
+      "RJ45",
+      "RG-59",
+      "RJ11"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "RG-6 and RG-59 are coaxial cable grades (objective 3.2). RJ45 and RJ11 are connectors for twisted-pair cable.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-26",
+    "topicId": "networking-cabling",
+    "prompt": "A switch is rated for 802.3bt Type 3. About how much power can it supply per port?",
+    "choices": [
+      "15.4 W",
+      "30 W",
+      "60 W",
+      "90 W"
+    ],
+    "answer": 2,
+    "explanation": "802.3bt Type 3 supplies up to 60 W at the switch (about 51 W reaches the device); Type 4 supplies 90 W (objective 2.5). 15.4 W is 802.3af and 30 W is 802.3at (PoE+).",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-27",
+    "topicId": "networking-cabling",
+    "prompt": "A technician must find which unlabeled cable in a bundle runs to a user's wall jack. Which tool fits?",
+    "choices": [
+      "Cable tester",
+      "Loopback plug",
+      "Tone generator",
+      "Network tap"
+    ],
+    "answer": 2,
+    "explanation": "A tone generator puts a signal on the cable and the probe finds it at the other end (objective 2.8). A cable tester checks pinout, and a loopback plug tests a port.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-28",
+    "topicId": "networking-cabling",
+    "prompt": "A user's PC has no network access. Which switch feature gives the quickest first clue?",
+    "choices": [
+      "The port's link light",
+      "The port's speed and duplex setting",
+      "The switch's VLAN table",
+      "The DHCP server's lease list"
+    ],
+    "answer": 0,
+    "explanation": "No link light on the switch port or NIC points to the cable, jack or port, and it takes seconds to check (objective 5.5). Speed, VLAN and DHCP checks come later, after the physical link is confirmed.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-29",
+    "topicId": "networking-devices",
+    "prompt": "A user wants email to stay on the server and look the same on a phone and a laptop. Which retrieval protocol fits?",
+    "choices": [
+      "SMTP",
+      "IMAP",
+      "POP3",
+      "SNMP"
+    ],
+    "answer": 1,
+    "explanation": "IMAP (port 143) leaves mail on the server and syncs folders across devices (objective 2.1). POP3 usually downloads and removes mail, and SMTP only sends.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-30",
+    "topicId": "networking-devices",
+    "prompt": "Which TWO protocols encrypt their traffic by design? (Choose two.)",
+    "choices": [
+      "SSH",
+      "Telnet",
+      "HTTPS",
+      "SNMPv1"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "SSH (22) and HTTPS (443) encrypt by design (objective 2.1). Telnet and SNMPv1 send data, including passwords or community strings, in clear text.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-31",
+    "topicId": "networking-devices",
+    "prompt": "An FTP client cannot open a control session through a firewall. Which port should be allowed?",
+    "choices": [
+      "25",
+      "53",
+      "21",
+      "80"
+    ],
+    "answer": 2,
+    "explanation": "FTP uses port 21 for control and 20 for data (objective 2.1). Port 25 is SMTP, 53 is DNS and 80 is HTTP.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-32",
+    "topicId": "networking-devices",
+    "prompt": "A phone's mail app sends mail with SMTP over STARTTLS. Which port does it most likely use?",
+    "choices": [
+      "25",
+      "110",
+      "143",
+      "587"
+    ],
+    "answer": 3,
+    "explanation": "Port 587 is SMTP submission, which mail clients use with STARTTLS (objective 2.1). Port 25 is server-to-server SMTP, and 110 and 143 are POP3 and IMAP for retrieving mail.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-33",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Management wants to block employees from reaching certain websites. Which server can do this?",
+    "choices": [
+      "DNS forwarder",
+      "Proxy server",
+      "DHCP server",
+      "Syslog server"
+    ],
+    "answer": 1,
+    "explanation": "A proxy server makes web requests for clients, so it can filter and block sites (objective 2.3). A plain DNS forwarder only passes on queries, DHCP hands out addresses and syslog collects logs.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-34",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Which appliance combines a firewall, IDS/IPS and antimalware in one box?",
+    "choices": [
+      "Load balancer",
+      "Spam gateway",
+      "Proxy server",
+      "UTM"
+    ],
+    "answer": 3,
+    "explanation": "Unified threat management (UTM) bundles firewall, intrusion detection or prevention and malware filtering (objective 2.3). A spam gateway filters only mail, and a load balancer spreads requests.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-35",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "An audit found login timestamps that differ by several minutes across servers. Which service fixes this?",
+    "choices": [
+      "DHCP",
+      "DNS",
+      "NTP",
+      "AAA"
+    ],
+    "answer": 2,
+    "explanation": "NTP keeps every device's clock synchronized (objective 2.3). AAA records logins but does not set clocks.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-36",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "A Bluetooth Class 2 headset is rated for about what range?",
+    "choices": [
+      "100 m",
+      "1 m",
+      "30 cm",
+      "10 m"
+    ],
+    "answer": 3,
+    "explanation": "Class 2 devices such as headsets, keyboards and mice reach about 10 m (objective 2.2). Class 1 reaches about 100 m and Class 3 about 1 m.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-37",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "Which TWO Wi-Fi standards can operate in both 2.4 GHz and 5 GHz? (Choose two.)",
+    "choices": [
+      "802.11g",
+      "802.11n",
+      "802.11ac",
+      "802.11ax"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "802.11n (Wi-Fi 4) and 802.11ax (Wi-Fi 6) support both bands (objective 2.2). 802.11ac is 5 GHz only and 802.11g is 2.4 GHz only.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-38",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "Which IPv4 address is private and cannot be routed on the internet?",
+    "choices": [
+      "172.20.5.10",
+      "172.32.5.10",
+      "192.169.1.1",
+      "11.0.0.5"
+    ],
+    "answer": 0,
+    "explanation": "172.20.5.10 falls in the private 172.16.0.0/12 range, which ends at 172.31.255.255 (objective 2.6). 172.32.x.x, 192.169.x.x and 11.0.0.5 are public addresses just outside the private ranges.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-39",
+    "topicId": "core1-cloud-computing",
+    "prompt": "A company's cloud bill rose after it restored large backups to its own office. Which metered charge explains this?",
+    "choices": [
+      "Ingress",
+      "Elasticity",
+      "High availability",
+      "Egress"
+    ],
+    "answer": 3,
+    "explanation": "Egress is data leaving the provider, such as a download or restore, and is often billed per GB (objective 4.2). Ingress (upload) is usually free.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-40",
+    "topicId": "core1-cloud-computing",
+    "prompt": "A company runs some servers in its own data center and others at a public cloud provider, linked together. What type of cloud is this?",
+    "choices": [
+      "Community",
+      "Private",
+      "Hybrid",
+      "Public"
+    ],
+    "answer": 2,
+    "explanation": "A hybrid cloud combines a private cloud and a public cloud run by a provider (objective 4.2). A community cloud is shared by several organizations with common needs.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-41",
+    "topicId": "core1-cloud-computing",
+    "prompt": "Staff edit documents in a web-based office suite with nothing installed locally. Which service model is this?",
+    "choices": [
+      "IaaS",
+      "SaaS",
+      "PaaS",
+      "Private cloud"
+    ],
+    "answer": 1,
+    "explanation": "Software as a service (SaaS) delivers a finished application through the browser (objective 4.2). IaaS gives raw servers and PaaS gives a platform for developers. Private cloud is a deployment model, not a service model.",
+    "weak": false
+  },
+  {
+    "id": "q-as1201-42",
+    "topicId": "core1-virtualization",
+    "prompt": "A user wants to run a Linux VM on a Windows desktop. Which software is required?",
+    "choices": [
+      "Terminal emulator",
+      "Hypervisor",
+      "Hyper-threading driver",
+      "Remote desktop client"
+    ],
+    "answer": 1,
+    "explanation": "A hypervisor creates and runs virtual machines (objective 4.1). A terminal emulator and remote desktop client connect to other systems, and hyper-threading is a CPU feature, not software.",
+    "weak": false
   }
 ]
