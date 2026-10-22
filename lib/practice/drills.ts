@@ -344,6 +344,13 @@ const troubleshooting: DrillDeck = {
     { id: "t-punch", fields: { tool: "Punch-down tool", use: "Seats wires into a 110 or Krone block" }, detail: "A punch-down tool terminates wires on a patch panel or wall jack.", hook: "Punch down the wires." },
     { id: "t-crimp", fields: { tool: "Crimper", use: "Attaches RJ-45 connectors to a cable" }, detail: "A crimper locks RJ-45 connectors onto the cable.", hook: "Crimp = RJ-45." },
     { id: "t-wifi", fields: { tool: "Wi-Fi analyzer", use: "Shows channel use and signal strength" }, detail: "A Wi-Fi analyzer maps channel congestion and signal levels.", hook: "Analyze the channels." },
+    { id: "s-fans", fields: { symptom: "Fans spin, but no POST and no display", cause: "Power supply voltages or a failed core part: test PSU outputs with a multimeter" }, detail: "Spinning fans do not prove the PSU is good.", hook: "Fans spinning is not proof." },
+    { id: "s-burn", fields: { symptom: "Burning smell or smoke from the PC", cause: "Failed component: remove power immediately" }, detail: "Cut power first, then find and replace the damaged part.", hook: "Smoke = power off first." },
+    { id: "s-caps", fields: { symptom: "Bulging or leaking capacitors on the motherboard", cause: "Failing motherboard: replace it" }, detail: "Physical damage is not fixed by reseating or settings.", hook: "Bulging caps = new board." },
+    { id: "s-usb", fields: { symptom: "PC starts a USB installer instead of Windows", cause: "Boot order lists USB first" }, detail: "Move the internal drive to the top of the boot order.", hook: "Wrong device boots = boot order." },
+    { id: "s-blackwin", fields: { symptom: "Screen goes black right after the Windows logo", cause: "Video driver: start in Safe Mode and fix the driver" }, detail: "The display works until the driver loads.", hook: "Black after logo = driver." },
+    { id: "s-rattle", fields: { symptom: "Rattling inside the case", cause: "A loose part, often the heatsink: secure it" }, detail: "Reinstall the heatsink with fresh thermal paste if it is loose.", hook: "Rattle = something loose." },
+    { id: "s-slow", fields: { symptom: "Sluggish performance on an older PC", cause: "Heavy processes, low disk space, power saving or malware" }, detail: "Check Task Manager, free space, the power plan and malware scans.", hook: "Slow = check resources first." },
   ],
 };
 
@@ -464,6 +471,16 @@ const networkConfig: DrillDeck = {
     { id: "s-voip", fields: { symptom: "Choppy VoIP calls", cause: "Jitter or latency: prioritize voice with QoS" }, detail: "Voice needs steady, low delay; QoS gives it priority.", hook: "Choppy voice = jitter, fix with QoS." },
     { id: "s-wifi", fields: { symptom: "Intermittent wireless connectivity", cause: "Interference or weak signal: check channel and AP placement" }, detail: "Overlapping channels, distance and obstacles cause drops.", hook: "Wi-Fi drops = interference or distance." },
     { id: "s-slow", fields: { symptom: "One PC has slow network speeds", cause: "Bad cable or duplex mismatch" }, detail: "Check the cable and that both ends agree on speed and duplex.", hook: "One slow PC = its cable or NIC settings." },
+    { id: "concentrator", fields: { term: "VPN concentrator", meaning: "Device or software that encrypts and decrypts VPN traffic" }, detail: "Often built into a firewall or a dedicated appliance.", hook: "Concentrator = the VPN endpoint." },
+    { id: "c2s", fields: { term: "Client-to-site VPN", meaning: "One user's device connects securely to the company network" }, detail: "Remote access, for example from home.", hook: "Client = one user." },
+    { id: "s2s", fields: { term: "Site-to-site VPN", meaning: "Two offices' firewalls link whole networks over the internet" }, detail: "Users run no VPN software; the firewalls build the tunnel.", hook: "Site = whole office." },
+    { id: "alwayson", fields: { term: "Always-on VPN", meaning: "Connects automatically at startup and sign-in" }, detail: "The user never starts it by hand.", hook: "Always on = automatic." },
+    { id: "intervlan", fields: { term: "Inter-VLAN routing", meaning: "A router or layer 3 switch passing traffic between VLANs" }, detail: "Devices in different VLANs cannot talk directly.", hook: "VLANs need a router to talk." },
+    { id: "s-latency", fields: { symptom: "High latency to remote sites", cause: "Congestion or a long path: find the slow hop with tracert" }, detail: "ping shows the delay; tracert shows where it starts.", hook: "Delay = find the hop." },
+    { id: "s-auth", fields: { symptom: "\"Access denied\" when joining Wi-Fi or opening a share", cause: "Authentication failure: wrong password, locked account or wrong security type" }, detail: "Check credentials and the account before permissions.", hook: "Denied = credentials." },
+    { id: "s-apipa2", fields: { symptom: "Limited connectivity with a 169.254.x.x address", cause: "No DHCP response (APIPA)" }, detail: "Check the DHCP server and cabling, then release and renew.", hook: "169.254 = no DHCP." },
+    { id: "s-name", fields: { symptom: "Sites fail by name but load by IP address", cause: "DNS problem: check the DNS server settings" }, detail: "Use nslookup to test name resolution.", hook: "Names fail, IPs work = DNS." },
+    { id: "s-allslow", fields: { symptom: "Network slow for everyone at once", cause: "Congestion on a shared link: apply QoS or move large transfers" }, detail: "One busy link slows every user behind it.", hook: "Everyone slow = shared link." },
   ],
 };
 
@@ -580,6 +597,12 @@ const storageRaid: DrillDeck = {
     { id: "s-raid0", fields: { symptom: "Whole array lost after one drive failed", cause: "It was RAID 0, which has no redundancy" }, detail: "Only RAID 0 loses everything on a single failure.", hook: "One failure, all gone = RAID 0." },
     { id: "s-newdrive", fields: { symptom: "New drive appears in UEFI but not in File Explorer", cause: "Initialize and partition it in Disk Management" }, detail: "A blank drive needs a partition and file system.", hook: "Seen by firmware, not Windows = initialize it." },
     { id: "s-uefi", fields: { symptom: "Drive not detected in UEFI", cause: "Loose data or power cable, or a dead drive" }, detail: "Firmware detection fails before any OS is involved.", hook: "Not in UEFI = cable or dead drive." },
+    { id: "s-ssdro", fields: { symptom: "SSD reads files but will not write", cause: "SSD at end of life (read-only): copy data off and replace" }, detail: "Worn SSDs often go read-only before failing.", hook: "Read-only SSD = replace." },
+    { id: "s-osnf", fields: { symptom: "\"Operating system not found\" with the drive listed in UEFI", cause: "Boot order or boot media: check the boot order and remove USB drives" }, detail: "The firmware sees the drive, so the cable is fine.", hook: "Seen but won't boot = boot order." },
+    { id: "s-psu", fields: { symptom: "Drives drop out after new parts were added", cause: "Not enough power supply wattage" }, detail: "Add up the load and compare it with the PSU rating.", hook: "New parts, drives drop = power." },
+    { id: "s-mapped", fields: { symptom: "Mapped network drive missing after sign-in", cause: "Mapping not restored: remap with Reconnect at sign-in" }, detail: "The share is fine; the mapping did not reconnect.", hook: "Mapped drive gone = reconnect at sign-in." },
+    { id: "s-inactive", fields: { symptom: "RAID controller reports an inactive volume", cause: "Controller, cable or power fault: open the RAID controller utility" }, detail: "The controller's own utility shows which member failed.", hook: "Ask the controller first." },
+    { id: "s-rw", fields: { symptom: "Very slow reads and writes with read errors", cause: "Drive retrying bad sectors: back up, then run the maker's diagnostics" }, detail: "Retries on bad areas slow everything down.", hook: "Slow plus errors = failing drive." },
   ],
 };
 
@@ -625,7 +648,45 @@ const displays: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, troubleshooting, mobile, virtualization];
+const printers: DrillDeck = {
+  id: "printers",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "3.7, 3.8, 5.6",
+  topic: "Printers",
+  modes: [
+    { id: "taskToPrinter", from: "task", to: "printer" },
+    { id: "symptomToFix", from: "symptom", to: "fix" },
+  ],
+  tables: [
+    { id: "tasks", fields: ["task", "printer"] },
+    { id: "symptoms", fields: ["symptom", "fix"] },
+  ],
+  items: [
+    { id: "t-kit", fields: { task: "Install a maintenance kit (fuser and rollers)", printer: "Laser" }, detail: "Kits are model-specific and due at the maker's page count.", hook: "Kit = laser." },
+    { id: "t-counter", fields: { task: "Reset the page counter after maintenance", printer: "Laser" }, detail: "The counter tracks the next maintenance interval.", hook: "Page counter = laser kit." },
+    { id: "t-toner", fields: { task: "Replace the toner cartridge and remove packing strips", printer: "Laser" }, detail: "Keep the cartridge or drum in its light-blocking bag until installing.", hook: "Toner = laser." },
+    { id: "t-heads", fields: { task: "Run a printhead cleaning cycle", printer: "Inkjet" }, detail: "Clears ink buildup that causes color streaks.", hook: "Printheads + ink = inkjet." },
+    { id: "t-align", fields: { task: "Align after installing new cartridges", printer: "Inkjet" }, detail: "The alignment page lines the colors up.", hook: "New cartridges = calibrate." },
+    { id: "t-heat", fields: { task: "Clean the heating element with isopropyl alcohol", printer: "Thermal" }, detail: "A cleaning pen or cleaning card works too.", hook: "Heating element = thermal." },
+    { id: "t-paper", fields: { task: "Load heat-sensitive paper made for the model", printer: "Thermal" }, detail: "Ordinary paper will not print in a thermal printer.", hook: "Special paper = thermal." },
+    { id: "t-ribbon", fields: { task: "Replace the ink ribbon", printer: "Impact" }, detail: "A worn ribbon makes print fade evenly.", hook: "Ribbon = impact." },
+    { id: "t-tractor", fields: { task: "Line up tractor-feed paper holes", printer: "Impact" }, detail: "Continuous multipart paper feeds on tractor holes.", hook: "Tractor feed = impact." },
+    { id: "p-kit", fields: { symptom: "Laser printer reached its maintenance page count", fix: "Install the maintenance kit, then reset the page counter" }, detail: "Replaces worn fuser and rollers on schedule.", hook: "Count reached = kit + reset." },
+    { id: "p-spill", fields: { symptom: "Toner spilled inside a laser printer", fix: "Clean it with a toner-rated vacuum" }, detail: "Compressed air spreads toner; use cold water on skin.", hook: "Toner mess = toner vacuum." },
+    { id: "p-streak", fields: { symptom: "Inkjet prints streaks of color", fix: "Run printhead cleaning" }, detail: "Ink has built up on the printheads.", hook: "Streaks = clean heads." },
+    { id: "p-offset", fields: { symptom: "Colors print offset after new cartridges", fix: "Run the calibration (alignment) utility" }, detail: "Calibration lines up the colors again.", hook: "Offset = calibrate." },
+    { id: "p-thermal", fields: { symptom: "Faded thermal receipts on the correct paper", fix: "Clean the heating element" }, detail: "Debris on the element blocks the heat.", hook: "Faded thermal = clean element." },
+    { id: "p-faint", fields: { symptom: "Dot-matrix print is evenly faint", fix: "Replace the ribbon" }, detail: "The ribbon has run out of ink.", hook: "Faint impact = ribbon." },
+    { id: "p-dots", fields: { symptom: "Every dot-matrix character misses the same row of dots", fix: "Replace the printhead" }, detail: "One printhead pin has failed.", hook: "Missing dots = printhead pin." },
+    { id: "p-garbled", fields: { symptom: "Printouts full of garbled characters", fix: "Install the correct printer driver" }, detail: "Garbled output is a driver problem, not worn hardware.", hook: "Garbage text = driver." },
+    { id: "p-smudge", fields: { symptom: "Laser toner smudges and rubs off the page", fix: "Replace the fuser" }, detail: "The fuser is not melting toner onto the paper.", hook: "Smudge = fuser." },
+    { id: "p-ghost", fields: { symptom: "Faint repeats of earlier images on laser pages", fix: "Replace the drum or check the cleaning blade" }, detail: "The drum is not being cleared between pages.", hook: "Ghosting = drum." },
+    { id: "p-jam", fields: { symptom: "Paper jams at pickup", fix: "Clean or replace the pickup rollers" }, detail: "Worn rollers fail to grab the paper.", hook: "Pickup jams = rollers." },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

@@ -9061,5 +9061,355 @@
     "answer": 1,
     "explanation": "A hypervisor creates and runs virtual machines (objective 4.1). A terminal emulator and remote desktop client connect to other systems, and hyper-threading is a CPU feature, not software.",
     "weak": false
+  },
+  {
+    "id": "q-c1miss-01",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A desktop's fans spin when the power button is pressed, but there is no POST and no display. The outlet and power cord test fine. What should the technician check next?",
+    "choices": [
+      "The CMOS battery on the motherboard",
+      "The installed display adapter driver",
+      "The power supply's output voltages",
+      "Free space on the boot drive"
+    ],
+    "answer": 2,
+    "explanation": "Spinning fans only prove that some power arrives; a power supply can still deliver wrong voltages, so check the power supply's output voltages with a multimeter (objective 5.1). The CMOS battery keeps the clock and settings and does not stop POST, and drivers and disk space matter only after the OS loads.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-02",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "Every morning a workstation boots with the date set to January 1 and the wrong time. What is the most likely fix?",
+    "choices": [
+      "Replace the CMOS battery",
+      "Update the BIOS firmware",
+      "Replace the power supply",
+      "Reseat the memory modules"
+    ],
+    "answer": 0,
+    "explanation": "The CMOS battery keeps the real-time clock running while the PC is off, so a clock that resets at every startup means you should replace the CMOS battery (objective 5.1). A firmware update does not power the clock when the PC is unplugged.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-03",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A user smells something burning from the computer under their desk. What should the technician do first?",
+    "choices": [
+      "Run hardware diagnostics from the firmware",
+      "Disconnect power from the computer",
+      "Check Event Viewer for errors",
+      "Open the case and look for the damaged part"
+    ],
+    "answer": 1,
+    "explanation": "A burning smell means a failed component, so disconnect power from the computer before anything else (objective 5.1). Opening the case to find the damaged part comes next, once it is safe; running diagnostics keeps power on a failing part.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-04",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A PC shuts down without an error message after about an hour of use. Its fans and heatsink are clogged with dust. What is the most likely cause?",
+    "choices": [
+      "A failing hard drive",
+      "A corrupt video driver",
+      "An incorrect boot order",
+      "Overheating"
+    ],
+    "answer": 3,
+    "explanation": "Dust blocks airflow, and a system that shuts down after running a while with no error is usually protecting itself from overheating (objective 5.1). A corrupt video driver typically causes a stop error or black screen, not a silent shutdown after a delay.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-05",
+    "topicId": "core1-ch1-motherboards",
+    "prompt": "A technician inspecting a PC that keeps rebooting finds several capacitors near the CPU socket with bulging tops. What is the best action?",
+    "choices": [
+      "Replace the motherboard",
+      "Apply new thermal paste to the CPU",
+      "Clear the CMOS with the jumper",
+      "Update the chipset driver"
+    ],
+    "answer": 0,
+    "explanation": "Bulging capacitors mean the board is failing, and reseating or reconfiguring will not repair them, so replace the motherboard (objective 5.1). Clearing the CMOS resets settings but cannot fix damaged hardware.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-06",
+    "topicId": "core1-ch2",
+    "prompt": "A four-drive RAID 5 array reports that one drive has failed. What should the technician do?",
+    "choices": [
+      "Restore the whole array from the last backup",
+      "Convert the array to RAID 0 to recover space",
+      "Replace all four drives with new ones",
+      "Replace the failed drive and rebuild"
+    ],
+    "answer": 3,
+    "explanation": "RAID 5 survives one drive failure, so replace the failed drive and rebuild the array from parity (objective 5.2). Restoring from backup is what a RAID 0 failure requires, and replacing healthy drives adds risk during the rebuild.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-07",
+    "topicId": "core1-ch2",
+    "prompt": "A newly installed second SSD is listed in UEFI setup but does not appear in File Explorer. What should the technician do?",
+    "choices": [
+      "Replace the SATA data cable with a new one",
+      "Initialize and partition it in Disk Management",
+      "Move the SSD to the top of the boot order",
+      "Update the motherboard firmware to the latest"
+    ],
+    "answer": 1,
+    "explanation": "UEFI already detects the drive, so the cable and firmware are working; a blank drive must be initialized and partitioned in Disk Management before Windows shows it (objective 5.2). Boot order affects only which drive starts the OS.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-08",
+    "topicId": "core1-ch2",
+    "prompt": "At startup a workstation shows \"Operating system not found,\" yet the system drive is listed in UEFI. What should the technician check first?",
+    "choices": [
+      "The boot order",
+      "The power supply wattage",
+      "The drive's S.M.A.R.T. history",
+      "The SATA power connector"
+    ],
+    "answer": 0,
+    "explanation": "The firmware can see the drive, so check the boot order (and remove any USB media) before suspecting hardware (objective 5.2). A loose power connector would stop the drive from being detected at all.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-09",
+    "topicId": "core1-ch2",
+    "prompt": "Monitoring software reports a S.M.A.R.T. warning on a laptop's SSD, but the laptop still works normally. What should the technician do?",
+    "choices": [
+      "Defragment the drive to repair bad sectors",
+      "Keep using it and check again next month",
+      "Back up the data and replace the drive",
+      "Reinstall the operating system on the drive"
+    ],
+    "answer": 2,
+    "explanation": "A S.M.A.R.T. warning means the drive predicts its own failure, so back up the data and replace the drive while it still works (objective 5.2). SSDs are not defragmented, and reinstalling the OS leaves the failing hardware in place.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-10",
+    "topicId": "core1-ch2",
+    "prompt": "A user's hard drive makes a repeated clicking sound, and file copies fail with read errors. What is the best next step?",
+    "choices": [
+      "Run a full defragmentation pass",
+      "Back up important data right away",
+      "Increase the virtual memory size",
+      "Update the storage controller driver"
+    ],
+    "answer": 1,
+    "explanation": "Clicking with read errors is the classic sign of a failing HDD, so back up important data right away and plan to replace the drive (objective 5.2). Defragmenting adds heavy reads and writes that can finish off a dying drive.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-11",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "VoIP calls in an office sound choppy and robotic whenever large file transfers run. What should the administrator configure?",
+    "choices": [
+      "QoS to prioritize voice traffic",
+      "Static IP addresses on the phones",
+      "A longer DHCP lease time",
+      "MAC filtering on the switch"
+    ],
+    "answer": 0,
+    "explanation": "Choppy, robotic calls under load point to jitter, so configure QoS to prioritize voice traffic over bulk transfers (objective 5.5). Static addresses and lease times affect addressing, not how traffic is queued.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-12",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "A desktop's network link light turns on and off every few seconds. What is the most likely cause?",
+    "choices": [
+      "A full DHCP scope",
+      "A wrong DNS server setting",
+      "An expired Wi-Fi password",
+      "A faulty cable or switch port"
+    ],
+    "answer": 3,
+    "explanation": "A link that keeps going up and down is port flapping, caused by a faulty cable or switch port (objective 5.5). DHCP and DNS problems appear after the link is up, so they do not make the link light blink on and off.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-13",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "Users near the break room lose Wi-Fi whenever the microwave runs. What should the technician do?",
+    "choices": [
+      "Shorten the DHCP lease time",
+      "Hide the network's SSID",
+      "Move clients to the 5 GHz band",
+      "Replace the switch uplink"
+    ],
+    "answer": 2,
+    "explanation": "Microwave ovens interfere with 2.4 GHz Wi-Fi, so move clients to the 5 GHz band or change the channel after checking with a Wi-Fi analyzer (objective 5.5). Hiding the SSID does nothing about interference.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-14",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "A PC can open file shares on the local network but cannot reach any internet site, even by IP address. What should the technician check?",
+    "choices": [
+      "The DNS server address",
+      "The default gateway setting",
+      "The Wi-Fi channel",
+      "The NIC's link light"
+    ],
+    "answer": 1,
+    "explanation": "Local traffic works but every internet address fails, even by IP, so check the default gateway setting (objective 5.5). A DNS problem would still let sites load by IP address, and a dark link light would break local access too.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-15",
+    "topicId": "core1-ch9-wireless-soho",
+    "prompt": "A laptop reports \"No internet,\" and ipconfig shows the address 169.254.20.15. What does this indicate?",
+    "choices": [
+      "The DNS server is not responding to queries",
+      "The default gateway address is set wrong",
+      "The laptop did not get an address from DHCP",
+      "The network adapter driver is missing"
+    ],
+    "answer": 2,
+    "explanation": "A 169.254.x.x address is APIPA, which means the laptop did not get an address from DHCP (objective 5.5). A DNS or gateway problem leaves a normal DHCP-assigned address in place, and a missing driver means no adapter at all.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-16",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Employees working from home need encrypted access to internal company servers over the internet. What should be deployed?",
+    "choices": [
+      "A VLAN for remote users",
+      "A DHCP reservation",
+      "A client-to-site VPN",
+      "A CNAME record"
+    ],
+    "answer": 2,
+    "explanation": "A client-to-site VPN encrypts each remote user's traffic across the internet to the company network (objective 2.4). A VLAN separates devices on a switch but provides no encryption or remote access.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-17",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Accounting PCs and guest devices connect to the same physical switch but must be in separate broadcast domains. What should the administrator configure?",
+    "choices": [
+      "VLANs",
+      "A site-to-site VPN",
+      "DHCP exclusions",
+      "An MX record"
+    ],
+    "answer": 0,
+    "explanation": "VLANs split one physical switch into separate broadcast domains (objective 2.4). A site-to-site VPN links two locations over the internet; it does not separate devices on one switch.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-18",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "Two VLANs on the same switch need to exchange traffic. What is required?",
+    "choices": [
+      "A VPN concentrator between them",
+      "A larger DHCP scope on each",
+      "A second physical switch",
+      "A router or layer 3 switch"
+    ],
+    "answer": 3,
+    "explanation": "Devices in different VLANs cannot talk directly, so traffic between them needs a router or layer 3 switch (objective 2.4). A VPN concentrator handles encrypted tunnels, not routing between VLANs.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-19",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "A network printer must always receive 192.168.1.50 from the DHCP server. What should the administrator create?",
+    "choices": [
+      "An exclusion for that address",
+      "A reservation for its MAC address",
+      "A shorter lease time for all clients",
+      "A second DHCP scope for printers"
+    ],
+    "answer": 1,
+    "explanation": "A reservation for its MAC address makes DHCP always hand that device the same IP (objective 2.4). An exclusion does the opposite: it stops DHCP from handing out the address at all.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-20",
+    "topicId": "networking-dns-dhcp",
+    "prompt": "A company wants its branch office network permanently linked to headquarters over the internet, without users running VPN software. Which solution fits?",
+    "choices": [
+      "Site-to-site VPN",
+      "Client-to-site VPN",
+      "Always-on client VPN",
+      "Guest VLAN"
+    ],
+    "answer": 0,
+    "explanation": "A site-to-site VPN links the two offices' firewalls, so whole networks connect without software on each PC (objective 2.4). Client-to-site and always-on VPNs both run on each user's device.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-21",
+    "topicId": "core1-printers",
+    "prompt": "A laser printer reached the manufacturer's maintenance interval, and the technician installed the maintenance kit. What should the technician do next?",
+    "choices": [
+      "Recalibrate the toner density",
+      "Replace the toner cartridge",
+      "Clean the paper output tray",
+      "Reset the page counter"
+    ],
+    "answer": 3,
+    "explanation": "After a maintenance kit is installed, reset the page counter so the printer can track the next maintenance interval (objective 3.8). Toner and density are separate tasks that the kit does not trigger.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-22",
+    "topicId": "core1-printers",
+    "prompt": "A technician needs to clean up loose toner inside a laser printer. What should the technician use?",
+    "choices": [
+      "A toner-rated vacuum",
+      "Compressed air",
+      "A household vacuum",
+      "A cloth soaked in warm water"
+    ],
+    "answer": 0,
+    "explanation": "A toner-rated vacuum captures the fine particles safely (objective 3.8). Compressed air spreads toner through the printer and room, and warm water can melt toner, so use cold water if it gets on skin.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-23",
+    "topicId": "core1-printers",
+    "prompt": "After new ink cartridges are installed, an inkjet printer's colors print slightly offset from each other. What should the technician do?",
+    "choices": [
+      "Replace the printhead",
+      "Install a different printer driver",
+      "Run the calibration utility",
+      "Replace the paper tray"
+    ],
+    "answer": 2,
+    "explanation": "Inkjets calibrate after a cartridge change, so run the calibration utility and adjust using its alignment test page (objective 3.8). Replacing the printhead is far more costly and is not the first step for slightly offset colors.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-24",
+    "topicId": "core1-printers",
+    "prompt": "Receipts from a thermal printer come out faded in streaks, and the paper is the correct type. What should the technician do?",
+    "choices": [
+      "Replace the ribbon",
+      "Clean the heating element",
+      "Install a maintenance kit",
+      "Raise the print density"
+    ],
+    "answer": 1,
+    "explanation": "Streaky, faded thermal printouts on the right paper point to a dirty heating element, so clean the heating element with isopropyl alcohol or a cleaning card (objective 3.8). Thermal printers have no ribbon; ribbons belong to impact printers.",
+    "weak": false
+  },
+  {
+    "id": "q-c1miss-25",
+    "topicId": "core1-printers",
+    "prompt": "A dot-matrix printer that prints multipart invoices is producing faint characters. What should the technician replace first?",
+    "choices": [
+      "The ribbon",
+      "The printhead",
+      "The tractor-feed paper",
+      "The fuser"
+    ],
+    "answer": 0,
+    "explanation": "Faint impact printing usually means a worn ink ribbon, so replace the ribbon first (objective 3.8). The printhead is replaced when pins fail, which leaves missing dots rather than evenly faint text, and fusers belong to laser printers.",
+    "weak": false
   }
 ]

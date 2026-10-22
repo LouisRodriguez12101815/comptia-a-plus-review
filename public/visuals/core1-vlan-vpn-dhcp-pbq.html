@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VLAN, VPN or DHCP: pick the setting</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:row}
+li{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);display:grid;gap:8px;min-width:0;counter-increment:row}
+li.good{border-color:var(--good);background:var(--good-soft)}
+li.bad{border-color:var(--bad);background:var(--bad-soft)}
+.sym{font-weight:600}
+.sym::before{content:counter(row) ". ";color:var(--muted)}
+.sym{overflow-wrap:anywhere}
+.type{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-left:6px}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;width:100%;max-width:100%}
+.why{font-size:14px;margin:0}
+.why[hidden]{display:none}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>VLAN, VPN or DHCP: pick the setting</h1>
+<p class="lede">A performance-based drill for 220-1201 objective 2.4. Pick the configuration that meets each requirement. A setting can be used more than once.</p>
+<section class="card" aria-labelledby="h-drill">
+<h2 id="h-drill" class="sr">Exercise</h2>
+<ol id="rows"></ol>
+<div class="ctrls">
+<button type="button" class="primary" id="check">Check answers</button>
+<button type="button" id="retry">Try again</button>
+<button type="button" id="show">Show answers</button>
+</div>
+<p class="out" id="out" role="status" aria-live="polite">Choose a setting for each requirement.</p>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "kind": "exercise",
+  "facts": [
+    {
+      "claim": "A VLAN splits one physical switch into separate broadcast domains and does not encrypt.",
+      "objectives": [
+        "220-1201 2.4"
+      ],
+      "sources": [
+        "notes networking-dns-dhcp: VLANs and VPNs (objective 2.4)"
+      ]
+    },
+    {
+      "claim": "Traffic between VLANs needs a router or a layer 3 switch.",
+      "objectives": [
+        "220-1201 2.4"
+      ],
+      "sources": [
+        "notes networking-dns-dhcp: VLANs and VPNs (objective 2.4)"
+      ]
+    },
+    {
+      "claim": "A client-to-site VPN connects one user's device to the company network.",
+      "objectives": [
+        "220-1201 2.4"
+      ],
+      "sources": [
+        "notes networking-dns-dhcp: VLANs and VPNs (objective 2.4)"
+      ]
+    },
+    {
+      "claim": "A site-to-site VPN links two offices' networks through their firewalls.",
+      "objectives": [
+        "220-1201 2.4"
+      ],
+      "sources": [
+        "notes networking-dns-dhcp: VLANs and VPNs (objective 2.4)"
+      ]
+    },
+    {
+      "claim": "An always-on VPN connects automatically at startup and sign-in.",
+      "objectives": [
+        "220-1201 2.4"
+      ],
+      "sources": [
+        "notes networking-dns-dhcp: VLANs and VPNs (objective 2.4)"
+      ]
+    },
+    {
+      "claim": "A DHCP reservation always gives one MAC address the same IP; an exclusion keeps addresses from being handed out.",
+      "objectives": [
+        "220-1201 2.4"
+      ],
+      "sources": [
+        "notes networking-dns-dhcp: VLANs and VPNs (objective 2.4)"
+      ]
+    }
+  ]
+}
+</script>
+<script>
+(function(){
+  var MODELS = ["VLAN", "Client-to-site VPN", "Site-to-site VPN", "Always-on VPN", "DHCP reservation", "DHCP exclusion", "Router or layer 3 switch"];
+  var WHY = {
+    "VLAN": "A VLAN splits one switch into separate broadcast domains. It does not encrypt.",
+    "Client-to-site VPN": "One user's device opens an encrypted tunnel to the company network.",
+    "Site-to-site VPN": "Two offices' firewalls link whole networks; users run no VPN software.",
+    "Always-on VPN": "The VPN connects by itself when the device starts and the user signs in.",
+    "DHCP reservation": "A reservation always gives one MAC address the same IP.",
+    "DHCP exclusion": "An exclusion keeps addresses in the range from ever being handed out.",
+    "Router or layer 3 switch": "Devices in different VLANs need a router to reach each other."
+};
+  var ITEMS = [
+    {
+        "s": "Guest devices and staff PCs plug into the same switch but must be in separate broadcast domains.",
+        "a": "VLAN",
+        "w": "Splitting one switch into separate networks is a VLAN."
+    },
+    {
+        "s": "Desk phones and PCs on one switch should be kept on separate networks.",
+        "a": "VLAN",
+        "w": "A voice VLAN separates phones from data on the same switch."
+    },
+    {
+        "s": "A remote employee needs encrypted access to internal servers from home.",
+        "a": "Client-to-site VPN",
+        "w": "One user's device to the company network is client-to-site."
+    },
+    {
+        "s": "A branch office must be linked to headquarters with no VPN software on users' PCs.",
+        "a": "Site-to-site VPN",
+        "w": "Firewalls at each office build the tunnel for whole networks."
+    },
+    {
+        "s": "Company laptops should connect to the VPN automatically as soon as users sign in.",
+        "a": "Always-on VPN",
+        "w": "Always-on starts the tunnel by itself at sign-in."
+    },
+    {
+        "s": "A network printer must always receive 192.168.1.50 from DHCP.",
+        "a": "DHCP reservation",
+        "w": "A reservation ties that IP to the printer's MAC address."
+    },
+    {
+        "s": "Addresses 192.168.1.1 to 192.168.1.20 are set by hand on servers and must never be handed out.",
+        "a": "DHCP exclusion",
+        "w": "An exclusion stops DHCP from offering addresses inside the range."
+    },
+    {
+        "s": "The staff VLAN must reach a printer on the printer VLAN.",
+        "a": "Router or layer 3 switch",
+        "w": "Traffic between VLANs has to be routed."
+    }
+];
+  var rows = document.getElementById("rows"), out = document.getElementById("out");
+  function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function build(){
+    var opts = shuffle(MODELS);
+    rows.innerHTML = "";
+    ITEMS.forEach(function(it, n){
+      var li = document.createElement("li"), id = "pick-" + n;
+      li.innerHTML = '<label class="sym" for="' + id + '"></label><select id="' + id + '"><option value="">Choose the setting</option></select><p class="why" hidden></p>';
+      li.querySelector("label").textContent = it.s;
+      var sel = li.querySelector("select");
+      opts.forEach(function(o){ var op = document.createElement("option"); op.value = o; op.textContent = o; sel.appendChild(op); });
+      rows.appendChild(li);
+    });
+  }
+  function mark(showAll){
+    var right = 0, blank = 0;
+    ITEMS.forEach(function(it, n){
+      var li = rows.children[n], sel = li.querySelector("select"), why = li.querySelector(".why");
+      if (showAll) sel.value = it.a;
+      if (!sel.value){ blank++; li.className = ""; why.hidden = true; return; }
+      var ok = sel.value === it.a; if (ok) right++;
+      li.className = ok ? "good" : "bad";
+      why.hidden = false;
+      why.textContent = ok ? "Correct. " + it.w : "Not this one. " + WHY[sel.value] + " The answer is " + it.a + ". " + it.w;
+    });
+    out.textContent = showAll ? "All answers shown. Use Try again to practise without them." :
+      right + " of " + ITEMS.length + " correct" + (blank ? ", " + blank + " left blank." : ".") + (right === ITEMS.length ? " Well done." : " Use Try again to clear only the wrong rows.");
+  }
+  document.getElementById("check").addEventListener("click", function(){ mark(false); });
+  document.getElementById("show").addEventListener("click", function(){ mark(true); });
+  document.getElementById("retry").addEventListener("click", function(){
+    var keep = ITEMS.map(function(it, n){ var v = rows.children[n].querySelector("select").value; return v === it.a ? v : ""; });
+    build();
+    keep.forEach(function(v, n){ rows.children[n].querySelector("select").value = v; if (v) rows.children[n].className = "good"; });
+    out.textContent = "Wrong rows cleared and options shuffled. Correct rows are kept.";
+  });
+  build();
+})();
+</script>
+</body>
+</html>
