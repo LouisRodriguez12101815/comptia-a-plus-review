@@ -32,7 +32,7 @@ export function SiteHeader() {
           aria-label={t("tracksLabel")}
         >
           {tracks.map((track) => {
-            const active = !onGame && pathname !== "/coverage" && pathname !== "/test" && !pathname.startsWith("/final-15") && current?.id === track.id;
+            const active = !onGame && pathname !== "/coverage" && pathname !== "/test" && !pathname.startsWith("/final-15") && !pathname.startsWith("/top-5") && current?.id === track.id;
             return (
               <Link
                 key={track.id}
@@ -61,6 +61,13 @@ export function SiteHeader() {
             className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname === "/test" ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
           >
             {t("testMode")}
+          </Link>
+          <Link
+            href="/top-5"
+            aria-current={pathname.startsWith("/top-5") ? "page" : undefined}
+            className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname.startsWith("/top-5") ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
+          >
+            {t("top5")}
           </Link>
           <Link
             href="/final-15"
