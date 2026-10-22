@@ -62,7 +62,31 @@ const core1: FinalReview = {
   ],
 };
 
-export const finalReviews: FinalReview[] = [core1];
+const core2: FinalReview = {
+  id: "core2",
+  certification: "A+ Core 2",
+  exam: "220-1202",
+  drillQuestions: 26,
+  trapsPerRound: 4,
+  minutes: 15,
+  traps: [
+    { id: "share-ntfs", prompt: "A user has NTFS Full Control but share Read on a folder, and opens it over the network. What access do they get?", answer: "Read (the most restrictive wins)", wrong: ["Full Control (NTFS wins)", "Modify (permissions add up)", "No access (they conflict)"], detail: "Over the network both sets apply, and the most restrictive combination wins.", hook: "Share + NTFS = the stricter one." },
+    { id: "restore-order", prompt: "When is System Restore turned off during malware removal?", answer: "Before remediation (step 3), then back on near the end (step 9)", wrong: ["Never; restore points remove malware", "Only after reinstalling the OS", "Only on Windows Pro"], detail: "Infected restore points could bring the malware back, so restore is disabled before cleaning and re-enabled with a fresh restore point afterward.", hook: "Off before cleaning, on after." },
+    { id: "incr-diff", prompt: "Which backup copies only what changed since the last backup of any type?", answer: "Incremental", wrong: ["Differential", "Synthetic full", "Full"], detail: "Differential copies changes since the last full backup; incremental copies changes since the last backup of any kind.", hook: "Incremental = since last anything." },
+    { id: "tacacs", prompt: "Which authentication protocol uses TCP and encrypts the entire payload?", answer: "TACACS+", wrong: ["RADIUS", "Kerberos", "TKIP"], detail: "RADIUS uses UDP and encrypts only the password; TACACS+ uses TCP 49 and encrypts everything.", hook: "TACACS+ = TCP, all encrypted." },
+    { id: "bitlocker-efs", prompt: "Which feature encrypts individual files for one user instead of the whole drive?", answer: "EFS", wrong: ["BitLocker", "BitLocker To Go", "FileVault"], detail: "BitLocker encrypts whole volumes; EFS encrypts files and folders on NTFS for a user account.", hook: "EFS = files; BitLocker = drive." },
+    { id: "home-edition", prompt: "Which Windows edition cannot join a domain or use gpedit.msc?", answer: "Home", wrong: ["Pro", "Enterprise", "Pro for Workstations"], detail: "Domain join, gpedit.msc, BitLocker and hosting RDP need Pro or higher.", hook: "Home = no business features." },
+    { id: "degauss", prompt: "Which destruction method does nothing to an SSD?", answer: "Degaussing", wrong: ["Shredding", "Drilling", "Incineration"], detail: "Degaussing erases magnetic media; SSDs store data in flash, so shred or physically destroy them.", hook: "Degauss = magnetic only." },
+    { id: "volatility", prompt: "During an incident, what should be collected first?", answer: "The most volatile data, such as RAM", wrong: ["The hard drive image", "Printed logs", "Backup tapes"], detail: "Order of volatility: capture short-lived data like memory before it is lost.", hook: "Most volatile first." },
+  ],
+  sequences: [
+    { id: "malware", steps: ["Investigate and verify malware symptoms", "Quarantine the infected system", "Disable System Restore in Windows Home", "Remediate the infected system", "Update the anti-malware software", "Scan and remove (Safe Mode or preinstallation environment)", "Reimage or reinstall if needed", "Schedule scans and run updates", "Enable System Restore and create a restore point", "Educate the end user"] },
+    { id: "change", steps: ["Submit a change request with its purpose and scope", "Analyze the risk and plan a rollback", "Test the change in a sandbox", "Get change board approval", "Implement it in the maintenance window", "Confirm end-user acceptance"] },
+    { id: "volatility", steps: ["CPU registers and cache", "RAM", "Swap and temporary files", "Hard drive", "Remote logs", "Backups and archives"] },
+  ],
+};
+
+export const finalReviews: FinalReview[] = [core1, core2];
 
 export function getFinalReview(id: string) {
   return finalReviews.find((r) => r.id === id);

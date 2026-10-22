@@ -102,7 +102,85 @@ const core1: TopFive = {
   ],
 };
 
-export const topFives: TopFive[] = [core1];
+const core2: TopFive = {
+  id: "core2",
+  certification: "A+ Core 2",
+  exam: "220-1202",
+  concepts: [
+    {
+      id: "malware",
+      title: "Malware: types, removal steps and symptoms",
+      domains: ["2", "3"],
+      objectives: "2.4, 2.6, 3.4",
+      why: "Security is tied for the largest domain, and malware runs through it and through PC security troubleshooting. The ten removal steps are a likely ordering question.",
+      facts: [
+        "Removal, in order: investigate and verify; quarantine; disable System Restore (Windows Home); remediate; update anti-malware; scan and remove in Safe Mode or a preinstallation environment; reimage if needed; schedule scans and updates; re-enable System Restore and create a restore point; educate the user.",
+        "Ransomware encrypts and renames files. Rootkits hide in the OS core. Boot sector viruses load before Windows. Fileless malware lives in memory. Cryptominers slow the PC.",
+        "Symptoms: random pop-ups and redirects (adware, hijacked browser), fake antivirus alerts (scareware), failed updates, certificate warnings.",
+        "EDR protects each endpoint, MDR is a managed service, XDR correlates endpoints, network, email and cloud.",
+      ],
+      drills: ["c2-malware", "c2-troubleshoot-security"],
+    },
+    {
+      id: "windows-tools",
+      title: "Windows tools, commands and settings",
+      domains: ["1"],
+      objectives: "1.4, 1.5, 1.6, 1.7",
+      why: "Operating systems is tied for the largest domain, and its scenario questions ask which tool, command or setting solves the problem.",
+      facts: [
+        "MMC snap-ins: eventvwr.msc (logs), diskmgmt.msc (partitions), devmgmt.msc (drivers), taskschd.msc (scheduled tasks), lusrmgr.msc (local users), gpedit.msc (local policy).",
+        "msconfig (Safe boot), msinfo32 (system summary), resmon (detailed resources), cleanmgr (free space), regedit (registry).",
+        "Commands: sfc /scannow (system files), chkdsk (disk errors), gpupdate /force and gpresult (policy), net use (map drive), robocopy (robust copy), pathping (route plus loss), whoami, winver.",
+        "Networking: domain vs. workgroup, public vs. private profile, metered connections, proxy settings, mapped drives.",
+      ],
+      drills: ["c2-windows-tools", "c2-command-line", "c2-windows-settings"],
+    },
+    {
+      id: "windows-troubleshooting",
+      title: "Windows and mobile troubleshooting",
+      domains: ["3"],
+      objectives: "3.1, 3.2, 3.3",
+      why: "Software troubleshooting is almost a quarter of the exam, and nearly every item is a symptom-to-fix scenario.",
+      facts: [
+        "BSOD after a driver: roll it back from Safe Mode. Won't boot: Startup Repair. No OS found: boot order, then repair boot records.",
+        "Services not starting: check dependencies and startup type. USB controller resource warning: spread devices across controllers. Time drift: resync with a time server.",
+        "Mobile: app won't launch (force stop, clear cache, reinstall); OS update fails (space, battery, Wi-Fi); no autorotate (rotation lock).",
+        "Mobile security signs: data-usage spikes, a flood of ads, fake security warnings, leaked files; causes include sideloaded apps, root/jailbreak and developer mode.",
+      ],
+      drills: ["c2-troubleshoot-windows", "c2-troubleshoot-mobile"],
+    },
+    {
+      id: "security-settings",
+      title: "Security measures, Windows security and wireless authentication",
+      domains: ["2"],
+      objectives: "2.1, 2.2, 2.3, 2.5",
+      why: "These are the core comparisons of the Security domain: which control, which encryption, which protocol, which attack.",
+      facts: [
+        "BitLocker encrypts a whole drive, BitLocker To Go removable drives, EFS individual files. NTFS + share permissions: the most restrictive wins.",
+        "WPA3 uses SAE; WPA2 uses AES; TKIP is legacy. RADIUS = UDP, password encrypted; TACACS+ = TCP 49, everything encrypted; Kerberos = tickets in AD.",
+        "Physical: bollards, access control vestibule (stops tailgating), badge readers, magnetometers. Logical: least privilege, Zero Trust, MFA, SSO, SAML, DLP, MDM.",
+        "Social engineering: phishing by email, vishing by voice, smishing by text, whaling targets executives; evil twin copies a Wi-Fi name.",
+      ],
+      drills: ["c2-security-measures", "c2-windows-security", "c2-wireless-auth", "c2-social-engineering"],
+    },
+    {
+      id: "operational",
+      title: "Operational procedures: backups, change management, safety and documentation",
+      domains: ["4"],
+      objectives: "4.1, 4.2, 4.3, 4.4",
+      why: "Operational procedures is about a fifth of the exam and mostly recall: backup types, change types, safety steps and documents.",
+      facts: [
+        "Full copies everything; incremental copies changes since the last backup of any type; differential copies changes since the last full. 3-2-1: three copies, two media, one offsite.",
+        "Change types: standard (pre-approved), normal (change board), emergency (expedited). Every change needs a rollback plan; test in a sandbox first.",
+        "Safety: disconnect power, ESD strap and mat, lift with your legs, antistatic bags, toner mask and vacuum. UPS covers outages; surge suppressors only spikes.",
+        "Documentation: tickets (severity, escalation), CMDB, asset tags, SOPs, SLAs, knowledge base, onboarding and off-boarding checklists.",
+      ],
+      drills: ["c2-backup-safety", "c2-docs-change"],
+    },
+  ],
+};
+
+export const topFives: TopFive[] = [core1, core2];
 
 export function getTopFive(id: string) {
   return topFives.find((t) => t.id === id);

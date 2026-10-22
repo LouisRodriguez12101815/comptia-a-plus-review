@@ -63,3 +63,18 @@ test('A+ Core 1 facts that are easy to get backwards stay correct', () => {
   assert.equal(find('network-config', 'pat').term, 'PAT (NAT overload)');
   assert.equal(find('motherboard-cpu', 'lga1700').cpu, 'Intel 12th–14th gen Core');
 });
+
+test('A+ Core 2 facts that are easy to get backwards stay correct', () => {
+  const find = (deck, id) => drillDecks.find((d) => d.id === deck).items.find((i) => i.id === id).fields;
+  assert.match(find('c2-backup-safety', 'incremental').meaning, /since the last backup of any type/);
+  assert.match(find('c2-backup-safety', 'differential').meaning, /since the last full backup/);
+  assert.match(find('c2-wireless-auth', 'tacacs').meaning, /TCP/);
+  assert.match(find('c2-wireless-auth', 'radius').meaning, /UDP/);
+  assert.equal(find('c2-windows-security', 't-ntfsshare').meaning, 'When both apply over the network, the most restrictive wins');
+  // 220-1202 objective 2.6 lists ten malware-removal steps in this order.
+  const steps = drillDecks.find((d) => d.id === 'c2-malware').items.filter((i) => i.fields.step).map((i) => i.fields.action);
+  assert.equal(steps.length, 10);
+  assert.equal(steps[2], 'Disable System Restore in Windows Home');
+  assert.equal(steps[8], 'Enable System Restore and create a restore point');
+  assert.equal(steps[9], 'Educate the end user');
+});
