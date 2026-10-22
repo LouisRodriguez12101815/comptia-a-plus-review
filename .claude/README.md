@@ -28,6 +28,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 | [hardware-diagram-designer](skills/hardware-diagram-designer/SKILL.md) | A hardware chapter needs a board map or part drill |
 | [network-diagram-designer](skills/network-diagram-designer/SKILL.md) | A networking visual, packet path or VLSM view |
 | [learning-challenge-designer](skills/learning-challenge-designer/SKILL.md) | A practice mission with feedback and retries |
+| [rubric-audit](skills/rubric-audit/SKILL.md) | Grading how completely the notes and study material cover the official exam objectives, before an exam or after adding notes |
 | [comptia-site-pm](skills/comptia-site-pm/SKILL.md) | Deciding what to build next or reviewing a pull request |
 | [shared-state-regression-tester](skills/shared-state-regression-tester/SKILL.md) | Multiplayer rooms or shared state misbehave |
 
@@ -38,6 +39,7 @@ Agents run in their own context and report back. All are report-only; the caller
 | Agent | Use it when |
 | --- | --- |
 | [drill-target-auditor](agents/drill-target-auditor.md) | Ranking which recall-heavy objectives need a drill, or building a time-boxed review plan |
+| [rubric-grader](agents/rubric-grader.md) | The judgment pass of rubric-audit: grading batches of objective items against the evidence |
 | [objective-gap-auditor](agents/objective-gap-auditor.md) | Deciding which objective to cover next |
 | [answer-key-verifier](agents/answer-key-verifier.md) | New questions were written or a key is disputed |
 | [learner-simulator](agents/learner-simulator.md) | A topic was added or rewritten |
