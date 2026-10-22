@@ -19,6 +19,11 @@ export type DrillTable = { id: string; fields: string[] };
 
 export type DrillDeck = {
   id: string;
+  /** Certification name shown in the Practice Games filter, e.g. "A+ Core 1". */
+  certification: string;
+  /** Exam code that must exist in content/objectives.json, e.g. "220-1201". */
+  exam: string;
+  /** Objective ids from that exam, e.g. "2.4, 2.6" or "3.1–3.8". */
   objective: string;
   /** Topic shown in the Practice Games filter. */
   topic: string;
@@ -29,6 +34,8 @@ export type DrillDeck = {
 
 const ports: DrillDeck = {
   id: "ports",
+  certification: "A+ Core 1",
+  exam: "220-1201",
   objective: "2.1",
   topic: "Ports and protocols",
   modes: [
@@ -47,7 +54,9 @@ const ports: DrillDeck = {
 
 const wifi: DrillDeck = {
   id: "wifi",
-  objective: "2.3",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "2.2",
   topic: "Wireless standards",
   modes: [
     { id: "standardToBand", from: "standard", to: "band" },
@@ -80,6 +89,8 @@ const wifi: DrillDeck = {
 
 const privateIps: DrillDeck = {
   id: "private-ip",
+  certification: "A+ Core 1",
+  exam: "220-1201",
   objective: "2.6",
   topic: "IP addressing",
   modes: [
@@ -118,7 +129,9 @@ const privateIps: DrillDeck = {
 
 const appliances: DrillDeck = {
   id: "appliances",
-  objective: "2.4, 2.5",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "2.3, 2.5",
   topic: "Network appliances and services",
   modes: [
     { id: "jobToName", from: "job", to: "name" },
@@ -164,7 +177,9 @@ const appliances: DrillDeck = {
 
 const dhcp: DrillDeck = {
   id: "dhcp",
-  objective: "2.6",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "2.3, 2.4",
   topic: "DHCP",
   modes: [
     { id: "termToMeaning", from: "term", to: "meaning" },
@@ -193,7 +208,9 @@ const dhcp: DrillDeck = {
 
 const dns: DrillDeck = {
   id: "dns",
-  objective: "2.6",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "2.3, 2.4",
   topic: "DNS",
   modes: [
     { id: "recordToPurpose", from: "record", to: "purpose" },
@@ -222,6 +239,8 @@ const dns: DrillDeck = {
 
 const hardware: DrillDeck = {
   id: "hardware",
+  certification: "A+ Core 1",
+  exam: "220-1201",
   objective: "3.1–3.8",
   topic: "Hardware components",
   modes: [
@@ -280,6 +299,8 @@ const hardware: DrillDeck = {
 
 const troubleshooting: DrillDeck = {
   id: "troubleshooting",
+  certification: "A+ Core 1",
+  exam: "220-1201",
   objective: "5.1–5.6",
   topic: "Hardware and network troubleshooting",
   modes: [
@@ -328,6 +349,8 @@ const troubleshooting: DrillDeck = {
 
 const mobile: DrillDeck = {
   id: "mobile",
+  certification: "A+ Core 1",
+  exam: "220-1201",
   objective: "1.1–1.3, 5.4",
   topic: "Mobile devices",
   modes: [
@@ -364,6 +387,8 @@ const mobile: DrillDeck = {
 
 const virtualization: DrillDeck = {
   id: "virtualization-cloud",
+  certification: "A+ Core 1",
+  exam: "220-1201",
   objective: "4.1–4.2",
   topic: "Virtualization and cloud computing",
   modes: [
@@ -406,7 +431,201 @@ const virtualization: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [ports, wifi, privateIps, appliances, dhcp, dns, hardware, troubleshooting, mobile, virtualization];
+const networkConfig: DrillDeck = {
+  id: "network-config",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "2.4, 2.6, 5.5",
+  topic: "Network configuration",
+  modes: [
+    { id: "termToMeaning", from: "term", to: "meaning" },
+    { id: "meaningToTerm", from: "meaning", to: "term" },
+    { id: "symptomToCause", from: "symptom", to: "cause" },
+  ],
+  tables: [
+    { id: "terms", fields: ["term", "meaning"] },
+    { id: "symptoms", fields: ["symptom", "cause"] },
+  ],
+  items: [
+    { id: "nat", fields: { term: "NAT", meaning: "Router translates private addresses to a public address" }, detail: "Network Address Translation lets private (RFC 1918) addresses reach the internet through the router's public address.", hook: "NAT = private in, public out." },
+    { id: "pat", fields: { term: "PAT (NAT overload)", meaning: "Many private hosts share one public IP, told apart by port numbers" }, detail: "Port Address Translation tracks each connection by port, so a whole home or office shares one public IP.", hook: "PAT = Ports let many share one address." },
+    { id: "gateway", fields: { term: "Default gateway", meaning: "Router address a host sends traffic to for other networks" }, detail: "Without a correct default gateway a host can reach its own subnet but not the internet.", hook: "Gateway = the way out of the subnet." },
+    { id: "mask", fields: { term: "Subnet mask", meaning: "Marks which part of an IP address is network and which is host" }, detail: "255.255.255.0 (/24) means the first three octets are the network.", hook: "The mask hides the host part." },
+    { id: "vlan", fields: { term: "VLAN", meaning: "Splits one physical switch into separate broadcast domains" }, detail: "A VLAN groups ports logically; traffic between VLANs needs a router or layer 3 switch.", hook: "Virtual LAN = separate networks on one switch." },
+    { id: "vpn", fields: { term: "VPN", meaning: "Encrypted tunnel across an untrusted network" }, detail: "A VPN lets remote users reach a private network securely over the internet.", hook: "VPN = private tunnel over a public network." },
+    { id: "pf", fields: { term: "Port forwarding", meaning: "Sends inbound traffic on one port to one internal host" }, detail: "Example: forward TCP 3389 to one PC for Remote Desktop.", hook: "Forward one port to one host." },
+    { id: "dmzhost", fields: { term: "DMZ host (SOHO router)", meaning: "Sends all unsolicited inbound traffic to one internal host" }, detail: "A SOHO DMZ host is fully exposed; port forwarding is the safer choice.", hook: "DMZ host = every port to one machine." },
+    { id: "static", fields: { term: "Static IP address", meaning: "Address set manually that does not change" }, detail: "Servers and printers often use static addresses or DHCP reservations.", hook: "Static = set by hand." },
+    { id: "ssid", fields: { term: "SSID", meaning: "Name a wireless network broadcasts" }, detail: "Clients pick the network by its SSID.", hook: "SSID = Wi-Fi name." },
+    { id: "s-gw", fields: { symptom: "Reaches local devices but not the internet", cause: "Wrong or missing default gateway" }, detail: "Local traffic works, so the problem is the route off the subnet.", hook: "Local yes, internet no = gateway." },
+    { id: "s-dup", fields: { symptom: "Duplicate IP address warning", cause: "Static IP conflicts with a DHCP-assigned address" }, detail: "Exclude static addresses from the DHCP range or use reservations.", hook: "Two devices, one address." },
+    { id: "s-link", fields: { symptom: "No link light on the network port", cause: "Unplugged or bad cable, or disabled NIC" }, detail: "No link light means no physical connection at layer 1.", hook: "No light = physical problem." },
+    { id: "s-flap", fields: { symptom: "Port flapping (link keeps going up and down)", cause: "Bad cable or failing switch port" }, detail: "A link that bounces usually has a physical fault.", hook: "Flapping = flaky physical link." },
+    { id: "s-voip", fields: { symptom: "Choppy VoIP calls", cause: "Jitter or latency: prioritize voice with QoS" }, detail: "Voice needs steady, low delay; QoS gives it priority.", hook: "Choppy voice = jitter, fix with QoS." },
+    { id: "s-wifi", fields: { symptom: "Intermittent wireless connectivity", cause: "Interference or weak signal: check channel and AP placement" }, detail: "Overlapping channels, distance and obstacles cause drops.", hook: "Wi-Fi drops = interference or distance." },
+    { id: "s-slow", fields: { symptom: "One PC has slow network speeds", cause: "Bad cable or duplex mismatch" }, detail: "Check the cable and that both ends agree on speed and duplex.", hook: "One slow PC = its cable or NIC settings." },
+  ],
+};
+
+const connectionTypes: DrillDeck = {
+  id: "connection-types",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "2.7",
+  topic: "Internet connection and network types",
+  modes: [
+    { id: "connectionToFact", from: "connection", to: "fact" },
+    { id: "scenarioToConnection", from: "scenario", to: "connection" },
+    { id: "scopeToNetwork", from: "scope", to: "network" },
+  ],
+  tables: [
+    { id: "connections", fields: ["connection", "fact", "scenario"] },
+    { id: "networks", fields: ["network", "scope"] },
+  ],
+  items: [
+    { id: "fiber", fields: { connection: "Fiber", fact: "Light over glass; the highest bandwidth", scenario: "Office needs the highest possible bandwidth" }, detail: "Fiber to the premises offers the fastest consumer service.", hook: "Fiber = fastest." },
+    { id: "cable", fields: { connection: "Cable", fact: "Coaxial line from the TV provider, shared with neighbors", scenario: "Service arrives on the TV company's coax" }, detail: "Cable bandwidth is shared within a neighborhood.", hook: "Cable = coax, shared." },
+    { id: "dsl", fields: { connection: "DSL", fact: "Runs over phone lines; slows with distance from the provider", scenario: "Service uses the existing telephone line" }, detail: "DSL speed drops as the line gets longer.", hook: "DSL = phone line." },
+    { id: "sat", fields: { connection: "Satellite", fact: "Needs a dish with a clear view of the sky; traditionally high latency", scenario: "Remote cabin with no wired service" }, detail: "Satellite reaches places with no wired service; geostationary links have high latency.", hook: "Satellite = remote, delay." },
+    { id: "cell", fields: { connection: "Cellular", fact: "4G/5G data from carrier towers", scenario: "Internet for a food truck that moves around" }, detail: "Cellular works anywhere there's carrier coverage.", hook: "Mobile = cellular." },
+    { id: "wisp", fields: { connection: "Wireless ISP (WISP)", fact: "Fixed antenna aimed at a provider's tower", scenario: "Rooftop antenna pointed at a tower a few miles away" }, detail: "A WISP delivers fixed wireless service by line of sight.", hook: "WISP = antenna to tower." },
+    { id: "lan", fields: { network: "LAN", scope: "One home, office or building" }, detail: "Local area network.", hook: "Local = one site." },
+    { id: "wan", fields: { network: "WAN", scope: "Connects sites across cities or countries" }, detail: "Wide area network; the internet is the largest WAN.", hook: "Wide = far apart." },
+    { id: "man", fields: { network: "MAN", scope: "Spans a city" }, detail: "Metropolitan area network.", hook: "Metro = city." },
+    { id: "pan", fields: { network: "PAN", scope: "Devices around one person, like Bluetooth" }, detail: "Personal area network.", hook: "Personal = you." },
+    { id: "wlan", fields: { network: "WLAN", scope: "Wireless local network" }, detail: "Wireless LAN, usually Wi-Fi.", hook: "W + LAN = wireless LAN." },
+    { id: "san", fields: { network: "SAN", scope: "Dedicated network for block storage" }, detail: "Storage area network connects servers to shared storage.", hook: "Storage = SAN." },
+  ],
+};
+
+const motherboardCpu: DrillDeck = {
+  id: "motherboard-cpu",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "3.5, 3.6",
+  topic: "Motherboards, CPUs and power",
+  modes: [
+    { id: "slotToUse", from: "slot", to: "use" },
+    { id: "socketToCpu", from: "socket", to: "cpu" },
+    { id: "featureToMeaning", from: "feature", to: "meaning" },
+    { id: "powerToRole", from: "power", to: "role" },
+  ],
+  tables: [
+    { id: "slots", fields: ["slot", "use"] },
+    { id: "sockets", fields: ["socket", "cpu"] },
+    { id: "features", fields: ["feature", "meaning"] },
+    { id: "power", fields: ["power", "role"] },
+  ],
+  items: [
+    { id: "x16", fields: { slot: "PCIe x16", use: "Graphics card" }, detail: "The longest PCIe slot, usually nearest the CPU.", hook: "x16 = video." },
+    { id: "x1", fields: { slot: "PCIe x1", use: "Small add-on cards like sound, Wi-Fi or a network card" }, detail: "x1 slots are short and carry one lane.", hook: "x1 = small cards." },
+    { id: "m2slot", fields: { slot: "M.2 slot (M key)", use: "NVMe SSDs" }, detail: "M-keyed M.2 slots take NVMe (and some SATA) SSDs.", hook: "M key = SSD." },
+    { id: "dimm", fields: { slot: "DIMM slot", use: "Desktop memory modules" }, detail: "Fill matching slots for dual channel.", hook: "DIMM = desktop RAM." },
+    { id: "sataport", fields: { slot: "SATA port", use: "Hard drives, SSDs and optical drives" }, detail: "Each SATA port connects one drive.", hook: "SATA = drives." },
+    { id: "front", fields: { slot: "Front-panel header", use: "Power button, reset button and case LEDs" }, detail: "Small pins that wire the case buttons to the board.", hook: "Front panel = buttons and LEDs." },
+    { id: "fanh", fields: { slot: "Fan header", use: "CPU and case fans" }, detail: "3-pin or 4-pin (PWM) fan connectors.", hook: "Fan header = fans." },
+    { id: "lga1700", fields: { socket: "LGA 1700", cpu: "Intel 12th–14th gen Core" }, detail: "LGA puts the pins in the socket, not on the CPU.", hook: "LGA = Intel, pins in the socket." },
+    { id: "lga1200", fields: { socket: "LGA 1200", cpu: "Intel 10th–11th gen Core" }, detail: "The socket before LGA 1700.", hook: "1200 = older Intel." },
+    { id: "am5", fields: { socket: "AM5", cpu: "AMD Ryzen 7000 and newer" }, detail: "AM5 moved AMD to LGA and DDR5.", hook: "AM5 = newest AMD, DDR5." },
+    { id: "am4", fields: { socket: "AM4", cpu: "AMD Ryzen 1000–5000" }, detail: "AM4 is PGA: pins on the CPU.", hook: "AM4 = older AMD, pins on the chip." },
+    { id: "smt", fields: { feature: "Hyper-threading (SMT)", meaning: "Each core runs two threads at once" }, detail: "Simultaneous multithreading presents two logical processors per core.", hook: "Hyper = two threads per core." },
+    { id: "multicore", fields: { feature: "Multicore", meaning: "Several processing cores on one chip" }, detail: "More cores run more tasks in parallel.", hook: "Multi = many cores." },
+    { id: "vtx", fields: { feature: "VT-x / AMD-V", meaning: "CPU virtualization support, enabled in UEFI" }, detail: "Required to run 64-bit virtual machines well.", hook: "V = virtualization." },
+    { id: "arm", fields: { feature: "ARM", meaning: "Power-efficient architecture in phones, tablets and Apple silicon" }, detail: "ARM uses less power than x64.", hook: "ARM = battery-friendly." },
+    { id: "x64", fields: { feature: "x64", meaning: "64-bit instruction set for most desktops and laptops" }, detail: "x64 runs 64-bit operating systems and more than 4 GB of RAM.", hook: "x64 = 64-bit PCs." },
+    { id: "tpm", fields: { feature: "TPM", meaning: "Chip that stores encryption keys; required by Windows 11" }, detail: "Trusted Platform Module 2.0 is a Windows 11 requirement.", hook: "TPM = keys, Windows 11." },
+    { id: "secureboot", fields: { feature: "Secure Boot", meaning: "UEFI loads only signed boot loaders" }, detail: "Blocks boot-level malware.", hook: "Secure Boot = signed only." },
+    { id: "atx24", fields: { power: "24-pin ATX connector", role: "Main motherboard power" }, detail: "The widest power connector on the board.", hook: "24-pin = motherboard." },
+    { id: "eps", fields: { power: "4/8-pin EPS (ATX12V)", role: "CPU power" }, detail: "Near the CPU socket at the top of the board.", hook: "EPS = CPU." },
+    { id: "pcie8", fields: { power: "6/8-pin PCIe connector", role: "Graphics card power" }, detail: "Plugs into the graphics card itself.", hook: "PCIe power = GPU." },
+    { id: "satapw", fields: { power: "15-pin SATA power", role: "SATA drive power" }, detail: "Flat L-shaped connector.", hook: "15 pins = SATA drives." },
+    { id: "molex", fields: { power: "4-pin Molex", role: "Older drives and fans" }, detail: "Legacy peripheral connector.", hook: "Molex = old peripherals." },
+    { id: "modular", fields: { power: "Modular power supply", role: "Cables detach so only needed ones are installed" }, detail: "Better airflow and less clutter.", hook: "Modular = detachable cables." },
+    { id: "redundant", fields: { power: "Redundant power supply", role: "Second unit keeps a server running if one fails" }, detail: "Common in servers; often hot-swappable.", hook: "Redundant = backup supply." },
+  ],
+};
+
+const storageRaid: DrillDeck = {
+  id: "storage-raid",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "3.4, 5.2",
+  topic: "Storage and RAID",
+  modes: [
+    { id: "driveToFact", from: "drive", to: "fact" },
+    { id: "levelToDescription", from: "level", to: "description" },
+    { id: "descriptionToLevel", from: "description", to: "level" },
+    { id: "symptomToCause", from: "symptom", to: "cause" },
+  ],
+  tables: [
+    { id: "drives", fields: ["drive", "fact"] },
+    { id: "raid", fields: ["level", "description"] },
+    { id: "symptoms", fields: ["symptom", "cause"] },
+  ],
+  items: [
+    { id: "hdd", fields: { drive: "HDD", fact: "Spinning platters; cheapest per GB, slowest, sensitive to shock" }, detail: "Common speeds are 5,400 and 7,200 rpm; servers use 10,000 or 15,000 rpm.", hook: "Spinning = slow and fragile." },
+    { id: "satassd", fields: { drive: "SATA SSD", fact: "Flash with no moving parts, capped near 600 MB/s by SATA" }, detail: "SATA III is 6 Gb/s, which limits SSDs to roughly 550 MB/s.", hook: "SATA caps the SSD." },
+    { id: "nvme", fields: { drive: "NVMe SSD", fact: "Flash on PCIe lanes; several GB/s" }, detail: "NVMe skips the SATA bottleneck.", hook: "NVMe = PCIe speed." },
+    { id: "sshd", fields: { drive: "Hybrid drive (SSHD)", fact: "Hard drive with a small flash cache" }, detail: "Frequently used data is cached in flash.", hook: "Hybrid = HDD plus a little flash." },
+    { id: "sd", fields: { drive: "SD card", fact: "Removable flash for cameras and phones" }, detail: "Comes in SD, microSD and other sizes.", hook: "SD = camera card." },
+    { id: "optical", fields: { drive: "Blu-ray", fact: "Optical disc holding 25 GB per layer" }, detail: "DVD holds 4.7 GB per layer; Blu-ray holds 25 GB.", hook: "Blu-ray = 25 GB." },
+    { id: "r0", fields: { level: "RAID 0", description: "Striping only: fastest, no fault tolerance, 2+ drives" }, detail: "Lose one drive and you lose the whole array.", hook: "0 = zero redundancy." },
+    { id: "r1", fields: { level: "RAID 1", description: "Mirroring: exact copy on a second drive, 2 drives" }, detail: "Survives one drive failure; half the capacity is used for the copy.", hook: "1 = one copy." },
+    { id: "r5", fields: { level: "RAID 5", description: "Striping with parity: 3+ drives, survives 1 failure" }, detail: "One drive's worth of space holds parity.", hook: "5 = parity, 3 drives minimum." },
+    { id: "r6", fields: { level: "RAID 6", description: "Striping with double parity: 4+ drives, survives 2 failures" }, detail: "Two drives' worth of space holds parity.", hook: "6 = two parities." },
+    { id: "r10", fields: { level: "RAID 10", description: "Mirrored pairs that are striped: 4+ drives" }, detail: "Combines RAID 1 safety with RAID 0 speed.", hook: "10 = 1 + 0." },
+    { id: "s-degraded", fields: { symptom: "RAID array reports degraded", cause: "One drive failed: replace it and rebuild" }, detail: "The array still works but has lost its fault tolerance.", hook: "Degraded = replace and rebuild." },
+    { id: "s-boot", fields: { symptom: "\"Bootable device not found\"", cause: "Wrong boot order, failed drive or loose cable" }, detail: "Check the UEFI boot order and the drive's cables first.", hook: "No boot device = order, cable, drive." },
+    { id: "s-smart", fields: { symptom: "S.M.A.R.T. failure warning", cause: "Drive predicts its own failure: back up and replace" }, detail: "S.M.A.R.T. tracks drive health counters.", hook: "S.M.A.R.T. warning = back up now." },
+    { id: "s-raid0", fields: { symptom: "Whole array lost after one drive failed", cause: "It was RAID 0, which has no redundancy" }, detail: "Only RAID 0 loses everything on a single failure.", hook: "One failure, all gone = RAID 0." },
+    { id: "s-newdrive", fields: { symptom: "New drive appears in UEFI but not in File Explorer", cause: "Initialize and partition it in Disk Management" }, detail: "A blank drive needs a partition and file system.", hook: "Seen by firmware, not Windows = initialize it." },
+    { id: "s-uefi", fields: { symptom: "Drive not detected in UEFI", cause: "Loose data or power cable, or a dead drive" }, detail: "Firmware detection fails before any OS is involved.", hook: "Not in UEFI = cable or dead drive." },
+  ],
+};
+
+const displays: DrillDeck = {
+  id: "displays",
+  certification: "A+ Core 1",
+  exam: "220-1201",
+  objective: "3.1, 5.3",
+  topic: "Displays and projectors",
+  modes: [
+    { id: "techToFact", from: "tech", to: "fact" },
+    { id: "attributeToMeaning", from: "attribute", to: "meaning" },
+    { id: "symptomToCause", from: "symptom", to: "cause" },
+  ],
+  tables: [
+    { id: "tech", fields: ["tech", "fact"] },
+    { id: "attributes", fields: ["attribute", "meaning"] },
+    { id: "symptoms", fields: ["symptom", "cause"] },
+  ],
+  items: [
+    { id: "ips", fields: { tech: "IPS (LCD)", fact: "Wide viewing angles and accurate color" }, detail: "In-plane switching LCDs are common for design work.", hook: "IPS = color and angles." },
+    { id: "tn", fields: { tech: "TN (LCD)", fact: "Fast response and low cost, poor viewing angles" }, detail: "Twisted nematic panels were popular for gaming.", hook: "TN = fast and cheap." },
+    { id: "va", fields: { tech: "VA (LCD)", fact: "High contrast, deep blacks for an LCD" }, detail: "Vertical alignment sits between TN and IPS.", hook: "VA = contrast." },
+    { id: "oled", fields: { tech: "OLED", fact: "Each pixel makes its own light; true black, burn-in risk" }, detail: "No backlight is needed.", hook: "OLED = self-lit pixels." },
+    { id: "miniled", fields: { tech: "Mini-LED", fact: "LCD with thousands of small backlight zones" }, detail: "Local dimming zones improve contrast.", hook: "Mini-LED = better backlight." },
+    { id: "digitizer", fields: { tech: "Digitizer", fact: "Touch layer that turns touches into input" }, detail: "Replace the digitizer when touch fails but the image is fine.", hook: "Digitizer = touch." },
+    { id: "backlight", fields: { tech: "Backlight", fact: "Lights an LCD from behind; failure gives a very dim image" }, detail: "Older laptops used a CCFL backlight powered by an inverter.", hook: "LCDs need a backlight." },
+    { id: "res", fields: { attribute: "Resolution", meaning: "Pixels across and down, such as 1920 × 1080" }, detail: "Run LCDs at their native resolution for a sharp image.", hook: "Resolution = pixel count." },
+    { id: "refresh", fields: { attribute: "Refresh rate", meaning: "How many times per second the image redraws (Hz)" }, detail: "60 Hz is standard; gaming monitors run 144 Hz or more.", hook: "Hz = redraws per second." },
+    { id: "aspect", fields: { attribute: "Aspect ratio", meaning: "Width compared to height, such as 16:9" }, detail: "16:9 is widescreen; 4:3 is the older shape.", hook: "Aspect = shape." },
+    { id: "ppi", fields: { attribute: "Pixel density (PPI)", meaning: "Pixels per inch; higher looks sharper" }, detail: "The same resolution on a smaller screen gives higher PPI.", hook: "PPI = sharpness." },
+    { id: "nits", fields: { attribute: "Brightness (nits)", meaning: "How much light the screen puts out" }, detail: "Higher nits help in bright rooms and for HDR.", hook: "Nits = brightness." },
+    { id: "response", fields: { attribute: "Response time", meaning: "How fast a pixel changes color, in milliseconds" }, detail: "Lower response time means less motion blur.", hook: "Lower ms = less blur." },
+    { id: "s-nosignal", fields: { symptom: "Projector shows \"No signal\"", cause: "Wrong input source selected" }, detail: "Pick the input the laptop is actually connected to.", hook: "No signal = wrong input." },
+    { id: "s-projoff", fields: { symptom: "Projector shuts off after a few minutes", cause: "Overheating: clean the filter and fans" }, detail: "Projectors shut down to protect the lamp.", hook: "Shuts off = heat." },
+    { id: "s-projdim", fields: { symptom: "Projector image dim and discolored", cause: "Lamp near end of life" }, detail: "Lamps dim with age; check the lamp hours.", hook: "Dim projector = old bulb." },
+    { id: "s-fuzzy", fields: { symptom: "Fuzzy or blurry image on an LCD", cause: "Not set to native resolution" }, detail: "Non-native resolutions are scaled and look soft.", hook: "Fuzzy = wrong resolution." },
+    { id: "s-burn", fields: { symptom: "Faint image stays on an OLED screen", cause: "Burn-in" }, detail: "Static elements shown for a long time leave a permanent ghost.", hook: "Stuck ghost = burn-in." },
+    { id: "s-pixel", fields: { symptom: "One pixel always black or always lit", cause: "Dead or stuck pixel" }, detail: "A pixel that never changes is dead or stuck.", hook: "One bad dot = pixel." },
+    { id: "s-flicker", fields: { symptom: "Screen flickers or flashes", cause: "Loose video cable or wrong refresh rate" }, detail: "Reseat the cable, then check the refresh rate setting.", hook: "Flicker = cable or Hz." },
+    { id: "s-tint", fields: { symptom: "Whole picture tinted one color", cause: "Loose or damaged video cable" }, detail: "A missing color channel often means a bad cable or bent pin.", hook: "Color cast = cable." },
+    { id: "s-audio", fields: { symptom: "No sound through an HDMI monitor", cause: "Wrong audio output device selected" }, detail: "Pick the HDMI device as the default audio output.", hook: "HDMI silent = output device." },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, troubleshooting, mobile, virtualization];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

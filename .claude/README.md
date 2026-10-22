@@ -9,7 +9,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 1. `objective-gap-auditor` (agent) picks what to add.
 2. `chapter-ingest` (skill) turns the source into notes, cards, questions and mappings, using `question-writer` and `notes-clarity-editor`.
 3. `answer-key-verifier` and `learner-simulator` (agents) check the keys and the teaching.
-4. `pbq-designer` or a visual skill adds practice, and `ux-a11y-reviewer` and `visual-fact-auditor` (agents) check it.
+4. `exam-drill-builder` (with the `drill-target-auditor` agent) adds memory drills for the recall-heavy objectives; `pbq-designer` or a visual skill adds scenario practice, and `ux-a11y-reviewer` and `visual-fact-auditor` (agents) check it.
 
 ## Skills
 
@@ -18,6 +18,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 | [chapter-ingest](skills/chapter-ingest/SKILL.md) | The author shares a new chapter to add |
 | [question-writer](skills/question-writer/SKILL.md) | An objective has few or no questions |
 | [question-quality-fixer](skills/question-quality-fixer/SKILL.md) | The checker reports balance, choice-count or explanation warnings |
+| [exam-drill-builder](skills/exam-drill-builder/SKILL.md) | Picking the facts most worth memorizing for an exam and building a memory drill, or planning a last-minute review |
 | [pbq-designer](skills/pbq-designer/SKILL.md) | A scenario objective needs a match, order or pick-the-command exercise |
 | [notes-clarity-editor](skills/notes-clarity-editor/SKILL.md) | Notes are long or vague, or don't teach what the quiz tests |
 | [content-fact-check](skills/content-fact-check/SKILL.md) | A chapter needs a correctness review |
@@ -36,6 +37,7 @@ Agents run in their own context and report back. All are report-only; the caller
 
 | Agent | Use it when |
 | --- | --- |
+| [drill-target-auditor](agents/drill-target-auditor.md) | Ranking which recall-heavy objectives need a drill, or building a time-boxed review plan |
 | [objective-gap-auditor](agents/objective-gap-auditor.md) | Deciding which objective to cover next |
 | [answer-key-verifier](agents/answer-key-verifier.md) | New questions were written or a key is disputed |
 | [learner-simulator](agents/learner-simulator.md) | A topic was added or rewritten |
