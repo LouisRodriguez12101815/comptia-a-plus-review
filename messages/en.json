@@ -835,10 +835,10 @@
     "outageBody": "Cooperative troubleshooting with Guided Demo and existing Twilio rooms. Investigate evidence, diagnose the incident, repair and verify.",
     "outageMeta": "A+ / Network+ · Troubleshooting · Applied",
     "openOutage": "Open Outage Ops",
-    "portTitle": "Port Drill",
-    "portMeta": "A+ Core 1 220-1201 · Objective 2.1 · Ports and protocols · Rapid-fire · Solo",
-    "portBody": "Match all 15 Core 1 ports and protocols three ways. Misses come back until you get them right.",
-    "playPort": "Play Port Drill"
+    "drillsTitle": "Memory drills",
+    "drillsBody": "Rapid-fire multiple choice for the facts Core 1 expects you to know cold. One-line reason after every answer; misses come back until you get them.",
+    "drillMeta": "A+ Core 1 220-1201 · Objective {objective} · Rapid-fire",
+    "playDrill": "Play {title}"
   },
   "challengePlayer": {
     "backToPractice": "← Practice Games",
@@ -1177,34 +1177,203 @@
     "parentLabel": "Explicit parent prefix for equal-size /{bits} children",
     "parentAria": "Explicit parent prefix"
   },
-  "portDrillPage": {
-    "title": "Port Drill | CompTIA Review",
-    "description": "Rapid-fire practice for the A+ Core 1 ports and protocols."
-  },
-  "portDrill": {
+  "factDrill": {
     "back": "Back to Practice Games",
-    "meta": "A+ Core 1 220-1201 · Objective 2.1 · Ports and protocols",
-    "title": "Port Drill",
-    "intro": "Pick the answer, read the one-line reason, keep going. Anything you miss comes back three questions later until you get it.",
+    "meta": "A+ Core 1 220-1201 · Objective {objective} · {topic}",
+    "missesReturn": "Anything you miss comes back three questions later until you get it.",
     "modeLabel": "Drill mode",
-    "modePortToProtocol": "Port → Protocol",
-    "modeProtocolToPort": "Protocol → Port",
-    "modePurpose": "Purpose → Protocol",
     "score": "Correct {correct}/{attempts} · Left {left} · Streak {streak} · Best {best}",
-    "askProtocolForPort": "Which protocol uses this port?",
-    "askPortForProtocol": "Which port does this protocol use?",
-    "askProtocolForPurpose": "Which protocol does this?",
     "right": "Correct.",
-    "wrong": "Not quite. {answer}.",
+    "wrong": "Not quite. The answer is {answer}.",
     "next": "Next",
     "doneTitle": "Round complete",
-    "doneBody": "{correct} first-try and retry answers correct out of {attempts} attempts across {total} ports.",
+    "doneBody": "{correct} correct out of {attempts} attempts across {total} items.",
     "retryMissed": "Drill the {count} I missed",
     "playAgain": "Play all again",
-    "tableToggle": "Show the full port table",
-    "colPort": "Port",
-    "colProtocol": "Protocol",
-    "colTransport": "TCP/UDP",
-    "colPurpose": "Purpose"
+    "tableToggle": "Show the full reference table",
+    "otherDrills": "Other memory drills",
+    "start": "Start drill",
+    "ready": "{count} questions in {mode} mode. Pick a mode above or start now."
+  },
+  "drillDecks": {
+    "ports": {
+      "title": "Port Drill",
+      "topic": "Ports and protocols",
+      "intro": "Pick the protocol or port, read the one-line reason, keep going.",
+      "cardBody": "All 15 Core 1 ports, three ways: port, protocol and purpose.",
+      "modes": {
+        "portToProtocol": {
+          "label": "Port → Protocol",
+          "ask": "Which protocol uses this port?"
+        },
+        "protocolToPort": {
+          "label": "Protocol → Port",
+          "ask": "Which port does this protocol use?"
+        },
+        "purposeToProtocol": {
+          "label": "Purpose → Protocol",
+          "ask": "Which protocol does this?"
+        }
+      },
+      "fields": {
+        "port": "Port",
+        "protocol": "Protocol",
+        "transport": "TCP/UDP",
+        "purpose": "Purpose"
+      }
+    },
+    "wifi": {
+      "title": "Wi-Fi Drill",
+      "topic": "Wireless standards",
+      "intro": "802.11 standards, bands, speeds and the wireless facts the exam likes to ask.",
+      "cardBody": "802.11a through Wi-Fi 6E, bands, speeds, channels 1/6/11, Bluetooth, NFC and RFID.",
+      "modes": {
+        "standardToBand": {
+          "label": "Standard → Band",
+          "ask": "Which frequency band does this standard use?"
+        },
+        "standardToSpeed": {
+          "label": "Standard → Max speed",
+          "ask": "What is this standard's maximum speed?"
+        },
+        "genToStandard": {
+          "label": "Wi-Fi name → Standard",
+          "ask": "Which 802.11 standard is this?"
+        },
+        "facts": {
+          "label": "Wireless facts",
+          "ask": "Which answer fits?"
+        }
+      },
+      "fields": {
+        "standard": "Standard",
+        "generation": "Wi-Fi name",
+        "band": "Band",
+        "speed": "Max speed",
+        "question": "Fact",
+        "answer": "Answer"
+      },
+      "tables": {
+        "standards": "802.11 standards",
+        "facts": "Wireless facts"
+      }
+    },
+    "private-ip": {
+      "title": "Private IP Drill",
+      "topic": "IP addressing",
+      "intro": "Spot private, public, APIPA and loopback addresses, including the 172.16–31 trap.",
+      "cardBody": "Private ranges, CIDR blocks, APIPA and loopback, plus classify-the-address practice.",
+      "modes": {
+        "classify": {
+          "label": "Classify the address",
+          "ask": "What kind of address is this?"
+        },
+        "rangeToCidr": {
+          "label": "Range → CIDR",
+          "ask": "What is this range in CIDR notation?"
+        },
+        "cidrToUse": {
+          "label": "CIDR → Use",
+          "ask": "What is this block used for?"
+        }
+      },
+      "fields": {
+        "range": "Range",
+        "cidr": "CIDR",
+        "use": "Use",
+        "address": "Address",
+        "kind": "Kind"
+      }
+    },
+    "appliances": {
+      "title": "Appliance Drill",
+      "topic": "Network appliances and services",
+      "intro": "Match each appliance or server to its job, and know where servers belong.",
+      "cardBody": "UTM vs. firewall vs. proxy, IDS vs. IPS, AAA, load balancers, and DMZ vs. internal placement.",
+      "modes": {
+        "jobToName": {
+          "label": "Job → Device",
+          "ask": "Which device or service does this?"
+        },
+        "nameToJob": {
+          "label": "Device → Job",
+          "ask": "What does this device or service do?"
+        },
+        "placement": {
+          "label": "Where does it go?",
+          "ask": "Where should this server be placed?"
+        }
+      },
+      "fields": {
+        "name": "Device or service",
+        "job": "Job",
+        "server": "Server",
+        "zone": "Placement"
+      },
+      "tables": {
+        "devices": "Devices and services",
+        "placement": "Server placement"
+      }
+    },
+    "dhcp": {
+      "title": "DHCP Drill",
+      "topic": "DHCP",
+      "intro": "Scope vs. range, exclusions vs. reservations, leases, relays, APIPA and DORA.",
+      "cardBody": "Scope, exclusion, reservation, lease, relay, APIPA, ports 67/68 and the DORA order.",
+      "modes": {
+        "termToMeaning": {
+          "label": "Term → Meaning",
+          "ask": "What does this DHCP term mean?"
+        },
+        "meaningToTerm": {
+          "label": "Meaning → Term",
+          "ask": "Which DHCP term is this?"
+        },
+        "dora": {
+          "label": "DORA order",
+          "ask": "Which DHCP message is this step?"
+        }
+      },
+      "fields": {
+        "term": "Term",
+        "meaning": "Meaning",
+        "step": "Step",
+        "message": "Message"
+      },
+      "tables": {
+        "terms": "DHCP terms",
+        "dora": "DORA"
+      }
+    },
+    "dns": {
+      "title": "DNS Drill",
+      "topic": "DNS",
+      "intro": "DNS record types, email anti-spoofing records, zone vs. hosts file, and DNS symptoms.",
+      "cardBody": "A, AAAA, CNAME, MX, TXT, SPF, DKIM, DMARC, port 53, zone vs. hosts file.",
+      "modes": {
+        "recordToPurpose": {
+          "label": "Record → Purpose",
+          "ask": "What is this record for?"
+        },
+        "purposeToRecord": {
+          "label": "Purpose → Record",
+          "ask": "Which record does this?"
+        },
+        "facts": {
+          "label": "DNS facts",
+          "ask": "Which answer fits?"
+        }
+      },
+      "fields": {
+        "record": "Record",
+        "purpose": "Purpose",
+        "question": "Fact",
+        "answer": "Answer"
+      },
+      "tables": {
+        "records": "Record types",
+        "facts": "DNS facts"
+      }
+    }
   }
 }
