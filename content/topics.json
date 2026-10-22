@@ -185,6 +185,121 @@
             "text": "A clicking or grinding HDD may be about to fail. Back up its data before anything else."
           }
         ]
+      },
+      {
+        "id": "troubleshoot-power-boot",
+        "title": "Troubleshooting motherboards, RAM, CPUs and power (objective 5.1)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "What the exam asks: given a symptom at power-on or during use, pick the most likely failing part or the safest first step (objective 5.1)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Likely cause",
+              "First step"
+            ],
+            "rows": [
+              [
+                "No power at all: no fans, no lights",
+                "Outlet, power cord or power supply",
+                "Test the outlet, then check the PSU outputs with a multimeter"
+              ],
+              [
+                "Fans spin, but no POST and no display",
+                "PSU voltage problem, or a failed motherboard, CPU, RAM or video card",
+                "Test every PSU output with a multimeter, then reseat RAM and cards"
+              ],
+              [
+                "POST beep codes",
+                "A core part failed: CPU, RAM, video or BIOS",
+                "Count the beeps and look them up for that motherboard maker"
+              ],
+              [
+                "Beeps, then a blank screen",
+                "Video, memory or CPU fault, or a BIOS video setting",
+                "Check the BIOS video settings, then test the suspect part"
+              ],
+              [
+                "Wrong date and time at every startup",
+                "Dead CMOS battery",
+                "Replace the coin-cell battery and set the clock"
+              ],
+              [
+                "Boots from a USB drive instead of the SSD",
+                "Boot order lists USB first",
+                "Move the internal drive to the top of the UEFI boot order"
+              ],
+              [
+                "Blue screen (stop error)",
+                "Bad driver, hardware or application",
+                "Note the stop code; roll back the driver, try Safe Mode or System Restore, reseat RAM and cards, run diagnostics"
+              ],
+              [
+                "Screen goes black only after Windows loads",
+                "Video driver or display setting",
+                "Start in Safe Mode (low-resolution video) and update or roll back the video driver"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Likely cause",
+              "First step"
+            ],
+            "rows": [
+              [
+                "Random shutdowns with no error message",
+                "Overheating triggers the protective shutdown",
+                "Clean dust, check fans and airflow, reseat the heatsink with fresh thermal paste"
+              ],
+              [
+                "Hot case or overheating warnings",
+                "Dust, a failed fan, or a loose or dry heatsink",
+                "Clean, check fans, reapply thermal paste, watch temperatures in a sensor tool"
+              ],
+              [
+                "Burning smell or smoke",
+                "A failed component",
+                "Remove power immediately, then find and replace the damaged part"
+              ],
+              [
+                "Bulging, leaking or popped capacitors",
+                "Failing motherboard (or power supply)",
+                "Replace the board or PSU; reseating parts will not fix it"
+              ],
+              [
+                "Grinding or scraping noise",
+                "Failing hard drive",
+                "Back up now and replace the drive"
+              ],
+              [
+                "Rattling inside the case",
+                "A loose part, often the heatsink",
+                "Secure or reinstall it"
+              ],
+              [
+                "Clicking or ticking from a fan",
+                "Fan blade hitting debris or a cable",
+                "Clean the fan and route cables away from it"
+              ],
+              [
+                "Sluggish performance",
+                "Heavy processes, low disk space, power-saving mode, malware or missing updates",
+                "Check Task Manager, free disk space, change the power plan, scan for malware, update"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Spinning fans do not prove the power supply is good. A PSU can turn fans and still deliver wrong voltages, so test each output with a multimeter before replacing the motherboard."
+          }
+        ]
       }
     ],
     "concept": "hardware"
@@ -368,6 +483,121 @@
             "type": "callout",
             "kind": "tip",
             "text": "Try the cheapest, least destructive fix first. Reinstalling the OS or replacing the drive comes after freeing space."
+          }
+        ]
+      },
+      {
+        "id": "drive-raid-troubleshooting",
+        "title": "Drive and RAID troubleshooting (objective 5.2)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "What the exam asks: given a drive or RAID symptom, pick the cause or the safest next step. When data is at risk, back it up first (objective 5.2)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Likely cause",
+              "First step"
+            ],
+            "rows": [
+              [
+                "Grinding or clicking (the \"click of death\")",
+                "Failing HDD platters or heads",
+                "Stop using it, back up what you can, replace it"
+              ],
+              [
+                "Read/write errors or very slow reads and writes",
+                "The drive keeps retrying bad sectors",
+                "Back up, then run the drive maker's diagnostics"
+              ],
+              [
+                "S.M.A.R.T. warning",
+                "The drive predicts its own failure",
+                "Back up and replace it before it fails"
+              ],
+              [
+                "SSD reads but will not write",
+                "SSD at end of life, now read-only",
+                "Copy the data off and replace it"
+              ],
+              [
+                "\"Bootable device not found\" or no drive detected",
+                "Loose data or power cable, or a dead drive",
+                "Reseat or swap the cables, then check detection in UEFI"
+              ],
+              [
+                "\"Operating system not found\" with the drive listed in UEFI",
+                "Wrong boot order or no OS on that drive",
+                "Check the boot order and remove any USB media"
+              ],
+              [
+                "New drive shows in UEFI but not in File Explorer",
+                "Not initialized or partitioned",
+                "Initialize, partition and format it in Disk Management"
+              ],
+              [
+                "Drives drop out after new parts were added",
+                "Not enough power supply wattage",
+                "Add up the load and compare it with the PSU rating"
+              ],
+              [
+                "Mapped network drive missing after sign-in",
+                "The mapping was not restored",
+                "Remap it with Reconnect at sign-in selected"
+              ],
+              [
+                "HDD much slower than an SSD for many small files",
+                "Low IOPS: roughly 200 for a spinning drive",
+                "Upgrade to an SSD, which handles far more I/O operations per second"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Array",
+              "One drive fails",
+              "What to do"
+            ],
+            "rows": [
+              [
+                "RAID 0",
+                "The whole array is lost",
+                "Replace the drive and restore from backup"
+              ],
+              [
+                "RAID 1",
+                "Keeps running on the mirror",
+                "Replace the failed drive; the mirror rebuilds"
+              ],
+              [
+                "RAID 5",
+                "Survives one failure",
+                "Replace the drive and rebuild; a second failure before the rebuild finishes loses the array"
+              ],
+              [
+                "RAID 6",
+                "Survives two failures",
+                "Replace the failed drives and rebuild"
+              ],
+              [
+                "RAID 10",
+                "Survives one failure per mirrored pair",
+                "Replace the drive and rebuild that pair"
+              ],
+              [
+                "Controller reports an inactive volume or missing array",
+                "Controller, cable or power fault",
+                "Open the RAID controller utility; check cables and power"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Replace the drive the controller reports as failed, and confirm it by bay or serial number. Pulling a healthy drive from a degraded array can destroy it. RAID is not a backup."
           }
         ]
       }
@@ -845,6 +1075,39 @@
               "Leases expire; clients renew. Rogue DHCP is a security issue; DHCP snooping / authorized servers help.",
               "3-2-1 backup is a backup rule, not a DHCP setting."
             ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "DHCP term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Scope",
+                "All settings for one subnet: the address range, exclusions, reservations, lease time and options"
+              ],
+              [
+                "Range (pool)",
+                "The addresses the server can hand out"
+              ],
+              [
+                "Exclusion",
+                "Addresses inside the range that are never handed out, such as static printers and servers"
+              ],
+              [
+                "Reservation",
+                "Always gives the same IP address to one device's MAC address"
+              ],
+              [
+                "Lease",
+                "How long a client keeps its address; clients try to renew partway through"
+              ],
+              [
+                "Scope options",
+                "Settings sent with the address: default gateway, DNS servers and domain name"
+              ]
+            ]
           }
         ]
       },
@@ -910,6 +1173,62 @@
             "type": "callout",
             "kind": "tip",
             "text": "Block websites: proxy. One box with IDS/IPS: UTM. Matching timestamps: NTP."
+          }
+        ]
+      },
+      {
+        "id": "vlan-vpn",
+        "title": "VLANs and VPNs (objective 2.4)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "What the exam asks: tell a VLAN (one switch split into separate networks) from a VPN (an encrypted tunnel across another network), and pick the VPN type for a scenario (objective 2.4)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "VLAN",
+                "Splits one physical switch into separate broadcast domains; devices in different VLANs cannot talk directly"
+              ],
+              [
+                "Traffic between VLANs",
+                "Needs a router or a layer 3 switch"
+              ],
+              [
+                "VPN",
+                "Encrypts traffic across an untrusted network such as the internet"
+              ],
+              [
+                "VPN concentrator",
+                "Device or software that encrypts and decrypts VPN traffic, often built into a firewall"
+              ],
+              [
+                "Client-to-site (remote access) VPN",
+                "One user's device connects to the company network, for example from home"
+              ],
+              [
+                "Site-to-site VPN",
+                "Two offices' firewalls link their networks over the internet; users need no VPN software"
+              ],
+              [
+                "Always-on VPN",
+                "Connects automatically when the device starts and the user signs in"
+              ],
+              [
+                "VPN client",
+                "Built into the operating system or installed as third-party software"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A VLAN separates; a VPN encrypts. A VLAN adds no encryption, a VPN does not split a switch, and two VLANs still need a router to reach each other."
           }
         ]
       }
@@ -1550,6 +1869,91 @@
             "type": "callout",
             "kind": "tip",
             "text": "Toner belongs to laser printers, ribbons to impact printers, heating elements to thermal printers. Match the consumable to the type first."
+          }
+        ]
+      },
+      {
+        "id": "maintenance-steps",
+        "title": "Printer maintenance steps (objective 3.8)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "What the exam asks: given a printer type and a maintenance need, pick the right task and do it safely (objective 3.8)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Printer",
+              "Task",
+              "Key detail"
+            ],
+            "rows": [
+              [
+                "Laser",
+                "Maintenance kit",
+                "Replaces wear parts such as the fuser and rollers at the maker's page count. Reset the page counter afterward"
+              ],
+              [
+                "Laser",
+                "Before working inside",
+                "Power off and let the fuser cool; it runs very hot"
+              ],
+              [
+                "Laser",
+                "Replace toner",
+                "Remove the packing strips. Keep the cartridge or drum in its light-blocking bag until installing it"
+              ],
+              [
+                "Laser",
+                "Calibrate",
+                "After a new cartridge, print a test page and adjust density if output is too light or dark"
+              ],
+              [
+                "Laser",
+                "Clean",
+                "Damp cloth outside; water or isopropyl alcohol on rollers; a toner-rated vacuum inside"
+              ],
+              [
+                "Inkjet",
+                "Clean printheads",
+                "Automatic or manual cleaning cycle. Color streaks mean ink buildup on the heads"
+              ],
+              [
+                "Inkjet",
+                "Calibrate (align)",
+                "Runs after a new cartridge; print the alignment page and adjust"
+              ],
+              [
+                "Inkjet",
+                "Clear jams",
+                "Open the paper path and remove every scrap before printing again"
+              ],
+              [
+                "Thermal",
+                "Replace paper",
+                "Use the thermal paper made for that model; printouts fade with heat and time"
+              ],
+              [
+                "Thermal",
+                "Clean the heating element",
+                "Isopropyl alcohol pen or a cleaning card; an anti-static vacuum for debris"
+              ],
+              [
+                "Impact",
+                "Replace the ribbon",
+                "Faded print means a worn ribbon; the cartridge snaps out and in"
+              ],
+              [
+                "Impact",
+                "Replace the printhead, load paper",
+                "Replace it when pins fail and dots go missing. Let the head cool, replace the ribbon at the same time, and line up the tractor-feed holes"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Never clean toner with compressed air or a household vacuum: it spreads the toner. Use a toner-rated vacuum, and cold water if toner gets on skin, because heat melts toner."
           }
         ]
       }
@@ -3520,6 +3924,91 @@
           {
             "type": "paragraph",
             "text": "This chapter teaches the listed 220-1201 wireless technology scope, the IP-addressing subtopics in objective 2.6, and the listed internet/network types in 2.7. The configuration lab is simulated on paper. It does not authorize edits to a live router, ISP account, enterprise network, or service configuration. Network symptom practice adds to objective 5.5 but does not by itself cover every 5.5 issue."
+          }
+        ]
+      },
+      {
+        "id": "network-symptoms",
+        "title": "Network symptoms and first checks (objective 5.5)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "What the exam asks: given a wired or wireless network symptom, pick the likely cause and the first check or tool (objective 5.5)."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Likely cause",
+              "First check"
+            ],
+            "rows": [
+              [
+                "No link light",
+                "Unplugged or bad cable, bad jack or switch port, or a disabled NIC",
+                "Reseat or swap the cable; try another port"
+              ],
+              [
+                "Port flapping: the link goes up and down repeatedly",
+                "Faulty cable, connector or switch port",
+                "Replace the cable; move to a known-good port"
+              ],
+              [
+                "Intermittent wireless drops",
+                "Interference (microwaves and cordless phones share the 2.4 GHz band), distance or a low signal-to-noise ratio",
+                "Run a Wi-Fi analyzer; change the channel, move 2.4 GHz clients to 5 GHz, or move closer to the AP"
+              ],
+              [
+                "Limited connectivity with a 169.254.x.x address",
+                "No DHCP response (APIPA)",
+                "Check the DHCP server and cabling, then ipconfig /release and /renew"
+              ],
+              [
+                "Local resources work, the internet does not (even by IP)",
+                "Wrong or missing default gateway, or an ISP outage",
+                "ipconfig /all to check the gateway, then ping it"
+              ],
+              [
+                "Sites fail by name but work by IP address",
+                "DNS problem",
+                "nslookup; check the DNS server settings"
+              ],
+              [
+                "Slow network for everyone",
+                "Congestion or a saturated link",
+                "Look for heavy traffic; apply QoS or move large transfers"
+              ],
+              [
+                "Slow network on one PC only",
+                "Bad cable, duplex mismatch or an old NIC driver",
+                "Check the cable and the NIC speed and duplex settings"
+              ],
+              [
+                "High latency",
+                "Congestion or a long path",
+                "ping and tracert to find where the delay starts"
+              ],
+              [
+                "High jitter: choppy or robotic VoIP calls",
+                "Delay that varies under load",
+                "Prioritize voice with QoS; reduce competing traffic"
+              ],
+              [
+                "Access denied to Wi-Fi or a share",
+                "Authentication failure: wrong password, locked account or wrong security type",
+                "Verify the credentials and account, then permissions"
+              ],
+              [
+                "Problem only at certain times of day",
+                "Load or interference that comes and goes",
+                "Log when it happens and compare with usage or nearby devices"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Work up from the bottom: link light, then IP address, then default gateway, then DNS. Each check rules out one layer before you change anything else."
           }
         ]
       }

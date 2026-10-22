@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drive or RAID: pick the next step</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:row}
+li{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);display:grid;gap:8px;min-width:0;counter-increment:row}
+li.good{border-color:var(--good);background:var(--good-soft)}
+li.bad{border-color:var(--bad);background:var(--bad-soft)}
+.sym{font-weight:600}
+.sym::before{content:counter(row) ". ";color:var(--muted)}
+.sym{overflow-wrap:anywhere}
+.type{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-left:6px}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;width:100%;max-width:100%}
+.why{font-size:14px;margin:0}
+.why[hidden]{display:none}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:8px 16px;min-height:44px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Drive or RAID: pick the next step</h1>
+<p class="lede">A performance-based drill for 220-1201 objective 5.2. Pick the safest next step for each drive or RAID symptom. A step can be used more than once.</p>
+<section class="card" aria-labelledby="h-drill">
+<h2 id="h-drill" class="sr">Exercise</h2>
+<ol id="rows"></ol>
+<div class="ctrls">
+<button type="button" class="primary" id="check">Check answers</button>
+<button type="button" id="retry">Try again</button>
+<button type="button" id="show">Show answers</button>
+</div>
+<p class="out" id="out" role="status" aria-live="polite">Choose a next step for each symptom.</p>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{
+  "kind": "exercise",
+  "facts": [
+    {
+      "claim": "Clicking with read errors or a S.M.A.R.T. warning means back up and replace the drive.",
+      "objectives": [
+        "220-1201 5.2"
+      ],
+      "sources": [
+        "notes core1-ch2: Drive and RAID troubleshooting (objective 5.2)"
+      ]
+    },
+    {
+      "claim": "\"Operating system not found\" with the drive listed in UEFI points to the boot order.",
+      "objectives": [
+        "220-1201 5.2"
+      ],
+      "sources": [
+        "notes core1-ch2: Drive and RAID troubleshooting (objective 5.2)"
+      ]
+    },
+    {
+      "claim": "A drive visible in UEFI but not in File Explorer needs initializing in Disk Management.",
+      "objectives": [
+        "220-1201 5.2"
+      ],
+      "sources": [
+        "notes core1-ch2: Drive and RAID troubleshooting (objective 5.2)"
+      ]
+    },
+    {
+      "claim": "RAID 1 survives one failed drive and rebuilds onto a replacement.",
+      "objectives": [
+        "220-1201 5.2"
+      ],
+      "sources": [
+        "notes core1-ch2: Drive and RAID troubleshooting (objective 5.2)"
+      ]
+    },
+    {
+      "claim": "RAID 0 has no redundancy; one failed drive loses the array, so restore from backup.",
+      "objectives": [
+        "220-1201 5.2"
+      ],
+      "sources": [
+        "notes core1-ch2: Drive and RAID troubleshooting (objective 5.2)"
+      ]
+    },
+    {
+      "claim": "Too little power supply wattage can make drives drop out after new parts are added.",
+      "objectives": [
+        "220-1201 5.2"
+      ],
+      "sources": [
+        "notes core1-ch2: Drive and RAID troubleshooting (objective 5.2)"
+      ]
+    }
+  ]
+}
+</script>
+<script>
+(function(){
+  var MODELS = ["Back up, then replace the drive", "Check the boot order", "Initialize it in Disk Management", "Reseat or swap the cables", "Replace the failed drive and rebuild", "Replace the drive and restore from backup", "Check the power supply wattage"];
+  var WHY = {
+    "Back up, then replace the drive": "A drive that is failing or predicting failure needs its data copied off before it dies.",
+    "Check the boot order": "Boot order matters when the firmware sees the drive but starts the wrong device.",
+    "Initialize it in Disk Management": "A blank drive needs initializing and partitioning before Windows shows it.",
+    "Reseat or swap the cables": "A drive the firmware cannot see at all usually has a loose data or power cable.",
+    "Replace the failed drive and rebuild": "Fault-tolerant arrays keep running after one failure and rebuild onto a new drive.",
+    "Replace the drive and restore from backup": "RAID 0 has no redundancy, so its data must come back from backup.",
+    "Check the power supply wattage": "Too little power can make drives drop out after new parts are added."
+};
+  var ITEMS = [
+    {
+        "s": "A hard drive clicks repeatedly and file copies fail with read errors.",
+        "a": "Back up, then replace the drive",
+        "w": "Clicking with read errors is a failing HDD. Get the data off before anything else."
+    },
+    {
+        "s": "Monitoring software shows a S.M.A.R.T. warning, but the laptop still works.",
+        "a": "Back up, then replace the drive",
+        "w": "S.M.A.R.T. predicts failure. Replace the drive while it still works."
+    },
+    {
+        "s": "\"Operating system not found,\" yet the system drive is listed in UEFI.",
+        "a": "Check the boot order",
+        "w": "The firmware sees the drive, so check the boot order and remove USB media."
+    },
+    {
+        "s": "A new SSD shows in UEFI but not in File Explorer.",
+        "a": "Initialize it in Disk Management",
+        "w": "The hardware is detected. A blank disk needs a partition and file system."
+    },
+    {
+        "s": "After the case was cleaned, UEFI no longer detects the second drive.",
+        "a": "Reseat or swap the cables",
+        "w": "Firmware detection fails when a data or power cable is loose."
+    },
+    {
+        "s": "A RAID 1 mirror reports one failed member.",
+        "a": "Replace the failed drive and rebuild",
+        "w": "The mirror keeps running on the healthy drive and rebuilds onto the new one."
+    },
+    {
+        "s": "A drive in a two-disk RAID 0 array has died.",
+        "a": "Replace the drive and restore from backup",
+        "w": "RAID 0 stripes with no redundancy, so one failure loses the whole array."
+    },
+    {
+        "s": "Drives drop out under load after two graphics cards were added.",
+        "a": "Check the power supply wattage",
+        "w": "Add up the new load and compare it with the PSU rating."
+    }
+];
+  var rows = document.getElementById("rows"), out = document.getElementById("out");
+  function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function build(){
+    var opts = shuffle(MODELS);
+    rows.innerHTML = "";
+    ITEMS.forEach(function(it, n){
+      var li = document.createElement("li"), id = "pick-" + n;
+      li.innerHTML = '<label class="sym" for="' + id + '"></label><select id="' + id + '"><option value="">Choose the next step</option></select><p class="why" hidden></p>';
+      li.querySelector("label").textContent = it.s;
+      var sel = li.querySelector("select");
+      opts.forEach(function(o){ var op = document.createElement("option"); op.value = o; op.textContent = o; sel.appendChild(op); });
+      rows.appendChild(li);
+    });
+  }
+  function mark(showAll){
+    var right = 0, blank = 0;
+    ITEMS.forEach(function(it, n){
+      var li = rows.children[n], sel = li.querySelector("select"), why = li.querySelector(".why");
+      if (showAll) sel.value = it.a;
+      if (!sel.value){ blank++; li.className = ""; why.hidden = true; return; }
+      var ok = sel.value === it.a; if (ok) right++;
+      li.className = ok ? "good" : "bad";
+      why.hidden = false;
+      why.textContent = ok ? "Correct. " + it.w : "Not this one. " + WHY[sel.value] + " The answer is " + it.a + ". " + it.w;
+    });
+    out.textContent = showAll ? "All answers shown. Use Try again to practise without them." :
+      right + " of " + ITEMS.length + " correct" + (blank ? ", " + blank + " left blank." : ".") + (right === ITEMS.length ? " Well done." : " Use Try again to clear only the wrong rows.");
+  }
+  document.getElementById("check").addEventListener("click", function(){ mark(false); });
+  document.getElementById("show").addEventListener("click", function(){ mark(true); });
+  document.getElementById("retry").addEventListener("click", function(){
+    var keep = ITEMS.map(function(it, n){ var v = rows.children[n].querySelector("select").value; return v === it.a ? v : ""; });
+    build();
+    keep.forEach(function(v, n){ rows.children[n].querySelector("select").value = v; if (v) rows.children[n].className = "good"; });
+    out.textContent = "Wrong rows cleared and options shuffled. Correct rows are kept.";
+  });
+  build();
+})();
+</script>
+</body>
+</html>
