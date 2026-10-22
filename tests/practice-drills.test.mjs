@@ -38,6 +38,19 @@ test('every deck, mode, field and table has text in all four languages', () => {
   }
 });
 
+test('every deck names a real exam and objective ids from content/objectives.json', () => {
+  const { exams } = JSON.parse(readFileSync(new URL('../content/objectives.json', import.meta.url), 'utf8'));
+  for (const deck of drillDecks) {
+    const exam = exams.find((e) => e.code === deck.exam);
+    assert.ok(exam, `${deck.id}: unknown exam ${deck.exam}`);
+    assert.ok(deck.certification, `${deck.id}: certification missing`);
+    const ids = new Set(exam.domains.flatMap((d) => d.objectives.map((o) => o.id)));
+    const named = deck.objective.match(/\d+\.\d+/g) ?? [];
+    assert.ok(named.length, `${deck.id}: no objective ids`);
+    for (const id of named) assert.ok(ids.has(id), `${deck.id}: objective ${id} is not in ${deck.exam}`);
+  }
+});
+
 test('A+ Core 1 facts that are easy to get backwards stay correct', () => {
   const find = (deck, id) => drillDecks.find((d) => d.id === deck).items.find((i) => i.id === id).fields;
   assert.equal(find('dns', 'aaaa').purpose, 'Maps a hostname to an IPv6 address');
@@ -46,4 +59,7 @@ test('A+ Core 1 facts that are easy to get backwards stay correct', () => {
   assert.equal(find('wifi', 'channels').answer, '1, 6 and 11');
   assert.equal(find('dhcp', 'ports').meaning, 'UDP 67 (server) and UDP 68 (client)');
   assert.equal(find('ports', 'rdp').port, '3389');
+  assert.equal(find('storage-raid', 'r5').description, 'Striping with parity: 3+ drives, survives 1 failure');
+  assert.equal(find('network-config', 'pat').term, 'PAT (NAT overload)');
+  assert.equal(find('motherboard-cpu', 'lga1700').cpu, 'Intel 12th–14th gen Core');
 });

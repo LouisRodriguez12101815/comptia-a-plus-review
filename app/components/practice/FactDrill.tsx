@@ -78,7 +78,7 @@ export function FactDrill({ deckId }: { deckId: string }) {
   return <div className="mx-auto max-w-3xl space-y-5">
     <Link href="/practice-games" className="text-cyan-200 underline">{t("back")}</Link>
     <header className="space-y-2">
-      <p className="text-sm text-cyan-100">{t("meta", { objective: deck.objective, topic: d(`${deck.id}.topic`) })}</p>
+      <p className="text-sm text-cyan-100">{t("meta", { certification: deck.certification, exam: deck.exam, objective: deck.objective, topic: d(`${deck.id}.topic`) })}</p>
       <h1 className="text-3xl font-bold">{d(`${deck.id}.title`)}</h1>
       <p className="text-slate-300">{d(`${deck.id}.intro`)} {t("missesReturn")}</p>
     </header>
