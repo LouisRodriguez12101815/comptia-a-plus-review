@@ -12,7 +12,8 @@ import {
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
-import { recordQuiz } from "@/lib/progress";
+import { recordMock, recordQuiz, type MockAttempt } from "@/lib/progress";
+import { evaluateReadiness } from "@/lib/readiness";
 import type { Question } from "@/lib/types";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
@@ -36,6 +37,15 @@ function answerText(question: Question, pick: number | number[] | undefined, noA
   return (Array.isArray(pick) ? pick : [pick]).map((i) => question.choices[i]).join(" · ");
 }
 
+function StatMini({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3">
+      <dt className="text-xs uppercase tracking-wide text-slate-400">{label}</dt>
+      <dd className="mt-1 font-mono text-lg text-white">{value}</dd>
+    </div>
+  );
+}
+
 export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const t = useTranslations("examTest");
   const [exam, setExam] = useState<ExamCode>(initialExam ?? "220-1201");
@@ -50,6 +60,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const [confirmEnd, setConfirmEnd] = useState(false);
   const [missedOnly, setMissedOnly] = useState(true);
   const [announce, setAnnounce] = useState("");
+  const [mockHistory, setMockHistory] = useState<MockAttempt[]>([]);
 
   const pool = useMemo(() => buildExamPool({ objectives: matrix, questions, topics, examCode: exam }), [exam]);
   const format = EXAM_FORMATS[exam];
@@ -86,11 +97,26 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
 
   const finish = useCallback((finalResponses: Record<string, TestResponse>, finalPicks: TestPick[]) => {
     const missed = finalPicks.filter((p) => !isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).map((p) => p.questionId);
+    const graded = gradeTest({ pool, picks: finalPicks, questionsById, responses: finalResponses });
+    const multiPicks = finalPicks.filter((p) => Array.isArray(questionsById[p.questionId].answer));
+    const multiCorrect = multiPicks.filter((p) => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).length;
     setScoredPicks(finalPicks);
     recordQuiz({ topicId: `exam-test:${exam}`, correct: finalPicks.length - missed.length, total: finalPicks.length, missedIds: missed });
+    const next = recordMock({
+      exam,
+      full: finalPicks.length === EXAM_FORMATS[exam].maxQuestions,
+      correct: graded.correct,
+      total: graded.total,
+      percent: graded.percent,
+      domains: graded.domains.map((d) => ({ id: d.id, title: d.title, correct: d.correct, total: d.total })),
+      multiCorrect,
+      multiTotal: multiPicks.length,
+      missedIds: missed,
+    });
+    setMockHistory(next.mockAttempts);
     setPhase("done");
     setConfirmEnd(false);
-  }, [exam]);
+  }, [exam, pool]);
 
   const lockIn = useCallback((timedOut: boolean) => {
     if (phase !== "running" || !current || lockedIndex.current === index) return;
@@ -319,6 +345,11 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const objectiveTitle = (domainId: string, objectiveId: string) =>
     pool.domains.find((d) => d.id === domainId)?.objectives.find((o) => o.id === objectiveId)?.title ?? "";
   const review = scored.filter((p) => !missedOnly || !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
+  const examMatrix = matrix.exams.find((item) => item.code === exam);
+  const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status === "missing").length ?? 0;
+  const awsReadiness = exam === "clf-c02" || exam === "saa-c03"
+    ? evaluateReadiness(mockHistory, exam, missingObjectives)
+    : null;
 
   return (
     <div className="space-y-6">
@@ -357,6 +388,53 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
           })}
         </ul>
       </section>
+
+      {awsReadiness && (
+        <section className={card} aria-labelledby="readiness-heading">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-teal-300">{t("readinessEyebrow")}</p>
+              <h2 id="readiness-heading" className="mt-1 text-lg font-semibold text-white">{t("readinessHeading")}</h2>
+            </div>
+            <span className={`rounded-full border px-3 py-1 text-sm font-medium ${
+              awsReadiness.status === "ready"
+                ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-200"
+                : awsReadiness.status === "near"
+                  ? "border-amber-400/50 bg-amber-400/10 text-amber-200"
+                  : "border-rose-400/50 bg-rose-400/10 text-rose-200"
+            }`}>
+              {t(`readinessStatus.${awsReadiness.status}`)}
+            </span>
+          </div>
+          <p className="mt-3 text-sm text-slate-300">{t("readinessHeuristic")}</p>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-4">
+            <StatMini label={t("readinessFullMocks")} value={`${awsReadiness.fullAttempts}/3`} />
+            <StatMini label={t("readinessScores")} value={awsReadiness.overallScores.length ? awsReadiness.overallScores.map((score) => `${score}%`).join(" · ") : "—"} />
+            <StatMini label={t("readinessDomainFloor")} value={awsReadiness.domainFloor === null ? "—" : `${awsReadiness.domainFloor}%`} />
+            <StatMini label={t("readinessMulti")} value={awsReadiness.multiPercent === null ? "—" : `${awsReadiness.multiPercent}%`} />
+          </dl>
+          {awsReadiness.weakDomains.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-white">{t("weakDomains")}</h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {awsReadiness.weakDomains.map((domain) => (
+                  <li key={domain.id} className="rounded-full border border-amber-400/30 bg-amber-400/5 px-3 py-1 text-sm text-amber-100">
+                    {domain.id} {domain.title} · {domain.percent}%
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {awsReadiness.blockers.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-white">{t("readinessBlockers")}</h3>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+                {awsReadiness.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
 
       <section className="space-y-4" aria-labelledby="review-heading">
         <div className="flex flex-wrap items-center justify-between gap-3">
