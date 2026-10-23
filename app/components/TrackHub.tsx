@@ -29,7 +29,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
     { label: tTrack("tools.flashcards.label"), href: "/flashcards" },
     { label: tTrack("tools.quiz.label"), href: "/quiz" },
     { label: t("testModeTitle"), href: `/test?exam=${track.focus}` },
-    { label: tHeader("final15"), href: `/final-15/${track.id}` },
+    { label: tHeader("final15"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` },
   ] : [];
 
   const sequence = track.focus ? [
@@ -77,7 +77,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           <span className="text-slate-100">{tTrack(`${track.id}.short`)}</span>
         </p>
         <div className="flex items-start gap-4">
-          <div className="track-accent-border track-accent-surface track-accent-text hidden shrink-0 rounded-2xl border p-3 sm:block">
+          <div className="track-hero-icon track-accent-border track-accent-surface track-accent-text hidden shrink-0 rounded-2xl border p-3 sm:block">
             <DeviceIcon name={track.icon} width={56} height={56} />
           </div>
           <div className="space-y-2">
