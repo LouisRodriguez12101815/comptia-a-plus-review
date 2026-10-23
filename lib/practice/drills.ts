@@ -5,6 +5,8 @@
 import { corePorts } from "@/lib/practice/ports";
 
 export type DrillItem = {
+  /** Explicit primary objective for cross-domain AWS decks. */
+  objective?: string;
   id: string;
   fields: Record<string, string>;
   /** Shown after every answer about this item. */
@@ -1425,80 +1427,512 @@ const c2ScriptsRemoteAi: DrillDeck = {
 
 
 const awsClfServiceCompare: DrillDeck = {
-  id: "aws-clf-service-compare",
-  certification: "AWS Cloud Practitioner",
-  exam: "clf-c02",
-  objective: "2.1–4.3",
-  topic: "AWS service positioning",
-  modes: [{ id: "scenarioToAnswer", from: "scenario", to: "answer" }],
-  tables: [{ id: "scenarios", fields: ["scenario", "answer"] }],
-  items: [
-    { id: "metrics", fields: { scenario: "Metrics, logs, alarms, and dashboards", answer: "Amazon CloudWatch" }, detail: "CloudWatch is the monitoring and observability choice.", hook: "Watch = metrics and alarms." },
-    { id: "audit", fields: { scenario: "Record AWS account and API activity", answer: "AWS CloudTrail" }, detail: "CloudTrail records API activity for auditing.", hook: "Trail = who did what." },
-    { id: "config", fields: { scenario: "Track configuration history and evaluate configuration rules", answer: "AWS Config" }, detail: "Config records resource configuration state and compliance.", hook: "Config = configuration history." },
-    { id: "queue", fields: { scenario: "Durable asynchronous queue between application components", answer: "Amazon SQS" }, detail: "SQS decouples producers and consumers with a queue.", hook: "Q = queue." },
-    { id: "fanout", fields: { scenario: "Publish one message to multiple subscribers", answer: "Amazon SNS" }, detail: "SNS is publish/subscribe fanout.", hook: "Notify many = SNS." },
-    { id: "object", fields: { scenario: "Object storage in buckets", answer: "Amazon S3" }, detail: "S3 is object storage.", hook: "S3 = objects in buckets." },
-    { id: "block", fields: { scenario: "Persistent block volume for EC2", answer: "Amazon EBS" }, detail: "EBS is persistent block storage.", hook: "B = block." },
-    { id: "dns", fields: { scenario: "Managed DNS and routing policies", answer: "Amazon Route 53" }, detail: "Route 53 provides DNS and routing policies.", hook: "Route names with Route 53." },
-    { id: "relational", fields: { scenario: "Managed relational database", answer: "Amazon RDS" }, detail: "RDS manages relational database engines.", hook: "RDS = relational." },
-    { id: "nosql", fields: { scenario: "Managed key-value/document database", answer: "Amazon DynamoDB" }, detail: "DynamoDB is managed NoSQL.", hook: "DynamoDB = NoSQL." }
+  "id": "aws-clf-service-compare",
+  "certification": "AWS Cloud Practitioner",
+  "exam": "clf-c02",
+  "objective": "2.1–4.3",
+  "topic": "AWS service positioning",
+  "modes": [
+    {
+      "id": "scenarioToAnswer",
+      "from": "scenario",
+      "to": "answer"
+    }
   ],
+  "tables": [
+    {
+      "id": "scenarios",
+      "fields": [
+        "scenario",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "metrics",
+      "fields": {
+        "scenario": "Metrics, logs, alarms, and dashboards",
+        "answer": "Amazon CloudWatch"
+      },
+      "detail": "CloudWatch is the monitoring and observability choice.",
+      "hook": "Watch = metrics and alarms.",
+      "objective": "2.4"
+    },
+    {
+      "id": "audit",
+      "fields": {
+        "scenario": "Record AWS account and API activity",
+        "answer": "AWS CloudTrail"
+      },
+      "detail": "CloudTrail records API activity for auditing.",
+      "hook": "Trail = who did what.",
+      "objective": "2.2"
+    },
+    {
+      "id": "config",
+      "fields": {
+        "scenario": "Track configuration history and evaluate configuration rules",
+        "answer": "AWS Config"
+      },
+      "detail": "Config records resource configuration state and compliance.",
+      "hook": "Config = configuration history.",
+      "objective": "2.2"
+    },
+    {
+      "id": "queue",
+      "fields": {
+        "scenario": "Durable asynchronous queue between application components",
+        "answer": "Amazon SQS"
+      },
+      "detail": "SQS decouples producers and consumers with a queue.",
+      "hook": "Q = queue.",
+      "objective": "3.8"
+    },
+    {
+      "id": "fanout",
+      "fields": {
+        "scenario": "Publish one message to multiple subscribers",
+        "answer": "Amazon SNS"
+      },
+      "detail": "SNS is publish/subscribe fanout.",
+      "hook": "Notify many = SNS.",
+      "objective": "3.8"
+    },
+    {
+      "id": "object",
+      "fields": {
+        "scenario": "Object storage in buckets",
+        "answer": "Amazon S3"
+      },
+      "detail": "S3 is object storage.",
+      "hook": "S3 = objects in buckets.",
+      "objective": "3.6"
+    },
+    {
+      "id": "block",
+      "fields": {
+        "scenario": "Persistent block volume for EC2",
+        "answer": "Amazon EBS"
+      },
+      "detail": "EBS is persistent block storage.",
+      "hook": "B = block.",
+      "objective": "3.6"
+    },
+    {
+      "id": "dns",
+      "fields": {
+        "scenario": "Managed DNS and routing policies",
+        "answer": "Amazon Route 53"
+      },
+      "detail": "Route 53 provides DNS and routing policies.",
+      "hook": "Route names with Route 53.",
+      "objective": "3.5"
+    },
+    {
+      "id": "relational",
+      "fields": {
+        "scenario": "Managed relational database",
+        "answer": "Amazon RDS"
+      },
+      "detail": "RDS manages relational database engines.",
+      "hook": "RDS = relational.",
+      "objective": "3.4"
+    },
+    {
+      "id": "nosql",
+      "fields": {
+        "scenario": "Managed key-value/document database",
+        "answer": "Amazon DynamoDB"
+      },
+      "detail": "DynamoDB is managed NoSQL.",
+      "hook": "DynamoDB = NoSQL.",
+      "objective": "3.4"
+    }
+  ]
 };
 
 const awsSaaServiceCompare: DrillDeck = {
-  id: "aws-saa-service-compare",
-  certification: "AWS Solutions Architect – Associate",
-  exam: "saa-c03",
-  objective: "1.1–4.4",
-  topic: "AWS architecture tradeoffs",
-  modes: [{ id: "scenarioToAnswer", from: "scenario", to: "answer" }],
-  tables: [{ id: "scenarios", fields: ["scenario", "answer"] }],
-  items: [
-    { id: "sg-nacl", fields: { scenario: "Stateful resource-level network filtering", answer: "Security group" }, detail: "Security groups are stateful.", hook: "Security group remembers return traffic." },
-    { id: "nacl", fields: { scenario: "Stateless subnet-level allow and deny rules", answer: "Network ACL" }, detail: "NACLs are stateless subnet controls.", hook: "NACL = subnet edge." },
-    { id: "multiaz", fields: { scenario: "Improve RDS availability across Availability Zones", answer: "RDS Multi-AZ" }, detail: "Multi-AZ is primarily for availability.", hook: "Multi-AZ = survive AZ failure." },
-    { id: "readreplica", fields: { scenario: "Scale reads on a relational database", answer: "RDS read replica" }, detail: "Read replicas add read capacity.", hook: "Replica = reads." },
-    { id: "nat", fields: { scenario: "Private subnet needs outbound internet without direct inbound exposure", answer: "NAT gateway" }, detail: "NAT gateway provides outbound internet access for private subnets.", hook: "Private out = NAT." },
-    { id: "directconnect", fields: { scenario: "Dedicated private connectivity from on-premises to AWS", answer: "AWS Direct Connect" }, detail: "Direct Connect is dedicated private connectivity.", hook: "Dedicated circuit = Direct Connect." },
-    { id: "cloudfront", fields: { scenario: "Cache and deliver content near global users", answer: "Amazon CloudFront" }, detail: "CloudFront is AWS CDN.", hook: "Front = content near users." },
-    { id: "lambda", fields: { scenario: "Event-driven compute without server management", answer: "AWS Lambda" }, detail: "Lambda runs serverless functions.", hook: "Event arrives, function runs." },
-    { id: "spot", fields: { scenario: "Lowest-cost compute for interruption-tolerant batch work", answer: "EC2 Spot Instances" }, detail: "Spot uses spare capacity and can be interrupted.", hook: "Cheap if interruption is okay." },
-    { id: "role", fields: { scenario: "Temporary AWS permissions for an application", answer: "IAM role" }, detail: "Roles provide temporary credentials.", hook: "Applications assume roles." }
+  "id": "aws-saa-service-compare",
+  "certification": "AWS Solutions Architect – Associate",
+  "exam": "saa-c03",
+  "objective": "1.1–4.4",
+  "topic": "AWS architecture tradeoffs",
+  "modes": [
+    {
+      "id": "scenarioToAnswer",
+      "from": "scenario",
+      "to": "answer"
+    }
   ],
+  "tables": [
+    {
+      "id": "scenarios",
+      "fields": [
+        "scenario",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "sg-nacl",
+      "fields": {
+        "scenario": "Stateful resource-level network filtering",
+        "answer": "Security group"
+      },
+      "detail": "Security groups are stateful.",
+      "hook": "Security group remembers return traffic.",
+      "objective": "1.2"
+    },
+    {
+      "id": "nacl",
+      "fields": {
+        "scenario": "Stateless subnet-level allow and deny rules",
+        "answer": "Network ACL"
+      },
+      "detail": "NACLs are stateless subnet controls.",
+      "hook": "NACL = subnet edge.",
+      "objective": "1.2"
+    },
+    {
+      "id": "multiaz",
+      "fields": {
+        "scenario": "Automatic failover for a single-standby RDS DB instance",
+        "answer": "RDS Multi-AZ"
+      },
+      "detail": "The single standby is not readable. A Multi-AZ DB cluster has readable standbys, so qualify the deployment type.",
+      "hook": "Multi-AZ = survive AZ failure.",
+      "objective": "2.2"
+    },
+    {
+      "id": "readreplica",
+      "fields": {
+        "scenario": "Scale reads on a relational database",
+        "answer": "RDS read replica"
+      },
+      "detail": "Read replicas add read capacity.",
+      "hook": "Replica = reads.",
+      "objective": "3.3"
+    },
+    {
+      "id": "nat",
+      "fields": {
+        "scenario": "Private IPv4 subnet needs internet egress through an IGW",
+        "answer": "Public NAT gateway with an EIP and IGW route"
+      },
+      "detail": "Private NAT cannot supply internet egress through an IGW. Native IPv6 outbound-only access uses an egress-only IGW. Zonal and regional NAT have different availability designs.",
+      "hook": "Private out = NAT.",
+      "objective": "3.4"
+    },
+    {
+      "id": "directconnect",
+      "fields": {
+        "scenario": "Dedicated private connectivity from on-premises to AWS",
+        "answer": "AWS Direct Connect"
+      },
+      "detail": "Direct Connect is dedicated private connectivity.",
+      "hook": "Dedicated circuit = Direct Connect.",
+      "objective": "3.4"
+    },
+    {
+      "id": "cloudfront",
+      "fields": {
+        "scenario": "Cache and deliver content near global users",
+        "answer": "Amazon CloudFront"
+      },
+      "detail": "CloudFront is AWS CDN.",
+      "hook": "Front = content near users.",
+      "objective": "3.4"
+    },
+    {
+      "id": "lambda",
+      "fields": {
+        "scenario": "Event-driven compute without server management",
+        "answer": "AWS Lambda"
+      },
+      "detail": "Lambda runs serverless functions.",
+      "hook": "Event arrives, function runs.",
+      "objective": "3.2"
+    },
+    {
+      "id": "spot",
+      "fields": {
+        "scenario": "Discounted spare EC2 capacity for interruption-tolerant batch work",
+        "answer": "EC2 Spot Instances"
+      },
+      "detail": "Compare restart overhead, spare capacity and total cost; Spot is not an unconditional lowest-cost guarantee.",
+      "hook": "Cheap if interruption is okay.",
+      "objective": "4.2"
+    },
+    {
+      "id": "role",
+      "fields": {
+        "scenario": "Temporary AWS permissions for an application",
+        "answer": "IAM role"
+      },
+      "detail": "Roles provide temporary credentials.",
+      "hook": "Applications assume roles.",
+      "objective": "1.1"
+    }
+  ]
 };
 
 
 const awsClfDomainCues: DrillDeck = {
-  id: "aws-clf-domain-cues",
-  certification: "AWS Cloud Practitioner",
-  exam: "clf-c02",
-  objective: "1.1–4.3",
-  topic: "CLF-C02 exam language and service cues",
-  modes: [{ id: "cueToAnswer", from: "cue", to: "answer" }],
-  tables: [{ id: "cues", fields: ["cue", "answer"] }],
-  items: [
-    { id: "elastic", fields: { cue: "Unpredictable demand; capacity should rise and fall automatically", answer: "Elasticity" }, detail: "Elasticity matches capacity to changing demand.", hook: "Unpredictable = elastic." },
-    { id: "scale", fields: { cue: "Workload will grow over time and needs more capacity", answer: "Scalability" }, detail: "Scalability is capacity to support growth.", hook: "Growth = scale." },
-    { id: "az", fields: { cue: "Survive failure of one data-center location inside a Region", answer: "Multi-AZ design" }, detail: "Multiple AZs reduce a single-AZ failure dependency.", hook: "One AZ fails; another stays." },
-    { id: "region", fields: { cue: "Regional disaster recovery or data-sovereignty requirement", answer: "Multiple Regions" }, detail: "Multi-Region design addresses regional separation.", hook: "Region failure needs another Region." },
-    { id: "audit", fields: { cue: "Who called an AWS API and when?", answer: "AWS CloudTrail" }, detail: "CloudTrail records account and API activity.", hook: "Trail of API calls." },
-    { id: "metrics", fields: { cue: "CPU metric crosses a threshold and should raise an alarm", answer: "Amazon CloudWatch" }, detail: "CloudWatch handles metrics and alarms.", hook: "Watch metrics." },
-    { id: "compliance", fields: { cue: "Download AWS compliance reports", answer: "AWS Artifact" }, detail: "Artifact provides compliance documents.", hook: "Compliance artifact." },
-    { id: "root", fields: { cue: "Protect the most privileged account identity", answer: "Root user protection + MFA" }, detail: "The root user needs strong protection and minimal routine use.", hook: "Root is exceptional." },
-    { id: "objects", fields: { cue: "Store web assets as objects in buckets", answer: "Amazon S3" }, detail: "S3 is object storage.", hook: "Buckets = S3." },
-    { id: "block", fields: { cue: "Persistent block volume for EC2", answer: "Amazon EBS" }, detail: "EBS provides block volumes.", hook: "EBS = block." },
-    { id: "sql", fields: { cue: "Managed relational database", answer: "Amazon RDS" }, detail: "RDS is managed relational database service.", hook: "RDS = relational." },
-    { id: "nosql", fields: { cue: "Managed key-value/document database", answer: "Amazon DynamoDB" }, detail: "DynamoDB is managed NoSQL.", hook: "Dynamo = NoSQL." },
-    { id: "dns", fields: { cue: "Managed DNS", answer: "Amazon Route 53" }, detail: "Route 53 provides DNS.", hook: "Names route with Route 53." },
-    { id: "cdn", fields: { cue: "Cache content near global users", answer: "Amazon CloudFront" }, detail: "CloudFront is AWS CDN.", hook: "Front = edge content." },
-    { id: "estimate", fields: { cue: "Estimate cost before deployment", answer: "AWS Pricing Calculator" }, detail: "Pricing Calculator estimates planned workloads.", hook: "Plan first = calculator." },
-    { id: "analyze", fields: { cue: "Analyze historical AWS spend", answer: "AWS Cost Explorer" }, detail: "Cost Explorer analyzes spend and usage.", hook: "Explore past/current cost." },
-    { id: "alert", fields: { cue: "Alert when spend exceeds a threshold", answer: "AWS Budgets" }, detail: "Budgets tracks thresholds.", hook: "Budget threshold = Budgets." },
-    { id: "queue", fields: { cue: "Durable queue to decouple producers and consumers", answer: "Amazon SQS" }, detail: "SQS provides queues.", hook: "Q = queue." },
-    { id: "fanout", fields: { cue: "Publish one message to many subscribers", answer: "Amazon SNS" }, detail: "SNS is pub/sub.", hook: "Notify subscribers." },
-    { id: "iac", fields: { cue: "Repeatable declarative infrastructure deployment", answer: "AWS CloudFormation" }, detail: "CloudFormation is AWS infrastructure as code.", hook: "Template the cloud." }
+  "id": "aws-clf-domain-cues",
+  "certification": "AWS Cloud Practitioner",
+  "exam": "clf-c02",
+  "objective": "1.1–4.3",
+  "topic": "CLF-C02 exam language and service cues",
+  "modes": [
+    {
+      "id": "cueToAnswer",
+      "from": "cue",
+      "to": "answer"
+    }
   ],
+  "tables": [
+    {
+      "id": "cues",
+      "fields": [
+        "cue",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+{
+    "id": "well-architected",
+    "objective": "1.2",
+    "fields": {
+        "cue": "Evaluate a workload using six architectural pillars",
+        "answer": "AWS Well-Architected Framework"
+    },
+    "detail": "The six pillars are operational excellence, security, reliability, performance efficiency, cost optimization and sustainability.",
+    "hook": "Framework for workload design."
+},
+{
+    "id": "caf-perspectives",
+    "objective": "1.3",
+    "fields": {
+        "cue": "Organize cloud transformation across business, people, governance, platform, security and operations",
+        "answer": "AWS Cloud Adoption Framework"
+    },
+    "detail": "CAF groups capabilities into six perspectives to plan organizational cloud adoption.",
+    "hook": "Adoption is broader than moving servers."
+},
+{
+    "id": "economies",
+    "objective": "1.4",
+    "fields": {
+        "cue": "Provider purchasing scale can lower variable unit infrastructure cost",
+        "answer": "Economies of scale"
+    },
+    "detail": "Shared aggregate demand can lower unit cost; cloud migration does not guarantee the lowest total cost for every workload.",
+    "hook": "Aggregate scale can improve unit economics."
+},
+    {
+      "id": "elastic",
+      "fields": {
+        "cue": "Unpredictable demand; capacity should rise and fall automatically",
+        "answer": "Elasticity"
+      },
+      "detail": "Elasticity matches capacity to changing demand.",
+      "hook": "Unpredictable = elastic.",
+      "objective": "1.1"
+    },
+    {
+      "id": "scale",
+      "fields": {
+        "cue": "Workload will grow over time and needs more capacity",
+        "answer": "Scalability"
+      },
+      "detail": "Scalability is capacity to support growth.",
+      "hook": "Growth = scale.",
+      "objective": "1.1"
+    },
+    {
+      "id": "az",
+      "fields": {
+        "cue": "Survive failure of one data-center location inside a Region",
+        "answer": "Multi-AZ design"
+      },
+      "detail": "Multiple AZs reduce a single-AZ failure dependency.",
+      "hook": "One AZ fails; another stays.",
+      "objective": "3.2"
+    },
+    {
+      "id": "region",
+      "fields": {
+        "cue": "Recover from a complete AWS Region outage",
+        "answer": "Multiple Regions"
+      },
+      "detail": "Regional disaster recovery may require another Region. Data residency instead constrains permitted locations; it does not itself require multiple Regions.",
+      "hook": "Region failure needs another Region.",
+      "objective": "3.2"
+    },
+    {
+      "id": "audit",
+      "fields": {
+        "cue": "Who called an AWS API and when?",
+        "answer": "AWS CloudTrail"
+      },
+      "detail": "CloudTrail records account and API activity.",
+      "hook": "Trail of API calls.",
+      "objective": "2.2"
+    },
+    {
+      "id": "metrics",
+      "fields": {
+        "cue": "CPU metric crosses a threshold and should raise an alarm",
+        "answer": "Amazon CloudWatch"
+      },
+      "detail": "CloudWatch handles metrics and alarms.",
+      "hook": "Watch metrics.",
+      "objective": "2.4"
+    },
+    {
+      "id": "compliance",
+      "fields": {
+        "cue": "Download AWS compliance reports",
+        "answer": "AWS Artifact"
+      },
+      "detail": "Artifact provides compliance documents.",
+      "hook": "Compliance artifact.",
+      "objective": "2.2"
+    },
+    {
+      "id": "root",
+      "fields": {
+        "cue": "Protect the most privileged account identity",
+        "answer": "Root user protection + MFA"
+      },
+      "detail": "The root user needs strong protection and minimal routine use.",
+      "hook": "Root is exceptional.",
+      "objective": "2.3"
+    },
+    {
+      "id": "objects",
+      "fields": {
+        "cue": "Store web assets as objects in buckets",
+        "answer": "Amazon S3"
+      },
+      "detail": "S3 is object storage.",
+      "hook": "Buckets = S3.",
+      "objective": "3.6"
+    },
+    {
+      "id": "block",
+      "fields": {
+        "cue": "Persistent block volume for EC2",
+        "answer": "Amazon EBS"
+      },
+      "detail": "EBS provides block volumes.",
+      "hook": "EBS = block.",
+      "objective": "3.6"
+    },
+    {
+      "id": "sql",
+      "fields": {
+        "cue": "Managed relational database",
+        "answer": "Amazon RDS"
+      },
+      "detail": "RDS is managed relational database service.",
+      "hook": "RDS = relational.",
+      "objective": "3.4"
+    },
+    {
+      "id": "nosql",
+      "fields": {
+        "cue": "Managed key-value/document database",
+        "answer": "Amazon DynamoDB"
+      },
+      "detail": "DynamoDB is managed NoSQL.",
+      "hook": "Dynamo = NoSQL.",
+      "objective": "3.4"
+    },
+    {
+      "id": "dns",
+      "fields": {
+        "cue": "Managed DNS",
+        "answer": "Amazon Route 53"
+      },
+      "detail": "Route 53 provides DNS.",
+      "hook": "Names route with Route 53.",
+      "objective": "3.5"
+    },
+    {
+      "id": "cdn",
+      "fields": {
+        "cue": "Cache content near global users",
+        "answer": "Amazon CloudFront"
+      },
+      "detail": "CloudFront is AWS CDN.",
+      "hook": "Front = edge content.",
+      "objective": "3.5"
+    },
+    {
+      "id": "estimate",
+      "fields": {
+        "cue": "Estimate cost before deployment",
+        "answer": "AWS Pricing Calculator"
+      },
+      "detail": "Pricing Calculator estimates planned workloads.",
+      "hook": "Plan first = calculator.",
+      "objective": "4.2"
+    },
+    {
+      "id": "analyze",
+      "fields": {
+        "cue": "Analyze historical AWS spend",
+        "answer": "AWS Cost Explorer"
+      },
+      "detail": "Cost Explorer analyzes spend and usage.",
+      "hook": "Explore past/current cost.",
+      "objective": "4.2"
+    },
+    {
+      "id": "alert",
+      "fields": {
+        "cue": "Alert when spend exceeds a threshold",
+        "answer": "AWS Budgets"
+      },
+      "detail": "Budgets tracks thresholds.",
+      "hook": "Budget threshold = Budgets.",
+      "objective": "4.2"
+    },
+    {
+      "id": "queue",
+      "fields": {
+        "cue": "Durable queue to decouple producers and consumers",
+        "answer": "Amazon SQS"
+      },
+      "detail": "SQS provides queues.",
+      "hook": "Q = queue.",
+      "objective": "3.8"
+    },
+    {
+      "id": "fanout",
+      "fields": {
+        "cue": "Publish one message to many subscribers",
+        "answer": "Amazon SNS"
+      },
+      "detail": "SNS is pub/sub.",
+      "hook": "Notify subscribers.",
+      "objective": "3.8"
+    },
+    {
+      "id": "iac",
+      "fields": {
+        "cue": "Repeatable declarative infrastructure deployment",
+        "answer": "AWS CloudFormation"
+      },
+      "detail": "CloudFormation is AWS infrastructure as code.",
+      "hook": "Template the cloud.",
+      "objective": "3.1"
+    }
+  ]
 };
 
 export const drillDecks: DrillDeck[] = [awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];

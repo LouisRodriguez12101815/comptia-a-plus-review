@@ -2330,7 +2330,7 @@
   {
     "slug": "aws-clf-cost-estimate",
     "title": "AWS CLF Lab — Estimate and Budget a Workload",
-    "subtitle": "Cloud Practitioner · billing and pricing",
+    "subtitle": "Cloud Practitioner · billing and pricing · Guided paper exercise",
     "summary": "Paper-first lab: estimate a small web workload with AWS Pricing Calculator concepts, then define a budget threshold and cost-allocation strategy without requiring paid resources.",
     "skills": [
       "AWS Pricing Calculator",
@@ -2379,13 +2379,48 @@
             "text": "Calculator estimates future cost; Cost Explorer analyzes actual spend; Budgets alerts on thresholds. Do not swap these three roles."
           }
         ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Use a fictional account with Production=$120 and Test=$30; calculate the tagged subtotal, then estimate two instances x 730 hours x a supplied hourly rate plus storage and transfer.",
+              "2. Add Environment and Project tags and explicitly activate eligible cost-allocation tags in Billing; historical data is not automatically retroactively tagged.",
+              "3. Set a budget threshold of $100 and identify the billing data delay. Budget notifications are delayed controls, not real-time spending caps."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: $150 known usage; the estimate also includes noncompute costs. Removing a tag makes allocation incomplete, not the underlying charge disappear."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
+              "Technical reference: https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html",
+              "Technical reference: https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html"
+            ]
+          }
+        ]
       }
     ]
   },
   {
     "slug": "aws-clf-iam-baseline",
     "title": "AWS CLF Lab — Secure an Account Baseline",
-    "subtitle": "Cloud Practitioner · security and compliance",
+    "subtitle": "Cloud Practitioner · security and compliance · Guided paper exercise",
     "summary": "Guided security exercise: root-user protection, MFA, least privilege, roles, CloudTrail, and compliance resources.",
     "skills": [
       "IAM",
@@ -2425,13 +2460,47 @@
             ]
           }
         ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Draw root, named federated workforce identities, and an EC2 role as separate principals. Root has MFA and no routine workload keys.",
+              "2. For an app reading prefix reports/, write an allow for s3:GetObject on arn:aws:s3:::example/reports/*; distinguish ListBucket on the bucket ARN with a prefix condition.",
+              "3. Test the policy on paper against reports/jan.csv, private/payroll.csv and s3:DeleteObject. Record allow, implicit deny and explicit deny separately."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: only the intended read is allowed when no other applicable deny exists. Removing role credentials should stop new authorized calls after existing sessions expire."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+            ]
+          }
+        ]
       }
     ]
   },
   {
     "slug": "aws-clf-service-map",
     "title": "AWS CLF Lab — Build a Service Selection Map",
-    "subtitle": "Cloud Practitioner · technology and services",
+    "subtitle": "Cloud Practitioner · technology and services · Guided paper exercise",
     "summary": "Paper architecture lab that maps common workload requirements to AWS compute, storage, database, networking, monitoring, and integration services.",
     "skills": [
       "EC2",
@@ -2507,13 +2576,48 @@
             "text": "For each row, name one plausible distractor and explain why it solves a different problem."
           }
         ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Create eight requirement cards from the map and shuffle them. For each choose a service, name one assumption, reject a plausible alternative and identify the responsibility the customer retains.",
+              "2. Change the object-storage case to a shared POSIX filesystem case; change the SQL case to predictable key-value access. Explain why the original answer changes.",
+              "3. Score the explanation rather than a memorized service name; record mistakes for a fresh scenario next session."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: EFS is a candidate for shared POSIX files; DynamoDB for appropriate key-value patterns. Neither is a universal replacement for relational transactions."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://aws.amazon.com/compliance/shared-responsibility-model/",
+              "Technical reference: https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+              "Technical reference: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html"
+            ]
+          }
+        ]
       }
     ]
   },
   {
     "slug": "aws-clf-global-design",
     "title": "AWS CLF Lab — Region, AZ, and Edge Decisions",
-    "subtitle": "Cloud Practitioner · cloud concepts",
+    "subtitle": "Cloud Practitioner · cloud concepts · Guided paper exercise",
     "summary": "Scenario lab for choosing Region, Availability Zone, or edge concepts based on availability, latency, disaster recovery, and sovereignty requirements.",
     "skills": [
       "Regions",
@@ -2567,6 +2671,40 @@
             "type": "callout",
             "kind": "warning",
             "text": "An edge location is not an Availability Zone, and an Availability Zone is not a Region. Be able to explain the relationship."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Draw one Region with two AZs, then a separate permitted recovery Region and an edge location. Place each requirement in the narrowest sufficient scope.",
+              "2. Apply a rule that data may stay only in country X. Verify that all replicas, logs and backups obey the permitted-location rule.",
+              "3. Remove one AZ, then remove the whole primary Region; state what still works and which dependencies stop."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: multi-AZ handles an AZ outage within the Region; a Region-level recovery plan needs a separate allowed recovery environment. Residency alone does not demand multiple Regions."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
+              "Technical reference: https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+            ]
           }
         ]
       }
