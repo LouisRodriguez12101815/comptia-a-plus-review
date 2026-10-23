@@ -182,7 +182,87 @@ const core2: TopFive = {
   ],
 };
 
-export const topFives: TopFive[] = [core1, core2];
+
+const awsClf: TopFive = {
+  id: "aws-clf",
+  certification: "AWS Certified Cloud Practitioner",
+  exam: "clf-c02",
+  concepts: [
+    {
+      id: "service-positioning",
+      title: "Recognize the right AWS service for the job",
+      domains: ["3"],
+      objectives: "3.1–3.8",
+      why: "Cloud Technology and Services is the largest CLF-C02 domain, and many questions are service-recognition decisions rather than implementation tasks.",
+      facts: [
+        "EC2 = virtual machines; Lambda = event-driven serverless functions; ECS/EKS = containers; Fargate = serverless container compute.",
+        "S3 = object storage; EBS = block storage; EFS/FSx = file storage.",
+        "RDS/Aurora = relational; DynamoDB = key-value/document NoSQL; ElastiCache = in-memory cache; Redshift = data warehouse.",
+        "Route 53 = DNS; CloudFront = CDN; Direct Connect = dedicated private connectivity; Site-to-Site VPN = encrypted internet tunnel.",
+        "CloudWatch = metrics/logs/alarms; CloudTrail = API audit; Config = resource configuration history/rules.",
+      ],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues"],
+    },
+    {
+      id: "security",
+      title: "Shared responsibility, IAM, and core security services",
+      domains: ["2"],
+      objectives: "2.1–2.4",
+      why: "Security and Compliance is 30% of scored content and combines responsibility boundaries with identity, compliance, encryption, and security-service recognition.",
+      facts: [
+        "AWS secures the infrastructure of the cloud; customers secure data, identities, permissions, and many workload configurations.",
+        "Protect the root user, use MFA, apply least privilege, and prefer roles/temporary credentials for workloads.",
+        "KMS manages encryption keys; Secrets Manager stores and rotates application secrets.",
+        "Artifact = compliance reports; GuardDuty = threat detection; Inspector = vulnerability management; Shield = DDoS; WAF = web request filtering.",
+      ],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues"],
+    },
+    {
+      id: "global-cloud",
+      title: "Cloud value, elasticity, Regions, AZs, and edge",
+      domains: ["1", "3"],
+      objectives: "1.1–1.4, 3.2",
+      why: "These concepts appear directly and also act as context for availability, latency, migration, and economics questions.",
+      facts: [
+        "Scalability supports larger workloads; elasticity dynamically adjusts capacity as demand changes.",
+        "A Region contains multiple isolated Availability Zones; edge locations are separate points of presence for supported edge services.",
+        "Multi-AZ improves availability within a Region; multi-Region designs address regional DR, sovereignty, or global latency.",
+        "Cloud economics favor rightsizing, automation, variable usage-based spending, and reducing overprovisioning.",
+      ],
+      drills: ["aws-clf-domain-cues"],
+    },
+    {
+      id: "billing",
+      title: "Pricing models, cost tools, and Organizations",
+      domains: ["4"],
+      objectives: "4.1, 4.2",
+      why: "Billing questions are small in weight but highly learnable because each tool and purchasing option has a distinct purpose.",
+      facts: [
+        "Pricing Calculator estimates planned cost; Cost Explorer analyzes actual spend; Budgets alerts on thresholds.",
+        "On-Demand = flexibility; commitment models can reduce steady-use cost; Spot = interruption-tolerant spare capacity.",
+        "Organizations supports multi-account management and consolidated billing.",
+        "Cost allocation tags help attribute spend to teams, projects, or environments.",
+      ],
+      drills: ["aws-clf-domain-cues"],
+    },
+    {
+      id: "support",
+      title: "AWS support and technical resources",
+      domains: ["4"],
+      objectives: "4.3",
+      why: "Support questions reward knowing where to look: official documentation, re:Post, Knowledge Center, Prescriptive Guidance, Support Center, and the appropriate support channel.",
+      facts: [
+        "Use official AWS documentation and whitepapers for authoritative service guidance.",
+        "AWS re:Post is a managed community knowledge/Q&A resource.",
+        "Prescriptive Guidance provides patterns and implementation guidance.",
+        "Support-plan details can change, so verify current AWS support offerings rather than relying on stale memorization.",
+      ],
+      drills: ["aws-clf-domain-cues"],
+    },
+  ],
+};
+
+export const topFives: TopFive[] = [core1, core2, awsClf];
 
 export function getTopFive(id: string) {
   return topFives.find((t) => t.id === id);
