@@ -12811,6 +12811,1006 @@
     ]
   },
   {
+    "id": "q-saa-arch-01",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An EC2 workload in private subnets must access S3 without traversing a NAT gateway or public internet. Which design best meets the requirement?",
+    "choices": [
+      "Assign public IPs to the instances",
+      "Route through an internet gateway",
+      "Create a CloudFront distribution",
+      "Use an S3 VPC endpoint"
+    ],
+    "answer": 3,
+    "explanation": "A VPC endpoint provides private connectivity to supported AWS services such as S3.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-02",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A central security team must prevent member accounts in an AWS Organization from using specific high-risk services, even if account administrators attach Allow policies. What should be used?",
+    "choices": [
+      "S3 lifecycle rules",
+      "Route 53 policies",
+      "Security groups",
+      "Service control policies"
+    ],
+    "answer": 3,
+    "explanation": "SCPs set organization-level permission guardrails; an explicit organizational restriction can limit member-account permissions.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-03",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A public web application needs protection from SQL injection patterns in HTTP requests. Which service should be placed in the request path?",
+    "choices": [
+      "AWS WAF",
+      "AWS Config",
+      "AWS Shield only",
+      "Amazon GuardDuty"
+    ],
+    "answer": 0,
+    "explanation": "AWS WAF filters application-layer web requests using rules.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-04",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company needs to identify suspicious behavior such as anomalous API calls and potentially compromised credentials. Which service is designed for this?",
+    "choices": [
+      "Amazon Inspector",
+      "AWS Artifact",
+      "AWS Budgets",
+      "Amazon GuardDuty"
+    ],
+    "answer": 3,
+    "explanation": "GuardDuty performs threat detection using AWS data sources.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-05",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A security team needs automated vulnerability findings for supported EC2 instances and container images. Which service fits?",
+    "choices": [
+      "AWS Shield",
+      "Amazon Inspector",
+      "AWS Cost Explorer",
+      "Amazon Macie"
+    ],
+    "answer": 1,
+    "explanation": "Inspector is AWS vulnerability-management service for supported workloads.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-06",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database password must be stored securely and rotated automatically. Which service should hold the value?",
+    "choices": [
+      "AWS KMS only",
+      "CloudTrail",
+      "AWS Secrets Manager",
+      "S3 Glacier"
+    ],
+    "answer": 2,
+    "explanation": "Secrets Manager stores and can rotate secrets; KMS manages encryption keys.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-07",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A customer requires encryption keys in dedicated hardware security modules under customer control. Which service is the closest fit?",
+    "choices": [
+      "AWS CloudHSM",
+      "Amazon SNS",
+      "AWS Config",
+      "AWS Budgets"
+    ],
+    "answer": 0,
+    "explanation": "CloudHSM provides dedicated HSM appliances for customer-controlled key operations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-08",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which control should be used to discover sensitive data such as PII stored in S3 buckets?",
+    "choices": [
+      "Amazon Macie",
+      "AWS Shield",
+      "Amazon SQS",
+      "Amazon Route 53"
+    ],
+    "answer": 0,
+    "explanation": "Macie focuses on sensitive-data discovery in S3.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-09",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An IAM role has an Allow for s3:GetObject, but an applicable policy has an explicit Deny for the same action and resource. What is the result?",
+    "choices": [
+      "Denied",
+      "Allowed",
+      "Allowed only with MFA",
+      "Depends on region"
+    ],
+    "answer": 0,
+    "explanation": "A matching explicit deny overrides allows.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-10",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A cross-account application needs temporary access to a resource in another AWS account. Which pattern best fits?",
+    "choices": [
+      "Create a public bucket",
+      "Share root credentials",
+      "Assume an IAM role with STS",
+      "Embed a permanent access key in source code"
+    ],
+    "answer": 2,
+    "explanation": "Cross-account role assumption with STS supplies temporary credentials and avoids shared permanent keys.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-11",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A checkout service sends orders to a fulfillment service. Fulfillment may be unavailable temporarily, but orders must not be lost and checkout must continue accepting requests. Which service should decouple them?",
+    "choices": [
+      "Amazon SQS",
+      "Route 53",
+      "Amazon EBS",
+      "AWS KMS"
+    ],
+    "answer": 0,
+    "explanation": "SQS buffers durable asynchronous work and decouples producer availability from consumer availability.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-12",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A stateless web tier must survive instance and Availability Zone failures. Which design is best?",
+    "choices": [
+      "An ASG limited to one subnet and its single AZ",
+      "Auto Scaling group across multiple AZs behind a load balancer",
+      "One larger instance with scheduled snapshots only",
+      "Two application instances in one AZ behind an ALB"
+    ],
+    "answer": 1,
+    "explanation": "Multiple instances across AZs behind load balancing eliminate both instance and single-AZ dependencies.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-13",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company can tolerate 24 hours to restore a secondary environment and wants the lowest ongoing disaster-recovery cost. Which pattern is most appropriate?",
+    "choices": [
+      "Full duplicate capacity in another Region",
+      "Active/active",
+      "Warm standby",
+      "Backup and restore"
+    ],
+    "answer": 3,
+    "explanation": "Backup and restore generally has the lowest steady-state cost and longest recovery time.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-14",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A business requires a recovery environment that is already running at reduced capacity and can scale quickly after a regional disaster. Which DR strategy fits?",
+    "choices": [
+      "Backup and restore only",
+      "Warm standby",
+      "Pilot light with no running application tier",
+      "Single-AZ design"
+    ],
+    "answer": 1,
+    "explanation": "Warm standby keeps a reduced-capacity functional environment running.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-15",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Only the core database and critical components should stay running in the DR Region; application capacity can be launched during recovery. Which pattern is this?",
+    "choices": [
+      "Backup and restore only",
+      "Read replica",
+      "Active/active",
+      "Pilot light"
+    ],
+    "answer": 3,
+    "explanation": "Pilot light keeps the core ready and scales the rest during recovery.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-16",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "The maximum acceptable amount of lost data is 5 minutes. Which metric describes this requirement?",
+    "choices": [
+      "TTL",
+      "SLA",
+      "RTO",
+      "RPO"
+    ],
+    "answer": 3,
+    "explanation": "Recovery Point Objective is the acceptable data-loss window.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-17",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "The business requires service restored within 30 minutes of a disaster. Which metric is being specified?",
+    "choices": [
+      "MTU",
+      "IOPS",
+      "RTO",
+      "RPO"
+    ],
+    "answer": 2,
+    "explanation": "Recovery Time Objective is the maximum acceptable recovery duration.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-18",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database is replicated to another Region. Why should the company still maintain backups?",
+    "choices": [
+      "Replication always replaces backups",
+      "Backups are only for on-premises systems",
+      "Replication can copy logical corruption or accidental changes; backups preserve recovery points",
+      "Backups are required only for S3"
+    ],
+    "answer": 2,
+    "explanation": "Replication and backup address different failure modes.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-19",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A service occasionally returns throttling errors during traffic bursts. Which client behavior improves resilience?",
+    "choices": [
+      "Disable monitoring",
+      "Immediately create root credentials",
+      "Retry with exponential backoff and jitter where appropriate",
+      "Retry continuously with no delay"
+    ],
+    "answer": 2,
+    "explanation": "Controlled backoff reduces retry storms and handles transient throttling.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-20",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A primary endpoint in Region A should receive traffic unless unhealthy, then DNS should direct users to Region B. Which Route 53 policy is appropriate?",
+    "choices": [
+      "Weighted",
+      "Simple",
+      "Failover",
+      "Geolocation only"
+    ],
+    "answer": 2,
+    "explanation": "Failover routing supports primary/secondary endpoints with health checks.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-21",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A read-heavy Aurora-compatible application needs more read capacity without scaling the writer vertically. Which design should be considered?",
+    "choices": [
+      "Add Aurora Replicas and use the Aurora reader endpoint",
+      "Use RDS Proxy alone and assume it creates more database read capacity",
+      "Enable only an additional nonreadable standby in a single-standby RDS deployment",
+      "Increase backup retention without changing read-serving capacity"
+    ],
+    "answer": 0,
+    "explanation": "Read replicas scale read traffic; a reader endpoint can distribute reads among replicas.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-22",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB workload repeatedly reads the same hot items, accepts eventual consistency, and needs microsecond cache-hit latency. Which service is designed for this?",
+    "choices": [
+      "DynamoDB Accelerator (DAX)",
+      "Route 53",
+      "AWS Artifact",
+      "S3 Glacier"
+    ],
+    "answer": 0,
+    "explanation": "DAX caches eventually consistent DynamoDB reads and can return cache hits in microseconds. Strongly consistent requests pass through to DynamoDB, and misses do not have the same cache-hit latency. Glacier is archival object storage, Artifact supplies reports, and Route 53 supplies DNS.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-23",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A global website serves cacheable images and videos. Which service most directly reduces latency and origin load?",
+    "choices": [
+      "Amazon EBS",
+      "AWS Config",
+      "AWS Direct Connect",
+      "Amazon CloudFront"
+    ],
+    "answer": 3,
+    "explanation": "CloudFront caches content at edge locations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-24",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A multiplayer application uses TCP/UDP endpoints in two Regions and needs improved global routing over the AWS network with static anycast IPs. Which service fits?",
+    "choices": [
+      "AWS Global Accelerator",
+      "CloudFront only",
+      "AWS Glue",
+      "S3 Transfer Acceleration"
+    ],
+    "answer": 0,
+    "explanation": "Global Accelerator improves global network path to regional endpoints and provides static anycast addresses.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-25",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A real-time telemetry system needs applications to consume streaming records ordered for each device partition key and perform custom processing. Which service is appropriate?",
+    "choices": [
+      "Data Firehose only",
+      "AWS Artifact",
+      "Kinesis Data Streams",
+      "S3 Glacier"
+    ],
+    "answer": 2,
+    "explanation": "Kinesis Data Streams is built for real-time streams consumed by applications. Ordering is scoped to shards/partition keys and appropriate producer sequencing; there is no global ordering guarantee across shards. Handle retries, duplicates and consumer checkpoints explicitly.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-26",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Streaming records simply need managed delivery into S3 with minimal code. Which service is the better fit?",
+    "choices": [
+      "Kinesis Data Streams with custom consumers",
+      "Amazon Data Firehose",
+      "EC2 Dedicated Hosts",
+      "AWS WAF"
+    ],
+    "answer": 1,
+    "explanation": "Data Firehose provides managed streaming delivery to supported destinations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-27",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An HPC cluster requires very low-latency communication between supported EC2 instances. Which feature should be considered?",
+    "choices": [
+      "Elastic Fabric Adapter",
+      "Route 53 geolocation",
+      "S3 lifecycle",
+      "AWS Budgets"
+    ],
+    "answer": 0,
+    "explanation": "EFA provides specialized high-performance networking for supported HPC workloads.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-28",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A shared Linux file workload needs more throughput than its current architecture. Which service family should be evaluated before replacing it with block storage?",
+    "choices": [
+      "Amazon EFS performance/throughput modes",
+      "AWS KMS",
+      "CloudTrail",
+      "Route 53"
+    ],
+    "answer": 0,
+    "explanation": "EFS is the shared file service; its performance/throughput options should be matched to the workload.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-29",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A web API is CPU-bound and runs continuously on EC2. Which first step is most appropriate for performance architecture?",
+    "choices": [
+      "Move all data to Glacier",
+      "Disable load balancing",
+      "Choose an instance family/size matched to CPU needs and use scaling as required",
+      "Add more IAM users"
+    ],
+    "answer": 2,
+    "explanation": "Compute characteristics and scaling should be matched to workload behavior.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-30",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Analysts need ad hoc SQL queries over large datasets already stored in S3. Which service avoids moving the data into a database server first?",
+    "choices": [
+      "AWS Shield",
+      "Amazon Athena",
+      "Amazon RDS Proxy",
+      "EBS Multi-Attach"
+    ],
+    "answer": 1,
+    "explanation": "Athena queries S3 data using SQL.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-31",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A batch-processing fleet can tolerate interruptions and jobs checkpoint regularly. Which EC2 purchase option should be preferred for lowest cost?",
+    "choices": [
+      "On-Demand only",
+      "Spot Instances",
+      "Capacity Reservations only",
+      "Dedicated Hosts"
+    ],
+    "answer": 1,
+    "explanation": "Spot is appropriate for interruption-tolerant workloads and offers deep discounts.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-32",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A production compute workload runs steadily year-round with predictable usage. Which option is most likely to reduce cost compared with pure On-Demand pricing?",
+    "choices": [
+      "Always use Dedicated Hosts",
+      "Use only Spot regardless of interruption tolerance",
+      "A suitable Savings Plan or eligible Reserved pricing commitment",
+      "Disable Auto Scaling"
+    ],
+    "answer": 2,
+    "explanation": "Commitment-based discounts are designed for predictable ongoing usage.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-33",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An S3 bucket contains logs that are rarely read after 30 days but must be retained for seven years. Which feature most directly automates cost reduction?",
+    "choices": [
+      "Security groups",
+      "CloudTrail event history",
+      "Route 53 weighted routing",
+      "S3 lifecycle transitions"
+    ],
+    "answer": 3,
+    "explanation": "Lifecycle rules move objects to cheaper classes or expire them based on retention policy.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-34",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Private instances access S3 heavily through a NAT gateway and generate significant NAT data-processing charges. Which change can reduce this cost while keeping traffic private?",
+    "choices": [
+      "Add another NAT gateway and route all S3 traffic through it",
+      "Assign public IPs to every instance",
+      "Use an S3 gateway VPC endpoint and route-table associations",
+      "Move the bucket to EBS"
+    ],
+    "answer": 2,
+    "explanation": "An S3 gateway VPC endpoint avoids NAT processing for eligible S3 routes without endpoint hourly/data charges. Associate the correct route tables and allow access in IAM/bucket/endpoint policies. Interface endpoints also exist but have different costs; simply adding a NAT increases rather than removes this processing path.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-35",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A low-traffic event-driven task runs a few seconds each hour. Which architecture can avoid paying for an idle EC2 server?",
+    "choices": [
+      "AWS Lambda",
+      "A larger EC2 instance",
+      "A permanently running Dedicated Host",
+      "An always-on NAT instance"
+    ],
+    "answer": 0,
+    "explanation": "Lambda charges based on execution and avoids an always-on server for suitable workloads.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-36",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB workload has highly unpredictable traffic with long idle periods. Which capacity mode can reduce planning overhead and match usage automatically?",
+    "choices": [
+      "On-demand",
+      "Provisioned with fixed high capacity only",
+      "Dedicated Host",
+      "S3 Standard-IA"
+    ],
+    "answer": 0,
+    "explanation": "On-demand capacity follows request traffic and avoids provisioned-capacity planning.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-37",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database instance averages 10% CPU and has no evidence of memory pressure. What is the first cost-optimization action to evaluate?",
+    "choices": [
+      "Choose a smaller instance solely from average CPU",
+      "Add read replicas even when there is no measured read bottleneck",
+      "Measure memory, I/O, connections and peak demand, then evaluate rightsizing",
+      "Remove backups before checking recovery requirements"
+    ],
+    "answer": 2,
+    "explanation": "Measure all relevant bottlenecks and peak demand before rightsizing. Low average CPU alone does not establish spare memory/I/O/connection capacity. Removing backups changes recovery, while unnecessary replicas add cost.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-38",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A workload transfers large amounts of cacheable public content from an origin in one Region to global users. Which architecture may reduce origin load and data-transfer cost while improving latency?",
+    "choices": [
+      "Add a NAT gateway",
+      "CloudFront",
+      "Use EBS snapshots",
+      "Route every request directly to the origin"
+    ],
+    "answer": 1,
+    "explanation": "CloudFront caches content at edge locations and can reduce repeated origin transfer.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-39",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A team keeps hundreds of unattached EBS volumes and obsolete snapshots. Which action is a direct cost optimization?",
+    "choices": [
+      "Increase all volume sizes",
+      "Delete resources that are no longer required according to retention policy",
+      "Turn off CloudTrail",
+      "Copy every volume to another AZ"
+    ],
+    "answer": 1,
+    "explanation": "Unused persistent storage continues to incur cost; clean it up according to policy.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-40",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A cost question offers two architectures with the same compute price, but one sends large cross-AZ data volumes continuously. What hidden factor must be evaluated?",
+    "choices": [
+      "Route 53 domain registration only",
+      "IAM user count only",
+      "Data-transfer charges",
+      "S3 object key length"
+    ],
+    "answer": 2,
+    "explanation": "Data-transfer paths can be a major architecture cost driver.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
     "id": "q-aws-review-clf-c02-1-1",
     "topicId": "aws-clf-cloud-concepts",
     "examCodes": [
@@ -13283,6 +14283,356 @@
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-1-1",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "A workload in Account A must read a bucket in B with temporary credentials. The role in B has s3:GetObject permissions but no trust for A. What is missing?",
+    "choices": [
+      "An SCP Allow alone, which automatically grants S3 access",
+      "A public bucket ACL so role assumption is unnecessary",
+      "An administrator boundary, which grants the missing trust",
+      "An appropriate trust relationship plus caller sts:AssumeRole permission"
+    ],
+    "answer": 3,
+    "explanation": "Role resource permissions describe what the assumed role can do; trust/caller permissions allow assumption. Public access violates the intended restricted design. Boundaries and SCPs do not grant role trust or resource access.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-1-2",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "A private application needs frequent S3 access without NAT processing. Its users still require application authentication. Which design addresses both without conflating them?",
+    "choices": [
+      "Direct Connect without encryption because private always means encrypted",
+      "A public bucket plus a WAF rule that substitutes for IAM",
+      "An S3 gateway endpoint with appropriate policies, plus an application identity/authentication design",
+      "A gateway endpoint that automatically authenticates every end user"
+    ],
+    "answer": 2,
+    "explanation": "A gateway endpoint changes the S3 network path; it does not authenticate application users or grant all data access. IAM/resource policies and user identity remain separate. Public buckets and unencrypted-private assumptions do not meet the stated design.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-1-3",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "A compliance requirement says archived objects must not be deletable before their retention date, even by ordinary administrators. Which design should be evaluated?",
+    "choices": [
+      "Only an S3 Lifecycle expiration date",
+      "A reusable presigned URL distributed to administrators",
+      "Only cross-Region replication, regardless of deletion permissions",
+      "Appropriate S3 Object Lock retention configuration and controlled administration, with backup/restore validation"
+    ],
+    "answer": 3,
+    "explanation": "Object Lock provides retention controls suited to the specified mode/permissions. Lifecycle schedules storage actions, replication makes copies and presigned URLs authorize requests; none alone guarantees immutable retention. Evaluate governance versus compliance mode and the applicable legal requirements.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-2-1",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "A worker commits an order side effect but crashes before deleting its SQS message. The order must not be charged twice after retry. What is required?",
+    "choices": [
+      "A longer visibility timeout as the sole duplicate-prevention control",
+      "A public queue policy so another worker can always receive it",
+      "An ALB health check as the order-level transaction guarantee",
+      "An idempotency key or equivalent durable deduplication around the side effect"
+    ],
+    "answer": 3,
+    "explanation": "At-least-once delivery and crash windows require application idempotency. Visibility can reduce concurrent processing but is not exactly-once protection. Queue access and ALB health do not atomically deduplicate the business operation.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-2-2",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "An ALB detects unhealthy application targets, but their EC2 status checks pass and the ASG never replaces them. What configuration should be reviewed?",
+    "choices": [
+      "ASG Elastic Load Balancing health-check integration and grace-period behavior",
+      "Whether adding read replicas will change EC2 health status",
+      "Whether an S3 lifecycle transition has occurred",
+      "Whether CloudTrail automatically terminates unhealthy targets"
+    ],
+    "answer": 0,
+    "explanation": "Target-group application checks and ASG replacement checks are separate. Enable the appropriate ELB health checks and grace period, and verify replacement behavior. Storage lifecycle, database replicas and audit logging do not establish that integration.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-1",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "Two application servers in different AZs need simultaneous access to the same Linux file tree. They cannot be changed to use an object API. Which initial design is most appropriate?",
+    "choices": [
+      "Instance-store volumes with an assumption of automatic cross-AZ synchronization",
+      "One EBS volume attached across both AZs",
+      "A Regional EFS file system with suitable mount targets and throughput settings",
+      "An S3 bucket mounted as though it provides identical POSIX semantics without validation"
+    ],
+    "answer": 2,
+    "explanation": "Regional EFS fits shared cross-AZ Linux file access. EBS attachments are AZ-scoped, instance stores do not synchronize automatically and object interfaces are not identical to POSIX file semantics.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-2",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "A worker fleet is CPU-idle while processing a growing backlog of slow external API calls. Which scaling signal best reflects the business bottleneck?",
+    "choices": [
+      "Only average CPU utilization because every backlog implies high CPU",
+      "The S3 bucket creation date",
+      "Only the number of IAM users in the account",
+      "A suitable backlog-per-worker/processing-time metric, with downstream rate limits considered"
+    ],
+    "answer": 3,
+    "explanation": "Backlog and processing time capture unmet work even when the process waits on I/O. Scaling must respect downstream capacity and rate limits. CPU alone can remain low; identity count and bucket age do not measure work demand.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-3",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "A user must immediately read a just-written DynamoDB value with a strong consistency requirement. Which design avoids relying on stale cached data?",
+    "choices": [
+      "A read replica in another Region without considering replication delay",
+      "Only a DAX eventual cache read because all cache hits are current",
+      "A supported strongly consistent table read rather than assuming a DAX cache hit is strongly consistent",
+      "A GSI read with the assumption that every GSI supports strong consistency"
+    ],
+    "answer": 2,
+    "explanation": "Use a supported strong read for that requirement. DAX eventual caches and GSIs do not guarantee the same freshness, and asynchronously replicated paths may lag. A fast response is not a consistency guarantee.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-4",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "prompt": "A global UDP application requires static anycast entry addresses and routing to healthy regional endpoints. It does not use HTTP content caching. Which option fits?",
+    "choices": [
+      "CloudFront as a generic UDP proxy",
+      "Global Accelerator with supported regional endpoints",
+      "Route 53 geolocation as a guarantee of static anycast application addresses",
+      "S3 Transfer Acceleration for arbitrary application UDP traffic"
+    ],
+    "answer": 1,
+    "explanation": "Global Accelerator addresses supported TCP/UDP application entry and network paths. CloudFront and S3 Transfer Acceleration are not generic UDP proxies; DNS geolocation selects answers rather than providing the stated accelerator capability.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-5",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "Sensors require custom per-device stream processing and replay, followed by analytics in S3. Which design best preserves the processing requirement?",
+    "choices": [
+      "One unpartitioned CSV filename that every device overwrites",
+      "SNS email delivery as the durable analytical event store",
+      "Kinesis Data Streams with device partition keys and checkpointed consumers, followed by suitable S3 delivery/analytics",
+      "Only Firehose with an assumption of globally ordered custom consumer replay"
+    ],
+    "answer": 2,
+    "explanation": "A stream and consumers provide custom processing/replay within configured retention and per-key ordering design. Managed delivery is useful downstream but does not replace all stream-consumer semantics. Email and overwrites do not satisfy the data pipeline.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-1",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "A team archives small objects and retrieves them frequently. Its storage bill falls but request/retrieval charges rise sharply. What did the design omit?",
+    "choices": [
+      "Object size, access frequency, retrieval and minimum-duration/request economics",
+      "The assumption that every archival class is instant and free to read",
+      "Only the number of IAM groups in the account",
+      "A requirement to use the highest IOPS EBS volume for all objects"
+    ],
+    "answer": 0,
+    "explanation": "Storage-class selection requires the full access and lifecycle cost, including small-object and retrieval constraints. Identity-group count does not explain it; archives are not universally instant/free, and block storage is not a blanket fix for an object workload.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-2",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "An application has a measured stable baseline plus short seasonal peaks, and cannot tolerate interruption for customer transactions. Which purchase strategy should be evaluated?",
+    "choices": [
+      "A commitment sized to every historical peak before rightsizing",
+      "Dedicated Hosts solely because they must always cost less",
+      "A suitable baseline commitment with elastic On-Demand capacity for peaks",
+      "Spot-only capacity regardless of transaction continuity"
+    ],
+    "answer": 2,
+    "explanation": "Commitment on measured baseline plus flexible peak capacity matches predictable and variable demand. Committing to peaks risks unused spend; Spot-only ignores interruption constraints; dedicated tenancy is not a universal cost discount.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-3",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "prompt": "An RDS instance averages low CPU, but the team has not measured memory, I/O latency, connections or peak demand. What is the best cost-optimization next step?",
+    "choices": [
+      "Add a cache even if repeated reads and freshness tolerance are unknown",
+      "Measure the full workload and evaluate a smaller suitable configuration against peaks and recovery requirements",
+      "Disable backups and Multi-AZ before collecting any workload evidence",
+      "Immediately halve the instance size solely from average CPU"
+    ],
+    "answer": 1,
+    "explanation": "Low average CPU is only one signal. Memory, I/O, connections, peaks and resilience constrain safe rightsizing. Removing recovery controls or adding an unvalidated cache can change correctness or availability rather than remove waste.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-4",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "Private instances send large S3 volumes through a NAT gateway. The workload must keep S3 access private and maintain its AZ-resilience design. What should be evaluated first?",
+    "choices": [
+      "An interface endpoint assumed to have no hourly or per-GB charges",
+      "Public bucket access with no IAM restrictions to eliminate private routing",
+      "A single shared NAT as an automatic resilience improvement",
+      "S3 gateway endpoints with the relevant subnet route-table associations and access policies"
+    ],
+    "answer": 3,
+    "explanation": "Gateway endpoints can remove eligible S3 traffic from NAT without gateway-endpoint charges. Validate route/policy scope. A single zonal NAT can introduce an AZ dependency, public access changes authorization, and interface endpoint costs are different.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
     ]
   }
 ]

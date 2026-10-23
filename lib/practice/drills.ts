@@ -1935,7 +1935,349 @@ const awsClfDomainCues: DrillDeck = {
   ]
 };
 
-export const drillDecks: DrillDeck[] = [awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
+
+const awsSaaSecureCues: DrillDeck = {
+  "id": "aws-saa-secure-cues",
+  "certification": "AWS Solutions Architect – Associate",
+  "exam": "saa-c03",
+  "objective": "1.1–1.3",
+  "topic": "Secure architecture cues",
+  "modes": [
+    {
+      "id": "cueToAnswer",
+      "from": "cue",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "cues",
+      "fields": [
+        "cue",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "temporary",
+      "fields": {
+        "cue": "Workload needs temporary AWS permissions",
+        "answer": "IAM role / STS"
+      },
+      "detail": "Prefer temporary credentials for workloads.",
+      "hook": "Workload = role.",
+      "objective": "1.1"
+    },
+    {
+      "id": "webfilter",
+      "fields": {
+        "cue": "Filter SQL injection and HTTP request patterns",
+        "answer": "AWS WAF"
+      },
+      "detail": "WAF filters application-layer web requests.",
+      "hook": "Web request = WAF.",
+      "objective": "1.2"
+    },
+    {
+      "id": "ddos",
+      "fields": {
+        "cue": "Managed DDoS protection",
+        "answer": "AWS Shield"
+      },
+      "detail": "Shield is AWS DDoS protection.",
+      "hook": "Shield absorbs DDoS.",
+      "objective": "1.2"
+    },
+    {
+      "id": "private-service",
+      "fields": {
+        "cue": "Private VPC access to a supported AWS service",
+        "answer": "VPC endpoint / PrivateLink"
+      },
+      "detail": "Endpoints provide private service connectivity.",
+      "hook": "Private service path = endpoint.",
+      "objective": "1.2"
+    },
+    {
+      "id": "secret",
+      "fields": {
+        "cue": "Store and rotate database credentials",
+        "answer": "AWS Secrets Manager"
+      },
+      "detail": "Secrets Manager handles application secrets.",
+      "hook": "Secret value = Secrets Manager.",
+      "objective": "1.3"
+    },
+    {
+      "id": "sensitive-s3",
+      "fields": {
+        "cue": "Discover sensitive data in S3",
+        "answer": "Amazon Macie"
+      },
+      "detail": "Macie focuses on S3 sensitive data.",
+      "hook": "Sensitive S3 = Macie.",
+      "objective": "1.3"
+    }
+  ]
+};
+const awsSaaResilientCues: DrillDeck = {
+  "id": "aws-saa-resilient-cues",
+  "certification": "AWS Solutions Architect – Associate",
+  "exam": "saa-c03",
+  "objective": "2.1–2.2",
+  "topic": "Resilient architecture cues",
+  "modes": [
+    {
+      "id": "cueToAnswer",
+      "from": "cue",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "cues",
+      "fields": [
+        "cue",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "buffer",
+      "fields": {
+        "cue": "Buffer bursty asynchronous work",
+        "answer": "Amazon SQS"
+      },
+      "detail": "SQS decouples producers and consumers.",
+      "hook": "Buffer work = queue.",
+      "objective": "2.1"
+    },
+    {
+      "id": "az",
+      "fields": {
+        "cue": "Survive one Availability Zone failure",
+        "answer": "Multi-AZ design"
+      },
+      "detail": "Spread critical tiers across AZs.",
+      "hook": "AZ failure = another AZ.",
+      "objective": "2.2"
+    },
+    {
+      "id": "rto",
+      "fields": {
+        "cue": "Maximum acceptable recovery duration",
+        "answer": "RTO"
+      },
+      "detail": "Recovery Time Objective.",
+      "hook": "T = time to recover.",
+      "objective": "2.2"
+    },
+    {
+      "id": "rpo",
+      "fields": {
+        "cue": "Maximum acceptable data-loss window",
+        "answer": "RPO"
+      },
+      "detail": "Recovery Point Objective.",
+      "hook": "P = point in time.",
+      "objective": "2.2"
+    },
+    {
+      "id": "warm",
+      "fields": {
+        "cue": "Reduced-capacity DR environment already running",
+        "answer": "Warm standby"
+      },
+      "detail": "Warm standby is functional at reduced capacity.",
+      "hook": "Warm = already running.",
+      "objective": "2.2"
+    },
+    {
+      "id": "pilot",
+      "fields": {
+        "cue": "Only core DR components stay running; scale during recovery",
+        "answer": "Pilot light"
+      },
+      "detail": "Pilot light keeps the core ready.",
+      "hook": "Pilot flame stays lit.",
+      "objective": "2.2"
+    }
+  ]
+};
+const awsSaaPerformanceCues: DrillDeck = {
+  "id": "aws-saa-performance-cues",
+  "certification": "AWS Solutions Architect – Associate",
+  "exam": "saa-c03",
+  "objective": "3.1–3.5",
+  "topic": "High-performance architecture cues",
+  "modes": [
+    {
+      "id": "cueToAnswer",
+      "from": "cue",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "cues",
+      "fields": [
+        "cue",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "edge-cache",
+      "fields": {
+        "cue": "Cache content close to global users",
+        "answer": "Amazon CloudFront"
+      },
+      "detail": "CloudFront is the CDN choice.",
+      "hook": "Cache at edge = CloudFront.",
+      "objective": "3.4"
+    },
+    {
+      "id": "network-path",
+      "fields": {
+        "cue": "Improve global path to regional TCP/UDP endpoints",
+        "answer": "AWS Global Accelerator"
+      },
+      "detail": "Global Accelerator optimizes network routing.",
+      "hook": "Network acceleration, not caching.",
+      "objective": "3.4"
+    },
+    {
+      "id": "ddb-cache",
+      "fields": {
+        "cue": "Microsecond DynamoDB-compatible cache for eventually consistent cache hits",
+        "answer": "DAX"
+      },
+      "detail": "DAX strong reads pass through to DynamoDB; misses and expiry do not get cache-hit latency.",
+      "hook": "Dynamo cache = DAX.",
+      "objective": "3.3"
+    },
+    {
+      "id": "stream",
+      "fields": {
+        "cue": "Real-time streaming records with custom consumers",
+        "answer": "Kinesis Data Streams"
+      },
+      "detail": "Data Streams exposes records to consumers.",
+      "hook": "Consumers read the stream.",
+      "objective": "3.5"
+    },
+    {
+      "id": "delivery",
+      "fields": {
+        "cue": "Managed delivery of streaming data to S3",
+        "answer": "Amazon Data Firehose"
+      },
+      "detail": "Firehose delivers to supported destinations.",
+      "hook": "Deliver stream = Firehose.",
+      "objective": "3.5"
+    },
+    {
+      "id": "hpc",
+      "fields": {
+        "cue": "Very low-latency networking for supported HPC EC2 workloads",
+        "answer": "Elastic Fabric Adapter"
+      },
+      "detail": "EFA targets HPC networking.",
+      "hook": "HPC fabric = EFA.",
+      "objective": "3.2"
+    }
+  ]
+};
+const awsSaaCostCues: DrillDeck = {
+  "id": "aws-saa-cost-cues",
+  "certification": "AWS Solutions Architect – Associate",
+  "exam": "saa-c03",
+  "objective": "4.1–4.4",
+  "topic": "Cost-optimized architecture cues",
+  "modes": [
+    {
+      "id": "cueToAnswer",
+      "from": "cue",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "cues",
+      "fields": [
+        "cue",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "interruptible",
+      "fields": {
+        "cue": "Interruptible fault-tolerant compute",
+        "answer": "EC2 Spot Instances"
+      },
+      "detail": "Spot discounts spare EC2 capacity; interruption recovery and capacity availability affect total cost.",
+      "hook": "Can stop = Spot.",
+      "objective": "4.2"
+    },
+    {
+      "id": "steady",
+      "fields": {
+        "cue": "Predictable steady compute commitment",
+        "answer": "Savings Plans / eligible Reserved pricing"
+      },
+      "detail": "Commitment can reduce steady-use cost.",
+      "hook": "Steady = commit.",
+      "objective": "4.2"
+    },
+    {
+      "id": "archive",
+      "fields": {
+        "cue": "Automatically move aging S3 data to cheaper classes",
+        "answer": "S3 lifecycle policy"
+      },
+      "detail": "Lifecycle automates transitions.",
+      "hook": "Age changes storage class.",
+      "objective": "4.1"
+    },
+    {
+      "id": "idle",
+      "fields": {
+        "cue": "Sporadic event-driven job should not pay for idle servers",
+        "answer": "AWS Lambda"
+      },
+      "detail": "Serverless can remove idle-server cost for suitable jobs.",
+      "hook": "No idle server = Lambda.",
+      "objective": "4.2"
+    },
+    {
+      "id": "nat-cost",
+      "fields": {
+        "cue": "Heavy private-subnet S3 traffic is paying NAT processing charges",
+        "answer": "S3 gateway endpoint with appropriate routes and policies"
+      },
+      "detail": "S3 gateway endpoints avoid NAT processing for eligible S3 paths without endpoint hourly or data processing charges. Interface endpoints have different pricing.",
+      "hook": "AWS service private path = endpoint.",
+      "objective": "4.4"
+    },
+    {
+      "id": "oversized",
+      "fields": {
+        "cue": "Resource is consistently underutilized",
+        "answer": "Rightsize it"
+      },
+      "detail": "Rightsizing removes excess capacity cost.",
+      "hook": "Too big = rightsize.",
+      "objective": "4.2"
+    }
+  ]
+};
+
+export const drillDecks: DrillDeck[] = [awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
