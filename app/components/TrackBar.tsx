@@ -68,7 +68,7 @@ export function TrackBar() {
                 className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 ${
                   active
                     ? "track-accent-button border-transparent font-medium"
-                    : "border-slate-700 text-slate-200 hover:track-accent-border hover:text-white"
+                    : "border-slate-700 text-slate-200 hover:border-[var(--track-accent-line)] hover:text-white"
                 }`}
               >
                 <ToolIcon id={tool.id} width={16} height={16} />
