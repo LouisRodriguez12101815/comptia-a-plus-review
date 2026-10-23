@@ -5,6 +5,7 @@ import {
   EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftTest,
   gradeTest, isCorrect, mulberry32, questionsForLength, secondsPerQuestion,
 } from '../lib/exam-test.mjs';
+import { evaluateReadiness } from '../lib/readiness.ts';
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url)));
 const objectives = read('content/objectives.json');
@@ -111,4 +112,44 @@ test('AWS banks contain multi-response questions', () => {
     const multi = questions.filter((question) => ids.has(question.id) && Array.isArray(question.answer));
     assert.ok(multi.length >= 5, `${code} needs more multi-response coverage`);
   }
+});
+
+
+test('readiness requires three strong full mocks, domain floors, multi-response accuracy, and complete objectives', () => {
+  const attempt = (percent, domainPercent, multiCorrect = 3, multiTotal = 4) => ({
+    exam: 'saa-c03',
+    full: true,
+    percent,
+    domains: [
+      { id: '1.0', title: 'Secure', correct: domainPercent, total: 100 },
+      { id: '2.0', title: 'Resilient', correct: domainPercent, total: 100 },
+    ],
+    multiCorrect,
+    multiTotal,
+  });
+  const ready = evaluateReadiness([attempt(84, 78), attempt(82, 76), attempt(80, 72)], 'saa-c03', 0);
+  assert.equal(ready.status, 'ready');
+  assert.deepEqual(ready.blockers, []);
+
+  const weakDomain = evaluateReadiness([attempt(84, 69), attempt(83, 75), attempt(82, 76)], 'saa-c03', 0);
+  assert.equal(weakDomain.status, 'not-ready');
+  assert.ok(weakDomain.blockers.some((item) => item.includes('domain')));
+
+  const missing = evaluateReadiness([attempt(84, 78), attempt(83, 78), attempt(82, 78)], 'saa-c03', 1);
+  assert.equal(missing.status, 'not-ready');
+  assert.ok(missing.blockers.some((item) => item.includes('missing objective')));
+
+  const lowMulti = evaluateReadiness([attempt(84, 78, 2, 4), attempt(83, 78, 2, 4), attempt(82, 78, 2, 4)], 'saa-c03', 0);
+  assert.equal(lowMulti.multiPercent, 50);
+  assert.equal(lowMulti.status, 'not-ready');
+});
+
+test('readiness ignores non-full and other-exam attempts', () => {
+  const attempts = [
+    { exam: 'clf-c02', full: true, percent: 90, domains: [{ id: '1.0', title: 'Cloud', correct: 9, total: 10 }], multiCorrect: 4, multiTotal: 4 },
+    { exam: 'saa-c03', full: false, percent: 95, domains: [{ id: '1.0', title: 'Secure', correct: 9, total: 10 }], multiCorrect: 4, multiTotal: 4 },
+  ];
+  const result = evaluateReadiness(attempts, 'saa-c03', 0);
+  assert.equal(result.fullAttempts, 0);
+  assert.equal(result.status, 'not-ready');
 });
