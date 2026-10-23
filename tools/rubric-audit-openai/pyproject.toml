@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rubric-audit-openai"
+version = "0.1.0"
+description = "Independent rubric coverage assessment with OpenAI judgments and LangGraph control flow"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+graph = ["langgraph>=1,<2", "langgraph-checkpoint-sqlite>=3,<4"]
+openai = ["openai>=2,<3"]
+live = ["langgraph>=1,<2", "langgraph-checkpoint-sqlite>=3,<4", "openai>=2,<3"]
+
+[project.scripts]
+rubric-audit-openai = "rubric_audit_openai.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["rubric_audit_openai*"]

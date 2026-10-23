@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Remote-access path</title>
+<style>
+:root{--bg:#eef3fa;--surface:#fff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}.wrap{max-width:900px;margin:auto;padding:24px 0 40px}h1{font-size:26px;margin:0 0 6px}.lede,figcaption{color:var(--muted)}.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}.diagram{overflow-x:auto}svg{width:100%;height:auto;min-width:640px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button{font:inherit;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);padding:8px 13px;cursor:pointer}button[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.out{margin-top:14px;padding:12px;border-radius:10px;background:var(--accent-soft);min-height:48px}.good{background:var(--good-soft)}.bad{background:var(--bad-soft)}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><main class="wrap"><h1>Remote-access path</h1><p class="lede">Start with the task, then choose the remote-access method and protect the path.</p><section class="card">
+<figure><div class="diagram" tabindex="0" role="region" aria-label="Remote-access path diagram"><svg viewBox="0 0 760 300" role="img" aria-label="Remote user connecting through approved secure access to three remote administration methods">
+<circle cx="90" cy="150" r="48" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="90" y="145" text-anchor="middle" fill="var(--ink)" font-size="15" font-weight="700">Remote</text><text x="90" y="166" text-anchor="middle" fill="var(--muted)" font-size="13">technician</text>
+<rect x="245" y="110" width="150" height="80" rx="14" fill="var(--surface)" stroke="var(--good)" stroke-width="2"/><text x="320" y="143" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="700">Secure path</text><text x="320" y="166" text-anchor="middle" fill="var(--muted)" font-size="13">VPN / approved channel</text>
+<path d="M138 150H245" stroke="var(--good)" stroke-width="4" marker-end="url(#a)"/><path d="M395 150H485" stroke="var(--good)" stroke-width="4" marker-end="url(#a)"/>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--good)"/></marker></defs>
+<rect x="500" y="40" width="210" height="58" rx="10" fill="var(--accent-soft)" stroke="var(--line)"/><text x="605" y="64" text-anchor="middle" fill="var(--ink)" font-size="16" font-weight="700">RDP · 3389</text><text x="605" y="84" text-anchor="middle" fill="var(--muted)" font-size="12">Windows remote desktop</text>
+<rect x="500" y="121" width="210" height="58" rx="10" fill="var(--accent-soft)" stroke="var(--line)"/><text x="605" y="145" text-anchor="middle" fill="var(--ink)" font-size="16" font-weight="700">SSH · 22</text><text x="605" y="165" text-anchor="middle" fill="var(--muted)" font-size="12">Encrypted remote console</text>
+<rect x="500" y="202" width="210" height="58" rx="10" fill="var(--accent-soft)" stroke="var(--line)"/><text x="605" y="226" text-anchor="middle" fill="var(--ink)" font-size="16" font-weight="700">VNC · 5900</text><text x="605" y="246" text-anchor="middle" fill="var(--muted)" font-size="12">Remote screen/control</text>
+</svg></div><figcaption>A remote user reaches approved administration tools through a protected access path.</figcaption></figure>
+<div class="controls"><button data-r="ssh">Need encrypted CLI</button><button data-r="rdp">Need Windows desktop</button><button data-r="rmm">Need fleet management</button></div><div class="out" id="out" aria-live="polite">Choose an option to check your understanding.</div></section></main>
+<script type="application/json" id="visual-facts">{
+  "facts": [
+    {
+      "claim": "RDP is commonly associated with TCP 3389.",
+      "objectives": [
+        "220-1202 4.9"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Remote-access technologies"
+      ]
+    },
+    {
+      "claim": "SSH is encrypted remote console access commonly associated with TCP 22.",
+      "objectives": [
+        "220-1202 4.9"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Remote-access technologies"
+      ]
+    },
+    {
+      "claim": "VNC is commonly associated with port 5900.",
+      "objectives": [
+        "220-1202 4.9"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Remote-access technologies"
+      ]
+    }
+  ],
+  "simplifications": [
+    "The drawings are schematic learning diagrams, not product interfaces."
+  ]
+}</script>
+<script>document.querySelectorAll('button[data-r]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-r]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const m={ssh:'SSH is the best fit for encrypted command-line administration.',rdp:'RDP is the Windows remote desktop choice in these notes.',rmm:'RMM is the category for monitoring and managing many endpoints.'};document.getElementById('out').textContent=m[b.dataset.r];});</script></body></html>

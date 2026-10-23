@@ -4472,6 +4472,800 @@
     ]
   },
   {
+    "id": "core2-ch8-operational",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Scripting, Remote Access, and Artificial Intelligence",
+    "chapter": "Core 2 · Chapter 8",
+    "summary": "Script types and use cases, remote-access methods and security, and AI concepts, limitations, policy, and data handling.",
+    "concept": "reference",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1202 objective 4.8: explain the basics of scripting.",
+              "220-1202 objective 4.9: given a scenario, use remote-access technologies.",
+              "220-1202 objective 4.10: explain basic concepts related to artificial intelligence."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "script-types",
+        "title": "Script types, extensions, and interpreters",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "File type",
+              "Typical interpreter / use"
+            ],
+            "rows": [
+              [
+                ".bat / .cmd",
+                "Windows batch commands executed by the command processor."
+              ],
+              [
+                ".ps1",
+                "PowerShell script for Windows administration and automation."
+              ],
+              [
+                ".vbs",
+                "VBScript for Windows scripting and automation."
+              ],
+              [
+                ".sh",
+                "Shell script, commonly Bash on Linux and UNIX-like systems."
+              ],
+              [
+                ".js",
+                "JavaScript, commonly interpreted by browsers or JavaScript runtimes."
+              ],
+              [
+                ".py",
+                "Python script interpreted by Python."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "For A+ Core 2, focus on recognizing script types, extensions, constructs, and use cases. The notes do not require writing complete scripts."
+          }
+        ]
+      },
+      {
+        "id": "script-logic",
+        "title": "Variables, comments, branches, and loops",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "System variables are available to the system and programs; user variables apply to a specific user; program variables exist inside a script or application.",
+              "Variables can hold values used by a script. Common value categories include Boolean, integer, floating-point, and string data.",
+              "Branch logic chooses between paths based on a condition. Loops repeat work while a condition is true or across a defined range.",
+              "A for loop steps through a defined sequence. while and do-while styles repeat until their condition is no longer true.",
+              "Comments document intent and are ignored by the interpreter. Comment syntax varies by language."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "script-use-cases",
+        "title": "Scripting use cases and risks",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Use case",
+              "Example"
+            ],
+            "rows": [
+              [
+                "Basic automation",
+                "Repeat routine commands without retyping them."
+              ],
+              [
+                "Restarting machines",
+                "Automate planned reboots."
+              ],
+              [
+                "Network-drive mapping",
+                "Map or remap shared drives for users."
+              ],
+              [
+                "Application installation",
+                "Launch repeatable software-install tasks."
+              ],
+              [
+                "Automated backups",
+                "Start scheduled backup jobs."
+              ],
+              [
+                "Information gathering",
+                "Collect system or inventory data."
+              ],
+              [
+                "Updates",
+                "Initiate update tasks on one or more systems."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Scripts can introduce malware, change settings unintentionally, or exhaust resources and crash a browser or system. Review and test before broad use."
+          }
+        ]
+      },
+      {
+        "id": "powershell-basics",
+        "title": "PowerShell items to recognize",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Cmdlet",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "Get-Item",
+                "Gets an item such as a directory entry, environment variable, or registry key."
+              ],
+              [
+                "Set-Item",
+                "Changes an item, such as an environment variable or alias."
+              ],
+              [
+                "Copy-Item",
+                "Copies a file, folder, or other item."
+              ],
+              [
+                "Remove-Item",
+                "Deletes an item."
+              ],
+              [
+                "Move-Item",
+                "Moves an item."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A PowerShell variable name begins with $. The chapter notes use $home as an example of a PowerShell environment-related value."
+          }
+        ]
+      },
+      {
+        "id": "remote-access",
+        "title": "Remote-access technologies",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "What to know"
+            ],
+            "rows": [
+              [
+                "RDP",
+                "Microsoft remote desktop technology; commonly associated with TCP 3389."
+              ],
+              [
+                "VPN",
+                "Creates a protected tunnel so a remote user can reach a private network."
+              ],
+              [
+                "VNC",
+                "Cross-platform remote screen/control technology; commonly associated with port 5900."
+              ],
+              [
+                "SSH",
+                "Encrypted remote console access; commonly TCP 22."
+              ],
+              [
+                "RMM",
+                "Remote monitoring and management for administering many endpoints."
+              ],
+              [
+                "SPICE",
+                "Open-source remote-display protocol commonly associated with virtual desktop environments."
+              ],
+              [
+                "WinRM",
+                "Windows Remote Management for remote administration."
+              ],
+              [
+                "Third-party tools",
+                "Screen sharing, videoconferencing, file transfer, and desktop-management software."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Choose a remote-access method with security in mind. Prefer encrypted channels, strong authentication, and organization-approved tools."
+          }
+        ]
+      },
+      {
+        "id": "ai-basics",
+        "title": "Artificial intelligence: concepts and limitations",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "AI systems can simulate or imitate human-like tasks such as learning, language processing, classification, and problem solving.",
+              "Generative AI produces new content from prompts and learned patterns.",
+              "Large language models process text as tokens and generate likely continuations.",
+              "Training data and model design can introduce bias. Outputs can also contain hallucinations or other inaccuracies.",
+              "AI output must be verified before it is treated as reliable technical guidance."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Do not enter sensitive or confidential information into public AI systems unless organizational policy explicitly permits it."
+          }
+        ]
+      },
+      {
+        "id": "ai-policy",
+        "title": "AI policy, appropriate use, and private vs. public",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Concern",
+              "Exam-focused response"
+            ],
+            "rows": [
+              [
+                "Appropriate use",
+                "Follow organizational policy and use AI only for approved tasks."
+              ],
+              [
+                "Plagiarism",
+                "Do not present generated work as original when policy or assignment rules prohibit it."
+              ],
+              [
+                "Bias",
+                "Review outputs for unfair or unsupported assumptions."
+              ],
+              [
+                "Hallucinations / accuracy",
+                "Verify claims against trusted sources before acting."
+              ],
+              [
+                "Private vs. public AI",
+                "Understand where data is processed and what data sources or retention rules apply."
+              ],
+              [
+                "Data security",
+                "Keep regulated, customer, credential, and confidential data out of unapproved AI tools."
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-ch9-safety-environment",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Safety, Environmental Controls, and Policy",
+    "chapter": "Core 2 · Chapter 9",
+    "summary": "ESD and electrical safety, component handling and cable management, environmental controls and disposal, incident response, licensing, regulated data, and policy.",
+    "concept": "reference",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1202 objective 4.4: given a scenario, use common safety procedures.",
+              "220-1202 objective 4.5: summarize environmental impacts and local environmental controls.",
+              "220-1202 objective 4.6: explain the importance of prohibited content/activity and privacy, licensing, and policy concepts."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "esd",
+        "title": "ESD protection and component handling",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use an antistatic wrist strap and an ESD mat when appropriate to keep the technician and work surface at a safe electrical potential.",
+              "Store removed electronic components in antistatic bags.",
+              "Keep humidity in a reasonable range because very dry air increases static buildup.",
+              "Handle components by their edges and avoid touching contacts or exposed circuitry."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "ESD can damage electronics at levels far below what a person can feel. Do not use the absence of a visible spark or shock as proof that the component is safe."
+          }
+        ]
+      },
+      {
+        "id": "electrical-personal-safety",
+        "title": "Electrical and personal safety",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Hazard",
+              "Safe response"
+            ],
+            "rows": [
+              [
+                "Working inside a PC",
+                "Disconnect power before servicing internal components."
+              ],
+              [
+                "Heavy equipment",
+                "Use safe lifting technique and a cart when appropriate; clear the travel path first."
+              ],
+              [
+                "Eye or airborne-particle hazard",
+                "Use safety goggles or an appropriate filtration mask when the task calls for it."
+              ],
+              [
+                "Electrical fire",
+                "Do not use water on energized electrical equipment; use the correct extinguisher class and follow site procedures."
+              ],
+              [
+                "Stored electrical energy",
+                "Treat power supplies and display equipment as potentially hazardous even after unplugging."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Follow workplace and manufacturer procedures. Do not open or service high-voltage components unless the task, training, and authorization specifically permit it."
+          }
+        ]
+      },
+      {
+        "id": "cable-tools",
+        "title": "Cable management and tools",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Route and secure cables so they do not create trip hazards or block airflow.",
+              "Use cable ties, floor guards, conduits, or other approved methods when needed.",
+              "Use the right hand tool for the job and avoid improvised methods that can damage equipment or injure the technician.",
+              "The supplied notes recommend avoiding magnetic-tipped tools inside computers."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "environmental",
+        "title": "Environmental controls and disposal",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Area",
+              "What to know"
+            ],
+            "rows": [
+              [
+                "MSDS / safety documentation",
+                "Provides handling, storage, personal-protection, cleanup, and disposal information for hazardous materials."
+              ],
+              [
+                "Batteries and toner",
+                "Use the approved recycling or disposal process; do not treat them as ordinary office waste."
+              ],
+              [
+                "Temperature and humidity",
+                "Keep equipment within appropriate environmental ranges and maintain ventilation."
+              ],
+              [
+                "Dust",
+                "Control dust and use approved cleaning methods such as compressed air or suitable vacuums."
+              ],
+              [
+                "Power problems",
+                "A UPS can provide temporary power during an outage; a surge suppressor protects against voltage spikes."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "incident-response",
+        "title": "Incident response and evidence",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "When prohibited content or a serious incident is discovered, follow organizational procedure and report through the proper channels.",
+              "Preserve evidence instead of altering or deleting it.",
+              "Maintain chain of custody so the record shows who controlled the evidence and when.",
+              "Document the incident and preserve data integrity, including making an authorized copy of a drive when procedure requires it.",
+              "Use the order of volatility when deciding what evidence to capture first."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Do not confront a user, destroy evidence, or improvise outside policy. Escalate and preserve."
+          }
+        ]
+      },
+      {
+        "id": "licensing",
+        "title": "Licensing and digital rights",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "EULA",
+                "Defines the end user's rights and restrictions for software use."
+              ],
+              [
+                "DRM",
+                "Technical controls used to enforce rights or usage restrictions."
+              ],
+              [
+                "Valid license",
+                "Confirms the organization is entitled to install and use the software."
+              ],
+              [
+                "Perpetual license",
+                "A license that does not expire after a subscription period."
+              ],
+              [
+                "Personal vs. corporate license",
+                "Defines whether use is limited to an individual or licensed for organizational use."
+              ],
+              [
+                "Open-source license",
+                "Specifies the rights and obligations for using, modifying, and distributing open-source software."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "regulated-data",
+        "title": "Regulated and sensitive data",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Data / rule",
+              "Exam-focused meaning"
+            ],
+            "rows": [
+              [
+                "PII",
+                "Information that can identify an individual."
+              ],
+              [
+                "PHI",
+                "Health information associated with a patient or healthcare context."
+              ],
+              [
+                "Payment-card data",
+                "Handled under payment-industry security requirements such as PCI DSS."
+              ],
+              [
+                "GDPR",
+                "European Union privacy law governing personal data of people covered by the regulation."
+              ],
+              [
+                "Data retention",
+                "Rules for how long data must or may be kept."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The exam often gives you a type of data first. Identify the data category before choosing the policy or handling requirement."
+          }
+        ]
+      },
+      {
+        "id": "agreements-policies",
+        "title": "Agreements, acceptable use, and compliance",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "An NDA protects confidential information shared under an agreement; an MNDA applies confidentiality obligations to both parties.",
+              "An acceptable use policy (AUP) defines permitted and prohibited use of organizational systems and resources.",
+              "Organizations may need regulatory and business compliance controls, including notices or splash screens that communicate policy before access.",
+              "When a policy clearly prohibits an activity, use a separate authorized system or follow the approved exception process rather than ignoring the policy."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-ch10-docs-change-backup",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Documentation, Change Management, Backup, and Professionalism",
+    "chapter": "Core 2 · Chapter 10",
+    "summary": "Tickets and asset records, SOPs and knowledge bases, change control, backup and recovery methods, and professional customer communication.",
+    "concept": "reference",
+    "sections": [
+      {
+        "id": "objectives",
+        "title": "Exam objectives covered",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "220-1202 objective 4.1: given a scenario, implement best practices associated with documentation and support systems information management.",
+              "220-1202 objective 4.2: given a scenario, apply change-management procedures.",
+              "220-1202 objective 4.3: given a scenario, implement workstation backup and recovery methods.",
+              "220-1202 objective 4.7: given a scenario, use proper communication techniques and professionalism."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ticketing",
+        "title": "Ticketing systems",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Ticket field",
+              "Why it matters"
+            ],
+            "rows": [
+              [
+                "User information",
+                "Identifies who reported the issue and how to contact them."
+              ],
+              [
+                "Device information",
+                "Identifies the affected asset or system."
+              ],
+              [
+                "Issue description",
+                "Records the symptom and what the user reports."
+              ],
+              [
+                "Category",
+                "Groups similar issues for routing and reporting."
+              ],
+              [
+                "Severity",
+                "Records how serious the impact is."
+              ],
+              [
+                "Escalation level",
+                "Shows when and where the issue must be handed off."
+              ],
+              [
+                "Progress notes",
+                "Create a concise history of troubleshooting and actions taken."
+              ],
+              [
+                "Resolution",
+                "Records the fix and closes the loop for future support."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Clear, concise notes make repeat issues easier to resolve and give other technicians a reliable history."
+          }
+        ]
+      },
+      {
+        "id": "assets-docs",
+        "title": "Asset management and support documents",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Item",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "Inventory list",
+                "Tracks devices and equipment owned or managed by the organization."
+              ],
+              [
+                "CMDB",
+                "Tracks configuration items and their relationships."
+              ],
+              [
+                "Asset tag / ID",
+                "Provides a unique identifier for a physical asset."
+              ],
+              [
+                "Procurement lifecycle",
+                "Tracks acquisition through retirement."
+              ],
+              [
+                "Warranty and licensing",
+                "Records entitlement, support, and licensing status."
+              ],
+              [
+                "Incident report",
+                "Documents what happened, impact, root cause, and response."
+              ],
+              [
+                "SOP",
+                "Standardizes a repeatable procedure."
+              ],
+              [
+                "Knowledge base article",
+                "Provides a reusable reference for common symptoms and solutions."
+              ],
+              [
+                "Onboarding / off-boarding checklist",
+                "Standardizes setup, access changes, equipment assignment, and removal."
+              ],
+              [
+                "SLA",
+                "Defines agreed service levels such as response or resolution expectations."
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "change-management",
+        "title": "Change-management process",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Document the purpose, scope, affected systems, risk, responsible staff, date and time, and change type.",
+              "Use standard, normal, or emergency change categories according to organizational procedure.",
+              "Prepare a rollback plan and backup plan before implementation.",
+              "Test in a sandbox when possible before changing production.",
+              "Schedule the work inside an approved maintenance window and respect change freezes.",
+              "Obtain change-board approval when required, then implement, peer review, and obtain end-user acceptance."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A rollback plan exists so you can return to the prior known configuration if the change cannot proceed or fails."
+          }
+        ]
+      },
+      {
+        "id": "backup-types",
+        "title": "Backup types",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Backup",
+              "What it copies",
+              "Restore implication"
+            ],
+            "rows": [
+              [
+                "Full",
+                "All selected data.",
+                "Simplest restore; requires the full backup."
+              ],
+              [
+                "Incremental",
+                "Changes since the last backup of any type.",
+                "Restore needs the last full plus every incremental since it."
+              ],
+              [
+                "Differential",
+                "Changes since the last full backup.",
+                "Restore needs the last full plus the latest differential."
+              ],
+              [
+                "Synthetic full",
+                "Builds a new full backup from existing backup data without rereading every source file.",
+                "Produces a full restore point while reducing repeated source reads."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The distinction to memorize: incremental looks back to the last backup of any type; differential looks back to the last full."
+          }
+        ]
+      },
+      {
+        "id": "backup-recovery",
+        "title": "Recovery, testing, and rotation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Recovery can restore data in place or to an alternative location.",
+              "Backups are not trustworthy until a restore is tested.",
+              "Use an appropriate testing frequency based on organizational risk and policy.",
+              "Grandfather-father-son rotation uses daily, weekly, and monthly generations.",
+              "The 3-2-1 rule keeps three copies of data, on two media types, with one copy offsite.",
+              "Onsite copies are fast to access; offsite copies protect against a site-level disaster."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "professionalism",
+        "title": "Professional communication",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Present a professional appearance appropriate to the environment.",
+              "Use plain language and avoid unnecessary jargon, acronyms, or slang.",
+              "Maintain a positive attitude and project confidence without making promises you cannot keep.",
+              "Actively listen, take notes, and avoid interrupting the customer.",
+              "Be culturally sensitive and use appropriate professional titles when applicable.",
+              "Be on time; if you will be late, contact the customer.",
+              "Avoid distractions such as personal calls, texting, or social media while working with a customer."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "difficult-customers",
+        "title": "Difficult situations, expectations, and confidentiality",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Do not argue, become defensive, dismiss the customer's problem, or become judgmental.",
+              "Clarify vague statements with open-ended questions and restate the issue to confirm understanding.",
+              "Set expectations and timelines, then communicate status when circumstances change.",
+              "Offer repair or replacement options when appropriate and document services provided.",
+              "Follow up later when required to verify satisfaction.",
+              "Protect confidential and private material visible on customer systems, desktops, printers, and other devices."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "When you cannot meet a promised timeline, communicate the change directly instead of silently missing the commitment."
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "core2-operational-procedures",
     "group": "core2",
     "examCodes": [

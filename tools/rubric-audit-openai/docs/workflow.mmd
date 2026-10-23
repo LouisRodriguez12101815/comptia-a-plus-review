@@ -1,0 +1,15 @@
+flowchart TD
+    start(["Start"]) --> snapshot["Freeze inputs and configuration"]
+    snapshot --> extract["Import rubric"]
+    extract --> verify["Verify rubric structure"]
+    verify --> prepare["Prepare fingerprinted requests"]
+    prepare -->|"Jobs: parallel fan-out"| grade_batch["OpenAI grader batches"]
+    prepare -->|"No pending jobs"| merge["Validate and merge answers"]
+    grade_batch --> merge
+    merge --> recheck["Plan broader evidence recheck"]
+    recheck --> finish{"More grading required?"}
+    finish -->|"Yes, within attempt limit"| prepare
+    finish -->|"Complete or limit reached"| evaluate["Prepare blinded review sample"]
+    evaluate --> report["Write CSV and review report"]
+    report --> done(["Complete or needs review"])
+

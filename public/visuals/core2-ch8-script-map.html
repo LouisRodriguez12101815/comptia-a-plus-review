@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Script extension map</title>
+<style>
+:root{--bg:#eef3fa;--surface:#fff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}.wrap{max-width:900px;margin:auto;padding:24px 0 40px}h1{font-size:26px;margin:0 0 6px}.lede,figcaption{color:var(--muted)}.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}.diagram{overflow-x:auto}svg{width:100%;height:auto;min-width:640px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button{font:inherit;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);padding:8px 13px;cursor:pointer}button[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.out{margin-top:14px;padding:12px;border-radius:10px;background:var(--accent-soft);min-height:48px}.good{background:var(--good-soft)}.bad{background:var(--bad-soft)}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><main class="wrap"><h1>Script extension map</h1><p class="lede">Use the extension as the quickest clue to the scripting environment.</p><section class="card">
+<figure><div class="diagram" tabindex="0" role="region" aria-label="Script extension map diagram"><svg viewBox="0 0 760 260" role="img" aria-label="Six script file extensions grouped with their interpreters">
+<rect x="25" y="35" width="105" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="77" y="65" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="700">.ps1</text><text x="77" y="90" text-anchor="middle" fill="var(--muted)" font-size="13">PowerShell</text>
+<rect x="145" y="35" width="105" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="197" y="65" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="700">.bat</text><text x="197" y="90" text-anchor="middle" fill="var(--muted)" font-size="13">Batch</text>
+<rect x="265" y="35" width="105" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="317" y="65" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="700">.vbs</text><text x="317" y="90" text-anchor="middle" fill="var(--muted)" font-size="13">VBScript</text>
+<rect x="385" y="35" width="105" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="437" y="65" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="700">.sh</text><text x="437" y="90" text-anchor="middle" fill="var(--muted)" font-size="13">Shell / Bash</text>
+<rect x="505" y="35" width="105" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="557" y="65" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="700">.js</text><text x="557" y="90" text-anchor="middle" fill="var(--muted)" font-size="13">JavaScript</text>
+<rect x="625" y="35" width="105" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="677" y="65" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="700">.py</text><text x="677" y="90" text-anchor="middle" fill="var(--muted)" font-size="13">Python</text>
+<path d="M80 160 H680" stroke="var(--line)" stroke-width="3"/><text x="380" y="195" text-anchor="middle" fill="var(--muted)" font-size="15">Recognize the extension → identify the scripting environment</text>
+</svg></div><figcaption>The six script file types emphasized in the Chapter 8 notes.</figcaption></figure>
+<div class="controls"><button data-a="ps1">Which is PowerShell?</button><button data-a="sh">Which is shell/Bash?</button><button data-a="py">Which is Python?</button></div><div class="out" id="out" aria-live="polite">Choose an option to check your understanding.</div></section></main>
+<script type="application/json" id="visual-facts">{
+  "facts": [
+    {
+      "claim": ".ps1 identifies a PowerShell script.",
+      "objectives": [
+        "220-1202 4.8"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Script types, extensions, and interpreters"
+      ]
+    },
+    {
+      "claim": ".sh identifies a shell script, commonly Bash.",
+      "objectives": [
+        "220-1202 4.8"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Script types, extensions, and interpreters"
+      ]
+    },
+    {
+      "claim": ".py identifies a Python script.",
+      "objectives": [
+        "220-1202 4.8"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Script types, extensions, and interpreters"
+      ]
+    }
+  ],
+  "simplifications": [
+    "The drawings are schematic learning diagrams, not product interfaces."
+  ]
+}</script>
+<script>document.querySelectorAll('button[data-a]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-a]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const m={ps1:'.ps1 → PowerShell',sh:'.sh → shell/Bash',py:'.py → Python'};document.getElementById('out').textContent=m[b.dataset.a];});</script></body></html>
