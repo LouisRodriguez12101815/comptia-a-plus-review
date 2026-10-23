@@ -1423,7 +1423,52 @@ const c2ScriptsRemoteAi: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
+
+const awsClfServiceCompare: DrillDeck = {
+  id: "aws-clf-service-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "2.1–4.3",
+  topic: "AWS service positioning",
+  modes: [{ id: "scenarioToAnswer", from: "scenario", to: "answer" }],
+  tables: [{ id: "scenarios", fields: ["scenario", "answer"] }],
+  items: [
+    { id: "metrics", fields: { scenario: "Metrics, logs, alarms, and dashboards", answer: "Amazon CloudWatch" }, detail: "CloudWatch is the monitoring and observability choice.", hook: "Watch = metrics and alarms." },
+    { id: "audit", fields: { scenario: "Record AWS account and API activity", answer: "AWS CloudTrail" }, detail: "CloudTrail records API activity for auditing.", hook: "Trail = who did what." },
+    { id: "config", fields: { scenario: "Track configuration history and evaluate configuration rules", answer: "AWS Config" }, detail: "Config records resource configuration state and compliance.", hook: "Config = configuration history." },
+    { id: "queue", fields: { scenario: "Durable asynchronous queue between application components", answer: "Amazon SQS" }, detail: "SQS decouples producers and consumers with a queue.", hook: "Q = queue." },
+    { id: "fanout", fields: { scenario: "Publish one message to multiple subscribers", answer: "Amazon SNS" }, detail: "SNS is publish/subscribe fanout.", hook: "Notify many = SNS." },
+    { id: "object", fields: { scenario: "Object storage in buckets", answer: "Amazon S3" }, detail: "S3 is object storage.", hook: "S3 = objects in buckets." },
+    { id: "block", fields: { scenario: "Persistent block volume for EC2", answer: "Amazon EBS" }, detail: "EBS is persistent block storage.", hook: "B = block." },
+    { id: "dns", fields: { scenario: "Managed DNS and routing policies", answer: "Amazon Route 53" }, detail: "Route 53 provides DNS and routing policies.", hook: "Route names with Route 53." },
+    { id: "relational", fields: { scenario: "Managed relational database", answer: "Amazon RDS" }, detail: "RDS manages relational database engines.", hook: "RDS = relational." },
+    { id: "nosql", fields: { scenario: "Managed key-value/document database", answer: "Amazon DynamoDB" }, detail: "DynamoDB is managed NoSQL.", hook: "DynamoDB = NoSQL." }
+  ],
+};
+
+const awsSaaServiceCompare: DrillDeck = {
+  id: "aws-saa-service-compare",
+  certification: "AWS Solutions Architect – Associate",
+  exam: "saa-c03",
+  objective: "1.1–4.4",
+  topic: "AWS architecture tradeoffs",
+  modes: [{ id: "scenarioToAnswer", from: "scenario", to: "answer" }],
+  tables: [{ id: "scenarios", fields: ["scenario", "answer"] }],
+  items: [
+    { id: "sg-nacl", fields: { scenario: "Stateful resource-level network filtering", answer: "Security group" }, detail: "Security groups are stateful.", hook: "Security group remembers return traffic." },
+    { id: "nacl", fields: { scenario: "Stateless subnet-level allow and deny rules", answer: "Network ACL" }, detail: "NACLs are stateless subnet controls.", hook: "NACL = subnet edge." },
+    { id: "multiaz", fields: { scenario: "Improve RDS availability across Availability Zones", answer: "RDS Multi-AZ" }, detail: "Multi-AZ is primarily for availability.", hook: "Multi-AZ = survive AZ failure." },
+    { id: "readreplica", fields: { scenario: "Scale reads on a relational database", answer: "RDS read replica" }, detail: "Read replicas add read capacity.", hook: "Replica = reads." },
+    { id: "nat", fields: { scenario: "Private subnet needs outbound internet without direct inbound exposure", answer: "NAT gateway" }, detail: "NAT gateway provides outbound internet access for private subnets.", hook: "Private out = NAT." },
+    { id: "directconnect", fields: { scenario: "Dedicated private connectivity from on-premises to AWS", answer: "AWS Direct Connect" }, detail: "Direct Connect is dedicated private connectivity.", hook: "Dedicated circuit = Direct Connect." },
+    { id: "cloudfront", fields: { scenario: "Cache and deliver content near global users", answer: "Amazon CloudFront" }, detail: "CloudFront is AWS CDN.", hook: "Front = content near users." },
+    { id: "lambda", fields: { scenario: "Event-driven compute without server management", answer: "AWS Lambda" }, detail: "Lambda runs serverless functions.", hook: "Event arrives, function runs." },
+    { id: "spot", fields: { scenario: "Lowest-cost compute for interruption-tolerant batch work", answer: "EC2 Spot Instances" }, detail: "Spot uses spare capacity and can be interrupted.", hook: "Cheap if interruption is okay." },
+    { id: "role", fields: { scenario: "Temporary AWS permissions for an application", answer: "IAM role" }, detail: "Roles provide temporary credentials.", hook: "Applications assume roles." }
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [awsClfServiceCompare, awsSaaServiceCompare, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
