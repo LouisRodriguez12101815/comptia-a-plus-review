@@ -105,13 +105,13 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           ))}
         </section>
         <section aria-label="Objective-first study workflow" className="grid gap-4 md:grid-cols-2">
-          <Link href="/coverage" className="rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5 hover:border-teal-400">
-            <p className="text-xs font-medium uppercase tracking-wide text-teal-300">{track.code}</p>
+          <Link href="/coverage" className="rounded-2xl border track-accent-border track-accent-surface p-5 hover:track-accent-border">
+            <p className="text-xs font-medium uppercase tracking-wide track-accent-text">{track.code}</p>
             <h2 className="mt-2 text-lg font-semibold text-white">{tHeader("objectiveLab")}</h2>
             <p className="mt-2 text-sm text-slate-300">{tCoverage("intro")}</p>
           </Link>
-          <Link href="/assessment-workflow" className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 hover:border-teal-400">
-            <p className="text-xs font-medium uppercase tracking-wide text-teal-300">{tHeader("methods")}</p>
+          <Link href="/assessment-workflow" className="track-accent-border rounded-2xl border bg-slate-900/60 p-5 transition hover:bg-slate-900">
+            <p className="text-xs font-medium uppercase tracking-wide track-accent-text">{tHeader("methods")}</p>
             <h2 className="mt-2 text-lg font-semibold text-white">{tMethods("title")}</h2>
             <p className="mt-2 text-sm text-slate-300">{tMethods("metadataDescription")}</p>
           </Link>
@@ -120,7 +120,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
       ) : null}
 
       {track.focus && track.focus !== "all" ? (
-        <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5">
+        <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border track-accent-border track-accent-surface p-5">
           <div>
             <h2 id="test-mode-heading" className="text-lg font-medium text-white">{t("testModeTitle")}</h2>
             <p className="mt-1 max-w-xl text-sm text-slate-300">
@@ -145,7 +145,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
             const inner = (
               <>
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-teal-400">
+                  <span className="track-accent-text">
                     <ToolIcon id={tool.id} width={26} height={26} />
                   </span>
                   <StatusChip state={tool.state}>{tTrack(`chips.${tool.chip.key}`, { count: tool.chip.count ?? 0 })}</StatusChip>
@@ -168,8 +168,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                     focus={tool.focus}
                     className={`${tileBase} ${
                       tool.state === "soon"
-                        ? "border-dashed border-slate-700 bg-slate-900/30 hover:border-teal-400"
-                        : "border-slate-800 bg-slate-900 hover:border-teal-400"
+                        ? "border-dashed border-slate-700 bg-slate-900/30 hover:track-accent-border"
+                        : "border-slate-800 bg-slate-900 hover:track-accent-border"
                     }`}
                   >
                     {inner}
@@ -196,9 +196,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
               <li key={chapter.href}>
                 <Link
                   href={chapter.href}
-                  className="block h-full rounded-2xl border border-slate-800 bg-slate-900 p-4 hover:border-teal-400"
+                  className="track-accent-border block h-full rounded-2xl border bg-slate-900/70 p-4 transition hover:bg-slate-900"
                 >
-                  <p className="text-xs uppercase tracking-wide text-teal-300">{tChapter(`${chapter.id}.label`)}</p>
+                  <p className="text-xs uppercase tracking-wide track-accent-text">{tChapter(`${chapter.id}.label`)}</p>
                   <p className="mt-1 font-medium text-white">{tChapter(`${chapter.id}.title`)}</p>
                 </Link>
               </li>
@@ -222,9 +222,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
               <li key={lab.slug}>
                 <Link
                   href={`/labs/${lab.slug}`}
-                  className="block h-full rounded-2xl border border-slate-800 bg-slate-900 p-4 hover:border-teal-400"
+                  className="track-accent-border block h-full rounded-2xl border bg-slate-900/70 p-4 transition hover:bg-slate-900"
                 >
-                  <p className="text-xs uppercase tracking-wide text-teal-300">{lab.subtitle}</p>
+                  <p className="text-xs uppercase tracking-wide track-accent-text">{lab.subtitle}</p>
                   <p className="mt-1 font-medium text-white">{lab.title}</p>
                   <p className="mt-2 text-sm text-slate-400">{lab.summary}</p>
                 </Link>
@@ -247,9 +247,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                 <li key={topic.id}>
                   <Link
                     href={`/notes/${topic.id}`}
-                    className="block h-full rounded-2xl border border-slate-800 bg-slate-900 p-4 hover:border-teal-400"
+                    className="track-accent-border block h-full rounded-2xl border bg-slate-900/70 p-4 transition hover:bg-slate-900"
                   >
-                    <p className="text-xs uppercase tracking-wide text-teal-300">
+                    <p className="text-xs uppercase tracking-wide track-accent-text">
                       {topic.weak ? t("weakArea", { chapter: topic.chapter }) : topic.chapter}
                     </p>
                     <p className="mt-1 font-medium text-white">{topic.title}</p>
@@ -275,9 +275,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                   <li key={topic.id}>
                     <Link
                       href={`/notes/${topic.id}`}
-                      className="block h-full rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-teal-400"
+                      className="track-accent-border block h-full rounded-2xl border bg-slate-900/50 p-4 transition hover:bg-slate-900"
                     >
-                      <p className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-teal-300">
+                      <p className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide track-accent-text">
                         {topic.chapter}
                         <span className="rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 normal-case tracking-normal text-cyan-200">
                           {t("alsoIn", { tracks: alsoIn.join(", ") })}
