@@ -40,6 +40,9 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
         <p className="text-sm uppercase tracking-wide text-teal-300">{t("eyebrow")}</p>
         <h1 className="text-3xl font-semibold text-white sm:text-4xl">{t("heading")}</h1>
         <p className="max-w-3xl text-slate-300">{t("intro")}</p>
+        <Link href="/assessment-workflow" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200">
+          {t("assessmentWorkflow")}<span aria-hidden="true"> →</span>
+        </Link>
         <div className="rounded-xl border border-amber-400/30 bg-amber-400/5 p-4 text-sm text-slate-300">
           <p className="font-medium text-amber-200">{objectives.reviewed ? t("reviewed") : t("preliminary")}</p>
           <p className="mt-2">{t("statusExplainer")}</p>
