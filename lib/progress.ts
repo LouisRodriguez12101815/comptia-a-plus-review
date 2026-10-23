@@ -26,6 +26,8 @@ export type MockAttempt = {
   domains: MockDomainResult[];
   multiCorrect: number;
   multiTotal: number;
+  /** Question IDs shown in this sitting. Older saved attempts may not have this field. */
+  questionIds?: string[];
   missedIds: string[];
   at: number;
 };
@@ -88,6 +90,7 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && Number.isFinite(value.correct) && Number.isFinite(value.total) && Number.isFinite(value.percent)
     && Array.isArray(value.domains) && value.domains.every(isMockDomain)
     && Number.isFinite(value.multiCorrect) && Number.isFinite(value.multiTotal)
+    && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")))
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
