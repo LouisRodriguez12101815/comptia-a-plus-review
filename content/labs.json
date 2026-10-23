@@ -2571,5 +2571,499 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "aws-saa-vpc-public-private",
+    "title": "AWS SAA Lab — Public and Private VPC",
+    "subtitle": "Solutions Architect · VPC routing",
+    "summary": "Design a two-AZ VPC with public and private subnets, internet gateways, NAT gateways, route tables, and security controls; paper-first with optional console build.",
+    "skills": [
+      "VPC",
+      "Subnets",
+      "Route tables",
+      "Internet Gateway",
+      "NAT Gateway",
+      "Security groups",
+      "NACLs",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-networking",
+      "aws-saa-resilient-architectures"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A web application has internet-facing load balancers but private application instances. It must survive one AZ failure and private instances need outbound patch access."
+          }
+        ]
+      },
+      {
+        "id": "design",
+        "title": "Design",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Choose a VPC CIDR that does not overlap connected networks.",
+              "Create public and private subnets in at least two AZs.",
+              "Place internet-facing entry points and NAT gateways in public subnets.",
+              "Route private IPv4 internet-bound traffic to NAT; route public-subnet internet traffic to an internet gateway.",
+              "Use security groups for workload-level stateful filtering; use NACLs only when subnet-level stateless rules are required."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verify",
+        "title": "Verification questions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Check",
+              "Expected"
+            ],
+            "rows": [
+              [
+                "Private instance has no public IPv4",
+                "Yes"
+              ],
+              [
+                "Private instance can reach required internet endpoints through NAT",
+                "Yes"
+              ],
+              [
+                "Internet cannot initiate connections directly to private instance",
+                "Yes"
+              ],
+              [
+                "One AZ failure leaves another application path",
+                "Yes"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-alb-autoscaling",
+    "title": "AWS SAA Lab — ALB and Auto Scaling",
+    "subtitle": "Solutions Architect · resilient compute",
+    "summary": "Design a highly available web tier using an Application Load Balancer, launch template, health checks, and an Auto Scaling group across Availability Zones.",
+    "skills": [
+      "Application Load Balancer",
+      "Auto Scaling",
+      "Launch templates",
+      "Health checks",
+      "Multi-AZ",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-compute",
+      "aws-saa-resilient-architectures",
+      "aws-saa-high-performing"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Traffic changes throughout the day. The application is stateless and must continue if one instance or one AZ fails."
+          }
+        ]
+      },
+      {
+        "id": "build",
+        "title": "Architecture steps",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Define a launch template with the required AMI, instance type, security group, and IAM role.",
+              "Create an Auto Scaling group spanning at least two AZs.",
+              "Place an Application Load Balancer across public subnets and register the Auto Scaling target group.",
+              "Use application health checks rather than only instance-state checks.",
+              "Choose target tracking for a metric that reflects workload demand."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "break",
+        "title": "Break/fix thought experiment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Terminate one application instance. Predict which components detect the failure, how traffic is protected, and how replacement capacity is created."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-rds-ha-read-scaling",
+    "title": "AWS SAA Lab — RDS HA vs Read Scaling",
+    "subtitle": "Solutions Architect · database architecture",
+    "summary": "Choose between Multi-AZ, read replicas, backups, and RDS Proxy for availability, read scaling, recovery, and connection pressure.",
+    "skills": [
+      "RDS",
+      "Multi-AZ",
+      "Read replicas",
+      "RDS Proxy",
+      "Backups",
+      "RTO/RPO",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-databases",
+      "aws-saa-resilient-architectures",
+      "aws-saa-high-performing"
+    ],
+    "sections": [
+      {
+        "id": "cases",
+        "title": "Choose the feature",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Best first choice"
+            ],
+            "rows": [
+              [
+                "Automatic AZ-level database failover",
+                "Multi-AZ"
+              ],
+              [
+                "Offload read-only reporting",
+                "Read replica"
+              ],
+              [
+                "Thousands of short-lived application connections",
+                "RDS Proxy"
+              ],
+              [
+                "Recover an earlier database state",
+                "Backups / point-in-time recovery where supported"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "explain",
+        "title": "Explain why not the others",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "For each row, explain why the other three choices do not primarily solve the stated requirement. This is the same tradeoff reasoning SAA scenarios demand."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-iam-cross-account",
+    "title": "AWS SAA Lab — Least Privilege and Cross-Account Roles",
+    "subtitle": "Solutions Architect · secure access",
+    "summary": "Design role trust, permissions, temporary credentials, and a permissions boundary for a cross-account application-access scenario.",
+    "skills": [
+      "IAM roles",
+      "STS",
+      "Trust policies",
+      "Identity policies",
+      "Permissions boundaries",
+      "Least privilege",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-identity-observability",
+      "aws-saa-secure-architectures"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An application in Account A needs read-only access to one S3 bucket in Account B. No long-lived credentials may be stored."
+          }
+        ]
+      },
+      {
+        "id": "model",
+        "title": "Permission model",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Create a role in Account B with a trust relationship that permits the approved principal in Account A to assume it.",
+              "Attach only the required S3 read permissions to the role.",
+              "Allow the caller in Account A to call sts:AssumeRole for that role.",
+              "Use the returned temporary credentials in the workload.",
+              "Optionally apply a permissions boundary when delegated administrators must be constrained."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "trap",
+        "title": "Exam traps",
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A permissions boundary does not grant access. A trust policy determines who may assume the role; a permissions policy determines what the role may do."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-route53-policies",
+    "title": "AWS SAA Lab — Route 53 Policy Picker",
+    "subtitle": "Solutions Architect · DNS architecture",
+    "summary": "Match weighted, latency, failover, geolocation, geoproximity, multivalue, and simple routing to architecture requirements.",
+    "skills": [
+      "Route 53",
+      "Health checks",
+      "Weighted routing",
+      "Latency routing",
+      "Failover routing",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-dns-data",
+      "aws-saa-resilient-architectures",
+      "aws-saa-high-performing"
+    ],
+    "sections": [
+      {
+        "id": "matrix",
+        "title": "Routing-policy matrix",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Policy"
+            ],
+            "rows": [
+              [
+                "10% canary / 90% stable",
+                "Weighted"
+              ],
+              [
+                "Lowest-latency selected Region",
+                "Latency"
+              ],
+              [
+                "Primary endpoint then secondary on failure",
+                "Failover"
+              ],
+              [
+                "Route by user geography",
+                "Geolocation"
+              ],
+              [
+                "Route by resource/user geography with bias",
+                "Geoproximity"
+              ],
+              [
+                "Return several healthy records",
+                "Multi-value answer"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "transfer",
+        "title": "Transfer task",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Write one scenario where latency routing would be wrong even though the user is geographically close to the endpoint."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-s3-lifecycle-replication",
+    "title": "AWS SAA Lab — S3 Lifecycle, Versioning, and Replication",
+    "subtitle": "Solutions Architect · storage architecture",
+    "summary": "Design an object-storage policy that balances durability, recovery, access pattern, lifecycle cost, and cross-Region requirements.",
+    "skills": [
+      "S3",
+      "Versioning",
+      "Lifecycle",
+      "Replication",
+      "Storage classes",
+      "Presigned URLs",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-storage",
+      "aws-saa-cost-optimized",
+      "aws-saa-resilient-architectures"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Application logs are read often for 30 days, rarely for the next year, and must be retained for seven years. A copy must exist in a second Region."
+          }
+        ]
+      },
+      {
+        "id": "policy",
+        "title": "Policy decisions",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Enable versioning when replication/recovery requirements call for it.",
+              "Choose lifecycle transitions based on actual access and retrieval requirements.",
+              "Configure cross-Region replication when the geographic-copy requirement exists.",
+              "Use expiration only when retention policy permits deletion.",
+              "Keep the bucket private and use presigned access when temporary sharing is required."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-dr-patterns",
+    "title": "AWS SAA Lab — Disaster Recovery Pattern Selection",
+    "subtitle": "Solutions Architect · resiliency",
+    "summary": "Choose backup/restore, pilot light, warm standby, or active/active from RTO, RPO, budget, and operational constraints.",
+    "skills": [
+      "Disaster recovery",
+      "RTO",
+      "RPO",
+      "Multi-Region",
+      "Backup",
+      "Failover",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-resilient-architectures",
+      "aws-saa-cost-optimized"
+    ],
+    "sections": [
+      {
+        "id": "cases",
+        "title": "Choose the least-expensive pattern that meets the target",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Likely pattern"
+            ],
+            "rows": [
+              [
+                "Hours to restore; lowest steady cost",
+                "Backup and restore"
+              ],
+              [
+                "Core data/services ready; scale during recovery",
+                "Pilot light"
+              ],
+              [
+                "Functional reduced-capacity environment already running",
+                "Warm standby"
+              ],
+              [
+                "Near-immediate regional failover with high budget",
+                "Active/active"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "test",
+        "title": "Validation",
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A disaster-recovery architecture is not proven until recovery is tested. Validate dependencies, data, DNS/routing, credentials, quotas, and application startup order."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-sqs-decoupling",
+    "title": "AWS SAA Lab — Decouple a Bursty Workflow",
+    "subtitle": "Solutions Architect · messaging",
+    "summary": "Redesign a synchronous producer/worker application with SQS, retries, dead-letter handling, idempotency, and independent scaling.",
+    "skills": [
+      "SQS",
+      "Dead-letter queues",
+      "Auto Scaling",
+      "Lambda",
+      "Idempotency",
+      "Decoupling",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-dns-data",
+      "aws-saa-resilient-architectures"
+    ],
+    "sections": [
+      {
+        "id": "before",
+        "title": "Before",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A web request directly calls a slow image-processing worker. Traffic spikes cause timeouts and failed uploads."
+          }
+        ]
+      },
+      {
+        "id": "after",
+        "title": "After",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The web tier stores the job request in SQS and returns quickly.",
+              "Workers poll the queue and scale independently.",
+              "Visibility timeout protects in-flight work; failed messages can move to a dead-letter queue after configured retries.",
+              "Processing should be idempotent so duplicate delivery does not corrupt results."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verify",
+        "title": "Failure test",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Stop all workers while producers continue. Predict what happens to queued work, then restart the workers and verify the backlog drains."
+          }
+        ]
+      }
+    ]
   }
 ]
