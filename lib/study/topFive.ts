@@ -182,7 +182,166 @@ const core2: TopFive = {
   ],
 };
 
-export const topFives: TopFive[] = [core1, core2];
+
+const awsClf: TopFive = {
+  id: "aws-clf",
+  certification: "AWS Certified Cloud Practitioner",
+  exam: "clf-c02",
+  concepts: [
+    {
+      id: "service-positioning",
+      title: "Recognize the right AWS service for the job",
+      domains: ["3"],
+      objectives: "3.1–3.8",
+      why: "Cloud Technology and Services is the largest CLF-C02 domain, and many questions are service-recognition decisions rather than implementation tasks.",
+      facts: [
+        "EC2 = virtual machines; Lambda = event-driven serverless functions; ECS/EKS = containers; Fargate = serverless container compute.",
+        "S3 = object storage; EBS = block storage; EFS/FSx = file storage.",
+        "RDS/Aurora = relational; DynamoDB = key-value/document NoSQL; ElastiCache = in-memory cache; Redshift = data warehouse.",
+        "Route 53 = DNS; CloudFront = CDN; Direct Connect = dedicated private connectivity; Site-to-Site VPN = encrypted internet tunnel.",
+        "CloudWatch = metrics/logs/alarms; CloudTrail = API audit; Config = resource configuration history/rules.",
+      ],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues"],
+    },
+    {
+      id: "security",
+      title: "Shared responsibility, IAM, and core security services",
+      domains: ["2"],
+      objectives: "2.1–2.4",
+      why: "Security and Compliance is 30% of scored content and combines responsibility boundaries with identity, compliance, encryption, and security-service recognition.",
+      facts: [
+        "AWS secures the infrastructure of the cloud; customers secure data, identities, permissions, and many workload configurations.",
+        "Protect the root user, use MFA, apply least privilege, and prefer roles/temporary credentials for workloads.",
+        "KMS manages encryption keys; Secrets Manager stores and rotates application secrets.",
+        "Artifact = compliance reports; GuardDuty = threat detection; Inspector = vulnerability management; Shield = DDoS; WAF = web request filtering.",
+      ],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues"],
+    },
+    {
+      id: "global-cloud",
+      title: "Cloud value, elasticity, Regions, AZs, and edge",
+      domains: ["1", "3"],
+      objectives: "1.1–1.4, 3.2",
+      why: "These concepts appear directly and also act as context for availability, latency, migration, and economics questions.",
+      facts: [
+        "Scalability supports larger workloads; elasticity dynamically adjusts capacity as demand changes.",
+        "A Region contains multiple isolated Availability Zones; edge locations are separate points of presence for supported edge services.",
+        "Multi-AZ improves availability within a Region; multi-Region designs address regional DR, sovereignty, or global latency.",
+        "Cloud economics favor rightsizing, automation, variable usage-based spending, and reducing overprovisioning.",
+      ],
+      drills: ["aws-clf-domain-cues"],
+    },
+    {
+      id: "billing",
+      title: "Pricing models, cost tools, and Organizations",
+      domains: ["4"],
+      objectives: "4.1, 4.2",
+      why: "Billing questions are small in weight but highly learnable because each tool and purchasing option has a distinct purpose.",
+      facts: [
+        "Pricing Calculator estimates planned cost; Cost Explorer analyzes actual spend; Budgets alerts on thresholds.",
+        "On-Demand = flexibility; commitment models can reduce steady-use cost; Spot = interruption-tolerant spare capacity.",
+        "Organizations supports multi-account management and consolidated billing.",
+        "Cost allocation tags help attribute spend to teams, projects, or environments.",
+      ],
+      drills: ["aws-clf-domain-cues"],
+    },
+    {
+      id: "support",
+      title: "AWS support and technical resources",
+      domains: ["4"],
+      objectives: "4.3",
+      why: "Support questions reward knowing where to look: official documentation, re:Post, Knowledge Center, Prescriptive Guidance, Support Center, and the appropriate support channel.",
+      facts: [
+        "Use official AWS documentation and whitepapers for authoritative service guidance.",
+        "AWS re:Post is a managed community knowledge/Q&A resource.",
+        "Prescriptive Guidance provides patterns and implementation guidance.",
+        "Support-plan details can change, so verify current AWS support offerings rather than relying on stale memorization.",
+      ],
+      drills: ["aws-clf-domain-cues"],
+    },
+  ],
+};
+
+
+const awsSaa: TopFive = {
+  id: "aws-saa",
+  certification: "AWS Certified Solutions Architect – Associate",
+  exam: "saa-c03",
+  concepts: [
+    {
+      id: "secure",
+      title: "Secure access, network boundaries, and data protection",
+      domains: ["1"],
+      objectives: "1.1–1.3",
+      why: "Secure Architectures is the largest SAA-C03 domain at 30%, and security constraints appear inside many architecture scenarios.",
+      facts: [
+        "Prefer roles and temporary credentials for workloads; explicit deny overrides allow; boundaries restrict identity-policy grants, with documented same-account direct resource-policy exceptions.",
+        "Security groups are stateful resource controls; network ACLs are stateless subnet controls.",
+        "KMS manages keys, Secrets Manager stores/rotates secrets, ACM manages supported TLS certificates, CloudHSM provides dedicated HSMs.",
+        "WAF filters web requests, Shield protects against DDoS, GuardDuty detects threats, Inspector finds supported workload vulnerabilities, Macie discovers sensitive data in S3.",
+      ],
+      drills: ["aws-saa-secure-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "resilient",
+      title: "Decoupling, Multi-AZ, and disaster recovery",
+      domains: ["2"],
+      objectives: "2.1–2.2",
+      why: "Resilient design is 26% of SAA-C03 and rewards selecting the cheapest architecture that still meets availability, RTO, and RPO.",
+      facts: [
+        "Use SQS to buffer asynchronous work and let producers/consumers scale independently.",
+        "Deploy stateless tiers across multiple AZs; use Auto Scaling and load balancing to replace failed capacity.",
+        "RTO = maximum acceptable recovery time; RPO = maximum acceptable data-loss window.",
+        "DR cost generally rises from backup/restore → pilot light → warm standby → active/active as recovery time falls.",
+      ],
+      drills: ["aws-saa-resilient-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "performance",
+      title: "Storage, compute, database, network, and ingestion performance",
+      domains: ["3"],
+      objectives: "3.1–3.5",
+      why: "High-Performing Architectures is 24% and tests whether a service choice matches the actual bottleneck rather than simply choosing the largest resource.",
+      facts: [
+        "Choose storage by access model and performance need: S3 object, EBS block, EFS/FSx file, instance store ephemeral.",
+        "Asynchronous read replicas offload relational reads but can lag; DAX accelerates eventually consistent cache hits, while strong reads pass through to DynamoDB.",
+        "CloudFront caches content at the edge; Global Accelerator improves network routing to regional endpoints.",
+        "Kinesis Data Streams exposes stream records to consumers; Data Firehose provides managed delivery to supported destinations.",
+      ],
+      drills: ["aws-saa-performance-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "cost",
+      title: "Compute, storage, database, and network cost optimization",
+      domains: ["4"],
+      objectives: "4.1–4.4",
+      why: "Cost optimization is 20% of the exam and often hides the expensive part in idle capacity, storage retention, or data-transfer paths.",
+      facts: [
+        "Spot for interruption-tolerant work; commitment discounts for predictable steady use; On-Demand for flexibility.",
+        "Use lifecycle policies and appropriate S3 storage classes rather than retaining all data in the hottest tier.",
+        "Rightsize compute and databases; use serverless for suitable sporadic workloads to avoid idle capacity.",
+        "Evaluate data-transfer paths, NAT processing, cross-AZ/Region traffic, VPC endpoints, and CDN caching.",
+      ],
+      drills: ["aws-saa-cost-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "service-tradeoffs",
+      title: "Know the 'same-looking' AWS services apart",
+      domains: ["1", "2", "3", "4"],
+      objectives: "1.1–4.4",
+      why: "SAA scenarios frequently give several technically valid AWS services; the winning answer is the one that best satisfies the stated constraints with the least unnecessary cost or operations.",
+      facts: [
+        "A single-standby RDS Multi-AZ DB instance has a non-readable standby; Multi-AZ DB clusters have readable standbys. Read replicas provide asynchronous read scaling.",
+        "SQS = durable queue; SNS = pub/sub fanout; EventBridge = event routing.",
+        "CloudWatch = metrics/logs/alarms; CloudTrail = API activity; Config = configuration history/rules.",
+        "CloudFront = CDN/caching; Global Accelerator = network path acceleration.",
+      ],
+      drills: ["aws-saa-service-compare", "aws-saa-secure-cues", "aws-saa-resilient-cues", "aws-saa-performance-cues", "aws-saa-cost-cues"],
+    },
+  ],
+};
+
+export const topFives: TopFive[] = [core1, core2, awsClf, awsSaa];
 
 export function getTopFive(id: string) {
   return topFives.find((t) => t.id === id);

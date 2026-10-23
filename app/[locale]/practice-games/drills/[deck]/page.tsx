@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/practice
   const deck = getDeck(id);
   if (!deck) return {};
   const t = (await getTranslations({ locale, namespace: "drillDecks" })) as unknown as (key: string) => string;
-  return { title: `${t(`${deck.id}.title`)} | CompTIA Review`, description: t(`${deck.id}.cardBody`) };
+  return { title: `${t(`${deck.id}.title`)} | Certification Review`, description: t(`${deck.id}.cardBody`) };
 }
 
 export default async function DrillPage({ params }: PageProps<"/[locale]/practice-games/drills/[deck]">) {

@@ -23,7 +23,7 @@ export function SiteHeader() {
               aria-hidden="true"
               className="inline-block h-2.5 w-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(34,211,238,.6)]"
             />
-            CompTIA Review
+            Certification Review
           </Link>
           <LocaleSwitcher />
         </div>

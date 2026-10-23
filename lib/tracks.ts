@@ -2,9 +2,9 @@ import { getFlashcards, getQuestions, getTopics, labs } from "@/lib/content";
 import { visualCounts } from "@/lib/visuals";
 import type { ExamCode, StudyFocus, Topic } from "@/lib/types";
 
-export type TrackId = "core1" | "core2" | "networking" | "ccna";
+export type TrackId = "core1" | "core2" | "networking" | "ccna" | "aws-clf" | "aws-saa";
 export type ToolId = "notes" | "visuals" | "flashcards" | "quiz" | "labs" | "game";
-export type DeviceIconName = "laptop" | "server" | "switch" | "router";
+export type DeviceIconName = "laptop" | "server" | "switch" | "router" | "cloud";
 
 export type Track = {
   id: TrackId;
@@ -66,6 +66,28 @@ export const tracks: Track[] = [
     description:
       "Hands-on Packet Tracer labs: subnetting, static routing, DHCP relay, and break/fix troubleshooting.",
     icon: "router",
+  },
+  {
+    id: "aws-clf",
+    href: "/aws-clf",
+    short: "AWS CLF",
+    label: "AWS Certified Cloud Practitioner",
+    code: "CLF-C02",
+    focus: "clf-c02",
+    description:
+      "Foundational AWS cloud concepts, security and compliance, services, billing, pricing, and support.",
+    icon: "cloud",
+  },
+  {
+    id: "aws-saa",
+    href: "/aws-saa",
+    short: "AWS SAA",
+    label: "AWS Certified Solutions Architect – Associate",
+    code: "SAA-C03",
+    focus: "saa-c03",
+    description:
+      "Architecture decisions across security, resiliency, performance, and cost optimization on AWS.",
+    icon: "cloud",
   },
 ];
 
@@ -179,11 +201,15 @@ export function trackForPath(pathname: string, focus: StudyFocus): Track | undef
 
 export function trackCounts(track: Track) {
   const focus = track.focus;
+  const topicIds = new Set(focus ? getTopics(focus).map((topic) => topic.id) : []);
+  const awsLabCount = track.id.startsWith("aws-")
+    ? labs.filter((lab) => lab.relatedTopicIds.some((id) => topicIds.has(id))).length
+    : 0;
   return {
     topics: focus ? getTopics(focus).length : 0,
     cards: focus ? getFlashcards("all", focus).length : 0,
     questions: focus ? getQuestions("all", focus).length : 0,
-    labs: track.id === "ccna" ? labs.length : 0,
+    labs: track.id === "ccna" ? labs.length : awsLabCount,
   };
 }
 
@@ -219,15 +245,19 @@ export function toolStatuses(track: Track): ToolStatus[] {
           ? { ...base, state: "ready", chip: { key: "questions", count: counts.questions } }
           : { ...base, state: "soon", chip: { key: "comingSoon" } };
       case "labs":
-        return track.id === "ccna"
-          ? { ...base, state: "ready", chip: { key: "labs", count: counts.labs } }
-          : {
-              ...base,
-              href: "/ccna",
-              focus: null,
-              state: "elsewhere",
-              chip: { key: "inCcnaTrack" },
-            };
+        if (track.id === "ccna") {
+          return { ...base, state: "ready", chip: { key: "labs", count: counts.labs } };
+        }
+        if (track.id.startsWith("aws-") && counts.labs > 0) {
+          return { ...base, href: "/labs", state: "ready", chip: { key: "labs", count: counts.labs } };
+        }
+        return {
+          ...base,
+          href: "/ccna",
+          focus: null,
+          state: "elsewhere",
+          chip: { key: "inCcnaTrack" },
+        };
       case "game":
         return { ...base, state: "shared", chip: { key: "allTracks" } };
     }

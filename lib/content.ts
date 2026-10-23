@@ -29,6 +29,7 @@ export const conceptOrder: Concept[] = [
   "troubleshooting",
   "hardware",
   "operating-systems",
+  "cloud",
   "reference",
 ];
 

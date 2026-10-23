@@ -62,6 +62,15 @@ export function RouterIcon(props: IconProps) {
   );
 }
 
+export function CloudIcon(props: IconProps) {
+  return (
+    <svg {...device} {...props}>
+      <path d="M14 35h20a8 8 0 0 0 1-15.9A12 12 0 0 0 12.5 16 7.5 7.5 0 0 0 14 35Z" className="fill-slate-900" />
+      <path d="M17 28h14M20 23h8" />
+    </svg>
+  );
+}
+
 export function AccessPointIcon(props: IconProps) {
   return (
     <svg {...device} {...props}>
@@ -78,6 +87,7 @@ const deviceIcons: Record<DeviceIconName, (props: IconProps) => JSX.Element> = {
   server: ServerIcon,
   switch: SwitchIcon,
   router: RouterIcon,
+  cloud: CloudIcon,
 };
 
 export function DeviceIcon({ name, ...props }: { name: DeviceIconName } & IconProps) {

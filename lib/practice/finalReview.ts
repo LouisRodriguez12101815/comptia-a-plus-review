@@ -86,7 +86,51 @@ const core2: FinalReview = {
   ],
 };
 
-export const finalReviews: FinalReview[] = [core1, core2];
+
+const awsClf: FinalReview = {
+  id: "aws-clf",
+  certification: "AWS Certified Cloud Practitioner",
+  exam: "clf-c02",
+  drillQuestions: 20,
+  trapsPerRound: 4,
+  minutes: 15,
+  traps: [
+    { id: "clf-watch-trail-config", prompt: "Metrics and alarms vs API audit vs configuration history", answer: "CloudWatch = metrics/logs/alarms; CloudTrail = API activity; Config = configuration history/rules", wrong: ["CloudTrail = metrics; Config = API activity; CloudWatch = DNS", "All three are interchangeable", "CloudWatch = compliance reports; CloudTrail = budgets; Config = object storage"], detail: "These three services appear together often because they observe different parts of an AWS environment.", hook: "Watch metrics. Trail API calls. Config configuration." },
+    { id: "clf-storage", prompt: "Object vs block vs shared file storage", answer: "S3 = object; EBS = block; EFS/FSx = file", wrong: ["S3 = block; EBS = object; EFS = DNS", "EBS = shared file only; S3 = relational database", "All AWS storage is object storage"], detail: "Storage questions often become easy once you classify the storage model first.", hook: "Object S3. Block EBS. File EFS/FSx." },
+    { id: "clf-db", prompt: "Single-standby RDS DB instance: availability vs read scaling", answer: "Multi-AZ = availability; read replica = read scaling", wrong: ["Multi-AZ = analytics; read replica = DNS", "Read replica = primary availability feature; Multi-AZ = only cheaper storage", "They are the same feature"], detail: "A single-standby Multi-AZ DB instance has a non-readable standby. Multi-AZ DB clusters have readable standbys; asynchronous read replicas can lag.", hook: "AZ for availability. Replica for reads." },
+    { id: "clf-cost-tools", prompt: "Estimate vs analyze vs alert on AWS costs", answer: "Pricing Calculator = estimate; Cost Explorer = analyze; Budgets = threshold/alert", wrong: ["Budgets = estimate architecture; Config = cost analysis", "CloudTrail = estimate; Cost Explorer = DNS", "All three only work before deployment"], detail: "Pricing Calculator is pre-deployment estimation; Cost Explorer analyzes usage; Budgets monitors thresholds.", hook: "Calculate first. Explore spend. Budget alerts." },
+    { id: "clf-sg-nacl", prompt: "Stateful resource control vs stateless subnet control", answer: "Security group = stateful; network ACL = stateless", wrong: ["Security group = stateless; NACL = stateful", "Both are DNS policies", "Both attach only to IAM users"], detail: "Security groups and NACLs operate at different layers and have different state behavior.", hook: "SG remembers. NACL does not." },
+    { id: "clf-role-user", prompt: "Application needs AWS permissions without a stored long-lived key", answer: "Use an IAM role with temporary credentials", wrong: ["Use the root user", "Embed a shared IAM user's access key", "Make the resource public"], detail: "Roles are the preferred pattern for AWS workloads that need permissions.", hook: "Workload = role." },
+    { id: "clf-elastic-scale", prompt: "Dynamic demand matching vs capacity for growth", answer: "Elasticity = dynamic demand; scalability = growth capacity", wrong: ["Scalability = encryption; elasticity = billing", "They are unrelated to capacity", "Elasticity means only vertical scaling"], detail: "The words overlap in everyday speech but have distinct exam cues.", hook: "Elastic bends with demand. Scale handles size." },
+    { id: "clf-region-az-edge", prompt: "Region vs Availability Zone vs edge location", answer: "Region = geographic area; AZ = isolated location in a Region; edge = point of presence for supported edge services", wrong: ["Region and AZ are synonyms", "Edge locations are AZs used only for databases", "A VPC is a physical Region"], detail: "AWS global infrastructure questions depend on keeping these scopes separate.", hook: "Region contains AZs; edge is separate." }
+  ],
+  sequences: [],
+};
+
+
+const awsSaa: FinalReview = {
+  id: "aws-saa",
+  certification: "AWS Certified Solutions Architect – Associate",
+  exam: "saa-c03",
+  drillQuestions: 26,
+  trapsPerRound: 4,
+  minutes: 15,
+  traps: [
+    { id: "saa-multiaz-replica", prompt: "Single-standby RDS DB instance: availability vs read scaling", answer: "Multi-AZ = availability/failover; read replica = read scaling", wrong: ["Multi-AZ = read scaling only; read replica = automatic failover", "They are the same feature", "Read replica = encryption; Multi-AZ = DNS"], detail: "Single-standby DB instances use a non-readable standby for availability; Multi-AZ DB clusters have readable standbys. Read replicas are asynchronous and can lag.", hook: "AZ = availability. Replica = reads." },
+    { id: "saa-sg-nacl", prompt: "Stateful resource filtering vs stateless subnet filtering", answer: "Security group = stateful resource control; NACL = stateless subnet control", wrong: ["Security group = stateless; NACL = stateful", "Both are IAM policies", "Both are DNS routing controls"], detail: "These layers are frequently paired as distractors.", hook: "SG remembers return traffic; NACL does not." },
+    { id: "saa-sqs-sns-event", prompt: "Queue vs fanout vs event routing", answer: "SQS = queue; SNS = pub/sub fanout; EventBridge = event routing", wrong: ["SNS = queue; SQS = DNS; EventBridge = block storage", "All three are databases", "EventBridge = CDN; SQS = certificates"], detail: "Choose by messaging behavior rather than service name familiarity.", hook: "Queue SQS. Notify SNS. Route events EventBridge." },
+    { id: "saa-cloudfront-ga", prompt: "CDN caching vs global network acceleration", answer: "CloudFront = caching/CDN; Global Accelerator = network path acceleration", wrong: ["Global Accelerator = object storage; CloudFront = VPN", "They are identical", "CloudFront = database proxy; Global Accelerator = DNS only"], detail: "CloudFront caches content; Global Accelerator optimizes network paths to regional endpoints.", hook: "Content = CloudFront. Network path = Accelerator." },
+    { id: "saa-rto-rpo", prompt: "Recovery time vs data-loss window", answer: "RTO = recovery time; RPO = acceptable data-loss window", wrong: ["RTO = data loss; RPO = CPU target", "They are pricing models", "RPO = DNS TTL; RTO = IOPS"], detail: "DR answers often depend on reading RTO/RPO correctly.", hook: "T = time. P = point in time." },
+    { id: "saa-storage", prompt: "Object vs block vs shared file vs ephemeral", answer: "S3 = object; EBS = persistent block; EFS/FSx = file; instance store = ephemeral block", wrong: ["S3 = block; EBS = DNS; EFS = object", "All are relational databases", "Instance store is durable object storage"], detail: "Classify the storage model before comparing performance and cost.", hook: "S3 object. EBS block. EFS/FSx file. Instance store temporary." },
+    { id: "saa-watch-trail-config", prompt: "Metrics vs API audit vs configuration state", answer: "CloudWatch = metrics/logs/alarms; CloudTrail = API audit; Config = configuration history/rules", wrong: ["CloudTrail = metrics; Config = DNS; CloudWatch = IAM", "They are interchangeable", "CloudWatch = compliance contracts; CloudTrail = budgets"], detail: "These services observe different parts of the system.", hook: "Watch metrics. Trail calls. Config state." },
+    { id: "saa-cost", prompt: "Interruptible vs steady committed vs flexible compute", answer: "Spot = interruptible; commitment discount = steady; On-Demand = flexible", wrong: ["Spot = dedicated hardware only", "On-Demand requires a long commitment", "All options cost the same"], detail: "The workload's tolerance for interruption and predictability drive the purchase model.", hook: "Can stop = Spot. Steady = commit. Flexible = On-Demand." }
+  ],
+  sequences: [
+    { id: "dr-cost-order", steps: ["Read the workload requirement", "Identify RTO and RPO", "Choose the least-complex DR pattern that meets them", "Validate data replication and backup", "Test failover and recovery"] }
+  ],
+};
+
+export const finalReviews: FinalReview[] = [core1, core2, awsClf, awsSaa];
 
 export function getFinalReview(id: string) {
   return finalReviews.find((r) => r.id === id);
@@ -102,7 +146,8 @@ export function troubleshootingDomain(domains: { title: string; objectives: { id
  * Domain a drill question counts toward. Symptom → cause modes count as
  * troubleshooting; everything else counts toward the deck's first objective.
  */
-export function domainForMode(deck: DrillDeck, mode: DrillMode, troubleshooting?: string) {
+export function domainForMode(deck: DrillDeck, mode: DrillMode, troubleshooting?: string, objective?: string) {
+  if (objective) return objective.split(".")[0];
   if (mode.from === "symptom" && troubleshooting) return troubleshooting;
   return deck.objective.match(/\d+/)?.[0] ?? "";
 }
@@ -124,7 +169,7 @@ export function reviewPool(review: FinalReview, troubleshooting?: string): Revie
           pool,
           detail: item.detail,
           hook: item.hook,
-          domain: domainForMode(deck, mode, troubleshooting),
+          domain: domainForMode(deck, mode, troubleshooting, item.objective),
         });
       }
     }

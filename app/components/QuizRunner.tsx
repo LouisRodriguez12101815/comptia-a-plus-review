@@ -6,6 +6,7 @@ import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getQuestions, getTopics } from "@/lib/content";
+import { shuffleQuestionChoices } from "@/lib/exam-test.mjs";
 import { recordQuiz } from "@/lib/progress";
 import type { Question, StudyFocus } from "@/lib/types";
 
@@ -69,7 +70,7 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   }
 
   function start() {
-    const deck = shuffle(pool).slice(0, Math.min(15, pool.length));
+    const deck = shuffle(pool).slice(0, Math.min(15, pool.length)).map(q => shuffleQuestionChoices(q));
     setQuiz(deck);
     setIndex(0);
     setPicked([]);

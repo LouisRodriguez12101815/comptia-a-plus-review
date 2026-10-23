@@ -38,6 +38,16 @@
       "shortLabel": "All",
       "label": "All class material",
       "description": "Browse everything when comparing exams, catching up, or returning for a retake."
+    },
+    "clf-c02": {
+      "shortLabel": "AWS CLF",
+      "label": "AWS Cloud Practitioner · CLF-C02",
+      "description": "Cloud concepts, security and compliance, AWS services, billing, pricing, and support."
+    },
+    "saa-c03": {
+      "shortLabel": "AWS SAA",
+      "label": "AWS Solutions Architect – Associate · SAA-C03",
+      "description": "Secure, resilient, high-performing, and cost-optimized AWS architecture decisions."
     }
   },
   "concepts": {
@@ -47,7 +57,8 @@
     "troubleshooting": "Troubleshooting (domain 5.0)",
     "hardware": "Hardware and storage",
     "operating-systems": "Operating systems",
-    "reference": "Quick reference and weak areas"
+    "reference": "Quick reference and weak areas",
+    "cloud": "Cloud and AWS architecture"
   },
   "quizRunner": {
     "chooseQuiz": "Choose a quiz",
@@ -137,8 +148,11 @@
       "notes": "Notes",
       "visuals": "Visuals",
       "flashcards": "Flashcards",
-      "quiz": "Quiz"
-    }
+      "quiz": "Quiz",
+      "practice": "Practice"
+    },
+    "drillCount": "{count, plural, one {# recall deck} other {# recall decks}}",
+    "readNotes": "Read notes"
   },
   "examFocusPicker": {
     "legend": "What are you studying now?",
@@ -173,12 +187,12 @@
     "testText": "Run a timed exam weighted by the certification's objective domains."
   },
   "quizPage": {
-    "metaTitle": "Practice quiz | CompTIA Review",
+    "metaTitle": "Practice quiz | Certification Review",
     "title": "Practice quiz",
     "intro": "Original questions written from class notes — not CompTIA exam dumps. Choose an exam focus, check each answer, and review every miss."
   },
   "flashcardsPage": {
-    "metaTitle": "Flashcards | CompTIA Review",
+    "metaTitle": "Flashcards | Certification Review",
     "title": "Flashcards",
     "intro": "Flip a card, then rate how well you knew it: Again, Hard, Good, or Easy. Choose Due for review to study only the cards scheduled for today. Your exam focus and progress are saved in this browser only."
   },
@@ -187,24 +201,24 @@
     "intro": "Search the study guide or open a chapter. Amber callouts mark weak-area drills."
   },
   "topicPage": {
-    "metaTitle": "{title} notes · {chapter} | CompTIA Review",
+    "metaTitle": "{title} notes · {chapter} | Certification Review",
     "onThisPage": "On this page",
     "tocOftenMissed": "{title} (often missed)",
     "oftenMissed": "Often missed"
   },
   "testPage": {
-    "metadataTitle": "Timed test mode | CompTIA Review",
+    "metadataTitle": "Timed test mode | Certification Review",
     "metadataDescription": "Timed practice exams for A+ Core 1, A+ Core 2, and Network+, drafted from the exam objective map.",
     "eyebrow": "Test mode",
     "heading": "Timed practice exam",
-    "intro": "Questions are drawn from the exam objective map on the <coverageLink>coverage page</coverageLink>, weighted by each domain's share of the real exam. Every question has its own countdown at exam pace. Original questions written from class notes, not CompTIA exam content."
+    "intro": "Practice with a shared timer, return to earlier questions, and review flagged items. Use the <coverageLink>objective coverage report</coverageLink> to plan further study. Practice scores do not predict official exam results."
   },
   "examTest": {
     "certification": "Certification",
     "length": "Length",
     "questionCount": "{count, plural, one {# question} other {# questions}} · about {minutes} min",
     "blueprintHeading": "Test blueprint",
-    "blueprintIntro": "The real {exam} exam allows up to {maxQuestions} questions in {minutes} minutes, so each question here gets <strong>{seconds} seconds</strong>. Domain counts follow the objective map's domain weights, and questions rotate through each domain's objectives.",
+    "blueprintIntro": "{exam}: up to <strong>{maxQuestions} questions</strong> in <strong>{minutes} minutes</strong>. This session uses domain-weighted practice questions. Actual exam scoring and question types can differ.",
     "colDomain": "Domain",
     "colWeight": "Weight",
     "colThisTest": "This test",
@@ -213,10 +227,10 @@
     "capped": "The question bank has {total, plural, one {# question} other {# questions}} mapped to {exam}, so this test uses {planned} instead of {requested}.",
     "noQuestionsMapped": "No questions are mapped yet for {domains}. Their share goes to the other domains.",
     "howItWorks": "How it works",
-    "rule1": "Each question has its own {seconds}-second countdown. When it reaches zero, whatever you selected is locked in and the next question appears.",
-    "rule2": "No feedback until the end, and no going back, so pace yourself like the real exam.",
-    "rule3": "Keyboard: press a choice's number to select it and Enter to submit.",
-    "rule4": "Results show a score, a rough pass estimate, a per-domain breakdown, and every miss with its explanation. Scores stay on this device.",
+    "rule1": "One shared session timer. Full AWS mocks allow 90 minutes for CLF-C02 or 130 minutes for SAA-C03; shorter sessions use proportional time.",
+    "rule2": "Move back and forward, skip questions, flag items, and review before finishing. Unanswered questions count as incorrect.",
+    "rule3": "Choice order is randomized. Multi-response items require all correct options with no incorrect options.",
+    "rule4": "This is a study tool. CompTIA performance-based questions and official scaled scoring are not simulated.",
     "startTest": "Start {count}-question test",
     "fullExam": "Full exam",
     "halfExam": "Half exam",
@@ -235,9 +249,9 @@
     "noAnswer": "No answer",
     "timeExpired": "Time expired. Moved to the next question.",
     "tenSecondsLeft": "10 seconds left on this question.",
-    "passedLine": "Above the rough pass line of about {percent}%",
-    "failedLine": "Below the rough pass line of about {percent}%",
-    "scaleNote": "The real exam reports a scaled score ({min}–{max}, pass {passing}). CompTIA does not publish a percent conversion, so treat this line as a guide only.",
+    "passedLine": "Study target met: {percent}% raw accuracy. This is not an exam pass prediction.",
+    "failedLine": "Study target: {percent}% raw accuracy. Review the missed concepts and practice unfamiliar scenarios.",
+    "scaleNote": "Official passing score: {passing} on a {min}–{max} scale. Raw practice accuracy cannot be converted to that score.",
     "timeUsed": "Time used",
     "timeAllowed": "Time allowed",
     "timedOut": "Timed out",
@@ -250,7 +264,28 @@
     "studyTopic": "Study: {title}",
     "disputeQuestion": "Dispute this question",
     "retake": "Retake with new questions",
-    "changeExam": "Change exam or length"
+    "changeExam": "Change exam or length",
+    "readinessEyebrow": "Exam readiness",
+    "readinessHeading": "Practice evidence",
+    "readinessHeuristic": "Local study targets only: three current-bank full mocks within 90 days at 80%+, every domain at 70%+, multi-response accuracy 75%+ across distinct items, 80% bank exposure and first-exposure accuracy, and no incomplete objectives. These targets do not predict passing.",
+    "readinessFullMocks": "Full mocks",
+    "readinessScores": "Recent scores",
+    "readinessDomainFloor": "Lowest domain",
+    "readinessMulti": "Multi-response",
+    "weakDomains": "Weak domains",
+    "readinessBlockers": "What to fix next",
+    "readinessStatus": {
+      "ready": "Practice targets met",
+      "near": "Building evidence",
+      "not-ready": "More practice needed"
+    },
+    "readinessExposure": "Question bank exposure",
+    "previousQuestion": "Previous",
+    "nextQuestion": "Next / skip",
+    "flagQuestion": "Flag for review",
+    "reviewBeforeFinish": "Review before finishing",
+    "unanswered": "Unanswered",
+    "answered": "Answered"
   },
   "labsPage": {
     "metadataTitle": "Networking labs | CompTIA A+ Review",
@@ -268,7 +303,7 @@
     "relatedNotes": "Related study notes"
   },
   "coveragePage": {
-    "metadataTitle": "Exam objective coverage | CompTIA Review",
+    "metadataTitle": "Exam objective coverage | Certification Review",
     "metadataDescription": "Explore the current study content, mapped objectives, and next content gaps."
   },
   "coverageDashboard": {
@@ -324,8 +359,8 @@
     "missing": "{count} missing"
   },
   "tracks": {
-    "pageTitle": "{label} | CompTIA Review",
-    "visualsPageTitle": "{track} visuals · CompTIA Review",
+    "pageTitle": "{label} | Certification Review",
+    "visualsPageTitle": "{track} visuals · Certification Review",
     "home": "Home",
     "toolsLabel": "{track} study tools",
     "soon": "Soon",
@@ -385,6 +420,16 @@
       "comingSoon": "Coming soon",
       "inCcnaTrack": "In the CCNA track",
       "allTracks": "All tracks"
+    },
+    "aws-clf": {
+      "short": "AWS CLF",
+      "label": "AWS Certified Cloud Practitioner",
+      "description": "Foundational AWS cloud concepts, security and compliance, services, billing, pricing, and support."
+    },
+    "aws-saa": {
+      "short": "AWS SAA",
+      "label": "AWS Certified Solutions Architect – Associate",
+      "description": "Architecture decisions across security, resiliency, performance, and cost optimization on AWS."
     }
   },
   "trackHub": {
@@ -416,7 +461,8 @@
     "sequenceApply": "Apply",
     "sequenceApplyDetail": "Answer scenarios and timed questions.",
     "sequenceReview": "Review",
-    "sequenceReviewDetail": "Finish with the mixed final review."
+    "sequenceReviewDetail": "Finish with the mixed final review.",
+    "core2ReviewTools": "Core 2 assessment and study tools"
   },
   "networkChapters": {
     "ch9": {
@@ -443,7 +489,9 @@
       "core1": "Visuals for Core 1 are being added chapter by chapter.",
       "core2": "Visuals for Core 2 are being added chapter by chapter.",
       "networking": "Visuals for Network+ are being added chapter by chapter.",
-      "ccna": "CCNA does not have interactive visuals yet. The Packet Tracer labs are ready now and each one includes its own topology."
+      "ccna": "CCNA does not have interactive visuals yet. The Packet Tracer labs are ready now and each one includes its own topology.",
+      "aws-clf": "Cloud Practitioner visuals are being added alongside the review lessons.",
+      "aws-saa": "Architecture visuals are being added alongside the review lessons."
     },
     "comingSoon": "Coming soon",
     "readNotes": "Read the notes",
@@ -505,7 +553,7 @@
     "cancel": "Cancel"
   },
   "networkPlusIndex": {
-    "pageTitle": "Network+ · CompTIA Review",
+    "pageTitle": "Network+ · Certification Review",
     "eyebrow": "CompTIA Network+ (N10-009)",
     "heading": "Network+ chapters",
     "intro": "Notes, interactive visuals, and review questions for each chapter.",
@@ -534,7 +582,7 @@
     "returnToPractice": "Return to practice and check understanding"
   },
   "gamePage": {
-    "title": "Outage Ops | CompTIA Review",
+    "title": "Outage Ops | Certification Review",
     "description": "Practice CompTIA troubleshooting in a guided incident or a live multiplayer room.",
     "backToPractice": "← Practice Games"
   },
@@ -826,15 +874,15 @@
     "roomExpired": "This room has expired. Create a new room."
   },
   "practicePage": {
-    "title": "Practice Games | CompTIA Review",
+    "title": "Practice Games | Certification Review",
     "description": "Solo component matching and IPv4 packet journeys, plus Outage Ops troubleshooting."
   },
   "challengePage": {
-    "title": "{title} | CompTIA Review",
+    "title": "{title} | Certification Review",
     "notFound": "Challenge not found"
   },
   "nextHopMissionPage": {
-    "title": "Next-hop troubleshooting mission | CompTIA Review",
+    "title": "Next-hop troubleshooting mission | Certification Review",
     "description": "Practice, review and apply IPv4 next-hop troubleshooting to a new scenario."
   },
   "challengeCatalog": {
@@ -2200,6 +2248,286 @@
         "meaning": "Meaning",
         "term": "Term"
       }
+    },
+    "aws-clf-service-compare": {
+      "title": "AWS Service Positioning Drill",
+      "topic": "AWS service positioning",
+      "intro": "Choose the AWS service that best matches each foundational use case.",
+      "cardBody": "Practice the service distinctions that CLF-C02 expects you to recognize.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → Answer",
+          "ask": "Which AWS service or feature fits best?"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Answer"
+      },
+      "tables": {
+        "scenarios": "Scenarios"
+      }
+    },
+    "aws-saa-service-compare": {
+      "title": "AWS Architecture Tradeoffs Drill",
+      "topic": "AWS architecture tradeoffs",
+      "intro": "Choose the AWS service or feature that best satisfies each architecture requirement.",
+      "cardBody": "Practice common SAA-C03 service tradeoffs and requirement wording.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → Answer",
+          "ask": "Which AWS service or feature fits best?"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Answer"
+      },
+      "tables": {
+        "scenarios": "Scenarios"
+      }
+    },
+    "aws-clf-domain-cues": {
+      "title": "CLF-C02 Domain Cue Drill",
+      "topic": "CLF-C02 exam language",
+      "intro": "Translate exam wording into the AWS concept or service it implies.",
+      "cardBody": "Practice the wording patterns that make CLF-C02 service questions faster.",
+      "modes": {
+        "cueToAnswer": {
+          "label": "Cue → Answer",
+          "ask": "What concept or service does this cue imply?"
+        }
+      },
+      "fields": {
+        "cue": "Cue",
+        "answer": "Answer"
+      },
+      "tables": {
+        "cues": "Cues"
+      }
+    },
+    "aws-saa-secure-cues": {
+      "title": "SAA Secure Architecture Drill",
+      "topic": "Secure architecture cues",
+      "intro": "Translate security requirements into the AWS control or service that best fits.",
+      "cardBody": "Translate security requirements into the AWS control or service that best fits.",
+      "modes": {
+        "cueToAnswer": {
+          "label": "Cue → Answer",
+          "ask": "Which architecture choice does this cue imply?"
+        }
+      },
+      "fields": {
+        "cue": "Cue",
+        "answer": "Answer"
+      },
+      "tables": {
+        "cues": "Cues"
+      }
+    },
+    "aws-saa-resilient-cues": {
+      "title": "SAA Resilient Architecture Drill",
+      "topic": "Resilient architecture cues",
+      "intro": "Translate availability, decoupling, RTO, and RPO requirements into architecture choices.",
+      "cardBody": "Translate availability, decoupling, RTO, and RPO requirements into architecture choices.",
+      "modes": {
+        "cueToAnswer": {
+          "label": "Cue → Answer",
+          "ask": "Which architecture choice does this cue imply?"
+        }
+      },
+      "fields": {
+        "cue": "Cue",
+        "answer": "Answer"
+      },
+      "tables": {
+        "cues": "Cues"
+      }
+    },
+    "aws-saa-performance-cues": {
+      "title": "SAA Performance Architecture Drill",
+      "topic": "High-performance architecture cues",
+      "intro": "Translate performance wording into the AWS service or architecture pattern that best fits.",
+      "cardBody": "Translate performance wording into the AWS service or architecture pattern that best fits.",
+      "modes": {
+        "cueToAnswer": {
+          "label": "Cue → Answer",
+          "ask": "Which architecture choice does this cue imply?"
+        }
+      },
+      "fields": {
+        "cue": "Cue",
+        "answer": "Answer"
+      },
+      "tables": {
+        "cues": "Cues"
+      }
+    },
+    "aws-saa-cost-cues": {
+      "title": "SAA Cost Architecture Drill",
+      "topic": "Cost-optimized architecture cues",
+      "intro": "Translate cost requirements into the AWS purchase, storage, or network choice that best fits.",
+      "cardBody": "Translate cost requirements into the AWS purchase, storage, or network choice that best fits.",
+      "modes": {
+        "cueToAnswer": {
+          "label": "Cue → Answer",
+          "ask": "Which architecture choice does this cue imply?"
+        }
+      },
+      "fields": {
+        "cue": "Cue",
+        "answer": "Answer"
+      },
+      "tables": {
+        "cues": "Cues"
+      }
+    },
+    "c2-assessment-os": {
+      "title": "Assessment review: Operating systems and tools",
+      "topic": "Assessment: Operating systems and tools",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
+    },
+    "c2-assessment-security": {
+      "title": "Assessment review: Security controls and recovery",
+      "topic": "Assessment: Security controls and recovery",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
+    },
+    "c2-assessment-troubleshooting": {
+      "title": "Assessment review: Troubleshooting from evidence",
+      "topic": "Assessment: Troubleshooting from evidence",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
+    },
+    "c2-assessment-remote-ai": {
+      "title": "Assessment review: Remote access, collaboration and AI",
+      "topic": "Assessment: Remote access, collaboration and AI",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
+    },
+    "c2-assessment-safety": {
+      "title": "Assessment review: Safety, licensing and interference",
+      "topic": "Assessment: Safety, licensing and interference",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
+    },
+    "c2-assessment-support": {
+      "title": "Assessment review: Support decisions and professionalism",
+      "topic": "Assessment: Support decisions and professionalism",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
+    },
+    "c1-assessment-raid": {
+      "title": "Assessment review: Supplemental RAID 5",
+      "topic": "Assessment: Supplemental RAID 5",
+      "intro": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "cardBody": "Practice corrected assessment concepts. Misses return for another attempt; use the explanation before retrying.",
+      "modes": {
+        "scenarioToAnswer": {
+          "label": "Scenario → decision",
+          "ask": "Choose the supported decision"
+        }
+      },
+      "tables": {
+        "decisions": {
+          "label": "Assessment review"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "answer": "Decision"
+      }
     }
   },
   "finalReview": {
@@ -2249,11 +2577,12 @@
       "dora": "DHCP lease (DORA)",
       "malware": "Malware removal (220-1202 objective 2.6)",
       "change": "Change management",
-      "volatility": "Order of volatility (most to least)"
+      "volatility": "Order of volatility (most to least)",
+      "dr-cost-order": "Select and validate a disaster recovery design"
     },
-    "metaTitle": "{certification} Final 15 | CompTIA Review",
+    "metaTitle": "{certification} Final 15 | Certification Review",
     "metaDescription": "A {minutes}-minute recap weighted by what the exam tests most.",
-    "indexMetaTitle": "Final 15 | CompTIA Review",
+    "indexMetaTitle": "Final 15 | Certification Review",
     "indexTitle": "Final 15",
     "indexIntro": "15-minute reviews for the last minutes before an exam, weighted by what each exam tests.",
     "open": "Open {certification} Final 15"
@@ -2272,18 +2601,43 @@
     "practiceLabel": "Drills for {title}",
     "finalPrompt": "Know these five? Finish with the weighted 15-minute recap:",
     "finalLink": "{certification} Final 15",
-    "metaTitle": "{certification} Top 5 | CompTIA Review",
-    "indexMetaTitle": "Top 5 | CompTIA Review",
+    "metaTitle": "{certification} Top 5 | Certification Review",
+    "indexMetaTitle": "Top 5 | Certification Review",
     "indexTitle": "Top 5",
     "indexIntro": "The five concepts most likely to earn points on each exam, ranked by exam weight.",
     "open": "Open {certification} Top 5"
   },
   "assessmentWorkflowPage": {
-    "metadataTitle": "Assessment workflow | CompTIA Review",
+    "metadataTitle": "Assessment workflow | Certification Review",
     "metadataDescription": "How video and seminar notes become reviewed study material, and how local OpenAI and LangGraph tools assess certification coverage.",
     "eyebrow": "Behind the scenes",
     "title": "Assessment workflow",
     "englishNotice": "The detailed contributor guide is currently available in English. Commands retain their original syntax.",
     "backToCoverage": "Back to coverage"
+  },
+  "core2Review": {
+    "title": "Core 2 assessment and study tools",
+    "back": "Back to Core 2",
+    "intro": "The supplied 50 concepts are now represented by corrected original practice: 49 Core 2 items plus one supplemental Core 1 RAID item. Follow the notes, recall cards, memory drill, visual decision and changed-condition exercise.",
+    "limits": "These links show topic-level study-tool availability, not complete exam coverage. Several objectives remain partial or missing. Question 50 does not count toward Core 2 mock coverage.",
+    "assessmentHeading": "Assessment items 1–50",
+    "howToStudy": "Predict before revealing the answer. Explain why an alternative fails, retry mistakes, then solve the changed-condition exercise without looking back.",
+    "showMapping": "Show the complete 50-item learning map",
+    "supplement": "Supplemental Core 1",
+    "notes": "Notes",
+    "quiz": "Scenario quiz",
+    "cards": "Flashcards",
+    "memory": "Memory game",
+    "visual": "Visual decision",
+    "allTopics": "Study tools for all existing Core 2 topics",
+    "availability": "Every current Core 2 topic has notes, cards, a quiz, linked recall practice and visual resources. Some recall decks/visuals are shared; availability does not mean every paragraph has independent assessment coverage.",
+    "shared": "Shared reference material crosses exam boundaries. Follow the objective label for each item.",
+    "counts": "{cards, plural, one {# card} other {# cards}} · {questions, plural, one {# question} other {# questions}} · {visuals, plural, one {# visual resource} other {# visual resources}}",
+    "openVisual": "Open visual {number}",
+    "nextHeading": "Next chapter-content priorities",
+    "queued": "Queued next: macOS, Linux, application installation, cloud productivity, SOHO security, browser security and mobile security troubleshooting. These new chapters are not part of this assessment PR.",
+    "coverage": "Open objective coverage",
+    "practice": "Practice",
+    "drillCount": "{count} recall decks"
   }
 }
