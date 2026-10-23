@@ -6858,5 +6858,605 @@
         ]
       }
     ]
+  },
+  {
+    "id": "aws-saa-compute",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Core Services — Compute and Scaling",
+    "chapter": "SAA Core · Compute",
+    "summary": "EC2 instance design, pricing, storage attachment, Auto Scaling, load balancing, containers, Lambda, and Systems Manager.",
+    "sections": [
+      {
+        "id": "ec2",
+        "title": "EC2 architecture choices",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Choose instance families from workload characteristics rather than memorizing every SKU.",
+              "EBS-backed instances keep persistent block data independently of instance lifecycle when configured appropriately; instance store is ephemeral host-attached storage.",
+              "Placement groups influence how EC2 instances are placed for latency, throughput, or failure isolation.",
+              "IAM roles are the preferred way for EC2 workloads to receive AWS permissions."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Likely direction"
+            ],
+            "rows": [
+              [
+                "Flexible VM with OS control",
+                "EC2"
+              ],
+              [
+                "Steady predictable usage",
+                "Consider commitment discounts"
+              ],
+              [
+                "Interruptible batch",
+                "Spot"
+              ],
+              [
+                "Physical host/license visibility",
+                "Dedicated Host"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scale",
+        "title": "Auto Scaling and load balancing",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An Auto Scaling group maintains or changes instance capacity; an Elastic Load Balancer distributes traffic to healthy targets. A launch template defines how new instances are created. Target tracking follows a target metric; step scaling reacts in increments; scheduled scaling handles known time patterns."
+          }
+        ]
+      },
+      {
+        "id": "containers-serverless",
+        "title": "Containers and serverless",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Architecture cue"
+            ],
+            "rows": [
+              [
+                "Lambda",
+                "Short-lived event-driven functions without server management"
+              ],
+              [
+                "ECS",
+                "AWS-native container orchestration"
+              ],
+              [
+                "EKS",
+                "Managed Kubernetes"
+              ],
+              [
+                "Fargate",
+                "Serverless compute for supported ECS/EKS containers"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "systems-manager",
+        "title": "Systems Manager",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Systems Manager provides operational capabilities for managed nodes, including inventory, automation, Run Command, patching, and Session Manager. For remote administration, Session Manager can avoid opening inbound SSH/RDP ports."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-storage",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Core Services — Storage and Data Movement",
+    "chapter": "SAA Core · Storage",
+    "summary": "S3 architecture and classes, EBS/EFS/FSx choices, lifecycle, replication, transfer acceleration, DataSync, Storage Gateway, and Snowball Edge (existing customers only; evaluate current alternatives).",
+    "sections": [
+      {
+        "id": "s3",
+        "title": "S3 architecture",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "S3 is object storage with bucket-level namespace and object keys.",
+              "Versioning protects against overwrite/deletion scenarios and is a prerequisite for some replication patterns.",
+              "Choose storage classes using access and retention requirements, then configure S3 Lifecycle by dates/object age or noncurrent-version age. Lifecycle is not a last-access trigger; Intelligent-Tiering monitors access to move eligible objects among access tiers.",
+              "Storage class choice depends on access frequency, retrieval-time tolerance, and minimum storage/retrieval charges.",
+              "Presigned URLs provide temporary access without public bucket permissions."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "block-file",
+        "title": "Block and file storage",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Persistent block storage for EC2",
+                "EBS"
+              ],
+              [
+                "Very high-performance temporary host storage",
+                "Instance store"
+              ],
+              [
+                "Shared POSIX file system across Linux instances",
+                "EFS"
+              ],
+              [
+                "Managed Windows/Lustre/ONTAP/OpenZFS file systems",
+                "FSx"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "movement",
+        "title": "Data movement and hybrid storage",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Online accelerated transfer between storage systems",
+                "AWS DataSync"
+              ],
+              [
+                "Hybrid on-premises access to AWS storage",
+                "Storage Gateway"
+              ],
+              [
+                "Physical transfer / edge appliance (verify availability)",
+                "Snowball Edge (existing customers only; evaluate current alternatives)"
+              ],
+              [
+                "Faster S3 uploads over long geographic distance",
+                "S3 Transfer Acceleration"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "durability-availability",
+        "title": "Durability, availability, and replication",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Durability is about retaining data; availability is about being able to access it when needed. Cross-Region replication can satisfy geographic copy or compliance patterns; Multi-AZ service designs protect against an AZ failure without necessarily creating a second Region."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-networking",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Core Services — VPC and Connectivity",
+    "chapter": "SAA Core · Networking",
+    "summary": "CIDR, subnets, routing, security groups/NACLs, NAT, PrivateLink, peering, Transit Gateway, VPN, Direct Connect, and network performance.",
+    "sections": [
+      {
+        "id": "vpc-routing",
+        "title": "VPC routing and public/private subnets",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A subnet is associated with one Availability Zone.",
+              "A route table determines next hops; a public subnet has a route to an internet gateway for internet-bound traffic.",
+              "An instance also needs an appropriate public IPv4/EIP or IPv6 path and security rules to communicate with the internet.",
+              "Private-subnet outbound IPv4 internet access commonly uses a NAT gateway placed in a public subnet."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "filters",
+        "title": "Security groups and NACLs",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Security group",
+              "Network ACL"
+            ],
+            "rows": [
+              [
+                "Stateful",
+                "Stateless"
+              ],
+              [
+                "Attached to supported resources/interfaces",
+                "Applied at subnet boundary"
+              ],
+              [
+                "Allow rules",
+                "Allow and deny rules"
+              ],
+              [
+                "Return traffic automatically tracked",
+                "Return path must be allowed explicitly"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "connectivity",
+        "title": "VPC-to-VPC and hybrid connectivity",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Connect two VPCs directly",
+                "VPC peering"
+              ],
+              [
+                "Private service exposure without broad routing",
+                "AWS PrivateLink"
+              ],
+              [
+                "Hub for many VPC/on-prem connections",
+                "Transit Gateway"
+              ],
+              [
+                "Encrypted internet tunnel to on-prem",
+                "Site-to-Site VPN"
+              ],
+              [
+                "Dedicated private circuit",
+                "Direct Connect"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "performance",
+        "title": "Network performance tools",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Enhanced networking and Elastic Fabric Adapter target high-throughput/low-latency workloads. Global Accelerator improves network path to regional endpoints; CloudFront caches content at edge locations. Choose based on whether the requirement is application content caching or network acceleration."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-databases",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Core Services — Databases and Caching",
+    "chapter": "SAA Core · Databases",
+    "summary": "RDS/Aurora HA and scaling, DynamoDB capacity and indexes, ElastiCache, Redshift, backup, recovery, and database migration.",
+    "sections": [
+      {
+        "id": "rds",
+        "title": "Relational database choices",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "RDS manages supported relational engines; Aurora is AWS-built and compatible with MySQL/PostgreSQL ecosystems.",
+              "A single-standby RDS Multi-AZ DB instance provides synchronous standby/failover, and its standby cannot serve reads. A Multi-AZ DB cluster has two readable standbys; Aurora replicas can also serve reads and be failover candidates.",
+              "Read replicas are primarily for read scaling and can also support certain DR/reporting patterns.",
+              "RDS Proxy pools connections and can improve application resilience around connection storms.",
+              "Automated backups and snapshots serve different retention and recovery workflows."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dynamo",
+        "title": "DynamoDB design",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Partition-key design determines distribution and access efficiency.",
+              "On-demand capacity fits unpredictable traffic; provisioned capacity fits workloads where capacity can be planned and tuned.",
+              "Global secondary indexes provide alternate query keys; global tables replicate across Regions.",
+              "DAX is an in-memory DynamoDB-compatible cache. Its microsecond benefit applies to eventually consistent cache hits; strong reads pass through to DynamoDB, and cache misses/expiry still matter."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cache-warehouse",
+        "title": "Caching and analytics databases",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Managed in-memory cache",
+                "ElastiCache"
+              ],
+              [
+                "Data warehouse / OLAP",
+                "Redshift"
+              ],
+              [
+                "Relational OLTP",
+                "RDS/Aurora"
+              ],
+              [
+                "Key-value/document at scale",
+                "DynamoDB"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "migration",
+        "title": "Database migration",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AWS Database Migration Service supports database migration with minimal downtime patterns; schema-conversion needs depend on whether source and target engines are homogeneous or heterogeneous."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-identity-observability",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Core Services — IAM, Encryption, and Observability",
+    "chapter": "SAA Core · IAM & Observability",
+    "summary": "IAM policy evaluation, roles/STS, KMS/Secrets Manager, organizations, CloudTrail, CloudWatch, Config, EventBridge, and operational visibility.",
+    "sections": [
+      {
+        "id": "iam",
+        "title": "IAM decision rules",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Prefer roles and temporary credentials over long-lived access keys for workloads.",
+              "Identity-based policies attach to principals; resource-based policies attach to resources that support them.",
+              "An explicit deny overrides an allow.",
+              "A permissions boundary limits identity-policy grants and grants to a role ARN; it does not grant access. Same-account direct resource-policy grants to an IAM user ARN or assumed-role session ARN have implicit-deny exceptions. Applicable explicit denies still override allows.",
+              "Cross-account access commonly combines a trusted role/resource policy with the caller's permission to assume or use it."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "encryption",
+        "title": "Keys, secrets, and certificates",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Managed encryption keys",
+                "AWS KMS"
+              ],
+              [
+                "Dedicated hardware security module",
+                "AWS CloudHSM"
+              ],
+              [
+                "Secret storage/rotation",
+                "AWS Secrets Manager"
+              ],
+              [
+                "Public/private certificates for supported AWS integrations",
+                "AWS Certificate Manager"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "observe",
+        "title": "CloudWatch, CloudTrail, and Config",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Question",
+              "Service"
+            ],
+            "rows": [
+              [
+                "What is the workload doing? metrics/logs/alarms",
+                "CloudWatch"
+              ],
+              [
+                "Who called an API?",
+                "CloudTrail"
+              ],
+              [
+                "How was this resource configured and did it meet a rule?",
+                "AWS Config"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "events",
+        "title": "Event-driven operations",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "EventBridge routes events to targets using rules and is useful for event-driven automation. CloudWatch alarms react to metrics. CloudTrail records API events. These may participate in one workflow but are not interchangeable."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-dns-data",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Core Services — Route 53, CloudFront, and Data Pipelines",
+    "chapter": "SAA Core · DNS & Data",
+    "summary": "Route 53 policies and health checks, CloudFront, SQS/SNS/EventBridge, Kinesis, ingestion, transformation, and analytics services.",
+    "sections": [
+      {
+        "id": "route53",
+        "title": "Route 53 routing policies",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Policy",
+              "Use"
+            ],
+            "rows": [
+              [
+                "Simple",
+                "Single straightforward response"
+              ],
+              [
+                "Weighted",
+                "Select DNS answers probabilistically by relative weights; caching prevents exact request splits"
+              ],
+              [
+                "Latency",
+                "Send users to the lowest-latency selected Region"
+              ],
+              [
+                "Failover",
+                "Primary/secondary with health evaluation"
+              ],
+              [
+                "Geolocation",
+                "Route based on user geographic location"
+              ],
+              [
+                "Geoproximity",
+                "Route by resource/user geography with optional bias"
+              ],
+              [
+                "Multi-value answer",
+                "Return multiple records with health preference; all-unhealthy fallback can return unhealthy records"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cloudfront",
+        "title": "CloudFront",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CloudFront caches content at edge locations to reduce latency and origin load. Origins can include S3 and HTTP endpoints. Use signed URLs/cookies and origin access controls when private content or private S3 origins are required."
+          }
+        ]
+      },
+      {
+        "id": "decouple",
+        "title": "Messaging and decoupling",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Durable queue / buffering",
+                "SQS"
+              ],
+              [
+                "Pub/sub fanout",
+                "SNS"
+              ],
+              [
+                "Event bus and rules",
+                "EventBridge"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "data",
+        "title": "Streaming and analytics pipelines",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Kinesis Data Streams handles real-time streaming records with consumer applications.",
+              "Amazon Data Firehose delivers streaming data to supported destinations with managed delivery.",
+              "AWS Glue provides data integration and ETL capabilities.",
+              "Athena queries data in S3 with SQL.",
+              "Lake Formation helps build and govern data lakes."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
