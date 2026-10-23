@@ -116,7 +116,7 @@ test('AWS banks contain multi-response questions', () => {
 
 
 test('readiness requires three strong full mocks, domain floors, multi-response accuracy, and complete objectives', () => {
-  const attempt = (percent, domainPercent, multiCorrect = 3, multiTotal = 4) => ({
+  const attempt = (percent, domainPercent, questionIds, multiCorrect = 3, multiTotal = 4) => ({
     exam: 'saa-c03',
     full: true,
     percent,
@@ -126,20 +126,38 @@ test('readiness requires three strong full mocks, domain floors, multi-response 
     ],
     multiCorrect,
     multiTotal,
+    questionIds,
   });
-  const ready = evaluateReadiness([attempt(84, 78), attempt(82, 76), attempt(80, 72)], 'saa-c03', 0);
+  const ready = evaluateReadiness([
+    attempt(84, 78, Array.from({ length: 65 }, (_, i) => `q${i}`)),
+    attempt(82, 76, Array.from({ length: 65 }, (_, i) => `q${i + 30}`)),
+    attempt(80, 72, Array.from({ length: 65 }, (_, i) => `q${i + 55}`)),
+  ], 'saa-c03', 0, 120);
   assert.equal(ready.status, 'ready');
   assert.deepEqual(ready.blockers, []);
 
-  const weakDomain = evaluateReadiness([attempt(84, 69), attempt(83, 75), attempt(82, 76)], 'saa-c03', 0);
+  const exposure = Array.from({ length: 100 }, (_, i) => `q${i}`);
+  const weakDomain = evaluateReadiness([
+    attempt(84, 69, exposure.slice(0, 65)),
+    attempt(83, 75, exposure.slice(20, 85)),
+    attempt(82, 76, exposure.slice(35, 100)),
+  ], 'saa-c03', 0, 120);
   assert.equal(weakDomain.status, 'not-ready');
   assert.ok(weakDomain.blockers.some((item) => item.includes('domain')));
 
-  const missing = evaluateReadiness([attempt(84, 78), attempt(83, 78), attempt(82, 78)], 'saa-c03', 1);
+  const missing = evaluateReadiness([
+    attempt(84, 78, exposure.slice(0, 65)),
+    attempt(83, 78, exposure.slice(20, 85)),
+    attempt(82, 78, exposure.slice(35, 100)),
+  ], 'saa-c03', 1, 120);
   assert.equal(missing.status, 'not-ready');
   assert.ok(missing.blockers.some((item) => item.includes('missing objective')));
 
-  const lowMulti = evaluateReadiness([attempt(84, 78, 2, 4), attempt(83, 78, 2, 4), attempt(82, 78, 2, 4)], 'saa-c03', 0);
+  const lowMulti = evaluateReadiness([
+    attempt(84, 78, exposure.slice(0, 65), 2, 4),
+    attempt(83, 78, exposure.slice(20, 85), 2, 4),
+    attempt(82, 78, exposure.slice(35, 100), 2, 4),
+  ], 'saa-c03', 0, 120);
   assert.equal(lowMulti.multiPercent, 50);
   assert.equal(lowMulti.status, 'not-ready');
 });
@@ -149,7 +167,25 @@ test('readiness ignores non-full and other-exam attempts', () => {
     { exam: 'clf-c02', full: true, percent: 90, domains: [{ id: '1.0', title: 'Cloud', correct: 9, total: 10 }], multiCorrect: 4, multiTotal: 4 },
     { exam: 'saa-c03', full: false, percent: 95, domains: [{ id: '1.0', title: 'Secure', correct: 9, total: 10 }], multiCorrect: 4, multiTotal: 4 },
   ];
-  const result = evaluateReadiness(attempts, 'saa-c03', 0);
+  const result = evaluateReadiness(attempts, 'saa-c03', 0, 120);
   assert.equal(result.fullAttempts, 0);
   assert.equal(result.status, 'not-ready');
+});
+
+
+test('readiness blocks narrow repeated-question exposure', () => {
+  const same = Array.from({ length: 65 }, (_, i) => `q${i}`);
+  const attempts = [84, 83, 82].map((percent) => ({
+    exam: 'saa-c03',
+    full: true,
+    percent,
+    domains: [{ id: '1.0', title: 'Secure', correct: 80, total: 100 }],
+    multiCorrect: 3,
+    multiTotal: 4,
+    questionIds: same,
+  }));
+  const result = evaluateReadiness(attempts, 'saa-c03', 0, 120);
+  assert.equal(result.exposurePercent, 54);
+  assert.equal(result.status, 'not-ready');
+  assert.ok(result.blockers.some((item) => item.includes('question bank')));
 });
