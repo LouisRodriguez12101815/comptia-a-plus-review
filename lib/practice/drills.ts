@@ -2278,44 +2278,7 @@ const awsSaaCostCues: DrillDeck = {
   ]
 };
 
-// A+ Core 2 (220-1202 V15) OS concepts and Windows 11 minimums (Chapter 1 gaps).
-const c2OsConcepts: DrillDeck = {
-  id: "c2-os-concepts",
-  certification: "A+ Core 2",
-  exam: "220-1202",
-  objective: "1.1, 1.2",
-  topic: "OS concepts, multitasking and Windows 11 minimums",
-  modes: [
-    { id: "termToMeaning", from: "term", to: "meaning" },
-    { id: "meaningToTerm", from: "meaning", to: "term" },
-    { id: "scenarioToAnswer", from: "scenario", to: "answer" },
-  ],
-  tables: [
-    { id: "terms", fields: ["term", "meaning"] },
-    { id: "scenarios", fields: ["scenario", "answer"] },
-  ],
-  items: [
-    { id: "coop", fields: { term: "Cooperative multitasking", meaning: "Each app must release the processor itself; one frozen app can lock the whole system" }, detail: "Early Windows relied on each app to hand the processor back, so one hang froze everything.", hook: "Cooperative = apps must cooperate." },
-    { id: "preemptive", fields: { term: "Preemptive multitasking", meaning: "The OS takes the processor back on a schedule, so one crashed app does not stop the others" }, detail: "Used by modern operating systems; only the stalled app stops.", hook: "Preemptive = the OS takes control." },
-    { id: "multithread", fields: { term: "Multithreading", meaning: "One application sends several requests to the processor at the same time" }, detail: "Lets one program do several things at once.", hook: "Multi-thread = many requests." },
-    { id: "shell", fields: { term: "Shell", meaning: "Program that runs on the OS and gives the user menus or another interface" }, detail: "File Explorer is the Windows shell.", hook: "Shell = the interface on top." },
-    { id: "gui", fields: { term: "GUI", meaning: "Interface that uses icons, images and a pointing device, not text alone" }, detail: "Graphical user interface.", hook: "GUI = pictures and a mouse." },
-    { id: "driver", fields: { term: "Driver", meaning: "Software that tells the OS how to use a specific piece of hardware" }, detail: "Each device needs its own driver.", hook: "Driver = hardware instructions." },
-    { id: "x86", fields: { term: "x86", meaning: "Term for operating systems built for 32-bit Intel processors" }, detail: "Named after Intel's 32-bit chips ending in 86.", hook: "x86 = 32-bit Intel." },
-    { id: "x64", fields: { term: "x64 (AMD64)", meaning: "Term for operating systems built for 64-bit processors" }, detail: "AMD defined the 64-bit instruction set used today.", hook: "x64 = 64-bit." },
-    { id: "arm", fields: { term: "ARM", meaning: "Term for operating systems built for RISC processors used in phones and tablets" }, detail: "Reduced instruction set processors found in mobile devices.", hook: "ARM = phones and tablets." },
-    { id: "f1", fields: { term: "F1 key", meaning: "Opens Help in most applications" }, detail: "Quick path to Help.", hook: "F1 = Help." },
-    { id: "winr", fields: { term: "Windows key + R", meaning: "Opens the Run box" }, detail: "Type a program name to launch it.", hook: "Win+R = Run." },
-    { id: "w11-cpu", fields: { term: "Windows 11 processor minimum", meaning: "1 GHz or faster, 64-bit compatible, with at least 2 cores" }, detail: "Minimum processor for Windows 11.", hook: "Windows 11 CPU = 1 GHz." },
-    { id: "w11-ram", fields: { term: "Windows 11 RAM minimum (64-bit)", meaning: "4 GB" }, detail: "Minimum memory for the 64-bit edition.", hook: "Windows 11 RAM = 4 GB." },
-    { id: "w11-disk", fields: { term: "Windows 11 storage minimum", meaning: "64 GB" }, detail: "Minimum free storage for installation.", hook: "Windows 11 disk = 64 GB." },
-    { id: "w32-ram", fields: { term: "32-bit Windows RAM limit", meaning: "4 GB addressable" }, detail: "32-bit operating systems address at most 4 GB of RAM.", hook: "32-bit = 4 GB ceiling." },
-    { id: "sc-freeze", fields: { scenario: "One app freezes, but the rest of the desktop keeps running", answer: "Preemptive multitasking" }, detail: "The OS takes the processor back from the frozen app.", hook: "Others keep running = preemptive.", wrong: { answer: ["Cooperative multitasking", "Multithreading", "A shell"] } },
-    { id: "sc-cpu", fields: { scenario: "A 64-bit Windows 11 install is planned on an old single-core PC", answer: "It fails the processor check: Windows 11 needs at least 2 cores" }, detail: "Windows 11 needs a 1 GHz or faster 64-bit processor with at least 2 cores.", hook: "Windows 11 needs two cores.", wrong: { answer: ["It needs an optical drive", "It needs an IPv6 address", "It must be a laptop"] } },
-  ],
-};
-
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts];
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
