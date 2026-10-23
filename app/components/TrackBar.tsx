@@ -30,8 +30,8 @@ export function TrackBar() {
   const tools = toolStatuses(track);
 
   return (
-    <div className="border-b border-slate-800 bg-slate-900/60">
-      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:py-3">
+    <div className={`track-shell track-${track.id} border-b border-slate-800 bg-slate-900/60`}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:py-3">
         <p className="hidden text-sm text-slate-400 sm:block">
           <Link href="/" className="hover:text-white">
             {t("home")}
@@ -67,8 +67,8 @@ export function TrackBar() {
                 aria-current={active ? "page" : undefined}
                 className={`inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 ${
                   active
-                    ? "border-teal-400 bg-teal-400 font-medium text-slate-950"
-                    : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"
+                    ? "track-accent-button border-transparent font-medium"
+                    : "border-slate-700 text-slate-200 hover:border-[var(--track-accent-line)] hover:text-white"
                 }`}
               >
                 <ToolIcon id={tool.id} width={16} height={16} />

@@ -118,3 +118,150 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .practice-packet-arrival { animation: none; }
 }
+
+
+/* Exam-blueprint workspace theme.
+ * Each certification gets a distinct focal color while sharing the same dark
+ * gradient system. Accent is never the only carrier of meaning.
+ */
+.track-shell {
+  --track-accent: #38bdf8;
+  --track-accent-strong: #0ea5e9;
+  --track-accent-soft: rgba(56, 189, 248, 0.12);
+  --track-accent-line: rgba(56, 189, 248, 0.34);
+  --track-glow: rgba(56, 189, 248, 0.18);
+}
+
+.track-core1 {
+  --track-accent: #22d3ee;
+  --track-accent-strong: #0d9488;
+  --track-accent-soft: rgba(34, 211, 238, 0.12);
+  --track-accent-line: rgba(45, 212, 191, 0.36);
+  --track-glow: rgba(34, 211, 238, 0.2);
+}
+
+.track-core2 {
+  --track-accent: #60a5fa;
+  --track-accent-strong: #10b981;
+  --track-accent-soft: rgba(59, 130, 246, 0.13);
+  --track-accent-line: rgba(16, 185, 129, 0.34);
+  --track-glow: rgba(59, 130, 246, 0.22);
+}
+
+.track-networking {
+  --track-accent: #3b82f6;
+  --track-accent-strong: #2563eb;
+  --track-accent-soft: rgba(37, 99, 235, 0.13);
+  --track-accent-line: rgba(59, 130, 246, 0.38);
+  --track-glow: rgba(37, 99, 235, 0.22);
+}
+
+.track-ccna {
+  --track-accent: #fb923c;
+  --track-accent-strong: #dc2626;
+  --track-accent-soft: rgba(249, 115, 22, 0.13);
+  --track-accent-line: rgba(239, 68, 68, 0.34);
+  --track-glow: rgba(249, 115, 22, 0.2);
+}
+
+.track-workspace-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--track-accent-line);
+  background:
+    radial-gradient(circle at 88% 18%, var(--track-glow), transparent 34%),
+    linear-gradient(135deg, var(--track-accent-soft), rgba(21, 34, 56, 0.82) 48%, rgba(11, 18, 32, 0.96));
+}
+
+.track-workspace-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -55% 42%;
+  height: 210px;
+  border: 1px solid var(--track-accent-line);
+  border-radius: 50%;
+  opacity: 0.65;
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.track-accent-text { color: var(--track-accent); }
+.track-accent-border { border-color: var(--track-accent-line); }
+.track-accent-surface { background: var(--track-accent-soft); }
+.track-accent-button {
+  background: var(--track-accent);
+  color: #07111f;
+}
+.track-accent-button:hover { background: var(--track-accent-strong); color: white; }
+
+.study-sidebar {
+  border: 1px solid rgba(100, 116, 139, 0.36);
+  background: rgba(11, 18, 32, 0.78);
+  backdrop-filter: blur(14px);
+}
+.study-sidebar a:hover,
+.study-sidebar a:focus-visible {
+  border-color: var(--track-accent-line);
+  background: var(--track-accent-soft);
+  color: #fff;
+}
+
+.study-sequence-step {
+  border: 1px solid var(--track-accent-line);
+  background: linear-gradient(180deg, var(--track-accent-soft), rgba(21, 34, 56, 0.38));
+}
+
+@keyframes blueprint-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--track-glow); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+
+.track-focus-dot {
+  background: var(--track-accent);
+  animation: blueprint-pulse 3.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track-focus-dot { animation: none; }
+}
+
+
+@keyframes track-gradient-drift {
+  0% { transform: translate3d(-4%, -2%, 0) scale(1); opacity: 0.55; }
+  50% { transform: translate3d(5%, 3%, 0) scale(1.08); opacity: 0.85; }
+  100% { transform: translate3d(-4%, -2%, 0) scale(1); opacity: 0.55; }
+}
+
+@keyframes track-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.track-workspace-hero::before {
+  content: "";
+  position: absolute;
+  inset: -35% -10% auto 35%;
+  height: 220px;
+  background:
+    radial-gradient(circle at 35% 50%, var(--track-glow), transparent 34%),
+    radial-gradient(circle at 70% 35%, var(--track-accent-soft), transparent 38%);
+  filter: blur(8px);
+  animation: track-gradient-drift 9s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.track-workspace-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.track-hero-icon {
+  animation: track-icon-float 4.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track-workspace-hero::before,
+  .track-hero-icon {
+    animation: none;
+  }
+}
