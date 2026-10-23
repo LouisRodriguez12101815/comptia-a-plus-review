@@ -107,7 +107,30 @@ const awsClf: FinalReview = {
   sequences: [],
 };
 
-export const finalReviews: FinalReview[] = [core1, core2, awsClf];
+
+const awsSaa: FinalReview = {
+  id: "aws-saa",
+  certification: "AWS Certified Solutions Architect – Associate",
+  exam: "saa-c03",
+  drillQuestions: 26,
+  trapsPerRound: 4,
+  minutes: 15,
+  traps: [
+    { id: "saa-multiaz-replica", prompt: "RDS availability vs read scaling", answer: "Multi-AZ = availability/failover; read replica = read scaling", wrong: ["Multi-AZ = read scaling only; read replica = automatic failover", "They are the same feature", "Read replica = encryption; Multi-AZ = DNS"], detail: "The primary design goal differs even though both may involve another database instance.", hook: "AZ = availability. Replica = reads." },
+    { id: "saa-sg-nacl", prompt: "Stateful resource filtering vs stateless subnet filtering", answer: "Security group = stateful resource control; NACL = stateless subnet control", wrong: ["Security group = stateless; NACL = stateful", "Both are IAM policies", "Both are DNS routing controls"], detail: "These layers are frequently paired as distractors.", hook: "SG remembers return traffic; NACL does not." },
+    { id: "saa-sqs-sns-event", prompt: "Queue vs fanout vs event routing", answer: "SQS = queue; SNS = pub/sub fanout; EventBridge = event routing", wrong: ["SNS = queue; SQS = DNS; EventBridge = block storage", "All three are databases", "EventBridge = CDN; SQS = certificates"], detail: "Choose by messaging behavior rather than service name familiarity.", hook: "Queue SQS. Notify SNS. Route events EventBridge." },
+    { id: "saa-cloudfront-ga", prompt: "CDN caching vs global network acceleration", answer: "CloudFront = caching/CDN; Global Accelerator = network path acceleration", wrong: ["Global Accelerator = object storage; CloudFront = VPN", "They are identical", "CloudFront = database proxy; Global Accelerator = DNS only"], detail: "CloudFront caches content; Global Accelerator optimizes network paths to regional endpoints.", hook: "Content = CloudFront. Network path = Accelerator." },
+    { id: "saa-rto-rpo", prompt: "Recovery time vs data-loss window", answer: "RTO = recovery time; RPO = acceptable data-loss window", wrong: ["RTO = data loss; RPO = CPU target", "They are pricing models", "RPO = DNS TTL; RTO = IOPS"], detail: "DR answers often depend on reading RTO/RPO correctly.", hook: "T = time. P = point in time." },
+    { id: "saa-storage", prompt: "Object vs block vs shared file vs ephemeral", answer: "S3 = object; EBS = persistent block; EFS/FSx = file; instance store = ephemeral block", wrong: ["S3 = block; EBS = DNS; EFS = object", "All are relational databases", "Instance store is durable object storage"], detail: "Classify the storage model before comparing performance and cost.", hook: "S3 object. EBS block. EFS/FSx file. Instance store temporary." },
+    { id: "saa-watch-trail-config", prompt: "Metrics vs API audit vs configuration state", answer: "CloudWatch = metrics/logs/alarms; CloudTrail = API audit; Config = configuration history/rules", wrong: ["CloudTrail = metrics; Config = DNS; CloudWatch = IAM", "They are interchangeable", "CloudWatch = compliance contracts; CloudTrail = budgets"], detail: "These services observe different parts of the system.", hook: "Watch metrics. Trail calls. Config state." },
+    { id: "saa-cost", prompt: "Interruptible vs steady committed vs flexible compute", answer: "Spot = interruptible; commitment discount = steady; On-Demand = flexible", wrong: ["Spot = dedicated hardware only", "On-Demand requires a long commitment", "All options cost the same"], detail: "The workload's tolerance for interruption and predictability drive the purchase model.", hook: "Can stop = Spot. Steady = commit. Flexible = On-Demand." }
+  ],
+  sequences: [
+    { id: "dr-cost-order", steps: ["Read the workload requirement", "Identify RTO and RPO", "Choose the least-complex DR pattern that meets them", "Validate data replication and backup", "Test failover and recovery"] }
+  ],
+};
+
+export const finalReviews: FinalReview[] = [core1, core2, awsClf, awsSaa];
 
 export function getFinalReview(id: string) {
   return finalReviews.find((r) => r.id === id);
