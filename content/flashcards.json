@@ -101,7 +101,7 @@
     "id": "fc-15",
     "topicId": "core2-ch1",
     "front": "Windows Home vs Pro (domain / BitLocker / RDP)",
-    "back": "Home cannot join a domain, no BitLocker, no RDP host. Pro can.",
+    "back": "Home cannot join an AD domain or host RDP; Pro adds those capabilities and full BitLocker management. Eligible Home devices can provide Device Encryption. Both editions support Microsoft accounts.",
     "weak": false
   },
   {
@@ -220,7 +220,7 @@
     "id": "fc-32",
     "topicId": "core2-ch3",
     "front": "Windows 11 Insider on Home?",
-    "back": "No. Pro, Education, Enterprise only (this guide).",
+    "back": "Home is not categorically excluded. Check current Insider edition/build, hardware, account and channel requirements; use preview builds with a recovery plan.",
     "weak": false
   },
   {
@@ -290,7 +290,7 @@
     "id": "fc-42",
     "topicId": "core2-ch7",
     "front": "How often should AV definitions update?",
-    "back": "Daily, not weekly.",
+    "back": "Keep security intelligence current through supported automatic updates and organizational policy; a fixed daily interval is not universally sufficient.",
     "weak": true
   },
   {
@@ -4925,6 +4925,506 @@
     ],
     "front": "Network cost follows the traffic path — name the key design constraint",
     "back": "Identify bytes and paths: same-AZ, cross-AZ, cross-Region, service endpoint, NAT, dedicated link and internet delivery. Data-transfer pricing is service-specific; do not assume all same-Region traffic is free or all cross-AZ paths charge identically. Compare Direct Connect, VPN and internet designs using bandwidth, encryption, redundancy and business targets. CloudFront may reduce repeated origin work/transfer, but include CDN/request/invalidations and cache hit behavior. Do not minimize transfer by removing required failure isolation.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-01",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Application, OS and driver roles — explain the decision",
+    "back": "An application performs the user-facing task; the OS supplies shared services. Drivers connect the OS to hardware; a filesystem organizes stored data.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-02",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "ChromeOS can work offline — explain the decision",
+    "back": "ChromeOS supports offline-capable applications and prepared local data. Offline availability depends on the app and file configuration; Linux has roles beyond desktops.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-03",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Source code and compilation — explain the decision",
+    "back": "Source code is input to compilation in this workflow. Calling source code precompiled machine instructions confuses the input with the output.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-04",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Mobile operating systems — explain the decision",
+    "back": "Android is a mobile operating system in the smartphone scenario. An OS category does not imply that every application or feature requires cloud access.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-05",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Preview versus production releases — explain the decision",
+    "back": "Windows Insider distributes preview builds for evaluation. Preview channels and eligibility change; use current guidance and keep a recovery plan instead of old Windows servicing names.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-06",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Prepare an image before capture — explain the decision",
+    "back": "Sysprep /generalize prepares a reference installation by removing machine-specific information. A WIM is an image format; capture and deployment are separate operations. Use supported imaging procedures.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-07",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Boot configuration data — explain the decision",
+    "back": "BCD holds Windows boot configuration used by the boot manager. UEFI and legacy boot components differ; hibernation resume is not the same as a normal OS boot.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-08",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Static IP configuration paths — explain the decision",
+    "back": "Windows network Settings can configure manual IP assignment for an adapter. Adapter properties reached through Control Panel can also configure IP; a question must constrain the path if only one answer is intended.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-09",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Fragmentation is still possible — explain the decision",
+    "back": "ext4 uses allocation strategies to improve data locality and reduce fragmentation. These mechanisms are not a guarantee of automatic, continuous defragmentation.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-10",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Update macOS through Software Update — explain the decision",
+    "back": "Current macOS updates are offered through Software Update in System Settings. App Store app updates are a different task; older macOS versions may use different paths.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-11",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Finder manages files — explain the decision",
+    "back": "Finder is the standard macOS file-browsing interface. Browsing a file is different from installing an OS update or managing firmware.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-12",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Search names versus contents — explain the decision",
+    "back": "grep -r searches matching text through files recursively. find traverses directories by default; -name matches entry names rather than searching each file’s contents.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-13",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Password guessing — explain the decision",
+    "back": "Repeated candidate-password attempts are evidence of password guessing. The log does not by itself prove successful access. Investigate outcomes and apply approved authentication protections.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-14",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Biometrics and authentication factors — explain the decision",
+    "back": "A fingerprint is a biometric characteristic. A PIN and password are both knowledge factors; a smart card/token is possession, not a biological characteristic.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-15",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Rootkit concealment — explain the decision",
+    "back": "A rootkit is associated with concealed malicious presence or control. A symptom is a clue, not proof; follow the incident workflow and use trusted inspection/recovery methods.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-16",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Physical security boundaries — explain the decision",
+    "back": "A fence creates a physical perimeter control. Physical controls complement authentication and monitoring; a fence alone does not grant or verify digital access.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-17",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Metal-detector limits — explain the decision",
+    "back": "A metal detector detects metal under its operating conditions. It is not a universal weapon detector or a substitute for identity checks.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-18",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Sync is not independent backup — explain the decision",
+    "back": "Synchronization coordinates selected data and may propagate deletion. Recoverability depends on retention, versioning and backup configuration, not merely having two synced devices.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-19",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Firewall rules and tamper protection — explain the decision",
+    "back": "Advanced Security manages scoped firewall rules. Defender Tamper Protection restricts unauthorized security-setting changes; it is not the tool for authoring firewall rules.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-20",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Workstation hardening — explain the decision",
+    "back": "Hardening combines maintained software with restricted access and appropriate authentication. Renaming an account alone does not prevent compromise; disabling protective controls weakens the baseline.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-21",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "File encryption versus volume encryption — explain the decision",
+    "back": "EFS provides file-level encryption on supported Windows/NTFS configurations. Do not rule out BitLocker solely because a TPM is absent: supported non-TPM configurations exist. Plan recovery of encryption credentials.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-22",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Verify folder-backup configuration — explain the decision",
+    "back": "OneDrive folder backup requires the relevant client, account and folder configuration. A Microsoft account alone is not evidence that every file or folder is protected.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-23",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Built-in GPU performance monitoring — explain the decision",
+    "back": "Task Manager can display GPU data with supported hardware and drivers. Third-party tools may add detail, but they are not always required. GPU support depends on the driver model.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-24",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "End malware removal with education — explain the decision",
+    "back": "End-user education helps prevent recurrence after the required remediation and recovery steps. Education is not a substitute for containment, removal, validation or the organization’s incident procedure.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-25",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Match Wi-Fi changes to evidence — explain the decision",
+    "back": "An alternative supported band may reduce the measured 2.4 GHz interference. Range, obstructions and coverage still matter; 5 GHz is not a universal cure for disconnections.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-26",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "USB controller-resource troubleshooting — explain the decision",
+    "back": "USB devices can share controller resources even across different physical ports. Check power, bandwidth, controller topology and supported drivers; port generation/color alone does not establish the cause.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-27",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Virtual-machine clock synchronization — explain the decision",
+    "back": "Virtual timekeeping and pause/resume behavior can cause clock drift. The correct time source depends on the configuration; domain members commonly use the domain hierarchy.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-28",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Manage a Windows service — explain the decision",
+    "back": "The Services management console controls supported service operations. Review dependencies and the failure cause; changing startup settings is different from restarting a running service.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-29",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Battery thermal hazards — explain the decision",
+    "back": "A damaged or overheated lithium-ion battery can present a serious thermal hazard. Follow manufacturer and workplace handling/escalation guidance; do not puncture, charge or improvise a repair.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-30",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Shutdown evidence versus cause — explain the decision",
+    "back": "Unexpected-shutdown logs are evidence to correlate with other symptoms and records. A shutdown event does not independently identify the root cause.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-31",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "RDP transport and default port — explain the decision",
+    "back": "Direct RDP commonly uses TCP and UDP port 3389. Gateways and configured ports can change the path; do not assume TCP is its only possible transport.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-32",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Batch-file comments — explain the decision",
+    "back": "REM records a batch-file comment. Comment syntax depends on the interpreter; PowerShell/Bash and JavaScript examples do not become cmd.exe comments.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-33",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Launch the RDP client — explain the decision",
+    "back": "mstsc launches the Windows Remote Desktop Connection client. Launching a client does not establish authorization, reachability or permission to control the target.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-34",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Remote-access VPN — explain the decision",
+    "back": "A host-to-site VPN connects an individual remote client to the organization’s network. A VPN does not remove endpoint, authentication or application-authorization requirements.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-35",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Collaboration tools — explain the decision",
+    "back": "Videoconferencing is the relevant collaboration capability. Platforms such as Teams/Zoom may also support chat, sharing and other features; one label does not exclude the others.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-36",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Verify AI-generated guidance — explain the decision",
+    "back": "AI-generated technical guidance needs independent validation and policy review. Confidence and fluent language do not establish accuracy or permission; protect sensitive data.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-37",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Approved ESD controls — explain the decision",
+    "back": "Approved ESD equipment and handling procedures reduce damaging potential differences. Hair restraint can address other hazards, but it does not replace ESD controls. Follow electrical-safety and equipment guidance.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-38",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Use the correct driver bit — explain the decision",
+    "back": "Use the matching driver type and size to avoid damaging the fastener or equipment. Torx has a familiar six-lobed form; security variants can require a corresponding special bit.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-39",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Trial licensing and open source — explain the decision",
+    "back": "Shareware commonly offers trial or limited use before purchase. Open-source software can be used commercially under its license; price and licensing rights are separate questions.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-40",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "ESD strap resistance — explain the decision",
+    "back": "Approved wrist straps commonly include a series safety resistor, often around one megaohm. Use the manufacturer-approved equipment and bonding procedure; this is not a universal instruction for every grounding system.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-41",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Choose PPE from the hazard — explain the decision",
+    "back": "PPE and cleaning methods should match the actual hazard and approved procedure. A filtration mask can be appropriate for airborne particles, but it is not a universal answer for every task.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-42",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Microwave interference scope — explain the decision",
+    "back": "Microwave-related interference can affect 2.4 GHz Wi-Fi. Validate timing, signal and band conditions; this is not a claim that every wireless failure or band has the same cause.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-43",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Respect access authorization — explain the decision",
+    "back": "Visible credentials do not grant permission to use another person’s account. The approved contact method may be a call, ticket or other channel; texting is not universally required.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-44",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Report accidental damage — explain the decision",
+    "back": "Honest communication and documented escalation preserve trust and support safe resolution. Do not conceal damage or continue with a component known to be unsafe or faulty.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-45",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Communicate a changed estimate — explain the decision",
+    "back": "Communicate delays and revised expectations proactively. An estimate is not permission to hide risk or mark unfinished work resolved.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-46",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Ticket intake depends on the workflow — explain the decision",
+    "back": "The correct intake channel follows the organization’s configured and accessible workflow. Email, portals, staff entry and automated alerts have different uses; no one method is universally easiest.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-47",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Sandbox, rollout and backout — explain the decision",
+    "back": "Sandbox testing isolates evaluation; a backout plan explains how to reverse a failed change. Blackout and backout are different terms. Approval, verification and recovery planning remain part of change control.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-48",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Rename and join an AD domain — explain the decision",
+    "back": "System Properties provides computer-name/domain membership controls. Successful domain join also requires the correct edition, network/DNS reachability and authorized credentials.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-49",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Task Manager user sessions — explain the decision",
+    "back": "Task Manager’s Users view shows signed-in users and their associated activity. The Performance tab provides resource graphs; it answers a different question.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-50",
+    "topicId": "core1-ch2",
+    "examCodes": [
+      "220-1201"
+    ],
+    "front": "RAID 5 is supplemental Core 1 storage — explain the decision",
+    "back": "Conventional RAID 5 uses distributed parity and tolerates one member failure. This is supplemental Core 1 storage context. Degraded/rebuild availability depends on the controller and workload; RAID is not backup.",
     "weak": false
   }
 ]

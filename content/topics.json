@@ -629,7 +629,7 @@
             "items": [
               "Processor: 1.0 GHz or faster, 2 cores minimum.",
               "RAM: 4 GB minimum (8 GB recommended).",
-              "Storage: 64 GB minimum (CompTIA spec; Microsoft marketing numbers can be lower).",
+              "Storage: 64 GB or larger device is the published Windows 11 minimum; updates and workloads can require more free space.",
               "Display: 720p, 9\" minimum. Firmware: UEFI with Secure Boot capable."
             ]
           }
@@ -642,7 +642,7 @@
           {
             "type": "bullets",
             "items": [
-              "Home: local accounts only, no domain join, no BitLocker, no Remote Desktop host.",
+              "Windows Home supports Microsoft and local accounts. It cannot join an AD domain or host incoming RDP sessions. Full BitLocker management is edition-dependent; eligible Home devices can support Device Encryption.",
               "Pro: domain join, BitLocker, Remote Desktop, Group Policy.",
               "Enterprise: domain-oriented, full feature set.",
               "Windows 11 is 64-bit.",
@@ -880,8 +880,8 @@
           {
             "type": "bullets",
             "items": [
-              "Insider Program: not on Home. Supported on Pro, Education, Enterprise.",
-              "Do not pick “General Availability” as the branch name on this material. Semi-Annual Channel = regular public. LTSC = long-term enterprise. Insider = preview.",
+              "Windows Insider preview participation is not categorically prohibited on Home. Check current edition/build, hardware, account and channel requirements.",
+              "Windows 11 uses annual feature-update servicing and monthly quality updates. General availability is production release context; Insider provides previews. Retired Windows 10 channel labels are historical, not current Windows 11 rules.",
               "Security updates fix vulns (highest priority). Critical = major bugs. Feature updates bump version (21H2 → 22H2). Quality rollups = monthly cumulative. Optional = drivers/extras.",
               "32-bit → 64-bit is clean install only. No in-place, no intermediate stepping stone."
             ]
@@ -962,7 +962,7 @@
                 "IP, DHCP server, DNS"
               ],
               [
-                "ipconfig /release && /renew",
+                "ipconfig /release && ipconfig /renew",
                 "New DHCP lease"
               ],
               [
@@ -1026,7 +1026,7 @@
           {
             "type": "bullets",
             "items": [
-              "Antivirus definitions: daily, not weekly. New malware is constant.",
+              "Keep antimalware security intelligence current using automatic updates and organizational policy; do not treat once daily as a universal sufficient interval.",
               "SFC repairs system files. regedit edits the registry. Do not use regedit to “fix” SFC-class corruption.",
               "Unactivated Windows: personalization (wallpaper) limited. Apps, updates, and browsing still work."
             ]
@@ -1040,7 +1040,7 @@
           {
             "type": "bullets",
             "items": [
-              "Tabs: Processes, Performance, App History, Startup, Services, Details.",
+              "Task Manager views include Processes, Performance, App history, Startup apps, Users, Details and Services; naming/layout varies by version. Supported GPU data can appear in Performance.",
               "High CPU/RAM: identify in Processes, end or uninstall. 100% disk: check indexing, search, failing HDD, or missing TRIM on SSD. Network spike: identify the process.",
               "Battery drain: limit background apps. Overheating can throttle or shut down. WWAN is cellular; Wi-Fi is local wireless. Auto-connect to open Wi-Fi is a risk."
             ]
@@ -1347,12 +1347,12 @@
               "2. A = IPv4. AAAA = IPv6.",
               "3. IP works, name fails = DNS. Neither works = network.",
               "4. tracert = path. pathping = path + loss.",
-              "5. RAID 5 cannot be used during rebuild (this guide). RAID 10 can.",
+              "5. Conventional RAID 5 has one-drive failure tolerance; degraded/rebuild availability depends on the controller and workload. It has no remaining complete-drive failure tolerance after one member fails.",
               "6. TPM 2.0 is mandatory for Windows 11.",
               "7. Wall = AC, PC = DC, PSU converts AC→DC.",
               "8. Workstation SMB cap = 20 connections.",
               "9. 169.254.x.x = APIPA = DHCP failed.",
-              "10. Antivirus definitions update daily, not weekly."
+              "10. Keep antimalware security intelligence current using the supported automatic-update process and organizational policy."
             ]
           }
         ]
@@ -1426,7 +1426,7 @@
             "rows": [
               [
                 "DHCP failed",
-                "ipconfig /release && /renew"
+                "ipconfig /release && ipconfig /renew"
               ],
               [
                 "Can't resolve names",
@@ -8249,6 +8249,1320 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-os",
+    "group": "core2",
+    "concept": "operating-systems",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Operating systems and tools",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 1–12: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-01",
+        "title": "1 — Application, OS and driver roles",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An application performs the user-facing task; the OS supplies shared services."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Drivers connect the OS to hardware; a filesystem organizes stored data."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Change the symptom to missing device support. Which layer should you investigate?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-02",
+        "title": "2 — ChromeOS can work offline",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "ChromeOS supports offline-capable applications and prepared local data."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Offline availability depends on the app and file configuration; Linux has roles beyond desktops."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Identify what must be prepared before taking a cloud document offline."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://support.google.com/chromebook/answer/3214688?hl=en-GB"
+          }
+        ]
+      },
+      {
+        "id": "assessment-03",
+        "title": "3 — Source code and compilation",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Source code is input to compilation in this workflow."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Calling source code precompiled machine instructions confuses the input with the output."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How does an interpreted script differ from this simplified compiled workflow?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-04",
+        "title": "4 — Mobile operating systems",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Android is a mobile operating system in the smartphone scenario."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An OS category does not imply that every application or feature requires cloud access."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Contrast the support needs of a mobile OS with a server workload."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-05",
+        "title": "5 — Preview versus production releases",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Windows Insider distributes preview builds for evaluation."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Preview channels and eligibility change; use current guidance and keep a recovery plan instead of old Windows servicing names."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Would the same risk be appropriate for a critical production workstation? Explain."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://learn.microsoft.com/en-us/windows-insider/get-started"
+          }
+        ]
+      },
+      {
+        "id": "assessment-06",
+        "title": "6 — Prepare an image before capture",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Sysprep /generalize prepares a reference installation by removing machine-specific information."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A WIM is an image format; capture and deployment are separate operations. Use supported imaging procedures."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Place generalization, offline capture and target deployment in order."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.2. References: https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/sysprep--generalize--a-windows-installation?view=windows-11"
+          }
+        ]
+      },
+      {
+        "id": "assessment-07",
+        "title": "7 — Boot configuration data",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "BCD holds Windows boot configuration used by the boot manager."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "UEFI and legacy boot components differ; hibernation resume is not the same as a normal OS boot."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which evidence would distinguish a missing boot entry from an application startup failure?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.2. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-08",
+        "title": "8 — Static IP configuration paths",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Windows network Settings can configure manual IP assignment for an adapter."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Adapter properties reached through Control Panel can also configure IP; a question must constrain the path if only one answer is intended."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: List the IP, mask/prefix, gateway and DNS information you would verify after the change."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.7. References: https://support.microsoft.com/en-us/windows/experience/connectivity-networking/essential-network-settings-and-tasks-in-windows"
+          }
+        ]
+      },
+      {
+        "id": "assessment-09",
+        "title": "9 — Fragmentation is still possible",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "ext4 uses allocation strategies to improve data locality and reduce fragmentation."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "These mechanisms are not a guarantee of automatic, continuous defragmentation."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Explain why avoiding fragmentation is different from guaranteeing contiguous storage."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://www.kernel.org/doc/html/latest/filesystems/ext4/allocators.html"
+          }
+        ]
+      },
+      {
+        "id": "assessment-10",
+        "title": "10 — Update macOS through Software Update",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Current macOS updates are offered through Software Update in System Settings."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "App Store app updates are a different task; older macOS versions may use different paths."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What compatibility and backup checks belong before a major upgrade?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.8. References: https://support.apple.com/en-us/108382"
+          }
+        ]
+      },
+      {
+        "id": "assessment-11",
+        "title": "11 — Finder manages files",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Finder is the standard macOS file-browsing interface."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Browsing a file is different from installing an OS update or managing firmware."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Choose a different macOS tool to inspect a process that consumes excessive CPU."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.8. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-12",
+        "title": "12 — Search names versus contents",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "grep -r searches matching text through files recursively."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "find traverses directories by default; -name matches entry names rather than searching each file’s contents."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Change the requirement to finding files whose names end in .log. Which tool and predicate fit?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.9. References: https://www.gnu.org/s/grep/manual/grep.pdf ; https://www.man7.org/linux/man-pages/man1/find.1.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-security",
+    "group": "core2",
+    "concept": "security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Security controls and recovery",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 13–24: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-13",
+        "title": "13 — Password guessing",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Repeated candidate-password attempts are evidence of password guessing."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The log does not by itself prove successful access. Investigate outcomes and apply approved authentication protections."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What additional evidence would establish that an account was compromised?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.5. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-14",
+        "title": "14 — Biometrics and authentication factors",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A fingerprint is a biometric characteristic."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A PIN and password are both knowledge factors; a smart card/token is possession, not a biological characteristic."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why do two passwords not automatically provide two different authentication factors?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-15",
+        "title": "15 — Rootkit concealment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A rootkit is associated with concealed malicious presence or control."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A symptom is a clue, not proof; follow the incident workflow and use trusted inspection/recovery methods."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why might recovery from trusted media be needed when the running OS cannot be trusted?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-16",
+        "title": "16 — Physical security boundaries",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A fence creates a physical perimeter control."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Physical controls complement authentication and monitoring; a fence alone does not grant or verify digital access."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What control would verify identity at the building entrance?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-17",
+        "title": "17 — Metal-detector limits",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A metal detector detects metal under its operating conditions."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "It is not a universal weapon detector or a substitute for identity checks."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Name a risk this physical control does not address."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-18",
+        "title": "18 — Sync is not independent backup",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Synchronization coordinates selected data and may propagate deletion."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Recoverability depends on retention, versioning and backup configuration, not merely having two synced devices."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you verify that a deleted test file can actually be recovered?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.11. References: https://support.microsoft.com/en-us/onedrive/back-up-your-folders-with-onedrive"
+          }
+        ]
+      },
+      {
+        "id": "assessment-19",
+        "title": "19 — Firewall rules and tamper protection",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Advanced Security manages scoped firewall rules."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Defender Tamper Protection restricts unauthorized security-setting changes; it is not the tool for authoring firewall rules."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which profile, program, source and port restrictions should you verify before enabling a rule?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.2. References: https://learn.microsoft.com/en-us/defender-endpoint/tamper-protection-overview"
+          }
+        ]
+      },
+      {
+        "id": "assessment-20",
+        "title": "20 — Workstation hardening",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Hardening combines maintained software with restricted access and appropriate authentication."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Renaming an account alone does not prevent compromise; disabling protective controls weakens the baseline."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you verify that normal users can work without unnecessary administrator rights?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-21",
+        "title": "21 — File encryption versus volume encryption",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "EFS provides file-level encryption on supported Windows/NTFS configurations."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Do not rule out BitLocker solely because a TPM is absent: supported non-TPM configurations exist. Plan recovery of encryption credentials."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: When would volume-level BitLocker be the better match than EFS?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.2. References: https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/faq"
+          }
+        ]
+      },
+      {
+        "id": "assessment-22",
+        "title": "22 — Verify folder-backup configuration",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "OneDrive folder backup requires the relevant client, account and folder configuration."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A Microsoft account alone is not evidence that every file or folder is protected."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Create a harmless test file and describe how you would confirm upload and recovery."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.11. References: https://support.microsoft.com/en-us/onedrive/back-up-your-folders-with-onedrive"
+          }
+        ]
+      },
+      {
+        "id": "assessment-23",
+        "title": "23 — Built-in GPU performance monitoring",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Task Manager can display GPU data with supported hardware and drivers."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Third-party tools may add detail, but they are not always required. GPU support depends on the driver model."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you check if the GPU graph is absent?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.4. References: https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/"
+          }
+        ]
+      },
+      {
+        "id": "assessment-24",
+        "title": "24 — End malware removal with education",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "End-user education helps prevent recurrence after the required remediation and recovery steps."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Education is not a substitute for containment, removal, validation or the organization’s incident procedure."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Change the case to an organization-managed device. Who must approve recovery and communication?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.6. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-troubleshooting",
+    "group": "core2",
+    "concept": "troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Troubleshooting from evidence",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 25–30: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-25",
+        "title": "25 — Match Wi-Fi changes to evidence",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An alternative supported band may reduce the measured 2.4 GHz interference."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Range, obstructions and coverage still matter; 5 GHz is not a universal cure for disconnections."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What changes if the client is at the edge of coverage rather than near the AP?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.2. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-26",
+        "title": "26 — USB controller-resource troubleshooting",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "USB devices can share controller resources even across different physical ports."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Check power, bandwidth, controller topology and supported drivers; port generation/color alone does not establish the cause."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What evidence would instead suggest a power-budget problem?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-27",
+        "title": "27 — Virtual-machine clock synchronization",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Virtual timekeeping and pause/resume behavior can cause clock drift."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The correct time source depends on the configuration; domain members commonly use the domain hierarchy."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why can an inaccurate clock affect authentication and log correlation?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-28",
+        "title": "28 — Manage a Windows service",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The Services management console controls supported service operations."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Review dependencies and the failure cause; changing startup settings is different from restarting a running service."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you record if the service stops again immediately?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-29",
+        "title": "29 — Battery thermal hazards",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A damaged or overheated lithium-ion battery can present a serious thermal hazard."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Follow manufacturer and workplace handling/escalation guidance; do not puncture, charge or improvise a repair."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which approved channel handles safe isolation and disposal in your workplace?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-30",
+        "title": "30 — Shutdown evidence versus cause",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Unexpected-shutdown logs are evidence to correlate with other symptoms and records."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A shutdown event does not independently identify the root cause."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What additional evidence would support a power, thermal or driver hypothesis?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.1. References: https://learn.microsoft.com/en-us/troubleshoot/windows-server/performance/troubleshoot-unexpected-reboots-system-event-logs"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-remote-ai",
+    "group": "core2",
+    "concept": "reference",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Remote access, collaboration and AI",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 31–36: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-31",
+        "title": "31 — RDP transport and default port",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Direct RDP commonly uses TCP and UDP port 3389."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Gateways and configured ports can change the path; do not assume TCP is its only possible transport."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How does a Remote Desktop Gateway change the externally exposed path?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.9. References: https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/ports-used-by-rds"
+          }
+        ]
+      },
+      {
+        "id": "assessment-32",
+        "title": "32 — Batch-file comments",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "REM records a batch-file comment."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Comment syntax depends on the interpreter; PowerShell/Bash and JavaScript examples do not become cmd.exe comments."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which interpreter and comment syntax would apply to a .ps1 file?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.8. References: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/rem"
+          }
+        ]
+      },
+      {
+        "id": "assessment-33",
+        "title": "33 — Launch the RDP client",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "mstsc launches the Windows Remote Desktop Connection client."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Launching a client does not establish authorization, reachability or permission to control the target."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which target, network and permission checks belong before connecting?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.9. References: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc"
+          }
+        ]
+      },
+      {
+        "id": "assessment-34",
+        "title": "34 — Remote-access VPN",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A host-to-site VPN connects an individual remote client to the organization’s network."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A VPN does not remove endpoint, authentication or application-authorization requirements."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would the diagram change for a branch-office site-to-site VPN?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.9. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-35",
+        "title": "35 — Collaboration tools",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Videoconferencing is the relevant collaboration capability."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Platforms such as Teams/Zoom may also support chat, sharing and other features; one label does not exclude the others."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which meeting, sharing and privacy settings should the organizer verify?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.11. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-36",
+        "title": "36 — Verify AI-generated guidance",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AI-generated technical guidance needs independent validation and policy review."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Confidence and fluent language do not establish accuracy or permission; protect sensitive data."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you test a proposed command using disposable example data?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.10. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-safety",
+    "group": "core2",
+    "concept": "reference",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Safety, licensing and interference",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 37–42: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-37",
+        "title": "37 — Approved ESD controls",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Approved ESD equipment and handling procedures reduce damaging potential differences."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Hair restraint can address other hazards, but it does not replace ESD controls. Follow electrical-safety and equipment guidance."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why must the approved servicing procedure be checked before connecting an ESD strap?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://www.ibm.com/docs/en/storage-networking?topic=sl-esd-precautions"
+          }
+        ]
+      },
+      {
+        "id": "assessment-38",
+        "title": "38 — Use the correct driver bit",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Use the matching driver type and size to avoid damaging the fastener or equipment."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Torx has a familiar six-lobed form; security variants can require a corresponding special bit."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What should you do when the specified fastener does not match your available tool?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://www.topura.co.jp/eng/product/torx.html"
+          }
+        ]
+      },
+      {
+        "id": "assessment-39",
+        "title": "39 — Trial licensing and open source",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Shareware commonly offers trial or limited use before purchase."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Open-source software can be used commercially under its license; price and licensing rights are separate questions."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which rights and restrictions would you check before installing software for a business?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.6. References: https://opensource.org/faq"
+          }
+        ]
+      },
+      {
+        "id": "assessment-40",
+        "title": "40 — ESD strap resistance",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Approved wrist straps commonly include a series safety resistor, often around one megaohm."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Use the manufacturer-approved equipment and bonding procedure; this is not a universal instruction for every grounding system."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Explain why a bare improvised wire is not an equivalent substitute."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://www.ibm.com/docs/en/storage-networking?topic=sl-esd-precautions"
+          }
+        ]
+      },
+      {
+        "id": "assessment-41",
+        "title": "41 — Choose PPE from the hazard",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "PPE and cleaning methods should match the actual hazard and approved procedure."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A filtration mask can be appropriate for airborne particles, but it is not a universal answer for every task."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would your preparation change for damaged batteries or hazardous toner?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-42",
+        "title": "42 — Microwave interference scope",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Microwave-related interference can affect 2.4 GHz Wi-Fi."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Validate timing, signal and band conditions; this is not a claim that every wireless failure or band has the same cause."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Design a comparison test that changes one relevant condition at a time."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.10. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-support",
+    "group": "core2",
+    "concept": "reference",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Support decisions and professionalism",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 43–49: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-43",
+        "title": "43 — Respect access authorization",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Visible credentials do not grant permission to use another person’s account."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The approved contact method may be a call, ticket or other channel; texting is not universally required."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How can an approved support account or supervised session avoid impersonating the user?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-44",
+        "title": "44 — Report accidental damage",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Honest communication and documented escalation preserve trust and support safe resolution."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Do not conceal damage or continue with a component known to be unsafe or faulty."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which ticket and inventory records should be updated?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-45",
+        "title": "45 — Communicate a changed estimate",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Communicate delays and revised expectations proactively."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An estimate is not permission to hide risk or mark unfinished work resolved."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you communicate if the next step depends on an uncertain parts delivery?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-46",
+        "title": "46 — Ticket intake depends on the workflow",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The correct intake channel follows the organization’s configured and accessible workflow."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Email, portals, staff entry and automated alerts have different uses; no one method is universally easiest."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you handle a request containing sensitive data in the ticket body?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-47",
+        "title": "47 — Sandbox, rollout and backout",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Sandbox testing isolates evaluation; a backout plan explains how to reverse a failed change."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Blackout and backout are different terms. Approval, verification and recovery planning remain part of change control."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Name a measurable signal that should trigger rollback in a new deployment."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.2. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-48",
+        "title": "48 — Rename and join an AD domain",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "System Properties provides computer-name/domain membership controls."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Successful domain join also requires the correct edition, network/DNS reachability and authorized credentials."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you check if the domain name cannot be resolved?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.7. References: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain"
+          }
+        ]
+      },
+      {
+        "id": "assessment-49",
+        "title": "49 — Task Manager user sessions",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Task Manager’s Users view shows signed-in users and their associated activity."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The Performance tab provides resource graphs; it answers a different question."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which view would you use to examine GPU utilization rather than user sessions?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.4. References: https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/"
           }
         ]
       }

@@ -15,12 +15,12 @@ export async function ChapterStrip({ topicId, current }: { topicId: string; curr
   if (!tools.length) return null;
   return (
     <nav aria-label={t("ariaLabel")} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-3">
-      <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <ol className={`grid grid-cols-2 gap-2 ${tools.length > 4 ? "sm:grid-cols-5" : "sm:grid-cols-4"}`}>
         {tools.map((tool) => {
           const here = tool.id === current;
           const countKey =
-            tool.id === "visuals" ? "visualCount" : tool.id === "flashcards" ? "cardCount" : "questionCount";
-          const detail = tool.count === null ? t("youAreHere") : t(countKey, { count: tool.count });
+            tool.id === "practice" ? "drillCount" : tool.id === "visuals" ? "visualCount" : tool.id === "flashcards" ? "cardCount" : "questionCount";
+          const detail = tool.count === null ? (here ? t("youAreHere") : t("readNotes")) : t(countKey, { count: tool.count });
           const body = (
             <>
               <span className="block text-sm font-medium">{t(`tools.${tool.id}`)}</span>
