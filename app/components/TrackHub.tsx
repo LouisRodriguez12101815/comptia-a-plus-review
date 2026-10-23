@@ -23,21 +23,21 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const { own, shared } = splitTopics(track);
 
   const workspaceLinks = track.focus ? [
-    { label: "Overview", href: track.href },
-    { label: "Topics", href: `${track.href}#topics` },
+    { label: t("workspaceOverview"), href: track.href },
+    { label: t("workspaceTopics"), href: `${track.href}#topics` },
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
     { label: tTrack("tools.flashcards.label"), href: "/flashcards" },
     { label: tTrack("tools.quiz.label"), href: "/quiz" },
-    { label: t("testModeTitle"), href: `/test?exam=${track.focus}` },
-    { label: tHeader("final15"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` },
+    { label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` },
+    { label: t("workspaceResults"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` },
   ] : [];
 
   const sequence = track.focus ? [
-    { step: "01", label: "Learn", detail: "Read the mapped notes and objective scope.", href: `${track.href}#topics` },
-    { step: "02", label: "Visualize", detail: "Use the interactive chapter visuals.", href: `${track.href}/visuals` },
-    { step: "03", label: "Recall", detail: "Work the flashcards without looking back.", href: "/flashcards" },
-    { step: "04", label: "Apply", detail: "Answer scenarios and timed questions.", href: `/test?exam=${track.focus}` },
-    { step: "05", label: "Review", detail: "Finish with the mixed Final 15 review.", href: `/final-15/${track.id}` },
+    { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#topics` },
+    { step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` },
+    { step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" },
+    { step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: `/test?exam=${track.focus}` },
+    { step: "05", label: t("sequenceReview"), detail: t("sequenceReviewDetail"), href: `/final-15/${track.id}` },
   ] : [];
 
   return (
@@ -45,7 +45,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
       <SetTrackFocus focus={track.focus} />
       <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
         <summary className="cursor-pointer list-none font-medium text-white">
-          Study Menu <span className="track-accent-text ml-2" aria-hidden="true">▾</span>
+          {t("studyMenu")} <span className="track-accent-text ml-2" aria-hidden="true">▾</span>
         </summary>
         <nav className="mt-3 grid gap-2" aria-label="Study workspace">
           {workspaceLinks.map((item) => (
