@@ -7,8 +7,8 @@ import objectives from "@/content/objectives.json";
 import { reportContent } from "@/app/components/ReportIssue";
 import { getTopic, questions, topics } from "@/lib/content";
 import {
-  EXAM_FORMATS, TEST_LENGTHS, allocateByWeight, approximatePassPercent, buildExamPool,
-  draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion,
+  EXAM_FORMATS, TEST_LENGTHS, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
+  draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds,
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
@@ -57,6 +57,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const [selected, setSelected] = useState<number[]>([]);
   const [responses, setResponses] = useState<Record<string, TestResponse>>({});
   const [remaining, setRemaining] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
   const [confirmEnd, setConfirmEnd] = useState(false);
   const [missedOnly, setMissedOnly] = useState(true);
   const [announce, setAnnounce] = useState("");
@@ -65,6 +66,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const pool = useMemo(() => buildExamPool({ objectives: matrix, questions, topics, examCode: exam }), [exam]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
+  const duration = sessionDurationSeconds(exam, Math.min(pool.totalUnique, questionsForLength(exam, lengthId)));
   const requested = questionsForLength(exam, lengthId);
   const planned = Math.min(requested, pool.totalUnique);
   const quota = useMemo(() => allocateByWeight(pool.domains, planned), [pool, planned]);
@@ -72,9 +74,14 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const lengthLabel = (id: string) => (id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
 
   const deadline = useRef(0);
+  const completed = useRef(false);
   const startedAt = useRef(0);
   const selectedRef = useRef<number[]>([]);
-  const lockedIndex = useRef(-1);
+  const responsesRef = useRef<Record<string, TestResponse>>({});
+  const visited = useRef(new Set<string>());
+  const [orders, setOrders] = useState<Record<string, number[]>>({});
+  const [flags, setFlags] = useState<string[]>([]);
+  const [reviewing, setReviewing] = useState(false);
   const warnedIndex = useRef(-1);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -83,19 +90,24 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
     setSelected(next);
   }, []);
 
-  /** Starts the countdown for the question about to show. Called from event handlers, not effects. */
+  /** Starts one countdown for the complete session. Called from the start event handler. */
   const beginQuestion = useCallback(() => {
-    lockedIndex.current = -1;
     warnedIndex.current = -1;
     startedAt.current = Date.now();
-    deadline.current = startedAt.current + perQuestion * 1000;
-    setRemaining(perQuestion);
-  }, [perQuestion]);
+    deadline.current = startedAt.current + duration * 1000;
+    setRemaining(duration);
+  }, [duration]);
 
   const current = phase === "running" ? questionsById[picks[index]?.questionId] : undefined;
   const multi = current !== undefined && Array.isArray(current.answer);
 
-  const finish = useCallback((finalResponses: Record<string, TestResponse>, finalPicks: TestPick[]) => {
+  const finish = useCallback((finalResponses: Record<string, TestResponse>, finalPicks: TestPick[], timedOut = false) => {
+    if (completed.current) return;
+    completed.current = true;
+    if (timedOut) finalResponses = Object.fromEntries(finalPicks.map(p => [p.questionId, finalResponses[p.questionId] ?? { answer: undefined, timedOut: true, seconds: 0 }]));
+    responsesRef.current = finalResponses;
+    setResponses(finalResponses);
+    setElapsed(Math.min(duration, Math.max(0, (Date.now() - startedAt.current) / 1000)));
     const missed = finalPicks.filter((p) => !isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).map((p) => p.questionId);
     const graded = gradeTest({ pool, picks: finalPicks, questionsById, responses: finalResponses });
     const multiPicks = finalPicks.filter((p) => Array.isArray(questionsById[p.questionId].answer));
@@ -111,28 +123,31 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
       domains: graded.domains.map((d) => ({ id: d.id, title: d.title, correct: d.correct, total: d.total })),
       multiCorrect,
       multiTotal: multiPicks.length,
-      questionIds: finalPicks.map((pick) => pick.questionId),
+      questionIds: finalPicks.map((pick) => pick.questionId).filter(id => visited.current.has(id)),
+      correctIds: finalPicks.filter(p => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).map(p => p.questionId),
+      multiQuestionIds: multiPicks.filter(p => visited.current.has(p.questionId)).map(p => p.questionId),
+      bankVersion: assessmentVersion(pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
       missedIds: missed,
     });
     setMockHistory(next.mockAttempts);
     setPhase("done");
     setConfirmEnd(false);
-  }, [exam, pool]);
+  }, [exam, pool, duration]);
 
-  const lockIn = useCallback((timedOut: boolean) => {
-    if (phase !== "running" || !current || lockedIndex.current === index) return;
-    lockedIndex.current = index;
-    const pick = selectedRef.current;
-    const answer = pick.length === 0 ? undefined : Array.isArray(current.answer) ? [...pick] : pick[0];
-    const seconds = Math.min(perQuestion, Math.round((Date.now() - startedAt.current) / 1000));
-    const next = { ...responses, [current.id]: { answer, timedOut, seconds } };
-    setResponses(next);
-    if (index + 1 >= picks.length) { finish(next, picks); return; }
-    setIndex(index + 1);
-    choose([]);
-    beginQuestion();
-    setAnnounce(timedOut ? t("timeExpired") : "");
-  }, [phase, current, responses, index, picks, perQuestion, finish, choose, beginQuestion, t]);
+  const navigate = useCallback((nextIndex: number) => {
+    const next = Math.max(0, Math.min(picks.length - 1, nextIndex));
+    setIndex(next);
+    const id = picks[next].questionId;
+    visited.current.add(id);
+    const answer = responsesRef.current[id]?.answer;
+    choose(answer === undefined ? [] : Array.isArray(answer) ? [...answer] : [answer]);
+    setReviewing(false);
+  }, [picks, choose, setReviewing]);
+
+  const lockIn = useCallback(() => {
+    if (index + 1 < picks.length) navigate(index + 1);
+    else setReviewing(true);
+  }, [index, picks.length, navigate, setReviewing]);
 
   // Move focus to each new question so screen readers start there.
   useEffect(() => {
@@ -149,38 +164,50 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
         warnedIndex.current = index;
         setAnnounce(t("tenSecondsLeft"));
       }
-      if (left <= 0) lockIn(true);
+      if (left <= 0) finish(responsesRef.current, picks, true);
     }, 250);
     return () => window.clearInterval(timer);
-  }, [phase, index, lockIn, t]);
+  }, [phase, index, finish, picks, t]);
 
   const warned = remaining <= 10;
 
   const toggle = useCallback((choice: number) => {
     const prev = selectedRef.current;
-    if (!multi) choose([choice]);
-    else choose(prev.includes(choice) ? prev.filter((i) => i !== choice) : [...prev, choice]);
-  }, [multi, choose]);
+    const next = !multi ? [choice] : prev.includes(choice) ? prev.filter((i) => i !== choice) : [...prev, choice];
+    choose(next);
+    if (current) {
+      const answer = next.length === 0 ? undefined : multi ? next : next[0];
+      const updated = { ...responsesRef.current, [current.id]: { answer, timedOut: false, seconds: 0 } };
+      responsesRef.current = updated;
+      setResponses(updated);
+    }
+  }, [multi, current, choose]);
 
   // Number keys pick a choice; Enter submits.
   useEffect(() => {
-    if (phase !== "running" || !current) return;
+    if (phase !== "running" || !current || reviewing) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const n = Number(event.key);
-      if (Number.isInteger(n) && n >= 1 && n <= current.choices.length) { event.preventDefault(); toggle(n - 1); }
-      else if (event.key === "Enter" && selectedRef.current.length > 0 && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); lockIn(false); }
+      if (Number.isInteger(n) && n >= 1 && n <= current.choices.length) { event.preventDefault(); toggle(orders[current.id]?.[n - 1] ?? n - 1); }
+      else if (event.key === "Enter" && selectedRef.current.length > 0 && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); lockIn(); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, current, toggle, lockIn]);
+  }, [phase, current, toggle, lockIn, orders, reviewing]);
 
   function start() {
+    completed.current = false;
     const draft = draftTest(pool, requested);
     setPicks(draft);
     setIndex(0);
     choose([]);
     beginQuestion();
+    responsesRef.current = {};
+    visited.current = new Set(draft.slice(0, 1).map(p => p.questionId));
+    setOrders(Object.fromEntries(draft.map(p => [p.questionId, shuffleChoiceOrder(questionsById[p.questionId])])));
+    setFlags([]);
+    setReviewing(false);
     setResponses({});
     setMissedOnly(true);
     setAnnounce("");
@@ -280,7 +307,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   }
 
   if (phase === "running" && current) {
-    const fraction = Math.max(0, Math.min(1, remaining / perQuestion));
+    const fraction = Math.max(0, Math.min(1, remaining / duration));
     return (
       <div className="space-y-5">
         <p className="sr-only" role="status" aria-live="polite">{announce}</p>
@@ -303,15 +330,21 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
           </div>
         </div>
 
+        {reviewing ? <section className={card}>
+          <h2 className="text-lg font-semibold">{t("reviewBeforeFinish")}</h2>
+          <div className="mt-3 flex flex-wrap gap-2">{picks.map((pick, i) => <button key={pick.questionId} type="button" className={secondary} onClick={() => navigate(i)}>{i + 1} · {responses[pick.questionId]?.answer === undefined ? t("unanswered") : t("answered")}{flags.includes(pick.questionId) ? " ⚑" : ""}</button>)}</div>
+          <button type="button" className={`${primary} mt-4`} onClick={() => finish(responsesRef.current, picks)}>{t("scoreAll")}</button>
+        </section> : <>
         <h2 ref={headingRef} tabIndex={-1} className="text-xl font-medium text-white focus:outline-none">{current.prompt}</h2>
         <ul className="space-y-2" aria-label={t("choices")}>
-          {current.choices.map((choice, choiceIndex) => {
+          {(orders[current.id] ?? current.choices.map((_, i) => i)).map((choiceIndex, displayIndex) => {
+            const choice = current.choices[choiceIndex];
             const on = selected.includes(choiceIndex);
             return (
               <li key={`${current.id}-${choiceIndex}`}>
                 <button type="button" aria-pressed={on} onClick={() => toggle(choiceIndex)}
                   className={`flex min-h-11 w-full gap-3 rounded-xl border px-4 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300 ${on ? "border-teal-400 bg-teal-950/50 text-white" : "border-slate-700 bg-slate-900 text-slate-100 hover:border-slate-500"}`}>
-                  <span className="font-mono text-slate-400" aria-hidden="true">{choiceIndex + 1}</span>
+                  <span className="font-mono text-slate-400" aria-hidden="true">{displayIndex + 1}</span>
                   <span>{choice}</span>
                 </button>
               </li>
@@ -319,20 +352,23 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
           })}
         </ul>
         <div className="flex flex-wrap items-center gap-3">
-          <button type="button" onClick={() => lockIn(false)} disabled={selected.length === 0} className={primary}>
-            {index + 1 === picks.length ? t("submitAndFinish") : t("submitAnswer")}
+          <button type="button" onClick={lockIn} className={primary}>
+            {index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
           </button>
+          <button type="button" className={secondary} disabled={index === 0} onClick={() => navigate(index - 1)}>{t("previousQuestion")}</button>
+          <button type="button" className={secondary} aria-pressed={flags.includes(current.id)} onClick={() => setFlags(prev => prev.includes(current.id) ? prev.filter(id => id !== current.id) : [...prev, current.id])}>{t("flagQuestion")}</button>
+          <button type="button" className={secondary} onClick={() => setReviewing(true)}>{t("reviewBeforeFinish")}</button>
           {!confirmEnd ? (
             <button type="button" onClick={() => setConfirmEnd(true)} className={secondary}>{t("endTest")}</button>
           ) : (
             <span className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
               {t("endNowPrompt")}
-              <button type="button" onClick={() => finish(responses, picks.slice(0, index))} disabled={index === 0} className={secondary}>{t("scoreAnswered")}</button>
-              <button type="button" onClick={() => finish(responses, picks)} className={secondary}>{t("scoreAll")}</button>
+              <button type="button" onClick={() => finish(responsesRef.current, picks)} className={secondary}>{t("scoreAll")}</button>
               <button type="button" onClick={() => setConfirmEnd(false)} className={secondary}>{t("keepGoing")}</button>
             </span>
           )}
         </div>
+        </>}
       </div>
     );
   }
@@ -340,16 +376,21 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   // Results
   const scored = scoredPicks;
   const result = gradeTest({ pool, picks: scored, questionsById, responses });
-  const passPercent = approximatePassPercent(exam);
+  const passPercent = 80;
   const passed = result.percent >= passPercent;
-  const usedSeconds = Object.values(responses).reduce((sum, r) => sum + r.seconds, 0);
+  const usedSeconds = elapsed;
   const objectiveTitle = (domainId: string, objectiveId: string) =>
     pool.domains.find((d) => d.id === domainId)?.objectives.find((o) => o.id === objectiveId)?.title ?? "";
   const review = scored.filter((p) => !missedOnly || !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const examMatrix = matrix.exams.find((item) => item.code === exam);
-  const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status === "missing").length ?? 0;
+  const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status !== "covered").length ?? 0;
   const awsReadiness = exam === "clf-c02" || exam === "saa-c03"
-    ? evaluateReadiness(mockHistory, exam, missingObjectives, pool.totalUnique)
+    ? evaluateReadiness(mockHistory, exam, missingObjectives, pool.totalUnique, {
+      version: assessmentVersion(pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
+      questionIds: pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)),
+      multiIds: pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter(id => Array.isArray(questionsById[id].answer)),
+      expectedDomains: pool.domains.map(d => d.id),
+    })
     : null;
 
   return (
@@ -365,7 +406,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
         </p>
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
           <div><dt className="text-xs text-slate-400">{t("timeUsed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(usedSeconds)}</dd></div>
-          <div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(result.total * perQuestion)}</dd></div>
+          <div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(duration)}</dd></div>
           <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div>
         </dl>
       </section>

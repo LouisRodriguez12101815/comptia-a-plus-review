@@ -151,7 +151,7 @@ test('readiness requires three strong full mocks, domain floors, multi-response 
     attempt(82, 78, exposure.slice(35, 100)),
   ], 'saa-c03', 1, 120);
   assert.equal(missing.status, 'not-ready');
-  assert.ok(missing.blockers.some((item) => item.includes('missing objective')));
+  assert.ok(missing.blockers.some((item) => item.includes('incomplete objective')));
 
   const lowMulti = evaluateReadiness([
     attempt(84, 78, exposure.slice(0, 65), 2, 4),

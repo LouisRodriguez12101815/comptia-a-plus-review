@@ -208,14 +208,14 @@
     "metadataDescription": "Examens blancs chronométrés pour A+ Core 1, A+ Core 2 et Network+, rédigés à partir de la carte des objectifs d'examen.",
     "eyebrow": "Mode examen",
     "heading": "Examen blanc chronométré",
-    "intro": "Les questions sont tirées de la carte des objectifs d'examen de la <coverageLink>page de couverture</coverageLink>, pondérées selon la part de chaque domaine dans l'examen réel. Chaque question a son propre compte à rebours, au rythme de l'examen. Questions originales rédigées à partir des notes de cours, et non du contenu officiel de CompTIA."
+    "intro": "Entraînez-vous avec un chronomètre commun, revenez aux questions précédentes et révisez les éléments marqués. Consultez le <coverageLink>rapport de couverture</coverageLink> pour organiser votre étude. Les scores de pratique ne prédisent pas le résultat officiel."
   },
   "examTest": {
     "certification": "Certification",
     "length": "Longueur",
     "questionCount": "{count, plural, one {# question} other {# questions}} · environ {minutes} min",
     "blueprintHeading": "Plan du test",
-    "blueprintIntro": "Le format de référence pour {exam} est de {maxQuestions} questions en {minutes} minutes. Pour travailler le rythme, chaque question reçoit <strong>{seconds} secondes</strong>. La répartition suit les poids du plan d'examen.",
+    "blueprintIntro": "{exam} : jusqu’à <strong>{maxQuestions} questions</strong> en <strong>{minutes} minutes</strong>. Cette session répartit les questions selon les domaines. La notation et les types de questions réels peuvent différer.",
     "colDomain": "Domaine",
     "colWeight": "Poids",
     "colThisTest": "Ce test",
@@ -224,10 +224,10 @@
     "capped": "La banque contient {total, plural, one {# question associée} other {# questions associées}} à {exam}, donc ce test en utilise {planned} au lieu de {requested}.",
     "noQuestionsMapped": "Aucune question n'est encore associée à {domains}. Leur part est répartie entre les autres domaines.",
     "howItWorks": "Fonctionnement",
-    "rule1": "Chaque question a son propre compte à rebours de {seconds} secondes. À zéro, la réponse sélectionnée est enregistrée et la question suivante s'affiche.",
-    "rule2": "Aucun retour avant la fin, et impossible de revenir en arrière : gérez votre rythme comme à l'examen réel.",
-    "rule3": "Clavier : appuyez sur le numéro d'un choix pour le sélectionner, puis sur Entrée pour valider.",
-    "rule4": "Les résultats affichent un score, une estimation indicative de réussite, le détail par domaine et chaque erreur avec son explication. Les scores restent sur cet appareil.",
+    "rule1": "Un chronomètre commun à toute la session. Les examens blancs AWS complets durent 90 minutes pour CLF-C02 ou 130 pour SAA-C03 ; les sessions courtes utilisent une durée proportionnelle.",
+    "rule2": "Vous pouvez revenir en arrière, avancer, passer des questions, les marquer et les réviser avant de terminer. Les questions sans réponse sont comptées comme incorrectes.",
+    "rule3": "L’ordre des choix est aléatoire. Pour les réponses multiples, sélectionnez tous les choix corrects sans aucun choix incorrect.",
+    "rule4": "Cet outil sert à étudier. Il ne reproduit ni les questions pratiques de CompTIA ni la notation officielle sur une échelle.",
     "startTest": "Commencer le test de {count} questions",
     "fullExam": "Examen complet",
     "halfExam": "Demi-examen",
@@ -246,9 +246,9 @@
     "noAnswer": "Aucune réponse",
     "timeExpired": "Temps écoulé. Passage à la question suivante.",
     "tenSecondsLeft": "Il reste 10 secondes pour cette question.",
-    "passedLine": "Au-dessus de la ligne de réussite indicative, d'environ {percent} %",
-    "failedLine": "En dessous de la ligne de réussite indicative, d'environ {percent} %",
-    "scaleNote": "L'examen communique un score échelonné ({min}–{max}, réussite {passing}). Le pourcentage brut du site est uniquement un repère d'étude, pas une conversion officielle.",
+    "passedLine": "Objectif d’étude atteint : {percent}% de bonnes réponses. Ce résultat ne prédit pas la réussite à l’examen.",
+    "failedLine": "Objectif d’étude : {percent}% de bonnes réponses. Révisez les concepts manqués et entraînez-vous sur de nouveaux scénarios.",
+    "scaleNote": "Seuil officiel : {passing} sur une échelle de {min} à {max}. Le pourcentage de pratique ne peut pas être converti en cette note.",
     "timeUsed": "Temps utilisé",
     "timeAllowed": "Temps alloué",
     "timedOut": "Délai dépassé",
@@ -263,8 +263,8 @@
     "retake": "Refaire avec de nouvelles questions",
     "changeExam": "Changer d'examen ou de durée",
     "readinessEyebrow": "Préparation à l'examen",
-    "readinessHeading": "Contrôle de préparation conservateur",
-    "readinessHeuristic": "Heuristique d'étude : trois examens blancs complets à 80 % ou plus, chaque domaine à 70 % ou plus, 75 % ou plus aux questions à réponses multiples, au moins 80 % de couverture de la banque actuelle et aucun objectif manquant.",
+    "readinessHeading": "Éléments de pratique",
+    "readinessHeuristic": "Objectifs locaux : trois examens blancs complets du contenu actuel en 90 jours à 80%+, chaque domaine à 70%+, réponses multiples à 75%+ sur des questions distinctes, exposition à 80% du contenu et précision initiale à 80%, sans objectif incomplet. Ils ne prédisent pas la réussite.",
     "readinessFullMocks": "Examens blancs",
     "readinessScores": "Scores récents",
     "readinessDomainFloor": "Domaine le plus faible",
@@ -272,11 +272,17 @@
     "weakDomains": "Domaines faibles",
     "readinessBlockers": "À améliorer ensuite",
     "readinessStatus": {
-      "ready": "Prêt",
-      "near": "Presque prêt",
-      "not-ready": "Pas encore prêt"
+      "ready": "Objectifs de pratique atteints",
+      "near": "Éléments en cours de collecte",
+      "not-ready": "Pratique supplémentaire nécessaire"
     },
-    "readinessExposure": "Couverture de la banque"
+    "readinessExposure": "Couverture de la banque",
+    "previousQuestion": "Précédente",
+    "nextQuestion": "Suivante / passer",
+    "flagQuestion": "Marquer pour révision",
+    "reviewBeforeFinish": "Réviser avant de terminer",
+    "unanswered": "Sans réponse",
+    "answered": "Répondue"
   },
   "labsPage": {
     "metadataTitle": "Labs réseau | CompTIA A+ Review",
@@ -479,7 +485,9 @@
       "core1": "Les visuels pour Core 1 sont ajoutés chapitre par chapitre.",
       "core2": "Les visuels pour Core 2 sont ajoutés chapitre par chapitre.",
       "networking": "Les visuels pour Network+ sont ajoutés chapitre par chapitre.",
-      "ccna": "Le CCNA n'a pas encore de visuels interactifs. Les labs Packet Tracer sont prêts, et chacun inclut sa propre topologie."
+      "ccna": "Le CCNA n'a pas encore de visuels interactifs. Les labs Packet Tracer sont prêts, et chacun inclut sa propre topologie.",
+      "aws-clf": "Les visuels Cloud Practitioner sont ajoutés avec les leçons.",
+      "aws-saa": "Les visuels d’architecture sont ajoutés avec les leçons."
     },
     "comingSoon": "Bientôt disponible",
     "readNotes": "Lire les notes",
@@ -2418,7 +2426,8 @@
       "dora": "Bail DHCP (DORA)",
       "malware": "Suppression des logiciels malveillants (objectif 2.6 de 220-1202)",
       "change": "Gestion des changements",
-      "volatility": "Ordre de volatilité (du plus au moins)"
+      "volatility": "Ordre de volatilité (du plus au moins)",
+      "dr-cost-order": "Choisir et valider une architecture de reprise après sinistre"
     },
     "metaTitle": "Final 15 {certification} | Certification Review",
     "metaDescription": "Une révision de {minutes} minutes pondérée selon ce que l’examen évalue le plus.",

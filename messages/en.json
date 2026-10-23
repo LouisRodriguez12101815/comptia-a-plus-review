@@ -208,14 +208,14 @@
     "metadataDescription": "Timed practice exams for A+ Core 1, A+ Core 2, and Network+, drafted from the exam objective map.",
     "eyebrow": "Test mode",
     "heading": "Timed practice exam",
-    "intro": "Questions are drawn from the exam objective map on the <coverageLink>coverage page</coverageLink>, weighted by each domain's share of the real exam. Every question has its own countdown at exam pace. Original questions written from class notes, not CompTIA exam content."
+    "intro": "Practice with a shared timer, return to earlier questions, and review flagged items. Use the <coverageLink>objective coverage report</coverageLink> to plan further study. Practice scores do not predict official exam results."
   },
   "examTest": {
     "certification": "Certification",
     "length": "Length",
     "questionCount": "{count, plural, one {# question} other {# questions}} · about {minutes} min",
     "blueprintHeading": "Test blueprint",
-    "blueprintIntro": "The reference format for {exam} is {maxQuestions} questions in {minutes} minutes. For pacing practice, this test gives each question <strong>{seconds} seconds</strong>. Domain counts follow the objective map's weights.",
+    "blueprintIntro": "{exam}: up to <strong>{maxQuestions} questions</strong> in <strong>{minutes} minutes</strong>. This session uses domain-weighted practice questions. Actual exam scoring and question types can differ.",
     "colDomain": "Domain",
     "colWeight": "Weight",
     "colThisTest": "This test",
@@ -224,10 +224,10 @@
     "capped": "The question bank has {total, plural, one {# question} other {# questions}} mapped to {exam}, so this test uses {planned} instead of {requested}.",
     "noQuestionsMapped": "No questions are mapped yet for {domains}. Their share goes to the other domains.",
     "howItWorks": "How it works",
-    "rule1": "Each question has its own {seconds}-second countdown. When it reaches zero, whatever you selected is locked in and the next question appears.",
-    "rule2": "No feedback until the end, and no going back, so pace yourself like the real exam.",
-    "rule3": "Keyboard: press a choice's number to select it and Enter to submit.",
-    "rule4": "Results show a score, a rough pass estimate, a per-domain breakdown, and every miss with its explanation. Scores stay on this device.",
+    "rule1": "One shared session timer. Full AWS mocks allow 90 minutes for CLF-C02 or 130 minutes for SAA-C03; shorter sessions use proportional time.",
+    "rule2": "Move back and forward, skip questions, flag items, and review before finishing. Unanswered questions count as incorrect.",
+    "rule3": "Choice order is randomized. Multi-response items require all correct options with no incorrect options.",
+    "rule4": "This is a study tool. CompTIA performance-based questions and official scaled scoring are not simulated.",
     "startTest": "Start {count}-question test",
     "fullExam": "Full exam",
     "halfExam": "Half exam",
@@ -246,9 +246,9 @@
     "noAnswer": "No answer",
     "timeExpired": "Time expired. Moved to the next question.",
     "tenSecondsLeft": "10 seconds left on this question.",
-    "passedLine": "Above the rough pass line of about {percent}%",
-    "failedLine": "Below the rough pass line of about {percent}%",
-    "scaleNote": "The certification exam reports a scaled score ({min}–{max}, pass {passing}). This practice site's raw-percent comparison is only a study guide, not an official score conversion.",
+    "passedLine": "Study target met: {percent}% raw accuracy. This is not an exam pass prediction.",
+    "failedLine": "Study target: {percent}% raw accuracy. Review the missed concepts and practice unfamiliar scenarios.",
+    "scaleNote": "Official passing score: {passing} on a {min}–{max} scale. Raw practice accuracy cannot be converted to that score.",
     "timeUsed": "Time used",
     "timeAllowed": "Time allowed",
     "timedOut": "Timed out",
@@ -263,8 +263,8 @@
     "retake": "Retake with new questions",
     "changeExam": "Change exam or length",
     "readinessEyebrow": "Exam readiness",
-    "readinessHeading": "Conservative readiness check",
-    "readinessHeuristic": "Study heuristic: three full mocks at 80% or better, every domain at 70% or better, multi-response accuracy at 75% or better, at least 80% exposure to the current question bank, and no missing objectives.",
+    "readinessHeading": "Practice evidence",
+    "readinessHeuristic": "Local study targets only: three current-bank full mocks within 90 days at 80%+, every domain at 70%+, multi-response accuracy 75%+ across distinct items, 80% bank exposure and first-exposure accuracy, and no incomplete objectives. These targets do not predict passing.",
     "readinessFullMocks": "Full mocks",
     "readinessScores": "Recent scores",
     "readinessDomainFloor": "Lowest domain",
@@ -272,11 +272,17 @@
     "weakDomains": "Weak domains",
     "readinessBlockers": "What to fix next",
     "readinessStatus": {
-      "ready": "Ready",
-      "near": "Near ready",
-      "not-ready": "Not ready"
+      "ready": "Practice targets met",
+      "near": "Building evidence",
+      "not-ready": "More practice needed"
     },
-    "readinessExposure": "Question bank exposure"
+    "readinessExposure": "Question bank exposure",
+    "previousQuestion": "Previous",
+    "nextQuestion": "Next / skip",
+    "flagQuestion": "Flag for review",
+    "reviewBeforeFinish": "Review before finishing",
+    "unanswered": "Unanswered",
+    "answered": "Answered"
   },
   "labsPage": {
     "metadataTitle": "Networking labs | CompTIA A+ Review",
@@ -479,7 +485,9 @@
       "core1": "Visuals for Core 1 are being added chapter by chapter.",
       "core2": "Visuals for Core 2 are being added chapter by chapter.",
       "networking": "Visuals for Network+ are being added chapter by chapter.",
-      "ccna": "CCNA does not have interactive visuals yet. The Packet Tracer labs are ready now and each one includes its own topology."
+      "ccna": "CCNA does not have interactive visuals yet. The Packet Tracer labs are ready now and each one includes its own topology.",
+      "aws-clf": "Cloud Practitioner visuals are being added alongside the review lessons.",
+      "aws-saa": "Architecture visuals are being added alongside the review lessons."
     },
     "comingSoon": "Coming soon",
     "readNotes": "Read the notes",
@@ -2418,7 +2426,8 @@
       "dora": "DHCP lease (DORA)",
       "malware": "Malware removal (220-1202 objective 2.6)",
       "change": "Change management",
-      "volatility": "Order of volatility (most to least)"
+      "volatility": "Order of volatility (most to least)",
+      "dr-cost-order": "Select and validate a disaster recovery design"
     },
     "metaTitle": "{certification} Final 15 | Certification Review",
     "metaDescription": "A {minutes}-minute recap weighted by what the exam tests most.",
