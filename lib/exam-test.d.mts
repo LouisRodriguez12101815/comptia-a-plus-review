@@ -31,3 +31,9 @@ export function gradeTest(input: {
   questionsById: Record<string, { answer: number | number[] }>;
   responses: Record<string, TestResponse>;
 }): { correct: number; total: number; percent: number; timedOut: number; domains: DomainScore[] };
+
+export function shuffleChoiceOrder(question: { choices: string[] }, rng?: () => number): number[];
+export function shuffleQuestionChoices<T extends { choices: string[]; answer: number | number[] }>(question: T, rng?: () => number): T;
+export function assessmentVersion(questions: { id: string; prompt: string; choices: string[]; answer: number | number[]; explanation: string; objectiveIds?: object }[]): string;
+
+export function sessionDurationSeconds(examCode: string, count: number): number;

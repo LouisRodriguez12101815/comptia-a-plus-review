@@ -275,7 +275,7 @@ const awsSaa: TopFive = {
       objectives: "1.1–1.3",
       why: "Secure Architectures is the largest SAA-C03 domain at 30%, and security constraints appear inside many architecture scenarios.",
       facts: [
-        "Prefer roles and temporary credentials for workloads; explicit deny overrides allow; permissions boundaries limit maximum identity permissions.",
+        "Prefer roles and temporary credentials for workloads; explicit deny overrides allow; boundaries restrict identity-policy grants, with documented same-account direct resource-policy exceptions.",
         "Security groups are stateful resource controls; network ACLs are stateless subnet controls.",
         "KMS manages keys, Secrets Manager stores/rotates secrets, ACM manages supported TLS certificates, CloudHSM provides dedicated HSMs.",
         "WAF filters web requests, Shield protects against DDoS, GuardDuty detects threats, Inspector finds supported workload vulnerabilities, Macie discovers sensitive data in S3.",
@@ -304,7 +304,7 @@ const awsSaa: TopFive = {
       why: "High-Performing Architectures is 24% and tests whether a service choice matches the actual bottleneck rather than simply choosing the largest resource.",
       facts: [
         "Choose storage by access model and performance need: S3 object, EBS block, EFS/FSx file, instance store ephemeral.",
-        "Read replicas scale relational reads; DAX accelerates DynamoDB reads; caches reduce repeated hot work.",
+        "Asynchronous read replicas offload relational reads but can lag; DAX accelerates eventually consistent cache hits, while strong reads pass through to DynamoDB.",
         "CloudFront caches content at the edge; Global Accelerator improves network routing to regional endpoints.",
         "Kinesis Data Streams exposes stream records to consumers; Data Firehose provides managed delivery to supported destinations.",
       ],
@@ -331,7 +331,7 @@ const awsSaa: TopFive = {
       objectives: "1.1–4.4",
       why: "SAA scenarios frequently give several technically valid AWS services; the winning answer is the one that best satisfies the stated constraints with the least unnecessary cost or operations.",
       facts: [
-        "Multi-AZ = database availability; read replica = read scaling.",
+        "A single-standby RDS Multi-AZ DB instance has a non-readable standby; Multi-AZ DB clusters have readable standbys. Read replicas provide asynchronous read scaling.",
         "SQS = durable queue; SNS = pub/sub fanout; EventBridge = event routing.",
         "CloudWatch = metrics/logs/alarms; CloudTrail = API activity; Config = configuration history/rules.",
         "CloudFront = CDN/caching; Global Accelerator = network path acceleration.",
