@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Support documentation flow</title><style>
+:root{--bg:#eef3fa;--surface:#fff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}@media(prefers-color-scheme:dark){:root{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui;padding:0 16px}.wrap{max-width:900px;margin:auto;padding:24px 0 40px}h1{font-size:26px;margin:0 0 6px}.lede,figcaption{color:var(--muted)}.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}.diagram{overflow-x:auto}svg{width:100%;height:auto;min-width:640px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button{font:inherit;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);padding:8px 13px}button[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.out{margin-top:14px;padding:12px;border-radius:10px;background:var(--accent-soft);min-height:48px}@media(prefers-reduced-motion:reduce){*{transition:none!important}}</style></head><body><main class="wrap"><h1>Support documentation flow</h1><p class="lede">Connect the live ticket to the asset record and reusable support knowledge.</p><section class="card"><figure><div class="diagram" tabindex="0" role="region" aria-label="Support documentation flow diagram"><svg viewBox="0 0 760 300" role="img" aria-label="Support information flow from user ticket to asset records to reusable knowledge">
+<rect x="35" y="105" width="175" height="90" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="123" y="136" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="700">Ticket</text><text x="123" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">User · device · issue</text><text x="123" y="180" text-anchor="middle" fill="var(--muted)" font-size="12">severity · progress · fix</text>
+<path d="M210 150H300" stroke="var(--line)" stroke-width="4"/>
+<rect x="300" y="105" width="160" height="90" rx="12" fill="var(--surface)" stroke="var(--good)" stroke-width="2"/><text x="380" y="136" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="700">Asset / CMDB</text><text x="380" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">What is affected?</text><text x="380" y="180" text-anchor="middle" fill="var(--muted)" font-size="12">How does it relate?</text>
+<path d="M460 150H550" stroke="var(--line)" stroke-width="4"/>
+<rect x="550" y="105" width="175" height="90" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="638" y="136" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="700">Knowledge base</text><text x="638" y="160" text-anchor="middle" fill="var(--muted)" font-size="12">Reusable symptom</text><text x="638" y="180" text-anchor="middle" fill="var(--muted)" font-size="12">and solution</text></svg></div><figcaption>Ticket data, asset/configuration records, and knowledge articles serve different support purposes.</figcaption></figure><div class="controls"><button data-k="severity">High impact?</button><button data-k="repeat">Repeat issue?</button><button data-k="asset">Need relationships?</button></div><div class="out" id="out" aria-live="polite">Choose an option to check your understanding.</div></section></main><script type="application/json" id="visual-facts">{
+  "facts": [
+    {
+      "claim": "Ticket records should capture the reporter, affected device, issue description, category, severity, progress, and resolution.",
+      "objectives": [
+        "220-1202 4.1"
+      ],
+      "sources": [
+        "notes core2-ch10-docs-change-backup: Ticketing systems"
+      ]
+    },
+    {
+      "claim": "A knowledge base article provides reusable guidance for common issues.",
+      "objectives": [
+        "220-1202 4.1"
+      ],
+      "sources": [
+        "notes core2-ch10-docs-change-backup: Asset management and support documents"
+      ]
+    },
+    {
+      "claim": "A CMDB tracks configuration items and their relationships.",
+      "objectives": [
+        "220-1202 4.1"
+      ],
+      "sources": [
+        "notes core2-ch10-docs-change-backup: Asset management and support documents"
+      ]
+    }
+  ],
+  "simplifications": [
+    "The drawings are schematic learning diagrams."
+  ]
+}</script><script>document.querySelectorAll('button[data-k]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-k]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const m={severity:'Record severity so impact can drive prioritization.',repeat:'Document the known symptom and solution in the knowledge base.',asset:'Use the CMDB to track configuration items and their relationships.'};document.getElementById('out').textContent=m[b.dataset.k];});</script></body></html>

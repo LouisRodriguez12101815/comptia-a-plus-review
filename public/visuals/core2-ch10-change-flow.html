@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Change-control sequence</title><style>
+:root{--bg:#eef3fa;--surface:#fff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}@media(prefers-color-scheme:dark){:root{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui;padding:0 16px}.wrap{max-width:900px;margin:auto;padding:24px 0 40px}h1{font-size:26px;margin:0 0 6px}.lede,figcaption{color:var(--muted)}.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}.diagram{overflow-x:auto}svg{width:100%;height:auto;min-width:640px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button{font:inherit;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);padding:8px 13px}button[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.out{margin-top:14px;padding:12px;border-radius:10px;background:var(--accent-soft);min-height:48px}@media(prefers-reduced-motion:reduce){*{transition:none!important}}</style></head><body><main class="wrap"><h1>Change-control sequence</h1><p class="lede">A production change should move through documented risk controls, not jump straight to implementation.</p><section class="card"><figure><div class="diagram" tabindex="0" role="region" aria-label="Change-control sequence diagram"><svg viewBox="0 0 820 300" role="img" aria-label="Change management sequence from request through approval testing implementation and acceptance">
+<g font-size="13" text-anchor="middle">
+<rect x="20" y="110" width="120" height="70" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="80" y="140" fill="var(--ink)" font-weight="700">Request</text><text x="80" y="160" fill="var(--muted)">purpose · scope</text>
+<rect x="155" y="110" width="120" height="70" rx="10" fill="var(--surface)" stroke="var(--line)"/><text x="215" y="140" fill="var(--ink)" font-weight="700">Analyze</text><text x="215" y="160" fill="var(--muted)">impact · risk</text>
+<rect x="290" y="110" width="120" height="70" rx="10" fill="var(--surface)" stroke="var(--line)"/><text x="350" y="140" fill="var(--ink)" font-weight="700">Approve</text><text x="350" y="160" fill="var(--muted)">change board</text>
+<rect x="425" y="110" width="120" height="70" rx="10" fill="var(--good-soft)" stroke="var(--good)"/><text x="485" y="140" fill="var(--ink)" font-weight="700">Test</text><text x="485" y="160" fill="var(--muted)">sandbox · backup</text>
+<rect x="560" y="110" width="120" height="70" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="620" y="140" fill="var(--ink)" font-weight="700">Implement</text><text x="620" y="160" fill="var(--muted)">maintenance window</text>
+<rect x="695" y="110" width="105" height="70" rx="10" fill="var(--good-soft)" stroke="var(--good)"/><text x="748" y="140" fill="var(--ink)" font-weight="700">Accept</text><text x="748" y="160" fill="var(--muted)">review · user</text>
+</g><path d="M140 145H155M275 145H290M410 145H425M545 145H560M680 145H695" stroke="var(--line)" stroke-width="4"/>
+<text x="410" y="235" text-anchor="middle" fill="var(--bad)" font-size="14" font-weight="700">If implementation fails: use the documented rollback plan</text></svg></div><figcaption>Request, analysis, approval, testing, implementation, and acceptance form the controlled change path.</figcaption></figure><div class="controls"><button data-k="fail">Change cannot continue</button><button data-k="risk">Reduce production risk</button><button data-k="freeze">During change freeze?</button></div><div class="out" id="out" aria-live="polite">Choose an option to check your understanding.</div></section></main><script type="application/json" id="visual-facts">{
+  "facts": [
+    {
+      "claim": "Change management documents purpose, scope, impact, risk, timing, staff, approval, implementation, review, and acceptance.",
+      "objectives": [
+        "220-1202 4.2"
+      ],
+      "sources": [
+        "notes core2-ch10-docs-change-backup: Change-management process"
+      ]
+    },
+    {
+      "claim": "A rollback plan defines how to return to the previous known configuration if the change fails.",
+      "objectives": [
+        "220-1202 4.2"
+      ],
+      "sources": [
+        "notes core2-ch10-docs-change-backup: Change-management process"
+      ]
+    },
+    {
+      "claim": "Sandbox testing reduces risk before production implementation.",
+      "objectives": [
+        "220-1202 4.2"
+      ],
+      "sources": [
+        "notes core2-ch10-docs-change-backup: Change-management process"
+      ]
+    }
+  ],
+  "simplifications": [
+    "The drawings are schematic learning diagrams."
+  ]
+}</script><script>document.querySelectorAll('button[data-k]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-k]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const m={fail:'Stop and follow the rollback plan to return to the prior known configuration.',risk:'Use sandbox testing, backups, peer review, and approved change controls before production.',freeze:'Do not proceed unless the organization authorizes an exception to the change freeze.'};document.getElementById('out').textContent=m[b.dataset.k];});</script></body></html>
