@@ -2709,5 +2709,780 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "aws-saa-vpc-public-private",
+    "title": "AWS SAA Lab — Public and Private VPC",
+    "subtitle": "Solutions Architect · VPC routing · Guided paper exercise",
+    "summary": "Design a two-AZ VPC with public and private subnets, internet gateways, NAT gateways, route tables, and security controls; paper-first with optional console build.",
+    "skills": [
+      "VPC",
+      "Subnets",
+      "Route tables",
+      "Internet Gateway",
+      "NAT Gateway",
+      "Security groups",
+      "NACLs",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-networking",
+      "aws-saa-resilient-architectures"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A web application has internet-facing load balancers but private application instances. It must survive one AZ failure and private instances need outbound patch access."
+          }
+        ]
+      },
+      {
+        "id": "design",
+        "title": "Design",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Choose a VPC CIDR that does not overlap connected networks.",
+              "Create public and private subnets in at least two AZs.",
+              "Place internet-facing entry points and NAT gateways in public subnets.",
+              "Route private IPv4 internet-bound traffic to NAT; route public-subnet internet traffic to an internet gateway.",
+              "Use security groups for workload-level stateful filtering; use NACLs only when subnet-level stateless rules are required."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verify",
+        "title": "Verification questions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Check",
+              "Expected"
+            ],
+            "rows": [
+              [
+                "Private instance has no public IPv4",
+                "Yes"
+              ],
+              [
+                "Private instance can reach required internet endpoints through NAT",
+                "Yes"
+              ],
+              [
+                "Internet cannot initiate connections directly to private instance",
+                "Yes"
+              ],
+              [
+                "One AZ failure leaves another application path",
+                "Yes"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. On paper use VPC 10.20.0.0/16, two public /24 and two private /24 subnets in distinct AZs. Put ALB subnets in both AZs; label IPv4 public addressing and SG/NACL return paths.",
+              "2. For zonal public NAT, draw one EIP-equipped NAT per AZ and private 0.0.0.0/0 routes to the same-AZ NAT; public subnet defaults point to an IGW. Compare regional NAT as a separate current design.",
+              "3. Trace both directions for HTTPS egress. Remove AZ A and verify AZ B does not depend on NAT A. For IPv6, draw ::/0 to an egress-only IGW where outbound-only native IPv6 is required, with compatible security rules."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: the surviving zonal path still has its own NAT/IGW route. Lack of public IPv4 alone does not prove all IPv6 inbound access is blocked."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html?trk=article-ssr-frontend-pulse_little-text-block",
+              "Technical reference: https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html",
+              "Technical reference: https://docs.aws.amazon.com/vpc/latest/userguide/ipv4-ipv6-comparison.html",
+              "Technical reference: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-subnets.html"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-alb-autoscaling",
+    "title": "AWS SAA Lab — ALB and Auto Scaling",
+    "subtitle": "Solutions Architect · resilient compute · Guided paper exercise",
+    "summary": "Design a highly available web tier using an Application Load Balancer, launch template, health checks, and an Auto Scaling group across Availability Zones.",
+    "skills": [
+      "Application Load Balancer",
+      "Auto Scaling",
+      "Launch templates",
+      "Health checks",
+      "Multi-AZ",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-compute",
+      "aws-saa-resilient-architectures",
+      "aws-saa-high-performing"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Traffic changes throughout the day. The application is stateless and must continue if one instance or one AZ fails."
+          }
+        ]
+      },
+      {
+        "id": "build",
+        "title": "Architecture steps",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Define a launch template with the required AMI, instance type, security group, and IAM role.",
+              "Create an Auto Scaling group spanning at least two AZs.",
+              "Place an Application Load Balancer across public subnets and register the Auto Scaling target group.",
+              "Use application health checks rather than only instance-state checks.",
+              "Choose target tracking for a metric that reflects workload demand."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "break",
+        "title": "Break/fix thought experiment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Terminate one application instance. Predict which components detect the failure, how traffic is protected, and how replacement capacity is created."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Draw an ALB using subnets in two AZs, an attached target group and an ASG with desired capacity 2 across both AZs. Define /health with expected HTTP 200.",
+              "2. Explicitly enable ELB health checks for the ASG, with appropriate grace period/warmup; EC2 checks alone do not replace an instance for every application failure.",
+              "3. Mark one target unhealthy and trace traffic to the healthy target and ASG replacement. Then mark every registered target unhealthy and explain ALB fail-open routing and remaining dependency risks."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: normally only healthy targets receive new traffic; if all registered targets are unhealthy ALB can fail open and route to unhealthy targets. Scaling does not fix a shared broken image."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+              "Technical reference: https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html",
+              "Technical reference: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-subnets.html"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-rds-ha-read-scaling",
+    "title": "AWS SAA Lab — RDS HA vs Read Scaling",
+    "subtitle": "Solutions Architect · database architecture · Guided paper exercise",
+    "summary": "Choose between Multi-AZ, read replicas, backups, and RDS Proxy for availability, read scaling, recovery, and connection pressure.",
+    "skills": [
+      "RDS",
+      "Multi-AZ",
+      "Read replicas",
+      "RDS Proxy",
+      "Backups",
+      "RTO/RPO",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-databases",
+      "aws-saa-resilient-architectures",
+      "aws-saa-high-performing"
+    ],
+    "sections": [
+      {
+        "id": "cases",
+        "title": "Choose the feature",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Best first choice"
+            ],
+            "rows": [
+              [
+                "Automatic AZ-level database failover",
+                "Multi-AZ"
+              ],
+              [
+                "Offload read-only reporting",
+                "Read replica"
+              ],
+              [
+                "Thousands of short-lived application connections",
+                "RDS Proxy"
+              ],
+              [
+                "Recover an earlier database state",
+                "Backups / point-in-time recovery where supported"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "explain",
+        "title": "Explain why not the others",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "For each row, explain why the other three choices do not primarily solve the stated requirement. This is the same tradeoff reasoning SAA scenarios demand."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Compare three labeled drawings: single-standby RDS DB instance, Multi-AZ DB cluster with two readable standbys, and asynchronous read replica.",
+              "2. Send a report query to each relevant reader endpoint; identify which architecture cannot serve standby reads. Draw the writer endpoint during a failover and the client reconnect/retry path.",
+              "3. Introduce replica lag and a just-written record. Explain when consistency requirements prevent using an asynchronous replica for that read; state supported engine/deployment constraints."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: single standby is unavailable for reads; cluster standbys can serve reads. Reconnection, failover timing and read consistency must be tested rather than promised."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+              "Technical reference: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+              "Technical reference: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-iam-cross-account",
+    "title": "AWS SAA Lab — Least Privilege and Cross-Account Roles",
+    "subtitle": "Solutions Architect · secure access · Guided paper exercise",
+    "summary": "Design role trust, permissions, temporary credentials, and a permissions boundary for a cross-account application-access scenario.",
+    "skills": [
+      "IAM roles",
+      "STS",
+      "Trust policies",
+      "Identity policies",
+      "Permissions boundaries",
+      "Least privilege",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-identity-observability",
+      "aws-saa-secure-architectures"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An application in Account A needs read-only access to one S3 bucket in Account B. No long-lived credentials may be stored."
+          }
+        ]
+      },
+      {
+        "id": "model",
+        "title": "Permission model",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Create a role in Account B with a trust relationship that permits the approved principal in Account A to assume it.",
+              "Attach only the required S3 read permissions to the role.",
+              "Allow the caller in Account A to call sts:AssumeRole for that role.",
+              "Use the returned temporary credentials in the workload.",
+              "Optionally apply a permissions boundary when delegated administrators must be constrained."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "trap",
+        "title": "Exam traps",
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A permissions boundary does not grant access. A trust policy determines who may assume the role; a permissions policy determines what the role may do."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Draw caller role A, target role B, B trust policy permitting A and A identity policy allowing sts:AssumeRole on B. Scope B read policy to one bucket/prefix.",
+              "2. Evaluate permitted GetObject, denied DeleteObject and denied AssumeRole from a third account. For SSE-KMS data also check the relevant key policy/grants and decrypt permission.",
+              "3. Compare a boundary on identity-policy grants with same-account direct resource-policy grants to user ARN and role-session ARN. Mark applicable explicit denies as overriding either path."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: both cross-account trust and caller permissions must allow role assumption. A boundary does not grant permissions and is not a universal ceiling on all same-account direct resource grants."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+              "Technical reference: https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-route53-policies",
+    "title": "AWS SAA Lab — Route 53 Policy Picker",
+    "subtitle": "Solutions Architect · DNS architecture · Guided paper exercise",
+    "summary": "Match weighted, latency, failover, geolocation, geoproximity, multivalue, and simple routing to architecture requirements.",
+    "skills": [
+      "Route 53",
+      "Health checks",
+      "Weighted routing",
+      "Latency routing",
+      "Failover routing",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-dns-data",
+      "aws-saa-resilient-architectures",
+      "aws-saa-high-performing"
+    ],
+    "sections": [
+      {
+        "id": "matrix",
+        "title": "Routing-policy matrix",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Policy"
+            ],
+            "rows": [
+              [
+                "Approximate 10% / 90% DNS answer weights",
+                "Weighted"
+              ],
+              [
+                "Lowest-latency selected Region",
+                "Latency"
+              ],
+              [
+                "Primary endpoint then secondary on failure",
+                "Failover"
+              ],
+              [
+                "Route by user geography",
+                "Geolocation"
+              ],
+              [
+                "Route by resource/user geography with bias",
+                "Geoproximity"
+              ],
+              [
+                "Return several records, preferring healthy records; all-unhealthy fallback exists",
+                "Multi-value answer"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "transfer",
+        "title": "Transfer task",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Write one scenario where latency routing would be wrong even though the user is geographically close to the endpoint."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Use weights 1 and 9, list 100 fictional authoritative DNS choices, and distinguish those choices from subsequent HTTP requests from cached resolvers.",
+              "2. Change TTL and simulate a resolver reusing one answer for many clients. Explain why 10% DNS weight cannot guarantee 10% of requests.",
+              "3. For multivalue records draw a case with healthy records, then all unhealthy; explain that an answer can still contain unhealthy records when none are healthy."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: weighted routing affects DNS record selection probabilistically; caching and connection reuse skew application traffic. Latency routing uses measured AWS latency, not a nearest-city guarantee."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html",
+              "Technical reference: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+              "Technical reference: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-s3-lifecycle-replication",
+    "title": "AWS SAA Lab — S3 Lifecycle, Versioning, and Replication",
+    "subtitle": "Solutions Architect · storage architecture · Guided paper exercise",
+    "summary": "Design an object-storage policy that balances durability, recovery, access pattern, lifecycle cost, and cross-Region requirements.",
+    "skills": [
+      "S3",
+      "Versioning",
+      "Lifecycle",
+      "Replication",
+      "Storage classes",
+      "Presigned URLs",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-storage",
+      "aws-saa-cost-optimized",
+      "aws-saa-resilient-architectures"
+    ],
+    "sections": [
+      {
+        "id": "scenario",
+        "title": "Scenario",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Application logs are read often for 30 days, rarely for the next year, and must be retained for seven years. A copy must exist in a second Region."
+          }
+        ]
+      },
+      {
+        "id": "policy",
+        "title": "Policy decisions",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Enable versioning on both source and destination before configuring replication.",
+              "Choose storage classes from access/retrieval requirements, then configure lifecycle transitions by object or noncurrent-version age/date.",
+              "Configure cross-Region replication when the geographic-copy requirement exists.",
+              "Use expiration only when retention policy permits deletion.",
+              "Keep the bucket private and use presigned access when temporary sharing is required."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Mark versioning enabled on both source and destination and define replication IAM permissions, destination policy where required, KMS access if relevant and the rule scope. Existing objects need S3 Batch Replication when backfill is required.",
+              "2. Build an age/date transition schedule with retrieval latency, class minimum duration and object-size charges considered. Contrast it with Intelligent-Tiering access monitoring; lifecycle does not trigger on last access.",
+              "3. Use Object Lock retention when a supported immutable retention requirement exists. Model async replication lag, delete-marker behavior, noncurrent versions, lifecycle expiry and rollback separately; a replica is not a universal backup.",
+              "4. For temporary sharing, identify a presigned URL as transferable bearer access bounded by expiry/credential validity/policy. Keep it secret and use a short lifetime."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: both buckets need versioning for replication; a new rule does not automatically replicate all old objects. Retention must prevent forbidden deletion, including lifecycle actions."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html",
+              "Technical reference: https://docs.aws.amazon.com/AmazonS3/latest/userguide/versioning-workflows.html",
+              "Technical reference: https://docs.aws.amazon.com/AmazonS3/latest/userguide/intro-lifecycle-rules.html",
+              "Technical reference: https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-what-is-isnot-replicated.html",
+              "Technical reference: https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html?linkId=207544811&sc_channel=sm&sc_outcome=AWS+Support&sc_publisher=REDDIT"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-dr-patterns",
+    "title": "AWS SAA Lab — Disaster Recovery Pattern Selection",
+    "subtitle": "Solutions Architect · resiliency · Guided paper exercise",
+    "summary": "Choose backup/restore, pilot light, warm standby, or active/active from RTO, RPO, budget, and operational constraints.",
+    "skills": [
+      "Disaster recovery",
+      "RTO",
+      "RPO",
+      "Multi-Region",
+      "Backup",
+      "Failover",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-resilient-architectures",
+      "aws-saa-cost-optimized"
+    ],
+    "sections": [
+      {
+        "id": "cases",
+        "title": "Choose the least-expensive pattern that meets the target",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Likely pattern"
+            ],
+            "rows": [
+              [
+                "Hours to restore; lowest steady cost",
+                "Backup and restore"
+              ],
+              [
+                "Core data/services ready; scale during recovery",
+                "Pilot light"
+              ],
+              [
+                "Functional reduced-capacity environment already running",
+                "Warm standby"
+              ],
+              [
+                "Near-immediate regional failover with high budget",
+                "Active/active"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "test",
+        "title": "Validation",
+        "blocks": [
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A disaster-recovery architecture is not proven until recovery is tested. Validate dependencies, data, DNS/routing, credentials, quotas, and application startup order."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Supply RTO=60 minutes and RPO=15 minutes as fictional workload requirements. List database, identity, secrets, DNS, quotas, deployment and external-service dependencies.",
+              "2. For each DR pattern write measured restore/failover steps, data-loss exposure and recurring cost; reject any candidate that cannot demonstrate either requirement.",
+              "3. Simulate loss of the primary Region and a later failback. Record timestamps, data consistency, client recovery and the conditions needed for safe traffic restoration."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: pattern names do not guarantee numerical RTO/RPO. Active/active can still have data-consistency, dependency or failback failures."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "aws-saa-sqs-decoupling",
+    "title": "AWS SAA Lab — Decouple a Bursty Workflow",
+    "subtitle": "Solutions Architect · messaging · Guided paper exercise",
+    "summary": "Redesign a synchronous producer/worker application with SQS, retries, dead-letter handling, idempotency, and independent scaling.",
+    "skills": [
+      "SQS",
+      "Dead-letter queues",
+      "Auto Scaling",
+      "Lambda",
+      "Idempotency",
+      "Decoupling",
+      "SAA-C03"
+    ],
+    "relatedTopicIds": [
+      "aws-saa-dns-data",
+      "aws-saa-resilient-architectures"
+    ],
+    "sections": [
+      {
+        "id": "before",
+        "title": "Before",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A web request directly calls a slow image-processing worker. Traffic spikes cause timeouts and failed uploads."
+          }
+        ]
+      },
+      {
+        "id": "after",
+        "title": "After",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The web tier stores the job request in SQS and returns quickly.",
+              "Workers poll the queue and scale independently.",
+              "Visibility timeout protects in-flight work; failed messages can move to a dead-letter queue after configured retries.",
+              "Processing should be idempotent so duplicate delivery does not corrupt results."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "verify",
+        "title": "Failure test",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Stop all workers while producers continue. Predict what happens to queued work, then restart the workers and verify the backlog drains."
+          }
+        ]
+      },
+      {
+        "id": "verification-workshop",
+        "title": "Worked verification and failure exercise",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Complete this as a paper exercise; no AWS account or billable resource is needed. This is a guided design review, not evidence of a completed cloud deployment."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "1. Draw producer SendMessage, worker ReceiveMessage, processing, durable result commit, then DeleteMessage acknowledgement. Set a visibility timeout longer than expected work, extending it if needed.",
+              "2. Crash after the result commit but before DeleteMessage; predict redelivery and apply an idempotency key so duplicate work does not duplicate the result.",
+              "3. Draw retry count, dead-letter queue and redrive after correcting the fault. Include queue retention as a finite boundary (up to 14 days), capacity and oldest-message age; never assume indefinite buffering."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Expected: visibility expiry makes undeleted messages available again. Successful processing alone does not remove a message; deletion acknowledges it. Poison messages require controlled DLQ handling."
+          },
+          {
+            "type": "paragraph",
+            "text": "If you independently implement the design in a sandbox, first define a budget and inventory. Afterwards remove only the exercise resources, check retained snapshots/versions and ongoing charges, and restore any changed policies. Paper-only exercises require no resource cleanup."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Technical reference: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+              "Technical reference: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
