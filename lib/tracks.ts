@@ -2,9 +2,9 @@ import { getFlashcards, getQuestions, getTopics, labs } from "@/lib/content";
 import { visualCounts } from "@/lib/visuals";
 import type { ExamCode, StudyFocus, Topic } from "@/lib/types";
 
-export type TrackId = "core1" | "core2" | "networking" | "ccna";
+export type TrackId = "core1" | "core2" | "networking" | "ccna" | "aws-clf" | "aws-saa";
 export type ToolId = "notes" | "visuals" | "flashcards" | "quiz" | "labs" | "game";
-export type DeviceIconName = "laptop" | "server" | "switch" | "router";
+export type DeviceIconName = "laptop" | "server" | "switch" | "router" | "cloud";
 
 export type Track = {
   id: TrackId;
@@ -66,6 +66,28 @@ export const tracks: Track[] = [
     description:
       "Hands-on Packet Tracer labs: subnetting, static routing, DHCP relay, and break/fix troubleshooting.",
     icon: "router",
+  },
+  {
+    id: "aws-clf",
+    href: "/aws-clf",
+    short: "AWS CLF",
+    label: "AWS Certified Cloud Practitioner",
+    code: "CLF-C02",
+    focus: "clf-c02",
+    description:
+      "Foundational AWS cloud concepts, security and compliance, services, billing, pricing, and support.",
+    icon: "cloud",
+  },
+  {
+    id: "aws-saa",
+    href: "/aws-saa",
+    short: "AWS SAA",
+    label: "AWS Certified Solutions Architect – Associate",
+    code: "SAA-C03",
+    focus: "saa-c03",
+    description:
+      "Architecture decisions across security, resiliency, performance, and cost optimization on AWS.",
+    icon: "cloud",
   },
 ];
 

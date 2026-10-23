@@ -3,7 +3,8 @@ export type TopicGroup =
   | "core2"
   | "networking"
   | "weak"
-  | "reference";
+  | "reference"
+  | "aws";
 
 export type Concept =
   | "networking-concepts"
@@ -12,9 +13,10 @@ export type Concept =
   | "troubleshooting"
   | "hardware"
   | "operating-systems"
-  | "reference";
+  | "reference"
+  | "cloud";
 
-export type ExamCode = "220-1201" | "220-1202" | "n10-009";
+export type ExamCode = "220-1201" | "220-1202" | "n10-009" | "clf-c02" | "saa-c03";
 export type StudyFocus = ExamCode | "all";
 
 export type Block =
@@ -54,6 +56,9 @@ export type Flashcard = {
 };
 
 export type Question = {
+  /** Explicit primary scored objective per exam; chapter membership is not assessment evidence. */
+  objectiveIds?: Partial<Record<ExamCode, string[]>>;
+  sourceUrls?: string[];
   id: string;
   topicId: string;
   examCodes?: ExamCode[];
