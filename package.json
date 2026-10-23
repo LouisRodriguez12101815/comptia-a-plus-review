@@ -24,7 +24,10 @@
     "test:objectives": "node --test --test-isolation=none tests/objectives.test.mjs",
     "test:exam": "node --test --test-isolation=none tests/exam-test.test.mjs",
     "audit:visuals": "node scripts/audit-visuals.mjs",
-    "test:e2e:objectives": "node scripts/verify-objective-dashboard.mjs"
+    "test:e2e:objectives": "node scripts/verify-objective-dashboard.mjs",
+    "audit:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m rubric_audit_openai",
+    "test:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m unittest discover -s tools/rubric-audit-openai/tests -v",
+    "demo:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m rubric_audit_openai demo --engine langgraph"
   },
   "dependencies": {
     "next": "16.3.5",

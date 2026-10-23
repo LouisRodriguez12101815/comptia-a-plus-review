@@ -83,3 +83,14 @@ recommendation. Counts come from mapped content; weighted coverage is a prelimin
 planning estimate, not learner readiness. The CLI uses the same calculations:
 `npm run report:objectives`. See [the developer guide](docs/exam-objective-dashboard.md)
 and [Python catch-up record](docs/python-class-catchup.md) for implementation and checks.
+
+## OpenAI rubric assessment
+
+The independent OpenAI/LangGraph workflow compares the supported local study
+content with a selected certification rubric. See the
+[assessment runbook](tools/rubric-audit-openai/REPO_COMMANDS.md) for installation, exam selection,
+API runs, checkpoint recovery, reports, and reference review.
+
+Use `npm run audit:rubric:openai -- --help` to list commands and
+`npm run test:rubric:openai` to check the assessment implementation.
+Assessment output is kept outside the repository.
