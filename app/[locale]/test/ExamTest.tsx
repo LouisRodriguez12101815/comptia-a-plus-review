@@ -111,6 +111,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
       domains: graded.domains.map((d) => ({ id: d.id, title: d.title, correct: d.correct, total: d.total })),
       multiCorrect,
       multiTotal: multiPicks.length,
+      questionIds: finalPicks.map((pick) => pick.questionId),
       missedIds: missed,
     });
     setMockHistory(next.mockAttempts);
@@ -348,7 +349,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const examMatrix = matrix.exams.find((item) => item.code === exam);
   const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status === "missing").length ?? 0;
   const awsReadiness = exam === "clf-c02" || exam === "saa-c03"
-    ? evaluateReadiness(mockHistory, exam, missingObjectives)
+    ? evaluateReadiness(mockHistory, exam, missingObjectives, pool.totalUnique)
     : null;
 
   return (
@@ -407,11 +408,12 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
             </span>
           </div>
           <p className="mt-3 text-sm text-slate-300">{t("readinessHeuristic")}</p>
-          <dl className="mt-4 grid gap-3 sm:grid-cols-4">
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <StatMini label={t("readinessFullMocks")} value={`${awsReadiness.fullAttempts}/3`} />
             <StatMini label={t("readinessScores")} value={awsReadiness.overallScores.length ? awsReadiness.overallScores.map((score) => `${score}%`).join(" · ") : "—"} />
             <StatMini label={t("readinessDomainFloor")} value={awsReadiness.domainFloor === null ? "—" : `${awsReadiness.domainFloor}%`} />
             <StatMini label={t("readinessMulti")} value={awsReadiness.multiPercent === null ? "—" : `${awsReadiness.multiPercent}%`} />
+            <StatMini label={t("readinessExposure")} value={awsReadiness.exposurePercent === null ? "—" : `${awsReadiness.exposurePercent}%`} />
           </dl>
           {awsReadiness.weakDomains.length > 0 && (
             <div className="mt-4">
