@@ -6,7 +6,7 @@ import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
 import { TrackLink } from "@/app/components/TrackLink";
 import { labs } from "@/lib/content";
-import { getTrack, networkingChapters, splitTopics, toolStatuses, type TrackId } from "@/lib/tracks";
+import { getTrack, networkingChapters, splitTopics, toolStatuses, trackCounts, type TrackId } from "@/lib/tracks";
 
 const tileBase =
   "flex h-full flex-col gap-3 rounded-2xl border p-5 transition";
@@ -20,24 +20,29 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const tChapter = await getTranslations("networkChapters");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
+  const counts = trackCounts(track);
   const { own, shared } = splitTopics(track);
 
   const workspaceLinks = track.focus ? [
     { label: t("workspaceOverview"), href: track.href },
     { label: t("workspaceTopics"), href: `${track.href}#topics` },
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
-    { label: tTrack("tools.flashcards.label"), href: "/flashcards" },
-    { label: tTrack("tools.quiz.label"), href: "/quiz" },
-    { label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` },
-    { label: t("workspaceResults"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` },
+    ...(counts.cards > 0 ? [{ label: tTrack("tools.flashcards.label"), href: "/flashcards" }] : []),
+    ...(counts.questions > 0 ? [{ label: tTrack("tools.quiz.label"), href: "/quiz" }] : []),
+    ...(counts.questions > 0 ? [{ label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` }] : []),
+    ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0
+      ? [{ label: t("workspaceResults"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` }]
+      : []),
   ] : [];
 
   const sequence = track.focus ? [
     { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#topics` },
     { step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` },
-    { step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" },
-    { step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: `/test?exam=${track.focus}` },
-    { step: "05", label: t("sequenceReview"), detail: t("sequenceReviewDetail"), href: `/final-15/${track.id}` },
+    ...(counts.cards > 0 ? [{ step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" }] : []),
+    ...(counts.questions > 0 ? [{ step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: `/test?exam=${track.focus}` }] : []),
+    ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0
+      ? [{ step: "05", label: t("sequenceReview"), detail: t("sequenceReviewDetail"), href: `/final-15/${track.id}` }]
+      : []),
   ] : [];
 
   return (
