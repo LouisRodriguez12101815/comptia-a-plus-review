@@ -6,8 +6,6 @@ import { trackCounts, tracks } from "@/lib/tracks";
 
 async function NetworkDiagram() {
   const t = await getTranslations("homePage");
-  const tHeader = await getTranslations("header");
-  const tMethods = await getTranslations("assessmentWorkflowPage");
   return (
     <svg
       viewBox="0 0 420 120"
@@ -41,6 +39,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("homePage");
+  const tHeader = await getTranslations("header");
+  const tMethods = await getTranslations("assessmentWorkflowPage");
   return (
     <div className="space-y-12">
       <section className="grid items-center gap-8 md:grid-cols-2">
