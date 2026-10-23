@@ -1,3 +1,4 @@
+import core2LearningMap from "@/content/core2-learning-map.json";
 import { getFlashcards, getQuestions, getTopic } from "@/lib/content";
 import { visualChapters } from "@/lib/visuals";
 import { getTrack } from "@/lib/tracks";
@@ -19,7 +20,7 @@ export function focusForTopic(topic: Topic): StudyFocus {
 }
 
 export type ChapterTool = {
-  id: "notes" | "visuals" | "flashcards" | "quiz";
+  id: "notes" | "visuals" | "flashcards" | "quiz" | "practice";
   label: string;
   /** Number of items, or null for the notes page itself. */
   count: number | null;
@@ -37,15 +38,16 @@ export function chapterTools(topicId: string): ChapterTool[] {
     visualChapters(focus).find((chapter) => chapter.id === topicId)?.visuals ?? [];
   const cards = getFlashcards(topicId, focus).length;
   const quiz = getQuestions(topicId, focus).length;
+  const study = core2LearningMap.topics.find(entry => entry.topicId === topicId);
   const first = visuals[0]?.file.replace(/\.html$/, "");
   return [
-    { id: "notes", label: "Notes", count: null, unit: "", href: null },
+    { id: "notes", label: "Notes", count: null, unit: "", href: `/notes/${topicId}` },
     {
       id: "visuals",
       label: "Visuals",
-      count: visuals.length,
+      count: study?.visualFiles.length ?? visuals.length,
       unit: "visuals",
-      href: trackId && first ? `${getTrack(trackId).href}/visuals#visual-${first}` : null,
+      href: trackId && first ? `${getTrack(trackId).href}/visuals#visual-${first}` : study ? `/core2/review-tools#topic-${topicId}` : null,
     },
     {
       id: "flashcards",
@@ -54,6 +56,7 @@ export function chapterTools(topicId: string): ChapterTool[] {
       unit: "cards",
       href: cards ? `/flashcards?topic=${topicId}` : null,
     },
+    ...(study ? [{ id: "practice" as const, label: "Practice", count: study.drillIds.length, unit: "decks", href: `/core2/review-tools#topic-${topicId}` }] : []),
     {
       id: "quiz",
       label: "Quiz",

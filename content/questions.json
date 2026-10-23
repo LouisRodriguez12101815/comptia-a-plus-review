@@ -142,7 +142,7 @@
   {
     "id": "q-11",
     "topicId": "core2-ch1",
-    "prompt": "Which Windows edition cannot join a domain and does not include BitLocker in this comparison?",
+    "prompt": "Which Windows edition lacks AD domain join and incoming Remote Desktop hosting?",
     "choices": [
       "Pro",
       "Enterprise",
@@ -150,7 +150,7 @@
       "Education (treated like Pro-class)"
     ],
     "answer": 2,
-    "explanation": "Home is local-account oriented: no domain join and no BitLocker in the class table.",
+    "explanation": "Home lacks those features. Eligible Home devices may support Device Encryption, which differs from the full BitLocker management available on higher editions. Microsoft accounts are supported on Home.",
     "weak": false
   },
   {
@@ -338,29 +338,29 @@
   {
     "id": "q-25",
     "topicId": "core2-ch3",
-    "prompt": "Which edition cannot use the Windows Insider Program in these notes?",
+    "prompt": "Which Windows preview-program eligibility statement is accurate?",
     "choices": [
-      "Pro",
-      "Enterprise",
-      "Home",
-      "Education"
+      "Home is categorically forbidden",
+      "Every device is eligible without hardware checks",
+      "Check current edition/build, hardware, account and channel requirements",
+      "Preview builds are guaranteed safe for critical production use"
     ],
     "answer": 2,
-    "explanation": "Home is not supported for Insider in the study guide.",
+    "explanation": "Home is not categorically excluded from Insider. Eligibility and channel requirements must be checked in current guidance; preview builds require a recovery plan.",
     "weak": false
   },
   {
     "id": "q-26",
     "topicId": "core2-ch3",
-    "prompt": "A question asks for the public, twice-yearly Windows update branch. Which name should you avoid as the trap answer?",
+    "prompt": "Which Windows 11 servicing statement is appropriate?",
     "choices": [
-      "Semi-Annual Channel",
-      "LTSC",
-      "Insider Program",
-      "General Availability"
+      "Regular feature updates arrive twice yearly under a permanent SAC rule",
+      "LTSC is the name for every public preview",
+      "Preview builds are mandatory on all production PCs",
+      "Windows 11 uses annual feature updates; Insider supplies previews"
     ],
     "answer": 3,
-    "explanation": "The notes flag “General Availability” as a common wrong branch name. Semi-Annual Channel is the regular public track.",
+    "explanation": "Use current Windows 11 servicing guidance. Retired Windows 10 labels and a twice-yearly assumption should not define current Windows 11 behavior.",
     "weak": false
   },
   {
@@ -492,15 +492,15 @@
   {
     "id": "q-36",
     "topicId": "core2-ch7",
-    "prompt": "How often should antivirus definitions update in this guide?",
+    "prompt": "How should Windows antimalware security intelligence be maintained?",
     "choices": [
-      "Yearly",
-      "Weekly",
-      "Daily",
-      "Only after a BSOD"
+      "Update only after a BSOD",
+      "Permanently disable updates",
+      "Use supported automatic updates and organizational policy to keep it current",
+      "Rely on the installation date indefinitely"
     ],
     "answer": 2,
-    "explanation": "Daily. Weekly leaves a multi-day gap while malware changes constantly.",
+    "explanation": "Keep protection and security intelligence current. A fixed daily schedule alone is not a universal sufficient guarantee; use supported controls and policy.",
     "weak": true
   },
   {
@@ -12811,6 +12811,1383 @@
     ]
   },
   {
+    "id": "q-saa-arch-01",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An EC2 workload in private subnets must access S3 without traversing a NAT gateway or public internet. Which design best meets the requirement?",
+    "choices": [
+      "Assign public IPs to the instances",
+      "Route through an internet gateway",
+      "Create a CloudFront distribution",
+      "Use an S3 VPC endpoint"
+    ],
+    "answer": 3,
+    "explanation": "A VPC endpoint provides private connectivity to supported AWS services such as S3.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-02",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A central security team must prevent member accounts in an AWS Organization from using specific high-risk services, even if account administrators attach Allow policies. What should be used?",
+    "choices": [
+      "S3 lifecycle rules",
+      "Route 53 policies",
+      "Security groups",
+      "Service control policies"
+    ],
+    "answer": 3,
+    "explanation": "SCPs set organization-level permission guardrails; an explicit organizational restriction can limit member-account permissions.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-03",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A public web application needs protection from SQL injection patterns in HTTP requests. Which service should be placed in the request path?",
+    "choices": [
+      "AWS WAF",
+      "AWS Config",
+      "AWS Shield only",
+      "Amazon GuardDuty"
+    ],
+    "answer": 0,
+    "explanation": "AWS WAF filters application-layer web requests using rules.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-04",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company needs to identify suspicious behavior such as anomalous API calls and potentially compromised credentials. Which service is designed for this?",
+    "choices": [
+      "Amazon Inspector",
+      "AWS Artifact",
+      "AWS Budgets",
+      "Amazon GuardDuty"
+    ],
+    "answer": 3,
+    "explanation": "GuardDuty performs threat detection using AWS data sources.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-05",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A security team needs automated vulnerability findings for supported EC2 instances and container images. Which service fits?",
+    "choices": [
+      "AWS Shield",
+      "Amazon Inspector",
+      "AWS Cost Explorer",
+      "Amazon Macie"
+    ],
+    "answer": 1,
+    "explanation": "Inspector is AWS vulnerability-management service for supported workloads.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-06",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database password must be stored securely and rotated automatically. Which service should hold the value?",
+    "choices": [
+      "AWS KMS only",
+      "CloudTrail",
+      "AWS Secrets Manager",
+      "S3 Glacier"
+    ],
+    "answer": 2,
+    "explanation": "Secrets Manager stores and can rotate secrets; KMS manages encryption keys.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-07",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A customer requires encryption keys in dedicated hardware security modules under customer control. Which service is the closest fit?",
+    "choices": [
+      "AWS CloudHSM",
+      "Amazon SNS",
+      "AWS Config",
+      "AWS Budgets"
+    ],
+    "answer": 0,
+    "explanation": "CloudHSM provides dedicated HSM appliances for customer-controlled key operations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-08",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which control should be used to discover sensitive data such as PII stored in S3 buckets?",
+    "choices": [
+      "Amazon Macie",
+      "AWS Shield",
+      "Amazon SQS",
+      "Amazon Route 53"
+    ],
+    "answer": 0,
+    "explanation": "Macie focuses on sensitive-data discovery in S3.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-09",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An IAM role has an Allow for s3:GetObject, but an applicable policy has an explicit Deny for the same action and resource. What is the result?",
+    "choices": [
+      "Denied",
+      "Allowed",
+      "Allowed only with MFA",
+      "Depends on region"
+    ],
+    "answer": 0,
+    "explanation": "A matching explicit deny overrides allows.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-10",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A cross-account application needs temporary access to a resource in another AWS account. Which pattern best fits?",
+    "choices": [
+      "Create a public bucket",
+      "Share root credentials",
+      "Assume an IAM role with STS",
+      "Embed a permanent access key in source code"
+    ],
+    "answer": 2,
+    "explanation": "Cross-account role assumption with STS supplies temporary credentials and avoids shared permanent keys.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-11",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A checkout service sends orders to a fulfillment service. Fulfillment may be unavailable temporarily, but orders must not be lost and checkout must continue accepting requests. Which service should decouple them?",
+    "choices": [
+      "Amazon SQS",
+      "Route 53",
+      "Amazon EBS",
+      "AWS KMS"
+    ],
+    "answer": 0,
+    "explanation": "SQS buffers durable asynchronous work and decouples producer availability from consumer availability.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-12",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A stateless web tier must survive instance and Availability Zone failures. Which design is best?",
+    "choices": [
+      "An ASG limited to one subnet and its single AZ",
+      "Auto Scaling group across multiple AZs behind a load balancer",
+      "One larger instance with scheduled snapshots only",
+      "Two application instances in one AZ behind an ALB"
+    ],
+    "answer": 1,
+    "explanation": "Multiple instances across AZs behind load balancing eliminate both instance and single-AZ dependencies.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-13",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company can tolerate 24 hours to restore a secondary environment and wants the lowest ongoing disaster-recovery cost. Which pattern is most appropriate?",
+    "choices": [
+      "Full duplicate capacity in another Region",
+      "Active/active",
+      "Warm standby",
+      "Backup and restore"
+    ],
+    "answer": 3,
+    "explanation": "Backup and restore generally has the lowest steady-state cost and longest recovery time.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-14",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A business requires a recovery environment that is already running at reduced capacity and can scale quickly after a regional disaster. Which DR strategy fits?",
+    "choices": [
+      "Backup and restore only",
+      "Warm standby",
+      "Pilot light with no running application tier",
+      "Single-AZ design"
+    ],
+    "answer": 1,
+    "explanation": "Warm standby keeps a reduced-capacity functional environment running.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-15",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Only the core database and critical components should stay running in the DR Region; application capacity can be launched during recovery. Which pattern is this?",
+    "choices": [
+      "Backup and restore only",
+      "Read replica",
+      "Active/active",
+      "Pilot light"
+    ],
+    "answer": 3,
+    "explanation": "Pilot light keeps the core ready and scales the rest during recovery.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-16",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "The maximum acceptable amount of lost data is 5 minutes. Which metric describes this requirement?",
+    "choices": [
+      "TTL",
+      "SLA",
+      "RTO",
+      "RPO"
+    ],
+    "answer": 3,
+    "explanation": "Recovery Point Objective is the acceptable data-loss window.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-17",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "The business requires service restored within 30 minutes of a disaster. Which metric is being specified?",
+    "choices": [
+      "MTU",
+      "IOPS",
+      "RTO",
+      "RPO"
+    ],
+    "answer": 2,
+    "explanation": "Recovery Time Objective is the maximum acceptable recovery duration.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-18",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database is replicated to another Region. Why should the company still maintain backups?",
+    "choices": [
+      "Replication always replaces backups",
+      "Backups are only for on-premises systems",
+      "Replication can copy logical corruption or accidental changes; backups preserve recovery points",
+      "Backups are required only for S3"
+    ],
+    "answer": 2,
+    "explanation": "Replication and backup address different failure modes.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-19",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A service occasionally returns throttling errors during traffic bursts. Which client behavior improves resilience?",
+    "choices": [
+      "Disable monitoring",
+      "Immediately create root credentials",
+      "Retry with exponential backoff and jitter where appropriate",
+      "Retry continuously with no delay"
+    ],
+    "answer": 2,
+    "explanation": "Controlled backoff reduces retry storms and handles transient throttling.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-20",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A primary endpoint in Region A should receive traffic unless unhealthy, then DNS should direct users to Region B. Which Route 53 policy is appropriate?",
+    "choices": [
+      "Weighted",
+      "Simple",
+      "Failover",
+      "Geolocation only"
+    ],
+    "answer": 2,
+    "explanation": "Failover routing supports primary/secondary endpoints with health checks.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-21",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A read-heavy Aurora-compatible application needs more read capacity without scaling the writer vertically. Which design should be considered?",
+    "choices": [
+      "Add Aurora Replicas and use the Aurora reader endpoint",
+      "Use RDS Proxy alone and assume it creates more database read capacity",
+      "Enable only an additional nonreadable standby in a single-standby RDS deployment",
+      "Increase backup retention without changing read-serving capacity"
+    ],
+    "answer": 0,
+    "explanation": "Read replicas scale read traffic; a reader endpoint can distribute reads among replicas.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-22",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB workload repeatedly reads the same hot items, accepts eventual consistency, and needs microsecond cache-hit latency. Which service is designed for this?",
+    "choices": [
+      "DynamoDB Accelerator (DAX)",
+      "Route 53",
+      "AWS Artifact",
+      "S3 Glacier"
+    ],
+    "answer": 0,
+    "explanation": "DAX caches eventually consistent DynamoDB reads and can return cache hits in microseconds. Strongly consistent requests pass through to DynamoDB, and misses do not have the same cache-hit latency. Glacier is archival object storage, Artifact supplies reports, and Route 53 supplies DNS.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-23",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A global website serves cacheable images and videos. Which service most directly reduces latency and origin load?",
+    "choices": [
+      "Amazon EBS",
+      "AWS Config",
+      "AWS Direct Connect",
+      "Amazon CloudFront"
+    ],
+    "answer": 3,
+    "explanation": "CloudFront caches content at edge locations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-24",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A multiplayer application uses TCP/UDP endpoints in two Regions and needs improved global routing over the AWS network with static anycast IPs. Which service fits?",
+    "choices": [
+      "AWS Global Accelerator",
+      "CloudFront only",
+      "AWS Glue",
+      "S3 Transfer Acceleration"
+    ],
+    "answer": 0,
+    "explanation": "Global Accelerator improves global network path to regional endpoints and provides static anycast addresses.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-25",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A real-time telemetry system needs applications to consume streaming records ordered for each device partition key and perform custom processing. Which service is appropriate?",
+    "choices": [
+      "Data Firehose only",
+      "AWS Artifact",
+      "Kinesis Data Streams",
+      "S3 Glacier"
+    ],
+    "answer": 2,
+    "explanation": "Kinesis Data Streams is built for real-time streams consumed by applications. Ordering is scoped to shards/partition keys and appropriate producer sequencing; there is no global ordering guarantee across shards. Handle retries, duplicates and consumer checkpoints explicitly.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-26",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Streaming records simply need managed delivery into S3 with minimal code. Which service is the better fit?",
+    "choices": [
+      "Kinesis Data Streams with custom consumers",
+      "Amazon Data Firehose",
+      "EC2 Dedicated Hosts",
+      "AWS WAF"
+    ],
+    "answer": 1,
+    "explanation": "Data Firehose provides managed streaming delivery to supported destinations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-27",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An HPC cluster requires very low-latency communication between supported EC2 instances. Which feature should be considered?",
+    "choices": [
+      "Elastic Fabric Adapter",
+      "Route 53 geolocation",
+      "S3 lifecycle",
+      "AWS Budgets"
+    ],
+    "answer": 0,
+    "explanation": "EFA provides specialized high-performance networking for supported HPC workloads.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-28",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A shared Linux file workload needs more throughput than its current architecture. Which service family should be evaluated before replacing it with block storage?",
+    "choices": [
+      "Amazon EFS performance/throughput modes",
+      "AWS KMS",
+      "CloudTrail",
+      "Route 53"
+    ],
+    "answer": 0,
+    "explanation": "EFS is the shared file service; its performance/throughput options should be matched to the workload.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-29",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A web API is CPU-bound and runs continuously on EC2. Which first step is most appropriate for performance architecture?",
+    "choices": [
+      "Move all data to Glacier",
+      "Disable load balancing",
+      "Choose an instance family/size matched to CPU needs and use scaling as required",
+      "Add more IAM users"
+    ],
+    "answer": 2,
+    "explanation": "Compute characteristics and scaling should be matched to workload behavior.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-30",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Analysts need ad hoc SQL queries over large datasets already stored in S3. Which service avoids moving the data into a database server first?",
+    "choices": [
+      "AWS Shield",
+      "Amazon Athena",
+      "Amazon RDS Proxy",
+      "EBS Multi-Attach"
+    ],
+    "answer": 1,
+    "explanation": "Athena queries S3 data using SQL.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-31",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A batch-processing fleet can tolerate interruptions and jobs checkpoint regularly. Which EC2 purchase option should be preferred for lowest cost?",
+    "choices": [
+      "On-Demand only",
+      "Spot Instances",
+      "Capacity Reservations only",
+      "Dedicated Hosts"
+    ],
+    "answer": 1,
+    "explanation": "Spot is appropriate for interruption-tolerant workloads and offers deep discounts.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-32",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A production compute workload runs steadily year-round with predictable usage. Which option is most likely to reduce cost compared with pure On-Demand pricing?",
+    "choices": [
+      "Always use Dedicated Hosts",
+      "Use only Spot regardless of interruption tolerance",
+      "A suitable Savings Plan or eligible Reserved pricing commitment",
+      "Disable Auto Scaling"
+    ],
+    "answer": 2,
+    "explanation": "Commitment-based discounts are designed for predictable ongoing usage.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-33",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An S3 bucket contains logs that are rarely read after 30 days but must be retained for seven years. Which feature most directly automates cost reduction?",
+    "choices": [
+      "Security groups",
+      "CloudTrail event history",
+      "Route 53 weighted routing",
+      "S3 lifecycle transitions"
+    ],
+    "answer": 3,
+    "explanation": "Lifecycle rules move objects to cheaper classes or expire them based on retention policy.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-34",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Private instances access S3 heavily through a NAT gateway and generate significant NAT data-processing charges. Which change can reduce this cost while keeping traffic private?",
+    "choices": [
+      "Add another NAT gateway and route all S3 traffic through it",
+      "Assign public IPs to every instance",
+      "Use an S3 gateway VPC endpoint and route-table associations",
+      "Move the bucket to EBS"
+    ],
+    "answer": 2,
+    "explanation": "An S3 gateway VPC endpoint avoids NAT processing for eligible S3 routes without endpoint hourly/data charges. Associate the correct route tables and allow access in IAM/bucket/endpoint policies. Interface endpoints also exist but have different costs; simply adding a NAT increases rather than removes this processing path.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-35",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A low-traffic event-driven task runs a few seconds each hour. Which architecture can avoid paying for an idle EC2 server?",
+    "choices": [
+      "AWS Lambda",
+      "A larger EC2 instance",
+      "A permanently running Dedicated Host",
+      "An always-on NAT instance"
+    ],
+    "answer": 0,
+    "explanation": "Lambda charges based on execution and avoids an always-on server for suitable workloads.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-36",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB workload has highly unpredictable traffic with long idle periods. Which capacity mode can reduce planning overhead and match usage automatically?",
+    "choices": [
+      "On-demand",
+      "Provisioned with fixed high capacity only",
+      "Dedicated Host",
+      "S3 Standard-IA"
+    ],
+    "answer": 0,
+    "explanation": "On-demand capacity follows request traffic and avoids provisioned-capacity planning.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-37",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database instance averages 10% CPU and has no evidence of memory pressure. What is the first cost-optimization action to evaluate?",
+    "choices": [
+      "Choose a smaller instance solely from average CPU",
+      "Add read replicas even when there is no measured read bottleneck",
+      "Measure memory, I/O, connections and peak demand, then evaluate rightsizing",
+      "Remove backups before checking recovery requirements"
+    ],
+    "answer": 2,
+    "explanation": "Measure all relevant bottlenecks and peak demand before rightsizing. Low average CPU alone does not establish spare memory/I/O/connection capacity. Removing backups changes recovery, while unnecessary replicas add cost.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-38",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A workload transfers large amounts of cacheable public content from an origin in one Region to global users. Which architecture may reduce origin load and data-transfer cost while improving latency?",
+    "choices": [
+      "Add a NAT gateway",
+      "CloudFront",
+      "Use EBS snapshots",
+      "Route every request directly to the origin"
+    ],
+    "answer": 1,
+    "explanation": "CloudFront caches content at edge locations and can reduce repeated origin transfer.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-39",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A team keeps hundreds of unattached EBS volumes and obsolete snapshots. Which action is a direct cost optimization?",
+    "choices": [
+      "Increase all volume sizes",
+      "Delete resources that are no longer required according to retention policy",
+      "Turn off CloudTrail",
+      "Copy every volume to another AZ"
+    ],
+    "answer": 1,
+    "explanation": "Unused persistent storage continues to incur cost; clean it up according to policy.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-arch-40",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A cost question offers two architectures with the same compute price, but one sends large cross-AZ data volumes continuously. What hidden factor must be evaluated?",
+    "choices": [
+      "Route 53 domain registration only",
+      "IAM user count only",
+      "Data-transfer charges",
+      "S3 object key length"
+    ],
+    "answer": 2,
+    "explanation": "Data-transfer paths can be a major architecture cost driver.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-clf-multi-01",
+    "topicId": "aws-clf-cloud-concepts",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "prompt": "Which TWO are benefits commonly associated with cloud computing? (Select two.)",
+    "choices": [
+      "Provision resources faster than a traditional hardware procurement cycle",
+      "Guarantee every workload costs less",
+      "Trade some fixed up-front capacity for usage-based consumption",
+      "Reserve unlimited AWS capacity without quotas",
+      "Eliminate all operating expenses"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explanation": "Cloud can shift spending toward usage and improve agility. It does not eliminate OpEx or guarantee every workload is cheaper. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "clf-c02": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"
+    ]
+  },
+  {
+    "id": "q-clf-multi-02",
+    "topicId": "aws-clf-security-compliance",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "prompt": "Which TWO are customer responsibilities under the AWS shared responsibility model for a typical EC2 workload? (Select two.)",
+    "choices": [
+      "Replacing failed physical disks in AWS facilities",
+      "Patching the guest operating system",
+      "Securing AWS data-center buildings",
+      "Replacing failed physical network devices inside AWS facilities",
+      "Configuring IAM permissions"
+    ],
+    "answer": [
+      1,
+      4
+    ],
+    "explanation": "For EC2, customers manage IAM and the guest OS; AWS manages the physical facilities and hardware. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "clf-c02": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
+    ]
+  },
+  {
+    "id": "q-clf-multi-03",
+    "topicId": "aws-clf-technology-services",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "prompt": "Which TWO services are primarily used for asynchronous application integration? (Select two.)",
+    "choices": [
+      "Amazon SQS",
+      "Amazon EBS",
+      "Amazon Route 53",
+      "Amazon Route 53 Resolver",
+      "Amazon SNS"
+    ],
+    "answer": [
+      0,
+      4
+    ],
+    "explanation": "SQS provides queues and SNS provides publish/subscribe fanout; EBS is block storage and Route 53 is DNS. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "clf-c02": [
+        "3.8"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+    ]
+  },
+  {
+    "id": "q-clf-multi-04",
+    "topicId": "aws-clf-billing-support",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "prompt": "Which TWO tools are directly focused on AWS cost management after usage begins? (Select two.)",
+    "choices": [
+      "AWS Artifact",
+      "Amazon GuardDuty",
+      "AWS Cost Explorer",
+      "AWS Budgets",
+      "AWS CloudTrail"
+    ],
+    "answer": [
+      2,
+      3
+    ],
+    "explanation": "Cost Explorer analyzes spend/usage and Budgets tracks thresholds; CloudTrail and GuardDuty are security/operations services. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "clf-c02": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+    ]
+  },
+  {
+    "id": "q-clf-multi-05",
+    "topicId": "aws-clf-technology-services",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "prompt": "Which TWO statements about AWS global infrastructure are correct? (Select two.)",
+    "choices": [
+      "Edge locations are used by supported edge services such as CloudFront",
+      "A Region contains multiple Availability Zones",
+      "Every VPC spans all AWS Regions automatically",
+      "A private subnet automatically provides protection from a complete regional outage",
+      "An Availability Zone contains multiple Regions"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Regions contain multiple AZs, and edge locations support edge services. AZs do not contain Regions and VPCs are regional resources. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "clf-c02": [
+        "3.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-01",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A workload needs secure access to AWS APIs without storing long-lived keys. Which TWO design choices help meet this requirement? (Select two.)",
+    "choices": [
+      "Use temporary credentials from AWS STS",
+      "Reuse a shared administrator access key across workloads",
+      "Embed an IAM user's access key in source code",
+      "Share the root user's credentials",
+      "Use an IAM role"
+    ],
+    "answer": [
+      0,
+      4
+    ],
+    "explanation": "Roles and STS temporary credentials avoid embedded long-lived credentials. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-02",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which TWO changes improve the availability of a stateless EC2 web tier? (Select two.)",
+    "choices": [
+      "Store the application only on instance store",
+      "Run instances across multiple Availability Zones",
+      "Run one very large instance in one AZ",
+      "Put every instance and its load balancer targets in one Availability Zone",
+      "Place instances behind a load balancer with health checks"
+    ],
+    "answer": [
+      1,
+      4
+    ],
+    "explanation": "Multi-AZ deployment and load-balanced health checks reduce single-instance and single-AZ failure dependencies. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-03",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A global web application serves mostly cacheable content. Which TWO changes can improve user-perceived performance? (Select two.)",
+    "choices": [
+      "Cache frequently accessed data where consistency requirements allow",
+      "Replace edge caching with a longer synchronous origin-processing chain",
+      "Disable load balancing",
+      "Use Amazon CloudFront",
+      "Move all content to S3 Glacier Flexible Retrieval"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explanation": "Edge caching and application/data caching can reduce latency and repeated work; archival storage and disabling load balancing do not. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-04",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which TWO actions can directly reduce unnecessary steady-state compute cost? (Select two.)",
+    "choices": [
+      "Use Auto Scaling to remove idle capacity when demand falls",
+      "Reserve peak capacity permanently without measuring utilization",
+      "Increase every instance one size",
+      "Rightsize underutilized resources",
+      "Use Dedicated Hosts for all workloads"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explanation": "Rightsizing and scaling down unused capacity reduce waste; larger instances or universal dedicated hosts generally increase cost. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-05",
+    "topicId": "aws-saa-networking",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Private EC2 instances need outbound IPv4 internet access but must not accept direct inbound internet connections. Which TWO components are typically part of this design? (Select two.)",
+    "choices": [
+      "A NAT gateway in a public subnet",
+      "A route from the private subnet to the NAT gateway",
+      "A public IPv4 address on every private instance",
+      "An egress-only internet gateway as the translator for IPv4 traffic",
+      "A route from the private subnet directly to the internet gateway"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Private subnet traffic routes to a NAT gateway in a public subnet; the private instances do not need public IPs or a direct IGW route. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-06",
+    "topicId": "aws-saa-databases",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which TWO features primarily help scale database read workloads? (Select two.)",
+    "choices": [
+      "Single-standby RDS Multi-AZ DB instance standby",
+      "RDS read replicas",
+      "RDS automated-backup retention alone",
+      "DynamoDB Accelerator (DAX) for suitable cached reads",
+      "AWS Shield"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explanation": "Read replicas add relational read capacity, and DAX accelerates DynamoDB reads. Multi-AZ is primarily availability and Shield is DDoS protection. The nonreadable standby distinction is specifically for the single-standby Multi-AZ DB instance. Multi-AZ DB clusters have readable standby instances; DAX acceleration requires cacheable, eventually consistent reads. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-07",
+    "topicId": "aws-saa-storage",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which TWO S3 features can help protect against accidental object deletion or overwrite while preserving recoverable copies? (Select two.)",
+    "choices": [
+      "NAT gateway",
+      "Versioning",
+      "Replication when configured for the requirement",
+      "An S3 gateway VPC endpoint without version retention",
+      "Route 53 weighted routing"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explanation": "Versioning preserves object versions and replication can maintain another configured copy; networking/DNS features do not protect object versions. Enable versioning on both replication buckets, verify permission/encryption configuration and handle existing objects with backfill where required. Replication is asynchronous, and delete-marker/explicit-version deletion behavior differs; use appropriate retention controls rather than treating replication as immutable backup. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-multi-08",
+    "topicId": "aws-saa-identity-observability",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Which TWO services are most directly useful when investigating who changed an AWS resource and how its configuration evolved? (Select two.)",
+    "choices": [
+      "AWS Pricing Calculator",
+      "Amazon SQS",
+      "AWS Config",
+      "AWS CloudTrail",
+      "Amazon EFS"
+    ],
+    "answer": [
+      2,
+      3
+    ],
+    "explanation": "CloudTrail records API activity and Config records resource configuration history. The additional alternative addresses a different requirement and does not supply either of the requested capabilities.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
     "id": "q-aws-review-clf-c02-1-1",
     "topicId": "aws-clf-cloud-concepts",
     "examCodes": [
@@ -13284,5 +14661,1610 @@
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
     ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-1-1",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "A workload in Account A must read a bucket in B with temporary credentials. The role in B has s3:GetObject permissions but no trust for A. What is missing?",
+    "choices": [
+      "An SCP Allow alone, which automatically grants S3 access",
+      "A public bucket ACL so role assumption is unnecessary",
+      "An administrator boundary, which grants the missing trust",
+      "An appropriate trust relationship plus caller sts:AssumeRole permission"
+    ],
+    "answer": 3,
+    "explanation": "Role resource permissions describe what the assumed role can do; trust/caller permissions allow assumption. Public access violates the intended restricted design. Boundaries and SCPs do not grant role trust or resource access.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-1-2",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "A private application needs frequent S3 access without NAT processing. Its users still require application authentication. Which design addresses both without conflating them?",
+    "choices": [
+      "Direct Connect without encryption because private always means encrypted",
+      "A public bucket plus a WAF rule that substitutes for IAM",
+      "An S3 gateway endpoint with appropriate policies, plus an application identity/authentication design",
+      "A gateway endpoint that automatically authenticates every end user"
+    ],
+    "answer": 2,
+    "explanation": "A gateway endpoint changes the S3 network path; it does not authenticate application users or grant all data access. IAM/resource policies and user identity remain separate. Public buckets and unencrypted-private assumptions do not meet the stated design.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-1-3",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "A compliance requirement says archived objects must not be deletable before their retention date, even by ordinary administrators. Which design should be evaluated?",
+    "choices": [
+      "Only an S3 Lifecycle expiration date",
+      "A reusable presigned URL distributed to administrators",
+      "Only cross-Region replication, regardless of deletion permissions",
+      "Appropriate S3 Object Lock retention configuration and controlled administration, with backup/restore validation"
+    ],
+    "answer": 3,
+    "explanation": "Object Lock provides retention controls suited to the specified mode/permissions. Lifecycle schedules storage actions, replication makes copies and presigned URLs authorize requests; none alone guarantees immutable retention. Evaluate governance versus compliance mode and the applicable legal requirements.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-2-1",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "A worker commits an order side effect but crashes before deleting its SQS message. The order must not be charged twice after retry. What is required?",
+    "choices": [
+      "A longer visibility timeout as the sole duplicate-prevention control",
+      "A public queue policy so another worker can always receive it",
+      "An ALB health check as the order-level transaction guarantee",
+      "An idempotency key or equivalent durable deduplication around the side effect"
+    ],
+    "answer": 3,
+    "explanation": "At-least-once delivery and crash windows require application idempotency. Visibility can reduce concurrent processing but is not exactly-once protection. Queue access and ALB health do not atomically deduplicate the business operation.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-2-2",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "An ALB detects unhealthy application targets, but their EC2 status checks pass and the ASG never replaces them. What configuration should be reviewed?",
+    "choices": [
+      "ASG Elastic Load Balancing health-check integration and grace-period behavior",
+      "Whether adding read replicas will change EC2 health status",
+      "Whether an S3 lifecycle transition has occurred",
+      "Whether CloudTrail automatically terminates unhealthy targets"
+    ],
+    "answer": 0,
+    "explanation": "Target-group application checks and ASG replacement checks are separate. Enable the appropriate ELB health checks and grace period, and verify replacement behavior. Storage lifecycle, database replicas and audit logging do not establish that integration.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-1",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "Two application servers in different AZs need simultaneous access to the same Linux file tree. They cannot be changed to use an object API. Which initial design is most appropriate?",
+    "choices": [
+      "Instance-store volumes with an assumption of automatic cross-AZ synchronization",
+      "One EBS volume attached across both AZs",
+      "A Regional EFS file system with suitable mount targets and throughput settings",
+      "An S3 bucket mounted as though it provides identical POSIX semantics without validation"
+    ],
+    "answer": 2,
+    "explanation": "Regional EFS fits shared cross-AZ Linux file access. EBS attachments are AZ-scoped, instance stores do not synchronize automatically and object interfaces are not identical to POSIX file semantics.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-2",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "A worker fleet is CPU-idle while processing a growing backlog of slow external API calls. Which scaling signal best reflects the business bottleneck?",
+    "choices": [
+      "Only average CPU utilization because every backlog implies high CPU",
+      "The S3 bucket creation date",
+      "Only the number of IAM users in the account",
+      "A suitable backlog-per-worker/processing-time metric, with downstream rate limits considered"
+    ],
+    "answer": 3,
+    "explanation": "Backlog and processing time capture unmet work even when the process waits on I/O. Scaling must respect downstream capacity and rate limits. CPU alone can remain low; identity count and bucket age do not measure work demand.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-3",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "A user must immediately read a just-written DynamoDB value with a strong consistency requirement. Which design avoids relying on stale cached data?",
+    "choices": [
+      "A read replica in another Region without considering replication delay",
+      "Only a DAX eventual cache read because all cache hits are current",
+      "A supported strongly consistent table read rather than assuming a DAX cache hit is strongly consistent",
+      "A GSI read with the assumption that every GSI supports strong consistency"
+    ],
+    "answer": 2,
+    "explanation": "Use a supported strong read for that requirement. DAX eventual caches and GSIs do not guarantee the same freshness, and asynchronously replicated paths may lag. A fast response is not a consistency guarantee.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-4",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "prompt": "A global UDP application requires static anycast entry addresses and routing to healthy regional endpoints. It does not use HTTP content caching. Which option fits?",
+    "choices": [
+      "CloudFront as a generic UDP proxy",
+      "Global Accelerator with supported regional endpoints",
+      "Route 53 geolocation as a guarantee of static anycast application addresses",
+      "S3 Transfer Acceleration for arbitrary application UDP traffic"
+    ],
+    "answer": 1,
+    "explanation": "Global Accelerator addresses supported TCP/UDP application entry and network paths. CloudFront and S3 Transfer Acceleration are not generic UDP proxies; DNS geolocation selects answers rather than providing the stated accelerator capability.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-3-5",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "Sensors require custom per-device stream processing and replay, followed by analytics in S3. Which design best preserves the processing requirement?",
+    "choices": [
+      "One unpartitioned CSV filename that every device overwrites",
+      "SNS email delivery as the durable analytical event store",
+      "Kinesis Data Streams with device partition keys and checkpointed consumers, followed by suitable S3 delivery/analytics",
+      "Only Firehose with an assumption of globally ordered custom consumer replay"
+    ],
+    "answer": 2,
+    "explanation": "A stream and consumers provide custom processing/replay within configured retention and per-key ordering design. Managed delivery is useful downstream but does not replace all stream-consumer semantics. Email and overwrites do not satisfy the data pipeline.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-1",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "A team archives small objects and retrieves them frequently. Its storage bill falls but request/retrieval charges rise sharply. What did the design omit?",
+    "choices": [
+      "Object size, access frequency, retrieval and minimum-duration/request economics",
+      "The assumption that every archival class is instant and free to read",
+      "Only the number of IAM groups in the account",
+      "A requirement to use the highest IOPS EBS volume for all objects"
+    ],
+    "answer": 0,
+    "explanation": "Storage-class selection requires the full access and lifecycle cost, including small-object and retrieval constraints. Identity-group count does not explain it; archives are not universally instant/free, and block storage is not a blanket fix for an object workload.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-2",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "An application has a measured stable baseline plus short seasonal peaks, and cannot tolerate interruption for customer transactions. Which purchase strategy should be evaluated?",
+    "choices": [
+      "A commitment sized to every historical peak before rightsizing",
+      "Dedicated Hosts solely because they must always cost less",
+      "A suitable baseline commitment with elastic On-Demand capacity for peaks",
+      "Spot-only capacity regardless of transaction continuity"
+    ],
+    "answer": 2,
+    "explanation": "Commitment on measured baseline plus flexible peak capacity matches predictable and variable demand. Committing to peaks risks unused spend; Spot-only ignores interruption constraints; dedicated tenancy is not a universal cost discount.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-3",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "prompt": "An RDS instance averages low CPU, but the team has not measured memory, I/O latency, connections or peak demand. What is the best cost-optimization next step?",
+    "choices": [
+      "Add a cache even if repeated reads and freshness tolerance are unknown",
+      "Measure the full workload and evaluate a smaller suitable configuration against peaks and recovery requirements",
+      "Disable backups and Multi-AZ before collecting any workload evidence",
+      "Immediately halve the instance size solely from average CPU"
+    ],
+    "answer": 1,
+    "explanation": "Low average CPU is only one signal. Memory, I/O, connections, peaks and resilience constrain safe rightsizing. Removing recovery controls or adding an unvalidated cache can change correctness or availability rather than remove waste.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-aws-review-saa-c03-4-4",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "Private instances send large S3 volumes through a NAT gateway. The workload must keep S3 access private and maintain its AZ-resilience design. What should be evaluated first?",
+    "choices": [
+      "An interface endpoint assumed to have no hourly or per-GB charges",
+      "Public bucket access with no IAM restrictions to eliminate private routing",
+      "A single shared NAT as an automatic resilience improvement",
+      "S3 gateway endpoints with the relevant subnet route-table associations and access policies"
+    ],
+    "answer": 3,
+    "explanation": "Gateway endpoints can remove eligible S3 traffic from NAT without gateway-endpoint charges. Validate route/policy scope. A single zonal NAT can introduce an AZ dependency, public access changes authorization, and interface endpoint costs are different.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-c2-assessment-01",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.1"
+      ]
+    },
+    "prompt": "A user needs to edit a budget spreadsheet. Which software layer directly performs that user task?",
+    "choices": [
+      "Operating-system kernel",
+      "Filesystem metadata",
+      "Spreadsheet application",
+      "Storage device driver"
+    ],
+    "answer": 2,
+    "explanation": "An application performs the user-facing task; the OS supplies shared services. Drivers connect the OS to hardware; a filesystem organizes stored data.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-02",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.1"
+      ]
+    },
+    "prompt": "A Chromebook must edit a prepared document while disconnected. Which statement is accurate?",
+    "choices": [
+      "ChromeOS cannot execute anything offline",
+      "Offline-capable apps and locally available files can work without an active connection",
+      "Every cloud file is automatically available offline",
+      "All Linux systems are workstation-only"
+    ],
+    "answer": 1,
+    "explanation": "ChromeOS supports offline-capable applications and prepared local data. Offline availability depends on the app and file configuration; Linux has roles beyond desktops.",
+    "sourceUrls": [
+      "https://support.google.com/chromebook/answer/3214688?hl=en-GB"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-03",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.1"
+      ]
+    },
+    "prompt": "In a compiled application workflow, what is the human-readable input translated into executable code?",
+    "choices": [
+      "The installed GPU driver",
+      "A finished machine-code executable",
+      "Source code",
+      "A display resolution setting"
+    ],
+    "answer": 2,
+    "explanation": "Source code is input to compilation in this workflow. Calling source code precompiled machine instructions confuses the input with the output.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-04",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.1"
+      ]
+    },
+    "prompt": "Which category best describes Android as used on a smartphone?",
+    "choices": [
+      "Network cable standard",
+      "Desktop-only hypervisor",
+      "Storage filesystem",
+      "Mobile operating system"
+    ],
+    "answer": 3,
+    "explanation": "Android is a mobile operating system in the smartphone scenario. An OS category does not imply that every application or feature requires cloud access.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-05",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.1"
+      ]
+    },
+    "prompt": "A lab machine must evaluate pre-release Windows features through Microsoft’s preview program. Which program fits?",
+    "choices": [
+      "Windows Insider Program",
+      "A promise that all preview builds are production-safe",
+      "The retired Semi-Annual Channel (Targeted) label",
+      "A BIOS firmware setup utility"
+    ],
+    "answer": 0,
+    "explanation": "Windows Insider distributes preview builds for evaluation. Preview channels and eligibility change; use current guidance and keep a recovery plan instead of old Windows servicing names.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/windows-insider/get-started"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-06",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.2"
+      ]
+    },
+    "prompt": "Before capturing a reusable supported Windows reference image, which tool removes machine-specific information?",
+    "choices": [
+      "Copying only the user Desktop folder",
+      "Sysprep with /generalize",
+      "Opening Event Viewer",
+      "Renaming a .wim file"
+    ],
+    "answer": 1,
+    "explanation": "Sysprep /generalize prepares a reference installation by removing machine-specific information. A WIM is an image format; capture and deployment are separate operations. Use supported imaging procedures.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/sysprep--generalize--a-windows-installation?view=windows-11"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-07",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.2"
+      ]
+    },
+    "prompt": "Where does Windows store configuration that identifies the operating-system boot entries?",
+    "choices": [
+      "The monitor firmware menu",
+      "A user’s browser cookie jar",
+      "The application recycle bin",
+      "Boot Configuration Data (BCD) store"
+    ],
+    "answer": 3,
+    "explanation": "BCD holds Windows boot configuration used by the boot manager. UEFI and legacy boot components differ; hibernation resume is not the same as a normal OS boot.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-08",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.7"
+      ]
+    },
+    "prompt": "A Windows 11 procedure specifically requires the Settings app. Where should the technician edit a supported adapter’s IP assignment?",
+    "choices": [
+      "Task Manager → Users",
+      "The Windows activation page",
+      "Defender antivirus history",
+      "Settings → Network & internet → the adapter’s IP settings"
+    ],
+    "answer": 3,
+    "explanation": "Windows network Settings can configure manual IP assignment for an adapter. Adapter properties reached through Control Panel can also configure IP; a question must constrain the path if only one answer is intended.",
+    "sourceUrls": [
+      "https://support.microsoft.com/en-us/windows/experience/connectivity-networking/essential-network-settings-and-tasks-in-windows"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-09",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.1"
+      ]
+    },
+    "prompt": "Which description of ext4 avoids overstating its fragmentation behavior?",
+    "choices": [
+      "Its allocation strategies reduce fragmentation, but fragmentation can still occur",
+      "It cannot store files larger than a single disk block",
+      "It guarantees that every file is always contiguous",
+      "It automatically moves every file after each read"
+    ],
+    "answer": 0,
+    "explanation": "ext4 uses allocation strategies to improve data locality and reduce fragmentation. These mechanisms are not a guarantee of automatic, continuous defragmentation.",
+    "sourceUrls": [
+      "https://www.kernel.org/doc/html/latest/filesystems/ext4/allocators.html"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-10",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.8"
+      ]
+    },
+    "prompt": "On a current supported Mac, which interface is intended for operating-system updates?",
+    "choices": [
+      "System Settings → General → Software Update",
+      "Only an App Store application-update list",
+      "Only the Finder Trash",
+      "Windows Update inside Control Panel"
+    ],
+    "answer": 0,
+    "explanation": "Current macOS updates are offered through Software Update in System Settings. App Store app updates are a different task; older macOS versions may use different paths.",
+    "sourceUrls": [
+      "https://support.apple.com/en-us/108382"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-11",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.8"
+      ]
+    },
+    "prompt": "Which macOS interface would you normally use to browse folders and move a document?",
+    "choices": [
+      "A Linux package repository",
+      "The firmware boot menu",
+      "Finder",
+      "Windows Registry Editor"
+    ],
+    "answer": 2,
+    "explanation": "Finder is the standard macOS file-browsing interface. Browsing a file is different from installing an OS update or managing firmware.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-12",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.9"
+      ]
+    },
+    "prompt": "A Linux technician must search file contents under ./logs for the text timeout, including subdirectories. Which command fits?",
+    "choices": [
+      "cd ./logs",
+      "pwd",
+      "find ./logs -name timeout",
+      "grep -r timeout ./logs"
+    ],
+    "answer": 3,
+    "explanation": "grep -r searches matching text through files recursively. find traverses directories by default; -name matches entry names rather than searching each file’s contents.",
+    "sourceUrls": [
+      "https://www.gnu.org/s/grep/manual/grep.pdf",
+      "https://www.man7.org/linux/man-pages/man1/find.1.html"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-13",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.5"
+      ]
+    },
+    "prompt": "Logs show repeated attempts to authenticate using many candidate passwords against one account. Which attack behavior is most directly shown?",
+    "choices": [
+      "A guaranteed privilege-escalation exploit",
+      "Password guessing",
+      "A confirmed disk-encryption failure",
+      "A physical cable fault"
+    ],
+    "answer": 1,
+    "explanation": "Repeated candidate-password attempts are evidence of password guessing. The log does not by itself prove successful access. Investigate outcomes and apply approved authentication protections.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-14",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.1"
+      ]
+    },
+    "prompt": "Which example uses a biometric characteristic?",
+    "choices": [
+      "A memorized PIN",
+      "A password typed twice",
+      "Possession of a hardware token",
+      "Fingerprint recognition"
+    ],
+    "answer": 3,
+    "explanation": "A fingerprint is a biometric characteristic. A PIN and password are both knowledge factors; a smart card/token is possession, not a biological characteristic.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-15",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.4"
+      ]
+    },
+    "prompt": "A malicious component alters system behavior to hide its presence from ordinary inspection. Which malware category fits?",
+    "choices": [
+      "A DNS record type",
+      "A legitimate spreadsheet macro by definition",
+      "A backup rotation scheme",
+      "Rootkit"
+    ],
+    "answer": 3,
+    "explanation": "A rootkit is associated with concealed malicious presence or control. A symptom is a clue, not proof; follow the incident workflow and use trusted inspection/recovery methods.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-16",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.1"
+      ]
+    },
+    "prompt": "Which control creates a physical perimeter that discourages unauthorized entry to a facility?",
+    "choices": [
+      "A backup filename",
+      "A DNS search suffix",
+      "A password-expiration reminder",
+      "A perimeter fence"
+    ],
+    "answer": 3,
+    "explanation": "A fence creates a physical perimeter control. Physical controls complement authentication and monitoring; a fence alone does not grant or verify digital access.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-17",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.1"
+      ]
+    },
+    "prompt": "What claim can safely be made about a properly used metal detector?",
+    "choices": [
+      "It can detect relevant metal objects within its operating limits",
+      "It decrypts removable storage",
+      "It authenticates a person’s identity",
+      "It identifies every possible weapon"
+    ],
+    "answer": 0,
+    "explanation": "A metal detector detects metal under its operating conditions. It is not a universal weapon detector or a substitute for identity checks.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-18",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.11"
+      ]
+    },
+    "prompt": "A deleted cloud-synced file disappears from a second device. What does this illustrate?",
+    "choices": [
+      "A synced folder cannot be changed by its owner",
+      "Synchronization can propagate deletions, so recovery needs separate retention/version or backup controls",
+      "Synchronization always preserves an immutable copy",
+      "All sync requires identical hardware"
+    ],
+    "answer": 1,
+    "explanation": "Synchronization coordinates selected data and may propagate deletion. Recoverability depends on retention, versioning and backup configuration, not merely having two synced devices.",
+    "sourceUrls": [
+      "https://support.microsoft.com/en-us/onedrive/back-up-your-folders-with-onedrive"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-19",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.2"
+      ]
+    },
+    "prompt": "A technician must create a scoped inbound Windows firewall rule. Which interface is appropriate?",
+    "choices": [
+      "Windows Defender Firewall with Advanced Security",
+      "A drive-letter rename dialog",
+      "Only Defender antivirus signature history",
+      "A screen-resolution menu"
+    ],
+    "answer": 0,
+    "explanation": "Advanced Security manages scoped firewall rules. Defender Tamper Protection restricts unauthorized security-setting changes; it is not the tool for authoring firewall rules.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/defender-endpoint/tamper-protection-overview"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-20",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.7"
+      ]
+    },
+    "prompt": "Which plan provides a stronger workstation baseline than simply renaming an administrator account?",
+    "choices": [
+      "Disable updates permanently",
+      "Disable the host firewall on all profiles",
+      "Supported updates, least privilege, strong authentication and controlled administrative access",
+      "Share one administrator password widely"
+    ],
+    "answer": 2,
+    "explanation": "Hardening combines maintained software with restricted access and appropriate authentication. Renaming an account alone does not prevent compromise; disabling protective controls weakens the baseline.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-21",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.2"
+      ]
+    },
+    "prompt": "On a supported Windows edition with NTFS, a user needs file-level encryption for selected files. Which feature matches that scope?",
+    "choices": [
+      "FileVault for the Windows NTFS files",
+      "Encrypting File System (EFS)",
+      "TLS as local file encryption",
+      "Changing only a filename extension"
+    ],
+    "answer": 1,
+    "explanation": "EFS provides file-level encryption on supported Windows/NTFS configurations. Do not rule out BitLocker solely because a TPM is absent: supported non-TPM configurations exist. Plan recovery of encryption credentials.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/faq"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-22",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.11"
+      ]
+    },
+    "prompt": "After signing into Windows with a Microsoft account, what should a technician verify before claiming Desktop files are backed up by OneDrive?",
+    "choices": [
+      "Assume backup succeeds when the client shows an error",
+      "The OneDrive account, selected folders, backup configuration and sync/backup status",
+      "Assume account sign-in alone proves every folder is protected",
+      "Assume files on every disk are included"
+    ],
+    "answer": 1,
+    "explanation": "OneDrive folder backup requires the relevant client, account and folder configuration. A Microsoft account alone is not evidence that every file or folder is protected.",
+    "sourceUrls": [
+      "https://support.microsoft.com/en-us/onedrive/back-up-your-folders-with-onedrive"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-23",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.4"
+      ]
+    },
+    "prompt": "A Windows system has a supported WDDM driver. Which built-in tool can display GPU performance data?",
+    "choices": [
+      "The printer spool directory",
+      "Only a third-party utility in every case",
+      "Disk Management’s partition list",
+      "Task Manager"
+    ],
+    "answer": 3,
+    "explanation": "Task Manager can display GPU data with supported hardware and drivers. Third-party tools may add detail, but they are not always required. GPU support depends on the driver model.",
+    "sourceUrls": [
+      "https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-24",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.6"
+      ]
+    },
+    "prompt": "After remediation, recovery validation and the required protection/update steps, what completes the user-facing malware-removal workflow?",
+    "choices": [
+      "Educate the end user about avoiding recurrence",
+      "Stop before verifying normal operation",
+      "Delete all incident evidence without policy approval",
+      "Re-enable the malicious program"
+    ],
+    "answer": 0,
+    "explanation": "End-user education helps prevent recurrence after the required remediation and recovery steps. Education is not a substitute for containment, removal, validation or the organization’s incident procedure.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-25",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "3.2"
+      ]
+    },
+    "prompt": "A nearby client supports 5 GHz and measurements identify 2.4 GHz interference. Which change is reasonable to test?",
+    "choices": [
+      "Reduce AP power without checking coverage",
+      "Assume 5 GHz always has longer range",
+      "Move the client to an appropriately configured 5 GHz connection and remeasure",
+      "Shorten the SSID as a guaranteed RF fix"
+    ],
+    "answer": 2,
+    "explanation": "An alternative supported band may reduce the measured 2.4 GHz interference. Range, obstructions and coverage still matter; 5 GHz is not a universal cure for disconnections.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-26",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "3.1"
+      ]
+    },
+    "prompt": "Controller-resource errors occur when several devices share one USB controller. Which investigation is most useful?",
+    "choices": [
+      "Manually increase current beyond the port specification",
+      "Assume connector color proves the controller topology",
+      "Delete unrelated user documents",
+      "Check topology and move a device to a suitable port on a different controller, then retest"
+    ],
+    "answer": 3,
+    "explanation": "USB devices can share controller resources even across different physical ports. Check power, bandwidth, controller topology and supported drivers; port generation/color alone does not establish the cause.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-27",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "3.1"
+      ]
+    },
+    "prompt": "A Windows VM resumes after being paused and its clock is wrong. Which response addresses time synchronization appropriately?",
+    "choices": [
+      "Assume virtual clocks cannot drift",
+      "Check supported host/guest time integration and the guest’s configured time hierarchy",
+      "Set an arbitrary clock once and never monitor it",
+      "Assume every Windows guest must always use time.windows.com"
+    ],
+    "answer": 1,
+    "explanation": "Virtual timekeeping and pause/resume behavior can cause clock drift. The correct time source depends on the configuration; domain members commonly use the domain hierarchy.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-28",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.4"
+      ]
+    },
+    "prompt": "Which tool is intended to inspect a Windows service and restart it when authorized?",
+    "choices": [
+      "Only the screen saver dialog",
+      "Only a browser history viewer",
+      "Only the Windows activation dialog",
+      "Services (services.msc), also available through Computer Management"
+    ],
+    "answer": 3,
+    "explanation": "The Services management console controls supported service operations. Review dependencies and the failure cause; changing startup settings is different from restarting a running service.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-29",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.4"
+      ]
+    },
+    "prompt": "A device has an overheating, visibly damaged lithium-ion battery. Which concern takes priority?",
+    "choices": [
+      "A guarantee that only display brightness changes",
+      "Thermal runaway, fire or related injury risk",
+      "A need to puncture the battery to cool it",
+      "A harmless cosmetic change in every case"
+    ],
+    "answer": 1,
+    "explanation": "A damaged or overheated lithium-ion battery can present a serious thermal hazard. Follow manufacturer and workplace handling/escalation guidance; do not puncture, charge or improvise a repair.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-30",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "3.1"
+      ]
+    },
+    "prompt": "An Event Viewer record shows Kernel-Power event 41 after a restart. What conclusion is justified?",
+    "choices": [
+      "The event proves malware caused the restart",
+      "The previous shutdown was unexpected; investigate correlated evidence for the cause",
+      "The event proves the power supply is faulty",
+      "The event proves a specific driver is faulty"
+    ],
+    "answer": 1,
+    "explanation": "Unexpected-shutdown logs are evidence to correlate with other symptoms and records. A shutdown event does not independently identify the root cause.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/troubleshoot/windows-server/performance/troubleshoot-unexpected-reboots-system-event-logs"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-31",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.9"
+      ]
+    },
+    "prompt": "Which default transport/port association is appropriate for direct RDP connectivity?",
+    "choices": [
+      "TCP and UDP 3389",
+      "Only TCP 443 in every deployment",
+      "TCP 22 as the standard RDP port",
+      "UDP 53 as the standard RDP port"
+    ],
+    "answer": 0,
+    "explanation": "Direct RDP commonly uses TCP and UDP port 3389. Gateways and configured ports can change the path; do not assume TCP is its only possible transport.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/ports-used-by-rds"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-32",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.8"
+      ]
+    },
+    "prompt": "Which line is a conventional comment in a Windows batch file interpreted by cmd.exe?",
+    "choices": [
+      "# Explain the next step as a cmd.exe comment",
+      "A SQL SELECT statement",
+      "// Explain the next step as a cmd.exe comment",
+      "REM Explain the next step"
+    ],
+    "answer": 3,
+    "explanation": "REM records a batch-file comment. Comment syntax depends on the interpreter; PowerShell/Bash and JavaScript examples do not become cmd.exe comments.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/rem"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-33",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.9"
+      ]
+    },
+    "prompt": "A Windows support procedure requires opening the Remote Desktop Connection client. Which command fits?",
+    "choices": [
+      "diskmgmt.msc",
+      "services.msc",
+      "mstsc.exe",
+      "regedit.exe"
+    ],
+    "answer": 2,
+    "explanation": "mstsc launches the Windows Remote Desktop Connection client. Launching a client does not establish authorization, reachability or permission to control the target.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-34",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.9"
+      ]
+    },
+    "prompt": "A single remote worker’s device establishes a protected tunnel into the office network. Which model is described?",
+    "choices": [
+      "Remote-access / host-to-site VPN",
+      "A replacement for every application login",
+      "Only a site-to-site tunnel between two offices",
+      "A local filesystem format"
+    ],
+    "answer": 0,
+    "explanation": "A host-to-site VPN connects an individual remote client to the organization’s network. A VPN does not remove endpoint, authentication or application-authorization requirements.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-35",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.11"
+      ]
+    },
+    "prompt": "A team needs a live online meeting with multiple attendees, audio and video. Which capability is the best match?",
+    "choices": [
+      "Only a local registry editor",
+      "Videoconferencing in a suitable collaboration platform",
+      "Only an offline file checksum utility",
+      "Only a disk defragmenter"
+    ],
+    "answer": 1,
+    "explanation": "Videoconferencing is the relevant collaboration capability. Platforms such as Teams/Zoom may also support chat, sharing and other features; one label does not exclude the others.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-36",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.10"
+      ]
+    },
+    "prompt": "An AI assistant proposes a command that deletes files while troubleshooting. What is the appropriate response?",
+    "choices": [
+      "Run it because a confident explanation proves correctness",
+      "Paste secrets into a public service to improve its answer",
+      "Assume generated commands cannot cause damage",
+      "Verify the command, authorization, backup and consequences before considering execution"
+    ],
+    "answer": 3,
+    "explanation": "AI-generated technical guidance needs independent validation and policy review. Confidence and fluent language do not establish accuracy or permission; protect sensitive data.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-37",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.4"
+      ]
+    },
+    "prompt": "For manufacturer-approved servicing of a disconnected PC, which TWO controls directly address ESD handling? (Choose two.)",
+    "choices": [
+      "Lower humidity as far as possible",
+      "Work on carpet in socks",
+      "Rely on tying hair back as the main ESD control",
+      "Use an approved ESD work surface/mat as directed",
+      "Use the approved antistatic wrist strap and connection procedure"
+    ],
+    "answer": [
+      3,
+      4
+    ],
+    "explanation": "Approved ESD equipment and handling procedures reduce damaging potential differences. Hair restraint can address other hazards, but it does not replace ESD controls. Follow electrical-safety and equipment guidance.",
+    "sourceUrls": [
+      "https://www.ibm.com/docs/en/storage-networking?topic=sl-esd-precautions"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-38",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.4"
+      ]
+    },
+    "prompt": "A manufacturer’s fastener is a Torx type. Which bit should be selected?",
+    "choices": [
+      "A drill bit chosen without the service procedure",
+      "A Phillips bit regardless of fit",
+      "The matching Torx bit and size",
+      "Any flat blade forced into the head"
+    ],
+    "answer": 2,
+    "explanation": "Use the matching driver type and size to avoid damaging the fastener or equipment. Torx has a familiar six-lobed form; security variants can require a corresponding special bit.",
+    "sourceUrls": [
+      "https://www.topura.co.jp/eng/product/torx.html"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-39",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.6"
+      ]
+    },
+    "prompt": "Software offers a limited trial with payment required for continued licensed use. Which familiar licensing description fits?",
+    "choices": [
+      "Proof that every open-source license forbids commercial use",
+      "A guarantee of unlimited licensed use",
+      "A hardware warranty",
+      "Shareware / trial software"
+    ],
+    "answer": 3,
+    "explanation": "Shareware commonly offers trial or limited use before purchase. Open-source software can be used commercially under its license; price and licensing rights are separate questions.",
+    "sourceUrls": [
+      "https://opensource.org/faq"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-40",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.4"
+      ]
+    },
+    "prompt": "Why does an approved ESD wrist-strap cord commonly include a high-resistance safety component?",
+    "choices": [
+      "It limits current while providing the intended controlled discharge path",
+      "It increases the voltage delivered to components",
+      "It replaces all electrical-safety precautions",
+      "It magnetizes the motherboard"
+    ],
+    "answer": 0,
+    "explanation": "Approved wrist straps commonly include a series safety resistor, often around one megaohm. Use the manufacturer-approved equipment and bonding procedure; this is not a universal instruction for every grounding system.",
+    "sourceUrls": [
+      "https://www.ibm.com/docs/en/storage-networking?topic=sl-esd-precautions"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-41",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.4"
+      ]
+    },
+    "prompt": "Before removing dust from equipment, what determines the appropriate PPE and cleaning method?",
+    "choices": [
+      "A rule that every cleaning task always needs exactly the same mask",
+      "Whether the technician owns a multimeter",
+      "Only the color of the computer case",
+      "The task hazards, manufacturer instructions and applicable safety guidance"
+    ],
+    "answer": 3,
+    "explanation": "PPE and cleaning methods should match the actual hazard and approved procedure. A filtration mask can be appropriate for airborne particles, but it is not a universal answer for every task.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-42",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "2.10"
+      ]
+    },
+    "prompt": "Measurements show a 2.4 GHz Wi-Fi problem that coincides with a nearby microwave oven operating. Which hypothesis is reasonable to test?",
+    "choices": [
+      "A universal need to disable encryption",
+      "An automatic proof of disk corruption",
+      "A guarantee that all Wi-Fi bands are equally affected",
+      "Interference affecting the 2.4 GHz connection"
+    ],
+    "answer": 3,
+    "explanation": "Microwave-related interference can affect 2.4 GHz Wi-Fi. Validate timing, signal and band conditions; this is not a claim that every wireless failure or band has the same cause.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-43",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.7"
+      ]
+    },
+    "prompt": "A user is absent and a password is written under the keyboard. What is the appropriate next step before accessing the account?",
+    "choices": [
+      "Leave the account logged in for convenience",
+      "Change the password without authorization",
+      "Use an approved contact/access process and obtain the required authorization",
+      "Use the discovered credentials because they are visible"
+    ],
+    "answer": 2,
+    "explanation": "Visible credentials do not grant permission to use another person’s account. The approved contact method may be a call, ticket or other channel; texting is not universally required.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-44",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.7"
+      ]
+    },
+    "prompt": "During a repair, a technician accidentally damages a replacement part. What should the technician do?",
+    "choices": [
+      "Disclose the damage promptly and follow the approved resolution/escalation process",
+      "Hide the incident and close the ticket",
+      "Claim it arrived damaged without evidence",
+      "Install the visibly damaged part anyway"
+    ],
+    "answer": 0,
+    "explanation": "Honest communication and documented escalation preserve trust and support safe resolution. Do not conceal damage or continue with a component known to be unsafe or faulty.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-45",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.7"
+      ]
+    },
+    "prompt": "A repair will take longer than the estimate already given. Which response is appropriate?",
+    "choices": [
+      "Close the ticket to meet the original deadline",
+      "Remain silent until the customer complains",
+      "Promise a time you cannot support",
+      "Notify the customer, explain the status and provide a revised realistic estimate"
+    ],
+    "answer": 3,
+    "explanation": "Communicate delays and revised expectations proactively. An estimate is not permission to hide risk or mark unfinished work resolved.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-46",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.1"
+      ]
+    },
+    "prompt": "An organization has configured email-to-ticket intake for users who cannot access its portal. Which method fits this stated situation?",
+    "choices": [
+      "Email the approved support address to create a ticket",
+      "Assume email is always easiest in every organization",
+      "Bypass all tracking and send credentials to a stranger",
+      "Close another user’s ticket instead"
+    ],
+    "answer": 0,
+    "explanation": "The correct intake channel follows the organization’s configured and accessible workflow. Email, portals, staff entry and automated alerts have different uses; no one method is universally easiest.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-47",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "4.2"
+      ]
+    },
+    "prompt": "A proposed change must be evaluated away from production and have a recovery path. Which plan fits?",
+    "choices": [
+      "Make the change without recording scope or risk",
+      "Test in a sandbox, obtain required approval and prepare a backout/rollback plan",
+      "Treat a blackout period as a rollback procedure",
+      "Skip testing because a change is small"
+    ],
+    "answer": 1,
+    "explanation": "Sandbox testing isolates evaluation; a backout plan explains how to reverse a failed change. Blackout and backout are different terms. Approval, verification and recovery planning remain part of change control.",
+    "sourceUrls": [
+      "https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-48",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.7"
+      ]
+    },
+    "prompt": "On a supported Windows edition, which interface exposes computer-name and Active Directory domain-membership settings?",
+    "choices": [
+      "Only the monitor control panel",
+      "Only Disk Cleanup",
+      "Only Credential Manager",
+      "System Properties (sysdm.cpl)"
+    ],
+    "answer": 3,
+    "explanation": "System Properties provides computer-name/domain membership controls. Successful domain join also requires the correct edition, network/DNS reachability and authorized credentials.",
+    "sourceUrls": [
+      "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-49",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "objectiveIds": {
+      "220-1202": [
+        "1.4"
+      ]
+    },
+    "prompt": "A technician wants to inspect signed-in users and their resource activity in Task Manager. Which tab is appropriate?",
+    "choices": [
+      "Only the firmware boot menu",
+      "Only Startup apps",
+      "Only App history for all interactive sessions",
+      "Users"
+    ],
+    "answer": 3,
+    "explanation": "Task Manager’s Users view shows signed-in users and their associated activity. The Performance tab provides resource graphs; it answers a different question.",
+    "sourceUrls": [
+      "https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/"
+    ],
+    "weak": false
+  },
+  {
+    "id": "q-c2-assessment-50",
+    "topicId": "core1-ch2",
+    "examCodes": [
+      "220-1201"
+    ],
+    "objectiveIds": {
+      "220-1201": [
+        "3.6"
+      ]
+    },
+    "prompt": "Which conventional RAID arrangement uses distributed parity, needs at least three drives and tolerates one drive failure?",
+    "choices": [
+      "A two-drive RAID 1 mirror",
+      "RAID 0 without redundancy",
+      "RAID 5",
+      "A single unprotected disk"
+    ],
+    "answer": 2,
+    "explanation": "Conventional RAID 5 uses distributed parity and tolerates one member failure. This is supplemental Core 1 storage context. Degraded/rebuild availability depends on the controller and workload; RAID is not backup.",
+    "sourceUrls": [
+      "https://www.ibm.com/docs/en/storage-scale-system/5147-092?topic=r5dr-recovering-raid-5-single-disk-failure"
+    ],
+    "weak": false
   }
 ]

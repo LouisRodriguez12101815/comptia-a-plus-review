@@ -101,7 +101,7 @@
     "id": "fc-15",
     "topicId": "core2-ch1",
     "front": "Windows Home vs Pro (domain / BitLocker / RDP)",
-    "back": "Home cannot join a domain, no BitLocker, no RDP host. Pro can.",
+    "back": "Home cannot join an AD domain or host RDP; Pro adds those capabilities and full BitLocker management. Eligible Home devices can provide Device Encryption. Both editions support Microsoft accounts.",
     "weak": false
   },
   {
@@ -220,7 +220,7 @@
     "id": "fc-32",
     "topicId": "core2-ch3",
     "front": "Windows 11 Insider on Home?",
-    "back": "No. Pro, Education, Enterprise only (this guide).",
+    "back": "Home is not categorically excluded. Check current Insider edition/build, hardware, account and channel requirements; use preview builds with a recovery plan.",
     "weak": false
   },
   {
@@ -290,7 +290,7 @@
     "id": "fc-42",
     "topicId": "core2-ch7",
     "front": "How often should AV definitions update?",
-    "back": "Daily, not weekly.",
+    "back": "Keep security intelligence current through supported automatic updates and organizational policy; a fixed daily interval is not universally sufficient.",
     "weak": true
   },
   {
@@ -4278,6 +4278,326 @@
     "weak": false
   },
   {
+    "id": "fc-saa-arch-secure-role",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Workload credentials",
+    "back": "Prefer IAM roles and temporary credentials over embedded long-lived access keys.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-boundary",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Permissions boundary",
+    "back": "Does not grant permissions. It limits identity-policy grants, with documented implicit-deny exceptions for same-account direct user/session resource-policy grants.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-endpoint",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "VPC endpoint",
+    "back": "Private access from a VPC to supported AWS services without using a public internet path.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-waf",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "AWS WAF",
+    "back": "Application-layer web request filtering.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-shield",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "AWS Shield",
+    "back": "Managed DDoS protection.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-macie",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Amazon Macie",
+    "back": "Sensitive-data discovery/protection focus for S3.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-kms",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "KMS vs Secrets Manager",
+    "back": "KMS manages cryptographic keys; Secrets Manager stores and rotates application secrets.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-secure-deny",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "IAM policy evaluation",
+    "back": "A matching explicit deny overrides an allow.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-sqs",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "SQS for resilience",
+    "back": "Buffer and decouple asynchronous work so producers and consumers can fail or scale independently.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-multiaz",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Multi-AZ principle",
+    "back": "Deploy across multiple AZs to avoid a single-AZ dependency.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-backup",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Backup vs replication",
+    "back": "Replication improves availability/recovery options; backups protect retained historical copies. One does not replace the other.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-rto",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "RTO",
+    "back": "Maximum acceptable recovery time after an outage.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-rpo",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "RPO",
+    "back": "Maximum acceptable data-loss window measured in time.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-pilot",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Pilot light",
+    "back": "Keep core services/data ready and scale the rest during disaster recovery.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-warm",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Warm standby",
+    "back": "Reduced-capacity recovery environment already running.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-res-active",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Active/active",
+    "back": "Multiple active sites; fast failover but higher cost and complexity.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-cache",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Caching",
+    "back": "Reduce repeated work and latency when data can be served safely from a cache.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-read",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Relational read scaling",
+    "back": "Read replicas and reader endpoints can offload read traffic.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-dax",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "DAX",
+    "back": "In-memory cache designed for DynamoDB.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-cloudfront",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "CloudFront performance cue",
+    "back": "Cache content at edge locations to reduce user latency and origin load.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-ga",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Global Accelerator performance cue",
+    "back": "Improve global network path to regional endpoints without relying on content caching.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-kds",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Kinesis Data Streams",
+    "back": "Real-time streaming records consumed by applications.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-firehose",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Data Firehose",
+    "back": "Managed delivery of streaming data to supported destinations.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-perf-efa",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Elastic Fabric Adapter",
+    "back": "Specialized low-latency/high-throughput networking for supported HPC workloads.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-lifecycle",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "S3 lifecycle cost control",
+    "back": "Schedule transitions/expiration by object or noncurrent-version age or date; choose that schedule from access/retention needs. Intelligent-Tiering monitors actual access.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-spot",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Spot cost cue",
+    "back": "Often a low EC2 purchase price relative to On-Demand for interruption-tolerant work; compare restart overhead, capacity availability and total workload cost.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-savings",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Savings Plans cue",
+    "back": "Commitment-based discount for predictable eligible compute usage.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-serverless",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Serverless cost cue",
+    "back": "Can avoid paying for idle server capacity for suitable sporadic/event-driven workloads.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-ddb",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "DynamoDB on-demand vs provisioned",
+    "back": "On-demand suits unpredictable traffic; provisioned can be economical for predictable capacity.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-endpoint",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "VPC endpoint cost cue",
+    "back": "Can avoid routing AWS-service traffic through NAT or public paths when supported and appropriate.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-rightsize",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Rightsizing",
+    "back": "Choose resources that meet requirements without persistent excess capacity.",
+    "weak": false
+  },
+  {
+    "id": "fc-saa-arch-cost-transfer",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Data transfer as a cost driver",
+    "back": "Architecture placement and traffic paths can dominate cost even when service unit prices look low.",
+    "weak": false
+  },
+  {
     "id": "fc-aws-review-clf-c02-1-1",
     "topicId": "aws-clf-cloud-concepts",
     "examCodes": [
@@ -4465,6 +4785,646 @@
     ],
     "front": "Support choices and escalation resources — name the key design constraint",
     "back": "Current AWS documentation lists Basic Support and paid offerings including Business Support+, Enterprise Support and Unified Operations. Compare current technical-support scope, response targets and designated guidance rather than memorizing retired plan names or treating response targets as resolution guarantees. AWS Partners include software vendors and integrators; Marketplace distributes third-party products and purchasing entitlements. Professional Services and solutions architects address different assistance needs. Report suspected AWS-resource abuse through the appropriate Trust and Safety process, rather than sending it to an unrelated billing alert.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-1-1",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Evaluate a complete authorization request — name the key design constraint",
+    "back": "Identify the principal (human, role or role session), action, resource, account boundary and conditions before evaluating policy. Federate workforce access where appropriate; use roles/STS for temporary workload credentials. For cross-account role use, the target role trust permits the source principal, the caller has sts:AssumeRole permission and the assumed role has required resource permissions. Control Tower and Organizations provide multi-account governance; choose the least privilege that matches the workload.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-1-2",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Secure the request path and application identity — name the key design constraint",
+    "back": "Separate public entry points, private application tiers and data stores. Security groups permit required resource flows; NACLs evaluate ordered stateless subnet rules including return traffic. A private subnet name or missing public IPv4 is not proof of isolation for every address family. WAF filters supported HTTP/S attacks, Shield addresses DDoS, GuardDuty detects threats, Inspector assesses vulnerabilities and Cognito can provide application user identity. These controls solve separate problems; workload credentials belong in suitable role/secret mechanisms.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-1-3",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Keys, retention, recovery and sharing — name the key design constraint",
+    "back": "KMS key policies, IAM permissions and encryption context/conditions determine key use; encrypting data does not neutralize an overly broad read permission. Plan key rotation/lifecycle and certificate renewal; ACM TLS certificates serve a different role from application secrets. Versioning preserves previous versions; replication needs both buckets versioned, permission/encryption setup and status validation. Existing objects need a backfill strategy. Backup, deletion recovery and Object Lock retention are distinct requirements; test recovery with the intended permissions.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-2-1",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Loose coupling with correct failure semantics — name the key design constraint",
+    "back": "Use queues to absorb bursts and separate producer/worker scaling. SQS standard queues are at-least-once with best-effort ordering; processing must be idempotent. Visibility hides in-flight work temporarily, and successful processing must be acknowledged/deleted. Stateful sessions/files on one instance prevent easy horizontal replacement. Externalize appropriate state, choose container/serverless services based on runtime/operational constraints, and scale workers against backlog and processing time rather than an unrelated metric.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-2-2",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Failure domains, health and recovery evidence — name the key design constraint",
+    "back": "Deploy independent serving capacity across AZs, configure load-balancer target health and ASG ELB health checks where application failures should cause replacement, and maintain enough surviving capacity. ALB can fail open when all targets are unhealthy; a health check is not a universal safety barrier. Choose DR from measured RTO/RPO and test data recovery, dependencies, credentials, quotas, routing and startup order. Backup/restore, pilot light, warm standby and active/active have relative cost/recovery tradeoffs, not universal minute guarantees. Workload metrics, logs and traces supply evidence of recovery.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-3-1",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Storage access, throughput and capacity — name the key design constraint",
+    "back": "EBS provides persistent AZ-scoped block volumes; volume type and provisioned IOPS/throughput must match the instance and workload. A volume remaining after stop differs from DeleteOnTermination behavior. Instance store is scratch storage that can be lost on stop/termination or host loss. S3 handles objects with key-based access; multipart/parallel access, object size and request patterns affect performance. DataSync and hybrid gateways solve movement/interface needs rather than making every storage service interchangeable. Measure IOPS, throughput, latency and concurrency separately.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-3-2",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Choose and scale compute for the bottleneck — name the key design constraint",
+    "back": "Match EC2 family/size to CPU, memory, storage, network and accelerator demand. Horizontal scaling needs a partitionable/stateless design; vertical scaling changes one node and retains its failure boundary. Benchmark before assuming the largest size is efficient. For Lambda, consider memory/CPU coupling, concurrency, execution limits and downstream connection pressure. ECS/EKS orchestrate containers; Fargate supplies supported serverless task compute. Batch/EMR target suitable batch/distributed processing. Placement/EFA choices have supported-instance and topology constraints.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-3-3",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Database access patterns, consistency and connections — name the key design constraint",
+    "back": "Relational replicas offload suitable reads but may lag. RDS Proxy pools supported connections; reader endpoints distribute connections rather than guaranteeing equal query cost. Distinguish single-standby Multi-AZ, readable Multi-AZ clusters and Aurora read/failover roles. On-demand adapts capacity but retains warm-throughput/partition/table limits. DAX accelerates eventual cache hits, not strongly consistent reads. ElastiCache reduces repeated work where freshness requirements permit. Database-engine and migration choices require schema, transaction, query and compatibility analysis.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-3-4",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Network topology, transport and DNS behavior — name the key design constraint",
+    "back": "Plan nonoverlapping address ranges, AZ subnets and route tables, including return paths and IPv4/IPv6 differences. Select gateway/interface endpoints, PrivateLink, peering or Transit Gateway from service exposure versus network-routing requirements. Route 53 weighted routing selects DNS responses probabilistically, with caching effects; latency routing uses AWS latency information, not simply map distance. Multivalue can return up to eight records and depends on health-check configuration, including an all-unhealthy fallback. DNS TTL limits how quickly clients observe failover.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-3-5",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "End-to-end ingestion and transformation — name the key design constraint",
+    "back": "Kinesis Data Streams supports streaming records consumed by applications; ordering is scoped to shard/partition-key sequencing, with producer retry and consumer checkpoint behavior to design. Firehose supplies managed buffered delivery and optional transformations to supported destinations. DataSync, Storage Gateway and supported transfer services address different movement and interface needs. Secure ingestion endpoints, roles, encryption, data-lake access and catalog governance. Design throughput, buffering, latency, replay and malformed-record handling together.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-4-1",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Price the complete storage lifecycle — name the key design constraint",
+    "back": "Compare object/file/block access requirements before cost. Include stored bytes, provisioned performance, requests, transitions, retrieval, minimum-duration/object-size rules, replicas and transfers. The cheapest GB price may violate retrieval or durability requirements. Size persistent storage and backup retention from recovery/compliance needs. Delete only genuinely unused volumes/snapshots under policy; snapshot dependencies mean billed savings may differ from visible snapshot count. Compare DataSync/transfer/gateway options against scale, bandwidth and change rate.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-4-2",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Commit the baseline and scale the variable work — name the key design constraint",
+    "back": "Right-size and measure before choosing commitments. Use eligible Savings Plans/Reserved discounts for a stable baseline; On-Demand for flexibility; Spot for interruption-tolerant work after accounting for capacity/restart behavior. A discount is not a capacity guarantee. Compute topology also determines load-balancing, network and resilience costs. Select ALB/NLB/GWLB and horizontal/vertical/suspend/hibernate choices from protocol, state and availability requirements. Outposts/hybrid choices add operational and placement considerations.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-4-3",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Database cost without losing correctness — name the key design constraint",
+    "back": "Choose engine/model from transactions, access patterns, schema, scale and compatibility; compare relational, key-value/document, time-series and analytical workloads deliberately. A low instance rate is not a reason to select an incompatible data model. Backups, cross-Region copies, retention and migrations all cost money but meet different requirements. Heterogeneous migration needs schema/application validation. Estimate the cost of read scaling, data retention and recovery before eliminating safeguards for savings.",
+    "weak": false
+  },
+  {
+    "id": "fc-aws-review-saa-c03-4-4",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "front": "Network cost follows the traffic path — name the key design constraint",
+    "back": "Identify bytes and paths: same-AZ, cross-AZ, cross-Region, service endpoint, NAT, dedicated link and internet delivery. Data-transfer pricing is service-specific; do not assume all same-Region traffic is free or all cross-AZ paths charge identically. Compare Direct Connect, VPN and internet designs using bandwidth, encryption, redundancy and business targets. CloudFront may reduce repeated origin work/transfer, but include CDN/request/invalidations and cache hit behavior. Do not minimize transfer by removing required failure isolation.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-01",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Application, OS and driver roles — explain the decision",
+    "back": "An application performs the user-facing task; the OS supplies shared services. Drivers connect the OS to hardware; a filesystem organizes stored data.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-02",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "ChromeOS can work offline — explain the decision",
+    "back": "ChromeOS supports offline-capable applications and prepared local data. Offline availability depends on the app and file configuration; Linux has roles beyond desktops.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-03",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Source code and compilation — explain the decision",
+    "back": "Source code is input to compilation in this workflow. Calling source code precompiled machine instructions confuses the input with the output.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-04",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Mobile operating systems — explain the decision",
+    "back": "Android is a mobile operating system in the smartphone scenario. An OS category does not imply that every application or feature requires cloud access.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-05",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Preview versus production releases — explain the decision",
+    "back": "Windows Insider distributes preview builds for evaluation. Preview channels and eligibility change; use current guidance and keep a recovery plan instead of old Windows servicing names.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-06",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Prepare an image before capture — explain the decision",
+    "back": "Sysprep /generalize prepares a reference installation by removing machine-specific information. A WIM is an image format; capture and deployment are separate operations. Use supported imaging procedures.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-07",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Boot configuration data — explain the decision",
+    "back": "BCD holds Windows boot configuration used by the boot manager. UEFI and legacy boot components differ; hibernation resume is not the same as a normal OS boot.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-08",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Static IP configuration paths — explain the decision",
+    "back": "Windows network Settings can configure manual IP assignment for an adapter. Adapter properties reached through Control Panel can also configure IP; a question must constrain the path if only one answer is intended.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-09",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Fragmentation is still possible — explain the decision",
+    "back": "ext4 uses allocation strategies to improve data locality and reduce fragmentation. These mechanisms are not a guarantee of automatic, continuous defragmentation.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-10",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Update macOS through Software Update — explain the decision",
+    "back": "Current macOS updates are offered through Software Update in System Settings. App Store app updates are a different task; older macOS versions may use different paths.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-11",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Finder manages files — explain the decision",
+    "back": "Finder is the standard macOS file-browsing interface. Browsing a file is different from installing an OS update or managing firmware.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-12",
+    "topicId": "core2-assessment-os",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Search names versus contents — explain the decision",
+    "back": "grep -r searches matching text through files recursively. find traverses directories by default; -name matches entry names rather than searching each file’s contents.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-13",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Password guessing — explain the decision",
+    "back": "Repeated candidate-password attempts are evidence of password guessing. The log does not by itself prove successful access. Investigate outcomes and apply approved authentication protections.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-14",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Biometrics and authentication factors — explain the decision",
+    "back": "A fingerprint is a biometric characteristic. A PIN and password are both knowledge factors; a smart card/token is possession, not a biological characteristic.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-15",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Rootkit concealment — explain the decision",
+    "back": "A rootkit is associated with concealed malicious presence or control. A symptom is a clue, not proof; follow the incident workflow and use trusted inspection/recovery methods.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-16",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Physical security boundaries — explain the decision",
+    "back": "A fence creates a physical perimeter control. Physical controls complement authentication and monitoring; a fence alone does not grant or verify digital access.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-17",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Metal-detector limits — explain the decision",
+    "back": "A metal detector detects metal under its operating conditions. It is not a universal weapon detector or a substitute for identity checks.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-18",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Sync is not independent backup — explain the decision",
+    "back": "Synchronization coordinates selected data and may propagate deletion. Recoverability depends on retention, versioning and backup configuration, not merely having two synced devices.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-19",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Firewall rules and tamper protection — explain the decision",
+    "back": "Advanced Security manages scoped firewall rules. Defender Tamper Protection restricts unauthorized security-setting changes; it is not the tool for authoring firewall rules.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-20",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Workstation hardening — explain the decision",
+    "back": "Hardening combines maintained software with restricted access and appropriate authentication. Renaming an account alone does not prevent compromise; disabling protective controls weakens the baseline.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-21",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "File encryption versus volume encryption — explain the decision",
+    "back": "EFS provides file-level encryption on supported Windows/NTFS configurations. Do not rule out BitLocker solely because a TPM is absent: supported non-TPM configurations exist. Plan recovery of encryption credentials.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-22",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Verify folder-backup configuration — explain the decision",
+    "back": "OneDrive folder backup requires the relevant client, account and folder configuration. A Microsoft account alone is not evidence that every file or folder is protected.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-23",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Built-in GPU performance monitoring — explain the decision",
+    "back": "Task Manager can display GPU data with supported hardware and drivers. Third-party tools may add detail, but they are not always required. GPU support depends on the driver model.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-24",
+    "topicId": "core2-assessment-security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "End malware removal with education — explain the decision",
+    "back": "End-user education helps prevent recurrence after the required remediation and recovery steps. Education is not a substitute for containment, removal, validation or the organization’s incident procedure.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-25",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Match Wi-Fi changes to evidence — explain the decision",
+    "back": "An alternative supported band may reduce the measured 2.4 GHz interference. Range, obstructions and coverage still matter; 5 GHz is not a universal cure for disconnections.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-26",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "USB controller-resource troubleshooting — explain the decision",
+    "back": "USB devices can share controller resources even across different physical ports. Check power, bandwidth, controller topology and supported drivers; port generation/color alone does not establish the cause.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-27",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Virtual-machine clock synchronization — explain the decision",
+    "back": "Virtual timekeeping and pause/resume behavior can cause clock drift. The correct time source depends on the configuration; domain members commonly use the domain hierarchy.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-28",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Manage a Windows service — explain the decision",
+    "back": "The Services management console controls supported service operations. Review dependencies and the failure cause; changing startup settings is different from restarting a running service.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-29",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Battery thermal hazards — explain the decision",
+    "back": "A damaged or overheated lithium-ion battery can present a serious thermal hazard. Follow manufacturer and workplace handling/escalation guidance; do not puncture, charge or improvise a repair.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-30",
+    "topicId": "core2-assessment-troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Shutdown evidence versus cause — explain the decision",
+    "back": "Unexpected-shutdown logs are evidence to correlate with other symptoms and records. A shutdown event does not independently identify the root cause.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-31",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "RDP transport and default port — explain the decision",
+    "back": "Direct RDP commonly uses TCP and UDP port 3389. Gateways and configured ports can change the path; do not assume TCP is its only possible transport.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-32",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Batch-file comments — explain the decision",
+    "back": "REM records a batch-file comment. Comment syntax depends on the interpreter; PowerShell/Bash and JavaScript examples do not become cmd.exe comments.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-33",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Launch the RDP client — explain the decision",
+    "back": "mstsc launches the Windows Remote Desktop Connection client. Launching a client does not establish authorization, reachability or permission to control the target.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-34",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Remote-access VPN — explain the decision",
+    "back": "A host-to-site VPN connects an individual remote client to the organization’s network. A VPN does not remove endpoint, authentication or application-authorization requirements.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-35",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Collaboration tools — explain the decision",
+    "back": "Videoconferencing is the relevant collaboration capability. Platforms such as Teams/Zoom may also support chat, sharing and other features; one label does not exclude the others.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-36",
+    "topicId": "core2-assessment-remote-ai",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Verify AI-generated guidance — explain the decision",
+    "back": "AI-generated technical guidance needs independent validation and policy review. Confidence and fluent language do not establish accuracy or permission; protect sensitive data.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-37",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Approved ESD controls — explain the decision",
+    "back": "Approved ESD equipment and handling procedures reduce damaging potential differences. Hair restraint can address other hazards, but it does not replace ESD controls. Follow electrical-safety and equipment guidance.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-38",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Use the correct driver bit — explain the decision",
+    "back": "Use the matching driver type and size to avoid damaging the fastener or equipment. Torx has a familiar six-lobed form; security variants can require a corresponding special bit.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-39",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Trial licensing and open source — explain the decision",
+    "back": "Shareware commonly offers trial or limited use before purchase. Open-source software can be used commercially under its license; price and licensing rights are separate questions.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-40",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "ESD strap resistance — explain the decision",
+    "back": "Approved wrist straps commonly include a series safety resistor, often around one megaohm. Use the manufacturer-approved equipment and bonding procedure; this is not a universal instruction for every grounding system.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-41",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Choose PPE from the hazard — explain the decision",
+    "back": "PPE and cleaning methods should match the actual hazard and approved procedure. A filtration mask can be appropriate for airborne particles, but it is not a universal answer for every task.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-42",
+    "topicId": "core2-assessment-safety",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Microwave interference scope — explain the decision",
+    "back": "Microwave-related interference can affect 2.4 GHz Wi-Fi. Validate timing, signal and band conditions; this is not a claim that every wireless failure or band has the same cause.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-43",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Respect access authorization — explain the decision",
+    "back": "Visible credentials do not grant permission to use another person’s account. The approved contact method may be a call, ticket or other channel; texting is not universally required.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-44",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Report accidental damage — explain the decision",
+    "back": "Honest communication and documented escalation preserve trust and support safe resolution. Do not conceal damage or continue with a component known to be unsafe or faulty.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-45",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Communicate a changed estimate — explain the decision",
+    "back": "Communicate delays and revised expectations proactively. An estimate is not permission to hide risk or mark unfinished work resolved.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-46",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Ticket intake depends on the workflow — explain the decision",
+    "back": "The correct intake channel follows the organization’s configured and accessible workflow. Email, portals, staff entry and automated alerts have different uses; no one method is universally easiest.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-47",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Sandbox, rollout and backout — explain the decision",
+    "back": "Sandbox testing isolates evaluation; a backout plan explains how to reverse a failed change. Blackout and backout are different terms. Approval, verification and recovery planning remain part of change control.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-48",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Rename and join an AD domain — explain the decision",
+    "back": "System Properties provides computer-name/domain membership controls. Successful domain join also requires the correct edition, network/DNS reachability and authorized credentials.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-49",
+    "topicId": "core2-assessment-support",
+    "examCodes": [
+      "220-1202"
+    ],
+    "front": "Task Manager user sessions — explain the decision",
+    "back": "Task Manager’s Users view shows signed-in users and their associated activity. The Performance tab provides resource graphs; it answers a different question.",
+    "weak": false
+  },
+  {
+    "id": "fc-c2-assessment-50",
+    "topicId": "core1-ch2",
+    "examCodes": [
+      "220-1201"
+    ],
+    "front": "RAID 5 is supplemental Core 1 storage — explain the decision",
+    "back": "Conventional RAID 5 uses distributed parity and tolerates one member failure. This is supplemental Core 1 storage context. Degraded/rebuild availability depends on the controller and workload; RAID is not backup.",
     "weak": false
   }
 ]

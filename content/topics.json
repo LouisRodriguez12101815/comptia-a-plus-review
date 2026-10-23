@@ -629,7 +629,7 @@
             "items": [
               "Processor: 1.0 GHz or faster, 2 cores minimum.",
               "RAM: 4 GB minimum (8 GB recommended).",
-              "Storage: 64 GB minimum (CompTIA spec; Microsoft marketing numbers can be lower).",
+              "Storage: 64 GB or larger device is the published Windows 11 minimum; updates and workloads can require more free space.",
               "Display: 720p, 9\" minimum. Firmware: UEFI with Secure Boot capable."
             ]
           }
@@ -642,7 +642,7 @@
           {
             "type": "bullets",
             "items": [
-              "Home: local accounts only, no domain join, no BitLocker, no Remote Desktop host.",
+              "Windows Home supports Microsoft and local accounts. It cannot join an AD domain or host incoming RDP sessions. Full BitLocker management is edition-dependent; eligible Home devices can support Device Encryption.",
               "Pro: domain join, BitLocker, Remote Desktop, Group Policy.",
               "Enterprise: domain-oriented, full feature set.",
               "Windows 11 is 64-bit.",
@@ -880,8 +880,8 @@
           {
             "type": "bullets",
             "items": [
-              "Insider Program: not on Home. Supported on Pro, Education, Enterprise.",
-              "Do not pick “General Availability” as the branch name on this material. Semi-Annual Channel = regular public. LTSC = long-term enterprise. Insider = preview.",
+              "Windows Insider preview participation is not categorically prohibited on Home. Check current edition/build, hardware, account and channel requirements.",
+              "Windows 11 uses annual feature-update servicing and monthly quality updates. General availability is production release context; Insider provides previews. Retired Windows 10 channel labels are historical, not current Windows 11 rules.",
               "Security updates fix vulns (highest priority). Critical = major bugs. Feature updates bump version (21H2 → 22H2). Quality rollups = monthly cumulative. Optional = drivers/extras.",
               "32-bit → 64-bit is clean install only. No in-place, no intermediate stepping stone."
             ]
@@ -962,7 +962,7 @@
                 "IP, DHCP server, DNS"
               ],
               [
-                "ipconfig /release && /renew",
+                "ipconfig /release && ipconfig /renew",
                 "New DHCP lease"
               ],
               [
@@ -1026,7 +1026,7 @@
           {
             "type": "bullets",
             "items": [
-              "Antivirus definitions: daily, not weekly. New malware is constant.",
+              "Keep antimalware security intelligence current using automatic updates and organizational policy; do not treat once daily as a universal sufficient interval.",
               "SFC repairs system files. regedit edits the registry. Do not use regedit to “fix” SFC-class corruption.",
               "Unactivated Windows: personalization (wallpaper) limited. Apps, updates, and browsing still work."
             ]
@@ -1040,7 +1040,7 @@
           {
             "type": "bullets",
             "items": [
-              "Tabs: Processes, Performance, App History, Startup, Services, Details.",
+              "Task Manager views include Processes, Performance, App history, Startup apps, Users, Details and Services; naming/layout varies by version. Supported GPU data can appear in Performance.",
               "High CPU/RAM: identify in Processes, end or uninstall. 100% disk: check indexing, search, failing HDD, or missing TRIM on SSD. Network spike: identify the process.",
               "Battery drain: limit background apps. Overheating can throttle or shut down. WWAN is cellular; Wi-Fi is local wireless. Auto-connect to open Wi-Fi is a risk."
             ]
@@ -1347,12 +1347,12 @@
               "2. A = IPv4. AAAA = IPv6.",
               "3. IP works, name fails = DNS. Neither works = network.",
               "4. tracert = path. pathping = path + loss.",
-              "5. RAID 5 cannot be used during rebuild (this guide). RAID 10 can.",
+              "5. Conventional RAID 5 has one-drive failure tolerance; degraded/rebuild availability depends on the controller and workload. It has no remaining complete-drive failure tolerance after one member fails.",
               "6. TPM 2.0 is mandatory for Windows 11.",
               "7. Wall = AC, PC = DC, PSU converts AC→DC.",
               "8. Workstation SMB cap = 20 connections.",
               "9. 169.254.x.x = APIPA = DHCP failed.",
-              "10. Antivirus definitions update daily, not weekly."
+              "10. Keep antimalware security intelligence current using the supported automatic-update process and organizational policy."
             ]
           }
         ]
@@ -1426,7 +1426,7 @@
             "rows": [
               [
                 "DHCP failed",
-                "ipconfig /release && /renew"
+                "ipconfig /release && ipconfig /renew"
               ],
               [
                 "Can't resolve names",
@@ -7454,6 +7454,2115 @@
               "Athena queries data in S3 with SQL.",
               "Lake Formation helps build and govern data lakes."
             ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-secure-architectures",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Domain 1 — Design Secure Architectures",
+    "chapter": "SAA-C03 · Secure",
+    "summary": "Secure access, workload protection, network boundaries, encryption, and data controls for the 30% Secure Architectures domain.",
+    "sections": [
+      {
+        "id": "access",
+        "title": "Secure access patterns",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Prefer federated workforce access and roles over creating unnecessary long-lived IAM users.",
+              "Use temporary credentials for applications, automation, and cross-account access.",
+              "Apply least privilege and use explicit denies or service-control guardrails where the requirement calls for centralized restrictions.",
+              "Use resource policies where supported to grant controlled cross-account or service access.",
+              "Permissions boundaries do not grant permissions. Apply the identity-policy intersection model, then evaluate direct resource-policy grants by principal type; a same-account grant to a user ARN or role-session ARN can bypass an implicit boundary deny, but not an applicable explicit deny."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "workload",
+        "title": "Protect workloads and network boundaries",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Architecture direction"
+            ],
+            "rows": [
+              [
+                "Private AWS service access from a VPC",
+                "VPC endpoint / PrivateLink where supported"
+              ],
+              [
+                "Filter traffic at resource ENI",
+                "Security group"
+              ],
+              [
+                "Subnet-level allow and deny",
+                "Network ACL"
+              ],
+              [
+                "Filter HTTP/S requests",
+                "AWS WAF"
+              ],
+              [
+                "DDoS protection",
+                "AWS Shield"
+              ],
+              [
+                "Detect suspicious account/workload activity",
+                "GuardDuty"
+              ],
+              [
+                "Assess supported workloads for vulnerabilities",
+                "Inspector"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "data",
+        "title": "Data security controls",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Encrypt data at rest with service-supported KMS integration when key governance is required.",
+              "Use TLS for data in transit.",
+              "Secrets Manager is for secrets such as database credentials; KMS is for cryptographic keys.",
+              "S3 Block Public Access, bucket policies, access points, and object ownership settings should reflect the intended access model.",
+              "Classify sensitive data and use Macie where S3 sensitive-data discovery is required."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "logging",
+        "title": "Detective and governance controls",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CloudTrail records API activity, Config evaluates configuration state, CloudWatch provides metrics/logs/alarms, Security Hub aggregates security findings, and centralized logging supports investigation. The exam often asks which control is preventive, detective, or corrective."
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-1-1",
+        "title": "1.1 — Evaluate a complete authorization request",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Identify the principal (human, role or role session), action, resource, account boundary and conditions before evaluating policy. Federate workforce access where appropriate; use roles/STS for temporary workload credentials.",
+              "An identity-policy allow is not sufficient when an applicable explicit deny, SCP, boundary or session constraint prevents it. Boundaries/SCPs do not grant access. Direct same-account user/session resource grants have documented implicit-deny exceptions; key policies and service rules still matter.",
+              "For cross-account role use, the target role trust permits the source principal, the caller has sts:AssumeRole permission and the assumed role has required resource permissions. Control Tower and Organizations provide multi-account governance; choose the least privilege that matches the workload."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A workload in Account A must read a bucket in B with temporary credentials. The role in B has s3:GetObject permissions but no trust for A. What is missing? Choose An appropriate trust relationship plus caller sts:AssumeRole permission. Role resource permissions describe what the assumed role can do; trust/caller permissions allow assumption. Public access violates the intended restricted design. Boundaries and SCPs do not grant role trust or resource access."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Trace caller identity, trust policy, assumed session, role permissions, bucket policy and any KMS key policy. Add an explicit deny and explain its effect; then distinguish a role ARN grant from a session ARN grant."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-1-2",
+        "title": "1.2 — Secure the request path and application identity",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Separate public entry points, private application tiers and data stores. Security groups permit required resource flows; NACLs evaluate ordered stateless subnet rules including return traffic. A private subnet name or missing public IPv4 is not proof of isolation for every address family.",
+              "Use supported endpoints for private service access, selecting gateway versus interface endpoints deliberately. Endpoint policies, IAM and resource policies work together. Direct Connect is not default encryption; VPN/TLS/MACsec requirements must be evaluated separately.",
+              "WAF filters supported HTTP/S attacks, Shield addresses DDoS, GuardDuty detects threats, Inspector assesses vulnerabilities and Cognito can provide application user identity. These controls solve separate problems; workload credentials belong in suitable role/secret mechanisms."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A private application needs frequent S3 access without NAT processing. Its users still require application authentication. Which design addresses both without conflating them? Choose An S3 gateway endpoint with appropriate policies, plus an application identity/authentication design. A gateway endpoint changes the S3 network path; it does not authenticate application users or grant all data access. IAM/resource policies and user identity remain separate. Public buckets and unencrypted-private assumptions do not meet the stated design."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Draw a complete client-to-database path, labeling TLS termination, user authentication, service role, endpoint access and network rules. Explain why a threat-detection finding is not a preventive access policy."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-1-3",
+        "title": "1.3 — Keys, retention, recovery and sharing",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "KMS key policies, IAM permissions and encryption context/conditions determine key use; encrypting data does not neutralize an overly broad read permission. Plan key rotation/lifecycle and certificate renewal; ACM TLS certificates serve a different role from application secrets.",
+              "S3 Block Public Access, ownership and resource policies restrict access. A presigned URL is transferable bearer access within the signing principal permissions and credential lifetime, not recipient-bound identity. Use a separate authentication/control design if sharing must be nontransferable.",
+              "Versioning preserves previous versions; replication needs both buckets versioned, permission/encryption setup and status validation. Existing objects need a backfill strategy. Backup, deletion recovery and Object Lock retention are distinct requirements; test recovery with the intended permissions."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A compliance requirement says archived objects must not be deletable before their retention date, even by ordinary administrators. Which design should be evaluated? Choose Appropriate S3 Object Lock retention configuration and controlled administration, with backup/restore validation. Object Lock provides retention controls suited to the specified mode/permissions. Lifecycle schedules storage actions, replication makes copies and presigned URLs authorize requests; none alone guarantees immutable retention. Evaluate governance versus compliance mode and the applicable legal requirements."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Build a source/destination retention-and-access matrix: writer, reader, replicator, key administrator and recovery operator. Test overwrite, ordinary delete, explicit version delete and restore in a permitted disposable environment."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-resilient-architectures",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Domain 2 — Design Resilient Architectures",
+    "chapter": "SAA-C03 · Resilient",
+    "summary": "Loose coupling, multi-AZ design, backups, queues, health checks, failover, and disaster-recovery patterns for the 26% Resilient Architectures domain.",
+    "sections": [
+      {
+        "id": "decouple",
+        "title": "Scale independently and decouple",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use SQS to buffer work between producers and consumers and absorb traffic bursts.",
+              "Use SNS when one event must fan out to multiple subscribers.",
+              "Use EventBridge for event routing across sources and targets.",
+              "Keep application tiers stateless where possible so instances can be replaced or scaled horizontally.",
+              "Use managed services and asynchronous workflows to reduce dependencies between components."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ha",
+        "title": "High availability and fault tolerance",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Risk",
+              "Design response"
+            ],
+            "rows": [
+              [
+                "Single EC2 instance failure",
+                "Auto Scaling group with multiple instances"
+              ],
+              [
+                "Single AZ failure",
+                "Deploy across multiple AZs"
+              ],
+              [
+                "Database AZ failure",
+                "RDS/Aurora Multi-AZ design"
+              ],
+              [
+                "Endpoint failure",
+                "Health checks and failover routing/load balancing"
+              ],
+              [
+                "Regional disaster",
+                "Multi-Region DR pattern appropriate to RTO/RPO"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dr",
+        "title": "Backup and disaster recovery",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Choose a recovery design from business RTO and RPO. Backups generally cost less but recover more slowly; warm standby or active/active designs cost more but can recover faster. Replication improves recovery options but does not replace backup or protection against logical corruption."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Pattern",
+              "Tradeoff"
+            ],
+            "rows": [
+              [
+                "Backup and restore",
+                "Lowest steady cost, highest recovery time"
+              ],
+              [
+                "Pilot light",
+                "Core services kept ready; scale during recovery"
+              ],
+              [
+                "Warm standby",
+                "Reduced-capacity environment already running"
+              ],
+              [
+                "Multi-site active/active",
+                "Fastest failover, highest cost and complexity"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "limits",
+        "title": "Design for failure and service limits",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Architectures should anticipate service quotas, retry transient failures with appropriate backoff, use idempotent operations where possible, and avoid retry storms. Health checks must measure the user-facing dependency that actually determines availability."
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-2-1",
+        "title": "2.1 — Loose coupling with correct failure semantics",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use queues to absorb bursts and separate producer/worker scaling. SQS standard queues are at-least-once with best-effort ordering; processing must be idempotent. Visibility hides in-flight work temporarily, and successful processing must be acknowledged/deleted.",
+              "SNS fans out to subscribers; EventBridge routes events; Step Functions orchestrates stateful workflows; API Gateway supplies managed API entry capabilities. Choose synchronous response, queue, event bus or orchestration from required behavior, not a shared event keyword.",
+              "Stateful sessions/files on one instance prevent easy horizontal replacement. Externalize appropriate state, choose container/serverless services based on runtime/operational constraints, and scale workers against backlog and processing time rather than an unrelated metric."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A worker commits an order side effect but crashes before deleting its SQS message. The order must not be charged twice after retry. What is required? Choose An idempotency key or equivalent durable deduplication around the side effect. At-least-once delivery and crash windows require application idempotency. Visibility can reduce concurrent processing but is not exactly-once protection. Queue access and ALB health do not atomically deduplicate the business operation."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Walk through publish, receive, visibility expiry, side effect, acknowledgement and DLQ redrive. Inject failure before and after the side effect and identify which durable record prevents duplicate business effects."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-2-2",
+        "title": "2.2 — Failure domains, health and recovery evidence",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Deploy independent serving capacity across AZs, configure load-balancer target health and ASG ELB health checks where application failures should cause replacement, and maintain enough surviving capacity. ALB can fail open when all targets are unhealthy; a health check is not a universal safety barrier.",
+              "Single-standby RDS Multi-AZ, readable Multi-AZ clusters and Aurora replicas have different read/failover mechanics. Match recovery behavior, client reconnects, replication and backup to the database deployment rather than using one standby slogan.",
+              "Choose DR from measured RTO/RPO and test data recovery, dependencies, credentials, quotas, routing and startup order. Backup/restore, pilot light, warm standby and active/active have relative cost/recovery tradeoffs, not universal minute guarantees. Workload metrics, logs and traces supply evidence of recovery."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An ALB detects unhealthy application targets, but their EC2 status checks pass and the ASG never replaces them. What configuration should be reviewed? Choose ASG Elastic Load Balancing health-check integration and grace-period behavior. Target-group application checks and ASG replacement checks are separate. Enable the appropriate ELB health checks and grace period, and verify replacement behavior. Storage lifecycle, database replicas and audit logging do not establish that integration."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Test instance loss, application-only failure, AZ loss and all-target failure separately. Record recovery time and validate the data recovery point, then compare both against the business targets."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-high-performing",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Domain 3 — Design High-Performing Architectures",
+    "chapter": "SAA-C03 · High Performance",
+    "summary": "Choose performant storage, compute, database, network, caching, and data-ingestion architectures for the 24% High-Performing domain.",
+    "sections": [
+      {
+        "id": "storage",
+        "title": "High-performing storage",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Direction"
+            ],
+            "rows": [
+              [
+                "Massive object scale / parallel access",
+                "S3"
+              ],
+              [
+                "Low-latency block I/O",
+                "Appropriate EBS volume type and provisioned performance"
+              ],
+              [
+                "Shared Linux file access",
+                "EFS with performance/throughput mode matched to workload"
+              ],
+              [
+                "HPC parallel file system",
+                "FSx for Lustre where appropriate"
+              ],
+              [
+                "Frequently accessed hot data",
+                "Caching layer where appropriate"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "compute",
+        "title": "Compute performance and elasticity",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Choose instance families based on compute, memory, storage, accelerator, and network requirements.",
+              "Use Auto Scaling to match capacity to load and load balancers to distribute requests.",
+              "Use Lambda for suitable event-driven workloads where scaling without server management is valuable.",
+              "Use placement groups, enhanced networking, or EFA for specialized low-latency/high-throughput EC2 workloads."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "database",
+        "title": "Database performance",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use read replicas for relational read scaling and caching for repeated hot reads.",
+              "Choose DynamoDB keys that distribute traffic and satisfy access patterns; add indexes deliberately.",
+              "DAX can reduce DynamoDB read latency for cacheable workloads.",
+              "Aurora read replicas and reader endpoints can scale reads for compatible relational workloads."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "network-data",
+        "title": "Network and ingestion performance",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Likely service/pattern"
+            ],
+            "rows": [
+              [
+                "Cache static/dynamic content close to users",
+                "CloudFront"
+              ],
+              [
+                "Improve global network path to regional endpoints",
+                "Global Accelerator"
+              ],
+              [
+                "Real-time streaming records with custom consumers",
+                "Kinesis Data Streams"
+              ],
+              [
+                "Managed streaming delivery to destinations",
+                "Data Firehose"
+              ],
+              [
+                "Ad hoc SQL on S3",
+                "Athena"
+              ],
+              [
+                "Reduce repeated application/database work",
+                "Cache with CloudFront, ElastiCache, DAX, or application cache as appropriate"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-1",
+        "title": "3.1 — Storage access, throughput and capacity",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "EBS provides persistent AZ-scoped block volumes; volume type and provisioned IOPS/throughput must match the instance and workload. A volume remaining after stop differs from DeleteOnTermination behavior. Instance store is scratch storage that can be lost on stop/termination or host loss.",
+              "EFS provides shared Linux/POSIX-style access; choose Regional versus One Zone, throughput and performance options against requirements. FSx alternatives target Windows, Lustre, ONTAP or OpenZFS workloads; a shared-file requirement does not automatically fit a block volume.",
+              "S3 handles objects with key-based access; multipart/parallel access, object size and request patterns affect performance. DataSync and hybrid gateways solve movement/interface needs rather than making every storage service interchangeable. Measure IOPS, throughput, latency and concurrency separately."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Two application servers in different AZs need simultaneous access to the same Linux file tree. They cannot be changed to use an object API. Which initial design is most appropriate? Choose A Regional EFS file system with suitable mount targets and throughput settings. Regional EFS fits shared cross-AZ Linux file access. EBS attachments are AZ-scoped, instance stores do not synchronize automatically and object interfaces are not identical to POSIX file semantics."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: For a small-I/O database and a large sequential file workload, separate required IOPS from MB/s. Check instance limits as well as storage limits and compare persistent, shared and disposable storage choices."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-2",
+        "title": "3.2 — Choose and scale compute for the bottleneck",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Match EC2 family/size to CPU, memory, storage, network and accelerator demand. Horizontal scaling needs a partitionable/stateless design; vertical scaling changes one node and retains its failure boundary. Benchmark before assuming the largest size is efficient.",
+              "Target tracking needs a metric that changes proportionally with capacity, such as a suitable average utilization or request metric. Step and scheduled scaling fit different triggers. For queues, consider backlog per worker and processing duration; also plan warmup, scale-in and service quotas.",
+              "For Lambda, consider memory/CPU coupling, concurrency, execution limits and downstream connection pressure. ECS/EKS orchestrate containers; Fargate supplies supported serverless task compute. Batch/EMR target suitable batch/distributed processing. Placement/EFA choices have supported-instance and topology constraints."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A worker fleet is CPU-idle while processing a growing backlog of slow external API calls. Which scaling signal best reflects the business bottleneck? Choose A suitable backlog-per-worker/processing-time metric, with downstream rate limits considered. Backlog and processing time capture unmet work even when the process waits on I/O. Scaling must respect downstream capacity and rate limits. CPU alone can remain low; identity count and bucket age do not measure work demand."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Choose metrics and scale limits for CPU-bound, I/O-bound and scheduled workloads. Explain how adding workers can worsen throttling if a downstream API is already saturated."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-3",
+        "title": "3.3 — Database access patterns, consistency and connections",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Relational replicas offload suitable reads but may lag. RDS Proxy pools supported connections; reader endpoints distribute connections rather than guaranteeing equal query cost. Distinguish single-standby Multi-AZ, readable Multi-AZ clusters and Aurora read/failover roles.",
+              "DynamoDB partition keys must spread load and support access patterns. GSIs add alternate keys and use eventually consistent reads; LSIs have creation/key constraints. Strong and eventual reads and write item sizes consume capacity differently; round per-request size requirements before estimating provisioned demand.",
+              "On-demand adapts capacity but retains warm-throughput/partition/table limits. DAX accelerates eventual cache hits, not strongly consistent reads. ElastiCache reduces repeated work where freshness requirements permit. Database-engine and migration choices require schema, transaction, query and compatibility analysis."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A user must immediately read a just-written DynamoDB value with a strong consistency requirement. Which design avoids relying on stale cached data? Choose A supported strongly consistent table read rather than assuming a DAX cache hit is strongly consistent. Use a supported strong read for that requirement. DAX eventual caches and GSIs do not guarantee the same freshness, and asynchronously replicated paths may lag. A fast response is not a consistency guarantee."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Estimate capacity for mixed item sizes and read consistency, then change the access pattern to a hot partition. Explain when a cache, a GSI, a different key or a relational replica addresses the actual bottleneck."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-4",
+        "title": "3.4 — Network topology, transport and DNS behavior",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Plan nonoverlapping address ranges, AZ subnets and route tables, including return paths and IPv4/IPv6 differences. Select gateway/interface endpoints, PrivateLink, peering or Transit Gateway from service exposure versus network-routing requirements.",
+              "ALB serves HTTP-layer routing; NLB serves TCP/UDP/TLS connection requirements; GWLB supports appropriate virtual network-appliance insertion. CloudFront caches/delivers HTTP content, while Global Accelerator supplies static anycast entry and AWS-network routing to supported endpoints.",
+              "Route 53 weighted routing selects DNS responses probabilistically, with caching effects; latency routing uses AWS latency information, not simply map distance. Multivalue can return up to eight records and depends on health-check configuration, including an all-unhealthy fallback. DNS TTL limits how quickly clients observe failover."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A global UDP application requires static anycast entry addresses and routing to healthy regional endpoints. It does not use HTTP content caching. Which option fits? Choose Global Accelerator with supported regional endpoints. Global Accelerator addresses supported TCP/UDP application entry and network paths. CloudFront and S3 Transfer Acceleration are not generic UDP proxies; DNS geolocation selects answers rather than providing the stated accelerator capability."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare a public HTTP site, UDP game endpoint and security-appliance path. Include addressing, health, routing, TLS/transport and DNS caching in the decision rather than choosing by service familiarity."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-5",
+        "title": "3.5 — End-to-end ingestion and transformation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Kinesis Data Streams supports streaming records consumed by applications; ordering is scoped to shard/partition-key sequencing, with producer retry and consumer checkpoint behavior to design. Firehose supplies managed buffered delivery and optional transformations to supported destinations.",
+              "Use Glue for suitable integration, transformation and catalog work; EMR for appropriate distributed processing; Athena for queries and BI tools for visualization. Partitioned/columnar formats can reduce scanned data, but conversion and partition strategy must preserve schema and query requirements.",
+              "DataSync, Storage Gateway and supported transfer services address different movement and interface needs. Secure ingestion endpoints, roles, encryption, data-lake access and catalog governance. Design throughput, buffering, latency, replay and malformed-record handling together."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Sensors require custom per-device stream processing and replay, followed by analytics in S3. Which design best preserves the processing requirement? Choose Kinesis Data Streams with device partition keys and checkpointed consumers, followed by suitable S3 delivery/analytics. A stream and consumers provide custom processing/replay within configured retention and per-key ordering design. Managed delivery is useful downstream but does not replace all stream-consumer semantics. Email and overwrites do not satisfy the data pipeline."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Sketch ingestion, authentication, buffer, transformation, error path, S3 partitioning, catalog, query and dashboard. Compare .csv and columnar output for a specific query and test replay without duplicate side effects."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-cost-optimized",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA Domain 4 — Design Cost-Optimized Architectures",
+    "chapter": "SAA-C03 · Cost",
+    "summary": "Storage lifecycle, compute commitments, serverless, database sizing, data-transfer design, and cost visibility for the 20% Cost-Optimized domain.",
+    "sections": [
+      {
+        "id": "storage-cost",
+        "title": "Cost-optimize storage",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Match S3 storage class to access frequency, retrieval-time tolerance, object size, and retention period.",
+              "Use lifecycle policies to transition or expire data automatically.",
+              "Delete unattached EBS volumes and obsolete snapshots according to retention policy.",
+              "Use the storage model that meets the requirement instead of defaulting to the highest-performance tier."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "compute-cost",
+        "title": "Cost-optimize compute",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Workload",
+              "Cost direction"
+            ],
+            "rows": [
+              [
+                "Short-lived or unpredictable",
+                "On-Demand / serverless as appropriate"
+              ],
+              [
+                "Steady predictable usage",
+                "Savings Plans or eligible Reserved pricing"
+              ],
+              [
+                "Fault-tolerant interruptible",
+                "Spot"
+              ],
+              [
+                "Variable demand",
+                "Auto Scaling to avoid idle capacity"
+              ],
+              [
+                "Event-driven sporadic execution",
+                "Lambda can reduce idle-server cost"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "database-cost",
+        "title": "Cost-optimize databases",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Right-size RDS instances/storage and use suitable purchase models where available.",
+              "DynamoDB on-demand can avoid capacity planning for unpredictable workloads; provisioned capacity can be cost-effective when usage is predictable.",
+              "Archive infrequently accessed data outside expensive primary database storage when the application permits.",
+              "Caching can reduce expensive repeated database work, but only when cache cost and consistency needs make sense."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "network-cost",
+        "title": "Cost-optimize network architecture",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Data transfer often changes the cheapest architecture. Keep high-volume traffic local to an AZ/Region when requirements allow, use CloudFront to reduce repeated origin transfer for cacheable content, avoid unnecessary NAT gateway paths for AWS-service traffic by using appropriate VPC endpoints, and compare Direct Connect/VPN choices against throughput and business needs."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "SAA cost questions frequently hide the cost driver in data transfer or idle capacity rather than in the obvious service price."
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-1",
+        "title": "4.1 — Price the complete storage lifecycle",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Compare object/file/block access requirements before cost. Include stored bytes, provisioned performance, requests, transitions, retrieval, minimum-duration/object-size rules, replicas and transfers. The cheapest GB price may violate retrieval or durability requirements.",
+              "Choose lifecycle transitions by eligible object/version age and retention needs. Handle noncurrent versions and multipart leftovers deliberately. Intelligent-Tiering monitors eligible access patterns; archive tiers can require restore steps. Requester Pays changes who is billed for supported request/transfer charges, not ownership or authorization.",
+              "Size persistent storage and backup retention from recovery/compliance needs. Delete only genuinely unused volumes/snapshots under policy; snapshot dependencies mean billed savings may differ from visible snapshot count. Compare DataSync/transfer/gateway options against scale, bandwidth and change rate."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team archives small objects and retrieves them frequently. Its storage bill falls but request/retrieval charges rise sharply. What did the design omit? Choose Object size, access frequency, retrieval and minimum-duration/request economics. Storage-class selection requires the full access and lifecycle cost, including small-object and retrieval constraints. Identity-group count does not explain it; archives are not universally instant/free, and block storage is not a blanket fix for an object workload."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Write a symbolic monthly cost comparison for hot storage versus an archival tier, including a retrieval event and early deletion. Explain which measurements determine the break-even decision."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-2",
+        "title": "4.2 — Commit the baseline and scale the variable work",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Right-size and measure before choosing commitments. Use eligible Savings Plans/Reserved discounts for a stable baseline; On-Demand for flexibility; Spot for interruption-tolerant work after accounting for capacity/restart behavior. A discount is not a capacity guarantee.",
+              "Scale off idle capacity, schedule suitable non-production environments and compare serverless versus containers/VMs for actual runtime, concurrency and operational needs. Lambda is not automatically cheapest at every utilization, and Dedicated Hosts serve tenancy/license requirements rather than universal savings.",
+              "Compute topology also determines load-balancing, network and resilience costs. Select ALB/NLB/GWLB and horizontal/vertical/suspend/hibernate choices from protocol, state and availability requirements. Outposts/hybrid choices add operational and placement considerations."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An application has a measured stable baseline plus short seasonal peaks, and cannot tolerate interruption for customer transactions. Which purchase strategy should be evaluated? Choose A suitable baseline commitment with elastic On-Demand capacity for peaks. Commitment on measured baseline plus flexible peak capacity matches predictable and variable demand. Committing to peaks risks unused spend; Spot-only ignores interruption constraints; dedicated tenancy is not a universal cost discount."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Separate baseline and peak spend, include load balancer/transfer/operational costs, and compare a scheduled development environment with a continuously required production environment."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-3",
+        "title": "4.3 — Database cost without losing correctness",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Choose engine/model from transactions, access patterns, schema, scale and compatibility; compare relational, key-value/document, time-series and analytical workloads deliberately. A low instance rate is not a reason to select an incompatible data model.",
+              "For RDS/Aurora evaluate instance/storage right-sizing, appropriate purchase models, replicas, connections and retention. For DynamoDB compare on-demand/provisioned demand economics, key distribution, indexes and cache cost; a cache adds its own operations and consistency requirements.",
+              "Backups, cross-Region copies, retention and migrations all cost money but meet different requirements. Heterogeneous migration needs schema/application validation. Estimate the cost of read scaling, data retention and recovery before eliminating safeguards for savings."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An RDS instance averages low CPU, but the team has not measured memory, I/O latency, connections or peak demand. What is the best cost-optimization next step? Choose Measure the full workload and evaluate a smaller suitable configuration against peaks and recovery requirements. Low average CPU is only one signal. Memory, I/O, connections, peaks and resilience constrain safe rightsizing. Removing recovery controls or adding an unvalidated cache can change correctness or availability rather than remove waste."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare two database configurations using peak demand, storage growth, backup retention and recovery goals. State when an index/cache/replica lowers total work and when it adds unnecessary cost."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-4",
+        "title": "4.4 — Network cost follows the traffic path",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Identify bytes and paths: same-AZ, cross-AZ, cross-Region, service endpoint, NAT, dedicated link and internet delivery. Data-transfer pricing is service-specific; do not assume all same-Region traffic is free or all cross-AZ paths charge identically.",
+              "An S3 gateway endpoint can avoid NAT processing for eligible traffic without gateway-endpoint hourly/data fees. Interface endpoints have different charging/availability properties. For zonal NAT compare same-AZ egress per AZ with a shared dependency; regional NAT is a distinct current multi-AZ option.",
+              "Compare Direct Connect, VPN and internet designs using bandwidth, encryption, redundancy and business targets. CloudFront may reduce repeated origin work/transfer, but include CDN/request/invalidations and cache hit behavior. Do not minimize transfer by removing required failure isolation."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Private instances send large S3 volumes through a NAT gateway. The workload must keep S3 access private and maintain its AZ-resilience design. What should be evaluated first? Choose S3 gateway endpoints with the relevant subnet route-table associations and access policies. Gateway endpoints can remove eligible S3 traffic from NAT without gateway-endpoint charges. Validate route/policy scope. A single zonal NAT can introduce an AZ dependency, public access changes authorization, and interface endpoint costs are different."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Draw each byte path and cost category before/after the endpoint change. Include cross-AZ dependencies and check service pricing rather than using a universal transfer-rate assumption."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-os",
+    "group": "core2",
+    "concept": "operating-systems",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Operating systems and tools",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 1–12: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-01",
+        "title": "1 — Application, OS and driver roles",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An application performs the user-facing task; the OS supplies shared services."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Drivers connect the OS to hardware; a filesystem organizes stored data."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Change the symptom to missing device support. Which layer should you investigate?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-02",
+        "title": "2 — ChromeOS can work offline",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "ChromeOS supports offline-capable applications and prepared local data."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Offline availability depends on the app and file configuration; Linux has roles beyond desktops."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Identify what must be prepared before taking a cloud document offline."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://support.google.com/chromebook/answer/3214688?hl=en-GB"
+          }
+        ]
+      },
+      {
+        "id": "assessment-03",
+        "title": "3 — Source code and compilation",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Source code is input to compilation in this workflow."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Calling source code precompiled machine instructions confuses the input with the output."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How does an interpreted script differ from this simplified compiled workflow?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-04",
+        "title": "4 — Mobile operating systems",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Android is a mobile operating system in the smartphone scenario."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An OS category does not imply that every application or feature requires cloud access."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Contrast the support needs of a mobile OS with a server workload."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-05",
+        "title": "5 — Preview versus production releases",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Windows Insider distributes preview builds for evaluation."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Preview channels and eligibility change; use current guidance and keep a recovery plan instead of old Windows servicing names."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Would the same risk be appropriate for a critical production workstation? Explain."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://learn.microsoft.com/en-us/windows-insider/get-started"
+          }
+        ]
+      },
+      {
+        "id": "assessment-06",
+        "title": "6 — Prepare an image before capture",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Sysprep /generalize prepares a reference installation by removing machine-specific information."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A WIM is an image format; capture and deployment are separate operations. Use supported imaging procedures."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Place generalization, offline capture and target deployment in order."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.2. References: https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/sysprep--generalize--a-windows-installation?view=windows-11"
+          }
+        ]
+      },
+      {
+        "id": "assessment-07",
+        "title": "7 — Boot configuration data",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "BCD holds Windows boot configuration used by the boot manager."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "UEFI and legacy boot components differ; hibernation resume is not the same as a normal OS boot."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which evidence would distinguish a missing boot entry from an application startup failure?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.2. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-08",
+        "title": "8 — Static IP configuration paths",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Windows network Settings can configure manual IP assignment for an adapter."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Adapter properties reached through Control Panel can also configure IP; a question must constrain the path if only one answer is intended."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: List the IP, mask/prefix, gateway and DNS information you would verify after the change."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.7. References: https://support.microsoft.com/en-us/windows/experience/connectivity-networking/essential-network-settings-and-tasks-in-windows"
+          }
+        ]
+      },
+      {
+        "id": "assessment-09",
+        "title": "9 — Fragmentation is still possible",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "ext4 uses allocation strategies to improve data locality and reduce fragmentation."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "These mechanisms are not a guarantee of automatic, continuous defragmentation."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Explain why avoiding fragmentation is different from guaranteeing contiguous storage."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.1. References: https://www.kernel.org/doc/html/latest/filesystems/ext4/allocators.html"
+          }
+        ]
+      },
+      {
+        "id": "assessment-10",
+        "title": "10 — Update macOS through Software Update",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Current macOS updates are offered through Software Update in System Settings."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "App Store app updates are a different task; older macOS versions may use different paths."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What compatibility and backup checks belong before a major upgrade?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.8. References: https://support.apple.com/en-us/108382"
+          }
+        ]
+      },
+      {
+        "id": "assessment-11",
+        "title": "11 — Finder manages files",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Finder is the standard macOS file-browsing interface."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Browsing a file is different from installing an OS update or managing firmware."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Choose a different macOS tool to inspect a process that consumes excessive CPU."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.8. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-12",
+        "title": "12 — Search names versus contents",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "grep -r searches matching text through files recursively."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "find traverses directories by default; -name matches entry names rather than searching each file’s contents."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Change the requirement to finding files whose names end in .log. Which tool and predicate fit?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.9. References: https://www.gnu.org/s/grep/manual/grep.pdf ; https://www.man7.org/linux/man-pages/man1/find.1.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-security",
+    "group": "core2",
+    "concept": "security",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Security controls and recovery",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 13–24: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-13",
+        "title": "13 — Password guessing",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Repeated candidate-password attempts are evidence of password guessing."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The log does not by itself prove successful access. Investigate outcomes and apply approved authentication protections."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What additional evidence would establish that an account was compromised?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.5. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-14",
+        "title": "14 — Biometrics and authentication factors",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A fingerprint is a biometric characteristic."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A PIN and password are both knowledge factors; a smart card/token is possession, not a biological characteristic."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why do two passwords not automatically provide two different authentication factors?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-15",
+        "title": "15 — Rootkit concealment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A rootkit is associated with concealed malicious presence or control."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A symptom is a clue, not proof; follow the incident workflow and use trusted inspection/recovery methods."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why might recovery from trusted media be needed when the running OS cannot be trusted?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-16",
+        "title": "16 — Physical security boundaries",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A fence creates a physical perimeter control."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Physical controls complement authentication and monitoring; a fence alone does not grant or verify digital access."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What control would verify identity at the building entrance?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-17",
+        "title": "17 — Metal-detector limits",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A metal detector detects metal under its operating conditions."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "It is not a universal weapon detector or a substitute for identity checks."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Name a risk this physical control does not address."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-18",
+        "title": "18 — Sync is not independent backup",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Synchronization coordinates selected data and may propagate deletion."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Recoverability depends on retention, versioning and backup configuration, not merely having two synced devices."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you verify that a deleted test file can actually be recovered?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.11. References: https://support.microsoft.com/en-us/onedrive/back-up-your-folders-with-onedrive"
+          }
+        ]
+      },
+      {
+        "id": "assessment-19",
+        "title": "19 — Firewall rules and tamper protection",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Advanced Security manages scoped firewall rules."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Defender Tamper Protection restricts unauthorized security-setting changes; it is not the tool for authoring firewall rules."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which profile, program, source and port restrictions should you verify before enabling a rule?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.2. References: https://learn.microsoft.com/en-us/defender-endpoint/tamper-protection-overview"
+          }
+        ]
+      },
+      {
+        "id": "assessment-20",
+        "title": "20 — Workstation hardening",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Hardening combines maintained software with restricted access and appropriate authentication."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Renaming an account alone does not prevent compromise; disabling protective controls weakens the baseline."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you verify that normal users can work without unnecessary administrator rights?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-21",
+        "title": "21 — File encryption versus volume encryption",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "EFS provides file-level encryption on supported Windows/NTFS configurations."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Do not rule out BitLocker solely because a TPM is absent: supported non-TPM configurations exist. Plan recovery of encryption credentials."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: When would volume-level BitLocker be the better match than EFS?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.2. References: https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/faq"
+          }
+        ]
+      },
+      {
+        "id": "assessment-22",
+        "title": "22 — Verify folder-backup configuration",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "OneDrive folder backup requires the relevant client, account and folder configuration."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A Microsoft account alone is not evidence that every file or folder is protected."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Create a harmless test file and describe how you would confirm upload and recovery."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.11. References: https://support.microsoft.com/en-us/onedrive/back-up-your-folders-with-onedrive"
+          }
+        ]
+      },
+      {
+        "id": "assessment-23",
+        "title": "23 — Built-in GPU performance monitoring",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Task Manager can display GPU data with supported hardware and drivers."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Third-party tools may add detail, but they are not always required. GPU support depends on the driver model."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you check if the GPU graph is absent?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.4. References: https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/"
+          }
+        ]
+      },
+      {
+        "id": "assessment-24",
+        "title": "24 — End malware removal with education",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "End-user education helps prevent recurrence after the required remediation and recovery steps."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Education is not a substitute for containment, removal, validation or the organization’s incident procedure."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Change the case to an organization-managed device. Who must approve recovery and communication?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.6. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-troubleshooting",
+    "group": "core2",
+    "concept": "troubleshooting",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Troubleshooting from evidence",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 25–30: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-25",
+        "title": "25 — Match Wi-Fi changes to evidence",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An alternative supported band may reduce the measured 2.4 GHz interference."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Range, obstructions and coverage still matter; 5 GHz is not a universal cure for disconnections."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What changes if the client is at the edge of coverage rather than near the AP?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.2. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-26",
+        "title": "26 — USB controller-resource troubleshooting",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "USB devices can share controller resources even across different physical ports."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Check power, bandwidth, controller topology and supported drivers; port generation/color alone does not establish the cause."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What evidence would instead suggest a power-budget problem?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-27",
+        "title": "27 — Virtual-machine clock synchronization",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Virtual timekeeping and pause/resume behavior can cause clock drift."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The correct time source depends on the configuration; domain members commonly use the domain hierarchy."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why can an inaccurate clock affect authentication and log correlation?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-28",
+        "title": "28 — Manage a Windows service",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The Services management console controls supported service operations."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Review dependencies and the failure cause; changing startup settings is different from restarting a running service."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you record if the service stops again immediately?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-29",
+        "title": "29 — Battery thermal hazards",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A damaged or overheated lithium-ion battery can present a serious thermal hazard."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Follow manufacturer and workplace handling/escalation guidance; do not puncture, charge or improvise a repair."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which approved channel handles safe isolation and disposal in your workplace?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-30",
+        "title": "30 — Shutdown evidence versus cause",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Unexpected-shutdown logs are evidence to correlate with other symptoms and records."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A shutdown event does not independently identify the root cause."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What additional evidence would support a power, thermal or driver hypothesis?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 3.1. References: https://learn.microsoft.com/en-us/troubleshoot/windows-server/performance/troubleshoot-unexpected-reboots-system-event-logs"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-remote-ai",
+    "group": "core2",
+    "concept": "reference",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Remote access, collaboration and AI",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 31–36: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-31",
+        "title": "31 — RDP transport and default port",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Direct RDP commonly uses TCP and UDP port 3389."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Gateways and configured ports can change the path; do not assume TCP is its only possible transport."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How does a Remote Desktop Gateway change the externally exposed path?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.9. References: https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/ports-used-by-rds"
+          }
+        ]
+      },
+      {
+        "id": "assessment-32",
+        "title": "32 — Batch-file comments",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "REM records a batch-file comment."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Comment syntax depends on the interpreter; PowerShell/Bash and JavaScript examples do not become cmd.exe comments."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which interpreter and comment syntax would apply to a .ps1 file?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.8. References: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/rem"
+          }
+        ]
+      },
+      {
+        "id": "assessment-33",
+        "title": "33 — Launch the RDP client",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "mstsc launches the Windows Remote Desktop Connection client."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Launching a client does not establish authorization, reachability or permission to control the target."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which target, network and permission checks belong before connecting?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.9. References: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc"
+          }
+        ]
+      },
+      {
+        "id": "assessment-34",
+        "title": "34 — Remote-access VPN",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A host-to-site VPN connects an individual remote client to the organization’s network."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A VPN does not remove endpoint, authentication or application-authorization requirements."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would the diagram change for a branch-office site-to-site VPN?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.9. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-35",
+        "title": "35 — Collaboration tools",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Videoconferencing is the relevant collaboration capability."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Platforms such as Teams/Zoom may also support chat, sharing and other features; one label does not exclude the others."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which meeting, sharing and privacy settings should the organizer verify?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.11. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-36",
+        "title": "36 — Verify AI-generated guidance",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AI-generated technical guidance needs independent validation and policy review."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Confidence and fluent language do not establish accuracy or permission; protect sensitive data."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you test a proposed command using disposable example data?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.10. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-safety",
+    "group": "core2",
+    "concept": "reference",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Safety, licensing and interference",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 37–42: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-37",
+        "title": "37 — Approved ESD controls",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Approved ESD equipment and handling procedures reduce damaging potential differences."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Hair restraint can address other hazards, but it does not replace ESD controls. Follow electrical-safety and equipment guidance."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Why must the approved servicing procedure be checked before connecting an ESD strap?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://www.ibm.com/docs/en/storage-networking?topic=sl-esd-precautions"
+          }
+        ]
+      },
+      {
+        "id": "assessment-38",
+        "title": "38 — Use the correct driver bit",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Use the matching driver type and size to avoid damaging the fastener or equipment."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Torx has a familiar six-lobed form; security variants can require a corresponding special bit."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What should you do when the specified fastener does not match your available tool?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://www.topura.co.jp/eng/product/torx.html"
+          }
+        ]
+      },
+      {
+        "id": "assessment-39",
+        "title": "39 — Trial licensing and open source",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Shareware commonly offers trial or limited use before purchase."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Open-source software can be used commercially under its license; price and licensing rights are separate questions."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which rights and restrictions would you check before installing software for a business?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.6. References: https://opensource.org/faq"
+          }
+        ]
+      },
+      {
+        "id": "assessment-40",
+        "title": "40 — ESD strap resistance",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Approved wrist straps commonly include a series safety resistor, often around one megaohm."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Use the manufacturer-approved equipment and bonding procedure; this is not a universal instruction for every grounding system."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Explain why a bare improvised wire is not an equivalent substitute."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://www.ibm.com/docs/en/storage-networking?topic=sl-esd-precautions"
+          }
+        ]
+      },
+      {
+        "id": "assessment-41",
+        "title": "41 — Choose PPE from the hazard",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "PPE and cleaning methods should match the actual hazard and approved procedure."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A filtration mask can be appropriate for airborne particles, but it is not a universal answer for every task."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would your preparation change for damaged batteries or hazardous toner?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.4. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-42",
+        "title": "42 — Microwave interference scope",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Microwave-related interference can affect 2.4 GHz Wi-Fi."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Validate timing, signal and band conditions; this is not a claim that every wireless failure or band has the same cause."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Design a comparison test that changes one relevant condition at a time."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 2.10. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-assessment-support",
+    "group": "core2",
+    "concept": "reference",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Assessment review: Support decisions and professionalism",
+    "chapter": "Core 2 · Assessment",
+    "summary": "Corrected assessment concepts 43–49: notes, retrieval cards, scenario questions, a recall drill and an interactive visual workshop.",
+    "sections": [
+      {
+        "id": "how-to-study",
+        "title": "Use the corrected assessment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "These are original practice variants based on the supplied assessment concepts, with misleading or outdated claims corrected. Predict the answer, explain the rejected choices, then attempt the changed-condition exercise. Recall scores do not establish exam readiness."
+          }
+        ]
+      },
+      {
+        "id": "assessment-43",
+        "title": "43 — Respect access authorization",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Visible credentials do not grant permission to use another person’s account."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The approved contact method may be a call, ticket or other channel; texting is not universally required."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How can an approved support account or supervised session avoid impersonating the user?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-44",
+        "title": "44 — Report accidental damage",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Honest communication and documented escalation preserve trust and support safe resolution."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Do not conceal damage or continue with a component known to be unsafe or faulty."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which ticket and inventory records should be updated?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-45",
+        "title": "45 — Communicate a changed estimate",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Communicate delays and revised expectations proactively."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An estimate is not permission to hide risk or mark unfinished work resolved."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you communicate if the next step depends on an uncertain parts delivery?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.7. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-46",
+        "title": "46 — Ticket intake depends on the workflow",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The correct intake channel follows the organization’s configured and accessible workflow."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Email, portals, staff entry and automated alerts have different uses; no one method is universally easiest."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: How would you handle a request containing sensitive data in the ticket body?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.1. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-47",
+        "title": "47 — Sandbox, rollout and backout",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Sandbox testing isolates evaluation; a backout plan explains how to reverse a failed change."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Blackout and backout are different terms. Approval, verification and recovery planning remain part of change control."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Name a measurable signal that should trigger rollback in a new deployment."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 4.2. References: https://lecbyo.files.cmp.optimizely.com/download/cefedfb2b8a511ef809306d06d323538"
+          }
+        ]
+      },
+      {
+        "id": "assessment-48",
+        "title": "48 — Rename and join an AD domain",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "System Properties provides computer-name/domain membership controls."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Successful domain join also requires the correct edition, network/DNS reachability and authorized credentials."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: What would you check if the domain name cannot be resolved?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.7. References: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain"
+          }
+        ]
+      },
+      {
+        "id": "assessment-49",
+        "title": "49 — Task Manager user sessions",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Task Manager’s Users view shows signed-in users and their associated activity."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "The Performance tab provides resource graphs; it answers a different question."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Which view would you use to examine GPU utilization rather than user sessions?"
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope: 220-1202 1.4. References: https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/"
           }
         ]
       }

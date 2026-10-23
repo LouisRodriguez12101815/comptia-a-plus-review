@@ -46,7 +46,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <section className="grid items-center gap-8 md:grid-cols-2">
         <div className="space-y-4">
           <p className="text-sm uppercase tracking-wide text-teal-300">{t("eyebrow")}</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white">CompTIA Review</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-white">Certification Review</h1>
           <p className="max-w-xl text-slate-300">
             {t("intro")}
           </p>

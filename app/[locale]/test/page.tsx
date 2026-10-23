@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/test">):
   };
 }
 
-const examCodes = ["220-1201", "220-1202", "n10-009"] as const;
+const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
 
 export default async function TestPage({ params, searchParams }: PageProps<"/[locale]/test">) {

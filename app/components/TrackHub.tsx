@@ -25,6 +25,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
   const workspaceLinks = track.focus ? [
     { label: t("workspaceOverview"), href: track.href },
+    ...(track.id === "core2" ? [{ label: t("core2ReviewTools"), href: "/core2/review-tools" }] : []),
     { label: t("workspaceTopics"), href: `${track.href}#topics` },
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
     ...(counts.cards > 0 ? [{ label: tTrack("tools.flashcards.label"), href: "/flashcards" }] : []),
