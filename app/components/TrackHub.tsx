@@ -22,11 +22,53 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const tools = toolStatuses(track);
   const { own, shared } = splitTopics(track);
 
-  return (
-    <div className="space-y-10">
-      <SetTrackFocus focus={track.focus} />
+  const workspaceLinks = track.focus ? [
+    { label: "Overview", href: track.href },
+    { label: "Topics", href: `${track.href}#topics` },
+    { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
+    { label: tTrack("tools.flashcards.label"), href: "/flashcards" },
+    { label: tTrack("tools.quiz.label"), href: "/quiz" },
+    { label: t("testModeTitle"), href: `/test?exam=${track.focus}` },
+    { label: tHeader("final15"), href: `/final-15/${track.id}` },
+  ] : [];
 
-      <header className="space-y-4">
+  const sequence = track.focus ? [
+    { step: "01", label: "Learn", detail: "Read the mapped notes and objective scope.", href: `${track.href}#topics` },
+    { step: "02", label: "Visualize", detail: "Use the interactive chapter visuals.", href: `${track.href}/visuals` },
+    { step: "03", label: "Recall", detail: "Work the flashcards without looking back.", href: "/flashcards" },
+    { step: "04", label: "Apply", detail: "Answer scenarios and timed questions.", href: `/test?exam=${track.focus}` },
+    { step: "05", label: "Review", detail: "Finish with the mixed Final 15 review.", href: `/final-15/${track.id}` },
+  ] : [];
+
+  return (
+    <div className={`track-shell track-${track.id}`}>
+      <SetTrackFocus focus={track.focus} />
+      <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
+        <summary className="cursor-pointer list-none font-medium text-white">
+          Study Menu <span className="track-accent-text ml-2" aria-hidden="true">▾</span>
+        </summary>
+        <nav className="mt-3 grid gap-2" aria-label="Study workspace">
+          {workspaceLinks.map((item) => (
+            <Link key={item.label} href={item.href} className="rounded-xl border border-transparent px-3 py-2 text-sm text-slate-300">
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </details>
+      <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+        <aside className="study-sidebar sticky top-5 hidden h-fit rounded-2xl p-3 lg:block">
+          <p className="track-accent-text px-3 pb-2 text-xs font-semibold uppercase tracking-[0.18em]">{track.code}</p>
+          <nav className="grid gap-1" aria-label="Study workspace">
+            {workspaceLinks.map((item) => (
+              <Link key={item.label} href={item.href} className="rounded-xl border border-transparent px-3 py-2 text-sm text-slate-300">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+        <div className="min-w-0 space-y-10">
+
+      <header className="track-workspace-hero rounded-3xl p-6 sm:p-8">
         <p className="text-sm text-slate-400">
           <Link href="/" className="hover:text-white">
             {tTrack("home")}
@@ -35,11 +77,11 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           <span className="text-slate-100">{tTrack(`${track.id}.short`)}</span>
         </p>
         <div className="flex items-start gap-4">
-          <div className="hidden shrink-0 rounded-2xl border border-slate-800 bg-slate-900 p-3 text-teal-400 sm:block">
+          <div className="track-accent-border track-accent-surface track-accent-text hidden shrink-0 rounded-2xl border p-3 sm:block">
             <DeviceIcon name={track.icon} width={56} height={56} />
           </div>
           <div className="space-y-2">
-            <p className="text-sm uppercase tracking-wide text-teal-300">
+            <p className="track-accent-text text-sm uppercase tracking-wide">
               {t.rich("certificationTrack", {
                 code: track.code,
                 mono: (chunks) => <span className="font-mono normal-case">{chunks}</span>,
@@ -52,6 +94,16 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
       </header>
 
       {track.focus ? (
+        <>
+        <section aria-label="Study sequence" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {sequence.map((item) => (
+            <Link key={item.step} href={item.href} className="study-sequence-step rounded-2xl p-4 transition hover:-translate-y-0.5">
+              <span className="track-accent-text font-mono text-xs">{item.step}</span>
+              <span className="mt-2 block font-semibold text-white">{item.label}</span>
+              <span className="mt-1 block text-xs leading-5 text-slate-400">{item.detail}</span>
+            </Link>
+          ))}
+        </section>
         <section aria-label="Objective-first study workflow" className="grid gap-4 md:grid-cols-2">
           <Link href="/coverage" className="rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5 hover:border-teal-400">
             <p className="text-xs font-medium uppercase tracking-wide text-teal-300">{track.code}</p>
@@ -64,6 +116,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
             <p className="mt-2 text-sm text-slate-300">{tMethods("metadataDescription")}</p>
           </Link>
         </section>
+        </>
       ) : null}
 
       {track.focus && track.focus !== "all" ? (
@@ -76,7 +129,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           </div>
           <Link
             href={`/test?exam=${track.focus}`}
-            className="inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400"
+            className="track-accent-button inline-flex min-h-11 items-center rounded-full px-5 py-2 font-medium transition"
           >
             {t("startTest")}
           </Link>
@@ -185,7 +238,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         <>
           <ProgressDashboard />
 
-          <section aria-labelledby="notes-heading" className="space-y-4">
+          <section id="topics" aria-labelledby="notes-heading" className="space-y-4">
             <h2 id="notes-heading" className="text-lg font-medium text-white">
               {t("chaptersInTrack")}
             </h2>
@@ -240,6 +293,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           ) : null}
         </>
       ) : null}
+        </div>
+      </div>
     </div>
   );
 }
