@@ -38,10 +38,10 @@ export function SiteHeader() {
                 key={track.id}
                 href={track.href}
                 aria-current={active ? "page" : undefined}
-                className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${
+                className={`track-shell track-${track.id} inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${
                   active
-                    ? "border-teal-400 bg-teal-400 font-medium text-slate-950"
-                    : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"
+                    ? "track-accent-button border-transparent font-medium"
+                    : "border-slate-700 text-slate-200 hover:border-[var(--track-accent-line)] hover:text-white"
                 }`}
               >
                 {tTracks(`${track.id}.short`)}
