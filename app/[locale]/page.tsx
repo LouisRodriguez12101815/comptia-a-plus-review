@@ -15,7 +15,7 @@ async function NetworkDiagram() {
     >
       <path d="M72 50H348" className="stroke-slate-800" strokeWidth="3" strokeLinecap="round" />
       <path d="M72 50H348" className="stroke-slate-700" strokeWidth="1" strokeDasharray="2 8" strokeLinecap="round" />
-      <g className="text-teal-400">
+      <g className="track-accent-text">
         <DeviceIcon name="laptop" x={24} y={26} />
         <DeviceIcon name="switch" x={124} y={26} />
         <DeviceIcon name="router" x={224} y={26} />
@@ -92,7 +92,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               <li key={track.id}>
                 <Link
                   href={track.href}
-                  className="group flex h-full flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 transition hover:border-teal-400"
+                  className={`track-shell track-${track.id} group flex h-full flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 transition hover:border-[var(--track-accent-line)] hover:shadow-[0_18px_50px_var(--track-glow)]`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-teal-400">
@@ -121,7 +121,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
                       </>
                     )}
                   </div>
-                  <span className="text-sm font-medium text-teal-300 group-hover:text-teal-200">
+                  <span className="track-accent-text text-sm font-medium">
                     {t("openTrack")}
                   </span>
                 </Link>
