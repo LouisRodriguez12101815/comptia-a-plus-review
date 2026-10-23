@@ -10,11 +10,32 @@ export type QuizAttempt = {
   at: number;
 };
 
+export type MockDomainResult = {
+  id: string;
+  title: string;
+  correct: number;
+  total: number;
+};
+
+export type MockAttempt = {
+  exam: string;
+  full: boolean;
+  correct: number;
+  total: number;
+  percent: number;
+  domains: MockDomainResult[];
+  multiCorrect: number;
+  multiTotal: number;
+  missedIds: string[];
+  at: number;
+};
+
 export type Progress = {
   studyFocus: StudyFocus;
   knownCards: Record<string, boolean>;
   unknownCards: Record<string, boolean>;
   quizAttempts: QuizAttempt[];
+  mockAttempts: MockAttempt[];
   /** FSRS schedule per flashcard id (see lib/study/schedule.ts). */
   schedules: Record<string, StoredSchedule>;
 };
@@ -28,6 +49,7 @@ function createEmptyProgress(): Progress {
     knownCards: {},
     unknownCards: {},
     quizAttempts: [],
+    mockAttempts: [],
     schedules: {},
   };
 }
@@ -56,6 +78,19 @@ function isAttempt(value: unknown): value is QuizAttempt {
     && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
+function isMockDomain(value: unknown): value is MockDomainResult {
+  return isRecord(value) && typeof value.id === "string" && typeof value.title === "string"
+    && Number.isFinite(value.correct) && Number.isFinite(value.total) && (value.total as number) > 0;
+}
+
+function isMockAttempt(value: unknown): value is MockAttempt {
+  return isRecord(value) && typeof value.exam === "string" && typeof value.full === "boolean"
+    && Number.isFinite(value.correct) && Number.isFinite(value.total) && Number.isFinite(value.percent)
+    && Array.isArray(value.domains) && value.domains.every(isMockDomain)
+    && Number.isFinite(value.multiCorrect) && Number.isFinite(value.multiTotal)
+    && Array.isArray(value.missedIds) && Number.isFinite(value.at);
+}
+
 /**
  * Python Class 10 pattern: try the conversion, catch the specific failure, keep what is valid,
  * and report what happened instead of failing silently. Exported for tests.
@@ -73,10 +108,14 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   const known = flags(parsed.knownCards), unknown = flags(parsed.unknownCards);
   const attempts = Array.isArray(parsed.quizAttempts) ? parsed.quizAttempts : [];
   const quizAttempts = attempts.filter(isAttempt);
+  const rawMockAttempts = Array.isArray(parsed.mockAttempts) ? parsed.mockAttempts : [];
+  const mockAttempts = rawMockAttempts.filter(isMockAttempt);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
   const repaired = known.repaired || unknown.repaired
     || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
     || quizAttempts.length !== attempts.length
+    || (parsed.mockAttempts !== undefined && !Array.isArray(parsed.mockAttempts))
+    || mockAttempts.length !== rawMockAttempts.length
     || (parsed.schedules !== undefined && !isRecord(parsed.schedules));
   return {
     progress: {
@@ -84,6 +123,7 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
       knownCards: known.value,
       unknownCards: unknown.value,
       quizAttempts,
+      mockAttempts,
       schedules,
     },
     problems: repaired ? ["repaired"] : [],
@@ -188,6 +228,19 @@ export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
       { ...attempt, at: Date.now() },
       ...current.quizAttempts,
     ].slice(0, 40),
+  };
+  saveProgress(next);
+  return next;
+}
+
+export function recordMock(attempt: Omit<MockAttempt, "at">) {
+  const current = loadProgress();
+  const next = {
+    ...current,
+    mockAttempts: [
+      { ...attempt, at: Date.now() },
+      ...current.mockAttempts,
+    ].slice(0, 30),
   };
   saveProgress(next);
   return next;
