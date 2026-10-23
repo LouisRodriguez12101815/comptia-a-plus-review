@@ -40,13 +40,15 @@ def status(exam):
     print(f"  rubric CSV          {have(P['rubric'])}   ({P['rubric']})")
     print(f"  evidence table      {have(P['out'] / 'evidence.csv')}")
     print(f"  candidate matches   {have(P['out'] / 'matches.csv')}")
-    judged = {j["item_id"] for j in read_jsonl(P["results"] / "judgments.jsonl")}
-    rechecked = {j["item_id"] for j in read_jsonl(P["results"] / "notes-recheck.jsonl")}
+    # Cache entries are keyed by a hash of the evidence as well as the item, so
+    # "waiting" must compare keys: an item whose evidence changed is waiting again.
+    judged = {j["key"] for j in read_jsonl(P["results"] / "judgments.jsonl")}
+    rechecked = {j["key"] for j in read_jsonl(P["results"] / "notes-recheck.jsonl")}
 
     def waiting(folder, answered):
         out = []
         for f in sorted((P["out"] / folder).glob("batch-*.jsonl")) if (P["out"] / folder).exists() else []:
-            if any(r["item_id"] not in answered for r in read_jsonl(f)):
+            if any(r["key"] not in answered for r in read_jsonl(f)):
                 out.append(f.name)
         return out
 
