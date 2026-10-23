@@ -8,14 +8,14 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { getTopic, questions, topics } from "@/lib/content";
 import {
   EXAM_FORMATS, TEST_LENGTHS, allocateByWeight, approximatePassPercent, buildExamPool,
-  draftTest, gradeTest, isCorrect, secondsPerQuestion,
+  draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion,
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { recordQuiz } from "@/lib/progress";
 import type { Question } from "@/lib/types";
 
-const examCodes = ["220-1201", "220-1202", "n10-009"] as const;
+const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
 type Phase = "setup" | "running" | "done";
 
@@ -54,7 +54,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
   const pool = useMemo(() => buildExamPool({ objectives: matrix, questions, topics, examCode: exam }), [exam]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
-  const requested = TEST_LENGTHS.find((l) => l.id === lengthId)?.questions ?? 90;
+  const requested = questionsForLength(exam, lengthId);
   const planned = Math.min(requested, pool.totalUnique);
   const quota = useMemo(() => allocateByWeight(pool.domains, planned), [pool, planned]);
 
@@ -184,7 +184,8 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
           <legend className="px-1 text-lg font-semibold text-white">{t("length")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
             {TEST_LENGTHS.map((length) => {
-              const count = Math.min(length.questions, pool.totalUnique);
+              const requestedForLength = questionsForLength(exam, length.id);
+              const count = Math.min(requestedForLength, pool.totalUnique);
               return (
                 <label key={length.id} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${lengthId === length.id ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
                   <span className="flex items-center gap-2">
