@@ -14,6 +14,9 @@ const tileBase =
 export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const t = await getTranslations("trackHub");
   const tTrack = await getTranslations("tracks");
+  const tHeader = await getTranslations("header");
+  const tCoverage = await getTranslations("coverageDashboard");
+  const tMethods = await getTranslations("assessmentWorkflowPage");
   const tChapter = await getTranslations("networkChapters");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
@@ -47,6 +50,21 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           </div>
         </div>
       </header>
+
+      {track.focus ? (
+        <section aria-label="Objective-first study workflow" className="grid gap-4 md:grid-cols-2">
+          <Link href="/coverage" className="rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5 hover:border-teal-400">
+            <p className="text-xs font-medium uppercase tracking-wide text-teal-300">{track.code}</p>
+            <h2 className="mt-2 text-lg font-semibold text-white">{tHeader("objectiveLab")}</h2>
+            <p className="mt-2 text-sm text-slate-300">{tCoverage("intro")}</p>
+          </Link>
+          <Link href="/assessment-workflow" className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 hover:border-teal-400">
+            <p className="text-xs font-medium uppercase tracking-wide text-teal-300">{tHeader("methods")}</p>
+            <h2 className="mt-2 text-lg font-semibold text-white">{tMethods("title")}</h2>
+            <p className="mt-2 text-sm text-slate-300">{tMethods("metadataDescription")}</p>
+          </Link>
+        </section>
+      ) : null}
 
       {track.focus && track.focus !== "all" ? (
         <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5">
