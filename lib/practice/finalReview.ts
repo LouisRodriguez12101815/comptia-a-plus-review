@@ -102,7 +102,8 @@ export function troubleshootingDomain(domains: { title: string; objectives: { id
  * Domain a drill question counts toward. Symptom → cause modes count as
  * troubleshooting; everything else counts toward the deck's first objective.
  */
-export function domainForMode(deck: DrillDeck, mode: DrillMode, troubleshooting?: string) {
+export function domainForMode(deck: DrillDeck, mode: DrillMode, troubleshooting?: string, objective?: string) {
+  if (objective) return objective.split(".")[0];
   if (mode.from === "symptom" && troubleshooting) return troubleshooting;
   return deck.objective.match(/\d+/)?.[0] ?? "";
 }
@@ -124,7 +125,7 @@ export function reviewPool(review: FinalReview, troubleshooting?: string): Revie
           pool,
           detail: item.detail,
           hook: item.hook,
-          domain: domainForMode(deck, mode, troubleshooting),
+          domain: domainForMode(deck, mode, troubleshooting, item.objective),
         });
       }
     }

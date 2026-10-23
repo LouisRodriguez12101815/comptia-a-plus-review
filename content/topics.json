@@ -5620,7 +5620,7 @@
         "blocks": [
           {
             "type": "paragraph",
-            "text": "Use network transfer services when the network is practical; use AWS Snow Family devices when physical transfer is appropriate for very large datasets or constrained connectivity. AWS Backup centralizes supported backup policies; Storage Gateway supports hybrid storage integration."
+            "text": "DataSync provides managed online transfers; Storage Gateway supplies hybrid file/volume/tape interfaces. AWS Backup centralizes supported backup policies. Snowball Edge is restricted to existing customers since November 7, 2025, and Snowcone is discontinued. For new physical-transfer designs evaluate Data Transfer Terminal or partners; Outposts addresses relevant edge-compute needs."
           }
         ]
       }
@@ -5649,7 +5649,7 @@
               "Subnets divide VPC address space and are associated with a single Availability Zone.",
               "Route tables determine where traffic is sent.",
               "An internet gateway enables internet routing for appropriately configured public resources.",
-              "A NAT gateway supports outbound internet access for resources in private subnets without making those resources directly internet-routable."
+              "In the zonal public-NAT IPv4 design, private-subnet default routes point to a public NAT gateway with an EIP and a path through the VPC internet gateway. A private NAT cannot provide internet egress through an IGW. Native IPv6 outbound-only egress uses an egress-only IGW; NAT64/DNS64 serves different translation requirements. Regional NAT is a separate current multi-AZ option."
             ]
           }
         ]
@@ -5748,7 +5748,7 @@
           },
           {
             "type": "paragraph",
-            "text": "Multi-AZ primarily improves database availability. Read replicas primarily scale read workloads. Do not treat them as interchangeable."
+            "text": "For a single-standby RDS Multi-AZ DB instance, the standby is for availability, not reads. Multi-AZ DB clusters have readable standbys. Asynchronous read replicas offload reads and can lag; Aurora has its own reader/failover architecture."
           }
         ]
       }
