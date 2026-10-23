@@ -262,7 +262,86 @@ const awsClf: TopFive = {
   ],
 };
 
-export const topFives: TopFive[] = [core1, core2, awsClf];
+
+const awsSaa: TopFive = {
+  id: "aws-saa",
+  certification: "AWS Certified Solutions Architect – Associate",
+  exam: "saa-c03",
+  concepts: [
+    {
+      id: "secure",
+      title: "Secure access, network boundaries, and data protection",
+      domains: ["1"],
+      objectives: "1.1–1.3",
+      why: "Secure Architectures is the largest SAA-C03 domain at 30%, and security constraints appear inside many architecture scenarios.",
+      facts: [
+        "Prefer roles and temporary credentials for workloads; explicit deny overrides allow; permissions boundaries limit maximum identity permissions.",
+        "Security groups are stateful resource controls; network ACLs are stateless subnet controls.",
+        "KMS manages keys, Secrets Manager stores/rotates secrets, ACM manages supported TLS certificates, CloudHSM provides dedicated HSMs.",
+        "WAF filters web requests, Shield protects against DDoS, GuardDuty detects threats, Inspector finds supported workload vulnerabilities, Macie discovers sensitive data in S3.",
+      ],
+      drills: ["aws-saa-secure-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "resilient",
+      title: "Decoupling, Multi-AZ, and disaster recovery",
+      domains: ["2"],
+      objectives: "2.1–2.2",
+      why: "Resilient design is 26% of SAA-C03 and rewards selecting the cheapest architecture that still meets availability, RTO, and RPO.",
+      facts: [
+        "Use SQS to buffer asynchronous work and let producers/consumers scale independently.",
+        "Deploy stateless tiers across multiple AZs; use Auto Scaling and load balancing to replace failed capacity.",
+        "RTO = maximum acceptable recovery time; RPO = maximum acceptable data-loss window.",
+        "DR cost generally rises from backup/restore → pilot light → warm standby → active/active as recovery time falls.",
+      ],
+      drills: ["aws-saa-resilient-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "performance",
+      title: "Storage, compute, database, network, and ingestion performance",
+      domains: ["3"],
+      objectives: "3.1–3.5",
+      why: "High-Performing Architectures is 24% and tests whether a service choice matches the actual bottleneck rather than simply choosing the largest resource.",
+      facts: [
+        "Choose storage by access model and performance need: S3 object, EBS block, EFS/FSx file, instance store ephemeral.",
+        "Read replicas scale relational reads; DAX accelerates DynamoDB reads; caches reduce repeated hot work.",
+        "CloudFront caches content at the edge; Global Accelerator improves network routing to regional endpoints.",
+        "Kinesis Data Streams exposes stream records to consumers; Data Firehose provides managed delivery to supported destinations.",
+      ],
+      drills: ["aws-saa-performance-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "cost",
+      title: "Compute, storage, database, and network cost optimization",
+      domains: ["4"],
+      objectives: "4.1–4.4",
+      why: "Cost optimization is 20% of the exam and often hides the expensive part in idle capacity, storage retention, or data-transfer paths.",
+      facts: [
+        "Spot for interruption-tolerant work; commitment discounts for predictable steady use; On-Demand for flexibility.",
+        "Use lifecycle policies and appropriate S3 storage classes rather than retaining all data in the hottest tier.",
+        "Rightsize compute and databases; use serverless for suitable sporadic workloads to avoid idle capacity.",
+        "Evaluate data-transfer paths, NAT processing, cross-AZ/Region traffic, VPC endpoints, and CDN caching.",
+      ],
+      drills: ["aws-saa-cost-cues", "aws-saa-service-compare"],
+    },
+    {
+      id: "service-tradeoffs",
+      title: "Know the 'same-looking' AWS services apart",
+      domains: ["1", "2", "3", "4"],
+      objectives: "1.1–4.4",
+      why: "SAA scenarios frequently give several technically valid AWS services; the winning answer is the one that best satisfies the stated constraints with the least unnecessary cost or operations.",
+      facts: [
+        "Multi-AZ = database availability; read replica = read scaling.",
+        "SQS = durable queue; SNS = pub/sub fanout; EventBridge = event routing.",
+        "CloudWatch = metrics/logs/alarms; CloudTrail = API activity; Config = configuration history/rules.",
+        "CloudFront = CDN/caching; Global Accelerator = network path acceleration.",
+      ],
+      drills: ["aws-saa-service-compare", "aws-saa-secure-cues", "aws-saa-resilient-cues", "aws-saa-performance-cues", "aws-saa-cost-cues"],
+    },
+  ],
+};
+
+export const topFives: TopFive[] = [core1, core2, awsClf, awsSaa];
 
 export function getTopFive(id: string) {
   return topFives.find((t) => t.id === id);
