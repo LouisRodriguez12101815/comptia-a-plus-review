@@ -119,7 +119,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </>
       ) : null}
 
-      {track.focus && track.focus !== "all" ? (
+      {track.focus && track.focus !== "all" && counts.questions > 0 ? (
         <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border track-accent-border track-accent-surface p-5">
           <div>
             <h2 id="test-mode-heading" className="text-lg font-medium text-white">{t("testModeTitle")}</h2>
