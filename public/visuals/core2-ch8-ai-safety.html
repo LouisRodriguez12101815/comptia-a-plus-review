@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI use safety flow</title>
+<style>
+:root{--bg:#eef3fa;--surface:#fff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}.wrap{max-width:900px;margin:auto;padding:24px 0 40px}h1{font-size:26px;margin:0 0 6px}.lede,figcaption{color:var(--muted)}.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}.diagram{overflow-x:auto}svg{width:100%;height:auto;min-width:640px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button{font:inherit;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);padding:8px 13px;cursor:pointer}button[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.out{margin-top:14px;padding:12px;border-radius:10px;background:var(--accent-soft);min-height:48px}.good{background:var(--good-soft)}.bad{background:var(--bad-soft)}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><main class="wrap"><h1>AI use safety flow</h1><p class="lede">Policy and verification come before trusting or sharing AI output.</p><section class="card">
+<figure><div class="diagram" tabindex="0" role="region" aria-label="AI use safety flow diagram"><svg viewBox="0 0 760 300" role="img" aria-label="AI use decision flow from prompt to policy check to verification">
+<rect x="35" y="110" width="140" height="70" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="105" y="140" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="700">Prompt</text><text x="105" y="162" text-anchor="middle" fill="var(--muted)" font-size="12">What data is included?</text>
+<path d="M175 145H270" stroke="var(--line)" stroke-width="4"/>
+<rect x="270" y="90" width="180" height="110" rx="12" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/><text x="360" y="125" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="700">Policy check</text><text x="360" y="151" text-anchor="middle" fill="var(--muted)" font-size="12">Approved tool?</text><text x="360" y="172" text-anchor="middle" fill="var(--muted)" font-size="12">Sensitive data allowed?</text>
+<path d="M450 145H545" stroke="var(--line)" stroke-width="4"/>
+<rect x="545" y="110" width="175" height="70" rx="12" fill="var(--good-soft)" stroke="var(--good)" stroke-width="2"/><text x="632" y="140" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="700">Verify output</text><text x="632" y="162" text-anchor="middle" fill="var(--muted)" font-size="12">Check trusted sources</text>
+<text x="360" y="245" text-anchor="middle" fill="var(--bad)" font-size="14" font-weight="700">Stop if policy or data handling is not approved</text>
+</svg></div><figcaption>A simple exam-focused flow for AI policy, data handling, and verification.</figcaption></figure>
+<div class="controls"><button data-ai="hall">Confident but false answer</button><button data-ai="phi">Sensitive customer data</button><button data-ai="safe">Approved low-risk prompt</button></div><div class="out" id="out" aria-live="polite">Choose an option to check your understanding.</div></section></main>
+<script type="application/json" id="visual-facts">{
+  "facts": [
+    {
+      "claim": "AI output can contain hallucinations or other inaccuracies and should be verified.",
+      "objectives": [
+        "220-1202 4.10"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: Artificial intelligence: concepts and limitations"
+      ]
+    },
+    {
+      "claim": "Sensitive or confidential data should not be entered into unapproved public AI systems.",
+      "objectives": [
+        "220-1202 4.10"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: AI policy, appropriate use, and private vs. public"
+      ]
+    },
+    {
+      "claim": "Organizational policy governs appropriate AI use.",
+      "objectives": [
+        "220-1202 4.10"
+      ],
+      "sources": [
+        "notes core2-ch8-operational: AI policy, appropriate use, and private vs. public"
+      ]
+    }
+  ],
+  "simplifications": [
+    "The drawings are schematic learning diagrams, not product interfaces."
+  ]
+}</script>
+<script>document.querySelectorAll('button[data-ai]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-ai]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const m={hall:'Treat it as a possible hallucination. Verify the claim before acting.',phi:'Do not submit sensitive data to an unapproved public AI tool.',safe:'Follow policy, then still verify important technical claims before use.'};document.getElementById('out').textContent=m[b.dataset.ai];});</script></body></html>
