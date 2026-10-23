@@ -2,16 +2,17 @@ import type { CoverageMatrix } from "./objective-coverage.mjs";
 
 export interface ExamFormat { label: string; maxQuestions: number; minutes: number; passingScore: number; scaleMin: number; scaleMax: number }
 export const EXAM_FORMATS: Record<string, ExamFormat>;
-export const TEST_LENGTHS: { id: string; label: string; questions: number }[];
+export const TEST_LENGTHS: { id: string; label: string }[];
+export function questionsForLength(examCode: string, lengthId: string): number;
 export function secondsPerQuestion(examCode: string): number;
-export function approximatePassPercent(examCode: string): number;
+export function approximatePassPercent(examCode: string): number | null;
 export function mulberry32(seed: number): () => number;
 
 export interface PoolObjective { id: string; title: string; topics: string[]; questionIds: string[] }
 export interface PoolDomain { id: string; title: string; weight: number; objectives: PoolObjective[]; available: number }
 export interface ExamPool { code: string; name: string; domains: PoolDomain[]; totalUnique: number }
 export interface TestPick { questionId: string; domainId: string; objectiveId: string }
-export interface PoolQuestion { id: string; topicId: string; examCodes?: string[]; answer: number | number[] }
+export interface PoolQuestion { objectiveIds?: Record<string, string[]>; id: string; topicId: string; examCodes?: string[]; answer: number | number[] }
 export type Pick = number | number[] | undefined | null;
 export interface TestResponse { answer?: number | number[]; timedOut: boolean; seconds: number }
 export interface DomainScore { id: string; title: string; weight: number; total: number; correct: number }
