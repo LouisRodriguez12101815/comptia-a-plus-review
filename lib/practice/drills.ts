@@ -1678,7 +1678,264 @@ const awsSaaServiceCompare: DrillDeck = {
   ]
 };
 
-export const drillDecks: DrillDeck[] = [awsClfServiceCompare, awsSaaServiceCompare, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
+
+const awsClfDomainCues: DrillDeck = {
+  "id": "aws-clf-domain-cues",
+  "certification": "AWS Cloud Practitioner",
+  "exam": "clf-c02",
+  "objective": "1.1–4.3",
+  "topic": "CLF-C02 exam language and service cues",
+  "modes": [
+    {
+      "id": "cueToAnswer",
+      "from": "cue",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "cues",
+      "fields": [
+        "cue",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+{
+    "id": "well-architected",
+    "objective": "1.2",
+    "fields": {
+        "cue": "Evaluate a workload using six architectural pillars",
+        "answer": "AWS Well-Architected Framework"
+    },
+    "detail": "The six pillars are operational excellence, security, reliability, performance efficiency, cost optimization and sustainability.",
+    "hook": "Framework for workload design."
+},
+{
+    "id": "caf-perspectives",
+    "objective": "1.3",
+    "fields": {
+        "cue": "Organize cloud transformation across business, people, governance, platform, security and operations",
+        "answer": "AWS Cloud Adoption Framework"
+    },
+    "detail": "CAF groups capabilities into six perspectives to plan organizational cloud adoption.",
+    "hook": "Adoption is broader than moving servers."
+},
+{
+    "id": "economies",
+    "objective": "1.4",
+    "fields": {
+        "cue": "Provider purchasing scale can lower variable unit infrastructure cost",
+        "answer": "Economies of scale"
+    },
+    "detail": "Shared aggregate demand can lower unit cost; cloud migration does not guarantee the lowest total cost for every workload.",
+    "hook": "Aggregate scale can improve unit economics."
+},
+    {
+      "id": "elastic",
+      "fields": {
+        "cue": "Unpredictable demand; capacity should rise and fall automatically",
+        "answer": "Elasticity"
+      },
+      "detail": "Elasticity matches capacity to changing demand.",
+      "hook": "Unpredictable = elastic.",
+      "objective": "1.1"
+    },
+    {
+      "id": "scale",
+      "fields": {
+        "cue": "Workload will grow over time and needs more capacity",
+        "answer": "Scalability"
+      },
+      "detail": "Scalability is capacity to support growth.",
+      "hook": "Growth = scale.",
+      "objective": "1.1"
+    },
+    {
+      "id": "az",
+      "fields": {
+        "cue": "Survive failure of one data-center location inside a Region",
+        "answer": "Multi-AZ design"
+      },
+      "detail": "Multiple AZs reduce a single-AZ failure dependency.",
+      "hook": "One AZ fails; another stays.",
+      "objective": "3.2"
+    },
+    {
+      "id": "region",
+      "fields": {
+        "cue": "Recover from a complete AWS Region outage",
+        "answer": "Multiple Regions"
+      },
+      "detail": "Regional disaster recovery may require another Region. Data residency instead constrains permitted locations; it does not itself require multiple Regions.",
+      "hook": "Region failure needs another Region.",
+      "objective": "3.2"
+    },
+    {
+      "id": "audit",
+      "fields": {
+        "cue": "Who called an AWS API and when?",
+        "answer": "AWS CloudTrail"
+      },
+      "detail": "CloudTrail records account and API activity.",
+      "hook": "Trail of API calls.",
+      "objective": "2.2"
+    },
+    {
+      "id": "metrics",
+      "fields": {
+        "cue": "CPU metric crosses a threshold and should raise an alarm",
+        "answer": "Amazon CloudWatch"
+      },
+      "detail": "CloudWatch handles metrics and alarms.",
+      "hook": "Watch metrics.",
+      "objective": "2.4"
+    },
+    {
+      "id": "compliance",
+      "fields": {
+        "cue": "Download AWS compliance reports",
+        "answer": "AWS Artifact"
+      },
+      "detail": "Artifact provides compliance documents.",
+      "hook": "Compliance artifact.",
+      "objective": "2.2"
+    },
+    {
+      "id": "root",
+      "fields": {
+        "cue": "Protect the most privileged account identity",
+        "answer": "Root user protection + MFA"
+      },
+      "detail": "The root user needs strong protection and minimal routine use.",
+      "hook": "Root is exceptional.",
+      "objective": "2.3"
+    },
+    {
+      "id": "objects",
+      "fields": {
+        "cue": "Store web assets as objects in buckets",
+        "answer": "Amazon S3"
+      },
+      "detail": "S3 is object storage.",
+      "hook": "Buckets = S3.",
+      "objective": "3.6"
+    },
+    {
+      "id": "block",
+      "fields": {
+        "cue": "Persistent block volume for EC2",
+        "answer": "Amazon EBS"
+      },
+      "detail": "EBS provides block volumes.",
+      "hook": "EBS = block.",
+      "objective": "3.6"
+    },
+    {
+      "id": "sql",
+      "fields": {
+        "cue": "Managed relational database",
+        "answer": "Amazon RDS"
+      },
+      "detail": "RDS is managed relational database service.",
+      "hook": "RDS = relational.",
+      "objective": "3.4"
+    },
+    {
+      "id": "nosql",
+      "fields": {
+        "cue": "Managed key-value/document database",
+        "answer": "Amazon DynamoDB"
+      },
+      "detail": "DynamoDB is managed NoSQL.",
+      "hook": "Dynamo = NoSQL.",
+      "objective": "3.4"
+    },
+    {
+      "id": "dns",
+      "fields": {
+        "cue": "Managed DNS",
+        "answer": "Amazon Route 53"
+      },
+      "detail": "Route 53 provides DNS.",
+      "hook": "Names route with Route 53.",
+      "objective": "3.5"
+    },
+    {
+      "id": "cdn",
+      "fields": {
+        "cue": "Cache content near global users",
+        "answer": "Amazon CloudFront"
+      },
+      "detail": "CloudFront is AWS CDN.",
+      "hook": "Front = edge content.",
+      "objective": "3.5"
+    },
+    {
+      "id": "estimate",
+      "fields": {
+        "cue": "Estimate cost before deployment",
+        "answer": "AWS Pricing Calculator"
+      },
+      "detail": "Pricing Calculator estimates planned workloads.",
+      "hook": "Plan first = calculator.",
+      "objective": "4.2"
+    },
+    {
+      "id": "analyze",
+      "fields": {
+        "cue": "Analyze historical AWS spend",
+        "answer": "AWS Cost Explorer"
+      },
+      "detail": "Cost Explorer analyzes spend and usage.",
+      "hook": "Explore past/current cost.",
+      "objective": "4.2"
+    },
+    {
+      "id": "alert",
+      "fields": {
+        "cue": "Alert when spend exceeds a threshold",
+        "answer": "AWS Budgets"
+      },
+      "detail": "Budgets tracks thresholds.",
+      "hook": "Budget threshold = Budgets.",
+      "objective": "4.2"
+    },
+    {
+      "id": "queue",
+      "fields": {
+        "cue": "Durable queue to decouple producers and consumers",
+        "answer": "Amazon SQS"
+      },
+      "detail": "SQS provides queues.",
+      "hook": "Q = queue.",
+      "objective": "3.8"
+    },
+    {
+      "id": "fanout",
+      "fields": {
+        "cue": "Publish one message to many subscribers",
+        "answer": "Amazon SNS"
+      },
+      "detail": "SNS is pub/sub.",
+      "hook": "Notify subscribers.",
+      "objective": "3.8"
+    },
+    {
+      "id": "iac",
+      "fields": {
+        "cue": "Repeatable declarative infrastructure deployment",
+        "answer": "AWS CloudFormation"
+      },
+      "detail": "CloudFormation is AWS infrastructure as code.",
+      "hook": "Template the cloud.",
+      "objective": "3.1"
+    }
+  ]
+};
+
+export const drillDecks: DrillDeck[] = [awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
