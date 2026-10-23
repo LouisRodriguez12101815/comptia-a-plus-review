@@ -15,7 +15,10 @@
       "CompTIA A+ / Network+",
       "CCNA fundamentals"
     ],
-    "relatedTopicIds": ["networking-dns-dhcp", "networking-storage"],
+    "relatedTopicIds": [
+      "networking-dns-dhcp",
+      "networking-storage"
+    ],
     "sections": [
       {
         "id": "scenario",
@@ -45,10 +48,25 @@
           },
           {
             "type": "table",
-            "headers": ["Subnet", "Network", "Usable range", "Broadcast"],
+            "headers": [
+              "Subnet",
+              "Network",
+              "Usable range",
+              "Broadcast"
+            ],
             "rows": [
-              ["A — Sales", "192.168.10.0/26", ".1 – .62", "192.168.10.63"],
-              ["B — Ops", "192.168.10.64/26", ".65 – .126", "192.168.10.127"]
+              [
+                "A — Sales",
+                "192.168.10.0/26",
+                ".1 – .62",
+                "192.168.10.63"
+              ],
+              [
+                "B — Ops",
+                "192.168.10.64/26",
+                ".65 – .126",
+                "192.168.10.127"
+              ]
             ]
           }
         ]
@@ -59,14 +77,49 @@
         "blocks": [
           {
             "type": "table",
-            "headers": ["Device", "Interface", "IP address", "Gateway"],
+            "headers": [
+              "Device",
+              "Interface",
+              "IP address",
+              "Gateway"
+            ],
             "rows": [
-              ["R1", "Gi0/0 (LAN-A)", "192.168.10.1", "—"],
-              ["R1", "Gi0/1 (LAN-B)", "192.168.10.65", "—"],
-              ["SW1", "VLAN 1 (mgmt SVI)", "192.168.10.2", "192.168.10.1"],
-              ["SW2", "VLAN 1 (mgmt SVI)", "192.168.10.66", "192.168.10.65"],
-              ["PC-A1 / PC-A2", "Fa0", ".10 / .11", "192.168.10.1"],
-              ["PC-B1 / PC-B2", "Fa0", ".74 / .75", "192.168.10.65"]
+              [
+                "R1",
+                "Gi0/0 (LAN-A)",
+                "192.168.10.1",
+                "—"
+              ],
+              [
+                "R1",
+                "Gi0/1 (LAN-B)",
+                "192.168.10.65",
+                "—"
+              ],
+              [
+                "SW1",
+                "VLAN 1 (mgmt SVI)",
+                "192.168.10.2",
+                "192.168.10.1"
+              ],
+              [
+                "SW2",
+                "VLAN 1 (mgmt SVI)",
+                "192.168.10.66",
+                "192.168.10.65"
+              ],
+              [
+                "PC-A1 / PC-A2",
+                "Fa0",
+                ".10 / .11",
+                "192.168.10.1"
+              ],
+              [
+                "PC-B1 / PC-B2",
+                "Fa0",
+                ".74 / .75",
+                "192.168.10.65"
+              ]
             ]
           }
         ]
@@ -77,16 +130,52 @@
         "blocks": [
           {
             "type": "table",
-            "headers": ["Check", "Expected", "Result"],
+            "headers": [
+              "Check",
+              "Expected",
+              "Result"
+            ],
             "rows": [
-              ["show ip int brief on R1", "Gi0/0 and Gi0/1 up/up", "PASS"],
-              ["show ip route on R1", "Two C and two L routes", "PASS"],
-              ["SW1 / SW2 mgmt SVI", "Vlan1 up with correct IP", "PASS"],
-              ["Same-subnet ping (PC-A1 → .11)", "Replies", "PASS"],
-              ["Gateway ping (PC-A1 → .1)", "Replies", "PASS"],
-              ["Cross-subnet ping (PC-A1 → .74)", "Replies (first run may drop 1–2 packets while ARP resolves)", "PASS"],
-              ["tracert PC-A1 → PC-B1", "2 hops: gateway .1, then .74", "PASS"],
-              ["PC-B2 → SW1 mgmt", "Replies across subnets", "PASS"]
+              [
+                "show ip int brief on R1",
+                "Gi0/0 and Gi0/1 up/up",
+                "PASS"
+              ],
+              [
+                "show ip route on R1",
+                "Two C and two L routes",
+                "PASS"
+              ],
+              [
+                "SW1 / SW2 mgmt SVI",
+                "Vlan1 up with correct IP",
+                "PASS"
+              ],
+              [
+                "Same-subnet ping (PC-A1 → .11)",
+                "Replies",
+                "PASS"
+              ],
+              [
+                "Gateway ping (PC-A1 → .1)",
+                "Replies",
+                "PASS"
+              ],
+              [
+                "Cross-subnet ping (PC-A1 → .74)",
+                "Replies (first run may drop 1–2 packets while ARP resolves)",
+                "PASS"
+              ],
+              [
+                "tracert PC-A1 → PC-B1",
+                "2 hops: gateway .1, then .74",
+                "PASS"
+              ],
+              [
+                "PC-B2 → SW1 mgmt",
+                "Replies across subnets",
+                "PASS"
+              ]
             ]
           },
           {
@@ -101,7 +190,11 @@
         "blocks": [
           {
             "type": "table",
-            "headers": ["Scenario", "Prediction", "Result and lesson"],
+            "headers": [
+              "Scenario",
+              "Prediction",
+              "Result and lesson"
+            ],
             "rows": [
               [
                 "Missing default gateway on PC-B2",
@@ -204,7 +297,11 @@
         "blocks": [
           {
             "type": "table",
-            "headers": ["Network", "Subnet", "Notes"],
+            "headers": [
+              "Network",
+              "Subnet",
+              "Notes"
+            ],
             "rows": [
               [
                 "Miami LAN",
@@ -221,9 +318,21 @@
                 "192.168.50.0/24",
                 "Gateway 192.168.50.1 (Router-DC Gi0/0/0); servers at .10 and .20"
               ],
-              ["MIA – NY link", "10.0.1.0/30", "MIA .1, NY .2"],
-              ["MIA – DC link", "10.0.2.0/30", "MIA .1, DC .2"],
-              ["NY – DC link", "10.0.3.0/30", "NY .1, DC .2"]
+              [
+                "MIA – NY link",
+                "10.0.1.0/30",
+                "MIA .1, NY .2"
+              ],
+              [
+                "MIA – DC link",
+                "10.0.2.0/30",
+                "MIA .1, DC .2"
+              ],
+              [
+                "NY – DC link",
+                "10.0.3.0/30",
+                "NY .1, DC .2"
+              ]
             ]
           },
           {
@@ -238,14 +347,49 @@
           },
           {
             "type": "table",
-            "headers": ["From", "Port", "To", "Port"],
+            "headers": [
+              "From",
+              "Port",
+              "To",
+              "Port"
+            ],
             "rows": [
-              ["Router-DC", "Gig0/0/0", "SW-DC", "Gig0/1"],
-              ["Router-DC", "Gig0/0/1", "Router-MIA", "Gig0/0/2"],
-              ["Router-DC", "Gig0/0/2", "Router-NY", "Gig0/0/2"],
-              ["Router-MIA", "Gig0/0/1", "Router-NY", "Gig0/0/1"],
-              ["Router-MIA", "Gig0/0/0", "SW-MIA", "Gig0/1"],
-              ["Router-NY", "Gig0/0/0", "SW-NY", "Gig0/1"]
+              [
+                "Router-DC",
+                "Gig0/0/0",
+                "SW-DC",
+                "Gig0/1"
+              ],
+              [
+                "Router-DC",
+                "Gig0/0/1",
+                "Router-MIA",
+                "Gig0/0/2"
+              ],
+              [
+                "Router-DC",
+                "Gig0/0/2",
+                "Router-NY",
+                "Gig0/0/2"
+              ],
+              [
+                "Router-MIA",
+                "Gig0/0/1",
+                "Router-NY",
+                "Gig0/0/1"
+              ],
+              [
+                "Router-MIA",
+                "Gig0/0/0",
+                "SW-MIA",
+                "Gig0/1"
+              ],
+              [
+                "Router-NY",
+                "Gig0/0/0",
+                "SW-NY",
+                "Gig0/1"
+              ]
             ]
           },
           {
@@ -290,14 +434,35 @@
           },
           {
             "type": "table",
-            "headers": ["Setting", "Value"],
+            "headers": [
+              "Setting",
+              "Value"
+            ],
             "rows": [
-              ["Pool name", "Desktops NY"],
-              ["Default gateway", "192.168.0.65 (the New York LAN interface)"],
-              ["DNS server", "192.168.50.20"],
-              ["Start IP address", "192.168.0.70"],
-              ["Subnet mask", "255.255.255.192"],
-              ["Maximum users", "57"]
+              [
+                "Pool name",
+                "Desktops NY"
+              ],
+              [
+                "Default gateway",
+                "192.168.0.65 (the New York LAN interface)"
+              ],
+              [
+                "DNS server",
+                "192.168.50.20"
+              ],
+              [
+                "Start IP address",
+                "192.168.0.70"
+              ],
+              [
+                "Subnet mask",
+                "255.255.255.192"
+              ],
+              [
+                "Maximum users",
+                "57"
+              ]
             ]
           },
           {
@@ -360,7 +525,10 @@
           },
           {
             "type": "table",
-            "headers": ["Command", "What it shows"],
+            "headers": [
+              "Command",
+              "What it shows"
+            ],
             "rows": [
               [
                 "show running-config",
@@ -386,7 +554,10 @@
                 "ping <address>",
                 "ICMP echo test; add repeat 5 to send five packets"
               ],
-              ["Ctrl+Shift+6", "Aborts a ping or other command that is hanging"]
+              [
+                "Ctrl+Shift+6",
+                "Aborts a ping or other command that is hanging"
+              ]
             ]
           },
           {
@@ -395,7 +566,10 @@
           },
           {
             "type": "table",
-            "headers": ["Command", "What it shows"],
+            "headers": [
+              "Command",
+              "What it shows"
+            ],
             "rows": [
               [
                 "ipconfig /all",
@@ -431,7 +605,11 @@
         "blocks": [
           {
             "type": "table",
-            "headers": ["Check", "Expected", "Result"],
+            "headers": [
+              "Check",
+              "Expected",
+              "Result"
+            ],
             "rows": [
               [
                 "show ip interface brief (MIA, NY, DC)",
@@ -463,7 +641,11 @@
                 "PC's MAC listed for its leased address",
                 "PASS"
               ],
-              ["Router-NY → ping 192.168.0.70", "Replies", "PASS (5/5)"]
+              [
+                "Router-NY → ping 192.168.0.70",
+                "Replies",
+                "PASS (5/5)"
+              ]
             ]
           },
           {
@@ -484,7 +666,12 @@
         "blocks": [
           {
             "type": "table",
-            "headers": ["Symptom", "What I checked", "Root cause", "Fix"],
+            "headers": [
+              "Symptom",
+              "What I checked",
+              "Root cause",
+              "Fix"
+            ],
             "rows": [
               [
                 "Miami could not reach the DHCP server's subnet",
