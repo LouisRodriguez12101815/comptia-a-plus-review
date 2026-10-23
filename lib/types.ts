@@ -56,6 +56,9 @@ export type Flashcard = {
 };
 
 export type Question = {
+  /** Explicit primary scored objective per exam; chapter membership is not assessment evidence. */
+  objectiveIds?: Partial<Record<ExamCode, string[]>>;
+  sourceUrls?: string[];
   id: string;
   topicId: string;
   examCodes?: ExamCode[];

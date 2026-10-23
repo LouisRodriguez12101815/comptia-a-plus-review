@@ -5620,7 +5620,7 @@
         "blocks": [
           {
             "type": "paragraph",
-            "text": "Use network transfer services when the network is practical; use AWS Snow Family devices when physical transfer is appropriate for very large datasets or constrained connectivity. AWS Backup centralizes supported backup policies; Storage Gateway supports hybrid storage integration."
+            "text": "DataSync provides managed online transfers; Storage Gateway supplies hybrid file/volume/tape interfaces. AWS Backup centralizes supported backup policies. Snowball Edge is restricted to existing customers since November 7, 2025, and Snowcone is discontinued. For new physical-transfer designs evaluate Data Transfer Terminal or partners; Outposts addresses relevant edge-compute needs."
           }
         ]
       }
@@ -5649,7 +5649,7 @@
               "Subnets divide VPC address space and are associated with a single Availability Zone.",
               "Route tables determine where traffic is sent.",
               "An internet gateway enables internet routing for appropriately configured public resources.",
-              "A NAT gateway supports outbound internet access for resources in private subnets without making those resources directly internet-routable."
+              "In the zonal public-NAT IPv4 design, private-subnet default routes point to a public NAT gateway with an EIP and a path through the VPC internet gateway. A private NAT cannot provide internet egress through an IGW. Native IPv6 outbound-only egress uses an egress-only IGW; NAT64/DNS64 serves different translation requirements. Regional NAT is a separate current multi-AZ option."
             ]
           }
         ]
@@ -5748,7 +5748,7 @@
           },
           {
             "type": "paragraph",
-            "text": "Multi-AZ primarily improves database availability. Read replicas primarily scale read workloads. Do not treat them as interchangeable."
+            "text": "For a single-standby RDS Multi-AZ DB instance, the standby is for availability, not reads. Multi-AZ DB clusters have readable standbys. Asynchronous read replicas offload reads and can lag; Aurora has its own reader/failover architecture."
           }
         ]
       }
@@ -5970,6 +5970,114 @@
             ]
           }
         ]
+      },
+      {
+        "id": "objective-clf-c02-1-1",
+        "title": "1.1 — Cloud benefits under changing demand",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Agility shortens the experiment/provisioning cycle; elasticity adjusts allocated capacity as demand changes. Scalability describes the ability to handle different load sizes, including planned growth.",
+              "High availability reduces service interruption across independent failure domains. Fault-tolerant designs aim to continue operating through failures; both require architecture rather than merely buying a larger machine.",
+              "Managed services reduce undifferentiated work, but customers still design permissions, data protection, service configuration and recovery. Global infrastructure helps place workloads near users when data-governance requirements allow it."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A seasonal store has a stable baseline, brief unpredictable peaks and a requirement to stay available after an AZ failure. Which plan best combines elasticity and availability? Choose Use a load-balanced Auto Scaling tier across multiple AZs. Multi-AZ load balancing provides independent serving capacity; Auto Scaling responds to load. A larger single instance or a purchasing commitment does not remove its AZ dependency. Caching may help performance but does not make a single origin application available during failure."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Describe which requirement is met by Auto Scaling, which by multiple AZs, and which would still require database/session-state design. Then change the requirement to predictable growth and explain what changes."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-1-2",
+        "title": "1.2 — Distinguish the six Well-Architected pillars",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Operational excellence concerns operating, observing and improving workloads. Security concerns protecting information and systems; reliability concerns correct operation and recovery after disruption.",
+              "Performance efficiency selects and adapts resource types to requirements. Cost optimization avoids unnecessary spend for a required outcome. Sustainability considers resource/energy efficiency and environmental effects.",
+              "A decision can affect several pillars: rightsizing can improve cost and sustainability, while redundant capacity may increase cost while improving reliability. Identify the primary business requirement rather than assuming every question is cost optimization."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team regularly rehearses recovery from failed components and verifies that the application resumes its required function. Which pillar is most directly addressed? Choose Reliability. Recovery and dependable operation are primarily reliability concerns. Faster resource choices are performance efficiency; environmental impact is sustainability; minimizing spend is cost optimization. Rehearsal and runbooks can also support operational excellence, but recovery is the stated outcome."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Classify a credential-rotation exercise, a deployment runbook, a cache experiment and a resource-cleanup policy by primary pillar; explain one cross-pillar tradeoff for each."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-1-3",
+        "title": "1.3 — Migration strategy, discovery and organizational readiness",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "CAF treats adoption as organizational transformation: business, people, governance, platform, security and operations perspectives require owners and an actionable readiness plan.",
+              "Migration choices include retaining or retiring a workload, rehosting with limited application change, replatforming selected components, and refactoring architecture. Repurchasing replaces software; relocating can move a compatible platform. Choose from constraints, not a universal cloud-first slogan.",
+              "Discover dependencies before migration. Application Migration Service supports server migration; DMS supports database movement/replication patterns; schema conversion may be needed for heterogeneous engines. A migration test includes data validation, cutover, rollback and business acceptance."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A legacy application must leave a data center quickly with minimal code changes. A later project may redesign it. Which initial strategy best fits? Choose Rehost the existing application and validate dependencies/cutover. Rehosting best matches the immediate minimal-change constraint. Refactoring may be a later optimization, retiring removes required functionality, and repurchasing needs its own business/compatibility decision."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Draw discovery, pilot, data synchronization, cutover verification and rollback checkpoints. Explain which CAF perspectives must approve the change and when a managed database might justify replatforming."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-1-4",
+        "title": "1.4 — Economics, licensing and total cost",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Compare total ownership: hardware refresh, facilities, power, cooling, staffing, resilience, software licenses and unused capacity. Usage-based cloud billing changes the cost model but does not guarantee savings.",
+              "BYOL eligibility depends on the vendor contract, product and tenancy. License-included services bundle eligible license cost into the service price. Dedicated Hosts may address physical-host licensing requirements but are not automatically cheapest.",
+              "Rightsize from measured CPU, memory, I/O and business demand before making long commitments. Consider data transfer, idle storage, resilience and operational effort; economies of scale do not remove these line items."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A server application is only busy during business hours. Its license has host-level restrictions. What should be evaluated before claiming AWS will be cheaper? Choose Utilization and shutdown options, license terms/tenancy, transfer, resilience and total operating cost. Total cost depends on demand, valid licensing and the chosen architecture. A large instance hourly rate, accounting classification or account count alone cannot establish savings."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Write an estimate with separate compute, storage, transfer, license and labor assumptions. Compare a continuously running design with an eligible scheduled design and identify which assumptions need measurement."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"
+          }
+        ]
       }
     ]
   },
@@ -6069,6 +6177,114 @@
           {
             "type": "paragraph",
             "text": "Recognize encryption at rest versus encryption in transit. KMS manages encryption keys for integrated services; Secrets Manager stores and can rotate secrets. The exact service matters because 'key' and 'secret' are not interchangeable exam terms."
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-2-1",
+        "title": "2.1 — Service-dependent responsibility boundaries",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "AWS operates physical facilities, hardware and foundational infrastructure. Customers choose access, data classification and application behavior. Shared controls such as patch management have different owners at different layers.",
+              "For EC2, customers patch guest operating systems and applications. For RDS, AWS operates more of the database platform, while customers control data, users, networking and supported configuration. For Lambda, distinguish AWS-managed runtime maintenance from the application code, libraries and configurations the customer supplies.",
+              "Managed services do not transfer responsibility for granting least privilege or deciding whether regulated data may be stored in a chosen location. Verify the actual service model in the scenario."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A company moves its database from EC2 to RDS. Which responsibility remains with the customer? Choose Choosing database-user permissions and protecting its data. The customer still controls database users, permissions and data requirements. Physical facilities and hardware remain AWS responsibilities. The move reduces some platform maintenance, not the need for data governance."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Create EC2/RDS/Lambda responsibility columns for physical security, guest OS, application dependencies, user access and customer data. Explain why one patching answer cannot be reused across all three services."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-2-2",
+        "title": "2.2 — Governance, encryption and audit evidence",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Compliance evidence is contextual: Artifact supplies AWS reports/agreements, not an automatic certification of the customer workload. Verify the services, Regions, controls and regulatory requirements actually in use.",
+              "CloudTrail records supported account/API activity; event history is recent regional management activity, not a complete default object-access log. Configure trails/data events/retention for the investigation requirement. Config records supported resource configuration and rule evaluations; CloudWatch monitors metrics/logs/alarms.",
+              "At-rest encryption and TLS in transit protect different paths. KMS policies and IAM govern use of keys; encrypting a bucket does not by itself prevent an authorized principal from reading data."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An auditor needs AWS compliance reports, a record of who changed a security group and its historical configuration. Which combination fits? Choose Artifact, CloudTrail and AWS Config. Artifact supplies reports, CloudTrail identifies supported API changes and Config preserves configuration history when configured. Monitoring, threat/vulnerability detection and cost tools do not replace those three types of evidence."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Choose management versus data-event logging for security-group changes and S3 object reads, then define retention and centralized access. Explain what an AWS report does not prove about your own configuration."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-2-3",
+        "title": "2.3 — Workforce access, root tasks and credentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Prefer workforce federation through IAM Identity Center and an identity provider. IAM users are long-lived identities when required; groups organize user permissions, while roles are assumed to obtain temporary credentials.",
+              "Protect root with strong authentication, avoid root access keys and restrict root use to tasks that actually require it. Routine administration should use named, auditable access. Root-only task lists and organization centralized-root features must be checked against current IAM guidance.",
+              "Separate authentication from authorization. Managed policies are reusable; inline policies attach to one identity. Least privilege requires actions, resources and conditions suited to the task. Store secrets appropriately rather than embedding them in code or images."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An organization wants employees to use its existing identity provider and applications on EC2 to access S3 without embedded keys. Which design fits? Choose Workforce federation/Identity Center for people and IAM roles for the EC2 workloads. Federation provides named workforce access and roles provide temporary workload credentials. Shared root credentials remove accountability, public buckets remove access restrictions, and groups are not assumable workload identities."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Explain user, group, role, policy and MFA in one access request. Draft a read-only bucket policy scope and identify which principal receives credentials. Name a current root-only task using the official IAM task list."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-2-4",
+        "title": "2.4 — Preventive controls, findings and security resources",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "WAF filters supported application HTTP/S requests; Shield provides DDoS protection. Firewall Manager centrally manages supported security policies across accounts. GuardDuty detects threats; Inspector reports supported workload vulnerabilities; Macie discovers sensitive data in supported S3 content.",
+              "Security Hub aggregates findings/posture information. Trusted Advisor provides recommendations in supported categories, with access/features dependent on the current support offering. Findings do not automatically fix every issue; remediation still needs an owner and validation.",
+              "Use official security documentation, Knowledge Center, the Security Blog and security/compliance resources to verify behavior. Marketplace offers third-party products; neither a listing nor a security-service subscription guarantees compliance."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A security team needs centrally consistent web ACL policies across accounts and vulnerability findings for supported EC2 workloads. Which pair fits those separate needs? Choose Firewall Manager and Amazon Inspector. Firewall Manager manages supported policies across accounts; Inspector supplies vulnerability findings. GuardDuty detects threats rather than replacing vulnerability scanning, Artifact supplies reports, and Macie specializes in S3 data discovery."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Classify each service as primarily preventive, detective, governance or evidence retrieval. For a finding, specify who approves remediation and how you verify the risk is reduced."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
           }
         ]
       }
@@ -6232,8 +6448,224 @@
               "AWS Direct Connect provides dedicated private connectivity.",
               "Site-to-Site VPN uses encrypted tunnels over the internet.",
               "Storage Gateway connects on-premises environments with AWS storage.",
-              "Snow Family devices support offline/edge data transfer scenarios."
+              "Snow devices are a historical offline/edge recognition cue: Snowball Edge is restricted to existing customers and Snowcone is discontinued. Do not recommend ordering Snow devices for an unspecified new customer."
             ]
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-1",
+        "title": "3.1 — Operate once, automate repeatedly",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The console is useful for interactive exploration. CLI commands support scripts; SDKs integrate AWS APIs into application code. CloudFormation models infrastructure declaratively as templates/stacks, including dependencies and repeatable changes.",
+              "A cloud deployment runs in cloud infrastructure; a hybrid design combines environments; on-premises remains a valid deployment context. Connectivity alone is not a migration strategy.",
+              "Choose repeatability and change control for repeated environments. IaC still needs permissions, parameter validation, reviews and safe handling of state/data; a template is not proof that every deployment succeeded."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team must create the same reviewed network and application resources in several test environments. Which operating method best reduces manual configuration drift? Choose Versioned CloudFormation templates with reviewed parameters. CloudFormation describes repeatable infrastructure. Console memory is error-prone; additional keys do not encode infrastructure; CloudTrail records activity rather than provisioning the desired environment."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare a one-time diagnostic console task with a repeatable environment deployment. Describe the inputs, approval, change preview, verification and rollback for the repeatable workflow."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-2",
+        "title": "3.2 — Availability scope and data residency",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A Region contains multiple isolated AZs; an AZ contains one or more data centers. A subnet belongs to one AZ; a VPC is regional. Edge locations support selected edge/network services and are not replacement AZs.",
+              "Multi-AZ design addresses an AZ failure within a Region. Multi-Region recovery addresses regional failure but adds replication, routing, permissions, cost and operational work. It must be compatible with residency restrictions.",
+              "For residency, select permitted processing/storage locations; do not assume more Regions are always required or allowed. For global content delivery, distinguish edge caching from deploying a second application/database Region."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Customer records must stay in one permitted Region, but the application must survive an AZ failure. Which design best fits? Choose Deploy the required tiers across AZs in that permitted Region. Multiple AZs can improve availability while retaining the selected Region. Arbitrary cross-Region copies can violate the stated residency constraint, an edge location is not a database failure domain, and one subnet cannot span AZs."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Draw Region, VPC, AZ and subnet boundaries. Change the requirement to regional DR and list which governance, replication and recovery decisions now require approval."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-3",
+        "title": "3.3 — Compute families and scaling roles",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "General-purpose, compute-optimized, memory-optimized and storage-optimized instance families fit different bottlenecks. Measure CPU, memory, local I/O and networking rather than defaulting to the largest instance.",
+              "EC2 provides guest-OS control. Lambda runs suitable function workloads without server management. ECS and EKS orchestrate containers; Fargate supplies serverless compute for supported ECS/EKS workloads. These are different layers, not interchangeable product names.",
+              "Auto Scaling maintains/adjusts capacity; a load balancer distributes requests. Deployment across AZs and externalized session state are separate availability decisions."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A database cache has high memory pressure but low CPU utilization. It must continue running on EC2. Which first change should be evaluated? Choose A memory-optimized instance family sized from measurements. The stated bottleneck is memory. Compute or local-storage optimization alone does not address it. Purchase model and interruption tolerance are separate from resource-family suitability."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Match a batch CPU job, memory cache, disposable local scratch job and event-triggered function to a resource model. Explain when scaling and load balancing are both necessary."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-4",
+        "title": "3.4 — Database models and migration responsibilities",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "RDS/Aurora fit relational workloads; DynamoDB provides key-value/document access patterns; ElastiCache supplies in-memory caching; Redshift is a data warehouse. These are workload models, not a ranking of universally better databases.",
+              "An EC2-hosted database gives more OS/database administration control and more responsibility. Managed databases reduce selected maintenance tasks but still require access, backup, recovery, network and engine choices.",
+              "DMS supports supported database migration/replication with cutover planning. Heterogeneous migrations can require schema conversion and application changes; moving rows does not prove all procedures, types and queries are compatible."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A business moves an application to a different managed relational engine. It needs existing data and compatible schema/application behavior. What should be planned? Choose Assess schema/application compatibility and use supported migration/replication tools with validation. Schema conversion, application compatibility and validation remain necessary during heterogeneous migration. DMS data movement is not a guarantee that all engine features migrate unchanged. A cache and DNS data do not replace the relational workload."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare managed relational, EC2-hosted relational, NoSQL and warehouse requirements. Plan a migration test with row counts, integrity checks, application queries and a rollback window."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-5",
+        "title": "3.5 — Network services and traffic paths",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "VPC routes select next hops; security groups and NACLs filter traffic at different scopes. Stateful security groups track return traffic; stateless NACL rules require the appropriate return path.",
+              "Direct Connect is dedicated private connectivity, not default end-to-end encryption. Site-to-Site VPN supplies IPsec tunneling. PrivateLink exposes supported services privately; Transit Gateway provides hub routing; peering directly connects compatible VPCs without transitive routing.",
+              "Route 53 supplies DNS and routing policies. CloudFront supplies content delivery/caching; Global Accelerator improves paths to supported regional TCP/UDP endpoints. Match content distribution versus network acceleration requirements."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A company wants a private dedicated link to AWS and also requires encryption in transit. Which statement is correct? Choose Evaluate Direct Connect plus a supported encryption design such as VPN or eligible MACsec, as required. Dedicated/private transport and encryption are different properties. Direct Connect does not encrypt by default; an appropriate VPN/MACsec/application design must meet the actual scope. DNS and NAT do not supply the required physical circuit."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Trace a DNS lookup, content download and private EC2 outbound request. Identify routing, addressing, filtering and encryption separately for each path."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-6",
+        "title": "3.6 — Storage classes, retrieval and recovery",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "S3 is object storage, EBS is persistent block storage in an AZ, instance store is ephemeral, and EFS/FSx provide file-system options. Select access model, sharing, persistence, latency and availability before price.",
+              "S3 Standard suits frequent access; Standard-IA and One Zone-IA introduce access/minimum-duration and resilience considerations. Glacier Instant Retrieval, Flexible Retrieval and Deep Archive have different access/retrieval characteristics. Intelligent-Tiering monitors eligible access patterns; optional archive tiers change retrieval behavior.",
+              "Lifecycle can transition or expire eligible objects by date/age; versioning, replication and AWS Backup serve different recovery needs. A transition policy is not an immutable-retention control, and a replica is not proof of a tested restore."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An archive can tolerate long retrieval times and is rarely accessed, but must remain recoverable for years. What must be checked before choosing the cheapest S3 archival class? Choose Retrieval time/cost, minimum-duration charges, resilience and retention requirements. Storage price alone omits retrieval delay and charges, retention and resilience requirements. Bucket naming and unrelated EC2 sizing do not remove archival retrieval behavior."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare classes for hot assets, infrequently read documents and a long-term archive. State whether each needs immediate retrieval, AZ resilience, version recovery or enforced retention."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-7",
+        "title": "3.7 — AI/ML and analytics service selection",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "SageMaker AI supports building/training/deploying models; Lex builds conversational interfaces. A managed service does not eliminate data-quality, permissions, evaluation and governance decisions.",
+              "Athena runs SQL over data such as S3 datasets; Kinesis Data Streams supports streaming records consumed by applications; Firehose handles managed delivery; Glue integrates/transforms/catalogs data; QuickSight provides BI dashboards.",
+              "Choose by the work: conversational intent, model training, ad hoc query, streaming processing, managed delivery, transformation or visualization. A multi-service pipeline may use several of these capabilities."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team has CSV data in S3, wants occasional SQL analysis and then business dashboards. It does not need model training. Which pair is most appropriate? Choose Athena for SQL and QuickSight for BI visualization. Athena and QuickSight match analysis and visualization. Lex/SageMaker AI address conversational/model workloads, while keys, DNS, queues and block storage are not the requested query/dashboard engines."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Design a telemetry-to-dashboard pipeline. Identify which component ingests, transforms, stores, queries and visualizes data; then explain when a custom streaming consumer is needed instead of managed delivery."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-3-8",
+        "title": "3.8 — Recognize the service categories beyond core infrastructure",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Integration: SQS queues work, SNS publishes to subscribers, EventBridge routes events, and Step Functions coordinates workflows. Select delivery and coordination behavior rather than matching the word event alone.",
+              "Business applications include Connect for contact centers and SES for email. Developer tools include CodeBuild for builds, CodePipeline for delivery orchestration and X-Ray for distributed tracing. End-user computing includes AppStream, WorkSpaces and WorkSpaces Secure Browser with different delivery models.",
+              "Amplify supports frontend/mobile application development; IoT Core supports connecting/managing interactions with IoT devices. AWS Support is customer enablement. Verify current availability and the actual service capability before selecting a product merely by category."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A project needs an application build stage, a deployment pipeline and visibility into requests across services. Which combination fits? Choose CodeBuild, CodePipeline and X-Ray. Build, delivery orchestration and tracing map to CodeBuild, CodePipeline and X-Ray. The alternatives address desktop/email/DNS, queue/storage/reports or contact-center/security/network needs."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Match a contact center, transactional email, streamed desktop app, managed desktop, browser-only workspace, mobile frontend and IoT sensor connection to the relevant service category."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
           }
         ]
       }
@@ -6341,6 +6773,87 @@
               "Support-plan questions test which level of guidance and response is appropriate; avoid memorizing old plan details without checking the current AWS Support page.",
               "AWS Partner Network includes partners that provide software and professional services around AWS."
             ]
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-4-1",
+        "title": "4.1 — Purchase commitments, capacity and transfer",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "On-Demand avoids a long-term commitment. Savings Plans commit an eligible hourly spend for a term; Reserved Instance discounts have scope/attribute rules. A regional RI discount does not itself reserve capacity in a selected AZ; capacity reservation is a separate requirement.",
+              "Spot fits interruption-tolerant work and spare capacity; Dedicated Hosts address eligible physical-host/tenancy needs. Compare total cost and restart overhead instead of assuming any model always wins.",
+              "Review RI flexibility and eligible consolidated-billing discount sharing within Organizations. Data transfer into/out of services, across AZs/Regions and to users has service-specific rules. Storage pricing includes requests, retrieval, minimum durations and transitions as well as stored GB."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team buys a regional RI discount and then assumes a particular AZ is guaranteed to have capacity at launch time. What is the problem? Choose A regional discount and an AZ capacity reservation are different commitments. Discount eligibility does not guarantee zonal capacity. Review the particular RI scope and a suitable capacity-reservation design when launch availability matters. Savings Plans do not reserve unlimited capacity, and Spot remains interruptible."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare a commitment discount, a capacity reservation and dedicated tenancy for the same workload. Add transfer and archive-retrieval costs to show why hourly compute price is not the whole estimate."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-4-2",
+        "title": "4.2 — Estimate, observe, allocate and alert",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Pricing Calculator estimates a planned design from assumptions. Cost Explorer analyzes costs/usage and supports forecasts; detailed billing exports support more granular analysis. None of these validates a bad architecture assumption automatically.",
+              "Budgets can alert on actual/forecast amounts and utilization/coverage; notifications and billing data have delay. A budget is not an instantaneous spending cap. Any budget action requires separate supported configuration and permissions.",
+              "Organizations provides consolidated billing. Apply and activate eligible cost-allocation tag keys for billing analysis; merely attaching a tag does not guarantee its immediate appearance in reports. Account boundaries and allocation rules determine financial ownership."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Resources are tagged Project=Website, but finance cannot group their costs by that key. What should be checked first? Choose Whether the user-defined tag key is activated for cost allocation and billing data has become available. User-defined cost allocation tags need activation and time to appear in billing data. Network rules, CloudTrail and larger instances do not activate billing dimensions."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Build a paper estimate, define actual/forecast budget alerts and describe the notification test. Activate a cost tag in a permitted training account or explain the workflow without creating paid resources."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-clf-c02-4-3",
+        "title": "4.3 — Support choices and escalation resources",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Current AWS documentation lists Basic Support and paid offerings including Business Support+, Enterprise Support and Unified Operations. Compare current technical-support scope, response targets and designated guidance rather than memorizing retired plan names or treating response targets as resolution guarantees.",
+              "Use documentation, re:Post/Knowledge Center and Prescriptive Guidance for self-service knowledge. Support Center handles support cases; support entitlements determine the available channel and technical response. Trusted Advisor and AWS Health/Health API expose different recommendation and health signals.",
+              "AWS Partners include software vendors and integrators; Marketplace distributes third-party products and purchasing entitlements. Professional Services and solutions architects address different assistance needs. Report suspected AWS-resource abuse through the appropriate Trust and Safety process, rather than sending it to an unrelated billing alert."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team needs information about an AWS event affecting its account resources, rather than a general architecture recommendation. Which resource should it check? Choose AWS Health and the relevant Health API/dashboard information. AWS Health provides relevant health/event information; Trusted Advisor recommendations and cost estimation serve different purposes. Marketplace and infrastructure templates do not replace the event/health signal."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare current support offerings using the official plan table, record the checked date, and distinguish first-response targets from guaranteed resolution. Identify the right channel for a bill question, an outage and suspected abuse."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
           }
         ]
       }
@@ -6459,7 +6972,7 @@
     ],
     "title": "SAA Core Services — Storage and Data Movement",
     "chapter": "SAA Core · Storage",
-    "summary": "S3 architecture and classes, EBS/EFS/FSx choices, lifecycle, replication, transfer acceleration, DataSync, Storage Gateway, and Snow Family.",
+    "summary": "S3 architecture and classes, EBS/EFS/FSx choices, lifecycle, replication, transfer acceleration, DataSync, Storage Gateway, and Snowball Edge (existing customers only; evaluate current alternatives).",
     "sections": [
       {
         "id": "s3",
@@ -6470,7 +6983,7 @@
             "items": [
               "S3 is object storage with bucket-level namespace and object keys.",
               "Versioning protects against overwrite/deletion scenarios and is a prerequisite for some replication patterns.",
-              "Lifecycle policies transition or expire objects based on access and retention requirements.",
+              "Choose storage classes using access and retention requirements, then configure S3 Lifecycle by dates/object age or noncurrent-version age. Lifecycle is not a last-access trigger; Intelligent-Tiering monitors access to move eligible objects among access tiers.",
               "Storage class choice depends on access frequency, retrieval-time tolerance, and minimum storage/retrieval charges.",
               "Presigned URLs provide temporary access without public bucket permissions."
             ]
@@ -6528,8 +7041,8 @@
                 "Storage Gateway"
               ],
               [
-                "Physical transfer / edge appliance",
-                "Snow Family"
+                "Physical transfer / edge appliance (verify availability)",
+                "Snowball Edge (existing customers only; evaluate current alternatives)"
               ],
               [
                 "Faster S3 uploads over long geographic distance",
@@ -6674,7 +7187,7 @@
             "type": "bullets",
             "items": [
               "RDS manages supported relational engines; Aurora is AWS-built and compatible with MySQL/PostgreSQL ecosystems.",
-              "Multi-AZ is primarily an availability/failover design.",
+              "A single-standby RDS Multi-AZ DB instance provides synchronous standby/failover, and its standby cannot serve reads. A Multi-AZ DB cluster has two readable standbys; Aurora replicas can also serve reads and be failover candidates.",
               "Read replicas are primarily for read scaling and can also support certain DR/reporting patterns.",
               "RDS Proxy pools connections and can improve application resilience around connection storms.",
               "Automated backups and snapshots serve different retention and recovery workflows."
@@ -6692,7 +7205,7 @@
               "Partition-key design determines distribution and access efficiency.",
               "On-demand capacity fits unpredictable traffic; provisioned capacity fits workloads where capacity can be planned and tuned.",
               "Global secondary indexes provide alternate query keys; global tables replicate across Regions.",
-              "DAX is an in-memory cache designed for DynamoDB."
+              "DAX is an in-memory DynamoDB-compatible cache. Its microsecond benefit applies to eventually consistent cache hits; strong reads pass through to DynamoDB, and cache misses/expiry still matter."
             ]
           }
         ]
@@ -6761,7 +7274,7 @@
               "Prefer roles and temporary credentials over long-lived access keys for workloads.",
               "Identity-based policies attach to principals; resource-based policies attach to resources that support them.",
               "An explicit deny overrides an allow.",
-              "Permissions boundaries limit the maximum permissions an identity can receive; they do not grant permissions by themselves.",
+              "A permissions boundary limits identity-policy grants and grants to a role ARN; it does not grant access. Same-account direct resource-policy grants to an IAM user ARN or assumed-role session ARN have implicit-deny exceptions. Applicable explicit denies still override allows.",
               "Cross-account access commonly combines a trusted role/resource policy with the caller's permission to assume or use it."
             ]
           }
@@ -6865,7 +7378,7 @@
               ],
               [
                 "Weighted",
-                "Split traffic by configured weights"
+                "Select DNS answers probabilistically by relative weights; caching prevents exact request splits"
               ],
               [
                 "Latency",
@@ -6885,7 +7398,7 @@
               ],
               [
                 "Multi-value answer",
-                "Return multiple healthy records"
+                "Return multiple records with health preference; all-unhealthy fallback can return unhealthy records"
               ]
             ]
           }
@@ -6968,7 +7481,7 @@
               "Use temporary credentials for applications, automation, and cross-account access.",
               "Apply least privilege and use explicit denies or service-control guardrails where the requirement calls for centralized restrictions.",
               "Use resource policies where supported to grant controlled cross-account or service access.",
-              "Permissions boundaries limit an identity's maximum permissions but do not grant permissions themselves."
+              "Permissions boundaries do not grant permissions. Apply the identity-policy intersection model, then evaluate direct resource-policy grants by principal type; a same-account grant to a user ARN or role-session ARN can bypass an implicit boundary deny, but not an applicable explicit deny."
             ]
           }
         ]
@@ -7039,6 +7552,87 @@
           {
             "type": "paragraph",
             "text": "CloudTrail records API activity, Config evaluates configuration state, CloudWatch provides metrics/logs/alarms, Security Hub aggregates security findings, and centralized logging supports investigation. The exam often asks which control is preventive, detective, or corrective."
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-1-1",
+        "title": "1.1 — Evaluate a complete authorization request",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Identify the principal (human, role or role session), action, resource, account boundary and conditions before evaluating policy. Federate workforce access where appropriate; use roles/STS for temporary workload credentials.",
+              "An identity-policy allow is not sufficient when an applicable explicit deny, SCP, boundary or session constraint prevents it. Boundaries/SCPs do not grant access. Direct same-account user/session resource grants have documented implicit-deny exceptions; key policies and service rules still matter.",
+              "For cross-account role use, the target role trust permits the source principal, the caller has sts:AssumeRole permission and the assumed role has required resource permissions. Control Tower and Organizations provide multi-account governance; choose the least privilege that matches the workload."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A workload in Account A must read a bucket in B with temporary credentials. The role in B has s3:GetObject permissions but no trust for A. What is missing? Choose An appropriate trust relationship plus caller sts:AssumeRole permission. Role resource permissions describe what the assumed role can do; trust/caller permissions allow assumption. Public access violates the intended restricted design. Boundaries and SCPs do not grant role trust or resource access."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Trace caller identity, trust policy, assumed session, role permissions, bucket policy and any KMS key policy. Add an explicit deny and explain its effect; then distinguish a role ARN grant from a session ARN grant."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-1-2",
+        "title": "1.2 — Secure the request path and application identity",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Separate public entry points, private application tiers and data stores. Security groups permit required resource flows; NACLs evaluate ordered stateless subnet rules including return traffic. A private subnet name or missing public IPv4 is not proof of isolation for every address family.",
+              "Use supported endpoints for private service access, selecting gateway versus interface endpoints deliberately. Endpoint policies, IAM and resource policies work together. Direct Connect is not default encryption; VPN/TLS/MACsec requirements must be evaluated separately.",
+              "WAF filters supported HTTP/S attacks, Shield addresses DDoS, GuardDuty detects threats, Inspector assesses vulnerabilities and Cognito can provide application user identity. These controls solve separate problems; workload credentials belong in suitable role/secret mechanisms."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A private application needs frequent S3 access without NAT processing. Its users still require application authentication. Which design addresses both without conflating them? Choose An S3 gateway endpoint with appropriate policies, plus an application identity/authentication design. A gateway endpoint changes the S3 network path; it does not authenticate application users or grant all data access. IAM/resource policies and user identity remain separate. Public buckets and unencrypted-private assumptions do not meet the stated design."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Draw a complete client-to-database path, labeling TLS termination, user authentication, service role, endpoint access and network rules. Explain why a threat-detection finding is not a preventive access policy."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-1-3",
+        "title": "1.3 — Keys, retention, recovery and sharing",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "KMS key policies, IAM permissions and encryption context/conditions determine key use; encrypting data does not neutralize an overly broad read permission. Plan key rotation/lifecycle and certificate renewal; ACM TLS certificates serve a different role from application secrets.",
+              "S3 Block Public Access, ownership and resource policies restrict access. A presigned URL is transferable bearer access within the signing principal permissions and credential lifetime, not recipient-bound identity. Use a separate authentication/control design if sharing must be nontransferable.",
+              "Versioning preserves previous versions; replication needs both buckets versioned, permission/encryption setup and status validation. Existing objects need a backfill strategy. Backup, deletion recovery and Object Lock retention are distinct requirements; test recovery with the intended permissions."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A compliance requirement says archived objects must not be deletable before their retention date, even by ordinary administrators. Which design should be evaluated? Choose Appropriate S3 Object Lock retention configuration and controlled administration, with backup/restore validation. Object Lock provides retention controls suited to the specified mode/permissions. Lifecycle schedules storage actions, replication makes copies and presigned URLs authorize requests; none alone guarantees immutable retention. Evaluate governance versus compliance mode and the applicable legal requirements."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Build a source/destination retention-and-access matrix: writer, reader, replicator, key administrator and recovery operator. Test overwrite, ordinary delete, explicit version delete and restore in a permitted disposable environment."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
           }
         ]
       }
@@ -7148,6 +7742,60 @@
           {
             "type": "paragraph",
             "text": "Architectures should anticipate service quotas, retry transient failures with appropriate backoff, use idempotent operations where possible, and avoid retry storms. Health checks must measure the user-facing dependency that actually determines availability."
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-2-1",
+        "title": "2.1 — Loose coupling with correct failure semantics",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use queues to absorb bursts and separate producer/worker scaling. SQS standard queues are at-least-once with best-effort ordering; processing must be idempotent. Visibility hides in-flight work temporarily, and successful processing must be acknowledged/deleted.",
+              "SNS fans out to subscribers; EventBridge routes events; Step Functions orchestrates stateful workflows; API Gateway supplies managed API entry capabilities. Choose synchronous response, queue, event bus or orchestration from required behavior, not a shared event keyword.",
+              "Stateful sessions/files on one instance prevent easy horizontal replacement. Externalize appropriate state, choose container/serverless services based on runtime/operational constraints, and scale workers against backlog and processing time rather than an unrelated metric."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A worker commits an order side effect but crashes before deleting its SQS message. The order must not be charged twice after retry. What is required? Choose An idempotency key or equivalent durable deduplication around the side effect. At-least-once delivery and crash windows require application idempotency. Visibility can reduce concurrent processing but is not exactly-once protection. Queue access and ALB health do not atomically deduplicate the business operation."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Walk through publish, receive, visibility expiry, side effect, acknowledgement and DLQ redrive. Inject failure before and after the side effect and identify which durable record prevents duplicate business effects."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-2-2",
+        "title": "2.2 — Failure domains, health and recovery evidence",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Deploy independent serving capacity across AZs, configure load-balancer target health and ASG ELB health checks where application failures should cause replacement, and maintain enough surviving capacity. ALB can fail open when all targets are unhealthy; a health check is not a universal safety barrier.",
+              "Single-standby RDS Multi-AZ, readable Multi-AZ clusters and Aurora replicas have different read/failover mechanics. Match recovery behavior, client reconnects, replication and backup to the database deployment rather than using one standby slogan.",
+              "Choose DR from measured RTO/RPO and test data recovery, dependencies, credentials, quotas, routing and startup order. Backup/restore, pilot light, warm standby and active/active have relative cost/recovery tradeoffs, not universal minute guarantees. Workload metrics, logs and traces supply evidence of recovery."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An ALB detects unhealthy application targets, but their EC2 status checks pass and the ASG never replaces them. What configuration should be reviewed? Choose ASG Elastic Load Balancing health-check integration and grace-period behavior. Target-group application checks and ASG replacement checks are separate. Enable the appropriate ELB health checks and grace period, and verify replacement behavior. Storage lifecycle, database replicas and audit logging do not establish that integration."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Test instance loss, application-only failure, AZ loss and all-target failure separately. Record recovery time and validate the data recovery point, then compare both against the business targets."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
           }
         ]
       }
@@ -7267,6 +7915,141 @@
             ]
           }
         ]
+      },
+      {
+        "id": "objective-saa-c03-3-1",
+        "title": "3.1 — Storage access, throughput and capacity",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "EBS provides persistent AZ-scoped block volumes; volume type and provisioned IOPS/throughput must match the instance and workload. A volume remaining after stop differs from DeleteOnTermination behavior. Instance store is scratch storage that can be lost on stop/termination or host loss.",
+              "EFS provides shared Linux/POSIX-style access; choose Regional versus One Zone, throughput and performance options against requirements. FSx alternatives target Windows, Lustre, ONTAP or OpenZFS workloads; a shared-file requirement does not automatically fit a block volume.",
+              "S3 handles objects with key-based access; multipart/parallel access, object size and request patterns affect performance. DataSync and hybrid gateways solve movement/interface needs rather than making every storage service interchangeable. Measure IOPS, throughput, latency and concurrency separately."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Two application servers in different AZs need simultaneous access to the same Linux file tree. They cannot be changed to use an object API. Which initial design is most appropriate? Choose A Regional EFS file system with suitable mount targets and throughput settings. Regional EFS fits shared cross-AZ Linux file access. EBS attachments are AZ-scoped, instance stores do not synchronize automatically and object interfaces are not identical to POSIX file semantics."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: For a small-I/O database and a large sequential file workload, separate required IOPS from MB/s. Check instance limits as well as storage limits and compare persistent, shared and disposable storage choices."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-2",
+        "title": "3.2 — Choose and scale compute for the bottleneck",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Match EC2 family/size to CPU, memory, storage, network and accelerator demand. Horizontal scaling needs a partitionable/stateless design; vertical scaling changes one node and retains its failure boundary. Benchmark before assuming the largest size is efficient.",
+              "Target tracking needs a metric that changes proportionally with capacity, such as a suitable average utilization or request metric. Step and scheduled scaling fit different triggers. For queues, consider backlog per worker and processing duration; also plan warmup, scale-in and service quotas.",
+              "For Lambda, consider memory/CPU coupling, concurrency, execution limits and downstream connection pressure. ECS/EKS orchestrate containers; Fargate supplies supported serverless task compute. Batch/EMR target suitable batch/distributed processing. Placement/EFA choices have supported-instance and topology constraints."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A worker fleet is CPU-idle while processing a growing backlog of slow external API calls. Which scaling signal best reflects the business bottleneck? Choose A suitable backlog-per-worker/processing-time metric, with downstream rate limits considered. Backlog and processing time capture unmet work even when the process waits on I/O. Scaling must respect downstream capacity and rate limits. CPU alone can remain low; identity count and bucket age do not measure work demand."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Choose metrics and scale limits for CPU-bound, I/O-bound and scheduled workloads. Explain how adding workers can worsen throttling if a downstream API is already saturated."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-3",
+        "title": "3.3 — Database access patterns, consistency and connections",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Relational replicas offload suitable reads but may lag. RDS Proxy pools supported connections; reader endpoints distribute connections rather than guaranteeing equal query cost. Distinguish single-standby Multi-AZ, readable Multi-AZ clusters and Aurora read/failover roles.",
+              "DynamoDB partition keys must spread load and support access patterns. GSIs add alternate keys and use eventually consistent reads; LSIs have creation/key constraints. Strong and eventual reads and write item sizes consume capacity differently; round per-request size requirements before estimating provisioned demand.",
+              "On-demand adapts capacity but retains warm-throughput/partition/table limits. DAX accelerates eventual cache hits, not strongly consistent reads. ElastiCache reduces repeated work where freshness requirements permit. Database-engine and migration choices require schema, transaction, query and compatibility analysis."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A user must immediately read a just-written DynamoDB value with a strong consistency requirement. Which design avoids relying on stale cached data? Choose A supported strongly consistent table read rather than assuming a DAX cache hit is strongly consistent. Use a supported strong read for that requirement. DAX eventual caches and GSIs do not guarantee the same freshness, and asynchronously replicated paths may lag. A fast response is not a consistency guarantee."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Estimate capacity for mixed item sizes and read consistency, then change the access pattern to a hot partition. Explain when a cache, a GSI, a different key or a relational replica addresses the actual bottleneck."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-4",
+        "title": "3.4 — Network topology, transport and DNS behavior",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Plan nonoverlapping address ranges, AZ subnets and route tables, including return paths and IPv4/IPv6 differences. Select gateway/interface endpoints, PrivateLink, peering or Transit Gateway from service exposure versus network-routing requirements.",
+              "ALB serves HTTP-layer routing; NLB serves TCP/UDP/TLS connection requirements; GWLB supports appropriate virtual network-appliance insertion. CloudFront caches/delivers HTTP content, while Global Accelerator supplies static anycast entry and AWS-network routing to supported endpoints.",
+              "Route 53 weighted routing selects DNS responses probabilistically, with caching effects; latency routing uses AWS latency information, not simply map distance. Multivalue can return up to eight records and depends on health-check configuration, including an all-unhealthy fallback. DNS TTL limits how quickly clients observe failover."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A global UDP application requires static anycast entry addresses and routing to healthy regional endpoints. It does not use HTTP content caching. Which option fits? Choose Global Accelerator with supported regional endpoints. Global Accelerator addresses supported TCP/UDP application entry and network paths. CloudFront and S3 Transfer Acceleration are not generic UDP proxies; DNS geolocation selects answers rather than providing the stated accelerator capability."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare a public HTTP site, UDP game endpoint and security-appliance path. Include addressing, health, routing, TLS/transport and DNS caching in the decision rather than choosing by service familiarity."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-3-5",
+        "title": "3.5 — End-to-end ingestion and transformation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Kinesis Data Streams supports streaming records consumed by applications; ordering is scoped to shard/partition-key sequencing, with producer retry and consumer checkpoint behavior to design. Firehose supplies managed buffered delivery and optional transformations to supported destinations.",
+              "Use Glue for suitable integration, transformation and catalog work; EMR for appropriate distributed processing; Athena for queries and BI tools for visualization. Partitioned/columnar formats can reduce scanned data, but conversion and partition strategy must preserve schema and query requirements.",
+              "DataSync, Storage Gateway and supported transfer services address different movement and interface needs. Secure ingestion endpoints, roles, encryption, data-lake access and catalog governance. Design throughput, buffering, latency, replay and malformed-record handling together."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Sensors require custom per-device stream processing and replay, followed by analytics in S3. Which design best preserves the processing requirement? Choose Kinesis Data Streams with device partition keys and checkpointed consumers, followed by suitable S3 delivery/analytics. A stream and consumers provide custom processing/replay within configured retention and per-key ordering design. Managed delivery is useful downstream but does not replace all stream-consumer semantics. Email and overwrites do not satisfy the data pipeline."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Sketch ingestion, authentication, buffer, transformation, error path, S3 partitioning, catalog, query and dashboard. Compare .csv and columnar output for a specific query and test replay without duplicate side effects."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+          }
+        ]
       }
     ]
   },
@@ -7358,6 +8141,114 @@
             "type": "callout",
             "kind": "tip",
             "text": "SAA cost questions frequently hide the cost driver in data transfer or idle capacity rather than in the obvious service price."
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-1",
+        "title": "4.1 — Price the complete storage lifecycle",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Compare object/file/block access requirements before cost. Include stored bytes, provisioned performance, requests, transitions, retrieval, minimum-duration/object-size rules, replicas and transfers. The cheapest GB price may violate retrieval or durability requirements.",
+              "Choose lifecycle transitions by eligible object/version age and retention needs. Handle noncurrent versions and multipart leftovers deliberately. Intelligent-Tiering monitors eligible access patterns; archive tiers can require restore steps. Requester Pays changes who is billed for supported request/transfer charges, not ownership or authorization.",
+              "Size persistent storage and backup retention from recovery/compliance needs. Delete only genuinely unused volumes/snapshots under policy; snapshot dependencies mean billed savings may differ from visible snapshot count. Compare DataSync/transfer/gateway options against scale, bandwidth and change rate."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A team archives small objects and retrieves them frequently. Its storage bill falls but request/retrieval charges rise sharply. What did the design omit? Choose Object size, access frequency, retrieval and minimum-duration/request economics. Storage-class selection requires the full access and lifecycle cost, including small-object and retrieval constraints. Identity-group count does not explain it; archives are not universally instant/free, and block storage is not a blanket fix for an object workload."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Write a symbolic monthly cost comparison for hot storage versus an archival tier, including a retrieval event and early deletion. Explain which measurements determine the break-even decision."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-2",
+        "title": "4.2 — Commit the baseline and scale the variable work",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Right-size and measure before choosing commitments. Use eligible Savings Plans/Reserved discounts for a stable baseline; On-Demand for flexibility; Spot for interruption-tolerant work after accounting for capacity/restart behavior. A discount is not a capacity guarantee.",
+              "Scale off idle capacity, schedule suitable non-production environments and compare serverless versus containers/VMs for actual runtime, concurrency and operational needs. Lambda is not automatically cheapest at every utilization, and Dedicated Hosts serve tenancy/license requirements rather than universal savings.",
+              "Compute topology also determines load-balancing, network and resilience costs. Select ALB/NLB/GWLB and horizontal/vertical/suspend/hibernate choices from protocol, state and availability requirements. Outposts/hybrid choices add operational and placement considerations."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An application has a measured stable baseline plus short seasonal peaks, and cannot tolerate interruption for customer transactions. Which purchase strategy should be evaluated? Choose A suitable baseline commitment with elastic On-Demand capacity for peaks. Commitment on measured baseline plus flexible peak capacity matches predictable and variable demand. Committing to peaks risks unused spend; Spot-only ignores interruption constraints; dedicated tenancy is not a universal cost discount."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Separate baseline and peak spend, include load balancer/transfer/operational costs, and compare a scheduled development environment with a continuously required production environment."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-3",
+        "title": "4.3 — Database cost without losing correctness",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Choose engine/model from transactions, access patterns, schema, scale and compatibility; compare relational, key-value/document, time-series and analytical workloads deliberately. A low instance rate is not a reason to select an incompatible data model.",
+              "For RDS/Aurora evaluate instance/storage right-sizing, appropriate purchase models, replicas, connections and retention. For DynamoDB compare on-demand/provisioned demand economics, key distribution, indexes and cache cost; a cache adds its own operations and consistency requirements.",
+              "Backups, cross-Region copies, retention and migrations all cost money but meet different requirements. Heterogeneous migration needs schema/application validation. Estimate the cost of read scaling, data retention and recovery before eliminating safeguards for savings."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: An RDS instance averages low CPU, but the team has not measured memory, I/O latency, connections or peak demand. What is the best cost-optimization next step? Choose Measure the full workload and evaluate a smaller suitable configuration against peaks and recovery requirements. Low average CPU is only one signal. Memory, I/O, connections, peaks and resilience constrain safe rightsizing. Removing recovery controls or adding an unvalidated cache can change correctness or availability rather than remove waste."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Compare two database configurations using peak demand, storage growth, backup retention and recovery goals. State when an index/cache/replica lowers total work and when it adds unnecessary cost."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "objective-saa-c03-4-4",
+        "title": "4.4 — Network cost follows the traffic path",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Identify bytes and paths: same-AZ, cross-AZ, cross-Region, service endpoint, NAT, dedicated link and internet delivery. Data-transfer pricing is service-specific; do not assume all same-Region traffic is free or all cross-AZ paths charge identically.",
+              "An S3 gateway endpoint can avoid NAT processing for eligible traffic without gateway-endpoint hourly/data fees. Interface endpoints have different charging/availability properties. For zonal NAT compare same-AZ egress per AZ with a shared dependency; regional NAT is a distinct current multi-AZ option.",
+              "Compare Direct Connect, VPN and internet designs using bandwidth, encryption, redundancy and business targets. CloudFront may reduce repeated origin work/transfer, but include CDN/request/invalidations and cache hit behavior. Do not minimize transfer by removing required failure isolation."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: Private instances send large S3 volumes through a NAT gateway. The workload must keep S3 access private and maintain its AZ-resilience design. What should be evaluated first? Choose S3 gateway endpoints with the relevant subnet route-table associations and access policies. Gateway endpoints can remove eligible S3 traffic from NAT without gateway-endpoint charges. Validate route/policy scope. A single zonal NAT can introduce an AZ dependency, public access changes authorization, and interface endpoint costs are different."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Transfer exercise: Draw each byte path and cost category before/after the endpoint change. Include cross-AZ dependencies and check service pricing rather than using a universal transfer-rate assumption."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
           }
         ]
       }

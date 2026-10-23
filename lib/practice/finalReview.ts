@@ -97,7 +97,7 @@ const awsClf: FinalReview = {
   traps: [
     { id: "clf-watch-trail-config", prompt: "Metrics and alarms vs API audit vs configuration history", answer: "CloudWatch = metrics/logs/alarms; CloudTrail = API activity; Config = configuration history/rules", wrong: ["CloudTrail = metrics; Config = API activity; CloudWatch = DNS", "All three are interchangeable", "CloudWatch = compliance reports; CloudTrail = budgets; Config = object storage"], detail: "These three services appear together often because they observe different parts of an AWS environment.", hook: "Watch metrics. Trail API calls. Config configuration." },
     { id: "clf-storage", prompt: "Object vs block vs shared file storage", answer: "S3 = object; EBS = block; EFS/FSx = file", wrong: ["S3 = block; EBS = object; EFS = DNS", "EBS = shared file only; S3 = relational database", "All AWS storage is object storage"], detail: "Storage questions often become easy once you classify the storage model first.", hook: "Object S3. Block EBS. File EFS/FSx." },
-    { id: "clf-db", prompt: "Availability vs read scaling for RDS", answer: "Multi-AZ = availability; read replica = read scaling", wrong: ["Multi-AZ = analytics; read replica = DNS", "Read replica = primary availability feature; Multi-AZ = only cheaper storage", "They are the same feature"], detail: "Multi-AZ and read replicas solve different primary problems.", hook: "AZ for availability. Replica for reads." },
+    { id: "clf-db", prompt: "Single-standby RDS DB instance: availability vs read scaling", answer: "Multi-AZ = availability; read replica = read scaling", wrong: ["Multi-AZ = analytics; read replica = DNS", "Read replica = primary availability feature; Multi-AZ = only cheaper storage", "They are the same feature"], detail: "A single-standby Multi-AZ DB instance has a non-readable standby. Multi-AZ DB clusters have readable standbys; asynchronous read replicas can lag.", hook: "AZ for availability. Replica for reads." },
     { id: "clf-cost-tools", prompt: "Estimate vs analyze vs alert on AWS costs", answer: "Pricing Calculator = estimate; Cost Explorer = analyze; Budgets = threshold/alert", wrong: ["Budgets = estimate architecture; Config = cost analysis", "CloudTrail = estimate; Cost Explorer = DNS", "All three only work before deployment"], detail: "Pricing Calculator is pre-deployment estimation; Cost Explorer analyzes usage; Budgets monitors thresholds.", hook: "Calculate first. Explore spend. Budget alerts." },
     { id: "clf-sg-nacl", prompt: "Stateful resource control vs stateless subnet control", answer: "Security group = stateful; network ACL = stateless", wrong: ["Security group = stateless; NACL = stateful", "Both are DNS policies", "Both attach only to IAM users"], detail: "Security groups and NACLs operate at different layers and have different state behavior.", hook: "SG remembers. NACL does not." },
     { id: "clf-role-user", prompt: "Application needs AWS permissions without a stored long-lived key", answer: "Use an IAM role with temporary credentials", wrong: ["Use the root user", "Embed a shared IAM user's access key", "Make the resource public"], detail: "Roles are the preferred pattern for AWS workloads that need permissions.", hook: "Workload = role." },
@@ -116,7 +116,7 @@ const awsSaa: FinalReview = {
   trapsPerRound: 4,
   minutes: 15,
   traps: [
-    { id: "saa-multiaz-replica", prompt: "RDS availability vs read scaling", answer: "Multi-AZ = availability/failover; read replica = read scaling", wrong: ["Multi-AZ = read scaling only; read replica = automatic failover", "They are the same feature", "Read replica = encryption; Multi-AZ = DNS"], detail: "The primary design goal differs even though both may involve another database instance.", hook: "AZ = availability. Replica = reads." },
+    { id: "saa-multiaz-replica", prompt: "Single-standby RDS DB instance: availability vs read scaling", answer: "Multi-AZ = availability/failover; read replica = read scaling", wrong: ["Multi-AZ = read scaling only; read replica = automatic failover", "They are the same feature", "Read replica = encryption; Multi-AZ = DNS"], detail: "Single-standby DB instances use a non-readable standby for availability; Multi-AZ DB clusters have readable standbys. Read replicas are asynchronous and can lag.", hook: "AZ = availability. Replica = reads." },
     { id: "saa-sg-nacl", prompt: "Stateful resource filtering vs stateless subnet filtering", answer: "Security group = stateful resource control; NACL = stateless subnet control", wrong: ["Security group = stateless; NACL = stateful", "Both are IAM policies", "Both are DNS routing controls"], detail: "These layers are frequently paired as distractors.", hook: "SG remembers return traffic; NACL does not." },
     { id: "saa-sqs-sns-event", prompt: "Queue vs fanout vs event routing", answer: "SQS = queue; SNS = pub/sub fanout; EventBridge = event routing", wrong: ["SNS = queue; SQS = DNS; EventBridge = block storage", "All three are databases", "EventBridge = CDN; SQS = certificates"], detail: "Choose by messaging behavior rather than service name familiarity.", hook: "Queue SQS. Notify SNS. Route events EventBridge." },
     { id: "saa-cloudfront-ga", prompt: "CDN caching vs global network acceleration", answer: "CloudFront = caching/CDN; Global Accelerator = network path acceleration", wrong: ["Global Accelerator = object storage; CloudFront = VPN", "They are identical", "CloudFront = database proxy; Global Accelerator = DNS only"], detail: "CloudFront caches content; Global Accelerator optimizes network paths to regional endpoints.", hook: "Content = CloudFront. Network path = Accelerator." },
@@ -146,7 +146,8 @@ export function troubleshootingDomain(domains: { title: string; objectives: { id
  * Domain a drill question counts toward. Symptom → cause modes count as
  * troubleshooting; everything else counts toward the deck's first objective.
  */
-export function domainForMode(deck: DrillDeck, mode: DrillMode, troubleshooting?: string) {
+export function domainForMode(deck: DrillDeck, mode: DrillMode, troubleshooting?: string, objective?: string) {
+  if (objective) return objective.split(".")[0];
   if (mode.from === "symptom" && troubleshooting) return troubleshooting;
   return deck.objective.match(/\d+/)?.[0] ?? "";
 }
@@ -168,7 +169,7 @@ export function reviewPool(review: FinalReview, troubleshooting?: string): Revie
           pool,
           detail: item.detail,
           hook: item.hook,
-          domain: domainForMode(deck, mode, troubleshooting),
+          domain: domainForMode(deck, mode, troubleshooting, item.objective),
         });
       }
     }
