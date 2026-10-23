@@ -105,7 +105,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           ))}
         </section>
         <section aria-label="Objective-first study workflow" className="grid gap-4 md:grid-cols-2">
-          <Link href="/coverage" className="rounded-2xl border track-accent-border track-accent-surface p-5 hover:track-accent-border">
+          <Link href="/coverage" className="rounded-2xl border track-accent-border track-accent-surface p-5 hover:border-[var(--track-accent-line)]">
             <p className="text-xs font-medium uppercase tracking-wide track-accent-text">{track.code}</p>
             <h2 className="mt-2 text-lg font-semibold text-white">{tHeader("objectiveLab")}</h2>
             <p className="mt-2 text-sm text-slate-300">{tCoverage("intro")}</p>
@@ -168,8 +168,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                     focus={tool.focus}
                     className={`${tileBase} ${
                       tool.state === "soon"
-                        ? "border-dashed border-slate-700 bg-slate-900/30 hover:track-accent-border"
-                        : "border-slate-800 bg-slate-900 hover:track-accent-border"
+                        ? "border-dashed border-slate-700 bg-slate-900/30 hover:border-[var(--track-accent-line)]"
+                        : "border-slate-800 bg-slate-900 hover:border-[var(--track-accent-line)]"
                     }`}
                   >
                     {inner}
