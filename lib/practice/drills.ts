@@ -5,6 +5,8 @@
 import { corePorts } from "@/lib/practice/ports";
 
 export type DrillItem = {
+  /** Explicit primary objective for cross-domain AWS decks. */
+  objective?: string;
   id: string;
   fields: Record<string, string>;
   /** Shown after every answer about this item. */
@@ -1423,7 +1425,260 @@ const c2ScriptsRemoteAi: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
+
+const awsClfServiceCompare: DrillDeck = {
+  "id": "aws-clf-service-compare",
+  "certification": "AWS Cloud Practitioner",
+  "exam": "clf-c02",
+  "objective": "2.1–4.3",
+  "topic": "AWS service positioning",
+  "modes": [
+    {
+      "id": "scenarioToAnswer",
+      "from": "scenario",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "scenarios",
+      "fields": [
+        "scenario",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "metrics",
+      "fields": {
+        "scenario": "Metrics, logs, alarms, and dashboards",
+        "answer": "Amazon CloudWatch"
+      },
+      "detail": "CloudWatch is the monitoring and observability choice.",
+      "hook": "Watch = metrics and alarms.",
+      "objective": "2.4"
+    },
+    {
+      "id": "audit",
+      "fields": {
+        "scenario": "Record AWS account and API activity",
+        "answer": "AWS CloudTrail"
+      },
+      "detail": "CloudTrail records API activity for auditing.",
+      "hook": "Trail = who did what.",
+      "objective": "2.2"
+    },
+    {
+      "id": "config",
+      "fields": {
+        "scenario": "Track configuration history and evaluate configuration rules",
+        "answer": "AWS Config"
+      },
+      "detail": "Config records resource configuration state and compliance.",
+      "hook": "Config = configuration history.",
+      "objective": "2.2"
+    },
+    {
+      "id": "queue",
+      "fields": {
+        "scenario": "Durable asynchronous queue between application components",
+        "answer": "Amazon SQS"
+      },
+      "detail": "SQS decouples producers and consumers with a queue.",
+      "hook": "Q = queue.",
+      "objective": "3.8"
+    },
+    {
+      "id": "fanout",
+      "fields": {
+        "scenario": "Publish one message to multiple subscribers",
+        "answer": "Amazon SNS"
+      },
+      "detail": "SNS is publish/subscribe fanout.",
+      "hook": "Notify many = SNS.",
+      "objective": "3.8"
+    },
+    {
+      "id": "object",
+      "fields": {
+        "scenario": "Object storage in buckets",
+        "answer": "Amazon S3"
+      },
+      "detail": "S3 is object storage.",
+      "hook": "S3 = objects in buckets.",
+      "objective": "3.6"
+    },
+    {
+      "id": "block",
+      "fields": {
+        "scenario": "Persistent block volume for EC2",
+        "answer": "Amazon EBS"
+      },
+      "detail": "EBS is persistent block storage.",
+      "hook": "B = block.",
+      "objective": "3.6"
+    },
+    {
+      "id": "dns",
+      "fields": {
+        "scenario": "Managed DNS and routing policies",
+        "answer": "Amazon Route 53"
+      },
+      "detail": "Route 53 provides DNS and routing policies.",
+      "hook": "Route names with Route 53.",
+      "objective": "3.5"
+    },
+    {
+      "id": "relational",
+      "fields": {
+        "scenario": "Managed relational database",
+        "answer": "Amazon RDS"
+      },
+      "detail": "RDS manages relational database engines.",
+      "hook": "RDS = relational.",
+      "objective": "3.4"
+    },
+    {
+      "id": "nosql",
+      "fields": {
+        "scenario": "Managed key-value/document database",
+        "answer": "Amazon DynamoDB"
+      },
+      "detail": "DynamoDB is managed NoSQL.",
+      "hook": "DynamoDB = NoSQL.",
+      "objective": "3.4"
+    }
+  ]
+};
+
+const awsSaaServiceCompare: DrillDeck = {
+  "id": "aws-saa-service-compare",
+  "certification": "AWS Solutions Architect – Associate",
+  "exam": "saa-c03",
+  "objective": "1.1–4.4",
+  "topic": "AWS architecture tradeoffs",
+  "modes": [
+    {
+      "id": "scenarioToAnswer",
+      "from": "scenario",
+      "to": "answer"
+    }
+  ],
+  "tables": [
+    {
+      "id": "scenarios",
+      "fields": [
+        "scenario",
+        "answer"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "sg-nacl",
+      "fields": {
+        "scenario": "Stateful resource-level network filtering",
+        "answer": "Security group"
+      },
+      "detail": "Security groups are stateful.",
+      "hook": "Security group remembers return traffic.",
+      "objective": "1.2"
+    },
+    {
+      "id": "nacl",
+      "fields": {
+        "scenario": "Stateless subnet-level allow and deny rules",
+        "answer": "Network ACL"
+      },
+      "detail": "NACLs are stateless subnet controls.",
+      "hook": "NACL = subnet edge.",
+      "objective": "1.2"
+    },
+    {
+      "id": "multiaz",
+      "fields": {
+        "scenario": "Automatic failover for a single-standby RDS DB instance",
+        "answer": "RDS Multi-AZ"
+      },
+      "detail": "The single standby is not readable. A Multi-AZ DB cluster has readable standbys, so qualify the deployment type.",
+      "hook": "Multi-AZ = survive AZ failure.",
+      "objective": "2.2"
+    },
+    {
+      "id": "readreplica",
+      "fields": {
+        "scenario": "Scale reads on a relational database",
+        "answer": "RDS read replica"
+      },
+      "detail": "Read replicas add read capacity.",
+      "hook": "Replica = reads.",
+      "objective": "3.3"
+    },
+    {
+      "id": "nat",
+      "fields": {
+        "scenario": "Private IPv4 subnet needs internet egress through an IGW",
+        "answer": "Public NAT gateway with an EIP and IGW route"
+      },
+      "detail": "Private NAT cannot supply internet egress through an IGW. Native IPv6 outbound-only access uses an egress-only IGW. Zonal and regional NAT have different availability designs.",
+      "hook": "Private out = NAT.",
+      "objective": "3.4"
+    },
+    {
+      "id": "directconnect",
+      "fields": {
+        "scenario": "Dedicated private connectivity from on-premises to AWS",
+        "answer": "AWS Direct Connect"
+      },
+      "detail": "Direct Connect is dedicated private connectivity.",
+      "hook": "Dedicated circuit = Direct Connect.",
+      "objective": "3.4"
+    },
+    {
+      "id": "cloudfront",
+      "fields": {
+        "scenario": "Cache and deliver content near global users",
+        "answer": "Amazon CloudFront"
+      },
+      "detail": "CloudFront is AWS CDN.",
+      "hook": "Front = content near users.",
+      "objective": "3.4"
+    },
+    {
+      "id": "lambda",
+      "fields": {
+        "scenario": "Event-driven compute without server management",
+        "answer": "AWS Lambda"
+      },
+      "detail": "Lambda runs serverless functions.",
+      "hook": "Event arrives, function runs.",
+      "objective": "3.2"
+    },
+    {
+      "id": "spot",
+      "fields": {
+        "scenario": "Discounted spare EC2 capacity for interruption-tolerant batch work",
+        "answer": "EC2 Spot Instances"
+      },
+      "detail": "Compare restart overhead, spare capacity and total cost; Spot is not an unconditional lowest-cost guarantee.",
+      "hook": "Cheap if interruption is okay.",
+      "objective": "4.2"
+    },
+    {
+      "id": "role",
+      "fields": {
+        "scenario": "Temporary AWS permissions for an application",
+        "answer": "IAM role"
+      },
+      "detail": "Roles provide temporary credentials.",
+      "hook": "Applications assume roles.",
+      "objective": "1.1"
+    }
+  ]
+};
+
+export const drillDecks: DrillDeck[] = [awsClfServiceCompare, awsSaaServiceCompare, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

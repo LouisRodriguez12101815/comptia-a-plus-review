@@ -5264,5 +5264,619 @@
         ]
       }
     ]
+  },
+  {
+    "id": "aws-foundation-cloud-global",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02",
+      "saa-c03"
+    ],
+    "title": "AWS Cloud Foundations and Global Infrastructure",
+    "chapter": "AWS Foundation 1",
+    "summary": "Cloud value, elasticity, availability, Regions, Availability Zones, edge locations, migration, and the Well-Architected mindset.",
+    "sections": [
+      {
+        "id": "cloud-value",
+        "title": "Cloud value and operating model",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AWS cloud computing trades large up-front infrastructure purchases for on-demand services that can scale with workload demand. The exam distinction is not simply 'cloud is cheaper'; it is that cloud services can improve agility, elasticity, reach, and the ability to match capacity to demand."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Concept",
+              "Exam-ready distinction"
+            ],
+            "rows": [
+              [
+                "Scalability",
+                "Increase or decrease capacity to meet a larger or smaller workload."
+              ],
+              [
+                "Elasticity",
+                "Adjust capacity dynamically as demand changes."
+              ],
+              [
+                "High availability",
+                "Keep a service usable despite component failures."
+              ],
+              [
+                "Fault tolerance",
+                "Continue operating through a failure with minimal or no interruption."
+              ],
+              [
+                "CapEx vs OpEx",
+                "Shift from large up-front purchases toward ongoing usage-based operating expense."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "When a question says 'unpredictable demand', think elasticity. When it says 'growth over time', think scalability."
+          }
+        ]
+      },
+      {
+        "id": "global-infra",
+        "title": "Regions, Availability Zones, and edge locations",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A Region is a geographic area that contains multiple isolated Availability Zones.",
+              "An Availability Zone is one or more data centers engineered to be isolated from failures in other AZs in the same Region.",
+              "Using multiple AZs is a common way to improve availability without leaving the Region.",
+              "Edge locations bring content or network services closer to users and are not the same thing as Availability Zones.",
+              "Multiple Regions can support disaster recovery, data-sovereignty requirements, and lower latency for globally distributed users."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "migration",
+        "title": "Migration and cloud adoption",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Migration questions ask why and how organizations move workloads, not only which migration service exists. Evaluate business drivers such as reduced data-center ownership, faster experimentation, elasticity, managed services, resilience, and global reach."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Cloud, hybrid, and on-premises deployment models",
+              "AWS Cloud Adoption Framework (AWS CAF) as an organizational transformation framework",
+              "Rightsizing and automation as recurring cloud-economics themes",
+              "Managed services can shift operational responsibility from the customer to AWS"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "well-architected",
+        "title": "Well-Architected thinking",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The AWS Well-Architected Framework is a decision framework for reviewing workloads. For SAA-C03 especially, do not memorize service names in isolation: connect each choice to security, reliability, performance efficiency, cost optimization, operational excellence, and sustainability."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-foundation-identity-security",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": [
+      "clf-c02",
+      "saa-c03"
+    ],
+    "title": "AWS Identity, Shared Responsibility, and Security Foundations",
+    "chapter": "AWS Foundation 2",
+    "summary": "Shared responsibility, IAM identities and roles, least privilege, root protection, encryption, governance, auditing, and security services.",
+    "sections": [
+      {
+        "id": "shared-responsibility",
+        "title": "Shared responsibility model",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Area",
+              "Typical responsibility"
+            ],
+            "rows": [
+              [
+                "Physical facilities, hardware, foundational network",
+                "AWS — security of the cloud"
+              ],
+              [
+                "Customer data, IAM permissions, many workload configurations",
+                "Customer — security in the cloud"
+              ],
+              [
+                "Managed service boundaries",
+                "Responsibility shifts depending on the service"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "The customer still owns data classification, identity choices, and many configuration decisions even when AWS manages the underlying service."
+          }
+        ]
+      },
+      {
+        "id": "iam",
+        "title": "IAM identities and least privilege",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Protect the root user; avoid routine root usage and enable strong protections.",
+              "IAM users represent long-lived identities when required; IAM roles provide assumable permissions and temporary credentials.",
+              "Groups simplify permission assignment to users but are not identities that applications assume.",
+              "Policies define allowed or denied actions and resources.",
+              "Least privilege means granting only the permissions required for the task."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "encryption-governance",
+        "title": "Encryption, governance, and compliance",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Distinguish encryption at rest from encryption in transit, and distinguish key management from secret storage. Governance and compliance services help record, evaluate, and report configuration or activity, but they do not replace IAM or preventive network controls."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Primary exam use"
+            ],
+            "rows": [
+              [
+                "AWS KMS",
+                "Create and control encryption keys used by integrated AWS services"
+              ],
+              [
+                "AWS Secrets Manager",
+                "Store and rotate application secrets"
+              ],
+              [
+                "AWS CloudTrail",
+                "Record account/API activity"
+              ],
+              [
+                "AWS Config",
+                "Track resource configuration and evaluate configuration rules"
+              ],
+              [
+                "Amazon CloudWatch",
+                "Metrics, logs, alarms, and operational monitoring"
+              ],
+              [
+                "AWS Artifact",
+                "Access AWS compliance reports and agreements"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "security-services",
+        "title": "Security service positioning",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Best mental model"
+            ],
+            "rows": [
+              [
+                "Amazon GuardDuty",
+                "Threat detection from AWS data sources"
+              ],
+              [
+                "Amazon Inspector",
+                "Automated vulnerability management for supported workloads"
+              ],
+              [
+                "AWS Shield",
+                "DDoS protection"
+              ],
+              [
+                "AWS WAF",
+                "Web request filtering for supported application endpoints"
+              ],
+              [
+                "AWS Security Hub",
+                "Aggregate and manage security findings"
+              ],
+              [
+                "Amazon Macie",
+                "Discover and help protect sensitive data in S3"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-foundation-compute-storage",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02",
+      "saa-c03"
+    ],
+    "title": "AWS Compute and Storage Foundations",
+    "chapter": "AWS Foundation 3",
+    "summary": "EC2, Lambda, containers, Auto Scaling, load balancing, S3, EBS, EFS, FSx, storage classes, backup, and data transfer.",
+    "sections": [
+      {
+        "id": "compute",
+        "title": "Compute choices",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Use when"
+            ],
+            "rows": [
+              [
+                "Amazon EC2",
+                "You need virtual machines and control over the operating system."
+              ],
+              [
+                "AWS Lambda",
+                "Run event-driven code without managing servers."
+              ],
+              [
+                "Amazon ECS",
+                "Run containers with AWS container orchestration."
+              ],
+              [
+                "Amazon EKS",
+                "Run Kubernetes workloads with a managed Kubernetes control plane."
+              ],
+              [
+                "AWS Fargate",
+                "Run supported containers without managing the underlying servers."
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Auto Scaling changes capacity; Elastic Load Balancing distributes traffic. They often work together, but they solve different problems."
+          }
+        ]
+      },
+      {
+        "id": "storage-models",
+        "title": "Object, block, and file storage",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Typical AWS choice"
+            ],
+            "rows": [
+              [
+                "Object storage at massive scale",
+                "Amazon S3"
+              ],
+              [
+                "Block volume for an EC2 instance",
+                "Amazon EBS"
+              ],
+              [
+                "Ephemeral block storage tied to host lifecycle",
+                "EC2 instance store"
+              ],
+              [
+                "Shared Linux-style file system",
+                "Amazon EFS"
+              ],
+              [
+                "Managed specialized file systems",
+                "Amazon FSx"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "s3",
+        "title": "S3 durability, classes, lifecycle, and access",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "S3 stores objects in buckets and is designed for very high durability.",
+              "Storage classes trade retrieval characteristics and access assumptions for cost.",
+              "Lifecycle rules automate transitions or expiration based on policy.",
+              "Versioning helps protect against accidental overwrite or deletion scenarios.",
+              "Presigned URLs provide time-limited access without making an object public."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "transfer-backup",
+        "title": "Transfer and backup patterns",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "DataSync provides managed online transfers; Storage Gateway supplies hybrid file/volume/tape interfaces. AWS Backup centralizes supported backup policies. Snowball Edge is restricted to existing customers since November 7, 2025, and Snowcone is discontinued. For new physical-transfer designs evaluate Data Transfer Terminal or partners; Outposts addresses relevant edge-compute needs."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-foundation-network-database",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02",
+      "saa-c03"
+    ],
+    "title": "AWS Networking and Database Foundations",
+    "chapter": "AWS Foundation 4",
+    "summary": "VPC building blocks, routing and connectivity, Route 53, CloudFront, RDS/Aurora, DynamoDB, ElastiCache, and Redshift.",
+    "sections": [
+      {
+        "id": "vpc",
+        "title": "VPC building blocks",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A VPC is a logically isolated network in AWS.",
+              "Subnets divide VPC address space and are associated with a single Availability Zone.",
+              "Route tables determine where traffic is sent.",
+              "An internet gateway enables internet routing for appropriately configured public resources.",
+              "In the zonal public-NAT IPv4 design, private-subnet default routes point to a public NAT gateway with an EIP and a path through the VPC internet gateway. A private NAT cannot provide internet egress through an IGW. Native IPv6 outbound-only egress uses an egress-only IGW; NAT64/DNS64 serves different translation requirements. Regional NAT is a separate current multi-AZ option."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "network-security",
+        "title": "Security groups and network ACLs",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Control",
+              "Key distinction"
+            ],
+            "rows": [
+              [
+                "Security group",
+                "Stateful control associated with supported resources such as network interfaces."
+              ],
+              [
+                "Network ACL",
+                "Stateless subnet-level control with ordered allow/deny rules."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "For SAA scenarios, ask where the control applies and whether return traffic is automatically allowed."
+          }
+        ]
+      },
+      {
+        "id": "dns-edge-connectivity",
+        "title": "DNS, edge, and hybrid connectivity",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Primary role"
+            ],
+            "rows": [
+              [
+                "Amazon Route 53",
+                "DNS, domain registration, health checks, and routing policies"
+              ],
+              [
+                "Amazon CloudFront",
+                "Content delivery through edge locations"
+              ],
+              [
+                "AWS Direct Connect",
+                "Dedicated private network connectivity to AWS"
+              ],
+              [
+                "AWS Site-to-Site VPN",
+                "Encrypted VPN connectivity over the internet"
+              ],
+              [
+                "AWS Transit Gateway",
+                "Hub for connecting multiple VPCs and on-premises networks"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "databases",
+        "title": "Database positioning",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Best fit"
+            ],
+            "rows": [
+              [
+                "Amazon RDS / Aurora",
+                "Managed relational database workloads"
+              ],
+              [
+                "Amazon DynamoDB",
+                "Managed key-value/document NoSQL workloads at scale"
+              ],
+              [
+                "Amazon ElastiCache",
+                "In-memory caching"
+              ],
+              [
+                "Amazon Redshift",
+                "Managed data warehousing and analytics"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "For a single-standby RDS Multi-AZ DB instance, the standby is for availability, not reads. Multi-AZ DB clusters have readable standbys. Asynchronous read replicas offload reads and can lag; Aurora has its own reader/failover architecture."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-foundation-observability-cost",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02",
+      "saa-c03"
+    ],
+    "title": "AWS Observability, Integration, and Cost Foundations",
+    "chapter": "AWS Foundation 5",
+    "summary": "Monitoring, audit, event integration, messaging, infrastructure as code, pricing models, budgets, and cost optimization.",
+    "sections": [
+      {
+        "id": "observability",
+        "title": "Observe, audit, and evaluate",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Service"
+            ],
+            "rows": [
+              [
+                "Metrics, alarms, logs, dashboards",
+                "Amazon CloudWatch"
+              ],
+              [
+                "Who called which AWS API and when",
+                "AWS CloudTrail"
+              ],
+              [
+                "Resource configuration history and compliance evaluation",
+                "AWS Config"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "integration",
+        "title": "Decoupling and event services",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Exam-ready use"
+            ],
+            "rows": [
+              [
+                "Amazon SQS",
+                "Durable message queue for asynchronous decoupling"
+              ],
+              [
+                "Amazon SNS",
+                "Publish messages to multiple subscribers"
+              ],
+              [
+                "Amazon EventBridge",
+                "Route events between sources and targets using rules"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Loose coupling limits the blast radius of component failures and lets producers and consumers scale independently."
+          }
+        ]
+      },
+      {
+        "id": "iac",
+        "title": "Repeatable deployment",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AWS CloudFormation describes infrastructure declaratively so environments can be created consistently and repeatedly. The AWS CLI and SDKs provide programmatic access; the Management Console provides interactive access."
+          }
+        ]
+      },
+      {
+        "id": "cost",
+        "title": "Cost models and cost-management tools",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Tool or option",
+              "Use"
+            ],
+            "rows": [
+              [
+                "On-Demand",
+                "Flexible compute without a long-term commitment"
+              ],
+              [
+                "Savings Plans / Reserved pricing models",
+                "Commitment-based discounts for suitable steady usage"
+              ],
+              [
+                "Spot",
+                "Use spare capacity at steep discounts when interruptions are acceptable"
+              ],
+              [
+                "AWS Pricing Calculator",
+                "Estimate planned workload costs"
+              ],
+              [
+                "AWS Cost Explorer",
+                "Analyze and visualize historical/current spend"
+              ],
+              [
+                "AWS Budgets",
+                "Set thresholds and receive budget alerts"
+              ],
+              [
+                "Cost allocation tags",
+                "Attribute spend to teams, projects, or environments"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
