@@ -5878,5 +5878,472 @@
         ]
       }
     ]
+  },
+  {
+    "id": "aws-clf-cloud-concepts",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "title": "CLF-C02 Domain 1 — Cloud Concepts",
+    "chapter": "CLF-C02 · Domain 1",
+    "summary": "Cloud value, design principles, migration benefits, and cloud economics for the 24% Cloud Concepts domain.",
+    "sections": [
+      {
+        "id": "benefits",
+        "title": "Benefits of the AWS Cloud",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Trade fixed up-front infrastructure purchases for variable usage-based spending where appropriate.",
+              "Provision resources quickly and experiment without waiting for a hardware procurement cycle.",
+              "Scale capacity to meet growth and use elasticity to react to changing demand.",
+              "Use global infrastructure to place workloads closer to users or meet resilience and sovereignty needs.",
+              "Use managed services to reduce undifferentiated operational work."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Do not answer 'AWS is always cheaper.' Cost depends on architecture, utilization, data transfer, commitments, and operations."
+          }
+        ]
+      },
+      {
+        "id": "design",
+        "title": "Cloud design principles",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement phrase",
+              "Likely principle"
+            ],
+            "rows": [
+              [
+                "Avoid single points of failure",
+                "Design for failure and redundancy"
+              ],
+              [
+                "Demand changes quickly",
+                "Elasticity and automation"
+              ],
+              [
+                "Large workload growth",
+                "Scalability"
+              ],
+              [
+                "Reduce manual configuration drift",
+                "Automation and infrastructure as code"
+              ],
+              [
+                "Serve global users",
+                "Global infrastructure and edge services"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "migration",
+        "title": "Migration benefits and strategies",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Migration questions often test business outcomes: agility, elasticity, managed services, reduced data-center ownership, resilience, and global reach. AWS migration services can assist discovery, application migration, database migration, and data transfer, but the exam starts with the business requirement."
+          }
+        ]
+      },
+      {
+        "id": "economics",
+        "title": "Cloud economics",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Rightsizing avoids paying for unnecessary capacity.",
+              "Automation can reduce repetitive operational effort.",
+              "Economies of scale allow cloud providers to spread infrastructure costs across many customers.",
+              "Pricing models trade flexibility, commitment, interruption tolerance, and dedicated hardware for different costs."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-security-compliance",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "title": "CLF-C02 Domain 2 — Security and Compliance",
+    "chapter": "CLF-C02 · Domain 2",
+    "summary": "Shared responsibility, governance, access management, encryption, compliance, and security resources for the 30% security domain.",
+    "sections": [
+      {
+        "id": "responsibility",
+        "title": "Shared responsibility by service model",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Responsibility changes with the service. With EC2, the customer manages more of the guest operating system and workload configuration. With managed services such as RDS or Lambda, AWS manages more of the underlying platform, while the customer still owns data, identities, permissions, and application-level decisions."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Ask: what layer is AWS managing, and what remains under the customer's control?"
+          }
+        ]
+      },
+      {
+        "id": "access",
+        "title": "Access management and root protection",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Protect the root user and use it only for tasks that require root.",
+              "Prefer roles and temporary credentials for workloads rather than embedding long-lived access keys.",
+              "Use MFA and least privilege.",
+              "IAM Identity Center supports workforce access and federation scenarios.",
+              "Policies define permissions; explicit denies override allows."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "governance",
+        "title": "Governance, audit, and compliance",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "AWS service or resource"
+            ],
+            "rows": [
+              [
+                "AWS compliance reports and agreements",
+                "AWS Artifact"
+              ],
+              [
+                "API/account activity",
+                "AWS CloudTrail"
+              ],
+              [
+                "Configuration history and rules",
+                "AWS Config"
+              ],
+              [
+                "Metrics/logs/alarms",
+                "Amazon CloudWatch"
+              ],
+              [
+                "Threat detection",
+                "Amazon GuardDuty"
+              ],
+              [
+                "Vulnerability management",
+                "Amazon Inspector"
+              ],
+              [
+                "Web request filtering",
+                "AWS WAF"
+              ],
+              [
+                "DDoS protection",
+                "AWS Shield"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "encryption",
+        "title": "Encryption and sensitive data",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Recognize encryption at rest versus encryption in transit. KMS manages encryption keys for integrated services; Secrets Manager stores and can rotate secrets. The exact service matters because 'key' and 'secret' are not interchangeable exam terms."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-technology-services",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "title": "CLF-C02 Domain 3 — Cloud Technology and Services",
+    "chapter": "CLF-C02 · Domain 3",
+    "summary": "Deployment methods, global infrastructure, compute, database, networking, storage, analytics, AI/ML, and integration services for the 34% technology domain.",
+    "sections": [
+      {
+        "id": "operate",
+        "title": "Ways to access and operate AWS",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Best mental model"
+            ],
+            "rows": [
+              [
+                "AWS Management Console",
+                "Interactive browser-based administration"
+              ],
+              [
+                "AWS CLI",
+                "Scriptable command-line access"
+              ],
+              [
+                "AWS SDK",
+                "Programmatic access from application code"
+              ],
+              [
+                "AWS CloudFormation",
+                "Repeatable declarative infrastructure as code"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "core-services",
+        "title": "Core service recognition",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "Service family"
+            ],
+            "rows": [
+              [
+                "Virtual machine",
+                "EC2"
+              ],
+              [
+                "Serverless function",
+                "Lambda"
+              ],
+              [
+                "Containers",
+                "ECS / EKS / Fargate"
+              ],
+              [
+                "Object storage",
+                "S3"
+              ],
+              [
+                "Block storage",
+                "EBS"
+              ],
+              [
+                "Shared file storage",
+                "EFS / FSx"
+              ],
+              [
+                "Relational database",
+                "RDS / Aurora"
+              ],
+              [
+                "NoSQL key-value/document database",
+                "DynamoDB"
+              ],
+              [
+                "DNS",
+                "Route 53"
+              ],
+              [
+                "CDN",
+                "CloudFront"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "analytics-ai",
+        "title": "Analytics, AI/ML, and application integration",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Recognition cue"
+            ],
+            "rows": [
+              [
+                "Amazon Athena",
+                "Query data in S3 using SQL"
+              ],
+              [
+                "Amazon Kinesis",
+                "Streaming data"
+              ],
+              [
+                "AWS Glue",
+                "Data integration and ETL"
+              ],
+              [
+                "Amazon QuickSight",
+                "Business intelligence dashboards"
+              ],
+              [
+                "Amazon SageMaker AI",
+                "Build/train/deploy ML models"
+              ],
+              [
+                "Amazon Lex",
+                "Conversational interfaces"
+              ],
+              [
+                "Amazon SQS",
+                "Queue"
+              ],
+              [
+                "Amazon SNS",
+                "Pub/sub notifications"
+              ],
+              [
+                "Amazon EventBridge",
+                "Event routing"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hybrid",
+        "title": "Hybrid and transfer services",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "AWS Direct Connect provides dedicated private connectivity.",
+              "Site-to-Site VPN uses encrypted tunnels over the internet.",
+              "Storage Gateway connects on-premises environments with AWS storage.",
+              "Snow Family devices support offline/edge data transfer scenarios."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-billing-support",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "title": "CLF-C02 Domain 4 — Billing, Pricing, and Support",
+    "chapter": "CLF-C02 · Domain 4",
+    "summary": "Pricing models, cost tools, Organizations billing, support plans, and AWS technical resources for the 12% billing and support domain.",
+    "sections": [
+      {
+        "id": "pricing",
+        "title": "Pricing model decisions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Typical option"
+            ],
+            "rows": [
+              [
+                "Maximum flexibility, no long commitment",
+                "On-Demand"
+              ],
+              [
+                "Steady usage with commitment",
+                "Savings Plans or eligible Reserved pricing"
+              ],
+              [
+                "Interruptible fault-tolerant workloads",
+                "Spot"
+              ],
+              [
+                "Physical host visibility/licensing requirements",
+                "Dedicated Host"
+              ],
+              [
+                "Reserve capacity in an Availability Zone",
+                "Capacity Reservation"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cost-tools",
+        "title": "Cost tools",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Question wording",
+              "Tool"
+            ],
+            "rows": [
+              [
+                "Estimate a planned architecture",
+                "AWS Pricing Calculator"
+              ],
+              [
+                "Analyze historical/current spend",
+                "AWS Cost Explorer"
+              ],
+              [
+                "Set a threshold and alert",
+                "AWS Budgets"
+              ],
+              [
+                "Detailed billing and usage data",
+                "AWS Cost and Usage Report"
+              ],
+              [
+                "Allocate spend by project/team",
+                "Cost allocation tags"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "organizations",
+        "title": "Organizations and consolidated billing",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AWS Organizations can centralize account management and consolidated billing. Cost allocation and account structure help separate ownership while centralizing financial visibility."
+          }
+        ]
+      },
+      {
+        "id": "support",
+        "title": "Technical resources and support",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Use official AWS documentation, whitepapers, Prescriptive Guidance, Knowledge Center, re:Post, and support resources based on the need.",
+              "Support-plan questions test which level of guidance and response is appropriate; avoid memorizing old plan details without checking the current AWS Support page.",
+              "AWS Partner Network includes partners that provide software and professional services around AWS."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
