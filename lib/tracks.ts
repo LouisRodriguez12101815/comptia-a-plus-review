@@ -201,11 +201,15 @@ export function trackForPath(pathname: string, focus: StudyFocus): Track | undef
 
 export function trackCounts(track: Track) {
   const focus = track.focus;
+  const topicIds = new Set(focus ? getTopics(focus).map((topic) => topic.id) : []);
+  const awsLabCount = track.id.startsWith("aws-")
+    ? labs.filter((lab) => lab.relatedTopicIds.some((id) => topicIds.has(id))).length
+    : 0;
   return {
     topics: focus ? getTopics(focus).length : 0,
     cards: focus ? getFlashcards("all", focus).length : 0,
     questions: focus ? getQuestions("all", focus).length : 0,
-    labs: track.id === "ccna" ? labs.length : 0,
+    labs: track.id === "ccna" ? labs.length : awsLabCount,
   };
 }
 
@@ -241,15 +245,19 @@ export function toolStatuses(track: Track): ToolStatus[] {
           ? { ...base, state: "ready", chip: { key: "questions", count: counts.questions } }
           : { ...base, state: "soon", chip: { key: "comingSoon" } };
       case "labs":
-        return track.id === "ccna"
-          ? { ...base, state: "ready", chip: { key: "labs", count: counts.labs } }
-          : {
-              ...base,
-              href: "/ccna",
-              focus: null,
-              state: "elsewhere",
-              chip: { key: "inCcnaTrack" },
-            };
+        if (track.id === "ccna") {
+          return { ...base, state: "ready", chip: { key: "labs", count: counts.labs } };
+        }
+        if (track.id.startsWith("aws-") && counts.labs > 0) {
+          return { ...base, href: "/labs", state: "ready", chip: { key: "labs", count: counts.labs } };
+        }
+        return {
+          ...base,
+          href: "/ccna",
+          focus: null,
+          state: "elsewhere",
+          chip: { key: "inCcnaTrack" },
+        };
       case "game":
         return { ...base, state: "shared", chip: { key: "allTracks" } };
     }
