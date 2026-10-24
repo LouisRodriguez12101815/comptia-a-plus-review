@@ -7740,216 +7740,6 @@
     "weak": false
   },
   {
-    "id": "q-c2sec-01",
-    "topicId": "core2-security-hardening",
-    "prompt": "A contractor will need a Windows account for three months only. Which setting best makes sure the account stops working when the contract ends?",
-    "choices": [
-      "Set a BIOS/UEFI password",
-      "Restrict login times",
-      "Disable the Guest account",
-      "Set an account expiration date"
-    ],
-    "answer": 3,
-    "explanation": "An expiration date disables the account automatically on the end date. Login-time restrictions only limit hours of the day, and the Guest account and firmware password are unrelated to this account. (Objective 2.7)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-02",
-    "topicId": "core2-security-hardening",
-    "prompt": "Malware is spreading through the office from USB drives that start a program as soon as they are inserted. Which setting addresses this?",
-    "choices": [
-      "Disable AutoRun and AutoPlay",
-      "Set a password expiration policy",
-      "Increase the screen-lock timeout",
-      "Enable the Guest account"
-    ],
-    "answer": 0,
-    "explanation": "AutoRun and AutoPlay launch content from removable media automatically. Disabling them stops the drive from starting the program. Password and screen-lock settings do not affect removable media. (Objective 2.7)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-03",
-    "topicId": "core2-security-hardening",
-    "prompt": "A technician wants to stop users from booting a laptop from a USB drive to get around Windows sign-in. What should the technician configure?",
-    "choices": [
-      "Account lockout",
-      "Encrypting File System on the user folders",
-      "A BIOS/UEFI password and a locked boot order",
-      "A screen saver with a password"
-    ],
-    "answer": 2,
-    "explanation": "Booting from other media happens before Windows loads, so the control belongs in firmware: a BIOS/UEFI password stops users from changing the boot order. Windows settings like lockout and screen locks never run in that case. (Objective 2.7)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-04",
-    "topicId": "core2-security-hardening",
-    "prompt": "Security logs show thousands of password guesses against workstation accounts. Which control stops these guesses from succeeding?",
-    "choices": [
-      "Account lockout after a set number of failed attempts",
-      "Password expiration",
-      "Disabling unused services",
-      "A screen-lock timeout"
-    ],
-    "answer": 0,
-    "explanation": "Lockout blocks the account after a few wrong passwords, which ends a guessing attack. Expiration only limits how long a stolen password works; it does not stop guessing. (Objective 2.7)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-05",
-    "topicId": "core2-security-hardening",
-    "prompt": "A user needs to step away from a desk for a few minutes. What is the best practice?",
-    "choices": [
-      "Unplug the network cable",
-      "Lock the workstation, for example with Windows+L",
-      "Turn off the monitor",
-      "Close all open applications"
-    ],
-    "answer": 1,
-    "explanation": "Locking the session requires a password to get back in while keeping work open. Turning off the monitor leaves the session open to anyone who sits down. (Objective 2.7)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-06",
-    "topicId": "core2-security-hardening",
-    "prompt": "A company phone holding sensitive data was lost and will not be recovered. What is the best way to protect the data?",
-    "choices": [
-      "Change the office Wi-Fi password",
-      "Disable Bluetooth on other company phones",
-      "Remotely wipe the phone",
-      "Turn on a locator application"
-    ],
-    "answer": 2,
-    "explanation": "A remote wipe erases the data on the lost device. A locator helps when you expect to get the device back, and the other actions do not touch the lost phone. (Objective 2.8)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-07",
-    "topicId": "core2-security-hardening",
-    "prompt": "Employees use their own phones for company email. The company must require a screen lock and encryption on those phones. What should it use?",
-    "choices": [
-      "A content filter",
-      "Mobile device management with a configuration profile",
-      "A remote backup application",
-      "A locator application"
-    ],
-    "answer": 1,
-    "explanation": "MDM pushes configuration profiles that enforce screen locks and encryption on many devices, including personal (BYOD) phones through a work profile. The other tools do not enforce settings. (Objective 2.8)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-08",
-    "topicId": "core2-security-hardening",
-    "prompt": "A phone erases itself after ten wrong PIN entries. Which security method is this?",
-    "choices": [
-      "Locator application",
-      "Remote backup",
-      "Failed-login attempt restriction",
-      "Patch management"
-    ],
-    "answer": 2,
-    "explanation": "Limiting failed logins, here by wiping after ten attempts, stops someone from guessing the PIN. Remote backup, patching and locators do not react to wrong PINs. (Objective 2.8)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-09",
-    "topicId": "core2-security-hardening",
-    "prompt": "Which policy lets employees use phones they personally own for company work?",
-    "choices": [
-      "A guest network",
-      "Bring your own device (BYOD)",
-      "Corporate-owned devices",
-      "Kiosk mode"
-    ],
-    "answer": 1,
-    "explanation": "BYOD means the employee owns the device and uses it for work, usually with MDM managing a work profile. Corporate-owned devices belong to the company. (Objective 2.8)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-10",
-    "topicId": "core2-security-hardening",
-    "prompt": "Which step protects a phone against security flaws that the vendor has already fixed?",
-    "choices": [
-      "Applying OS and app updates",
-      "Installing a locator application",
-      "Turning on remote backup",
-      "Switching to a pattern lock"
-    ],
-    "answer": 0,
-    "explanation": "Applying OS and app updates (patch management) installs the vendor's fixes for known flaws. A lock, a locator and backups protect against other risks, not unpatched vulnerabilities. (Objective 2.8)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-11",
-    "topicId": "core2-security-hardening",
-    "prompt": "A company is disposing of laptops with solid-state drives. Which method will NOT reliably destroy the data on those drives?",
-    "choices": [
-      "Incineration",
-      "Degaussing",
-      "Pulverizing",
-      "Shredding"
-    ],
-    "answer": 1,
-    "explanation": "Degaussing works on magnetic media such as hard drives and tapes. SSDs store data in flash memory, so a magnetic field does not erase them. Shredding, pulverizing and incineration destroy any media; a single drill hole can miss an SSD's flash chips. (Objective 2.9)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-12",
-    "topicId": "core2-security-hardening",
-    "prompt": "Hard drives will be reused by another department, and their old data must not be recoverable. What should the technician do?",
-    "choices": [
-      "Wipe the drives with an overwrite or secure-erase tool",
-      "Run a quick format",
-      "Delete the files and empty the Recycle Bin",
-      "Degauss the drives"
-    ],
-    "answer": 0,
-    "explanation": "Wiping overwrites the data and keeps the drive usable. A quick format and deleting files leave data recoverable, and degaussing usually leaves a hard drive unusable. (Objective 2.9)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-13",
-    "topicId": "core2-security-hardening",
-    "prompt": "A third-party recycling vendor destroys a company's old drives. Which document proves the destruction happened?",
-    "choices": [
-      "Purchase order",
-      "Service-level agreement",
-      "Certificate of destruction",
-      "Acceptable use policy"
-    ],
-    "answer": 2,
-    "explanation": "The vendor issues a certificate of destruction or recycling as proof. An SLA defines service levels, and an acceptable use policy covers employee behavior. (Objective 2.9)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-14",
-    "topicId": "core2-security-hardening",
-    "prompt": "What does a quick format do to the data already on a drive?",
-    "choices": [
-      "Encrypts the existing data",
-      "Overwrites every sector with zeros",
-      "Physically damages the platters",
-      "Removes the file system records but leaves the data recoverable"
-    ],
-    "answer": 3,
-    "explanation": "A quick format writes a new, empty file system; the old data stays on the drive until it is overwritten, so recovery tools can find it. Zero-filling is what a wipe does, and a Windows full (non-quick) format also writes zeros. (Objective 2.9)",
-    "weak": false
-  },
-  {
-    "id": "q-c2sec-15",
-    "topicId": "core2-security-hardening",
-    "prompt": "What is the usual result of degaussing a magnetic hard drive?",
-    "choices": [
-      "The drive can be reformatted and reused",
-      "Only the partition table is removed",
-      "The data is encrypted but recoverable with the right key",
-      "The data is destroyed, and the drive is usually unusable"
-    ],
-    "answer": 3,
-    "explanation": "Degaussing scrambles the magnetic data, including the information the drive needs to operate, so the drive usually cannot be reused. Use a wipe instead when the drive must be reused. (Objective 2.9)",
-    "weak": false
-  },
-  {
     "id": "q-ch11-01",
     "topicId": "core1-cloud-computing",
     "prompt": "A small office wants staff to use web-based email and word processing without installing or patching anything. Which cloud service model fits?",
@@ -19093,6 +18883,230 @@
     ],
     "answer": 3,
     "explanation": "Objective 2.3. WPA was a temporary replacement for WEP that used TKIP. WEP is insecure, WPA2 uses AES, and WPA3 uses SAE.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-01",
+    "topicId": "core2-security-measures",
+    "prompt": "Which secure entry has two gateways, with only one open at a time, and suits data centers?",
+    "choices": [
+      "Access control vestibule",
+      "Badge reader",
+      "Video surveillance",
+      "Bollard"
+    ],
+    "answer": 0,
+    "explanation": "Objective 2.1. An Access control vestibule, or man trap, has two gateways with only one open at a time. A badge reader checks identity, video surveillance records activity, and a bollard stops vehicles.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-02",
+    "topicId": "core2-security-measures",
+    "prompt": "Which device verifies identity by scanning an ID badge and logs each entry and exit?",
+    "choices": [
+      "Magnetometer",
+      "Badge reader",
+      "Equipment lock",
+      "Motion light"
+    ],
+    "answer": 1,
+    "explanation": "Objective 2.1. A Badge reader verifies an ID badge and logs each entry and exit. A magnetometer detects metal, an equipment lock secures hardware, and a motion light deters intruders.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-03",
+    "topicId": "core2-security-measures",
+    "prompt": "Which biometric device identifies a person by the pattern of blood vessels in the eye?",
+    "choices": [
+      "Fingerprint scanner",
+      "Voice recognition",
+      "Retina scanner",
+      "Palm scanner"
+    ],
+    "answer": 2,
+    "explanation": "Objective 2.1. A Retina scanner reads the pattern of blood vessels in the eye. Fingerprint and palm scanners read the skin ridges, and voice recognition uses speech characteristics.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-04",
+    "topicId": "core2-security-measures",
+    "prompt": "Which device detects metal objects by sensing the magnetic fields they generate?",
+    "choices": [
+      "Bollard",
+      "Key fob",
+      "Smart card",
+      "Magnetometer"
+    ],
+    "answer": 3,
+    "explanation": "Objective 2.1. A Magnetometer detects metal by sensing magnetic fields, as metal detectors do at airports. A bollard stops vehicles, and a key fob and smart card are access credentials.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-05",
+    "topicId": "core2-security-measures",
+    "prompt": "Which card embeds an integrated circuit that can store digital certificates?",
+    "choices": [
+      "Smart card",
+      "Mechanical key",
+      "Equipment lock",
+      "Bollard"
+    ],
+    "answer": 0,
+    "explanation": "Objective 2.1. A Smart card embeds an integrated circuit that can store data such as digital certificates. A mechanical key does not store data, and an equipment lock and bollard are not credentials.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-06",
+    "topicId": "core2-security-measures",
+    "prompt": "Which electronic credential is tapped near a reader and can be deactivated in the access system if it is lost?",
+    "choices": [
+      "Physical key",
+      "Key fob",
+      "Security guard",
+      "Fence"
+    ],
+    "answer": 1,
+    "explanation": "Objective 2.1. A Key fob is an electronic credential that communicates with a reader. If it is lost, it can be deactivated without replacing the locks. A physical key cannot be deactivated remotely.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-07",
+    "topicId": "core2-security-measures",
+    "prompt": "Which principle gives users and services only the permissions they need to do their work?",
+    "choices": [
+      "Multifactor authentication",
+      "Single sign-on",
+      "Least privilege",
+      "Magnetometer"
+    ],
+    "answer": 2,
+    "explanation": "Objective 2.1. Least privilege gives users and services only the permissions they need, which limits the damage from a compromised account. MFA and SSO govern authentication, and a magnetometer is a physical device.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-08",
+    "topicId": "core2-security-measures",
+    "prompt": "Which set of rules defines which users, groups or processes can read, modify or execute a resource?",
+    "choices": [
+      "SAML",
+      "Zero trust",
+      "TOTP",
+      "Access control list"
+    ],
+    "answer": 3,
+    "explanation": "Objective 2.1. An Access control list defines the rights for users, groups and processes on a resource. SAML exchanges authentication assertions, zero trust is a model, and TOTP is a one-time code.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-09",
+    "topicId": "core2-security-measures",
+    "prompt": "Which model never trusts a user or device automatically and verifies every access request?",
+    "choices": [
+      "Zero trust",
+      "Single sign-on",
+      "Workgroup",
+      "Biometrics"
+    ],
+    "answer": 0,
+    "explanation": "Objective 2.1. Zero trust never trusts automatically and verifies every request, with explicit verification, least privilege and assume breach. Single sign-on is an authentication service, Workgroup is a network model, and biometrics are an identity method.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-10",
+    "topicId": "core2-security-measures",
+    "prompt": "Which authentication requires two or more factors such as something you know and something you have?",
+    "choices": [
+      "Single-factor authentication",
+      "Multifactor authentication",
+      "Biometric lock",
+      "Access list"
+    ],
+    "answer": 1,
+    "explanation": "Objective 2.1. Multifactor authentication requires two or more factors from different categories. Single-factor authentication uses one factor, and a biometric lock or access list is one control, not a factor combination.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-11",
+    "topicId": "core2-security-measures",
+    "prompt": "Which MFA method generates time-based codes in software on a phone or computer?",
+    "choices": [
+      "Email token",
+      "SMS token",
+      "Authenticator application",
+      "Voice call authentication"
+    ],
+    "answer": 2,
+    "explanation": "Objective 2.1. An Authenticator application generates TOTP codes in software and can send push approvals. Email and SMS deliver codes by message, and voice call authentication reads a code aloud.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-12",
+    "topicId": "core2-security-measures",
+    "prompt": "Which MFA method delivers a one-time passcode by an automated phone call?",
+    "choices": [
+      "Email token",
+      "Hardware token",
+      "Authenticator application",
+      "Voice call authentication"
+    ],
+    "answer": 3,
+    "explanation": "Objective 2.1. Voice call authentication delivers the one-time passcode through an automated phone call. An email token uses email, a hardware token is a device, and an authenticator application is software.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-13",
+    "topicId": "core2-security-measures",
+    "prompt": "Which open standard passes authentication assertions between an identity provider and a service provider?",
+    "choices": [
+      "SAML",
+      "TOTP",
+      "Least privilege",
+      "Mantrap"
+    ],
+    "answer": 0,
+    "explanation": "Objective 2.1. SAML is an open standard that exchanges authentication assertions between an identity provider and a service provider. TOTP generates codes, least privilege is a principle, and a mantrap is a physical entry.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-14",
+    "topicId": "core2-security-measures",
+    "prompt": "Which service lets a user sign in once and reach several integrated applications with one validated token?",
+    "choices": [
+      "Biometric lock",
+      "Single sign-on",
+      "Hardware token",
+      "Motion sensor"
+    ],
+    "answer": 1,
+    "explanation": "Objective 2.1. Single sign-on validates a login once, issues a token, and reuses it for integrated applications. A biometric lock, hardware token and motion sensor do not provide SSO.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-15",
+    "topicId": "core2-security-measures",
+    "prompt": "Which physical measure secures a piece of equipment so it cannot be removed or stolen easily?",
+    "choices": [
+      "Equipment lock",
+      "Lighting",
+      "Magnetometer",
+      "Bollard"
+    ],
+    "answer": 0,
+    "explanation": "Objective 2.1. An Equipment lock physically secures equipment to prevent removal or theft. Lighting deters intruders, a magnetometer detects metal, and a bollard stops vehicles.",
+    "weak": false
+  },
+  {
+    "id": "q-c2sec-16",
+    "topicId": "core2-security-measures",
+    "prompt": "Which MFA factor is a physical device that displays or produces changing codes?",
+    "choices": [
+      "Email token",
+      "Authenticator application",
+      "SMS token",
+      "Hardware token"
+    ],
+    "answer": 3,
+    "explanation": "Objective 2.1. A Hardware token is a physical device that generates time-sensitive codes, which is the something you have factor. Email, SMS and the authenticator application are delivered or software-based methods.",
     "weak": false
   }
 ]
