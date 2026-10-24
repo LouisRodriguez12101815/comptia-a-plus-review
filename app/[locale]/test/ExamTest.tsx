@@ -20,6 +20,16 @@ const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as c
 type ExamCode = (typeof examCodes)[number];
 type Phase = "setup" | "running" | "done";
 
+// Exam-style labs for 220-1202 are done in a browser before the timed multiple-choice block.
+const coreTwoLabs = [
+  { file: "core2-pbq-command-line.html", title: "Command line" },
+  { file: "core2-pbq-malware-removal.html", title: "Malware removal" },
+  { file: "core2-pbq-tool-match.html", title: "Tool match" },
+  { file: "core2-pbq-soho-router.html", title: "SOHO router" },
+  { file: "core2-pbq-mobile-troubleshooting.html", title: "Mobile troubleshooting" },
+  { file: "core2-pbq-pc-security-issues.html", title: "PC security issues" },
+];
+
 const questionsById: Record<string, Question> = Object.fromEntries(questions.map((q) => [q.id, q]));
 const matrix = objectives as CoverageMatrix;
 
@@ -252,6 +262,14 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
             })}
           </div>
         </fieldset>
+
+        {exam === "220-1202" && <section className={card} aria-labelledby="labs-first-heading">
+          <h2 id="labs-first-heading" className="text-lg font-semibold text-white">{t("labsFirstHeading")}</h2>
+          <p className="mt-1 text-sm text-slate-300">{t("labsFirstIntro")}</p>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {coreTwoLabs.map((lab) => <li key={lab.file}><a href={`/visuals/${lab.file}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 w-full items-center rounded-xl border border-slate-700 px-4 py-2 text-teal-200 underline underline-offset-4 hover:border-teal-400">{lab.title}</a></li>)}
+          </ul>
+        </section>}
 
         <section className={card} aria-labelledby="blueprint-heading">
           <h2 id="blueprint-heading" className="text-lg font-semibold text-white">{t("blueprintHeading")}</h2>
