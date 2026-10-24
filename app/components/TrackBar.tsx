@@ -30,7 +30,7 @@ export function TrackBar() {
   const tools = toolStatuses(track);
 
   return (
-    <div className={`track-shell track-${track.id} border-b border-slate-800 bg-slate-900/60`}>
+    <section aria-label={t("toolsLabel", { track: track.short })} className={`track-shell track-${track.id} border-b border-slate-800 bg-slate-900/60`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:py-3">
         <p className="hidden text-sm text-slate-400 sm:block">
           <Link href="/" className="hover:text-white">
@@ -88,6 +88,6 @@ export function TrackBar() {
           })}
         </nav>
       </div>
-    </div>
+    </section>
   );
 }
