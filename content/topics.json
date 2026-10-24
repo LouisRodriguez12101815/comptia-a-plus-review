@@ -11439,5 +11439,168 @@
         ]
       }
     ]
+  },
+  {
+    "id": "core2-win-networking",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Windows networking on a client (1.7)",
+    "chapter": "Core 2 · Operating systems (Domain 1)",
+    "summary": "Configure a Windows client's network model, IP settings, connection type, firewall profile and sharing options.",
+    "concept": "Workgroups are peer-to-peer and domains are centrally managed. A client needs correct IPv4 settings, a suitable network profile and the right connection type.",
+    "sections": [
+      {
+        "id": "1-7-models",
+        "title": "Workgroups, domains and sharing (1.7)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Model",
+              "Management",
+              "Best fit"
+            ],
+            "rows": [
+              [
+                "Workgroup",
+                "Peer-to-peer. Each computer manages its own users and permissions",
+                "Small networks, about 20 devices or fewer"
+              ],
+              [
+                "Domain",
+                "Centralized through domain controllers, with policies, authentication and scale",
+                "Medium to large organizations"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Sharing resource",
+              "What to know"
+            ],
+            "rows": [
+              [
+                "File server",
+                "Any shared folder in a workgroup. Centralized, with backups and redundancy in a domain"
+              ],
+              [
+                "Mapped drive",
+                "A drive letter linked to a shared folder. Administrators can map drives automatically with Group Policy in a domain"
+              ],
+              [
+                "Shared printer",
+                "A locally connected printer shared through its host, or a network printer connected directly to the network. Share from Printer properties"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-7-firewall",
+        "title": "Windows Defender Firewall (1.7)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Profiles: Domain for enterprise networks, Private for trusted home or office networks, Public for untrusted networks such as coffee shops or airports.",
+              "Inbound rules control traffic entering the computer. Outbound rules control traffic leaving it.",
+              "Application restrictions block a program's network access. Exceptions let a trusted program through.",
+              "Port rules allow or block traffic on specific ports. Example: allow TCP 1433 for a database connection."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "New inbound rule wizard: choose Port, select TCP, enter 1433 in Specific local ports, choose Allow the connection, apply the profiles, then name the rule."
+          }
+        ]
+      },
+      {
+        "id": "1-7-ip",
+        "title": "IP settings and connection types (1.7)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "IPv4 setting",
+              "What to enter"
+            ],
+            "rows": [
+              [
+                "IP address",
+                "The device's address, such as 192.168.1.100"
+              ],
+              [
+                "Subnet mask",
+                "Defines the network range, usually 255.255.255.0 for a home network"
+              ],
+              [
+                "Default gateway",
+                "The router's address, such as 192.168.1.1. A wrong value strands the device on its local network"
+              ],
+              [
+                "Preferred DNS server",
+                "Queried first. Often the router's address"
+              ],
+              [
+                "Alternate DNS server",
+                "Used if the preferred server does not respond"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Connection",
+              "What it is"
+            ],
+            "rows": [
+              [
+                "Wired (Ethernet)",
+                "A cable to a router or switch. Fast, stable and unaffected by interference"
+              ],
+              [
+                "Wireless (Wi-Fi)",
+                "Radio signals with a passphrase. Performance varies with distance and obstacles"
+              ],
+              [
+                "Cellular (WWAN)",
+                "Mobile carrier internet through a SIM or embedded SIM. Appears only on devices with cellular hardware"
+              ],
+              [
+                "VPN",
+                "An encrypted tunnel to a remote network, useful on public Wi-Fi"
+              ],
+              [
+                "Proxy",
+                "An intermediary that can filter and log traffic. Set automatically or manually"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An address starting with 169.254 (APIPA) means the device could not reach a DHCP server. If a device can ping IP addresses but cannot open websites, check its DNS settings."
+          }
+        ]
+      },
+      {
+        "id": "1-7-profiles",
+        "title": "Network profiles and paths (1.7)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Private network: trusted. Network discovery is on, so the device can find and be found, and file and printer sharing works.",
+              "Public network: untrusted. Network discovery and file and printer sharing are off, and the firewall applies stricter rules.",
+              "Metered connection: data is tracked. Windows downloads only essential security updates, and OneDrive syncs manually.",
+              "UNC path: \\\\server\\share addresses a shared folder directly, without a mapped drive. The server can be a name or an IP address."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
