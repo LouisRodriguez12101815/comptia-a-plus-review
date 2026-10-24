@@ -10084,5 +10084,1014 @@
         ]
       }
     ]
+  },
+  {
+    "id": "core2-operational-procedures",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Operational procedures: documentation, change, backup, safety, policy, remote access, scripting, AI",
+    "chapter": "Core 2 · Operational procedures (Domain 4)",
+    "summary": "For each Domain 4 objective, know the record, the rule, and the risk it controls.",
+    "concept": "implementation",
+    "sections": [
+      {
+        "id": "4-1-documentation",
+        "title": "Documentation and support systems (4.1)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Objective 4.1 asks what each support record holds and why you keep it. The record decides who can act on the problem next."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Record",
+              "What it holds",
+              "Why it matters"
+            ],
+            "rows": [
+              [
+                "Ticketing system",
+                "User information, device information, description of the issue, category, severity, escalation level, progress notes, resolution",
+                "Lets the next technician pick up the problem without asking the customer again"
+              ],
+              [
+                "Asset management",
+                "Inventory lists, asset tags and IDs, assigned users, warranty and license dates, procurement life cycle",
+                "Tracks what the organization owns, who uses it, and when it expires"
+              ],
+              [
+                "Configuration management database (CMDB)",
+                "Relationships between configuration items, such as which server runs which application",
+                "Shows what a change will affect"
+              ],
+              [
+                "Knowledge base or article",
+                "Symptoms, cause and fix for a common problem",
+                "Lets technicians and users solve repeat issues quickly"
+              ],
+              [
+                "Standard operating procedure (SOP)",
+                "Step-by-step method for one routine task",
+                "Makes the work consistent between technicians"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Ticket writing: be clear and concise. Record the issue description, progress notes as you work, and the resolution when you close.",
+              "Other documents: incident reports, software custom installation procedures, new-user onboarding checklists, user off-boarding checklists.",
+              "Service-level agreements (SLAs) set the response and resolution times you promise. Internal SLAs cover your own organization; external or third-party SLAs cover vendors and contractors."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Documentation matters for repeat issues and for compliance. If you fix a problem twice without a note, you will spend the time twice."
+          }
+        ]
+      },
+      {
+        "id": "4-2-change-management",
+        "title": "Change management (4.2)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Change management reduces the risk that a planned change breaks something. Memorize the three change types and the steps that protect the business."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Change type",
+              "What it means",
+              "Approval"
+            ],
+            "rows": [
+              [
+                "Standard change",
+                "Low-risk, routine, and already tested",
+                "Pre-approved; no board meeting needed"
+              ],
+              [
+                "Normal change",
+                "Planned change that carries some risk",
+                "Full process, including change board approval"
+              ],
+              [
+                "Emergency change",
+                "Urgent change to fix an outage or a security problem",
+                "Expedited approval, documented afterward"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "A change request form records the purpose, the scope of the change, the change type, the date and time, the affected systems and their impact, the risk analysis and risk level, the change board's approval, the implementation steps, peer review, and end-user acceptance afterward."
+          },
+          {
+            "type": "paragraph",
+            "text": "Documented business processes protect the change. The rollback plan returns the system to its original configuration. The backup plan protects the data before the change. Sandbox testing runs the change in an isolated environment first. Name the responsible staff members for each step."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Change freeze: a period when no changes are allowed, such as a busy sales season.",
+              "Maintenance window: the agreed time, usually off-hours, when changes are made and users are warned."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Sandbox testing is done before production. A rollback plan is written before the change, not after it fails."
+          }
+        ]
+      },
+      {
+        "id": "4-3-backup-recovery",
+        "title": "Backup and recovery (4.3)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Backups protect data from deletion, corruption and disaster. A backup is not trusted until you have tested a restore."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Backup type",
+              "What it copies",
+              "Resets archive bit?"
+            ],
+            "rows": [
+              [
+                "Full",
+                "Everything in the data set",
+                "Yes"
+              ],
+              [
+                "Incremental",
+                "Only files changed since the last backup of any kind",
+                "Yes"
+              ],
+              [
+                "Differential",
+                "Files changed since the last full backup",
+                "No"
+              ],
+              [
+                "Synthetic full",
+                "A full set assembled from earlier backups, without a new full read of the source",
+                "Depends on the tool"
+              ],
+              [
+                "Copy",
+                "A full copy made without changing the archive bit, so normal backups are not disturbed",
+                "No"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Restore to the original location (in-place or overwrite) or to an alternative location. Overwriting in place destroys the current data, so restore elsewhere first when you are not sure."
+          },
+          {
+            "type": "paragraph",
+            "text": "The 3-2-1 backup rule: keep three copies of the data, on two different media types, with one copy offsite. Rotation schemes include on-site versus off-site storage and grandfather-father-son (GFS), which keeps daily, weekly and monthly sets."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A backup you have never restored is a guess. Test restores on a schedule, and record how often you test."
+          },
+          {
+            "type": "paragraph",
+            "text": "Volume Shadow Copy lets users restore earlier versions of their own files without calling IT. Use it for accidental overwrites; it is not a full backup."
+          }
+        ]
+      },
+      {
+        "id": "4-4-safety",
+        "title": "Safety procedures (4.4)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Safety protects you and the equipment. Know which hazard each control addresses."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Hazard",
+              "Control"
+            ],
+            "rows": [
+              [
+                "Electrostatic discharge (ESD)",
+                "Antistatic wrist strap, ESD mat, grounding, antistatic bags, controlled humidity"
+              ],
+              [
+                "Electrical shock",
+                "Disconnect power before repair, equipment grounding, do not work on a live power supply"
+              ],
+              [
+                "Heavy objects",
+                "Lift with the legs, use a cart, keep the path clear"
+              ],
+              [
+                "Eye and lung exposure",
+                "Safety goggles, air filtration mask when cleaning dust or toner"
+              ],
+              [
+                "Loose cables",
+                "Cable management, floor guards, cable ties"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Fire extinguisher classes: Class A for ordinary combustibles such as wood and paper; Class B for flammable liquids; Class C for electrical fires; Class D for combustible metals; Class K for cooking oils. Never fight an electrical fire with water."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Use only non-magnetic tools inside a computer. Magnetic tools can damage components and data.",
+              "Handle and store components in antistatic bags. Follow government and company regulations for handling hazardous materials."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "The power supply and the monitor can hold a dangerous charge even when unplugged. The processor can burn you when it has just been running."
+          }
+        ]
+      },
+      {
+        "id": "4-5-environment",
+        "title": "Environmental impacts and controls (4.5)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Environmental controls keep equipment running and keep hazardous materials out of the trash."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Safety data sheet (SDS), formerly called MSDS: lists handling, storage, personal protection, emergency cleanup and disposal for a chemical. Suppliers must provide one on request.",
+              "Disposal: batteries and toner need special handling. Recycle e-waste and batteries instead of putting them in the trash.",
+              "Temperature and humidity: keep equipment within its rated range, provide ventilation, and clean dust with an ESD-safe vacuum or compressed air."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Power problem",
+              "Protection"
+            ],
+            "rows": [
+              [
+                "Surge or spike",
+                "Surge suppressor, which absorbs the extra voltage but gives no backup power"
+              ],
+              [
+                "Brownout or blackout",
+                "Uninterruptible power supply (UPS), which keeps power running on its battery and conditions the feed"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A surge suppressor and a UPS are different. A surge suppressor protects against spikes; a UPS keeps the equipment running during an outage."
+          }
+        ]
+      },
+      {
+        "id": "4-6-privacy-licensing-policy",
+        "title": "Privacy, licensing and policy (4.6)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "This objective covers how you respond to prohibited content, how you handle evidence, and what licenses and policies allow."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Incident response: stop the activity, confiscate and preserve the evidence, report through proper channels, and document the incident.",
+              "Chain of custody: a written record of who handled the evidence, when, and what they did with it.",
+              "Order of volatility: collect the most volatile data first, which means registers and cache, then RAM, then disk, then archival media.",
+              "Forensic copy: make an image of the drive so the original data stays intact."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "PII (personally identifiable information)",
+                "Information that identifies a person, such as a name with a Social Security number"
+              ],
+              [
+                "PHI (protected health information)",
+                "Health information that identifies a patient"
+              ],
+              [
+                "PCI DSS",
+                "Payment Card Industry Data Security Standard for handling card data"
+              ],
+              [
+                "GDPR",
+                "EU law on how personal data of EU residents is used"
+              ],
+              [
+                "EULA",
+                "End-user license agreement that grants the right to use the software"
+              ],
+              [
+                "DRM",
+                "Digital rights management, which limits copying or use of content"
+              ],
+              [
+                "Personal vs corporate license",
+                "Personal is for one user; corporate covers many users or machines"
+              ],
+              [
+                "Open-source license",
+                "Source code is available; a purchase is not always required"
+              ],
+              [
+                "NDA and MNDA",
+                "Non-disclosure agreement; mutual NDA binds both parties"
+              ],
+              [
+                "AUP",
+                "Acceptable use policy that sets the rules for using company resources"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Stop, preserve and report first. Do not confront the user, and do not destroy the evidence."
+          }
+        ]
+      },
+      {
+        "id": "4-7-professionalism",
+        "title": "Professional communication (4.7)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Professional communication is scored in scenarios. Choose the answer that keeps the customer informed, respected and in control of the outcome."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Appearance: wear attire that fits the environment, such as formal or business casual.",
+              "Language: avoid jargon, acronyms and slang unless the customer uses them first.",
+              "Attitude: be positive and project confidence. Do not argue, dismiss the problem, or judge the customer.",
+              "Listening: let the customer finish, take notes, and do not interrupt.",
+              "Titles: use appropriate professional titles when they apply.",
+              "Time: be on time. If you will be late, contact the customer before they have to ask.",
+              "Distractions: avoid personal calls, texting, social media, and personal interruptions while you work.",
+              "Difficult customers: clarify with open-ended questions, restate the issue to confirm it, and use discretion when you discuss other people's problems.",
+              "Expectations: set a timeline, communicate status, offer repair or replacement options, document the service, and follow up later to check satisfaction.",
+              "Confidentiality: keep customer data private, including on screens, printers and desktops you leave open."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "If you cannot meet a timeline, tell the customer early, give a new estimate, and do not blame outside factors."
+          }
+        ]
+      },
+      {
+        "id": "4-8-scripting",
+        "title": "Scripting basics (4.8)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "You need to identify scripts and their file extensions. You do not need to write them for this exam. Know what each script is for and what can go wrong."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Extension",
+              "Language",
+              "Typical use"
+            ],
+            "rows": [
+              [
+                ".bat or .cmd",
+                "Windows batch",
+                "Simple command-line tasks"
+              ],
+              [
+                ".ps1",
+                "PowerShell",
+                "Windows and Microsoft 365 administration"
+              ],
+              [
+                ".vbs",
+                "VBScript",
+                "Windows automation that uses COM objects"
+              ],
+              [
+                ".sh",
+                "Bash shell",
+                "Linux and macOS command-line tasks"
+              ],
+              [
+                ".js",
+                "JavaScript",
+                "Interactive content in web browsers"
+              ],
+              [
+                ".py",
+                "Python",
+                "General-purpose scripting and automation"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "A compiled program, such as C or C++, is translated into machine code before it runs. A script is interpreted: the shell or an interpreter reads it and runs each line. Scripts are quick to write but depend on an interpreter and on applications already installed."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Constructs: variables (system, user and program variables), branch logic such as if statements, loops (a for loop has a defined start and end; a while loop runs while a condition is true), comments, and environment variables.",
+              "Comment markers: REM in batch, // in JavaScript, # in Bash and PowerShell, and an apostrophe in VBScript.",
+              "Bash scripts must be made executable with chmod before they will run.",
+              "Use cases: basic automation, restarting machines, mapping network drives, installing applications, automated backups, gathering information, and starting updates.",
+              "Considerations: a script can introduce malware, change system settings without warning, or crash the browser or system if it mishandles resources."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A script runs with the permissions of the person who runs it. Read a script before you run one from an unknown source."
+          }
+        ]
+      },
+      {
+        "id": "4-9-remote-access",
+        "title": "Remote access technologies (4.9)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Remote access lets you support a computer you are not sitting at. Know the tool, its port, and its security trade-off."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Tool or protocol",
+              "Port",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "RDP (Remote Desktop Protocol)",
+                "TCP 3389",
+                "Microsoft protocol; mstsc.exe starts the client"
+              ],
+              [
+                "SSH (Secure Shell)",
+                "TCP 22",
+                "Encrypted command-line access to Linux, UNIX and network devices"
+              ],
+              [
+                "VNC (Virtual Network Computing)",
+                "TCP 5900 (typical)",
+                "Open standard for screen sharing"
+              ],
+              [
+                "SPICE",
+                "Varies",
+                "Open-source protocol used with virtual desktop infrastructure (VDI)"
+              ],
+              [
+                "WinRM (Windows Remote Management)",
+                "HTTP 5985, HTTPS 5986",
+                "Runs remote PowerShell and management commands"
+              ],
+              [
+                "VPN",
+                "Varies",
+                "Encrypted tunnel that puts the remote computer on the internal network"
+              ],
+              [
+                "RMM (remote monitoring and management)",
+                "Varies",
+                "A category of tools that manage many machines from one console; it is not a single protocol"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Third-party tools add screen sharing (such as Quick Assist or Zoom screen share), videoconferencing (such as Teams or Zoom), file transfer software, and desktop management software (such as TeamViewer or Splashtop)."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Use a secure channel, such as a VPN with multifactor authentication. Do not expose RDP or VNC directly to the internet, and turn remote access off when no one needs it."
+          }
+        ]
+      },
+      {
+        "id": "4-10-ai",
+        "title": "Artificial intelligence basics (4.10)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "AI systems imitate parts of human intelligence, such as learning, pattern recognition and language. They do not replace human judgment, and they can be wrong."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Components: training data, neural networks, large language models (LLMs), natural language processing (NLP), and foundation models trained on broad data.",
+              "Tokenization: dividing text into smaller pieces called tokens so a model can process it.",
+              "Application integration: AI features built into the apps people already use.",
+              "Limitations: bias from the training data, hallucinations (confident but false output), and accuracy problems that you must verify.",
+              "Policy: follow the appropriate-use policy, and do not present AI output as your own work where plagiarism rules apply.",
+              "Private versus public tools: do not enter sensitive data, such as customer records or credentials, into a public AI tool. Check where the data goes and how it is used."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Verify AI output before you act on it, and never enter sensitive data into a tool your organization has not approved."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-os-gaps",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Operating system gaps: OS types, installs, Windows settings, networking, macOS",
+    "chapter": "Core 2 · Operating systems (Domain 1)",
+    "summary": "Match each OS, install method, setting and folder to the task it performs.",
+    "concept": "operating-systems",
+    "sections": [
+      {
+        "id": "1-1-os-types",
+        "title": "Operating system types (1.1)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Each operating system is designed for a specific use case. Match the device or workload to the OS family first, then decide which file system or support model fits."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "OS category",
+              "Examples",
+              "Purpose and traits"
+            ],
+            "rows": [
+              [
+                "Workstation",
+                "Windows 10/11, macOS, Linux distributions",
+                "User-friendly desktop environment with multimedia, productivity, and personal customization. Linux is open source and avoids licensing fees; Windows and macOS are proprietary."
+              ],
+              [
+                "Server",
+                "Windows Server 2022 and 2025, Linux server distributions",
+                "Optimized for robustness, security, and stability while serving many clients. Often run with no GUI (command-line only). Linux excels here."
+              ],
+              [
+                "Mobile (phone and tablet)",
+                "Android, iOS, iPadOS",
+                "Built for touch interfaces, virtual keyboards, power efficiency, and ARM processors. iPadOS is derived from iOS and runs on Apple tablets."
+              ],
+              [
+                "Chromebook / cloud-based",
+                "ChromeOS",
+                "Lightweight, browser-based interface; most work runs as web apps and data lives in the cloud."
+              ],
+              [
+                "Embedded / real-time",
+                "Stripped-down Linux, RTOS-style systems",
+                "Resource-constrained devices with specific functions, real-time capabilities, and minimal power use. Found in IoT devices, appliances, and gaming consoles. Most are derived from or based on Linux."
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "File system",
+              "Used by",
+              "Key facts"
+            ],
+            "rows": [
+              [
+                "NTFS",
+                "Newer Windows",
+                "Microsoft native file system. Supports compression, encryption, permissions, and journaling."
+              ],
+              [
+                "ReFS",
+                "Windows Server",
+                "Built for data integrity and fault tolerance. Supports permissions but not compression or encryption. Uses integrity checking instead of journaling."
+              ],
+              [
+                "FAT32",
+                "Older devices, cross-platform media",
+                "Compatible with many systems but no compression, encryption, or advanced permissions, and no journaling. Single files cannot exceed 4 GB."
+              ],
+              [
+                "exFAT",
+                "USB drives, memory cards",
+                "Works across Windows, macOS, and Linux. Supports files larger than 4 GB. No compression, encryption, advanced permissions, or journaling."
+              ],
+              [
+                "ext4",
+                "Modern Linux",
+                "Journaling, permissions, and large file support. No native compression or encryption."
+              ],
+              [
+                "XFS",
+                "Enterprise Linux and high-performance servers",
+                "Designed for scalability and large files. Journaling and permissions; no native compression or encryption."
+              ],
+              [
+                "APFS",
+                "Newer Macs",
+                "Apple primary file system, optimized for SSDs. Strong file and volume encryption, snapshots, cloning, permissions, and journaling."
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Update limitations: a vendor stops providing updates at the end of support. Older hardware may not get new versions, which leaves security gaps.",
+              "Compatibility concerns: apps are built for one OS. Files and file systems may not work across operating systems without extra tools.",
+              "Cross-platform transfer: choose exFAT for large files that must move between Windows, macOS, and Linux. Choose FAT32 only when the file size stays under 4 GB."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Know which OS is for which device type before you answer a scenario question."
+          }
+        ]
+      },
+      {
+        "id": "1-2-installation",
+        "title": "Installations and upgrades (1.2)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Boot methods: USB drive, optical media, network (PXE), and internet-based installation that downloads the OS during setup.",
+              "Multiboot: two or more operating systems on one computer, chosen at startup by a boot manager.",
+              "Remote network installation: the computer boots from a network server and installs the OS from there.",
+              "Third-party drivers: load the manufacturer's drivers during setup when the built-in drivers do not support the hardware.",
+              "Upgrade considerations: back up files and user preferences first, and confirm the hardware meets the new OS requirements."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Windows 11 requires TPM 2.0 and UEFI with Secure Boot, so check the hardware before you start an upgrade."
+          }
+        ]
+      },
+      {
+        "id": "1-6-windows-settings",
+        "title": "Windows settings and tools (1.6)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Area",
+              "What you change there"
+            ],
+            "rows": [
+              [
+                "System",
+                "Computer name, domain membership, remote settings, performance options (also Settings > System)"
+              ],
+              [
+                "Devices and Printers",
+                "Add printers and devices, set the default printer"
+              ],
+              [
+                "Network and Sharing Center",
+                "Network profiles, sharing options, adapter settings"
+              ],
+              [
+                "Administrative Tools",
+                "Consoles such as Event Viewer, Services and Task Scheduler"
+              ],
+              [
+                "File Explorer Options",
+                "Show hidden files, show file extensions, general browsing options"
+              ],
+              [
+                "Power Options",
+                "Power plans, sleep and display timeouts"
+              ],
+              [
+                "Apps and Privacy",
+                "Installed apps and startup apps; camera, microphone and location permissions"
+              ],
+              [
+                "Mail",
+                "Mail profiles for Outlook"
+              ],
+              [
+                "Gaming",
+                "Game Bar and game mode settings"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The Settings app and Control Panel overlap. Know the task, then choose whichever tool the question names."
+          }
+        ]
+      },
+      {
+        "id": "1-7-networking",
+        "title": "Windows networking on a client (1.7)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Workgroup: each computer keeps its own accounts and shares resources directly with peers.",
+              "Domain: a central directory manages accounts, and shared resources, such as printers, are reached through the domain.",
+              "Windows Defender Firewall: configure which apps are allowed through, and set rules for each network profile (domain, private, public).",
+              "Wired connections: check the Ethernet adapter, its IP settings and the cable before you change anything else."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "A public network profile blocks most inbound sharing. Set a home or work network only on networks you trust."
+          }
+        ]
+      },
+      {
+        "id": "1-8-macos",
+        "title": "macOS features and tools (1.8)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Applications: a .app bundle is one application. Install by dragging it to Applications, or from the App Store.",
+              "Folders: /Applications holds apps; /Users holds each user's home folder; /Library holds shared support files; /System holds protected system files; /Users/Library holds per-user support files.",
+              "Apple ID and corporate restrictions: a managed Apple ID or device policy can limit what a user installs or changes.",
+              "System Preferences (System Settings in newer versions): Displays, Networks, Printers and Scanners, and Privacy and Security.",
+              "Features: Mission Control with multiple desktops, iCloud Drive, trackpad gestures, Spotlight search, and Keychain for passwords."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "System Integrity Protection guards /System and other core folders. Do not disable it to fix a user problem."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-windows-editions",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Windows editions, upgrades and feature updates",
+    "chapter": "Core 2 · Operating systems (Domains 1.2, 1.3)",
+    "summary": "Match the edition to the feature or limit a scenario names, then choose the upgrade path that keeps the user's data.",
+    "concept": "operating-systems",
+    "sections": [
+      {
+        "id": "1-3-editions",
+        "title": "Windows 10 and 11 editions (1.3)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Windows comes in several editions. The edition decides which features you get, such as domain joining, BitLocker and Remote Desktop hosting."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Edition",
+              "Domain join",
+              "BitLocker",
+              "Remote Desktop host",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Home",
+                "No",
+                "No",
+                "No (client only)",
+                "Premium features and consumer use; Windows 10 Home RAM limit is 128 GB"
+              ],
+              [
+                "Pro",
+                "Yes",
+                "Yes",
+                "Yes",
+                "The most flexible consumer and business edition; RAM limit 2 TB"
+              ],
+              [
+                "Pro for Workstations",
+                "Yes",
+                "Yes",
+                "Yes",
+                "Up to 4 physical CPUs and 6 TB RAM (Windows 10 and 11)"
+              ],
+              [
+                "Enterprise",
+                "Yes",
+                "Yes",
+                "Yes",
+                "Volume licensed; includes features such as BranchCache and Credential Guard"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "N versions are sold without bundled media apps, such as Windows Media Player. The features are otherwise the same.",
+              "Domain versus workgroup: a domain uses central accounts and policy; a workgroup keeps accounts on each computer.",
+              "gpedit.msc (Local Group Policy Editor) is available in Pro and above, not in Home."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "If a question asks for domain joining, BitLocker or the Remote Desktop host role, the answer is Pro or Enterprise, not Home."
+          }
+        ]
+      },
+      {
+        "id": "1-2-upgrades",
+        "title": "Upgrades and feature updates (1.2)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Keeps apps and files?",
+              "When to use it"
+            ],
+            "rows": [
+              [
+                "In-place upgrade",
+                "Yes",
+                "The current OS is supported and the hardware meets the new requirements"
+              ],
+              [
+                "Clean install",
+                "No (erases the disk)",
+                "A fresh start, or when the in-place upgrade is not possible"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Before an upgrade, back up files and user preferences, and confirm that applications and drivers support the new OS.",
+              "Hardware compatibility: Windows 11 requires TPM 2.0, UEFI with Secure Boot, and at least 4 GB RAM and 64 GB storage.",
+              "Feature updates are new versions of the OS that arrive on a schedule. Each version has its own end-of-support date, so plan upgrades before support ends."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Windows 10 Pro can be upgraded to Enterprise only with a valid Enterprise key. An Enterprise-only feature needs that edition, not just a Pro license."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-apps-cloud",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Installing applications and cloud productivity tools",
+    "chapter": "Core 2 · Applications and cloud tools (Domains 1.10, 1.11)",
+    "summary": "Check the application's requirements before installing, then set up the cloud tool the user needs.",
+    "concept": "implementation",
+    "sections": [
+      {
+        "id": "1-10-app-requirements",
+        "title": "Application requirements (1.10)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Requirement",
+              "What to check"
+            ],
+            "rows": [
+              [
+                "Architecture",
+                "A 64-bit application needs a 64-bit OS. A 32-bit application runs on 32-bit and 64-bit OSes."
+              ],
+              [
+                "Graphics",
+                "Dedicated or integrated graphics card; the application may need VRAM (video memory)"
+              ],
+              [
+                "RAM and CPU",
+                "Minimum memory and processor for the application"
+              ],
+              [
+                "Hardware tokens",
+                "External licensing dongles or hardware tokens must be attached"
+              ],
+              [
+                "Storage",
+                "Free disk space for the installed application and its data"
+              ],
+              [
+                "OS compatibility",
+                "The application must support the installed OS version"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Distribution methods: physical media, a mountable ISO file, a downloadable package, or an image deployment that installs the app as part of a standard system image.",
+              "Impact considerations before a new application goes in: the device (resources), the network (bandwidth and ports), operation (support and updates), and the business (cost, licensing and training)."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Check the requirements before you install. A 64-bit application will not run on a 32-bit OS, and a missing hardware token stops the application from launching."
+          }
+        ]
+      },
+      {
+        "id": "1-11-cloud-tools",
+        "title": "Cloud productivity tools (1.11)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Area",
+              "What to set up",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "Email",
+                "Mailbox and client profile",
+                "Exchange Online with Outlook; Gmail"
+              ],
+              [
+                "Storage",
+                "Sync client and folder settings",
+                "OneDrive; Google Drive"
+              ],
+              [
+                "Collaboration",
+                "Document, spreadsheet, slideshow and word-processing tools",
+                "Word, Excel, PowerPoint; Google Docs, Sheets and Slides"
+              ],
+              [
+                "Communication",
+                "Videoconferencing and instant messaging",
+                "Teams, Zoom"
+              ],
+              [
+                "Identity",
+                "Sync on-premises directory accounts with the cloud",
+                "Microsoft Entra Connect"
+              ],
+              [
+                "Licensing",
+                "Assign a license to each user",
+                "Microsoft 365 license assignment in the admin center"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Exchange Online is the cloud version of on-premises Exchange. Outlook is the client, and Gmail is the Google equivalent."
+          }
+        ]
+      }
+    ]
   }
 ]
