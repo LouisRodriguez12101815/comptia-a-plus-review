@@ -24,6 +24,25 @@
     @media(max-width:520px){html[data-embedded="true"] .page{padding:16px 10px}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
     @media print{body{background:white;color:#173044}.page{padding:10px;max-width:none}.lede,.flow-caption,.principle p,.footer{color:#385468}.notice{color:#5b401f;background:#fff7e8}.simulator,.detail-card,.principles{break-inside:avoid}.workspace{grid-template-columns:1fr 1fr}.detail-card{position:static;box-shadow:none}.flow-panel,.simulator{background:#102031;color:#f5f1e8}.control,.scenario,.reset{display:none}.footer a{color:#173044}.diagram{display:block}.mobile-flow{display:none}}
+    .flow-panel{position:relative}
+    .node.current rect,.node.current polygon{stroke:var(--cyan);stroke-width:2.6;animation:nodePulse 1.6s ease-in-out infinite}
+    @keyframes nodePulse{0%,100%{filter:drop-shadow(0 0 0 rgba(106,224,211,0))}50%{filter:drop-shadow(0 0 9px rgba(106,224,211,.6))}}
+    .node:hover rect,.node:hover polygon,.node:focus-visible rect,.node:focus-visible polygon{stroke:var(--cyan)}
+    .node:hover .title{fill:#ffffff}
+    .hover-card{position:absolute;z-index:2;pointer-events:none;width:250px;padding:11px 13px;border:1px solid var(--cyan);border-radius:12px;background:#0a1521f2;color:var(--paper);font-size:13px;line-height:1.45;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}
+    .hover-card.show{opacity:1;transform:none}
+    .hover-card strong{display:block;color:var(--cyan);font-size:14px;margin-bottom:3px}
+    .hover-card span{color:var(--muted)}
+    .repo-source{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--cyan);margin:4px 0 0}
+    .ingest-qa{margin:30px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .ingest-qa article{border:1px solid #2b4355;border-radius:var(--radius);padding:20px;background:var(--navy2)}
+    .ingest-qa h3{margin:0 0 8px;font-size:18px}
+    .ingest-qa p{color:var(--muted);margin:0 0 8px;font-size:14px}
+    .ingest-qa ul{margin:8px 0 0;padding-left:18px;color:var(--paper);font-size:14px}
+    .ingest-qa li{margin-bottom:7px}
+    .ingest-qa code{color:var(--cyan);font-size:12.5px}
+    .ingest-qa .unverified{color:var(--gold)}
+    @media(max-width:740px){.ingest-qa{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -87,7 +106,7 @@
       <aside class="detail-card" aria-labelledby="detail-title">
         <div class="detail-top"><span id="detail-number" class="stage-number">01</span><span id="detail-kind">Deterministic code</span></div>
         <h2 id="detail-title" tabindex="-1">Freeze inputs</h2><p id="detail-intro" class="intro">Identify the exact rubric, source material, and configuration before any model request is created.</p>
-        <h3>What goes in</h3><p id="detail-input"></p><h3>What comes out</h3><p id="detail-output"></p><h3>Checks that matter</h3><ul id="detail-checks"></ul><div id="detail-note" class="detail-note"></div><div id="detail-state" class="detail-state">Selected stage · not a live execution state</div>
+        <h3>What goes in</h3><p id="detail-input"></p><h3>What comes out</h3><p id="detail-output"></p><h3>Checks that matter</h3><ul id="detail-checks"></ul><h3>Where it lives in the repository</h3><p id="detail-source" class="repo-source"></p><div id="detail-note" class="detail-note"></div><div id="detail-state" class="detail-state">Selected stage · not a live execution state</div>
       </aside>
     </section>
 
@@ -95,6 +114,26 @@
       <article class="principle"><h3>Coverage is an evidence claim</h3><p>A named term, an explanation, and an unresolved retrieval gap are different outcomes. A missing answer or unavailable source stays unresolved; it does not become an absent lesson.</p></article>
       <article class="principle"><h3>Measurement is a separate step</h3><p>The graph prepares a reproducible blinded sample. Agreement is calculated only after reference labels come back. Another model’s agreement is not a measured human error rate.</p></article>
       <article class="principle"><h3>The site stays separate</h3><p>Assessment outputs belong to the new tool. This graph has no stage that edits lessons, commits changes, pushes code, or publishes a website.</p></article>
+    </section>
+    <section class="ingest-qa" aria-label="Ingest and quality assurance in the repository">
+      <article>
+        <h3>Ingest: getting evidence in</h3>
+        <p>The workflow starts from files in the study repository, not from a model’s memory.</p>
+        <ul>
+          <li>Snapshot freezes the source files and settings before any request is made (<code>engine.py</code>).</li>
+          <li>Import reads the rubric CSV and the evidence JSONL. Paths are checked so a file outside the repository cannot be read (<code>inputs.py</code>).</li>
+          <li>Verify checks the rubric hierarchy, weights and exam scope before grading starts (<code>inputs.py</code>).</li>
+        </ul>
+      </article>
+      <article>
+        <h3>Quality assurance: checking answers</h3>
+        <p>A model answer is accepted only after deterministic checks pass.</p>
+        <ul>
+          <li>Merge checks each answer’s identity, schema and citations against the evidence it was given (<code>graph.py</code>).</li>
+          <li>Blinded recheck and a seeded sample of 40 rows support a separate agreement check against a reference review (<code>evaluation.py</code>).</li>
+          <li class="unverified">Not yet verified: live model runs, grader accuracy and the blinded reference review. The record is in <code>tools/rubric-audit-openai/docs/validation.md</code>.</li>
+        </ul>
+      </article>
     </section>
     <footer class="footer"><p>Workflow source: <code>rubric_audit_openai/graph.py</code><br>Offline page · no remote scripts, fonts, or model requests</p><nav aria-label="Official technical references"><a href="https://docs.langchain.com/oss/python/langgraph/graph-api">LangGraph graph API</a><a href="https://docs.langchain.com/oss/python/langgraph/checkpointers">Checkpointing</a><a href="https://developers.openai.com/api/docs/guides/structured-outputs">OpenAI structured outputs</a></nav></footer>
   </main>
@@ -113,6 +152,7 @@
       evaluate:{number:"09",kind:"code",title:"Prepare review sample",intro:"Check result invariants and prepare a reproducible sample for a separate, blinded reference review.",input:"The frozen run, accepted or unresolved outputs, and a sampling seed.",output:"A sample manifest and review material with original predictions hidden from the reviewer.",checks:["Keep notes and all-material evaluations separate.","Sample using a recorded seed and a defined eligible population.","Compute agreement only after reference labels have been returned.","Label a second-model comparison as agreement, not established accuracy."],note:"This node prepares the measurement. No agreement percentage has been produced by opening this page or stepping through its simulation."},
       report:{number:"10",kind:"code",title:"Write results + limitations",intro:"Produce separate, inspectable assessment artifacts from the accepted data and explicitly unresolved cases.",input:"Final effective decisions, scope inventory, verification status, and evaluation status.",output:"CSV tables and a readable report, plus provenance and diagnostic records in the new tool’s output area.",checks:["Keep CSV for flat comparison tables and JSON/JSONL for structured requests and receipts.","Separate current-run timestamps from deterministic score content.","Use scope-aware labels such as all scanned material.","Carry needs_review through to the final status; do not publish or modify site content."],note:"Real LangGraph runs use SQLite persistence. Verify execution and recovery with the runtime integration tests in your installed environment. The sequential reference executor and this simulated page are separate from that runtime."}
     };
+    const sources={snapshot:"engine.py · snapshot",extract:"inputs.py · load_rubric, load_evidence_jsonl",verify:"inputs.py · verify_rubric",prepare:"engine.py · prepare",grade_batch:"engine.py · grade_batch, provider.py · OpenAIGrader",merge:"graph.py · merge_batch_results",recheck:"engine.py · recheck",finish:"graph.py · route_after_finish",needs_review:"graph.py · _terminal",evaluate:"evaluation.py · sample_rows, blinded_rows",report:"reporting.py · export_reports"};
     const step=(node,text,round=0)=>({node,text,round});
     const start=[step("snapshot","Freeze the source snapshot before preparing any grading requests."),step("extract","Import the existing rubric CSV. This simulation does not extract or verify a PDF."),step("verify","Check the rubric’s structure. PDF wording verification remains a separate, unperformed check."),step("prepare","Prepare initial fingerprinted requests and start the first attempt round.",1)];
     const scenarios={
@@ -131,14 +171,17 @@
       title.scrollIntoView({block:"start",behavior:"auto"});
     });
     let scenario="normal",position=0,selected="snapshot";
+    const hoverCard=document.createElement("div");hoverCard.className="hover-card";hoverCard.id="hover-card";hoverCard.setAttribute("aria-hidden","true");document.querySelector(".flow-panel").append(hoverCard);
+    function showHover(node){const panel=document.querySelector(".flow-panel").getBoundingClientRect();const r=node.getBoundingClientRect();const s=stages[node.dataset.node];hoverCard.textContent="";const strong=document.createElement("strong");strong.textContent=s.number+" · "+s.title;const span=document.createElement("span");span.textContent="Click to drill down";hoverCard.append(strong,span);const right=r.right-panel.left+12;const left=(right+250>panel.width)?Math.max(8,r.left-panel.left-262):right;hoverCard.style.left=left+"px";hoverCard.style.top=Math.max(8,r.top-panel.top)+"px";hoverCard.classList.add("show");}
+    function hideHover(){hoverCard.classList.remove("show");}
     const kindLabel={code:"Deterministic code",model:"OpenAI judgment",gate:"Decision / review"};
     function selectStage(id){selected=id;const s=stages[id];
       document.getElementById("mobile-selection-status").textContent="Selected: "+s.title;
       mobile.querySelector('[data-node="'+id+'"]').after(mobileDetailsJump);
       mobileDetailsJump.setAttribute("aria-label","View selected stage details: "+s.title);
-      document.getElementById("detail-number").textContent=s.number;document.getElementById("detail-kind").textContent=kindLabel[s.kind];document.getElementById("detail-title").textContent=s.title;document.getElementById("detail-intro").textContent=s.intro;document.getElementById("detail-input").textContent=s.input;document.getElementById("detail-output").textContent=s.output;document.getElementById("detail-note").textContent=s.note;const list=document.getElementById("detail-checks");list.replaceChildren(...s.checks.map(text=>{const li=document.createElement("li");li.textContent=text;return li;}));document.querySelectorAll("[data-node]").forEach(node=>{const active=node.dataset.node===id;node.classList.toggle("selected",active);node.setAttribute("aria-pressed",String(active));});document.getElementById("detail-state").textContent=(scenarios[scenario].steps[position].node===id?"Current simulated stage":"Selected stage")+" · not a live execution state";}
+      document.getElementById("detail-source").textContent="rubric_audit_openai/"+sources[id];document.getElementById("detail-number").textContent=s.number;document.getElementById("detail-kind").textContent=kindLabel[s.kind];document.getElementById("detail-title").textContent=s.title;document.getElementById("detail-intro").textContent=s.intro;document.getElementById("detail-input").textContent=s.input;document.getElementById("detail-output").textContent=s.output;document.getElementById("detail-note").textContent=s.note;const list=document.getElementById("detail-checks");list.replaceChildren(...s.checks.map(text=>{const li=document.createElement("li");li.textContent=text;return li;}));document.querySelectorAll("[data-node]").forEach(node=>{const active=node.dataset.node===id;node.classList.toggle("selected",active);node.setAttribute("aria-pressed",String(active));});document.getElementById("detail-state").textContent=(scenarios[scenario].steps[position].node===id?"Current simulated stage":"Selected stage")+" · not a live execution state";}
     function render(){const list=scenarios[scenario].steps,item=list[position],seen=new Set(list.slice(0,position).map(entry=>entry.node));document.querySelectorAll("[data-node]").forEach(node=>{node.classList.toggle("current",node.dataset.node===item.node);node.classList.toggle("visited",seen.has(node.dataset.node));});document.querySelectorAll("[data-scenario]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.scenario===scenario)));document.getElementById("step-count").textContent="Simulation · "+scenarios[scenario].label+" · step "+(position+1)+" of "+list.length+(item.round?" · round "+item.round:"");document.getElementById("simulation-note").textContent=item.text;document.getElementById("back").disabled=position===0;document.getElementById("next").disabled=position===list.length-1;selectStage(item.node);}
-    document.querySelectorAll("[data-node]").forEach(node=>{node.addEventListener("click",()=>selectStage(node.dataset.node));if(node.tagName.toLowerCase()!=="button")node.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();selectStage(node.dataset.node);}});});
+    document.querySelectorAll("[data-node]").forEach(node=>{node.addEventListener("pointerenter",()=>showHover(node));node.addEventListener("pointerleave",hideHover);node.addEventListener("focus",()=>showHover(node));node.addEventListener("blur",hideHover);node.addEventListener("click",()=>selectStage(node.dataset.node));if(node.tagName.toLowerCase()!=="button")node.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();selectStage(node.dataset.node);}});});
     document.querySelectorAll("[data-scenario]").forEach(button=>button.addEventListener("click",()=>{scenario=button.dataset.scenario;position=0;render();}));document.getElementById("back").addEventListener("click",()=>{if(position>0){position--;render();}});document.getElementById("next").addEventListener("click",()=>{if(position<scenarios[scenario].steps.length-1){position++;render();}});document.getElementById("reset").addEventListener("click",()=>{position=0;render();});render();
 
     if(document.documentElement.dataset.embedded==="true" && window.parent!==window){
