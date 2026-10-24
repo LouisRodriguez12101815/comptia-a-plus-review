@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Core 2 memory games: malware, social engineering, removal, permissions</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 19px/1.3 Georgia,serif;margin:0 0 6px}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.tab{min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.panel[hidden]{display:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:0 0 12px;color:var(--muted)}
+.btn{min-height:44px;padding:8px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--accent);color:#fff;font:inherit;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible,.tab:focus-visible,.tile:focus-visible,.opt:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tile{min-height:88px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--accent-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}
+.tile.back{background:var(--surface);color:var(--muted);font-weight:600}
+.tile.matched{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.tile.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.tile:disabled{cursor:default}
+.opt{min-height:44px;width:100%;margin:6px 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.note{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--warm-soft);color:var(--warm)}
+.score{font-weight:600;color:var(--ink)}
+.toggle-row{display:flex;flex-wrap:wrap;gap:8px 18px;margin:8px 0}
+.toggle-row label{display:flex;align-items:center;gap:6px;min-height:44px;cursor:pointer}
+input[type="checkbox"]{width:22px;height:22px}
+.out{font:600 22px/1.3 ui-monospace,Menlo,monospace;margin:12px 0 4px}
+.seq{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.seq li{min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+.seq li.done{background:var(--good-soft);border-color:var(--good)}
+.seq li.hint{background:var(--bad-soft);border-color:var(--bad)}
+.pair-tag{display:inline-block;font-size:12px;color:var(--muted);margin-bottom:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Core 2 memory games</h1>
+  <p class="lede">Four short games to lock in the Core 2 security and permissions facts. Everything runs on this page with the keyboard or a mouse. Scores reset when you reload.</p>
+
+  <div class="tabs" role="tablist" aria-label="Games">
+    <button class="tab" role="tab" id="t-malware" aria-selected="true" aria-controls="p-malware" data-tab="malware">Malware memory match</button>
+    <button class="tab" role="tab" id="t-social" aria-selected="false" aria-controls="p-social" data-tab="social" tabindex="-1">Social engineering match</button>
+    <button class="tab" role="tab" id="t-order" aria-selected="false" aria-controls="p-order" data-tab="order" tabindex="-1">Malware removal order</button>
+    <button class="tab" role="tab" id="t-perm" aria-selected="false" aria-controls="p-perm" data-tab="perm" tabindex="-1">Permission builder (chmod)</button>
+  </div>
+
+  <!-- Game 1: memory match -->
+  <section class="card panel" id="p-malware" role="tabpanel" aria-labelledby="t-malware">
+    <h2>Flip and match: malware and its clue</h2>
+    <p class="lede">Flip two tiles at a time. Match each malware type with the clue that describes what it does.</p>
+    <div class="bar"><span class="score" id="m-score">Moves: 0</span><span id="m-status"></span><button class="btn ghost" data-reset="malware">Shuffle again</button></div>
+    <div class="grid" id="m-grid"></div>
+  </section>
+
+  <!-- Game 2: social engineering matching -->
+  <section class="card panel" id="p-social" role="tabpanel" aria-labelledby="t-social" hidden>
+    <h2>Match the attack to the scenario</h2>
+    <p class="lede">Pick an attack on the left, then its scenario on the right.</p>
+    <div class="bar"><span class="score" id="s-score">Matched: 0 of 6</span><button class="btn ghost" data-reset="social">Shuffle again</button></div>
+    <div class="grid" id="s-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
+  </section>
+
+  <!-- Game 3: removal order -->
+  <section class="card panel" id="p-order" role="tabpanel" aria-labelledby="t-order" hidden>
+    <h2>Put the malware removal steps in order</h2>
+    <p class="lede">Click the steps in the order the exam expects. Each correct click reveals why the step matters.</p>
+    <div class="bar"><span class="score" id="o-score">Next step: 1 of 8</span><span id="o-msg"></span><button class="btn ghost" data-reset="order">Shuffle again</button></div>
+    <ul class="seq" id="o-list" aria-label="Steps to put in order"></ul>
+    <div class="note" id="o-why" aria-live="polite">Start with the first step you would take on a suspected infected PC.</div>
+  </section>
+
+  <!-- Game 4: permission builder -->
+  <section class="card panel" id="p-perm" role="tabpanel" aria-labelledby="t-perm" hidden>
+    <h2>Build a Linux permission</h2>
+    <p class="lede">Tick the permissions for each group. The octal number and command update as you go. Then try to match the challenge.</p>
+    <div class="toggle-row" role="group" aria-label="Owner permissions">
+      <strong style="min-width:70px">Owner</strong>
+      <label><input type="checkbox" data-bit="owner" data-val="4"> read (4)</label>
+      <label><input type="checkbox" data-bit="owner" data-val="2"> write (2)</label>
+      <label><input type="checkbox" data-bit="owner" data-val="1"> execute (1)</label>
+    </div>
+    <div class="toggle-row" role="group" aria-label="Group permissions">
+      <strong style="min-width:70px">Group</strong>
+      <label><input type="checkbox" data-bit="group" data-val="4"> read (4)</label>
+      <label><input type="checkbox" data-bit="group" data-val="2"> write (2)</label>
+      <label><input type="checkbox" data-bit="group" data-val="1"> execute (1)</label>
+    </div>
+    <div class="toggle-row" role="group" aria-label="Other permissions">
+      <strong style="min-width:70px">Others</strong>
+      <label><input type="checkbox" data-bit="other" data-val="4"> read (4)</label>
+      <label><input type="checkbox" data-bit="other" data-val="2"> write (2)</label>
+      <label><input type="checkbox" data-bit="other" data-val="1"> execute (1)</label>
+    </div>
+    <div class="out" id="p-octal" aria-live="polite">chmod 000</div>
+    <div id="p-sym" style="color:var(--muted)">rwx for each group shows as ---------</div>
+    <div class="bar" style="margin-top:14px"><span id="p-target"></span><button class="btn" id="p-new">New challenge</button><span class="score" id="p-score"></span></div>
+    <div class="note" id="p-note" aria-live="polite">Challenge: set the owner to read, write and execute; the group to read and write; others to read only.</div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  function shuffle(a) {
+    var b = a.slice();
+    for (var i = b.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = b[i]; b[i] = b[j]; b[j] = t;
+    }
+    return b;
+  }
+
+  function byId(id) { return document.getElementById(id); }
+
+  // Tabs with arrow-key support
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function selectTab(name) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute("data-tab") === name;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      byId("p-" + t.getAttribute("data-tab")).hidden = !on;
+      if (on) t.focus();
+    });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { selectTab(t.getAttribute("data-tab")); });
+    t.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        var n = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
+        selectTab(tabs[n].getAttribute("data-tab"));
+        e.preventDefault();
+      }
+    });
+  });
+
+  // ---------- Game 1: malware memory match ----------
+  var MALWARE = [
+    { name: "Trojan", clue: "Free game that secretly opens a backdoor; does not copy itself" },
+    { name: "Rootkit", clue: "Hides at kernel level, so antivirus often cannot see it" },
+    { name: "Ransomware", clue: "Encrypts files and demands payment" },
+    { name: "Keylogger", clue: "Records every keystroke to capture passwords" },
+    { name: "Cryptominer", clue: "Fans run hot while the CPU mines coins for someone else" },
+    { name: "Fileless malware", clue: "Runs in memory through PowerShell and leaves little on disk" }
+  ];
+  var mState = { first: null, lock: false, moves: 0, matched: 0 };
+
+  function buildMalware() {
+    var grid = byId("m-grid");
+    grid.innerHTML = "";
+    mState = { first: null, lock: false, moves: 0, matched: 0 };
+    byId("m-score").textContent = "Moves: 0";
+    byId("m-status").textContent = "";
+    var cards = [];
+    MALWARE.forEach(function (m, i) {
+      cards.push({ key: i, text: m.name, kind: "name" });
+      cards.push({ key: i, text: m.clue, kind: "clue" });
+    });
+    shuffle(cards).forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "tile back";
+      b.textContent = "?";
+      b.setAttribute("aria-label", "Hidden card");
+      b.dataset.key = c.key;
+      b.dataset.text = c.text;
+      b.dataset.kind = c.kind;
+      b.addEventListener("click", function () { flipMalware(b); });
+      grid.appendChild(b);
+    });
+  }
+
+  function flipMalware(b) {
+    if (mState.lock || b.classList.contains("matched") || b === mState.first) return;
+    b.className = "tile";
+    b.textContent = b.dataset.text;
+    if (!mState.first) { mState.first = b; return; }
+    mState.moves++;
+    byId("m-score").textContent = "Moves: " + mState.moves;
+    var a = mState.first;
+    mState.first = null;
+    if (a.dataset.key === b.dataset.key && a.dataset.kind !== b.dataset.kind) {
+      a.classList.add("matched"); b.classList.add("matched");
+      mState.matched++;
+      byId("m-status").textContent = "Match! " + (6 - mState.matched) + " to go.";
+      if (mState.matched === MALWARE.length) {
+        byId("m-status").textContent = "Done in " + mState.moves + " moves. Shuffle to play again.";
+      }
+    } else {
+      a.classList.add("wrong"); b.classList.add("wrong");
+      mState.lock = true;
+      byId("m-status").textContent = "Not a pair. Look again.";
+      setTimeout(function () {
+        [a, b].forEach(function (x) {
+          if (!x.classList.contains("matched")) {
+            x.className = "tile back"; x.textContent = "?";
+          }
+        });
+        mState.lock = false;
+      }, 900);
+    }
+  }
+
+  // ---------- Game 2: social engineering match ----------
+  var SOCIAL = [
+    { attack: "Vishing", scenario: "A caller claims to be from a tax agency and demands payment now" },
+    { attack: "Tailgating", scenario: "Someone follows an employee through a badge-controlled door" },
+    { attack: "Evil twin", scenario: "A café hotspot has the right name but is a hacker's laptop" },
+    { attack: "Business email compromise", scenario: "An email from the 'CEO' asks accounting for an urgent wire" },
+    { attack: "Shoulder surfing", scenario: "Someone watches over a shoulder as a PIN is entered" },
+    { attack: "Dumpster diving", scenario: "Someone searches the trash for documents with account numbers" }
+  ];
+  var sState = { left: null, matched: 0, lock: false };
+
+  function buildSocial() {
+    var grid = byId("s-grid");
+    grid.innerHTML = "";
+    sState = { left: null, matched: 0, lock: false };
+    byId("s-score").textContent = "Matched: 0 of " + SOCIAL.length;
+    var left = shuffle(SOCIAL.map(function (x, i) { return { idx: i, text: x.attack, side: "L" }; }));
+    var right = shuffle(SOCIAL.map(function (x, i) { return { idx: i, text: x.scenario, side: "R" }; }));
+    left.concat(right).forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "tile";
+      b.textContent = c.text;
+      b.dataset.idx = c.idx;
+      b.dataset.side = c.side;
+      b.addEventListener("click", function () { pickSocial(b); });
+      grid.appendChild(b);
+    });
+  }
+
+  function pickSocial(b) {
+    if (sState.lock || b.disabled) return;
+    if (!sState.left) {
+      if (b.dataset.side !== "L") return;
+      sState.left = b;
+      b.classList.add("sel");
+      return;
+    }
+    if (b.dataset.side !== "R") { sState.left.classList.remove("sel"); sState.left = b; b.classList.add("sel"); return; }
+    var a = sState.left;
+    if (a.dataset.idx === b.dataset.idx) {
+      a.className = "tile matched"; b.className = "tile matched";
+      a.disabled = true; b.disabled = true;
+      sState.matched++;
+      byId("s-score").textContent = "Matched: " + sState.matched + " of " + SOCIAL.length;
+      sState.left = null;
+    } else {
+      a.classList.add("wrong"); b.classList.add("wrong");
+      sState.lock = true;
+      setTimeout(function () {
+        a.className = "tile"; b.className = "tile";
+        sState.left = null; sState.lock = false;
+      }, 900);
+    }
+  }
+
+  // ---------- Game 3: removal order ----------
+  var STEPS = [
+    { label: "Investigate and verify the symptoms", why: "Do not assume malware until the symptoms are confirmed." },
+    { label: "Quarantine the system", why: "Disconnect wired or Wi-Fi access to stop spreading across the network." },
+    { label: "Disable System Restore", why: "Malware can hide in restore points and return after removal." },
+    { label: "Remediate: update anti-malware, scan in safe mode, remove threats", why: "Use current definitions and trusted tools; rootkits may need vendor tools." },
+    { label: "Reimage or reinstall if the infection is too deep", why: "Back up data, verify it is clean, then reinstall for a clean state." },
+    { label: "Schedule scans and enable automatic updates", why: "Stops reinfection and closes known gaps." },
+    { label: "Enable System Restore and create a fresh restore point", why: "Gives the user a clean rollback point." },
+    { label: "Educate the end user", why: "Users are often the weakest link; teach them to spot phishing." }
+  ];
+  var oState = { next: 0, misses: 0 };
+
+  function buildOrder() {
+    var list = byId("o-list");
+    list.innerHTML = "";
+    oState = { next: 0, misses: 0 };
+    byId("o-msg").textContent = "";
+    byId("o-score").textContent = "Next step: 1 of " + STEPS.length;
+    byId("o-why").textContent = "Start with the first step you would take on a suspected infected PC.";
+    shuffle(STEPS.map(function (s, i) { return { idx: i, label: s.label }; })).forEach(function (s) {
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.className = "opt";
+      b.style.margin = "0";
+      b.textContent = s.label;
+      b.dataset.idx = s.idx;
+      b.addEventListener("click", function () { pickStep(b, li); });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+  }
+
+  function pickStep(b, li) {
+    if (li.classList.contains("done")) return;
+    var idx = Number(b.dataset.idx);
+    if (idx === oState.next) {
+      li.classList.add("done");
+      b.disabled = true;
+      byId("o-why").textContent = STEPS[idx].why;
+      oState.next++;
+      if (oState.next === STEPS.length) {
+        byId("o-score").textContent = "Complete. Misses: " + oState.misses;
+        byId("o-msg").textContent = "Nice work.";
+      } else {
+        byId("o-score").textContent = "Next step: " + (oState.next + 1) + " of " + STEPS.length;
+      }
+    } else {
+      oState.misses++;
+      li.classList.add("hint");
+      byId("o-msg").textContent = "Not that one yet. Think about what must happen first.";
+      setTimeout(function () { li.classList.remove("hint"); }, 700);
+    }
+  }
+
+  // ---------- Game 4: permission builder ----------
+  var CHALLENGES = [
+    { text: "Owner read, write, execute; group read and write; others read only.", target: { owner: 7, group: 6, other: 4 } },
+    { text: "Owner read and write; group read only; others nothing.", target: { owner: 6, group: 4, other: 0 } },
+    { text: "Everyone can read and execute, but only the owner can write.", target: { owner: 7, group: 5, other: 5 } }
+  ];
+  var pState = { target: null, score: 0, tries: 0 };
+
+  function bitsValue(group) {
+    var v = 0;
+    document.querySelectorAll('input[data-bit="' + group + '"]').forEach(function (c) {
+      if (c.checked) v += Number(c.dataset.val);
+    });
+    return v;
+  }
+  function symbolic(v) {
+    return (v & 4 ? "r" : "-") + (v & 2 ? "w" : "-") + (v & 1 ? "x" : "-");
+  }
+  function refreshPerm() {
+    var o = bitsValue("owner"), g = bitsValue("group"), t = bitsValue("other");
+    byId("p-octal").textContent = "chmod " + o + g + t;
+    byId("p-sym").textContent = "Owner " + symbolic(o) + "   Group " + symbolic(g) + "   Others " + symbolic(t);
+    if (pState.target) {
+      var tg = pState.target;
+      if (o === tg.owner && g === tg.group && t === tg.other) {
+        byId("p-note").textContent = "Correct. You built chmod " + o + g + t + ".";
+        byId("p-score").textContent = "Solved in " + pState.tries + " changes";
+      }
+    }
+  }
+  function newChallenge() {
+    var c = CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)];
+    pState = { target: c.target, score: 0, tries: 0 };
+    byId("p-target").textContent = "Challenge: " + c.text;
+    byId("p-note").textContent = "Set the boxes to match the challenge, then read the octal number.";
+    byId("p-score").textContent = "";
+    document.querySelectorAll('input[data-bit]').forEach(function (c2) { c2.checked = false; });
+    refreshPerm();
+  }
+  document.querySelectorAll('input[data-bit]').forEach(function (c) {
+    c.addEventListener("change", function () { pState.tries++; refreshPerm(); });
+  });
+  byId("p-new").addEventListener("click", newChallenge);
+
+  // ---------- Wiring ----------
+  document.querySelectorAll("[data-reset]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-reset");
+      if (k === "malware") buildMalware();
+      if (k === "social") buildSocial();
+      if (k === "order") buildOrder();
+    });
+  });
+  buildMalware();
+  buildSocial();
+  buildOrder();
+  newChallenge();
+})();
+</script>
+</body>
+</html>
