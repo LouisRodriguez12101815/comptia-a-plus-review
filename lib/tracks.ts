@@ -2,7 +2,7 @@ import { getFlashcards, getQuestions, getTopics, labs } from "@/lib/content";
 import { visualCounts } from "@/lib/visuals";
 import type { ExamCode, StudyFocus, Topic } from "@/lib/types";
 
-export type TrackId = "core1" | "core2" | "networking" | "ccna" | "aws-clf" | "aws-saa";
+export type TrackId = "core1" | "core2" | "networking" | "ccna" | "aws-clf" | "aws-saa" | "security-plus" | "azure-admin";
 export type ToolId = "notes" | "visuals" | "flashcards" | "quiz" | "labs" | "game";
 export type DeviceIconName = "laptop" | "server" | "switch" | "router" | "cloud";
 
@@ -87,6 +87,28 @@ export const tracks: Track[] = [
     focus: "saa-c03",
     description:
       "Architecture decisions across security, resiliency, performance, and cost optimization on AWS.",
+    icon: "cloud",
+  },
+  {
+    id: "security-plus",
+    href: "/security-plus",
+    short: "Security+",
+    label: "CompTIA Security+",
+    code: "SY0-701",
+    focus: "sy0-701",
+    description:
+      "Security concepts, threats and vulnerabilities, architecture, operations, and governance.",
+    icon: "server",
+  },
+  {
+    id: "azure-admin",
+    href: "/azure-admin",
+    short: "Azure AZ-104",
+    label: "Microsoft Azure Administrator",
+    code: "AZ-104 · AZ-900",
+    focus: "az-104",
+    description:
+      "Identities, storage, compute, networking, and monitoring for Azure, with the AZ-900 cloud fundamentals.",
     icon: "cloud",
   },
 ];
