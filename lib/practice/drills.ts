@@ -1427,6 +1427,66 @@ const c2ScriptsRemoteAi: DrillDeck = {
 };
 
 
+const c2Acronyms: DrillDeck = {
+  id: "c2-acronyms",
+  certification: "A+ Core 2",
+  exam: "220-1202",
+  objective: "1.1, 2.1, 3.2, 4.1",
+  topic: "Acronyms across Core 2",
+  modes: [
+    { id: "acronymToMeaning", from: "acronym", to: "meaning" },
+    { id: "meaningToAcronym", from: "meaning", to: "acronym" },
+  ],
+  tables: [
+    { id: "acronyms", fields: ["acronym", "meaning"] },
+  ],
+  items: [
+    { id: "acl", fields: { acronym: "ACL", meaning: "Access control list: rules that allow or deny access to a resource" }, detail: "Access control list is the ACL.", hook: "Access control list = ACL." },
+    { id: "apipa", fields: { acronym: "APIPA", meaning: "Automatic 169.254.x.x address a PC assigns when DHCP fails" }, detail: "APIPA appears when no DHCP server answers.", hook: "APIPA = 169.254." },
+    { id: "cli", fields: { acronym: "CLI", meaning: "Command-line interface for typing commands" }, detail: "A text interface such as the Windows command prompt or a Linux terminal.", hook: "CLI = type it." },
+    { id: "gui", fields: { acronym: "GUI", meaning: "Graphical user interface with windows, icons and menus" }, detail: "The visual desktop most users see.", hook: "GUI = graphics." },
+    { id: "efs", fields: { acronym: "EFS", meaning: "Encrypting File System that encrypts individual files for one user" }, detail: "EFS encrypts files and folders, not whole volumes.", hook: "EFS = file level." },
+    { id: "bitlocker", fields: { acronym: "BitLocker", meaning: "Windows feature that encrypts a whole volume" }, detail: "BitLocker protects the whole drive, including the operating system.", hook: "BitLocker = whole drive." },
+    { id: "esd", fields: { acronym: "ESD", meaning: "Electrostatic discharge that can damage components" }, detail: "Use an anti-static strap and mat when working inside a PC.", hook: "ESD = static damage." },
+    { id: "uac", fields: { acronym: "UAC", meaning: "User Account Control, which prompts before administrative changes" }, detail: "UAC asks for approval before an app makes system changes.", hook: "UAC = admin prompt." },
+    { id: "uefi", fields: { acronym: "UEFI", meaning: "Unified Extensible Firmware Interface that replaces legacy BIOS" }, detail: "UEFI supports Secure Boot and boots from GPT disks.", hook: "UEFI = modern firmware." },
+    { id: "tpm", fields: { acronym: "TPM", meaning: "Trusted Platform Module chip that stores encryption keys" }, detail: "A TPM protects keys used by BitLocker and secure boot.", hook: "TPM = keys in hardware." },
+    { id: "mbr", fields: { acronym: "MBR", meaning: "Master Boot Record partition style that supports up to four primary partitions" }, detail: "MBR uses a legacy partition table and has a 2 TB limit.", hook: "MBR = legacy partitions." },
+    { id: "gpt", fields: { acronym: "GPT", meaning: "GUID Partition Table partition style used with UEFI" }, detail: "GPT supports far larger disks and more partitions than MBR.", hook: "GPT = modern partitions." },
+    { id: "ntfs", fields: { acronym: "NTFS", meaning: "New Technology File System used by modern Windows" }, detail: "NTFS supports permissions, encryption and journaling.", hook: "NTFS = Windows permissions." },
+    { id: "sfc", fields: { acronym: "SFC", meaning: "System File Checker that repairs protected Windows files" }, detail: "sfc /scannow checks and repairs protected system files.", hook: "SFC = system files." },
+    { id: "dism", fields: { acronym: "DISM", meaning: "Deployment Image Servicing and Management that repairs a Windows image" }, detail: "DISM with RestoreHealth repairs the Windows component store.", hook: "DISM = Windows image." },
+    { id: "gpo", fields: { acronym: "GPO", meaning: "Group Policy Object that sets configuration for users or computers" }, detail: "GPOs are applied at sign-in or with gpupdate.", hook: "GPO = policy." },
+    { id: "pxe", fields: { acronym: "PXE", meaning: "Preboot Execution Environment that boots a PC over the network" }, detail: "PXE loads an image from a deployment server.", hook: "PXE = network boot." },
+    { id: "bcd", fields: { acronym: "BCD", meaning: "Boot Configuration Data store that Windows boot uses" }, detail: "Repaired with bcdboot or bootrec.", hook: "BCD = boot settings." },
+    { id: "vpn", fields: { acronym: "VPN", meaning: "Virtual private network that makes an encrypted tunnel" }, detail: "A VPN carries traffic over an encrypted link across untrusted networks.", hook: "VPN = encrypted tunnel." },
+    { id: "rdp", fields: { acronym: "RDP", meaning: "Remote Desktop Protocol that shows a Windows desktop remotely" }, detail: "RDP uses TCP 3389 by default.", hook: "RDP = Windows desktop." },
+    { id: "ssh", fields: { acronym: "SSH", meaning: "Secure Shell for encrypted remote command-line access" }, detail: "SSH uses TCP 22 by default.", hook: "SSH = secure shell." },
+    { id: "vnc", fields: { acronym: "VNC", meaning: "Virtual Network Computing for cross-platform remote screen sharing" }, detail: "VNC works across operating systems.", hook: "VNC = any OS screen." },
+    { id: "mfa", fields: { acronym: "MFA", meaning: "Multifactor authentication using two or more factor types" }, detail: "A password plus a code from a phone is MFA.", hook: "MFA = two or more factors." },
+    { id: "sso", fields: { acronym: "SSO", meaning: "Single sign-on that signs in once for many services" }, detail: "One sign-in provides access to several applications.", hook: "SSO = one sign-in." },
+    { id: "radius", fields: { acronym: "RADIUS", meaning: "Remote Authentication Dial-In User Service that uses UDP" }, detail: "RADIUS encrypts only the password in its default form.", hook: "RADIUS = UDP auth." },
+    { id: "tacacs", fields: { acronym: "TACACS+", meaning: "Terminal Access Controller Access-Control System Plus that uses TCP" }, detail: "TACACS+ uses TCP 49 and encrypts the whole payload.", hook: "TACACS+ = TCP 49." },
+    { id: "wpa3", fields: { acronym: "WPA3", meaning: "Wi-Fi Protected Access 3, the strongest current Wi-Fi security" }, detail: "WPA3 uses SAE for personal networks.", hook: "WPA3 = strongest Wi-Fi." },
+    { id: "wep", fields: { acronym: "WEP", meaning: "Wired Equivalent Privacy, an outdated Wi-Fi security method" }, detail: "WEP is easy to crack and should not be used.", hook: "WEP = outdated." },
+    { id: "wps", fields: { acronym: "WPS", meaning: "Wi-Fi Protected Setup, a PIN-based setup that should be disabled" }, detail: "The WPS PIN can be brute-forced.", hook: "WPS = turn it off." },
+    { id: "ssid", fields: { acronym: "SSID", meaning: "Service set identifier, the name of a wireless network" }, detail: "Broadcasting the SSID is optional.", hook: "SSID = network name." },
+    { id: "soho", fields: { acronym: "SOHO", meaning: "Small office/home office network or router class" }, detail: "SOHO routers ship with default credentials.", hook: "SOHO = small network." },
+    { id: "ups", fields: { acronym: "UPS", meaning: "Uninterruptible power supply that keeps power during an outage" }, detail: "A UPS gives a short battery runtime and clean power.", hook: "UPS = battery backup." },
+    { id: "nas", fields: { acronym: "NAS", meaning: "Network attached storage shared over the network" }, detail: "A NAS serves files to many clients.", hook: "NAS = shared storage." },
+    { id: "pii", fields: { acronym: "PII", meaning: "Personally identifiable information that identifies a person" }, detail: "Names, Social Security numbers and addresses are PII.", hook: "PII = identifies a person." },
+    { id: "dlp", fields: { acronym: "DLP", meaning: "Data loss prevention that stops sensitive data leaving the organization" }, detail: "DLP policies block or flag sensitive uploads and emails.", hook: "DLP = stops data leaks." },
+    { id: "mdm", fields: { acronym: "MDM", meaning: "Mobile device management that enforces policy on phones and tablets" }, detail: "MDM can push settings, apps and remote wipe.", hook: "MDM = manage mobile devices." },
+    { id: "imap", fields: { acronym: "IMAP", meaning: "Internet Message Access Protocol that keeps mail on the server" }, detail: "IMAP syncs folders across devices.", hook: "IMAP = sync mail." },
+    { id: "pop3", fields: { acronym: "POP3", meaning: "Post Office Protocol version 3 that downloads mail" }, detail: "POP3 often removes messages from the server after download.", hook: "POP3 = download mail." },
+    { id: "smtp", fields: { acronym: "SMTP", meaning: "Simple Mail Transfer Protocol that sends email" }, detail: "SMTP sends mail between servers and from clients.", hook: "SMTP = send mail." },
+    { id: "iaas", fields: { acronym: "IaaS", meaning: "Infrastructure as a service that rents virtual machines and storage" }, detail: "You manage the OS and apps.", hook: "IaaS = rent infrastructure." },
+    { id: "saas", fields: { acronym: "SaaS", meaning: "Software as a service delivered through a browser or app" }, detail: "The provider runs the whole application.", hook: "SaaS = ready-made app." },
+    { id: "paas", fields: { acronym: "PaaS", meaning: "Platform as a service that provides a runtime for your code" }, detail: "You manage the code and data, not the platform.", hook: "PaaS = build on a platform." },
+    { id: "sop", fields: { acronym: "SOP", meaning: "Standard operating procedure, a written step-by-step process" }, detail: "Used so a task is done the same way every time.", hook: "SOP = written steps." },
+  ],
+};
+
 const awsClfServiceCompare: DrillDeck = {
   "id": "aws-clf-service-compare",
   "certification": "AWS Cloud Practitioner",
@@ -2315,7 +2375,7 @@ const c2OsConcepts: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts];
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
