@@ -49,6 +49,20 @@ export function SiteHeader() {
             );
           })}
           <Link
+            href="/search"
+            aria-current={pathname.startsWith("/search") ? "page" : undefined}
+            className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname.startsWith("/search") ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
+          >
+            {t("search")}
+          </Link>
+          <Link
+            href="/glossary"
+            aria-current={pathname.startsWith("/glossary") ? "page" : undefined}
+            className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname.startsWith("/glossary") ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
+          >
+            {t("glossary")}
+          </Link>
+          <Link
             href="/coverage"
             aria-current={pathname === "/coverage" ? "page" : undefined}
             className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-3 py-1.5 ${pathname === "/coverage" ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}
