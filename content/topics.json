@@ -9567,5 +9567,522 @@
         ]
       }
     ]
+  },
+  {
+    "id": "core2-video-gaps",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Video gap review: Linux, SOHO network security, browser security, mobile security",
+    "chapter": "Core 2 · Video gap review",
+    "summary": "Close the Core 2 gaps for Linux client tools, SOHO network hardening, browser security and mobile malware response.",
+    "concept": "security",
+    "sections": [
+      {
+        "id": "1-9-linux-basics",
+        "title": "Linux client desktops: boot, config files and identity (1.9)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Linux is free, open-source and supported by a community rather than one company. Distributions such as Ubuntu and Red Hat package the same kernel with different tools. At boot, firmware (BIOS or UEFI) hands off to a bootloader, which starts the kernel. The kernel starts systemd, which manages background services called daemons."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "File",
+              "What it holds"
+            ],
+            "rows": [
+              [
+                "/etc/passwd",
+                "User account entries (names, IDs, home folders)"
+              ],
+              [
+                "/etc/shadow",
+                "Hashed passwords, readable only by root"
+              ],
+              [
+                "/etc/hosts",
+                "Manual name-to-IP mappings, checked before DNS"
+              ],
+              [
+                "/etc/resolv.conf",
+                "DNS servers the system uses"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Linux configuration lives in plain text files under /etc. Know which file holds passwords, which maps names locally, and which lists DNS servers."
+          }
+        ]
+      },
+      {
+        "id": "1-9-linux-commands",
+        "title": "Linux commands and permissions (1.9)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Task",
+              "Command"
+            ],
+            "rows": [
+              [
+                "Get help for a command",
+                "man"
+              ],
+              [
+                "List files with permissions",
+                "ls -la"
+              ],
+              [
+                "Copy, move or delete",
+                "cp, mv, rm"
+              ],
+              [
+                "Search text inside files",
+                "grep"
+              ],
+              [
+                "Find files by name",
+                "find"
+              ],
+              [
+                "Change permissions",
+                "chmod"
+              ],
+              [
+                "Change owner or group",
+                "chown"
+              ],
+              [
+                "Run one command as root",
+                "sudo"
+              ],
+              [
+                "Switch to a root shell",
+                "su"
+              ],
+              [
+                "Install packages (Debian/Ubuntu)",
+                "apt"
+              ],
+              [
+                "Install packages (Red Hat family)",
+                "dnf"
+              ],
+              [
+                "Show or set IP settings",
+                "ip address"
+              ],
+              [
+                "Test connectivity",
+                "ping"
+              ],
+              [
+                "DNS lookup",
+                "dig"
+              ],
+              [
+                "Trace the route to a host",
+                "traceroute"
+              ],
+              [
+                "List every running process",
+                "ps -e"
+              ],
+              [
+                "Live CPU and memory view",
+                "top"
+              ],
+              [
+                "Free disk space (readable)",
+                "df -h"
+              ],
+              [
+                "Space used by a folder",
+                "du -h"
+              ],
+              [
+                "View a file",
+                "cat"
+              ],
+              [
+                "Edit a file in a simple editor",
+                "nano"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "chmod uses octal numbers: 4 is read, 2 is write, 1 is execute. Add them per owner, group and others. chmod 764 gives the owner rwx, the group rw and others r.",
+              "Prefer sudo for a single administrative command. su switches the whole session to the superuser."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Standard users cannot read /etc/shadow. Protecting it is why password hashes are not visible to ordinary accounts."
+          }
+        ]
+      },
+      {
+        "id": "2-10-soho-security",
+        "title": "Securing SOHO wireless and wired networks (2.10)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A small office or home router is the heart of the network, and most of the hardening is done in its admin console."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Change the default administrator password before anything else. Default logins are public knowledge.",
+              "Keep the router firmware updated. Firmware is the router's operating system, and updates carry security patches.",
+              "Disable UPnP (Universal Plug and Play). It lets internal apps open firewall ports automatically, which is a serious security risk.",
+              "Place internet-facing services such as a web server in a DMZ (demilitarized zone), a screened subnet that visitors can reach but that cannot reach the private network.",
+              "Use WPA2 at a minimum and WPA3 when available. Hiding the SSID broadcast is security through obscurity and does not stop a determined attacker.",
+              "Create a guest network for visitors and IoT devices so they get internet access without reaching trusted devices.",
+              "Disable unused switch ports so an intruder cannot plug in.",
+              "Use port forwarding only when a service must be reachable from the internet, because each forward is a permanent opening in the firewall."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "The three SOHO essentials on the exam: change the default password, disable UPnP, and use WPA2 or WPA3 with a guest network for untrusted devices."
+          }
+        ]
+      },
+      {
+        "id": "2-11-browser-security",
+        "title": "Configuring browser security (2.11)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Download the browser from the developer's official site. Verify the installer by comparing its SHA-256 hash with the hash the developer publishes.",
+              "Keep the browser patched; modern browsers update automatically, and updates include security fixes.",
+              "Install extensions only from official stores. Extensions run with the browser's own access, so a malicious one can read keystrokes, passwords and screen contents.",
+              "Use a password manager to create and store a unique password for each site, which stops password reuse from spreading a breach."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "A 'connection is not private' warning is a red flag. Causes include an expired certificate, a certificate that does not match the domain name, a certificate signed by an authority the browser does not trust, or a wrong system date and time."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Keep the pop-up blocker on and allow exceptions only for trusted sites.",
+              "Clear the cache when pages misbehave, since corrupted cached data causes display and login problems.",
+              "Private browsing does not save history, cookies or cache on the local machine after the window closes. It does not hide your traffic from the network or the site.",
+              "A corporate proxy server filters web traffic. Configure the proxy address and port in the browser when your organization requires it.",
+              "Secure DNS (DNS over HTTPS) encrypts DNS queries so local observers cannot see which sites you look up."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A proxy server is a filtering middleman between you and the web. It is not the same as a VPN, which encrypts the whole connection."
+          }
+        ]
+      },
+      {
+        "id": "3-3-mobile-security",
+        "title": "Mobile malware and application security (3.3)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Sideloading means installing apps from unofficial stores or websites. Malicious apps are often disguised as legitimate ones, a technique called application spoofing.",
+              "Rooting (Android) and jailbreaking (iOS) disable the built-in security protections so you get full control. They make malware far easier to run.",
+              "Symptoms of mobile malware include a sudden spike in data usage, degraded performance that a restart does not fix, limited or no connectivity, excess ads or adware, fake security warnings, and apps that crash or change settings on their own.",
+              "For minor problems such as adware, an anti-malware scan may remove the offending app.",
+              "For a serious infection or a suspected data leak, back up essential data, perform a factory reset, restore from a clean backup, then change the passwords for every cloud account that synced to the device and enable multifactor authentication."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The reset-and-rotate sequence is the answer to most mobile infection scenarios: wipe the device, then change passwords and enable MFA."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-malware-social",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Malware, social engineering and malware removal (2.4, 2.5, 2.6)",
+    "chapter": "Core 2 · Security (Domain 2)",
+    "summary": "Name each malware type from its behavior, spot the social-engineering trick, and run the malware removal steps in order.",
+    "concept": "security",
+    "sections": [
+      {
+        "id": "2-4-malware-types",
+        "title": "Malware types and how to recognize them (2.4)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Malware",
+              "What it does",
+              "Clue in a scenario"
+            ],
+            "rows": [
+              [
+                "Trojan",
+                "Looks legitimate but hides a harmful payload; does not copy itself",
+                "Free software that secretly opens a remote-control backdoor"
+              ],
+              [
+                "Rootkit",
+                "Hides deep in the OS, often at kernel level, and evades normal scans",
+                "Antivirus cannot see it; admin-level control"
+              ],
+              [
+                "Virus",
+                "Attaches to legitimate files and spreads when they run or are shared",
+                "Infected files spread between users"
+              ],
+              [
+                "Spyware",
+                "Secretly tracks activity such as browsing and screenshots",
+                "Data is harvested in the background"
+              ],
+              [
+                "Keylogger",
+                "Records every keystroke to capture passwords",
+                "Every key typed is recorded and logins are stolen"
+              ],
+              [
+                "Ransomware",
+                "Encrypts files and demands payment",
+                "Files are locked with a ransom note"
+              ],
+              [
+                "Boot sector virus",
+                "Infects the code that loads before the OS starts",
+                "Antivirus inside Windows misses it"
+              ],
+              [
+                "Cryptominer",
+                "Uses CPU or GPU power to mine cryptocurrency for someone else",
+                "Fans run hard, performance drops, power bills rise"
+              ],
+              [
+                "Stalkerware",
+                "Covertly monitors messages, calls and location",
+                "Installed on a person's phone without consent"
+              ],
+              [
+                "Fileless malware",
+                "Runs in memory using built-in tools such as PowerShell",
+                "Little or nothing is written to disk"
+              ],
+              [
+                "Adware",
+                "Floods the screen with ads and redirects",
+                "Constant pop-ups and browser redirects"
+              ],
+              [
+                "PUP",
+                "Potentially unwanted program bundled with other software",
+                "A free converter installs an unwanted toolbar"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "On the exam, read the scenario's behavior first (hidden, spreading, locking, mining, in memory) and match the malware to that behavior."
+          },
+          {
+            "type": "paragraph",
+            "text": "Worms, which copy themselves across networks without user action, are a standard exam term that the source video did not cover. Know them alongside the types above."
+          }
+        ]
+      },
+      {
+        "id": "2-4-malware-tools",
+        "title": "Tools and methods that fight malware (2.4)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Safe mode and the recovery environment load only essential files, so many malware types cannot start and can be removed.",
+              "Antivirus focuses on viruses; anti-malware covers a broader set such as Trojans, spyware and ransomware. In practice, use both.",
+              "Endpoint detection and response (EDR) watches behavior on each device, such as a process trying to access files it should not touch.",
+              "Managed detection and response (MDR) outsources 24/7 monitoring to a third party, which suits small and medium businesses without a security operations center.",
+              "Extended detection and response (XDR) combines data from endpoints, networks, email and cloud services into one view.",
+              "An email security gateway filters spam, phishing and suspicious attachments before they reach inboxes. Email is the most common malware delivery route.",
+              "A software firewall decides which traffic gets in and out, and a personal firewall can block malware from contacting its control server.",
+              "User education, especially anti-phishing training, is one of the strongest defenses because human error starts many breaches.",
+              "Reinstalling the operating system gives a clean state. Back up critical data first."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-5-social-engineering",
+        "title": "Social-engineering attacks, threats and vulnerabilities (2.5)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Social engineering manipulates people instead of technology. Attackers know firewalls are hard to beat, so they target the human who can open the door."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Attack",
+              "How it works"
+            ],
+            "rows": [
+              [
+                "Phishing",
+                "Fake email that asks you to click a link or confirm login details"
+              ],
+              [
+                "Vishing (voice phishing)",
+                "Phone call from a fake agency or support desk"
+              ],
+              [
+                "Smishing (SMS phishing)",
+                "Fake text message with a malicious link"
+              ],
+              [
+                "QR code phishing",
+                "Malicious QR code posted where people scan it"
+              ],
+              [
+                "Spear phishing",
+                "Targeted phishing aimed at one person, such as an HR employee"
+              ],
+              [
+                "Whaling",
+                "Spear phishing aimed at executives"
+              ],
+              [
+                "Business email compromise",
+                "Impersonates an executive to trick staff into sending money or data"
+              ],
+              [
+                "Shoulder surfing",
+                "Watching someone enter a PIN or password"
+              ],
+              [
+                "Tailgating (piggybacking)",
+                "Following an authorized person through a secured door"
+              ],
+              [
+                "Impersonation",
+                "Pretending to be trusted staff, such as IT support or a delivery driver"
+              ],
+              [
+                "Dumpster diving",
+                "Searching trash for sensitive documents"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Denial of service (DoS) floods one system with traffic. A DDoS uses thousands of compromised machines, called a botnet.",
+              "An evil twin is a fake Wi-Fi access point that imitates a legitimate network.",
+              "An on-path (man-in-the-middle) attack secretly intercepts communication between two parties.",
+              "A zero-day attack exploits a vulnerability before a patch exists.",
+              "Spoofing pretends to be something else: a fake sender address, a fake IP source or a fake caller ID.",
+              "Brute force tries every combination. A dictionary attack tries a list of common passwords.",
+              "Insider threats come from employees, while SQL injection and cross-site scripting attack web applications.",
+              "A supply-chain attack compromises a trusted vendor to reach its customers, as in the SolarWinds case."
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Vulnerabilities are the weak points attackers use: non-compliant systems that break security policy, unpatched systems missing updates, unprotected systems with no antivirus or firewall, and end-of-life systems that no longer receive support."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Tailgating is physical, not technical. Phishing is about the message; tailgating is about the door."
+          }
+        ]
+      },
+      {
+        "id": "2-6-malware-removal",
+        "title": "Malware removal procedures for small offices (2.6)",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Follow the steps in order. Each step prevents a mistake the next one would cause."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Step",
+              "What to do",
+              "Why"
+            ],
+            "rows": [
+              [
+                "1. Investigate and verify symptoms",
+                "Check for slow performance, pop-ups, unfamiliar processes and traffic spikes",
+                "Do not assume malware until it is confirmed; the cause may be something else"
+              ],
+              [
+                "2. Quarantine the system",
+                "Disconnect wired or Wi-Fi access and isolate it from shared drives",
+                "Stops spreading across the network"
+              ],
+              [
+                "3. Disable System Restore",
+                "Turn off System Protection in Windows",
+                "Malware can hide inside restore points and return after removal"
+              ],
+              [
+                "4. Remediate",
+                "Update anti-malware, run a full scan (safe mode or preinstallation environment), remove the threats; use vendor tools for rootkits",
+                "Removes the infection while definitions are current"
+              ],
+              [
+                "5. Reimage or reinstall if needed",
+                "Back up data, verify it is clean, reinstall the OS or deploy a clean image",
+                "Guarantees a clean state when the infection is too deep"
+              ],
+              [
+                "6. Schedule scans and updates",
+                "Set regular scans and enable automatic updates",
+                "Stops reinfection and closes known gaps"
+              ],
+              [
+                "7. Enable System Restore",
+                "Turn System Protection back on and create a fresh restore point",
+                "Gives a clean rollback point"
+              ],
+              [
+                "8. Educate the end user",
+                "Teach them to recognize phishing and avoid risky downloads",
+                "Users are often the weakest link"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Exam order: investigate first, then quarantine, disable System Restore, remediate, schedule updates and scans, re-enable System Restore, and educate the user."
+          }
+        ]
+      }
+    ]
   }
 ]
