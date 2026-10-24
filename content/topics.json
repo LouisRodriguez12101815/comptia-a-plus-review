@@ -11935,5 +11935,336 @@
         ]
       }
     ]
+  },
+  {
+    "id": "core2-security-measures",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Security measures and their purposes (2.1)",
+    "chapter": "Core 2 · Operating systems (Domain 1)",
+    "summary": "Match each physical, access, logical and authentication security measure to what it protects against.",
+    "concept": "Physical controls protect the building and equipment. Logical controls protect systems and data. Multifactor authentication and single sign-on govern how users prove identity.",
+    "sections": [
+      {
+        "id": "2-1-physical",
+        "title": "Physical security devices (2.1)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Device",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "Access control vestibule (man trap)",
+                "Two gateways, only one open at a time. Authentication happens in the middle room, which suits data centers"
+              ],
+              [
+                "Badge reader",
+                "Verifies an ID badge and logs each entry and exit. A lost or stolen badge is the weakness, so pair it with other layers"
+              ],
+              [
+                "Video surveillance",
+                "Cameras that monitor and record activity, deterring intrusion and providing evidence"
+              ],
+              [
+                "Alarm system and motion sensors",
+                "Alert security staff or police when a door or window is forced or movement is detected"
+              ],
+              [
+                "Door lock",
+                "Mechanical, electronic or biometric locks that restrict a door to authorized people"
+              ],
+              [
+                "Equipment lock",
+                "Physically secures equipment against removal or theft"
+              ],
+              [
+                "Security guard",
+                "Trained staff who monitor, respond and protect assets"
+              ],
+              [
+                "Bollard and fence",
+                "Bollards stop vehicles while allowing foot traffic. Fences deter people on foot"
+              ],
+              [
+                "Lighting and motion-activated lights",
+                "Remove hiding places and alert staff to unexpected movement"
+              ],
+              [
+                "Magnetometer",
+                "Detects metal objects by sensing magnetic fields, such as metal detectors at airports"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-1-access",
+        "title": "Access credentials and biometrics (2.1)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Credential or method",
+              "What it is"
+            ],
+            "rows": [
+              [
+                "Key",
+                "A mechanical key. Losing one may require changing the lock"
+              ],
+              [
+                "Key fob",
+                "An electronic device that is tapped or held near a reader. A lost fob can be deactivated without replacing the locks"
+              ],
+              [
+                "Smart card",
+                "A card with an integrated circuit that stores data such as digital certificates"
+              ],
+              [
+                "Mobile digital key",
+                "A credential on a phone, using NFC or Bluetooth. Permissions can be revoked remotely"
+              ],
+              [
+                "Retina scanner",
+                "Reads the pattern of blood vessels in the eye"
+              ],
+              [
+                "Fingerprint and palm scanner",
+                "Read ridges on the fingertips or the whole palm"
+              ],
+              [
+                "Facial and voice recognition",
+                "Identify a person from facial features or voice characteristics"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-1-logical",
+        "title": "Logical security (2.1)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Least privilege: give users and services only the permissions they need. A standard account limits damage if it is compromised.",
+              "Access control lists (ACLs): rules that define which users, groups or processes can read, modify, execute or be denied on a resource.",
+              "Zero trust: never trust automatically, always verify. Verify explicitly, use least privilege, and assume breach."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-1-mfa",
+        "title": "Multifactor authentication and SSO (2.1)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "MFA method",
+              "How it works"
+            ],
+            "rows": [
+              [
+                "Email token",
+                "A code or link sent to an email account"
+              ],
+              [
+                "Hardware token",
+                "A physical device that generates a time-sensitive code"
+              ],
+              [
+                "Authenticator application",
+                "A software token that generates TOTP codes or push approvals"
+              ],
+              [
+                "SMS token",
+                "A one-time passcode sent by text message"
+              ],
+              [
+                "Voice call authentication",
+                "A one-time passcode read aloud by an automated phone call"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "SAML passes authentication assertions between an identity provider, which verifies the user, and a service provider, which grants access. Single sign-on (SSO) lets one login unlock several integrated applications through a validated token."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "core2-windows-security",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Windows OS security settings (2.2)",
+    "chapter": "Core 2 · Operating systems (Domain 1)",
+    "summary": "Configure Defender, the firewall, user accounts and UAC, sign-in options, NTFS and share permissions, encryption, and Active Directory basics.",
+    "concept": "Defender protects against malware in real time. The firewall filters network traffic by profile, port and application. Accounts, UAC and NTFS permissions limit what users can change. BitLocker and EFS encrypt data at rest.",
+    "sections": [
+      {
+        "id": "2-2-defender-firewall",
+        "title": "Defender Antivirus and firewall (2.2)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Microsoft Defender Antivirus provides real-time protection. Manage it in Windows Security under Virus and threat protection, where the Manage settings option holds the real-time protection toggle.",
+              "Virus definitions are updated through Windows Update. You can check for protection updates manually from the same section.",
+              "Microsoft Defender Firewall is on by default and has separate profiles: domain, private and public. The public profile is the most restrictive because public Wi-Fi is less trusted.",
+              "Ports identify services: DNS uses 53, HTTP uses 80, HTTPS uses 443, and RDP uses 3389. Open only the ports that are needed, and close them after troubleshooting.",
+              "Allow an app through firewall controls which applications may communicate across each network profile."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-2-accounts",
+        "title": "Accounts, UAC and sign-in options (2.2)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Account or feature",
+              "Purpose"
+            ],
+            "rows": [
+              [
+                "Microsoft account",
+                "Connects to cloud services such as OneDrive, Store and password recovery, and syncs settings across devices"
+              ],
+              [
+                "Local account",
+                "Exists only on one device and is not synced to the cloud"
+              ],
+              [
+                "Guest account",
+                "Temporary access with very limited permissions"
+              ],
+              [
+                "Standard user",
+                "Day-to-day use; cannot install many applications or change important settings"
+              ],
+              [
+                "Power user",
+                "More permissions than standard, but not full administrative control"
+              ],
+              [
+                "Administrator",
+                "Full control over the system; limit to users who need it"
+              ],
+              [
+                "User Account Control (UAC)",
+                "Prompts for approval before administrative changes, even for administrators"
+              ],
+              [
+                "Run as administrator",
+                "Launches one program with elevated privileges without permanent admin access"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Sign-in option",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Windows Hello Face",
+                "Uses an infrared camera to scan the face"
+              ],
+              [
+                "Windows Hello Fingerprint",
+                "Unlocks with a fingerprint reader"
+              ],
+              [
+                "Windows Hello PIN",
+                "Local to the device; cannot be used on other devices or online services"
+              ],
+              [
+                "Security key",
+                "A physical key that must be inserted, so the user must have it and be present"
+              ],
+              [
+                "Password",
+                "Most traditional, but vulnerable to weak or reused passwords"
+              ],
+              [
+                "Picture password",
+                "Unlocks with gestures drawn on a chosen image"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-2-permissions",
+        "title": "NTFS and share permissions (2.2)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "NTFS permissions apply to local and network access. Basic levels are Read, Write, Read and execute, List folder contents, Modify (read, write, execute and delete), and Full control.",
+              "Share permissions apply only to network access. Basic levels are Read, Change (read, modify and delete) and Full control.",
+              "When both apply, the most restrictive permission wins. Full control through share with Read through NTFS gives Read access.",
+              "Attributes such as read-only and hidden add control. Inheritance passes folder permissions down to subfolders and files."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-2-encryption",
+        "title": "Data at rest encryption (2.2)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Tool",
+              "Scope"
+            ],
+            "rows": [
+              [
+                "EFS (Encrypting File System)",
+                "File-level encryption of specific files or folders on an NTFS drive"
+              ],
+              [
+                "BitLocker",
+                "Full-disk encryption of an entire drive, including the operating system. Keep the recovery key safe, since major repairs or BIOS updates can require it"
+              ],
+              [
+                "BitLocker To Go",
+                "Encrypts removable drives such as USB flash drives"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-2-activedirectory",
+        "title": "Active Directory basics (2.2)",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A domain is managed centrally by one or more domain controllers that handle authentication and authorization.",
+              "Active Directory (AD) stores objects such as user objects, computers, printers, shared folders and security groups, each with attributes.",
+              "Organizational units (OUs) are containers that group objects. Security groups assign permissions to many users at once, supporting least privilege.",
+              "Group Policy deploys security and configuration settings across the domain. Login scripts run at sign-in to map drives or connect printers.",
+              "Home folders and folder redirection store user files on a network location for central backup and access from any domain computer."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
