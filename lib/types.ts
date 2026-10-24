@@ -16,7 +16,7 @@ export type Concept =
   | "reference"
   | "cloud";
 
-export type ExamCode = "220-1201" | "220-1202" | "n10-009" | "clf-c02" | "saa-c03";
+export type ExamCode = "220-1201" | "220-1202" | "n10-009" | "clf-c02" | "saa-c03" | "sy0-701" | "az-900" | "az-104";
 export type StudyFocus = ExamCode | "all";
 
 export type Block =
