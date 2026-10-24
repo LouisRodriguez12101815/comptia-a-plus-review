@@ -4029,5 +4029,406 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-cloud-connectivity",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Cloud deployment models, virtual private clouds and cloud connectivity (1.3)",
+    "chapter": "Network+ · Cloud and virtualization",
+    "concept": "networking-concepts",
+    "summary": "Match each cloud model, network function and connectivity option to the scenario it fits.",
+    "sections": [
+      {
+        "id": "1-3-cloud-models",
+        "title": "Cloud deployment models",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Model",
+              "Who owns the infrastructure",
+              "When it fits"
+            ],
+            "rows": [
+              [
+                "Public",
+                "A third party, shared by many tenants",
+                "Pay-as-you-go workloads, websites, short-term demand"
+              ],
+              [
+                "Private",
+                "One organization, dedicated hardware",
+                "Highly regulated data and strict access control"
+              ],
+              [
+                "Hybrid",
+                "Mix of private and public, with data and apps moving between them",
+                "Sensitive data on premises, scalable front end in the cloud"
+              ],
+              [
+                "Community",
+                "Shared by organizations with a common purpose",
+                "Groups with shared compliance needs"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "IaaS rents the hardware, PaaS rents a platform you build on, and SaaS rents finished software such as Microsoft 365.",
+              "A virtual private cloud (VPC) is an isolated network segment inside a public cloud, with its own IP range, subnets, routing tables and gateways."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-3-connectivity",
+        "title": "Cloud connectivity and network functions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "VPN",
+                "Encrypted tunnel over the public internet"
+              ],
+              [
+                "Direct Connect (dedicated link)",
+                "Private, high-speed link to the cloud for performance and security"
+              ],
+              [
+                "Internet gateway",
+                "Lets resources in a VPC communicate with the internet"
+              ],
+              [
+                "NAT gateway",
+                "Lets private instances reach the internet without exposing their private IP addresses"
+              ],
+              [
+                "NFV (network functions virtualization)",
+                "Runs firewalls and load balancers as software on standard servers"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Low latency to a cloud application without the public internet points to Direct Connect. A NAT gateway hides private addresses outbound; it does not create a fast private link."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-wireless-devices",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Wireless devices, bands, channels and security (2.3)",
+    "chapter": "Network+ · Wireless networks",
+    "concept": "implementation",
+    "summary": "Choose the right band, channel plan, security method and access point mode for a wireless scenario.",
+    "sections": [
+      {
+        "id": "2-3-bands-channels",
+        "title": "Bands, channels and overlap",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "2.4 GHz has the longest range and the most interference. Non-overlapping channels in the US are 1, 6 and 11. Any other channel overlaps with at least one of them.",
+              "5 GHz has more channels and less interference, with shorter range. 6 GHz (Wi-Fi 6E) adds more spectrum.",
+              "Wider channels (40, 80 or 160 MHz) carry more data but pick up more interference. 20 MHz is the standard width.",
+              "Band steering moves capable clients from 2.4 GHz to 5 GHz on dual- and tri-band access points.",
+              "SSID is the network name; BSSID is one radio's MAC address; ESSID is one logical network across several access points so clients can roam."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Three access points on a 2.4 GHz network should use channels 1, 6 and 11. Channel 4 interferes with both 1 and 6."
+          }
+        ]
+      },
+      {
+        "id": "2-3-security-modes",
+        "title": "Security methods and deployment modes",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Use it for",
+              "Trade-off"
+            ],
+            "rows": [
+              [
+                "WPA2 (AES)",
+                "Long-standing baseline",
+                "Older than WPA3"
+              ],
+              [
+                "WPA3 (SAE)",
+                "Current best practice; resists offline password guessing",
+                "Not every older device supports it"
+              ],
+              [
+                "PSK (pre-shared key)",
+                "Home and guest networks",
+                "Hard to revoke one user; everyone shares the password"
+              ],
+              [
+                "802.1X with RADIUS",
+                "Enterprise, one credential per user",
+                "Needs a RADIUS server"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Omnidirectional antennas cover a circle, like an office ceiling access point. Directional antennas focus a beam, for links between buildings or narrow hallways.",
+              "Autonomous access points are configured one at a time. Lightweight access points are managed by a wireless LAN controller (WLC) that handles configuration, roaming and channels.",
+              "Guest networks are isolated SSIDs. Captive portals are the splash pages that appear before access is granted."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-physical-installation",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Physical installation: racks, cabling, power and environment (2.4)",
+    "chapter": "Network+ · Physical installation",
+    "concept": "implementation",
+    "summary": "Plan rack layout, airflow, cable termination, power protection and environmental controls for network gear.",
+    "sections": [
+      {
+        "id": "2-4-racks-cabling",
+        "title": "Racks, airflow and cable termination",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "The MDF (main distribution frame) is the central wiring closet with the building's connection to the outside. IDFs (intermediate distribution frames) are satellite closets, usually one per floor, that connect back to the MDF.",
+              "Racks are measured in U units, where 1 U is 1.75 inches. A standard rack is 42U.",
+              "Switches and routers should match the rack's airflow. In a hot aisle and cold aisle layout, cold air enters the front and hot air exits the back.",
+              "Patch panels separate permanent building cable from short patch cables, so you change the patch cable, not the wall run.",
+              "Lockable cabling or locking ports prevent accidental or deliberate unplugging in high-security areas."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-4-power-environment",
+        "title": "Power and environment",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Item",
+              "What it does",
+              "Exam clue"
+            ],
+            "rows": [
+              [
+                "UPS",
+                "Battery backup that carries gear through dips and short outages",
+                "Gear loses connectivity during a power blip: move it behind the UPS"
+              ],
+              [
+                "PDU",
+                "Rack-mounted power strip that distributes power to the gear",
+                "Power load must not exceed the circuit rating"
+              ],
+              [
+                "Humidity",
+                "Low humidity causes static; high humidity causes condensation and corrosion",
+                "Aim for roughly 40 to 60 percent"
+              ],
+              [
+                "Temperature",
+                "Gear fails when the rack inlet runs hot",
+                "Roughly 64 to 81 °F at the rack inlet"
+              ],
+              [
+                "Clean-agent fire suppression",
+                "Protects electronics without water damage",
+                "Water sprinklers are wrong for a server room; use FM-200 or Inergen-type agents"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Keep water sprinklers out of the equipment room. Clean agents protect the gear, while water destroys it."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-access-management",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network access and management methods (3.4)",
+    "chapter": "Network+ · Network access and management",
+    "concept": "implementation",
+    "summary": "Pick the secure way to reach a device, and know when out-of-band management is the only option.",
+    "sections": [
+      {
+        "id": "3-4-access-methods",
+        "title": "Protocols for reaching devices",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Port or path",
+              "Security"
+            ],
+            "rows": [
+              [
+                "SSH",
+                "TCP 22",
+                "Encrypted; replaces Telnet"
+              ],
+              [
+                "Telnet",
+                "TCP 23",
+                "Plain text, including credentials"
+              ],
+              [
+                "RDP",
+                "TCP 3389",
+                "Remote desktop for Windows; encrypted in transit"
+              ],
+              [
+                "VNC",
+                "Varies",
+                "Cross-platform graphical control"
+              ],
+              [
+                "API",
+                "Varies",
+                "Push changes to many devices at once"
+              ],
+              [
+                "Console (serial)",
+                "Physical console port",
+                "Works when the network is down"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "When the exam offers SSH and Telnet, choose SSH."
+          }
+        ]
+      },
+      {
+        "id": "3-4-inbound-outofband",
+        "title": "Inbound, out-of-band and VPN access",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Inbound management uses the production network, such as SSH to the device's IP. It fails when that network fails.",
+              "Out-of-band management uses a separate path, such as a serial console or a modem line, so you can recover a device during an outage.",
+              "A jump box (jump host) is one hardened, monitored entry point. Administrators connect to it first, then move on to internal devices. Protect it with MFA and patching.",
+              "A site-to-site VPN permanently links two locations. A client-to-site (remote access) VPN connects one device, such as a laptop, to headquarters.",
+              "Full tunnel sends all of a device's traffic through the VPN. Split tunnel sends only traffic for the corporate network through the VPN."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-performance",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network performance: congestion, latency, jitter and wireless interference (5.4)",
+    "chapter": "Network+ · Troubleshooting performance",
+    "concept": "troubleshooting",
+    "summary": "Separate latency, jitter and packet loss from one another, then trace slow performance to its cause.",
+    "sections": [
+      {
+        "id": "5-4-symptoms",
+        "title": "Performance symptoms and causes",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Symptom",
+              "Cause",
+              "Example"
+            ],
+            "rows": [
+              [
+                "Latency",
+                "Delay between request and response",
+                "Slow page loads"
+              ],
+              [
+                "Jitter",
+                "Uneven delay between packets",
+                "Choppy voice or video"
+              ],
+              [
+                "Packet loss",
+                "Packets that never arrive",
+                "Dropped words on a call"
+              ],
+              [
+                "Congestion",
+                "More traffic than the link can carry",
+                "Buffers fill and packets are dropped"
+              ],
+              [
+                "Contention",
+                "Devices competing for one resource at the same instant",
+                "Busy shared link at peak time"
+              ],
+              [
+                "Bottleneck",
+                "One narrow point that limits the whole path",
+                "Slow disk or overloaded link"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Bandwidth is the theoretical maximum of a link. Throughput is what actually moves through it. Over a path, the slowest link sets the throughput.",
+              "On wireless: interference from neighboring access points, channel overlap, signal degradation through walls and distance, and dead zones with insufficient coverage.",
+              "RSSI measures signal strength at the client; SNR measures signal relative to background noise. Roaming thresholds decide when a client hands off, and a low threshold can leave a client stuck to a distant access point."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Latency is slow, jitter is uneven, and loss means the data is gone. Jitter is what ruins voice calls."
+          }
+        ]
+      }
+    ]
   }
 ]
