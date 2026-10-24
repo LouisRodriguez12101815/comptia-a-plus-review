@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
-import { getQuestions, getTopics } from "@/lib/content";
+import { getQuestions, getTopics, questions as allQuestions } from "@/lib/content";
 import { shuffleQuestionChoices } from "@/lib/exam-test.mjs";
 import { recordQuiz } from "@/lib/progress";
 import type { Question, StudyFocus } from "@/lib/types";
@@ -44,7 +44,7 @@ function answerLabel(question: Question, pick: number | number[] | undefined) {
   return indices.map((i) => question.choices[i]).join(" · ");
 }
 
-export function QuizRunner({ initialTopic }: { initialTopic: string }) {
+export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string; questionIds?: string[] }) {
   const t = useTranslations("quizRunner");
   const [focus, setFocus] = useStudyFocus();
   const [topicId, setTopicId] = useState(initialTopic);
@@ -54,7 +54,12 @@ export function QuizRunner({ initialTopic }: { initialTopic: string }) {
   const [answers, setAnswers] = useState<Record<string, number | number[]>>({});
   const [done, setDone] = useState(false);
 
-  const pool = useMemo(() => getQuestions(topicId, focus), [topicId, focus]);
+  const idKey = questionIds ? questionIds.join("|") : null;
+  const pool = useMemo(() => {
+    if (idKey === null) return getQuestions(topicId, focus);
+    const wanted = new Set(idKey.split("|"));
+    return allQuestions.filter((q) => wanted.has(q.id));
+  }, [topicId, focus, idKey]);
   const topicOptions = getTopics(focus);
   const [quiz, setQuiz] = useState<Question[]>([]);
 
