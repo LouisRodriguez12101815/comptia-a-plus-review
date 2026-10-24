@@ -266,6 +266,7 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
         {exam === "220-1202" && <section className={card} aria-labelledby="labs-first-heading">
           <h2 id="labs-first-heading" className="text-lg font-semibold text-white">{t("labsFirstHeading")}</h2>
           <p className="mt-1 text-sm text-slate-300">{t("labsFirstIntro")}</p>
+          <p className="mt-2 text-sm text-cyan-100">{t("labsFirstPacing")}</p>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {coreTwoLabs.map((lab) => <li key={lab.file}><a href={`/visuals/${lab.file}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 w-full items-center rounded-xl border border-slate-700 px-4 py-2 text-teal-200 underline underline-offset-4 hover:border-teal-400">{lab.title}</a></li>)}
           </ul>
