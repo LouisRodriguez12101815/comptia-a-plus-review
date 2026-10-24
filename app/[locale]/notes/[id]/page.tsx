@@ -5,11 +5,11 @@ import { ChapterStrip } from "@/app/components/ChapterStrip";
 import { EnsureTopicFocus } from "@/app/components/EnsureTopicFocus";
 import { SectionBlocks } from "@/app/components/SectionBlocks";
 import { focusForTopic } from "@/lib/chapter";
-import { getTopic, topics } from "@/lib/content";
+import { getTopic } from "@/lib/content";
 
-export function generateStaticParams() {
-  return topics.map((topic) => ({ id: topic.id }));
-}
+/* Topic pages are rendered the first time someone opens them, then cached,
+   instead of being built for every topic in every language at build time. */
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,
