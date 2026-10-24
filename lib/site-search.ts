@@ -16,13 +16,27 @@ function matchesAll(haystack: string, tokens: string[]) {
   return tokens.every((token) => haystack.includes(token));
 }
 
+/* Hits whose title contains the whole query phrase come first, then hits whose
+   title contains every word, then the rest. Sorting is stable, so the original
+   order is kept within each rank. */
+function rank(hits: SearchHit[], phrase: string, tokens: string[]): SearchHit[] {
+  const score = (hit: SearchHit) => {
+    const title = hit.title.toLowerCase();
+    if (title.includes(phrase)) return 2;
+    if (matchesAll(title, tokens)) return 1;
+    return 0;
+  };
+  return [...hits].sort((a, b) => score(b) - score(a));
+}
+
 function examOfTopic(topic: Topic | undefined): string {
   return topic?.examCodes[0] ?? "all";
 }
 
 /** Search every topic, flashcard, question and glossary term. Every word in the query must match. */
 export function searchSite(query: string, exam: string = "all") {
-  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const phrase = query.trim().toLowerCase();
+  const tokens = phrase.split(/\s+/).filter(Boolean);
   const empty = { topics: [] as SearchHit[], flashcards: [] as SearchHit[], questions: [] as SearchHit[], terms: [] as SearchHit[], total: 0 };
   if (tokens.length === 0) return empty;
 
@@ -68,10 +82,10 @@ export function searchSite(query: string, exam: string = "all") {
     .map((entry) => ({ kind: "term" as const, title: entry.term, text: entry.meaning, href: `/glossary#${entry.id}`, exam: entry.exam }));
 
   return {
-    topics: topicHits.slice(0, MAX_PER_KIND),
-    flashcards: cardHits.slice(0, MAX_PER_KIND),
-    questions: questionHits.slice(0, MAX_PER_KIND),
-    terms: termHits.slice(0, MAX_PER_KIND),
+    topics: rank(topicHits, phrase, tokens).slice(0, MAX_PER_KIND),
+    flashcards: rank(cardHits, phrase, tokens).slice(0, MAX_PER_KIND),
+    questions: rank(questionHits, phrase, tokens).slice(0, MAX_PER_KIND),
+    terms: rank(termHits, phrase, tokens).slice(0, MAX_PER_KIND),
     total: topicHits.length + cardHits.length + questionHits.length + termHits.length,
   };
 }
