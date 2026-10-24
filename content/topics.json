@@ -11093,5 +11093,168 @@
         ]
       }
     ]
+  },
+  {
+    "id": "core2-cli-tools",
+    "group": "core2",
+    "examCodes": [
+      "220-1202"
+    ],
+    "title": "Microsoft command-line tools (1.5)",
+    "chapter": "Core 2 · Operating systems (Domain 1)",
+    "summary": "Match each Windows command-line tool to the task it performs.",
+    "concept": "Command Prompt and PowerShell both run these commands. Know what each tool does and which one fits the scenario.",
+    "sections": [
+      {
+        "id": "1-5-navigation",
+        "title": "Navigation and file commands (1.5)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Command",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "dir",
+                "Lists the files and subfolders in the current folder"
+              ],
+              [
+                "cd",
+                "Changes folder. cd .. moves up one level; an absolute path such as cd C:\\Program Files jumps directly"
+              ],
+              [
+                "md or mkdir",
+                "Creates a new folder"
+              ],
+              [
+                "rd or rmdir",
+                "Removes an empty folder"
+              ],
+              [
+                "robocopy",
+                "Copies folders robustly. /MIR mirrors the source to the destination and removes extra files; /Z copies in restartable mode"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Drive letters identify storage devices. C: is usually the Windows system drive. Additional drives and partitions receive the next available letters unless one is chosen."
+          }
+        ]
+      },
+      {
+        "id": "1-5-network",
+        "title": "Network commands (1.5)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Command",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "ipconfig",
+                "Shows the IP address, subnet mask and default gateway. ipconfig /all adds MAC, DHCP and DNS details"
+              ],
+              [
+                "ipconfig /release and ipconfig /renew",
+                "Release the current DHCP lease, then request a new one"
+              ],
+              [
+                "ipconfig /flushdns",
+                "Clears the local DNS resolver cache. ipconfig /displaydns shows the cached entries"
+              ],
+              [
+                "ping",
+                "Tests reachability and round-trip time with echo requests"
+              ],
+              [
+                "tracert",
+                "Shows each router (hop) on the path to a destination and the time to each"
+              ],
+              [
+                "pathping",
+                "Traces the route, then pings each hop to show latency and packet loss"
+              ],
+              [
+                "netstat",
+                "Shows active connections and listening ports. netstat -e shows interface statistics such as bytes and packets sent and received"
+              ],
+              [
+                "nslookup",
+                "Queries DNS to resolve a name to an IP address and check DNS records"
+              ],
+              [
+                "net use",
+                "Maps a shared folder or printer to a drive letter or local name, such as net use Z: \\\\server1\\project"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-5-system",
+        "title": "System and disk commands (1.5)",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Command",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "hostname",
+                "Shows the computer's host name"
+              ],
+              [
+                "winver",
+                "Shows the Windows version and build"
+              ],
+              [
+                "whoami",
+                "Shows the signed-in user and computer name"
+              ],
+              [
+                "net user",
+                "Adds, changes or deletes user accounts. Example: net user John /add, net user John /delete"
+              ],
+              [
+                "diskpart",
+                "Manages partitions: list disk, select disk 1, create partition primary, list partition, format fs=ntfs quick, assign letter=T"
+              ],
+              [
+                "format",
+                "Erases a volume and creates a file system. Example: format E: /fs:NTFS"
+              ],
+              [
+                "chkdsk C:",
+                "Checks a volume for logical and physical errors such as bad sectors"
+              ],
+              [
+                "sfc /scannow",
+                "Scans protected system files and replaces corrupted or missing ones"
+              ],
+              [
+                "gpupdate /force",
+                "Applies Group Policy changes immediately"
+              ],
+              [
+                "gpresult /r",
+                "Shows the Group Policy settings applied to the user and computer"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "net use maps network connections, while net user manages user accounts. Format erases data. Run it only on a volume you intend to wipe."
+          }
+        ]
+      }
+    ]
   }
 ]
