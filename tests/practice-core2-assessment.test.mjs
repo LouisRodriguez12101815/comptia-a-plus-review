@@ -64,8 +64,8 @@ test('new question shuffling preserves answer identity across repeat practice', 
     assert.deepEqual(answerTexts(copy).sort(), answerTexts(q).sort());
   }
 });
-test('next seven chapter objectives remain explicitly queued, not marked covered by assessment fragments', () => {
-  const expected = ['1.8', '1.9', '1.10', '1.11', '2.10', '2.11', '3.3'];
+test('open chapter objectives remain explicitly queued, not marked covered by assessment fragments', () => {
+  const expected = ['3.2', '3.4'];
   assert.deepEqual(assessment.queuedObjectives, expected);
   assert.deepEqual(map.queuedObjectives, expected);
   const current = objectives.exams.find(e => e.code === '220-1202').domains.flatMap(d => d.objectives);
