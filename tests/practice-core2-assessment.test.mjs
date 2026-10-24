@@ -64,12 +64,12 @@ test('new question shuffling preserves answer identity across repeat practice', 
     assert.deepEqual(answerTexts(copy).sort(), answerTexts(q).sort());
   }
 });
-test('open chapter objectives remain explicitly queued, not marked covered by assessment fragments', () => {
-  const expected = ['3.2', '3.4'];
+test('no Core 2 objective is queued after the 3.2 and 3.4 notes were added', () => {
+  const expected = [];
   assert.deepEqual(assessment.queuedObjectives, expected);
   assert.deepEqual(map.queuedObjectives, expected);
   const current = objectives.exams.find(e => e.code === '220-1202').domains.flatMap(d => d.objectives);
-  for (const id of expected) assert.notEqual(current.find(o => o.id === id).status, 'covered');
+  for (const id of ['3.2', '3.4']) assert.equal(current.find(o => o.id === id).status, 'covered');
 });
 test('every authored workshop is self-contained and its interaction script is valid JavaScript', () => {
   for (const file of new Set([...assessment.items.map(i => i.visualFile), 'core2-hardening-decisions.html'])) {
