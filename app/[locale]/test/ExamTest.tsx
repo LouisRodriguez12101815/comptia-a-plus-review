@@ -413,6 +413,11 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
 
   return (
     <div className="space-y-6">
+      <section className={card} aria-labelledby="weak-loop-heading">
+        <h2 id="weak-loop-heading" className="text-lg font-semibold text-white">{t("weakAreasLink")}</h2>
+        <p className="mt-1 text-sm text-slate-300">{t("weakAreasIntro")}</p>
+        <Link href="/weak-areas" className="mt-3 inline-flex min-h-11 items-center rounded-full border border-teal-300 px-5 py-2 text-teal-100">{t("weakAreasLink")}</Link>
+      </section>
       <section className={card} aria-labelledby="score-heading">
         <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{format.label} · {exam}</h2>
         <p className="mt-2 text-4xl font-semibold text-white">{result.correct}/{result.total} <span className="text-2xl text-slate-300">({result.percent}%)</span></p>
