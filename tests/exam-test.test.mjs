@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftTest, freshFirstIds,
+  EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftFocused, draftTest, freshFirstIds,
   gradeTest, isCorrect, mulberry32, questionsForLength, secondsPerQuestion,
 } from '../lib/exam-test.mjs';
 import { evaluateReadiness } from '../lib/readiness.ts';
@@ -203,4 +203,18 @@ test('freshFirstIds puts unseen ids first, then the ones seen longest ago', () =
   const order = freshFirstIds(['a', 'b', 'c', 'd'], ['c', 'a'], mulberry32(5));
   assert.deepEqual(order.slice(0, 2).sort(), ['b', 'd']);
   assert.deepEqual(order.slice(2), ['c', 'a']);
+});
+
+test('a targeted draft takes about 60% from the chosen objectives and a retest takes all of them', () => {
+  const p = pool('220-1202');
+  const focus = ['2.3', '3.4'];
+  const inFocus = new Set(p.domains.flatMap((d) => d.objectives.filter((o) => focus.includes(o.id)).flatMap((o) => o.questionIds)));
+  const targeted = draftFocused(p, 15, mulberry32(9), { objectiveIds: focus });
+  assert.equal(targeted.length, 15);
+  assert.equal(new Set(targeted.map((x) => x.questionId)).size, 15);
+  assert.equal(targeted.filter((x) => inFocus.has(x.questionId)).length >= 9, true);
+  const retest = draftFocused(p, 5, mulberry32(10), { objectiveIds: focus, share: 1 });
+  assert.equal(retest.length, 5);
+  assert.equal(retest.every((x) => inFocus.has(x.questionId)), true);
+  assert.equal(draftFocused(p, 15, mulberry32(3), { objectiveIds: ['9.9'] }).length, 15);
 });

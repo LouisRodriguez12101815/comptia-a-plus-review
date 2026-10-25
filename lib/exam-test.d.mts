@@ -28,6 +28,8 @@ export function allocateByWeight(domains: PoolDomain[], total: number): Record<s
 export function freshFirstIds(ids: readonly string[], history?: readonly string[], rng?: () => number): string[];
 /** `history`: question ids from earlier sittings, oldest first. Unseen questions are drawn first. */
 export function draftTest(pool: ExamPool, requested: number, rng?: () => number, options?: { history?: readonly string[] }): TestPick[];
+/** Leans a draft on chosen objectives: `share` of questions from them (0.6 by default, 1 for a retest). */
+export function draftFocused(pool: ExamPool, requested: number, rng?: () => number, options?: { history?: readonly string[]; objectiveIds?: readonly string[]; share?: number }): TestPick[];
 export function isCorrect(question: { answer: number | number[] }, pick: Pick): boolean;
 export function gradeTest(input: {
   pool: ExamPool;

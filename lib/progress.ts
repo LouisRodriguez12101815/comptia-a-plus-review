@@ -33,6 +33,8 @@ export type MockAttempt = {
   multiTotal: number;
   /** Question IDs shown in this sitting. Older saved attempts may not have this field. */
   questionIds?: string[];
+  /** The objective each question was drawn for. Older saved attempts may not have this field. */
+  objectiveByQuestion?: Record<string, string>;
   missedIds: string[];
   at: number;
 };
@@ -112,6 +114,7 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && (value.bankVersion === undefined || typeof value.bankVersion === "string")
     && [value.correctIds, value.multiQuestionIds].every(ids => ids === undefined || (Array.isArray(ids) && ids.every(id => typeof id === "string")))
     && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")))
+    && (value.objectiveByQuestion === undefined || (isRecord(value.objectiveByQuestion) && Object.values(value.objectiveByQuestion).every((id) => typeof id === "string")))
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
