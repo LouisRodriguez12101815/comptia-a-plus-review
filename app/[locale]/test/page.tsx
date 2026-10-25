@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ExamTest } from "./ExamTest";
+import visuals from "@/content/track-visuals.json";
+import { ExamTest, type LabLink } from "./ExamTest";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/test">): Promise<Metadata> {
   const { locale } = await params;
@@ -19,8 +20,16 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("testPage");
-  const { exam } = await searchParams;
+  const { exam, focus } = await searchParams;
   const initialExam = examCodes.includes(exam as ExamCode) ? (exam as ExamCode) : undefined;
+  // ?focus=2.3,3.4 starts a test on those objectives (from the scorecard).
+  const initialFocus = (typeof focus === "string" ? focus.split(",") : []).filter((id) => /^\d+\.\d+$/.test(id)).slice(0, 10);
+  // Only the exam-style labs cross to the client, keyed by topic, for the Fix it links.
+  const labsByTopic: Record<string, LabLink[]> = Object.fromEntries(
+    Object.entries(visuals as Record<string, { file: string; title: string; group: string }[]>)
+      .map(([topicId, items]) => [topicId, items.filter((item) => item.group === "Exam-style labs").map(({ file, title }) => ({ file, title }))])
+      .filter(([, items]) => items.length > 0),
+  );
   return (
     <div className="space-y-6">
       <header className="space-y-2">
@@ -34,7 +43,7 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
           })}
         </p>
       </header>
-      <ExamTest initialExam={initialExam} />
+      <ExamTest initialExam={initialExam} initialFocus={initialFocus} labsByTopic={labsByTopic} />
     </div>
   );
 }
