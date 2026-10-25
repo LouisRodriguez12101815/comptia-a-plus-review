@@ -6,18 +6,9 @@ import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getQuestions, getTopics, questions as allQuestions } from "@/lib/content";
-import { shuffleQuestionChoices } from "@/lib/exam-test.mjs";
-import { recordQuiz } from "@/lib/progress";
+import { freshFirstIds, shuffleQuestionChoices } from "@/lib/exam-test.mjs";
+import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
 import type { Question, StudyFocus } from "@/lib/types";
-
-function shuffle<T>(items: T[]) {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
 
 function correctIndices(question: Question): number[] {
   return Array.isArray(question.answer) ? question.answer : [question.answer];
@@ -75,7 +66,10 @@ export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string
   }
 
   function start() {
-    const deck = shuffle(pool).slice(0, Math.min(15, pool.length)).map(q => shuffleQuestionChoices(q));
+    // Questions not seen in earlier quizzes or tests come first, then the ones seen longest ago.
+    const byId = new Map(pool.map((q) => [q.id, q]));
+    const order = freshFirstIds(pool.map((q) => q.id), questionHistory(getProgressSnapshot()));
+    const deck = order.slice(0, Math.min(15, order.length)).map((id) => shuffleQuestionChoices(byId.get(id)!));
     setQuiz(deck);
     setIndex(0);
     setPicked([]);
@@ -102,7 +96,7 @@ export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string
         .filter((question) => !isCorrectPick(question, nextAnswers[question.id]))
         .map((question) => question.id);
       const correct = quiz.length - missed.length;
-      recordQuiz({ topicId, correct, total: quiz.length, missedIds: missed });
+      recordQuiz({ topicId, correct, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed });
       setDone(true);
       return;
     }
