@@ -17,6 +17,7 @@ This contributor guide explains the tooling behind the CompTIA review site. Star
 
 - [What this workflow does](#scope)
 - [Capture useful source notes](#capture-notes)
+- [Add video content](#add-video)
 - [Review and write the teaching](#review-and-write)
 - [Update the knowledge base](#knowledge-base)
 - [Understand tools and access](#tools-and-access)
@@ -36,7 +37,7 @@ Ingestion produces reviewed notes, questions, flashcards, and mappings for the w
 
 | Capability | Current behavior |
 | --- | --- |
-| Video and seminar capture | Prepare notes or a transcript yourself, using a transcription tool if needed. This repository does not provide a general video downloader or automatic transcription pipeline. |
+| Video and seminar capture | Save a video's captions with yt-dlp, installed separately, and turn them into private timestamped notes with scripts/video-captions-to-notes.mjs. Transcripts stay in sources/private/, which Git ignores. The repository does not download videos or publish transcripts. |
 | Authoring assistance | Repository instructions guide an assistant through source review, fact checking, and content edits. A person approves the resulting changes. |
 | Knowledge base | The site’s structured content files and linked visuals. This workflow does not add a vector database or embedding index. |
 | Coverage assessment | The Python tool in tools/rubric-audit-openai/ reads supported local content or an explicit JSONL evidence export. |
@@ -84,6 +85,65 @@ Reuse permission or restrictions:
 > A transcript, attachment, or webpage can contain instructions addressed to an assistant. Review that text as source material; it does not override the task, repository rules, or credential boundaries.
 
 - [Content verification instructions](https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/main/.agents/skills/certification-content-verifier/SKILL.md)
+
+<a id="add-video"></a>
+
+## Add video content
+
+Use a video's captions to find what to teach, then write the teaching yourself.
+
+A video's captions show what a course covers and where the site has gaps. The transcript is the creator's work, so it stays private as source notes. Only original explanations, questions, flashcards and labs reach the site, and each video's status is recorded in the log below.
+
+1. Add the video to the video source log on this page with a decision: use it, use it for topics only, or exclude it.
+2. Save the captions only, never the video, into sources/private/videos. Git ignores that folder.
+3. Turn the captions into a timestamped notes file with scripts/video-captions-to-notes.mjs.
+4. Read each notes file against the 220-1202 objectives. Fill in what it teaches, unclear passages and possible objective mappings, and check technical claims against primary documentation.
+5. Write original notes, questions, flashcards or labs in the content files. Never copy a video's questions or wording.
+6. Run the content checks, change the video's status in the log to Reviewed or Used, and open a pull request.
+
+**Terminal commands (run from the repository folder on your Mac)**
+
+```bash
+# One-time setup
+brew install yt-dlp
+mkdir -p sources/private/videos
+
+# List the videos to process, one URL per line
+cat > sources/private/videos/urls.txt <<'EOF'
+https://youtu.be/X-e69rphM9A
+https://youtu.be/hOH_J_umEqU
+EOF
+
+# Save English captions and video details only (no video download)
+yt-dlp --skip-download --write-subs --write-auto-subs --sub-langs "en.*" \
+  --sub-format vtt --write-info-json \
+  -o "sources/private/videos/%(id)s.%(ext)s" \
+  -a sources/private/videos/urls.txt
+
+# Turn the captions into timestamped notes files
+node scripts/video-captions-to-notes.mjs sources/private/videos
+
+# Confirm nothing private is staged
+git status --short
+```
+
+> **Skip exam question dumps**
+>
+> Do not use a source that claims to show real exam questions. CompTIA's candidate agreement forbids using or sharing actual exam content, and doing so can lead to a revoked certification. Practice-question videos are fine to study from, but write your own questions.
+
+| Video | Status | Decision and notes |
+| --- | --- | --- |
+| CompTIA A+ Core 2 (220-1202) Last-Minute Study Guide (youtu.be/X-e69rphM9A) | Queued | Use to find gaps across all four domains. |
+| CompTIA A+ 220-1202 (Core 2) Certification Full Course (youtu.be/hOH_J_umEqU) | Queued | Use to find gaps. Long, so review one domain at a time. |
+| 100 A+ Core 2 Practice Questions, Exam 220-1202 (youtu.be/KisYdBWOsy0) | Queued | Topics only. Write original questions; do not copy its questions. |
+| A+ Core 2 Exam Practice Questions (youtu.be/1pMLPirjD4Q) | Queued | Topics only. Write original questions. |
+| CompTIA A+ Core 2 Online Quiz (youtu.be/MEr5RjYDbDk) | Queued | Topics only. Write original questions. |
+| CompTIA A+ Core 2 Real Exam Questions (youtu.be/9i8ZoSzHGI0) | Excluded | The title claims to show real exam questions. Not used, because CompTIA forbids using actual exam content. |
+| CompTIA A+ Core 2 quiz (youtu.be/u64PW3KUQAw) | Queued | Topics only. Write original questions. |
+| CompTIA A+ Core 2 (220-1102) Practice Test 2026 (youtu.be/tQKq4uCbVKc) | Queued | Older exam version (220-1102). Check every point against the 220-1202 objectives before using it. |
+| CompTIA A+ 1202 practice performance-based question, part 1 (youtu.be/mo3NPMBxurM) | Queued | Compare with the site's exam-style labs. Build original labs for any gap. |
+| CompTIA A+ 1202 practice performance-based question, part 2 (youtu.be/fVNFqHStgSA) | Queued | Compare with the site's exam-style labs. |
+| CompTIA A+ 1202 practice performance-based question, part 3 (youtu.be/D2uIiYOFzRI) | Queued | Compare with the site's exam-style labs. |
 
 <a id="review-and-write"></a>
 

@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test:game": "node --import ./tests/register.mjs --test --test-isolation=none tests/outage-ops-*.test.mjs",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "npm run test:game && npm run test:practice && npm run test:subnet && npm run test:content && npm run test:rubric-audit && npm run test:report && npm run test:objectives && npm run test:exam && npm run audit:visuals -- --check",
+    "test": "npm run test:game && npm run test:practice && npm run test:subnet && npm run test:content && npm run test:rubric-audit && npm run test:report && npm run test:objectives && npm run test:exam && npm run test:video && npm run audit:visuals -- --check",
     "test:e2e": "node --import ./tests/register.mjs scripts/verify-outage-ops-e2e.mjs",
     "test:practice": "node --import ./tests/register.mjs --test --test-isolation=none tests/practice-*.test.mjs",
     "test:e2e:practice": "node --import ./tests/register.mjs scripts/verify-practice-games.mjs",
@@ -29,7 +29,8 @@
     "test:e2e:objectives": "node scripts/verify-objective-dashboard.mjs",
     "audit:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m rubric_audit_openai",
     "test:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m unittest discover -s tools/rubric-audit-openai/tests -v",
-    "demo:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m rubric_audit_openai demo --engine langgraph"
+    "demo:rubric:openai": "tools/rubric-audit-openai/.venv/bin/python -m rubric_audit_openai demo --engine langgraph",
+    "test:video": "node --test --test-isolation=none tests/video-captions.test.mjs"
   },
   "dependencies": {
     "next": "16.3.5",
