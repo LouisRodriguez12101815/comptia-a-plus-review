@@ -1,0 +1,139 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wireless security and authentication lab</title><style>*{box-sizing:border-box}:root{color-scheme:light dark;--bg:#f5f7fa;--ink:#163047;--muted:#435c70;--line:#9cafbf;--accent:#075f85;--good:#086848;--bad:#a62f35;--warm:#875304;--panel:#fff;--term:#0d1b26;--termink:#d6f5e3}
+@media(prefers-color-scheme:dark){:root{--bg:#101923;--ink:#e9f1f7;--muted:#c1cfdb;--line:#718697;--accent:#78d3fc;--good:#6ee7b7;--bad:#ffafb2;--warm:#ffd28a;--panel:#172838;--term:#050c12;--termink:#bff5d6}}
+body{margin:0;padding:18px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:auto}h1{font-size:clamp(23px,4vw,32px);line-height:1.2;margin:8px 0}
+.eyebrow{color:var(--accent);font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 0}
+.muted{color:var(--muted)}a{color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0}
+.scenario{border-left:4px solid var(--accent)}
+button,select,input{font:inherit}
+button{min-height:44px;padding:10px 16px;background:var(--panel);color:var(--ink);border:1px solid var(--accent);border-radius:9px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--panel);font-weight:600}
+button:disabled{opacity:.55;cursor:default}
+select{width:100%;max-width:100%;min-height:44px;padding:10px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:9px}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.row{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--line)}.row:first-child{border-top:0}
+@media(min-width:720px){.row.two{grid-template-columns:1fr 1fr;align-items:center}}
+.ok{color:var(--good);font-weight:600}.no{color:var(--bad);font-weight:600}
+.why{font-size:15px;color:var(--muted);margin:4px 0 0}
+.mark-ok{border-left:4px solid var(--good);padding-left:10px}.mark-no{border-left:4px solid var(--bad);padding-left:10px}
+ol.order{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ol.order li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+ol.order .num{font-weight:700;min-width:1.6em}
+ol.order .moves{display:flex;gap:6px}ol.order .moves button{min-width:44px;padding:8px}
+.term{background:var(--term);color:var(--termink);border-radius:12px;padding:14px;font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-height:220px;max-height:420px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.prompt{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.prompt label{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.prompt input{flex:1;min-width:200px;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace}
+.task{font-weight:600}.hint{color:var(--warm)}
+.score{font-size:18px;font-weight:700}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}</style>
+<main>
+<a href="/en/core2/visuals" target="_top">Core 2 visuals</a>
+<p class="eyebrow">Exam-style lab · Objective 2.3</p>
+<h1>Wireless security and authentication lab</h1>
+<p class="muted">Choose the secure setting for each part of an office wireless setup from the drop-down lists, the way a simulation question gives you a configuration screen. This is practice in the style of a performance-based question, not a copy of a real exam item, and finishing it is not a readiness score.</p>
+<section class="card scenario" aria-label="Scenario"><p>A 60-person office with a Windows domain is replacing its wireless network. Each employee must sign in with their own account, visitors need internet access only, and network devices are managed by two administrators. Choose each setting.</p></section>
+<section class="card" id="lab" aria-label="Lab"></section>
+<div class="actions" id="actions"></div>
+<p class="score" id="score" aria-live="polite"></p>
+<p id="status" class="muted" role="status" aria-live="polite"></p>
+</main>
+<script type="application/json" id="workshop-data">{"type": "config", "settings": [{"label": "Staff wireless security mode", "options": ["WEP", "WPA2-Personal (TKIP)", "WPA2-Enterprise (AES)", "WPA3-Enterprise"], "correct": [3], "why": "WPA3-Enterprise is the strongest choice. WPA2-Enterprise with AES is the fallback only for devices that lack WPA3. WEP and TKIP are outdated."}, {"label": "How staff sign in to Wi-Fi", "options": ["One shared passphrase for everyone", "Each person's own directory account"], "correct": [1], "why": "Enterprise mode checks each person's own account, so one account can be removed without changing everyone's password."}, {"label": "Server that checks Wi-Fi sign-ins", "options": ["RADIUS", "TACACS+", "DHCP", "DNS"], "correct": [0], "why": "The access points pass each sign-in to a RADIUS server, which checks it against the directory."}, {"label": "Administrator sign-in to switches and routers, with each command authorized and logged", "options": ["RADIUS", "TACACS+", "Kerberos", "WPS"], "correct": [1], "why": "TACACS+ separates authentication, authorization and accounting, so it can control and log each command an administrator runs on network devices."}, {"label": "Sign-in to domain-joined Windows desktops", "options": ["Kerberos", "TACACS+", "WEP", "WPS"], "correct": [0], "why": "Active Directory uses Kerberos tickets for domain sign-in."}, {"label": "Extra protection for remote VPN and email sign-ins", "options": ["Multifactor authentication", "A longer network name", "Hiding the network name", "WPS"], "correct": [0], "why": "MFA requires a second factor, so a stolen password alone is not enough."}, {"label": "Wireless access for visitors", "options": ["Join the staff network with a shared password", "A separate guest network using WPA3-Personal, isolated from staff devices"], "correct": [1], "why": "An isolated guest network gives visitors internet access without reaching company systems."}, {"label": "Wi-Fi Protected Setup (WPS)", "options": ["Enabled", "Disabled"], "correct": [1], "why": "The WPS PIN can be guessed, so turn WPS off."}]}</script>
+<script>
+(function(){
+var data=JSON.parse(document.getElementById('workshop-data').textContent);
+var root=document.getElementById('lab');var status=document.getElementById('status');
+function el(tag,attrs,text){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==='class')e.className=attrs[k];else e.setAttribute(k,attrs[k]);}if(text!=null)e.textContent=text;return e;}
+function say(msg){status.textContent=msg;}
+function shuffle(a,seed){a=a.slice();var s=seed||7;for(var i=a.length-1;i>0;i--){s=(s*9301+49297)%233280;var j=Math.floor(s/233280*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function norm(c){return c.trim().toLowerCase().replace(/\s+/g,' ');}
+
+function buildMatch(){
+  var rows=[];var options=data.options.slice().sort();
+  data.items.forEach(function(item,i){
+    var row=el('div',{class:'row two'});
+    var id='m'+i;
+    var lab=el('label',{for:id},item.prompt);
+    var sel=el('select',{id:id});
+    sel.appendChild(el('option',{value:''},'Choose…'));
+    options.forEach(function(o){sel.appendChild(el('option',{value:o},o));});
+    var why=el('p',{class:'why',hidden:''});
+    row.appendChild(lab);row.appendChild(sel);row.appendChild(why);
+    root.appendChild(row);rows.push({row:row,sel:sel,why:why,item:item});
+  });
+  return {check:function(){var n=0;rows.forEach(function(r){var good=r.sel.value===r.item.answer;if(good)n++;r.row.className='row two '+(good?'mark-ok':'mark-no');r.why.hidden=false;r.why.textContent=(good?'Correct. ':'Answer: '+r.item.answer+'. ')+r.item.why;});return [n,rows.length];},
+          reset:function(){rows.forEach(function(r){r.sel.value='';r.row.className='row two';r.why.hidden=true;});}};
+}
+
+function buildConfig(){
+  var rows=[];
+  data.settings.forEach(function(s,i){
+    var row=el('div',{class:'row two'});var id='c'+i;
+    row.appendChild(el('label',{for:id},s.label));
+    var sel=el('select',{id:id});
+    s.options.forEach(function(o,j){sel.appendChild(el('option',{value:String(j)},o));});
+    sel.value=String(s.start||0);
+    var why=el('p',{class:'why',hidden:''});
+    row.appendChild(sel);row.appendChild(why);root.appendChild(row);rows.push({row:row,sel:sel,why:why,s:s});
+  });
+  return {check:function(){var n=0;rows.forEach(function(r){var good=r.s.correct.indexOf(Number(r.sel.value))>=0;if(good)n++;r.row.className='row two '+(good?'mark-ok':'mark-no');r.why.hidden=false;r.why.textContent=(good?'Secure. ':'Change this: '+r.s.options[r.s.correct[0]]+'. ')+r.s.why;});return [n,rows.length];},
+          reset:function(){rows.forEach(function(r){r.sel.value=String(r.s.start||0);r.row.className='row two';r.why.hidden=true;});}};
+}
+
+function buildOrder(){
+  var list=el('ol',{class:'order','aria-label':'Steps in your chosen order'});root.appendChild(list);
+  var order=shuffle(data.steps.map(function(_,i){return i;}),data.seed);
+  var whys=[];
+  function render(focusIdx,dir){
+    list.innerHTML='';whys=[];
+    order.forEach(function(stepIdx,pos){
+      var li=el('li');li.appendChild(el('span',{class:'num'},(pos+1)+'.'));
+      var body=el('div');body.appendChild(el('span',null,data.steps[stepIdx].text));
+      var why=el('p',{class:'why',hidden:''});body.appendChild(why);whys.push(why);li.appendChild(body);
+      var moves=el('div',{class:'moves'});
+      var up=el('button',{type:'button','aria-label':'Move up: '+data.steps[stepIdx].text},'↑');
+      var down=el('button',{type:'button','aria-label':'Move down: '+data.steps[stepIdx].text},'↓');
+      if(pos===0)up.disabled=true;if(pos===order.length-1)down.disabled=true;
+      up.onclick=function(){var t=order[pos-1];order[pos-1]=order[pos];order[pos]=t;render(pos-1,'up');say('Moved to position '+pos+'.');};
+      down.onclick=function(){var t=order[pos+1];order[pos+1]=order[pos];order[pos]=t;render(pos+1,'down');say('Moved to position '+(pos+2)+'.');};
+      moves.appendChild(up);moves.appendChild(down);li.appendChild(moves);list.appendChild(li);
+      if(focusIdx===pos){(dir==='up'?(pos===0?down:up):(pos===order.length-1?up:down)).focus();}
+    });
+  }
+  render();
+  return {check:function(){var n=0;var items=list.children;order.forEach(function(stepIdx,pos){var good=stepIdx===pos;if(good)n++;items[pos].className=good?'mark-ok':'mark-no';whys[pos].hidden=false;whys[pos].textContent=(good?'Correct position. ':'This is step '+(stepIdx+1)+'. ')+data.steps[stepIdx].why;});return [n,order.length];},
+          reset:function(){order=shuffle(data.steps.map(function(_,i){return i;}),data.seed);render();}};
+}
+
+function buildTerminal(){
+  var taskBox=el('div',{class:'card'});root.appendChild(taskBox);
+  var screen=el('div',{class:'term',tabindex:'0',role:'log','aria-label':'Command output','aria-live':'polite'});root.appendChild(screen);
+  var form=el('form',{class:'prompt'});var lab=el('label',{for:'cmd'},'C:\\>');var input=el('input',{id:'cmd',autocomplete:'off',autocapitalize:'off',spellcheck:'false'});
+  var run=el('button',{type:'submit',class:'primary'},'Run');var hintBtn=el('button',{type:'button'},'Hint');
+  form.appendChild(lab);form.appendChild(input);form.appendChild(run);form.appendChild(hintBtn);root.appendChild(form);
+  var t=0,s=0,misses=0,hints=0;
+  function print(txt){screen.textContent+=txt+'\n';screen.scrollTop=screen.scrollHeight;}
+  function showTask(){taskBox.innerHTML='';if(t>=data.tasks.length){taskBox.appendChild(el('p',{class:'ok'},'All tasks complete.'));input.disabled=true;run.disabled=true;hintBtn.disabled=true;say('Lab complete. Wrong commands: '+misses+'. Hints used: '+hints+'.');return;}
+    var task=data.tasks[t];taskBox.appendChild(el('p',{class:'eyebrow'},'Task '+(t+1)+' of '+data.tasks.length));taskBox.appendChild(el('p',null,task.scenario));
+    taskBox.appendChild(el('p',{class:'task'},'Step '+(s+1)+' of '+task.steps.length+': '+task.steps[s].goal));}
+  form.onsubmit=function(ev){ev.preventDefault();var raw=input.value;if(!raw.trim())return;input.value='';print('C:\\> '+raw);
+    var c=norm(raw);var step=data.tasks[t].steps[s];
+    if(step.accept.indexOf(c)>=0){print(step.output);print('');say('Correct. '+step.why);s++;if(s>=data.tasks[t].steps.length){print('-- '+data.tasks[t].done+' --');print('');t++;s=0;}showTask();return;}
+    misses++;var known=null;for(var k in data.known){if(c===k||c.indexOf(k+' ')===0){known=data.known[k];break;}}
+    if(known){print(known);say('That command runs, but it does not complete this step.');}
+    else{print("'"+raw.trim().split(' ')[0]+"' is not recognized as an internal or external command,\noperable program or batch file.");say('Not a command for this step. Check the spelling or use a hint.');}
+    print('');};
+  hintBtn.onclick=function(){if(t>=data.tasks.length)return;hints++;var h=data.tasks[t].steps[s].hint;say('Hint: '+h);print('[hint] '+h);print('');};
+  print(data.banner);print('');showTask();
+  return {check:null,reset:function(){screen.textContent='';t=0;s=0;misses=0;hints=0;input.disabled=false;run.disabled=false;hintBtn.disabled=false;print(data.banner);print('');showTask();}};
+}
+
+var api=data.type==='match'?buildMatch():data.type==='config'?buildConfig():data.type==='order'?buildOrder():buildTerminal();
+var actions=document.getElementById('actions');
+if(api.check){var checkBtn=el('button',{type:'button',class:'primary'},'Check answers');checkBtn.onclick=function(){var r=api.check();var msg='Score: '+r[0]+' of '+r[1]+'.'+(r[0]===r[1]?' All correct.':' Read the notes next to each red item, then reset and try again.');document.getElementById('score').textContent=msg;};actions.appendChild(checkBtn);}
+var resetBtn=el('button',{type:'button'},'Reset');resetBtn.onclick=function(){api.reset();document.getElementById('score').textContent='';say('Lab reset.');};actions.appendChild(resetBtn);
+})();
+</script>
+</html>
