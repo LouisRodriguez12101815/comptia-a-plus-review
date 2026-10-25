@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
@@ -8,7 +8,7 @@ import { questions, topics } from "@/lib/content";
 import { buildExamPool } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
-import { objectiveStats, weakestObjectives, type ObjectiveStat } from "@/lib/weakness";
+import { confidenceByObjective, dueReviews, objectiveStats, weakestObjectives, type ObjectiveStat } from "@/lib/weakness";
 
 const statusStyle: Record<ObjectiveStat["status"], string> = {
   weak: "border-amber-400/50 bg-amber-400/10 text-amber-200",
@@ -38,6 +38,10 @@ export function Scorecard({ exam }: { exam: string }) {
   const weakest = weakestObjectives(stats);
   const counts = stats.reduce<Record<ObjectiveStat["status"], number>>((acc, s) => ({ ...acc, [s.status]: acc[s.status] + 1 }), { weak: 0, ok: 0, strong: 0, few: 0, untested: 0 });
   const sittings = progress.mockAttempts.filter((attempt) => attempt.exam === exam).length;
+  const confidence = useMemo(() => confidenceByObjective(pool, progress.mockAttempts, exam), [pool, progress.mockAttempts, exam]);
+  const [now] = useState(() => Date.now());
+  const due = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
+  const totals = [...confidence.values()].reduce((acc, c) => ({ sureWrong: acc.sureWrong + c.sureWrong, guessRight: acc.guessRight + c.guessRight }), { sureWrong: 0, guessRight: 0 });
 
   return (
     <div className="space-y-6">
@@ -48,6 +52,11 @@ export function Scorecard({ exam }: { exam: string }) {
           {(["weak", "ok", "strong", "few", "untested"] as const).map((status) => (
             <li key={status} className={`rounded-full border px-3 py-1 text-sm ${statusStyle[status]}`}>{t(`status.${status}`)} · {counts[status]}</li>
           ))}
+        </ul>
+        <ul className="mt-2 flex flex-wrap gap-2" aria-label={t("confidenceSummary")}>
+          <li className="rounded-full border border-rose-400/50 bg-rose-400/10 px-3 py-1 text-sm text-rose-100">{t("sureWrongChip", { count: totals.sureWrong })}</li>
+          <li className="rounded-full border border-violet-400/50 bg-violet-400/10 px-3 py-1 text-sm text-violet-100">{t("guessRightChip", { count: totals.guessRight })}</li>
+          <li className="rounded-full border border-slate-600 bg-slate-800/60 px-3 py-1 text-sm text-slate-200">{t("dueChip", { count: due })}</li>
         </ul>
         {weakest.length > 0 ? (
           <Link href={`/test?exam=${exam}&focus=${weakest.map((s) => s.id).join(",")}`} className="mt-4 inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400">
@@ -75,6 +84,13 @@ export function Scorecard({ exam }: { exam: string }) {
                     {s.answered === 0 ? t("noAnswers") : t("answeredLine", { correct: s.correct, answered: s.answered, recent: s.recent ?? 0 })}
                     {s.trend ? ` · ${t(`trend.${s.trend}`)}` : ""}
                   </p>
+                  {(confidence.get(s.id)?.sureWrong || confidence.get(s.id)?.guessRight) ? (
+                    <p className="mt-1 text-xs">
+                      {confidence.get(s.id)!.sureWrong > 0 && <span className="text-rose-200">{t("sureWrongLine", { count: confidence.get(s.id)!.sureWrong })}</span>}
+                      {confidence.get(s.id)!.sureWrong > 0 && confidence.get(s.id)!.guessRight > 0 && <span className="text-slate-500"> · </span>}
+                      {confidence.get(s.id)!.guessRight > 0 && <span className="text-violet-200">{t("guessRightLine", { count: confidence.get(s.id)!.guessRight })}</span>}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
                   <span className={`rounded-full border px-3 py-1 text-xs font-medium ${statusStyle[s.status]}`}>{t(`status.${s.status}`)}</span>

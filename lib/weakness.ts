@@ -75,3 +75,66 @@ export function weakestObjectives(stats: ObjectiveStat[], limit = 5): ObjectiveS
     .sort((a, b) => rank(a) - rank(b) || (a.recent ?? 0) - (b.recent ?? 0) || b.answered - a.answered)
     .slice(0, limit);
 }
+
+const DAY = 86_400_000;
+
+export type DueReview = { questionId: string; objectiveId?: string; dueAt: number };
+
+/**
+ * Missed questions that are due to come back. A miss schedules the question for
+ * 1 day later. Answering it correctly then schedules one more look 3 days later,
+ * and a second correct answer ends the schedule. Any miss starts it again.
+ * Returns the due ones, most overdue first.
+ */
+export function dueReviews(attempts: MockAttempt[], exam: string, now: number): DueReview[] {
+  const state = new Map<string, { step: 0 | 1 | 2; dueAt: number; objectiveId?: string }>();
+  const oldestFirst = attempts.filter((attempt) => attempt.exam === exam).slice().sort((a, b) => a.at - b.at);
+  for (const attempt of oldestFirst) {
+    const missed = new Set(attempt.missedIds);
+    for (const id of attempt.questionIds ?? []) {
+      const objectiveId = attempt.objectiveByQuestion?.[id];
+      const current = state.get(id) ?? { step: 0, dueAt: 0 };
+      if (missed.has(id)) state.set(id, { step: 1, dueAt: attempt.at + DAY, objectiveId });
+      else if (current.step === 1) state.set(id, { step: 2, dueAt: attempt.at + 3 * DAY, objectiveId });
+      else if (current.step === 2) state.set(id, { step: 0, dueAt: 0, objectiveId });
+    }
+  }
+  return [...state.entries()]
+    .filter(([, s]) => s.step > 0 && s.dueAt <= now)
+    .map(([questionId, s]) => ({ questionId, objectiveId: s.objectiveId, dueAt: s.dueAt }))
+    .sort((a, b) => a.dueAt - b.dueAt);
+}
+
+export type ConfidenceCounts = { sureWrong: number; guessRight: number };
+
+/**
+ * Per objective, how often an answer marked "sure" was wrong (a likely
+ * misconception) and how often one marked "guessing" was right (luck to review).
+ */
+export function confidenceByObjective(pool: ExamPool, attempts: MockAttempt[], exam: string): Map<string, ConfidenceCounts> {
+  const counts = new Map<string, ConfidenceCounts>();
+  const objectivesFor = new Map<string, string[]>();
+  for (const domain of pool.domains) {
+    for (const objective of domain.objectives) {
+      for (const id of objective.questionIds) objectivesFor.set(id, [...(objectivesFor.get(id) ?? []), objective.id]);
+    }
+  }
+  for (const attempt of attempts.filter((a) => a.exam === exam)) {
+    const missed = new Set(attempt.missedIds);
+    const sure = new Set(attempt.sureIds ?? []);
+    const guessed = new Set(attempt.guessedIds ?? []);
+    for (const id of attempt.questionIds ?? []) {
+      const sureWrong = sure.has(id) && missed.has(id);
+      const guessRight = guessed.has(id) && !missed.has(id);
+      if (!sureWrong && !guessRight) continue;
+      const drawnFor = attempt.objectiveByQuestion?.[id];
+      for (const objectiveId of drawnFor ? [drawnFor] : objectivesFor.get(id) ?? []) {
+        const c = counts.get(objectiveId) ?? { sureWrong: 0, guessRight: 0 };
+        if (sureWrong) c.sureWrong += 1;
+        if (guessRight) c.guessRight += 1;
+        counts.set(objectiveId, c);
+      }
+    }
+  }
+  return counts;
+}

@@ -218,3 +218,15 @@ test('a targeted draft takes about 60% from the chosen objectives and a retest t
   assert.equal(retest.every((x) => inFocus.has(x.questionId)), true);
   assert.equal(draftFocused(p, 15, mulberry32(3), { objectiveIds: ['9.9'] }).length, 15);
 });
+
+test('due review questions are taken first, and the rest of the test is still a full weighted draft', () => {
+  const p = pool('220-1202');
+  const ids = p.domains.flatMap((d) => d.objectives.flatMap((o) => o.questionIds));
+  const due = [ids[0], ids[40], ids[120]];
+  const draft = draftTest(p, 15, mulberry32(4), { priority: due });
+  assert.equal(draft.length, 15);
+  assert.equal(new Set(draft.map((x) => x.questionId)).size, 15);
+  for (const id of due) assert.equal(draft.some((x) => x.questionId === id), true);
+  const focused = draftFocused(p, 15, mulberry32(4), { objectiveIds: ['2.3'], priority: due });
+  for (const id of due) assert.equal(focused.some((x) => x.questionId === id), true);
+});

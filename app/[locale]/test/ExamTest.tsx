@@ -13,7 +13,7 @@ import {
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { getProgressSnapshot, getServerProgressSnapshot, recordMock, recordQuiz, subscribeProgress, type MockAttempt } from "@/lib/progress";
-import { objectiveStats, weakestObjectives } from "@/lib/weakness";
+import { dueReviews, objectiveStats, weakestObjectives } from "@/lib/weakness";
 import { evaluateReadiness } from "@/lib/readiness";
 import type { Question } from "@/lib/types";
 
@@ -21,6 +21,9 @@ const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as c
 type ExamCode = (typeof examCodes)[number];
 type Phase = "setup" | "running" | "done";
 type RunKind = "standard" | "targeted" | "retest";
+type Confidence = "sure" | "guess";
+/** At most this many due missed questions go into one sitting. */
+const DUE_PER_TEST = 5;
 export type LabLink = { file: string; title: string };
 /** A retest after a test: five questions on the objectives just missed. */
 const RETEST_QUESTIONS = 5;
@@ -47,6 +50,11 @@ const card = "rounded-2xl border border-slate-700 bg-slate-900/60 p-5";
 const primary = "inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300";
 const secondary = "inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-teal-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300";
 
+/** Wall-clock time, read in event handlers only. */
+function nowMs() {
+  return Date.now();
+}
+
 function formatClock(totalSeconds: number) {
   const s = Math.max(0, Math.ceil(totalSeconds));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -62,6 +70,29 @@ function StatMini({ label, value }: { label: string; value: string }) {
     <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3">
       <dt className="text-xs uppercase tracking-wide text-slate-400">{label}</dt>
       <dd className="mt-1 font-mono text-lg text-white">{value}</dd>
+    </div>
+  );
+}
+
+/** Questions answered right while marked "guessing": correct, but worth locking in. */
+function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks: TestPick[]; heading: string; intro: string; ruleLabel: string; notesLabel: (title: string) => string }) {
+  return (
+    <div className="mt-4">
+      <h3 className="font-medium text-white">{heading}</h3>
+      <p className="mt-1 text-sm text-slate-300">{intro}</p>
+      <ul className="mt-2 space-y-3">
+        {picks.map((p) => {
+          const q = questionsById[p.questionId];
+          const topic = getTopic(q.topicId);
+          return (
+            <li key={p.questionId} className="rounded-xl border border-violet-900/70 bg-slate-950/50 p-4 text-sm">
+              <p className="text-slate-400"><span className="font-mono text-teal-300">{p.objectiveId}</span> {q.prompt}</p>
+              <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{ruleLabel}</span> {ruleText(q.explanation)}</p>
+              {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{notesLabel(topic.title)}</Link>}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -86,6 +117,11 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
   const [missedOnly, setMissedOnly] = useState(true);
   const [announce, setAnnounce] = useState("");
   const [mockHistory, setMockHistory] = useState<MockAttempt[]>([]);
+  const [confidence, setConfidence] = useState<Record<string, Confidence>>({});
+  const confidenceRef = useRef<Record<string, Confidence>>({});
+  const [dueIds, setDueIds] = useState<string[]>([]);
+  // Read the clock once per mount so the due count stays stable while rendering.
+  const [now] = useState(nowMs);
 
   const pool = useMemo(() => buildExamPool({ objectives: matrix, questions, topics, examCode: exam }), [exam]);
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
@@ -93,6 +129,7 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
   const validFocus = useMemo(() => initialFocus.filter((id) => stats.some((s) => s.id === id)), [initialFocus, stats]);
   const focusObjectives = validFocus.length > 0 ? stats.filter((s) => validFocus.includes(s.id)) : weakestObjectives(stats);
   const focusIds = focusObjectives.map((s) => s.id);
+  const dueCount = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
   const requested = questionsForLength(exam, lengthId);
@@ -112,6 +149,15 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
   const [reviewing, setReviewing] = useState(false);
   const warnedIndex = useRef(-1);
   const headingRef = useRef<HTMLHeadingElement>(null);
+
+  const rate = useCallback((questionId: string, level: Confidence) => {
+    const prev = confidenceRef.current;
+    const next = { ...prev };
+    if (prev[questionId] === level) delete next[questionId];
+    else next[questionId] = level;
+    confidenceRef.current = next;
+    setConfidence(next);
+  }, []);
 
   const choose = useCallback((next: number[]) => {
     selectedRef.current = next;
@@ -159,11 +205,13 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
       multiQuestionIds: multiPicks.filter(p => visited.current.has(p.questionId)).map(p => p.questionId),
       bankVersion: assessmentVersion(pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
       missedIds: missed,
+      sureIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "sure"),
+      guessedIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "guess"),
     });
     setMockHistory(next.mockAttempts);
     setPhase("done");
     setConfirmEnd(false);
-  }, [exam, pool]);
+  }, [exam, pool, setPhase]);
 
   const navigate = useCallback((nextIndex: number) => {
     const next = Math.max(0, Math.min(picks.length - 1, nextIndex));
@@ -220,12 +268,15 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
     const onKey = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const n = Number(event.key);
+      const key = event.key.toLowerCase();
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
       if (Number.isInteger(n) && n >= 1 && n <= current.choices.length) { event.preventDefault(); toggle(orders[current.id]?.[n - 1] ?? n - 1); }
+      else if (key === "s" || key === "g") { event.preventDefault(); rate(current.id, key === "s" ? "sure" : "guess"); }
       else if (event.key === "Enter" && selectedRef.current.length > 0 && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); lockIn(); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, current, toggle, lockIn, orders, reviewing]);
+  }, [phase, current, toggle, lockIn, orders, reviewing, rate]);
 
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
@@ -234,11 +285,18 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
       .filter((attempt) => attempt.exam === exam)
       .reverse()
       .flatMap((attempt) => attempt.questionIds ?? []);
+    // Missed questions whose 1-day or 3-day review is due go in first.
+    const due = dueReviews(getProgressSnapshot().mockAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
+    const priority = due.map((d) => d.questionId);
+    const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
     const draft = kind === "standard" || objectiveIds.length === 0
-      ? draftTest(pool, requested, Math.random, { history })
+      ? draftTest(pool, requested, Math.random, { history, priority, objectiveFor })
       : kind === "targeted"
-        ? draftFocused(pool, requested, Math.random, { history, objectiveIds, share: validFocus.length > 0 ? 1 : 0.6 })
-        : draftFocused(pool, RETEST_QUESTIONS, Math.random, { history, objectiveIds, share: 1 });
+        ? draftFocused(pool, requested, Math.random, { history, objectiveIds, share: validFocus.length > 0 ? 1 : 0.6, priority, objectiveFor })
+        : draftFocused(pool, RETEST_QUESTIONS, Math.random, { history, objectiveIds, share: 1, priority, objectiveFor });
+    setDueIds(priority.filter((id) => draft.some((p) => p.questionId === id)));
+    confidenceRef.current = {};
+    setConfidence({});
     setRunInfo({ kind: objectiveIds.length === 0 ? "standard" : kind, objectiveIds: kind === "standard" ? [] : objectiveIds });
     setPicks(draft);
     setIndex(0);
@@ -379,6 +437,11 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
           </ul>
         </section>
 
+        {dueCount > 0 && (
+          <p className="rounded-xl border border-violet-400/40 bg-violet-400/10 p-3 text-sm text-violet-100">
+            {t("dueLine", { count: dueCount, perTest: Math.min(dueCount, DUE_PER_TEST) })}
+          </p>
+        )}
         <button type="button" onClick={() => start()} disabled={planned === 0} className={primary}>
           {t("startTest", { count: planned })}
         </button>
@@ -415,6 +478,9 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
           <div className="mt-3 flex flex-wrap gap-2">{picks.map((pick, i) => <button key={pick.questionId} type="button" className={secondary} onClick={() => navigate(i)}>{i + 1} · {responses[pick.questionId]?.answer === undefined ? t("unanswered") : t("answered")}{flags.includes(pick.questionId) ? " ⚑" : ""}</button>)}</div>
           <button type="button" className={`${primary} mt-4`} onClick={() => finish(responsesRef.current, picks)}>{t("scoreAll")}</button>
         </section> : <>
+        {dueIds.includes(current.id) && (
+          <p className="w-fit rounded-full border border-violet-400/50 bg-violet-400/10 px-3 py-1 text-xs font-medium text-violet-100">{t("dueBadge")}</p>
+        )}
         <h2 ref={headingRef} tabIndex={-1} className="text-xl font-medium text-white focus:outline-none">{current.prompt}</h2>
         <ul className="space-y-2" aria-label={t("choices")}>
           {(orders[current.id] ?? current.choices.map((_, i) => i)).map((choiceIndex, displayIndex) => {
@@ -431,6 +497,17 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
             );
           })}
         </ul>
+        <div role="group" aria-labelledby="confidence-label" className="flex flex-wrap items-center gap-2">
+          <span id="confidence-label" className="text-sm text-slate-300">{t("confidenceLabel")}</span>
+          {(["sure", "guess"] as const).map((level) => (
+            <button key={level} type="button" aria-pressed={confidence[current.id] === level} onClick={() => rate(current.id, level)}
+              aria-keyshortcuts={level === "sure" ? "S" : "G"}
+              className={`${secondary} ${confidence[current.id] === level ? (level === "sure" ? "border-emerald-400 bg-emerald-950/50" : "border-violet-400 bg-violet-950/50") : ""}`}>
+              {level === "sure" ? t("confidenceSure") : t("confidenceGuess")}
+            </button>
+          ))}
+          <span className="text-xs text-slate-400">{t("confidenceKeys")}</span>
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={lockIn} className={primary}>
             {index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
@@ -479,7 +556,9 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
     map.set(key, [...(map.get(key) ?? []), p]);
     return map;
   }, new Map<string, TestPick[]>())];
+  const luckyPicks = scored.filter((p) => confidence[p.questionId] === "guess" && isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const missedObjectiveIds = missedByObjective.map(([id]) => id);
+  const retestObjectiveIds = [...new Set([...missedObjectiveIds, ...luckyPicks.map((p) => p.objectiveId)])];
 
   return (
     <div className="space-y-6">
@@ -526,6 +605,9 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
                         return (
                           <li key={p.questionId} className="text-sm">
                             <p className="text-slate-400">{q.prompt}</p>
+                            {confidence[p.questionId] === "sure" && (
+                              <p className="mt-1 w-fit rounded-full border border-rose-400/50 bg-rose-400/10 px-3 py-0.5 text-xs font-medium text-rose-100">{t("sureWrongBadge")}</p>
+                            )}
                             <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{t("fixRule")}</span> {ruleText(q.explanation)}</p>
                             <div className="mt-1 flex flex-wrap gap-x-4">
                               {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("fixNotes", { title: topic.title })}</Link>}
@@ -539,10 +621,15 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
                 );
               })}
             </ol>
-            <button type="button" onClick={() => start("retest", missedObjectiveIds)} className={`${primary} mt-4`}>
-              {t("fixRetest", { count: RETEST_QUESTIONS, minutes: Math.max(1, Math.round(sessionDurationSeconds(exam, RETEST_QUESTIONS) / 60)) })}
-            </button>
           </>
+        )}
+        {luckyPicks.length > 0 && (
+          <LuckyGuesses picks={luckyPicks} heading={t("luckyHeading", { count: luckyPicks.length })} intro={t("luckyIntro")} ruleLabel={t("fixRule")} notesLabel={(title) => t("fixNotes", { title })} />
+        )}
+        {retestObjectiveIds.length > 0 && (
+          <button type="button" onClick={() => start("retest", retestObjectiveIds)} className={`${primary} mt-4`}>
+            {t("fixRetest", { count: RETEST_QUESTIONS, minutes: Math.max(1, Math.round(sessionDurationSeconds(exam, RETEST_QUESTIONS) / 60)) })}
+          </button>
         )}
         <Link href={`/scorecard?exam=${exam}`} className="mt-3 block w-fit text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("scorecardLink")}</Link>
       </section>
