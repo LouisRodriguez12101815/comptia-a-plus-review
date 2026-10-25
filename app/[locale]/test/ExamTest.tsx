@@ -12,7 +12,7 @@ import {
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
-import { recordMock, recordQuiz, type MockAttempt } from "@/lib/progress";
+import { getProgressSnapshot, recordMock, recordQuiz, type MockAttempt } from "@/lib/progress";
 import { evaluateReadiness } from "@/lib/readiness";
 import type { Question } from "@/lib/types";
 
@@ -208,7 +208,12 @@ export function ExamTest({ initialExam }: { initialExam?: ExamCode }) {
 
   function start() {
     completed.current = false;
-    const draft = draftTest(pool, requested);
+    // Earlier sittings for this exam, oldest first, so unseen questions come up first.
+    const history = getProgressSnapshot().mockAttempts
+      .filter((attempt) => attempt.exam === exam)
+      .reverse()
+      .flatMap((attempt) => attempt.questionIds ?? []);
+    const draft = draftTest(pool, requested, Math.random, { history });
     setPicks(draft);
     setIndex(0);
     choose([]);
