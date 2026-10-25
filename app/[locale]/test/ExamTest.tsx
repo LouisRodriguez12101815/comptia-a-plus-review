@@ -15,18 +15,21 @@ import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { getProgressSnapshot, getServerProgressSnapshot, recordMock, recordQuiz, subscribeProgress, type MockAttempt } from "@/lib/progress";
 import { dueReviews, objectiveStats, weakestObjectives } from "@/lib/weakness";
 import { evaluateReadiness } from "@/lib/readiness";
+import { confusionFor, pairFromKey } from "@/lib/confusions";
+import { LookAlike } from "@/app/components/LookAlike";
 import type { Question } from "@/lib/types";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
 type Phase = "setup" | "running" | "done";
-type RunKind = "standard" | "targeted" | "retest";
+type RunKind = "standard" | "targeted" | "retest" | "drill";
 type Confidence = "sure" | "guess";
 /** At most this many due missed questions go into one sitting. */
 const DUE_PER_TEST = 5;
 export type LabLink = { file: string; title: string };
 /** A retest after a test: five questions on the objectives just missed. */
 const RETEST_QUESTIONS = 5;
+const NO_IDS: string[] = [];
 
 /** Strips the leading "Objective 1.2." label some explanations start with. */
 function ruleText(explanation: string) {
@@ -74,6 +77,17 @@ function StatMini({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** What was picked on a missed question, and the look-alike pair when there is one. */
+function FixPick({ question, picked, pickedLine, noAnswer, answerLabel, pickedLabel }: { question: Question; picked: number | number[] | undefined; pickedLine: (answer: string) => string; noAnswer: string; answerLabel: string; pickedLabel: string }) {
+  const pair = typeof picked === "number" ? confusionFor(question, picked) : undefined;
+  return (
+    <>
+      <p className="mt-1 text-slate-300">{pickedLine(answerText(question, picked, noAnswer))}</p>
+      {pair && <LookAlike answer={pair.answer.term} picked={pair.picked.term} answerLabel={answerLabel} pickedLabel={pickedLabel} />}
+    </>
+  );
+}
+
 /** Questions answered right while marked "guessing": correct, but worth locking in. */
 function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks: TestPick[]; heading: string; intro: string; ruleLabel: string; notesLabel: (title: string) => string }) {
   return (
@@ -97,7 +111,7 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
   );
 }
 
-export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: { initialExam?: ExamCode; initialFocus?: string[]; labsByTopic?: Record<string, LabLink[]> }) {
+export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {} }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]> }) {
   const t = useTranslations("examTest");
   const [exam, setExam] = useState<ExamCode>(initialExam ?? "220-1201");
   const [lengthId, setLengthId] = useState(initialFocus.length > 0 ? "quick" : "full");
@@ -129,6 +143,12 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
   const validFocus = useMemo(() => initialFocus.filter((id) => stats.some((s) => s.id === id)), [initialFocus, stats]);
   const focusObjectives = validFocus.length > 0 ? stats.filter((s) => validFocus.includes(s.id)) : weakestObjectives(stats);
   const focusIds = focusObjectives.map((s) => s.id);
+  // ?drill=ids&pair=key from the scorecard: a short test on one look-alike pair.
+  const drillIds = useMemo(() => {
+    const inPool = new Set(pool.domains.flatMap((d) => d.objectives.flatMap((o) => o.questionIds)));
+    return initialDrill.filter((id, i) => inPool.has(id) && initialDrill.indexOf(id) === i);
+  }, [initialDrill, pool]);
+  const drillTerms = drillPair ? pairFromKey(drillPair) : undefined;
   const dueCount = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
@@ -207,6 +227,10 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
       missedIds: missed,
       sureIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "sure"),
       guessedIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "guess"),
+      wrongChoices: Object.fromEntries(missed.flatMap((id) => {
+        const answer = finalResponses[id]?.answer;
+        return typeof answer === "number" && !Array.isArray(questionsById[id].answer) ? [[id, answer]] : [];
+      })),
     });
     setMockHistory(next.mockAttempts);
     setPhase("done");
@@ -286,10 +310,12 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
       .reverse()
       .flatMap((attempt) => attempt.questionIds ?? []);
     // Missed questions whose 1-day or 3-day review is due go in first.
-    const due = dueReviews(getProgressSnapshot().mockAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
+    const due = kind === "drill" ? [] : dueReviews(getProgressSnapshot().mockAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
     const priority = due.map((d) => d.questionId);
     const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
-    const draft = kind === "standard" || objectiveIds.length === 0
+    const draft = kind === "drill"
+      ? draftTest(pool, drillIds.length, Math.random, { priority: drillIds })
+      : kind === "standard" || objectiveIds.length === 0
       ? draftTest(pool, requested, Math.random, { history, priority, objectiveFor })
       : kind === "targeted"
         ? draftFocused(pool, requested, Math.random, { history, objectiveIds, share: validFocus.length > 0 ? 1 : 0.6, priority, objectiveFor })
@@ -297,7 +323,7 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
     setDueIds(priority.filter((id) => draft.some((p) => p.questionId === id)));
     confidenceRef.current = {};
     setConfidence({});
-    setRunInfo({ kind: objectiveIds.length === 0 ? "standard" : kind, objectiveIds: kind === "standard" ? [] : objectiveIds });
+    setRunInfo(kind === "drill" ? { kind, objectiveIds: [] } : { kind: objectiveIds.length === 0 ? "standard" : kind, objectiveIds: kind === "standard" ? [] : objectiveIds });
     setPicks(draft);
     setIndex(0);
     choose([]);
@@ -318,6 +344,16 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
     const empty = pool.domains.filter((d) => d.available === 0);
     return (
       <div className="space-y-6">
+        {drillIds.length > 0 && (
+          <section className={`${card} border-violet-400/50`} aria-labelledby="drill-heading">
+            <h2 id="drill-heading" className="text-lg font-semibold text-white">{t("drillHeading")}</h2>
+            <p className="mt-1 text-sm text-slate-300">
+              {drillTerms ? t("drillIntroPair", { count: drillIds.length, answer: drillTerms.answer.label, picked: drillTerms.picked.label }) : t("drillIntro", { count: drillIds.length })}
+            </p>
+            {drillTerms && <LookAlike answer={drillTerms.answer} picked={drillTerms.picked} answerLabel={t("lookAlikeAnswer")} pickedLabel={t("lookAlikePicked")} />}
+            <button type="button" onClick={() => start("drill")} className={`${primary} mt-4`}>{t("drillStart", { count: drillIds.length })}</button>
+          </section>
+        )}
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("certification")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
@@ -608,6 +644,7 @@ export function ExamTest({ initialExam, initialFocus = [], labsByTopic = {} }: {
                             {confidence[p.questionId] === "sure" && (
                               <p className="mt-1 w-fit rounded-full border border-rose-400/50 bg-rose-400/10 px-3 py-0.5 text-xs font-medium text-rose-100">{t("sureWrongBadge")}</p>
                             )}
+                            <FixPick question={q} picked={responses[p.questionId]?.answer} pickedLine={(answer) => t("fixPicked", { answer })} noAnswer={t("noAnswer")} answerLabel={t("lookAlikeAnswer")} pickedLabel={t("lookAlikePicked")} />
                             <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{t("fixRule")}</span> {ruleText(q.explanation)}</p>
                             <div className="mt-1 flex flex-wrap gap-x-4">
                               {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("fixNotes", { title: topic.title })}</Link>}
