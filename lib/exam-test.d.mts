@@ -24,7 +24,8 @@ export function buildExamPool(input: {
   examCode: string;
 }): ExamPool;
 export function allocateByWeight(domains: PoolDomain[], total: number): Record<string, number>;
-export function draftTest(pool: ExamPool, requested: number, rng?: () => number): TestPick[];
+/** `history`: question ids from earlier sittings, oldest first. Unseen questions are drawn first. */
+export function draftTest(pool: ExamPool, requested: number, rng?: () => number, options?: { history?: readonly string[] }): TestPick[];
 export function isCorrect(question: { answer: number | number[] }, pick: Pick): boolean;
 export function gradeTest(input: {
   pool: ExamPool;

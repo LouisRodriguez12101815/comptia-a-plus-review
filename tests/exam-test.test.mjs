@@ -189,3 +189,12 @@ test('readiness blocks narrow repeated-question exposure', () => {
   assert.equal(result.status, 'not-ready');
   assert.ok(result.blockers.some((item) => item.includes('question bank')));
 });
+
+test('earlier sittings are drawn last, so a quick check rotates through the bank', () => {
+  const p = pool('220-1202');
+  const first = draftTest(p, 15, mulberry32(11));
+  const seen = first.map((pick) => pick.questionId);
+  const second = draftTest(p, 15, mulberry32(12), { history: seen });
+  assert.equal(second.filter((pick) => seen.includes(pick.questionId)).length, 0);
+  assert.deepEqual(draftTest(p, 15, mulberry32(42), { history: [] }), draftTest(p, 15, mulberry32(42)));
+});
