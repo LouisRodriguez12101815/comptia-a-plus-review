@@ -8,6 +8,8 @@ import { questions, topics } from "@/lib/content";
 import { buildExamPool } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
+import { confusionPairs, drillQuestionIds } from "@/lib/confusions";
+import { LookAlike } from "@/app/components/LookAlike";
 import { confidenceByObjective, dueReviews, objectiveStats, weakestObjectives, type ObjectiveStat } from "@/lib/weakness";
 
 const statusStyle: Record<ObjectiveStat["status"], string> = {
@@ -41,6 +43,12 @@ export function Scorecard({ exam }: { exam: string }) {
   const confidence = useMemo(() => confidenceByObjective(pool, progress.mockAttempts, exam), [pool, progress.mockAttempts, exam]);
   const [now] = useState(() => Date.now());
   const due = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
+  const pairs = useMemo(() => {
+    const byId = Object.fromEntries(questions.map((q) => [q.id, q]));
+    const inPool = new Set(pool.domains.flatMap((d) => d.objectives.flatMap((o) => o.questionIds)));
+    const bank = questions.filter((q) => inPool.has(q.id));
+    return confusionPairs(progress.mockAttempts, exam, byId).slice(0, 8).map((pair) => ({ ...pair, drill: drillQuestionIds(pair, bank) }));
+  }, [pool, progress.mockAttempts, exam]);
   const totals = [...confidence.values()].reduce((acc, c) => ({ sureWrong: acc.sureWrong + c.sureWrong, guessRight: acc.guessRight + c.guessRight }), { sureWrong: 0, guessRight: 0 });
 
   return (
@@ -64,6 +72,30 @@ export function Scorecard({ exam }: { exam: string }) {
           </Link>
         ) : (
           <p className="mt-4 text-sm text-slate-400">{t("noWeakYet")}</p>
+        )}
+      </section>
+
+      <section className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5" aria-labelledby="lookalike-heading">
+        <h2 id="lookalike-heading" className="text-lg font-semibold text-white">{t("lookAlikeHeading")}</h2>
+        {pairs.length === 0 ? (
+          <p className="mt-1 text-sm text-slate-400">{t("lookAlikeNone")}</p>
+        ) : (
+          <>
+            <p className="mt-1 text-sm text-slate-300">{t("lookAlikeIntro")}</p>
+            <ol className="mt-3 space-y-4">
+              {pairs.map((pair) => (
+                <li key={pair.key} className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+                  <p className="text-sm text-slate-100">
+                    <span className="font-medium text-white">{pair.group.title}</span> · {t("lookAlikeCount", { count: pair.count, picked: pair.picked.label, answer: pair.answer.label })}
+                  </p>
+                  <LookAlike answer={pair.answer} picked={pair.picked} answerLabel={t("lookAlikeAnswer")} pickedLabel={t("lookAlikePicked")} />
+                  <Link href={`/test?exam=${exam}&drill=${pair.drill.join(",")}&pair=${encodeURIComponent(pair.key)}`} className="mt-2 inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">
+                    {t("lookAlikeDrill", { count: pair.drill.length })}<span className="sr-only"> {pair.answer.label} / {pair.picked.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </>
         )}
       </section>
 

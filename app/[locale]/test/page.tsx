@@ -20,10 +20,13 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("testPage");
-  const { exam, focus } = await searchParams;
+  const { exam, focus, drill, pair } = await searchParams;
   const initialExam = examCodes.includes(exam as ExamCode) ? (exam as ExamCode) : undefined;
   // ?focus=2.3,3.4 starts a test on those objectives (from the scorecard).
   const initialFocus = (typeof focus === "string" ? focus.split(",") : []).filter((id) => /^\d+\.\d+$/.test(id)).slice(0, 10);
+  // ?drill=id,id&pair=group:a>b runs a short test on one look-alike pair (from the scorecard).
+  const initialDrill = (typeof drill === "string" ? drill.split(",") : []).filter((id) => /^[\w-]+$/.test(id)).slice(0, 12);
+  const drillPair = typeof pair === "string" && /^[\w-]+:[\w-]+>[\w-]+$/.test(pair) ? pair : undefined;
   // Only the exam-style labs cross to the client, keyed by topic, for the Fix it links.
   const labsByTopic: Record<string, LabLink[]> = Object.fromEntries(
     Object.entries(visuals as Record<string, { file: string; title: string; group: string }[]>)
@@ -43,7 +46,7 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
           })}
         </p>
       </header>
-      <ExamTest initialExam={initialExam} initialFocus={initialFocus} labsByTopic={labsByTopic} />
+      <ExamTest initialExam={initialExam} initialFocus={initialFocus} initialDrill={initialDrill} drillPair={drillPair} labsByTopic={labsByTopic} />
     </div>
   );
 }

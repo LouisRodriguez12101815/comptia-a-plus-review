@@ -38,6 +38,8 @@ export type MockAttempt = {
   /** Questions the learner marked as sure or as a guess before answering. */
   sureIds?: string[];
   guessedIds?: string[];
+  /** The wrong choice picked (authored index) for each missed single-answer question. */
+  wrongChoices?: Record<string, number>;
   missedIds: string[];
   at: number;
 };
@@ -119,6 +121,7 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")))
     && (value.objectiveByQuestion === undefined || (isRecord(value.objectiveByQuestion) && Object.values(value.objectiveByQuestion).every((id) => typeof id === "string")))
     && [value.sureIds, value.guessedIds].every((ids) => ids === undefined || (Array.isArray(ids) && ids.every((id) => typeof id === "string")))
+    && (value.wrongChoices === undefined || (isRecord(value.wrongChoices) && Object.values(value.wrongChoices).every((n) => Number.isInteger(n) && (n as number) >= 0)))
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
