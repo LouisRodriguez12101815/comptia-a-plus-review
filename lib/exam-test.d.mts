@@ -24,6 +24,8 @@ export function buildExamPool(input: {
   examCode: string;
 }): ExamPool;
 export function allocateByWeight(domains: PoolDomain[], total: number): Record<string, number>;
+/** Unseen ids first, then the ones seen longest ago. `history` lists ids oldest first. */
+export function freshFirstIds(ids: readonly string[], history?: readonly string[], rng?: () => number): string[];
 /** `history`: question ids from earlier sittings, oldest first. Unseen questions are drawn first. */
 export function draftTest(pool: ExamPool, requested: number, rng?: () => number, options?: { history?: readonly string[] }): TestPick[];
 export function isCorrect(question: { answer: number | number[] }, pick: Pick): boolean;

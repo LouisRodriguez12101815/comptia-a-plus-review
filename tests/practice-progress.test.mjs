@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseProgress } from '../lib/progress.ts';
+import { parseProgress, questionHistory } from '../lib/progress.ts';
 
 const good = { studyFocus: 'all', knownCards: { a: true }, unknownCards: { b: true }, quizAttempts: [{ topicId: 't', correct: 3, total: 4, missedIds: ['q1'], at: 1 }], schedules: {} };
 
@@ -41,4 +41,18 @@ test('Class 10: older saves missing newer fields load cleanly', () => {
   const r = parseProgress(JSON.stringify({ studyFocus: 'all', knownCards: {}, unknownCards: {}, quizAttempts: [] }));
   assert.deepEqual(r.problems, []);
   assert.deepEqual(r.progress.schedules, {});
+});
+
+test('quiz attempts keep their question ids, and history lists them oldest sitting first', () => {
+  const saved = {
+    ...good,
+    quizAttempts: [
+      { topicId: 't', correct: 1, total: 2, questionIds: ['q3', 'q4'], missedIds: ['q4'], at: 30 },
+      { topicId: 't', correct: 1, total: 1, missedIds: [], at: 10 },
+    ],
+    mockAttempts: [{ exam: '220-1202', full: false, correct: 1, total: 2, percent: 50, domains: [], multiCorrect: 0, multiTotal: 0, questionIds: ['q1', 'q2'], missedIds: ['q2'], at: 20 }],
+  };
+  const { progress, problems } = parseProgress(JSON.stringify(saved));
+  assert.deepEqual(problems, []);
+  assert.deepEqual(questionHistory(progress), ['q1', 'q2', 'q3', 'q4']);
 });

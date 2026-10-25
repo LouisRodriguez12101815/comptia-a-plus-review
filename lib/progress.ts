@@ -6,6 +6,8 @@ export type QuizAttempt = {
   topicId: string;
   correct: number;
   total: number;
+  /** Question IDs shown in this quiz. Older saved attempts may not have this field. */
+  questionIds?: string[];
   missedIds: string[];
   at: number;
 };
@@ -80,7 +82,21 @@ function flags(value: unknown): { value: Record<string, boolean>; repaired: bool
 
 function isAttempt(value: unknown): value is QuizAttempt {
   return isRecord(value) && typeof value.topicId === "string" && Number.isFinite(value.correct) && Number.isFinite(value.total)
-    && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at);
+    && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at)
+    && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")));
+}
+
+/**
+ * Question IDs from saved quizzes and timed tests, oldest sitting first, so a new
+ * quiz can show questions that have not been seen yet.
+ */
+export function questionHistory(progress: Progress): string[] {
+  return [
+    ...progress.quizAttempts.map((attempt) => ({ at: attempt.at, ids: attempt.questionIds ?? [] })),
+    ...progress.mockAttempts.map((attempt) => ({ at: attempt.at, ids: attempt.questionIds ?? [] })),
+  ]
+    .sort((a, b) => a.at - b.at)
+    .flatMap((entry) => entry.ids);
 }
 
 function isMockDomain(value: unknown): value is MockDomainResult {

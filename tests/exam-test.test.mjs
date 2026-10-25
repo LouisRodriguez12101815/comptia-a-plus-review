@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftTest,
+  EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftTest, freshFirstIds,
   gradeTest, isCorrect, mulberry32, questionsForLength, secondsPerQuestion,
 } from '../lib/exam-test.mjs';
 import { evaluateReadiness } from '../lib/readiness.ts';
@@ -197,4 +197,10 @@ test('earlier sittings are drawn last, so a quick check rotates through the bank
   const second = draftTest(p, 15, mulberry32(12), { history: seen });
   assert.equal(second.filter((pick) => seen.includes(pick.questionId)).length, 0);
   assert.deepEqual(draftTest(p, 15, mulberry32(42), { history: [] }), draftTest(p, 15, mulberry32(42)));
+});
+
+test('freshFirstIds puts unseen ids first, then the ones seen longest ago', () => {
+  const order = freshFirstIds(['a', 'b', 'c', 'd'], ['c', 'a'], mulberry32(5));
+  assert.deepEqual(order.slice(0, 2).sort(), ['b', 'd']);
+  assert.deepEqual(order.slice(2), ['c', 'a']);
 });
