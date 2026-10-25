@@ -98,8 +98,9 @@ A video's captions show what a course covers and where the site has gaps. The tr
 2. Save the captions only, never the video, into sources/private/videos. Git ignores that folder.
 3. Turn the captions into a timestamped notes file with scripts/video-captions-to-notes.mjs.
 4. Read each notes file against the 220-1202 objectives. Fill in what it teaches, unclear passages and possible objective mappings, and check technical claims against primary documentation.
-5. Write original notes, questions, flashcards or labs in the content files. Never copy a video's questions or wording.
-6. Run the content checks, change the video's status in the log to Reviewed or Used, and open a pull request.
+5. Find the gaps: count how often each objective's terms appear in the notes files and in the site's notes, questions and flashcards. Terms the videos teach that the site mentions once or not at all are the gaps to write for.
+6. Write original notes, questions, flashcards or labs in the content files. Never copy a video's questions or wording.
+7. Run the content checks, change the video's status in the log to Reviewed or Used, and open a pull request.
 
 **Terminal commands (run from the repository folder on your Mac)**
 
@@ -133,17 +134,25 @@ git status --short
 
 | Video | Status | Decision and notes |
 | --- | --- | --- |
-| CompTIA A+ Core 2 (220-1202) Last-Minute Study Guide (youtu.be/X-e69rphM9A) | Queued | Use to find gaps across all four domains. |
-| CompTIA A+ 220-1202 (Core 2) Certification Full Course (youtu.be/hOH_J_umEqU) | Queued | Use to find gaps. Long, so review one domain at a time. |
-| 100 A+ Core 2 Practice Questions, Exam 220-1202 (youtu.be/KisYdBWOsy0) | Queued | Topics only. Write original questions; do not copy its questions. |
-| A+ Core 2 Exam Practice Questions (youtu.be/1pMLPirjD4Q) | Queued | Topics only. Write original questions. |
-| CompTIA A+ Core 2 Online Quiz (youtu.be/MEr5RjYDbDk) | Queued | Topics only. Write original questions. |
+| CompTIA A+ Core 2 (220-1202) Last-Minute Study Guide (youtu.be/X-e69rphM9A) | Gap check done | Use to find gaps across all four domains. |
+| CompTIA A+ 220-1202 (Core 2) Certification Full Course (youtu.be/hOH_J_umEqU) | Gap check done | Use to find gaps. Long, so review one domain at a time. |
+| 100 A+ Core 2 Practice Questions, Exam 220-1202 (youtu.be/KisYdBWOsy0) | Skipped for now | Topics only. Write original questions; do not copy its questions. Captions could not be saved because YouTube rate-limited the requests (HTTP 429). |
+| A+ Core 2 Exam Practice Questions (youtu.be/1pMLPirjD4Q) | Gap check done | Topics only. Write original questions. |
+| CompTIA A+ Core 2 Online Quiz (youtu.be/MEr5RjYDbDk) | Gap check done | Topics only. Write original questions. |
 | CompTIA A+ Core 2 Real Exam Questions (youtu.be/9i8ZoSzHGI0) | Excluded | The title claims to show real exam questions. Not used, because CompTIA forbids using actual exam content. |
-| CompTIA A+ Core 2 quiz (youtu.be/u64PW3KUQAw) | Queued | Topics only. Write original questions. |
-| CompTIA A+ Core 2 (220-1102) Practice Test 2026 (youtu.be/tQKq4uCbVKc) | Queued | Older exam version (220-1102). Check every point against the 220-1202 objectives before using it. |
-| CompTIA A+ 1202 practice performance-based question, part 1 (youtu.be/mo3NPMBxurM) | Queued | Compare with the site's exam-style labs. Build original labs for any gap. |
-| CompTIA A+ 1202 practice performance-based question, part 2 (youtu.be/fVNFqHStgSA) | Queued | Compare with the site's exam-style labs. |
-| CompTIA A+ 1202 practice performance-based question, part 3 (youtu.be/D2uIiYOFzRI) | Queued | Compare with the site's exam-style labs. |
+| CompTIA A+ Core 2 quiz (youtu.be/u64PW3KUQAw) | Gap check done | Topics only. Write original questions. |
+| CompTIA A+ Core 2 (220-1102) Practice Test 2026 (youtu.be/tQKq4uCbVKc) | Gap check done | Older exam version (220-1102). Check every point against the 220-1202 objectives before using it. |
+| CompTIA A+ 1202 practice performance-based question, part 1 (youtu.be/mo3NPMBxurM) | Gap check done | Compare with the site's exam-style labs. Build original labs for any gap. |
+| CompTIA A+ 1202 practice performance-based question, part 2 (youtu.be/fVNFqHStgSA) | Skipped for now | Compare with the site's exam-style labs. Captions could not be saved because YouTube rate-limited the requests (HTTP 429). |
+| CompTIA A+ 1202 practice performance-based question, part 3 (youtu.be/D2uIiYOFzRI) | Gap check done | Compare with the site's exam-style labs. |
+
+Ingest log for the Core 2 videos, newest entries last. Add a row each time a step is run.
+
+| Date | Step | Result |
+| --- | --- | --- |
+| 2026-10-24 | Saved captions for the Core 2 videos with yt-dlp and turned them into private notes files. | 8 of 10 saved. 2 were rate-limited and skipped for now. 1 video was excluded before this step. |
+| 2026-10-24 | Gap check: compared how often 600 objective terms appear in the 8 notes files and in the site's notes, questions and flashcards. | 94 terms taught in the videos appeared at most once on the site, and 47 more appeared only two to four times. |
+| 2026-10-24 | Wrote 57 original questions for the gaps: 17 for operating systems, 24 for security, 6 for software troubleshooting and 10 for operational procedures. | Added to content/questions.json. The Core 2 test pool is now 492 questions (223, 175, 86 and 95 by domain). |
 
 <a id="review-and-write"></a>
 
