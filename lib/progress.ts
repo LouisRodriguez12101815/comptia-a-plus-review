@@ -35,6 +35,9 @@ export type MockAttempt = {
   questionIds?: string[];
   /** The objective each question was drawn for. Older saved attempts may not have this field. */
   objectiveByQuestion?: Record<string, string>;
+  /** Questions the learner marked as sure or as a guess before answering. */
+  sureIds?: string[];
+  guessedIds?: string[];
   missedIds: string[];
   at: number;
 };
@@ -115,6 +118,7 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && [value.correctIds, value.multiQuestionIds].every(ids => ids === undefined || (Array.isArray(ids) && ids.every(id => typeof id === "string")))
     && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")))
     && (value.objectiveByQuestion === undefined || (isRecord(value.objectiveByQuestion) && Object.values(value.objectiveByQuestion).every((id) => typeof id === "string")))
+    && [value.sureIds, value.guessedIds].every((ids) => ids === undefined || (Array.isArray(ids) && ids.every((id) => typeof id === "string")))
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 

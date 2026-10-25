@@ -44,3 +44,26 @@ test('a recorded objective per question keeps a shared question from counting to
   const legacy = objectiveStats(shared, [sitting(1, ['a', 'b', 'c'], ['a'])], '220-1202');
   assert.equal(legacy.find((s) => s.id === '2.5').answered, 3);
 });
+
+test('a missed question comes back after 1 day, then after 3 more days, then stops', async () => {
+  const { dueReviews } = await import('../lib/weakness.ts');
+  const day = 86_400_000;
+  const miss = sitting(0, ['a'], ['a']);
+  assert.deepEqual(dueReviews([miss], '220-1202', day - 1), []);
+  assert.deepEqual(dueReviews([miss], '220-1202', day).map((d) => d.questionId), ['a']);
+  const right1 = sitting(day, ['a'], []);
+  assert.deepEqual(dueReviews([miss, right1], '220-1202', day * 3), []);
+  assert.deepEqual(dueReviews([miss, right1], '220-1202', day * 4).map((d) => d.questionId), ['a']);
+  const right2 = sitting(day * 4, ['a'], []);
+  assert.deepEqual(dueReviews([miss, right1, right2], '220-1202', day * 30), []);
+  const missAgain = sitting(day * 4, ['a'], ['a']);
+  assert.equal(dueReviews([miss, right1, missAgain], '220-1202', day * 5).length, 1);
+});
+
+test('sure-but-wrong and right-by-guessing are counted per objective', async () => {
+  const { confidenceByObjective } = await import('../lib/weakness.ts');
+  const attempt = { ...sitting(1, ['a', 'b', 'd'], ['a']), sureIds: ['a', 'd'], guessedIds: ['b'], objectiveByQuestion: { a: '2.3', b: '2.3', d: '2.5' } };
+  const counts = confidenceByObjective(pool, [attempt], '220-1202');
+  assert.deepEqual(counts.get('2.3'), { sureWrong: 1, guessRight: 1 });
+  assert.equal(counts.has('2.5'), false);
+});
