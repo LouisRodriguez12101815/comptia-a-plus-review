@@ -145,6 +145,20 @@ git status --short
 | CompTIA A+ 1202 practice performance-based question, part 1 (youtu.be/mo3NPMBxurM) | Gap check done | Compare with the site's exam-style labs. Build original labs for any gap. |
 | CompTIA A+ 1202 practice performance-based question, part 2 (youtu.be/fVNFqHStgSA) | Skipped for now | Compare with the site's exam-style labs. Captions could not be saved because YouTube rate-limited the requests (HTTP 429). |
 | CompTIA A+ 1202 practice performance-based question, part 3 (youtu.be/D2uIiYOFzRI) | Gap check done | Compare with the site's exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/AS6qs4pDeNM) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/It80myfEFAw) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/uHf2GY43IxY) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/2t7svpz2HZk) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/faf047sdfZs) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/OAZptsBPz5g) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ 1202 PBQ walkthrough (youtu.be/_LibOtVHvVk) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ Core 2 Crash Course in 45 minutes (youtu.be/DeeYoCo3tw0) | Gap check done | Use to find gaps across all four domains. |
+| CompTIA A+ Core 2 Simulation Part 2 (youtu.be/lQNFITgjPRQ) | Gap check done | Gap check done. Used to choose topics for the original exam-style labs. |
+| CompTIA A+ Core 2 (220-1102) PBQ Walkthrough (youtu.be/ves6EkJbZYA) | Gap check done | Older exam version (220-1102). Every point checked against the 220-1202 objectives before use. |
+| CMD Basic File Commands simulation, 220-1102 (youtu.be/n1Ps4sX5tjw) | Gap check done | Older exam version (220-1102). Used for the file and folder command lab topic. |
+| 5 REAL CompTIA A+ Core 2 PBQs (youtu.be/79WmqMxLnjA) | Excluded | The title claims to show real exam questions. Not used, because CompTIA forbids using actual exam content. |
+| 2.1 Compare and contrast TCP and UDP, 220-1201 PBQ (youtu.be/ffrFemv2Wq0) | Queued for Core 1 | Core 1 content, not Core 2. Process with the Core 1 track. |
+| Hardware RAID simulation, 220-1101 (youtu.be/6IC_L1aXjSE) | Queued for Core 1 | Older Core 1 version (220-1101). Process with the Core 1 track and check against 220-1201. |
 
 Ingest log for the Core 2 videos, newest entries last. Add a row each time a step is run.
 
@@ -153,6 +167,10 @@ Ingest log for the Core 2 videos, newest entries last. Add a row each time a ste
 | 2026-10-24 | Saved captions for the Core 2 videos with yt-dlp and turned them into private notes files. | 8 of 10 saved. 2 were rate-limited and skipped for now. 1 video was excluded before this step. |
 | 2026-10-24 | Gap check: compared how often 600 objective terms appear in the 8 notes files and in the site's notes, questions and flashcards. | 94 terms taught in the videos appeared at most once on the site, and 47 more appeared only two to four times. |
 | 2026-10-24 | Wrote 57 original questions for the gaps: 17 for operating systems, 24 for security, 6 for software troubleshooting and 10 for operational procedures. | Added to content/questions.json. The Core 2 test pool is now 492 questions (223, 175, 86 and 95 by domain). |
+| 2026-10-25 | Sorted the second video list: 11 Core 2 videos to use, 2 Core 1 videos queued for that track, and 1 excluded because its title claims real exam questions. | Added all 14 to the video source log. |
+| 2026-10-25 | Saved captions for the 11 Core 2 videos, one caption track each with longer pauses between downloads. | 11 of 11 saved, none rate-limited. |
+| 2026-10-25 | Matched each new notes file to the objectives it covers most and compared those task types with the site's existing exam-style labs. | Found no lab for physical security (2.1), install methods (1.2), file systems and partition styles (1.1, 1.2), wireless authentication (2.3), client network settings (1.7) or file and folder commands (1.5). |
+| 2026-10-25 | Built 6 original exam-style labs for those gaps: 2 matching, 3 settings screens and 1 command prompt. | Added to public/visuals and listed on their Core 2 topics in content/track-visuals.json. |
 
 <a id="review-and-write"></a>
 
