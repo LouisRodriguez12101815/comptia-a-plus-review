@@ -138,3 +138,26 @@ export function confidenceByObjective(pool: ExamPool, attempts: MockAttempt[], e
   }
   return counts;
 }
+
+/**
+ * Weak objectives from saved sittings alone, lowest accuracy first. Uses the
+ * same recent-answers window and thresholds as objectiveStats, but needs no
+ * question bank, so light pages can use it. Sittings saved before objectives
+ * were recorded per question are skipped.
+ */
+export function weakObjectiveIds(attempts: MockAttempt[], exam: string, limit = 5): string[] {
+  const outcomes = new Map<string, boolean[]>();
+  for (const attempt of attempts.filter((a) => a.exam === exam).slice().sort((a, b) => a.at - b.at)) {
+    const missed = new Set(attempt.missedIds);
+    for (const id of attempt.questionIds ?? []) {
+      const objectiveId = attempt.objectiveByQuestion?.[id];
+      if (objectiveId) outcomes.set(objectiveId, [...(outcomes.get(objectiveId) ?? []), !missed.has(id)]);
+    }
+  }
+  return [...outcomes.entries()]
+    .map(([id, list]) => ({ id, answered: list.length, recent: percent(list.slice(-RECENT)) ?? 0 }))
+    .filter((s) => s.answered >= MIN_ANSWERS && s.recent < WEAK_BELOW)
+    .sort((a, b) => a.recent - b.recent || b.answered - a.answered)
+    .slice(0, limit)
+    .map((s) => s.id);
+}

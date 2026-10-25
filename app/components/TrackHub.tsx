@@ -6,6 +6,7 @@ import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
 import { TrackLink } from "@/app/components/TrackLink";
 import { labs } from "@/lib/content";
+import { drillDecks } from "@/lib/practice/drills";
 import { getTrack, networkingChapters, splitTopics, toolStatuses, trackCounts, type TrackId } from "@/lib/tracks";
 
 const tileBase =
@@ -21,6 +22,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
   const counts = trackCounts(track);
+  // Practice Games opens on this exam; say how many memory drills wait there.
+  const drillCount = track.focus ? drillDecks.filter((deck) => deck.exam.toLowerCase() === track.focus).length : 0;
   const { own, shared } = splitTopics(track);
 
   const workspaceLinks = track.focus ? [
@@ -154,11 +157,11 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                   <span className="track-accent-text">
                     <ToolIcon id={tool.id} width={26} height={26} />
                   </span>
-                  <StatusChip state={tool.state}>{tTrack(`chips.${tool.chip.key}`, { count: tool.chip.count ?? 0 })}</StatusChip>
+                  <StatusChip state={tool.state}>{tool.id === "game" && drillCount > 0 ? tTrack("chips.drills", { count: drillCount }) : tTrack(`chips.${tool.chip.key}`, { count: tool.chip.count ?? 0 })}</StatusChip>
                 </div>
                 <div>
                   <p className="text-lg font-medium text-white">{tTrack(`tools.${tool.id}.label`)}</p>
-                  <p className="mt-1 text-sm text-slate-400">{tTrack(`tools.${tool.id}.blurb`)}</p>
+                  <p className="mt-1 text-sm text-slate-400">{tool.id === "game" && drillCount > 0 ? tTrack("tools.game.drillsBlurb") : tTrack(`tools.${tool.id}.blurb`)}</p>
                 </div>
               </>
             );
