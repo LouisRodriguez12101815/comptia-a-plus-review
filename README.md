@@ -8,6 +8,10 @@ Questions are written from class notes. They are not official CompTIA items.
 
 Open **https://comptia-a-plus-review.vercel.app** — no login. Choose Core 1, Core 2, Network+, or All, then use Notes to read, Flashcards to drill, Quiz to test, and Labs for Packet Tracer builds. The default for new visitors is Core 1 (220-1201); the chosen focus and progress are saved only in that browser.
 
+## Reproducible setup
+
+See [docs/reproducible-setup.md](docs/reproducible-setup.md) for the Node site (`npm ci`) and the Python agent starter in `agent-starter/` (virtual environment, pinned `requirements.txt`).
+
 ## Local development
 
 ```bash
