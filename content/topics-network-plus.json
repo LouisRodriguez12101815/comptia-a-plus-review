@@ -5843,5 +5843,206 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-topologies-architecture",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Topologies, architectures and network types (1.6)",
+    "chapter": "Network+ · Network concepts",
+    "concept": "topologies",
+    "summary": "Compare star, mesh, bus, ring and hub-and-spoke, choose three-tier, collapsed core or spine-leaf, and tell LAN, WAN, MAN, PAN, SAN and CAN apart.",
+    "sections": [
+      {
+        "id": "1-6-topologies",
+        "title": "Topologies",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Physical topology is how devices are wired. Logical topology is how data flows, whatever the wiring looks like."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Topology",
+              "Layout",
+              "Strength",
+              "Weakness"
+            ],
+            "rows": [
+              [
+                "Star",
+                "Every device connects to a central switch",
+                "Easy to manage. One device failing does not affect others",
+                "The central switch is a single point of failure"
+              ],
+              [
+                "Full mesh",
+                "Every device connects to every other device",
+                "Maximum redundancy",
+                "Expensive. Links = n(n-1)/2"
+              ],
+              [
+                "Partial mesh",
+                "Some devices have direct links",
+                "Redundancy at lower cost",
+                "Less complete than full mesh"
+              ],
+              [
+                "Bus",
+                "One shared backbone cable, often coax",
+                "Cheap, simple",
+                "Legacy. A cable break takes down the network"
+              ],
+              [
+                "Ring",
+                "Each device connects to exactly two neighbors in a loop",
+                "Predictable path. Dual ring adds redundancy",
+                "A break can stop a single ring. Used in token ring, FDDI and SONET"
+              ],
+              [
+                "Hub and spoke",
+                "Central hub site connects to spoke sites",
+                "Each spoke needs only one link",
+                "Hub is a bottleneck and single point of failure. Spoke-to-spoke traffic crosses the hub"
+              ],
+              [
+                "Hybrid",
+                "A combination, such as stars joined by a ring or mesh",
+                "Fits real networks",
+                "More complex to document"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Full mesh links: with 6 devices, 6 x 5 / 2 = 15 links. Adding devices grows the link count quickly."
+          }
+        ]
+      },
+      {
+        "id": "1-6-architecture",
+        "title": "Network architectures",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Design",
+              "Layers",
+              "Use"
+            ],
+            "rows": [
+              [
+                "Three-tier",
+                "Access (end devices, PoE, port security, VLAN), distribution (aggregation, inter-VLAN routing, ACLs, policy), core (fast, redundant backbone)",
+                "Large campuses with several buildings"
+              ],
+              [
+                "Collapsed core (two-tier)",
+                "Distribution and core combined into one layer or pair of switches",
+                "Small and medium networks. Lower cost, with more responsibility on one block"
+              ],
+              [
+                "Spine and leaf",
+                "Leaf switches connect to servers. Every leaf connects to every spine. No leaf-to-leaf or spine-to-spine links",
+                "Data centers. Predictable latency, easy growth by adding leaves or spines"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Hierarchy organizes responsibilities. A packet does not have to visit every tier, and two hosts on the same access switch and VLAN do not cross the core.",
+              "Spine-leaf links = leaves x spines. Three leaves and two spines give six links.",
+              "A top-of-rack switch is the leaf for the servers in its rack.",
+              "North-south traffic crosses the data center boundary, such as a client reaching a web server. East-west traffic stays inside it, such as an application server querying its database. Spine-leaf suits heavy east-west traffic."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-6-types",
+        "title": "Network types, provider links and virtual networking",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Scope"
+            ],
+            "rows": [
+              [
+                "PAN",
+                "A few meters around a person: Bluetooth, NFC"
+              ],
+              [
+                "LAN / WLAN",
+                "One office or building. WLAN is a LAN using Wi-Fi"
+              ],
+              [
+                "CAN",
+                "Several LANs across a campus"
+              ],
+              [
+                "MAN",
+                "A city or metropolitan area"
+              ],
+              [
+                "WAN",
+                "Wide geographic area. Uses leased lines, MPLS, VPNs"
+              ],
+              [
+                "SAN",
+                "Dedicated high-speed network for storage traffic"
+              ],
+              [
+                "SOHO",
+                "A small office or home office network"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Provider link",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Satellite",
+                "Wide coverage but high latency"
+              ],
+              [
+                "DSL",
+                "Over telephone lines. Speed drops with distance"
+              ],
+              [
+                "Cable",
+                "Shared coax (DOCSIS). Speed can vary with neighbors' use"
+              ],
+              [
+                "Leased line",
+                "Dedicated point-to-point circuit with a guaranteed rate"
+              ],
+              [
+                "Metro-optical",
+                "Fiber in a metropolitan area, such as Metro Ethernet"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "The demarcation point is where the provider's responsibility ends and the customer's begins. A smartjack (network interface device) lets the provider loop-test the circuit.",
+              "Peer-to-peer: devices share resources directly. Client-server: servers provide resources to clients.",
+              "Virtual networking: a hypervisor hosts VMs, each with a virtual NIC (vNIC) connected to a virtual switch (vSwitch). Network function virtualization runs appliances such as firewalls as VMs."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
