@@ -29,7 +29,8 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
   const [exam, setExam] = useState("all");
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
-  const visible = filterCoverage(rows, { exam, status, search });
+  const [missedOnly, setMissedOnly] = useState(false);
+  const visible = filterCoverage(rows, { exam, status, search, missedOnly });
   const summary = summarizeCoverage(visible);
   // Deliberately independent of the filters below: this is CLI gap 1.
   const next = rankGaps(rows)[0];
@@ -109,7 +110,11 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
               <input type="search" className={control} placeholder={t("searchPlaceholder")} value={search} onChange={(event) => setSearch(event.target.value)} />
             </label>
           </div>
-          <button type="button" onClick={() => { setExam("all"); setStatus("all"); setSearch(""); }} className="mt-3 inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200 focus-visible:outline-2 focus-visible:outline-teal-300">{t("resetFilters")}</button>
+          <label className="mt-4 flex min-h-11 items-center gap-3 text-sm font-medium text-slate-200">
+            <input type="checkbox" className="h-5 w-5 accent-rose-400" checked={missedOnly} onChange={(event) => setMissedOnly(event.target.checked)} />
+            {t("missedOnly")}
+          </label>
+          <button type="button" onClick={() => { setExam("all"); setStatus("all"); setSearch(""); setMissedOnly(false); }} className="mt-3 inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200 focus-visible:outline-2 focus-visible:outline-teal-300">{t("resetFilters")}</button>
         </div>
         <p role="status" aria-live="polite" aria-atomic="true" className="text-sm text-slate-300" data-testid="result-count">{t("resultCount", {
           shown: summary.total,
@@ -121,10 +126,13 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
         <p className="text-sm text-slate-400">{t("countsNote")}</p>
         {visible.length === 0 ? <div className="rounded-xl border border-dashed border-slate-600 p-6 text-slate-300"><h3 className="font-medium text-white">{t("noMatchTitle")}</h3><p className="mt-2">{t("noMatchBody")}</p></div> :
           <ul className="space-y-4" aria-label={t("matchingList")}>
-            {visible.map((row) => <li key={row.key} data-testid={`objective-${row.key}`} className="rounded-xl border border-slate-700 bg-slate-900/60 p-4 sm:p-5">
+            {visible.map((row) => <li key={row.key} data-testid={`objective-${row.key}`} className={`rounded-xl border p-4 sm:p-5 ${row.missedOnExam ? "border-rose-400/60 bg-rose-400/5" : "border-slate-700 bg-slate-900/60"}`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <h3 className="min-w-0 flex-1 basis-64 font-semibold text-white"><span className="mb-1 block font-mono text-sm text-teal-300">{row.exam} / {row.id}</span>{row.title}</h3>
-                <span className={`rounded-full border px-3 py-1 text-xs font-medium capitalize ${statusStyles[row.status]}`}>{statusLabels[row.status] ?? row.status}</span>
+                <span className="flex flex-wrap gap-2">
+                  {row.missedOnExam && <span className="rounded-full border border-rose-400/60 bg-rose-400/15 px-3 py-1 text-xs font-semibold text-rose-200" data-testid={`missed-${row.key}`}>{t("missedBadge")}</span>}
+                  <span className={`rounded-full border px-3 py-1 text-xs font-medium capitalize ${statusStyles[row.status]}`}>{statusLabels[row.status] ?? row.status}</span>
+                </span>
               </div>
               <p className="mt-2 text-sm text-slate-400">{t("rowDomain", { domain: row.domain, title: row.domainTitle, weight: row.weight })}</p>
               <dl className="mt-4 grid grid-cols-3 gap-3 text-sm sm:grid-cols-5">

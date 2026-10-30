@@ -128,3 +128,13 @@ test('reconciled display package is counted from its single mapping and guided l
   assert.equal(related[0].slug, 'display-path-isolation');
   assert.match(JSON.stringify(related[0]), /paper alternative/i);
 });
+
+// Objectives the learner missed on the real Core 2 score report (flag lives in content/objectives.json).
+test('Core 2 missed-on-exam flags mark exactly the 14 reported objectives and the filter isolates them', () => {
+  const expected = ['1.4', '1.5', '1.6', '1.7', '1.10', '1.11', '2.1', '2.3', '2.4', '2.6', '3.1', '3.4', '4.1', '4.9'];
+  const flagged = rows.filter((r) => r.missedOnExam);
+  assert.ok(flagged.every((r) => r.exam === '220-1202'));
+  assert.deepEqual(flagged.map((r) => r.id).sort(), [...expected].sort());
+  assert.deepEqual(filterCoverage(rows, { missedOnly: true }), flagged);
+  assert.equal(filterCoverage(rows, { missedOnly: false }).length, rows.length);
+});

@@ -5,7 +5,8 @@ import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
 import { TrackLink } from "@/app/components/TrackLink";
-import { labs } from "@/lib/content";
+import objectives from "@/content/objectives.json";
+import { labs, topics as allTopics } from "@/lib/content";
 import { drillDecks } from "@/lib/practice/drills";
 import { getTrack, networkingChapters, splitTopics, toolStatuses, trackCounts, type TrackId } from "@/lib/tracks";
 
@@ -25,6 +26,13 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   // Practice Games opens on this exam; say how many memory drills wait there.
   const drillCount = track.focus ? drillDecks.filter((deck) => deck.exam.toLowerCase() === track.focus).length : 0;
   const { own, shared } = splitTopics(track);
+  // Objectives flagged from the learner's real score report (set in content/objectives.json).
+  const missed = (objectives.exams.find((exam) => exam.code === track.code)?.domains ?? [])
+    .flatMap((domain) => domain.objectives)
+    .filter((objective) => (objective as { missedOnExam?: boolean }).missedOnExam === true);
+  const topicTitle = new Map(allTopics.map((topic) => [topic.id, topic.title]));
+  const missedByTopic = new Map<string, string[]>();
+  for (const objective of missed) for (const id of objective.topics) missedByTopic.set(id, [...(missedByTopic.get(id) ?? []), objective.id]);
 
   const workspaceLinks = track.focus ? [
     { label: t("workspaceOverview"), href: track.href },
@@ -142,6 +150,30 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           >
             {t("startTest")}
           </Link>
+        </section>
+      ) : null}
+
+      {missed.length > 0 ? (
+        <section aria-labelledby="missed-heading" className="space-y-4 rounded-2xl border border-rose-400/60 bg-rose-400/5 p-5" data-testid="missed-objectives">
+          <div>
+            <h2 id="missed-heading" className="text-lg font-semibold text-rose-100">{t("missedTitle")}</h2>
+            <p className="mt-1 text-sm text-slate-300">{t("missedBody", { count: missed.length })}</p>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {missed.map((objective) => (
+              <li key={objective.id} className="rounded-xl border border-rose-400/30 bg-slate-900/70 p-4">
+                <p className="font-mono text-sm text-rose-200">{track.code} / {objective.id}</p>
+                <p className="mt-1 font-medium text-white">{objective.title}</p>
+                <ul className="mt-2 flex flex-wrap gap-x-4">
+                  {objective.topics.map((id) => (
+                    <li key={id}>
+                      <Link href={`/notes/${encodeURIComponent(id)}`} className="inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{topicTitle.get(id) ?? id}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 
@@ -263,6 +295,11 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                     </p>
                     <p className="mt-1 font-medium text-white">{topic.title}</p>
                     <p className="mt-2 text-sm text-slate-400">{topic.summary}</p>
+                    {missedByTopic.has(topic.id) ? (
+                      <p className="mt-3 inline-block rounded-full border border-rose-400/60 bg-rose-400/15 px-2.5 py-0.5 text-xs font-semibold text-rose-200">
+                        {t("missedChip", { objectives: missedByTopic.get(topic.id)!.join(", ") })}
+                      </p>
+                    ) : null}
                   </Link>
                 </li>
               ))}
