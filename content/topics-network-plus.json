@@ -5052,5 +5052,273 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-org-documentation",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network documentation (3.1)",
+    "chapter": "Network+ · Organizational processes",
+    "concept": "documentation",
+    "summary": "Match each diagram or record to the question it answers: physical and logical maps, rack diagrams, cable maps, asset inventory, IPAM, SLAs and wireless surveys.",
+    "sections": [
+      {
+        "id": "3-1-diagrams",
+        "title": "Diagrams and maps",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Each document should answer one reader's question. A technician looking for a cable needs a different drawing than a manager planning a new site."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Document",
+              "Shows",
+              "Use it to"
+            ],
+            "rows": [
+              [
+                "Physical diagram",
+                "Equipment, rooms, racks, cables, ports",
+                "Walk to the right device and cable"
+              ],
+              [
+                "Logical diagram",
+                "Subnets, VLANs, routing, security zones, with no regard to location",
+                "Understand how traffic flows and plan changes"
+              ],
+              [
+                "Layer 1 diagram",
+                "Devices, links, port IDs, media types, patch panel positions",
+                "Trace the physical path"
+              ],
+              [
+                "Layer 2 diagram",
+                "Switch topology, trunks, allowed VLANs, MAC addresses, spanning tree root and blocked ports",
+                "Find switching loops and VLAN problems"
+              ],
+              [
+                "Layer 3 diagram",
+                "Subnets, routers, firewalls, gateways, IP addresses, routes",
+                "Follow the path packets take. Switches are left off"
+              ],
+              [
+                "Rack diagram",
+                "Each rack unit, with power, blanking panels and spare space",
+                "Tell remote hands exactly which unit to touch"
+              ],
+              [
+                "Cable map",
+                "Path from each wall jack to its patch panel position and switch port",
+                "Trace a dead drop without a toner"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A dead wall jack points to a cable map. A question about room in a rack points to a rack diagram. A question about subnets points to a layer 3 diagram."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Wrong documentation is worse than none. Give every diagram an owner and a review date, and label both ends of every cable so the map can be checked against reality."
+          }
+        ]
+      },
+      {
+        "id": "3-1-records",
+        "title": "Asset inventory, IPAM and SLAs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Asset inventory: a central record of hardware and software. It holds model, serial number, asset tag, owner or assigned user, location, purchase date, warranty status, firmware version, and software licenses with versions and expiration dates.",
+              "Asset tags: visible labels, often with a barcode or RFID, that tie a device to a ticket, to finance depreciation, and to warranty tracking.",
+              "IP address management (IPAM): plans, tracks and configures IPv4 and IPv6 addressing and DHCP and DNS data from one console. It prevents duplicate assignments, shows which user held an address at a given time, and warns when a scope is running out.",
+              "Service level agreement (SLA): a contract with a provider that sets the minimum service level, such as 99.99% uptime or no more than 4 hours of unscheduled downtime, and what the provider must do to restore service."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Question",
+              "Document"
+            ],
+            "rows": [
+              [
+                "How many licenses do we own, and when does the warranty end?",
+                "Asset inventory"
+              ],
+              [
+                "Which address did this laptop hold at 9:15 yesterday?",
+                "IPAM"
+              ],
+              [
+                "Is the ISP meeting its promised uptime?",
+                "SLA"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-1-wireless",
+        "title": "Wireless site surveys and heat maps",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Survey",
+              "How it works",
+              "Best for"
+            ],
+            "rows": [
+              [
+                "Predictive",
+                "Software model of a floor plan with wall materials marked",
+                "Planning before any hardware is bought"
+              ],
+              [
+                "Passive",
+                "Walk the site and listen to every audible access point, signal, noise and channel",
+                "Validating coverage and finding interference or rogue access points"
+              ],
+              [
+                "Active",
+                "Associate to the network and pass traffic",
+                "Measuring real throughput, loss and roaming"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "A heat map is the output. It colors a floor plan by signal strength.",
+              "A common design target is -67 dBm or better where clients work, with adjacent cells overlapping by about 15 to 20% so roaming is smooth.",
+              "Survey with the building in its normal working state and repeat after layout changes. Check 5 GHz in particular, because it weakens faster through walls."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-org-change-config",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Life cycle, change and configuration management (3.1)",
+    "chapter": "Network+ · Organizational processes",
+    "concept": "change-management",
+    "summary": "Plan equipment from purchase to disposal, control changes with a formal process, and keep production, backup and golden configurations.",
+    "sections": [
+      {
+        "id": "3-1-lifecycle",
+        "title": "Life-cycle management",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning",
+              "Typical action"
+            ],
+            "rows": [
+              [
+                "End of life (EOL)",
+                "The vendor stops selling the product",
+                "Plan its replacement. Support may continue for a while"
+              ],
+              [
+                "End of support (EOS)",
+                "The vendor stops patches, fixes and help",
+                "Replace or accept the risk. Unpatched devices become security gaps"
+              ],
+              [
+                "Software management",
+                "Tracking OS, firmware and application versions, patches and licenses",
+                "Test, schedule and apply updates; remove unlicensed or unsupported software"
+              ],
+              [
+                "Decommissioning",
+                "Safely retiring a device",
+                "Back up needed data, wipe it, remove it from inventory, monitoring and DNS, then recycle with records"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "EOL is about sales. EOS is about support. A device can be past EOL and still supported, but past EOS it receives no security fixes."
+          }
+        ]
+      },
+      {
+        "id": "3-1-change",
+        "title": "Change management",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Change management is the formal process for planning and approving changes so they are scheduled, tested, communicated and reversible. The documentation also helps rebuild a system after a disaster."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Request the change and state the reason.",
+              "Assess the risk and impact, and plan how to test it.",
+              "Get approval, usually from a change advisory board for significant changes.",
+              "Schedule it in a maintenance window and notify everyone affected.",
+              "Back up first and have a rollback plan.",
+              "Implement and verify, then document the result and close the change."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An emergency change still needs documentation. It can be approved faster, but it should be reviewed afterward."
+          }
+        ]
+      },
+      {
+        "id": "3-1-config",
+        "title": "Configuration management",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Configuration",
+              "Description"
+            ],
+            "rows": [
+              [
+                "Production",
+                "The configuration currently running and the standard for new devices of that kind"
+              ],
+              [
+                "Backup",
+                "A copy saved before a change so it can be restored. A VM snapshot is a backup of the whole machine state"
+              ],
+              [
+                "Baseline or golden",
+                "A tested, approved configuration, including hardware, firmware, drivers and software versions, used as the reference"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Integrity checks compare production to the golden configuration.",
+              "A difference means either fix production to match, or approve the change and update the baseline to a new version.",
+              "Test in a lab first. Not every case can be tested, so always keep a way to revert."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
