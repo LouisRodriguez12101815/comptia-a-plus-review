@@ -5515,5 +5515,713 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-sdn-overlay",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "SDN, SD-WAN, VXLAN and DCI (1.8)",
+    "chapter": "Network+ · Modern network environments",
+    "concept": "modern-networks",
+    "summary": "Separate the data, control and management planes, see why SD-WAN suits cloud traffic, and learn how VXLAN overlays stretch layer 2 across routed networks and data centers.",
+    "sections": [
+      {
+        "id": "1-8-sdn",
+        "title": "Software-defined networking and SD-WAN",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A router, switch or firewall does three jobs. Software-defined networking (SDN) separates them so the logic can run as software and be managed centrally."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Plane",
+              "Job",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "Data plane (infrastructure layer)",
+                "Forwards traffic from one interface to another",
+                "Forwarding, trunking, encryption, NAT"
+              ],
+              [
+                "Control plane (control layer)",
+                "Decides how traffic is forwarded",
+                "Routing tables, switching tables, NAT tables"
+              ],
+              [
+                "Management plane (application layer)",
+                "How administrators configure and monitor the device",
+                "SSH, console, web interface, APIs"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "SD-WAN applies the same idea to the wide area network. Applications moved from one data center to SaaS and IaaS, so branches need to reach many cloud locations, not only headquarters."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "SD-WAN feature",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Application aware",
+                "Recognizes the application and sends it by the best path, such as email straight to the nearest cloud service"
+              ],
+              [
+                "Zero-touch provisioning",
+                "A new edge device configures itself when it connects, without a technician on site"
+              ],
+              [
+                "Transport agnostic",
+                "Works over fiber, broadband, 5G or DSL, as long as there is IP reachability"
+              ],
+              [
+                "Central policy management",
+                "Policies are set once on a controller and pushed to every edge device"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Network function virtualization (NFV) replaces dedicated appliances with virtual firewalls, routers or load balancers on standard servers.",
+              "Local breakout lets a branch reach cloud services directly instead of hairpinning through the headquarters firewall."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-8-vxlan",
+        "title": "VXLAN and data center interconnect",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An overlay is a network built from tunnels across another network, the underlay. The underlay only delivers packets and never reads what is inside them. VXLAN is the data center overlay."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Detail"
+            ],
+            "rows": [
+              [
+                "VXLAN",
+                "Carries Ethernet (layer 2) frames inside UDP/IP packets, so a layer 2 segment can exist anywhere IP reaches"
+              ],
+              [
+                "VTEP",
+                "VXLAN tunnel endpoint. Usually a leaf switch or hypervisor virtual switch that adds and removes the VXLAN header"
+              ],
+              [
+                "VNI",
+                "VXLAN network identifier. 24 bits, about 16 million segments, compared with 4,096 for a 12-bit VLAN ID"
+              ],
+              [
+                "UDP port",
+                "4789"
+              ],
+              [
+                "Overhead",
+                "About 50 bytes per packet, so the underlay needs a larger MTU, such as jumbo frames"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Data center interconnect (DCI) joins data centers so workloads can fail over or move and keep their IP addresses.",
+              "Stretching VLANs over dark fiber makes spanning tree and broadcast storms span both sites. VXLAN over a routed link keeps failures contained.",
+              "VXLAN does not encrypt. Add IPsec on untrusted links.",
+              "When an overlay fails, check the underlay first. A single link with a small MTU lets small packets pass but stalls large transfers."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-zerotrust-iac",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Zero trust, SASE, infrastructure as code and IPv6 transition (1.8)",
+    "chapter": "Network+ · Modern network environments",
+    "concept": "modern-networks",
+    "summary": "Apply zero trust principles, tell SASE from SSE, use templates, playbooks and Git for automation, and pick dual stack, tunneling or NAT64 for IPv6 coexistence.",
+    "sections": [
+      {
+        "id": "1-8-zta",
+        "title": "Zero trust architecture",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The old perimeter model trusted anything inside the firewall. Zero trust removes that assumption: every request is evaluated on its own, using identity, device posture, resource and context."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Principle",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Verify explicitly (policy-based authentication)",
+                "Authenticate and authorize each request, with stronger checks for riskier context, such as MFA on an unmanaged device"
+              ],
+              [
+                "Least privilege access",
+                "Give one user access to one resource for one session, not the whole network"
+              ],
+              [
+                "Assume breach",
+                "Design as if an attacker is already inside: segment, monitor and contain"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "The policy decision point (PDP) evaluates the request against policy. The policy enforcement point (PEP) allows or blocks the connection.",
+              "Verification is continuous. A device that stops complying loses access during the session.",
+              "ZTNA connects a user to one application and hides everything else. A classic VPN puts the device on the whole internal network.",
+              "Microsegmentation applies policy to each server, VM or container, so every lateral hop is blocked and logged."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-8-sase",
+        "title": "SASE and SSE",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "What it is"
+            ],
+            "rows": [
+              [
+                "SSE (security service edge)",
+                "Cloud-delivered security: secure web gateway (SWG), cloud access security broker (CASB), ZTNA and firewall as a service (FWaaS)"
+              ],
+              [
+                "SASE (secure access service edge)",
+                "SSE plus SD-WAN, delivered from provider points of presence near users"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Users and apps left the office, so hairpinning to a headquarters firewall adds latency. SASE inspects traffic at the edge closest to each user.",
+              "SWG filters web traffic. CASB controls SaaS use and finds shadow IT.",
+              "Exam rule: if the requirement includes SD-WAN or networking, answer SASE. If it is only security services, answer SSE."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-8-iac",
+        "title": "Infrastructure as code and source control",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "With infrastructure as code (IaC) the files are the source of truth and devices are made to match them. The loop is define the desired state, render a configuration, push it through an API, and verify."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Template",
+                "A standard pattern with variables for values that differ, such as host name"
+              ],
+              [
+                "Playbook",
+                "An ordered set of tasks, such as back up, apply, verify and roll back"
+              ],
+              [
+                "Reusable task",
+                "A shared building block, such as the standard NTP configuration"
+              ],
+              [
+                "Idempotent",
+                "Running it twice gives the same result"
+              ],
+              [
+                "Dynamic inventory",
+                "The target device list is generated from a live source, such as IPAM or a cloud API"
+              ],
+              [
+                "Configuration drift",
+                "A device no longer matches its files, usually after a direct change"
+              ],
+              [
+                "Compliance check",
+                "Comparing each device with the desired state on a schedule"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Source control term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Version control (Git)",
+                "Full history, with who changed what and why"
+              ],
+              [
+                "Central repository",
+                "The authoritative copy that clones push to and pull from"
+              ],
+              [
+                "Branch",
+                "A parallel line of work so main is never edited directly"
+              ],
+              [
+                "Merge conflict",
+                "Two branches changed the same lines. A person must choose"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Keep passwords and keys out of the repository, because history is permanent. After an emergency manual fix, put the change back into the files or the next automated run will undo it."
+          }
+        ]
+      },
+      {
+        "id": "1-8-ipv6",
+        "title": "IPv6 coexistence",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "How it works"
+            ],
+            "rows": [
+              [
+                "Dual stack",
+                "Run IPv4 and IPv6 together on the same interfaces. The preferred approach"
+              ],
+              [
+                "Tunneling",
+                "Encapsulate IPv6 packets inside IPv4 to cross networks that do not support IPv6"
+              ],
+              [
+                "NAT64 with DNS64",
+                "Translate between IPv6-only clients and IPv4-only servers. DNS64 builds synthetic AAAA records, often using 64:ff9b::/96"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "IPv6 addresses are 128 bits, written as eight groups of four hexadecimal digits.",
+              "Drop leading zeros in a group, and replace one run of zero groups with :: (only once per address).",
+              "Global unicast starts at 2000::/3, link-local is fe80::/10, unique local is fc00::/7 and multicast is ff00::/8."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-topologies-architecture",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Topologies, architectures and network types (1.6)",
+    "chapter": "Network+ · Network concepts",
+    "concept": "topologies",
+    "summary": "Compare star, mesh, bus, ring and hub-and-spoke, choose three-tier, collapsed core or spine-leaf, and tell LAN, WAN, MAN, PAN, SAN and CAN apart.",
+    "sections": [
+      {
+        "id": "1-6-topologies",
+        "title": "Topologies",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Physical topology is how devices are wired. Logical topology is how data flows, whatever the wiring looks like."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Topology",
+              "Layout",
+              "Strength",
+              "Weakness"
+            ],
+            "rows": [
+              [
+                "Star",
+                "Every device connects to a central switch",
+                "Easy to manage. One device failing does not affect others",
+                "The central switch is a single point of failure"
+              ],
+              [
+                "Full mesh",
+                "Every device connects to every other device",
+                "Maximum redundancy",
+                "Expensive. Links = n(n-1)/2"
+              ],
+              [
+                "Partial mesh",
+                "Some devices have direct links",
+                "Redundancy at lower cost",
+                "Less complete than full mesh"
+              ],
+              [
+                "Bus",
+                "One shared backbone cable, often coax",
+                "Cheap, simple",
+                "Legacy. A cable break takes down the network"
+              ],
+              [
+                "Ring",
+                "Each device connects to exactly two neighbors in a loop",
+                "Predictable path. Dual ring adds redundancy",
+                "A break can stop a single ring. Used in token ring, FDDI and SONET"
+              ],
+              [
+                "Hub and spoke",
+                "Central hub site connects to spoke sites",
+                "Each spoke needs only one link",
+                "Hub is a bottleneck and single point of failure. Spoke-to-spoke traffic crosses the hub"
+              ],
+              [
+                "Hybrid",
+                "A combination, such as stars joined by a ring or mesh",
+                "Fits real networks",
+                "More complex to document"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Full mesh links: with 6 devices, 6 x 5 / 2 = 15 links. Adding devices grows the link count quickly."
+          }
+        ]
+      },
+      {
+        "id": "1-6-architecture",
+        "title": "Network architectures",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Design",
+              "Layers",
+              "Use"
+            ],
+            "rows": [
+              [
+                "Three-tier",
+                "Access (end devices, PoE, port security, VLAN), distribution (aggregation, inter-VLAN routing, ACLs, policy), core (fast, redundant backbone)",
+                "Large campuses with several buildings"
+              ],
+              [
+                "Collapsed core (two-tier)",
+                "Distribution and core combined into one layer or pair of switches",
+                "Small and medium networks. Lower cost, with more responsibility on one block"
+              ],
+              [
+                "Spine and leaf",
+                "Leaf switches connect to servers. Every leaf connects to every spine. No leaf-to-leaf or spine-to-spine links",
+                "Data centers. Predictable latency, easy growth by adding leaves or spines"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Hierarchy organizes responsibilities. A packet does not have to visit every tier, and two hosts on the same access switch and VLAN do not cross the core.",
+              "Spine-leaf links = leaves x spines. Three leaves and two spines give six links.",
+              "A top-of-rack switch is the leaf for the servers in its rack.",
+              "North-south traffic crosses the data center boundary, such as a client reaching a web server. East-west traffic stays inside it, such as an application server querying its database. Spine-leaf suits heavy east-west traffic."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-6-types",
+        "title": "Network types, provider links and virtual networking",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Scope"
+            ],
+            "rows": [
+              [
+                "PAN",
+                "A few meters around a person: Bluetooth, NFC"
+              ],
+              [
+                "LAN / WLAN",
+                "One office or building. WLAN is a LAN using Wi-Fi"
+              ],
+              [
+                "CAN",
+                "Several LANs across a campus"
+              ],
+              [
+                "MAN",
+                "A city or metropolitan area"
+              ],
+              [
+                "WAN",
+                "Wide geographic area. Uses leased lines, MPLS, VPNs"
+              ],
+              [
+                "SAN",
+                "Dedicated high-speed network for storage traffic"
+              ],
+              [
+                "SOHO",
+                "A small office or home office network"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Provider link",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Satellite",
+                "Wide coverage but high latency"
+              ],
+              [
+                "DSL",
+                "Over telephone lines. Speed drops with distance"
+              ],
+              [
+                "Cable",
+                "Shared coax (DOCSIS). Speed can vary with neighbors' use"
+              ],
+              [
+                "Leased line",
+                "Dedicated point-to-point circuit with a guaranteed rate"
+              ],
+              [
+                "Metro-optical",
+                "Fiber in a metropolitan area, such as Metro Ethernet"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "The demarcation point is where the provider's responsibility ends and the customer's begins. A smartjack (network interface device) lets the provider loop-test the circuit.",
+              "Peer-to-peer: devices share resources directly. Client-server: servers provide resources to clients.",
+              "Virtual networking: a hypervisor hosts VMs, each with a virtual NIC (vNIC) connected to a virtual switch (vSwitch). Network function virtualization runs appliances such as firewalls as VMs."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-transceivers-fiber",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Transceivers, fiber and connectors (1.5)",
+    "chapter": "Network+ · Transmission media",
+    "concept": "transceivers",
+    "summary": "Match SFP, SFP+, SFP28 and QSFP transceivers to speeds, choose DAC, multimode or single-mode for a distance, and recognize LC, SC, ST and MPO connectors.",
+    "sections": [
+      {
+        "id": "1-5-transceivers",
+        "title": "Transceiver families",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A transceiver is a hot-pluggable module that lets a switch port use copper, fiber or a direct-attach cable. The cage type must match the module type, and the module must be rated for the cable and distance."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Form factor",
+              "Speed",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "SFP",
+                "100 Mbps to 1 Gbps",
+                "Small form-factor pluggable. Copper or fiber"
+              ],
+              [
+                "SFP+",
+                "10 Gbps",
+                "Same size as SFP. Fiber, copper or DAC"
+              ],
+              [
+                "SFP28",
+                "25 Gbps",
+                "Fiber or DAC"
+              ],
+              [
+                "SFP56",
+                "50 Gbps",
+                "Fiber or DAC"
+              ],
+              [
+                "QSFP+",
+                "40 Gbps",
+                "Four lanes of 10 Gbps in one port"
+              ],
+              [
+                "QSFP28",
+                "100 Gbps",
+                "Four lanes of 25 Gbps in one port"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "SFP-family modules are backward compatible with slower rates in the same family, but QSFP ports are a different standard and do not accept SFP modules.",
+              "With fiber, both ends need a transceiver. With a copper RJ45 module, the far end can plug into any standard RJ45 port.",
+              "Do not mix a module's wavelength or fiber type with a mismatched partner: an SR module needs multimode and an LR module needs single-mode.",
+              "Mixing vendors can work but may cause quirks. Check that the switch supports the module."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-5-dac",
+        "title": "DAC, AOC and copper options",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Option",
+              "Best for",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "DAC (direct attach copper)",
+                "Very short links, such as top-of-rack to switch, about 1 to 7 m",
+                "Cheap, low power and low latency. Transceivers are built into the cable ends"
+              ],
+              [
+                "AOC (active optical cable)",
+                "Short to medium links",
+                "Fiber cable with fixed transceivers on each end"
+              ],
+              [
+                "10GBASE-T",
+                "Existing copper cabling, up to 100 m on Cat 6a",
+                "Higher power and latency than SFP+. Cat 6 reaches only 55 m"
+              ],
+              [
+                "SFP+ RJ45 module",
+                "Adding copper 10G to an SFP+ port",
+                "Often limited to about 30 m, and runs hot"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Short distance in the same rack: DAC. Between rooms or buildings: fiber. Reusing existing Cat 6a: 10GBASE-T."
+          }
+        ]
+      },
+      {
+        "id": "1-5-fiber",
+        "title": "Fiber types and connectors",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Light source and wavelength",
+              "Distance (10G example)",
+              "Use"
+            ],
+            "rows": [
+              [
+                "Multimode (MMF)",
+                "LED or VCSEL, 850 nm",
+                "10GBASE-SR: about 300 m on OM3, 400 m on OM4",
+                "Inside buildings and data centers. Lower cost"
+              ],
+              [
+                "Single-mode (SMF)",
+                "Laser, 1310 nm (LR)",
+                "10GBASE-LR: up to 10 km",
+                "Campus, metro and long distance"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Connector",
+              "Description"
+            ],
+            "rows": [
+              [
+                "LC",
+                "Small form factor, push-pull, usually duplex. Very common on SFP modules"
+              ],
+              [
+                "SC",
+                "Square push-pull connector"
+              ],
+              [
+                "ST",
+                "Round bayonet twist-lock connector"
+              ],
+              [
+                "MPO",
+                "Multi-fiber push-on connector, 12 or 24 fibers. Used for 40G and 100G parallel optics"
+              ],
+              [
+                "F-type / BNC",
+                "Coaxial connectors (cable TV, legacy Ethernet)"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "BiDi transceivers send and receive on one fiber strand using two wavelengths. CWDM and DWDM put several wavelengths on one fiber to multiply capacity.",
+              "A duplex link has one fiber for transmit and one for receive. If TX and RX are swapped there is no link, so flip the pair.",
+              "Respect the minimum bend radius, and keep connector ends clean."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
