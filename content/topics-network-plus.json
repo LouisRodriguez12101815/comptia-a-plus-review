@@ -6619,5 +6619,213 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-monitoring-technologies",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network monitoring technologies (3.2)",
+    "chapter": "Network+ · Network operations",
+    "concept": "monitoring",
+    "summary": "Read SNMP, flow data, packet captures, syslog and SIEM correctly, tell SPAN from a TAP, and use baselines and alerts to catch problems early.",
+    "sections": [
+      {
+        "id": "3-2-snmp",
+        "title": "SNMP",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Part",
+              "Role"
+            ],
+            "rows": [
+              [
+                "Manager (NMS)",
+                "Central station that polls devices and shows the data"
+              ],
+              [
+                "Agent",
+                "Software on a managed device that answers requests and sends alerts"
+              ],
+              [
+                "MIB",
+                "The agent's catalog of monitorable values, organized as a tree"
+              ],
+              [
+                "OID",
+                "Dotted-number address of one value in the MIB. Vendor-specific values sit in vendor branches"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Operation",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Get / Get-next / Get-bulk",
+                "Manager reads one value, the next value, or many values (UDP 161)"
+              ],
+              [
+                "Set",
+                "Manager changes a value"
+              ],
+              [
+                "Trap",
+                "Agent sends an unsolicited alert the moment an event happens (UDP 162)"
+              ],
+              [
+                "Inform",
+                "A trap the manager acknowledges"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Version",
+              "Security"
+            ],
+            "rows": [
+              [
+                "v1",
+                "Community string in clear text"
+              ],
+              [
+                "v2c",
+                "Community string in clear text, plus bulk retrieval and 64-bit counters"
+              ],
+              [
+                "v3",
+                "Per-user authentication, integrity and encryption. Use auth-priv in production"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Polling gives regular trends but can miss an event between polls. Traps are immediate but a lost trap is not retransmitted. Use both.",
+              "Default community strings are public (read-only) and private (read-write). Change them or move to v3.",
+              "Security levels in v3: no auth/no priv, auth/no priv, auth/priv (authentication and encryption)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-2-traffic",
+        "title": "Flow data, packet capture and traffic access",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "What it collects",
+              "Best for"
+            ],
+            "rows": [
+              [
+                "Flow data (NetFlow, IPFIX, sFlow)",
+                "Summary of conversations: addresses, ports, protocol, bytes, packets, duration. No payload",
+                "Who is using bandwidth, long-term trends"
+              ],
+              [
+                "Packet capture (Wireshark)",
+                "Complete packets including payload",
+                "Detailed troubleshooting and protocol analysis. Fills storage quickly"
+              ],
+              [
+                "Port mirroring (SPAN)",
+                "Copies traffic from ports or VLANs to a monitoring port",
+                "Flexible capture, but can drop copies when busy and does not copy bad frames"
+              ],
+              [
+                "Network TAP",
+                "Hardware inserted in the link that copies all traffic, including errors",
+                "Accurate capture that does not depend on switch load"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-2-logs",
+        "title": "Syslog, SIEM and aggregation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Syslog default transport is UDP 514, which has no retransmission. TCP syslog or syslog over TLS is preferred when completeness or confidentiality matters.",
+              "Each syslog message has a facility and a severity from 0 to 7: 0 emergency, 1 alert, 2 critical, 3 error, 4 warning, 5 notice, 6 informational, 7 debug. A lower number is more urgent.",
+              "A device configured for level 4 sends levels 0 to 4 and discards the rest. Production commonly sends level 6 and above.",
+              "Log aggregation forwards all device logs to a central collector because local buffers are small, a failed or compromised device loses its log, and incidents span many devices. Synchronize time with NTP first.",
+              "A SIEM correlates events from many sources. A firewall deny, repeated login failures and a new admin account are routine alone but signal a compromise together."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Mnemonic for severity 0 to 7: Every Awesome Cisco Engineer Will Need Ice cream Daily."
+          }
+        ]
+      },
+      {
+        "id": "3-2-baselines",
+        "title": "Baselines, metrics and alerting",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Metric",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Latency",
+                "Time for data to travel from source to destination"
+              ],
+              [
+                "Jitter",
+                "Variation in latency. Matters for voice and video"
+              ],
+              [
+                "Packet loss",
+                "Percentage of packets that never arrive"
+              ],
+              [
+                "Throughput",
+                "Actual data transferred"
+              ],
+              [
+                "Interface errors",
+                "CRC errors, collisions and other interface problems"
+              ],
+              [
+                "CPU / memory",
+                "Whether a device is overloaded"
+              ],
+              [
+                "Environmental",
+                "Temperature, humidity, water and door sensors"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "A baseline records normal behavior, including daily and monthly patterns. Re-establish it after a legitimate change.",
+              "A fixed threshold, such as 80 percent utilization, false-alarms on normal peaks and misses anomalies during quiet hours. Anomaly alerting compares each metric with what is expected for that time.",
+              "API integration and streaming telemetry push structured data, even sub-second, from controllers and cloud platforms. SNMP remains the universal baseline for physical equipment.",
+              "Good alerting is actionable, routed by severity, aware of dependencies and has an owner and a runbook. Too many false positives cause alert fatigue.",
+              "Network discovery finds devices on demand or on a schedule."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
