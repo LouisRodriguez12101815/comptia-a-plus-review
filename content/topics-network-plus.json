@@ -5052,5 +5052,468 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-org-documentation",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network documentation (3.1)",
+    "chapter": "Network+ · Organizational processes",
+    "concept": "documentation",
+    "summary": "Match each diagram or record to the question it answers: physical and logical maps, rack diagrams, cable maps, asset inventory, IPAM, SLAs and wireless surveys.",
+    "sections": [
+      {
+        "id": "3-1-diagrams",
+        "title": "Diagrams and maps",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Each document should answer one reader's question. A technician looking for a cable needs a different drawing than a manager planning a new site."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Document",
+              "Shows",
+              "Use it to"
+            ],
+            "rows": [
+              [
+                "Physical diagram",
+                "Equipment, rooms, racks, cables, ports",
+                "Walk to the right device and cable"
+              ],
+              [
+                "Logical diagram",
+                "Subnets, VLANs, routing, security zones, with no regard to location",
+                "Understand how traffic flows and plan changes"
+              ],
+              [
+                "Layer 1 diagram",
+                "Devices, links, port IDs, media types, patch panel positions",
+                "Trace the physical path"
+              ],
+              [
+                "Layer 2 diagram",
+                "Switch topology, trunks, allowed VLANs, MAC addresses, spanning tree root and blocked ports",
+                "Find switching loops and VLAN problems"
+              ],
+              [
+                "Layer 3 diagram",
+                "Subnets, routers, firewalls, gateways, IP addresses, routes",
+                "Follow the path packets take. Switches are left off"
+              ],
+              [
+                "Rack diagram",
+                "Each rack unit, with power, blanking panels and spare space",
+                "Tell remote hands exactly which unit to touch"
+              ],
+              [
+                "Cable map",
+                "Path from each wall jack to its patch panel position and switch port",
+                "Trace a dead drop without a toner"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "A dead wall jack points to a cable map. A question about room in a rack points to a rack diagram. A question about subnets points to a layer 3 diagram."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Wrong documentation is worse than none. Give every diagram an owner and a review date, and label both ends of every cable so the map can be checked against reality."
+          }
+        ]
+      },
+      {
+        "id": "3-1-records",
+        "title": "Asset inventory, IPAM and SLAs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Asset inventory: a central record of hardware and software. It holds model, serial number, asset tag, owner or assigned user, location, purchase date, warranty status, firmware version, and software licenses with versions and expiration dates.",
+              "Asset tags: visible labels, often with a barcode or RFID, that tie a device to a ticket, to finance depreciation, and to warranty tracking.",
+              "IP address management (IPAM): plans, tracks and configures IPv4 and IPv6 addressing and DHCP and DNS data from one console. It prevents duplicate assignments, shows which user held an address at a given time, and warns when a scope is running out.",
+              "Service level agreement (SLA): a contract with a provider that sets the minimum service level, such as 99.99% uptime or no more than 4 hours of unscheduled downtime, and what the provider must do to restore service."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Question",
+              "Document"
+            ],
+            "rows": [
+              [
+                "How many licenses do we own, and when does the warranty end?",
+                "Asset inventory"
+              ],
+              [
+                "Which address did this laptop hold at 9:15 yesterday?",
+                "IPAM"
+              ],
+              [
+                "Is the ISP meeting its promised uptime?",
+                "SLA"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-1-wireless",
+        "title": "Wireless site surveys and heat maps",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Survey",
+              "How it works",
+              "Best for"
+            ],
+            "rows": [
+              [
+                "Predictive",
+                "Software model of a floor plan with wall materials marked",
+                "Planning before any hardware is bought"
+              ],
+              [
+                "Passive",
+                "Walk the site and listen to every audible access point, signal, noise and channel",
+                "Validating coverage and finding interference or rogue access points"
+              ],
+              [
+                "Active",
+                "Associate to the network and pass traffic",
+                "Measuring real throughput, loss and roaming"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "A heat map is the output. It colors a floor plan by signal strength.",
+              "A common design target is -67 dBm or better where clients work, with adjacent cells overlapping by about 15 to 20% so roaming is smooth.",
+              "Survey with the building in its normal working state and repeat after layout changes. Check 5 GHz in particular, because it weakens faster through walls."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-org-change-config",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Life cycle, change and configuration management (3.1)",
+    "chapter": "Network+ · Organizational processes",
+    "concept": "change-management",
+    "summary": "Plan equipment from purchase to disposal, control changes with a formal process, and keep production, backup and golden configurations.",
+    "sections": [
+      {
+        "id": "3-1-lifecycle",
+        "title": "Life-cycle management",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning",
+              "Typical action"
+            ],
+            "rows": [
+              [
+                "End of life (EOL)",
+                "The vendor stops selling the product",
+                "Plan its replacement. Support may continue for a while"
+              ],
+              [
+                "End of support (EOS)",
+                "The vendor stops patches, fixes and help",
+                "Replace or accept the risk. Unpatched devices become security gaps"
+              ],
+              [
+                "Software management",
+                "Tracking OS, firmware and application versions, patches and licenses",
+                "Test, schedule and apply updates; remove unlicensed or unsupported software"
+              ],
+              [
+                "Decommissioning",
+                "Safely retiring a device",
+                "Back up needed data, wipe it, remove it from inventory, monitoring and DNS, then recycle with records"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "EOL is about sales. EOS is about support. A device can be past EOL and still supported, but past EOS it receives no security fixes."
+          }
+        ]
+      },
+      {
+        "id": "3-1-change",
+        "title": "Change management",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Change management is the formal process for planning and approving changes so they are scheduled, tested, communicated and reversible. The documentation also helps rebuild a system after a disaster."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Request the change and state the reason.",
+              "Assess the risk and impact, and plan how to test it.",
+              "Get approval, usually from a change advisory board for significant changes.",
+              "Schedule it in a maintenance window and notify everyone affected.",
+              "Back up first and have a rollback plan.",
+              "Implement and verify, then document the result and close the change."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "An emergency change still needs documentation. It can be approved faster, but it should be reviewed afterward."
+          }
+        ]
+      },
+      {
+        "id": "3-1-config",
+        "title": "Configuration management",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Configuration",
+              "Description"
+            ],
+            "rows": [
+              [
+                "Production",
+                "The configuration currently running and the standard for new devices of that kind"
+              ],
+              [
+                "Backup",
+                "A copy saved before a change so it can be restored. A VM snapshot is a backup of the whole machine state"
+              ],
+              [
+                "Baseline or golden",
+                "A tested, approved configuration, including hardware, firmware, drivers and software versions, used as the reference"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Integrity checks compare production to the golden configuration.",
+              "A difference means either fix production to match, or approve the change and update the baseline to a new version.",
+              "Test in a lab first. Not every case can be tested, so always keep a way to revert."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-disaster-recovery",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Disaster recovery concepts (3.3)",
+    "chapter": "Network+ · Organizational processes",
+    "concept": "disaster-recovery",
+    "summary": "Set recovery targets with RPO and RTO, judge reliability with MTBF and MTTR, choose a cold, warm or hot site, remove single points of failure, and prove the plan with tests.",
+    "sections": [
+      {
+        "id": "3-3-metrics",
+        "title": "Recovery metrics",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Disaster recovery (DR) restores technology after a disruptive event. It is one part of business continuity planning (BCP), which keeps the whole organization working. Recovery targets come from the business, usually from a business impact analysis (BIA) that ranks systems by the cost of losing them."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Metric",
+              "Meaning",
+              "Measured",
+              "Drives"
+            ],
+            "rows": [
+              [
+                "RPO (recovery point objective)",
+                "Maximum acceptable data loss",
+                "Backward in time from the failure to the last good copy",
+                "Backup or replication frequency"
+              ],
+              [
+                "RTO (recovery time objective)",
+                "Maximum acceptable downtime",
+                "Forward in time from the failure until service is back",
+                "Recovery site tier and standing redundancy"
+              ],
+              [
+                "MTBF (mean time between failures)",
+                "Average time a component runs before it fails",
+                "Reliability. Higher is better",
+                "Spare and redundancy planning"
+              ],
+              [
+                "MTTR (mean time to repair)",
+                "Average time to restore a failed component",
+                "Maintainability. Lower is better",
+                "Spares, runbooks, support contracts"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "An RPO of 1 hour means copies at least hourly. A zero RPO needs synchronous replication.",
+              "Set RPO and RTO per system. An order database may need a 5 minute RTO, while an internal wiki can wait two days.",
+              "Availability = MTBF / (MTBF + MTTR). With 1,000 hours between failures and 2 hours to repair, availability is 1000 / 1002, about 99.8 percent.",
+              "Cutting MTTR is usually cheaper than raising MTBF: keep spares, test the runbook and buy a fast support contract."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-3-sites",
+        "title": "Disaster recovery sites",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Site",
+              "What it has",
+              "Recovery time",
+              "Cost"
+            ],
+            "rows": [
+              [
+                "Cold",
+                "Space, power and connectivity, but no equipment or data",
+                "Days to weeks",
+                "Lowest"
+              ],
+              [
+                "Warm",
+                "Installed hardware, data restored from backups or periodic replication",
+                "Hours to a day",
+                "Middle"
+              ],
+              [
+                "Hot",
+                "Full duplicate with continuously replicated data",
+                "Minutes",
+                "Highest"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Pick the tier from the RTO. A tight RTO needs a hot site, a generous one allows a cold site.",
+              "A warm site's data refresh interval sets its RPO. Nightly replication means up to 24 hours of loss.",
+              "Site resiliency also covers moving back to the primary site (failback) after the disaster.",
+              "In the cloud, a pilot light design replicates data continuously but starts compute only at failover."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Cold means bring everything. Warm means bring the data. Hot means just switch."
+          }
+        ]
+      },
+      {
+        "id": "3-3-ha",
+        "title": "High availability",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "High availability (HA) removes single points of failure so one failed part does not cause an outage. DR sites answer the loss of a whole site. HA covers an ordinary failed power supply, cable or router."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Design",
+              "How it works",
+              "Trade-off"
+            ],
+            "rows": [
+              [
+                "Active-passive (active-standby)",
+                "One device carries traffic. The standby watches it and takes over on failure",
+                "Simple, but the standby capacity sits idle"
+              ],
+              [
+                "Active-active",
+                "Both devices carry traffic at once, often behind a load balancer",
+                "More capacity, but needs careful design, and each device must be able to carry the full load alone"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Active-passive pairs must share identical configuration and synchronize state such as session and routing tables, so the standby behaves the same after takeover.",
+              "Two active nodes each at 70 percent load cannot cover each other: the survivor would face 140 percent.",
+              "Redundancy is layered: dual power supplies, NIC teaming to two switches, first-hop redundancy protocols at the gateway, and load balancing."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-3-testing",
+        "title": "Testing the plan",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Test",
+              "What happens",
+              "Risk"
+            ],
+            "rows": [
+              [
+                "Tabletop exercise",
+                "The team talks through a scenario using the plan, and no systems are touched",
+                "None. Finds missing contacts, roles and dependencies"
+              ],
+              [
+                "Validation test",
+                "Real recovery steps are run to prove the technology works",
+                "Varies"
+              ],
+              [
+                "Parallel test (a validation test)",
+                "Bring the DR site up beside live production and confirm services work",
+                "Low"
+              ],
+              [
+                "Full failover test (a validation test)",
+                "Switch production to the DR site, then fail back",
+                "Highest, but the only real measure of RTO and RPO"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A plan decays as the environment changes. Test it regularly, track every gap to closure, and schedule failover tests as changes with a rollback plan."
+          }
+        ]
+      }
+    ]
   }
 ]
