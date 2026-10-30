@@ -6044,5 +6044,184 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-transceivers-fiber",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Transceivers, fiber and connectors (1.5)",
+    "chapter": "Network+ · Transmission media",
+    "concept": "transceivers",
+    "summary": "Match SFP, SFP+, SFP28 and QSFP transceivers to speeds, choose DAC, multimode or single-mode for a distance, and recognize LC, SC, ST and MPO connectors.",
+    "sections": [
+      {
+        "id": "1-5-transceivers",
+        "title": "Transceiver families",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A transceiver is a hot-pluggable module that lets a switch port use copper, fiber or a direct-attach cable. The cage type must match the module type, and the module must be rated for the cable and distance."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Form factor",
+              "Speed",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "SFP",
+                "100 Mbps to 1 Gbps",
+                "Small form-factor pluggable. Copper or fiber"
+              ],
+              [
+                "SFP+",
+                "10 Gbps",
+                "Same size as SFP. Fiber, copper or DAC"
+              ],
+              [
+                "SFP28",
+                "25 Gbps",
+                "Fiber or DAC"
+              ],
+              [
+                "SFP56",
+                "50 Gbps",
+                "Fiber or DAC"
+              ],
+              [
+                "QSFP+",
+                "40 Gbps",
+                "Four lanes of 10 Gbps in one port"
+              ],
+              [
+                "QSFP28",
+                "100 Gbps",
+                "Four lanes of 25 Gbps in one port"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "SFP-family modules are backward compatible with slower rates in the same family, but QSFP ports are a different standard and do not accept SFP modules.",
+              "With fiber, both ends need a transceiver. With a copper RJ45 module, the far end can plug into any standard RJ45 port.",
+              "Do not mix a module's wavelength or fiber type with a mismatched partner: an SR module needs multimode and an LR module needs single-mode.",
+              "Mixing vendors can work but may cause quirks. Check that the switch supports the module."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-5-dac",
+        "title": "DAC, AOC and copper options",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Option",
+              "Best for",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "DAC (direct attach copper)",
+                "Very short links, such as top-of-rack to switch, about 1 to 7 m",
+                "Cheap, low power and low latency. Transceivers are built into the cable ends"
+              ],
+              [
+                "AOC (active optical cable)",
+                "Short to medium links",
+                "Fiber cable with fixed transceivers on each end"
+              ],
+              [
+                "10GBASE-T",
+                "Existing copper cabling, up to 100 m on Cat 6a",
+                "Higher power and latency than SFP+. Cat 6 reaches only 55 m"
+              ],
+              [
+                "SFP+ RJ45 module",
+                "Adding copper 10G to an SFP+ port",
+                "Often limited to about 30 m, and runs hot"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Short distance in the same rack: DAC. Between rooms or buildings: fiber. Reusing existing Cat 6a: 10GBASE-T."
+          }
+        ]
+      },
+      {
+        "id": "1-5-fiber",
+        "title": "Fiber types and connectors",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "Light source and wavelength",
+              "Distance (10G example)",
+              "Use"
+            ],
+            "rows": [
+              [
+                "Multimode (MMF)",
+                "LED or VCSEL, 850 nm",
+                "10GBASE-SR: about 300 m on OM3, 400 m on OM4",
+                "Inside buildings and data centers. Lower cost"
+              ],
+              [
+                "Single-mode (SMF)",
+                "Laser, 1310 nm (LR)",
+                "10GBASE-LR: up to 10 km",
+                "Campus, metro and long distance"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Connector",
+              "Description"
+            ],
+            "rows": [
+              [
+                "LC",
+                "Small form factor, push-pull, usually duplex. Very common on SFP modules"
+              ],
+              [
+                "SC",
+                "Square push-pull connector"
+              ],
+              [
+                "ST",
+                "Round bayonet twist-lock connector"
+              ],
+              [
+                "MPO",
+                "Multi-fiber push-on connector, 12 or 24 fibers. Used for 40G and 100G parallel optics"
+              ],
+              [
+                "F-type / BNC",
+                "Coaxial connectors (cable TV, legacy Ethernet)"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "BiDi transceivers send and receive on one fiber strand using two wavelengths. CWDM and DWDM put several wavelengths on one fiber to multiply capacity.",
+              "A duplex link has one fiber for transmit and one for receive. If TX and RX are swapped there is no link, so flip the pair.",
+              "Respect the minimum bend radius, and keep connector ends clean."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
