@@ -1,4 +1,4 @@
-export interface CoverageObjective { id: string; title: string; status: string; topics: string[]; note?: string }
+export interface CoverageObjective { id: string; title: string; status: string; topics: string[]; note?: string; missedOnExam?: boolean }
 export interface CoverageDomain { id: string; title: string; weight: number; objectives: CoverageObjective[] }
 export interface CoverageExam { code: string; name: string; domains: CoverageDomain[] }
 export interface CoverageMatrix { reviewed: boolean; note: string; exams: CoverageExam[] }
@@ -21,4 +21,4 @@ export function rankGaps(rows: CoverageRow[]): CoverageRow[];
 export function summarizeCoverage(rows: CoverageRow[]): CoverageSummary;
 export function examCoverage(exam: CoverageExam, rows: CoverageRow[]): CoverageSummary & { weighted: number };
 export function normalizeSearch(value: string): string;
-export function filterCoverage(rows: CoverageRow[], filters?: { exam?: string; status?: string; search?: string }): CoverageRow[];
+export function filterCoverage(rows: CoverageRow[], filters?: { exam?: string; status?: string; search?: string; missedOnly?: boolean }): CoverageRow[];
