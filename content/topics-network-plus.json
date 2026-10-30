@@ -6223,5 +6223,401 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-remote-access-methods",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network access and management methods (3.5)",
+    "chapter": "Network+ · Network operations",
+    "concept": "remote-access",
+    "summary": "Choose between site-to-site, client-to-site and clientless VPNs, split and full tunnels, SSH, GUI, API, console and jump boxes, and in-band vs out-of-band management.",
+    "sections": [
+      {
+        "id": "3-5-vpn",
+        "title": "VPN types and tunnel modes",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A VPN builds an encrypted tunnel across a network you do not trust, usually the internet. It protects the path between its two endpoints. It does not make the user anonymous or fix a compromised device."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "VPN type",
+              "What connects",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Site-to-site",
+                "Two networks, gateway to gateway",
+                "Always on and transparent to users. Usually IPsec. The two sides must not use overlapping address space"
+              ],
+              [
+                "Client-to-site (remote access)",
+                "One device to the corporate network",
+                "VPN client software connects to a VPN concentrator. The device inherits broad access"
+              ],
+              [
+                "Clientless",
+                "One user's browser to selected web applications",
+                "SSL/TLS portal on port 443. No software installed. Limited to what the portal exposes"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Tunnel mode",
+              "Behavior",
+              "Trade-off"
+            ],
+            "rows": [
+              [
+                "Full tunnel",
+                "All client traffic goes through the VPN, including internet browsing",
+                "Full inspection and logging, but more load and latency at headquarters"
+              ],
+              [
+                "Split tunnel",
+                "Only traffic for the corporate network uses the VPN",
+                "Faster, but the organization cannot see the internet traffic and the device bridges both networks"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Contractor on an unmanaged laptop who needs one web app: clientless VPN. Branch office to headquarters: site-to-site. Remote employee on a company laptop: client-to-site."
+          }
+        ]
+      },
+      {
+        "id": "3-5-methods",
+        "title": "Management access methods",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "Port or medium",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "SSH",
+                "TCP 22",
+                "Encrypted command line. Supports key-based authentication, SFTP and tunneling. The everyday secure choice"
+              ],
+              [
+                "Telnet",
+                "TCP 23",
+                "Same job in clear text. Do not use it"
+              ],
+              [
+                "GUI",
+                "HTTPS (TCP 443)",
+                "Web interface for occasional tasks and viewing device state"
+              ],
+              [
+                "API",
+                "HTTPS, often REST with JSON",
+                "For automation and monitoring. Scriptable and consistent"
+              ],
+              [
+                "Console",
+                "Physical console port, often USB-to-serial",
+                "Needs no IP address or working configuration. Used for first setup and recovery. You must be present or use a console server"
+              ],
+              [
+                "RDP / VNC",
+                "TCP 3389 / TCP 5900",
+                "Graphical remote desktop. RDP is Microsoft. VNC works across platforms. Do not expose to the internet"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "A jump box (jump server or bastion host) is a hardened host that is the single entry point for administration of a sensitive segment. Admins connect to it first, it is logged, and the protected systems accept management only from it. It sits at the edge or in a DMZ and is a single point of compromise, so it is hardened more than anything it protects.",
+              "A console server (terminal server) gives network access to many devices' serial console ports, usually 8, 16 or 32 ports in a 1U unit. KVM over IP does the same for keyboard, video and mouse."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-5-oob",
+        "title": "In-band vs out-of-band",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Style",
+              "Path",
+              "When it works"
+            ],
+            "rows": [
+              [
+                "In-band",
+                "The production network that carries user data",
+                "Cheap and simple, but fails when the network fails"
+              ],
+              [
+                "Out-of-band",
+                "A separate dedicated path, such as a console server on its own network, often with a cellular uplink",
+                "Still works when the production network is down or misconfigured"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Independence is the test. A management VLAN on the production switches is still in-band. Real out-of-band has its own switches, power and uplink."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Network down: console or out-of-band.",
+              "Automation: API.",
+              "Graphical desktop: through a VPN or jump box.",
+              "Otherwise: SSH."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-ports-reference",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Common ports and protocols reference (1.4)",
+    "chapter": "Network+ · Ports and protocols",
+    "concept": "ports",
+    "summary": "A grouped reference of well-known TCP and UDP ports by purpose, with secure and insecure pairs, plus ports that signal trouble.",
+    "sections": [
+      {
+        "id": "1-4-ports-core",
+        "title": "Core service ports",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Port",
+              "Protocol",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "20 / 21",
+                "FTP",
+                "TCP. 21 control, 20 data. Clear text"
+              ],
+              [
+                "22",
+                "SSH / SCP / SFTP",
+                "TCP. Encrypted remote access and file transfer"
+              ],
+              [
+                "23",
+                "Telnet",
+                "TCP. Clear text. Avoid"
+              ],
+              [
+                "25",
+                "SMTP",
+                "TCP. Server-to-server mail"
+              ],
+              [
+                "53",
+                "DNS",
+                "UDP for queries. TCP for large responses and zone transfers"
+              ],
+              [
+                "67 / 68",
+                "DHCP",
+                "UDP. 67 server, 68 client"
+              ],
+              [
+                "69",
+                "TFTP",
+                "UDP. No authentication"
+              ],
+              [
+                "80",
+                "HTTP",
+                "TCP. Clear text web"
+              ],
+              [
+                "110",
+                "POP3",
+                "TCP. Mail retrieval"
+              ],
+              [
+                "123",
+                "NTP",
+                "UDP. Time"
+              ],
+              [
+                "143",
+                "IMAP4",
+                "TCP. Mail retrieval"
+              ],
+              [
+                "161 / 162",
+                "SNMP",
+                "UDP. 161 queries to agents, 162 traps to the manager"
+              ],
+              [
+                "389",
+                "LDAP",
+                "TCP/UDP. Directory"
+              ],
+              [
+                "443",
+                "HTTPS",
+                "TCP. Encrypted web"
+              ],
+              [
+                "445",
+                "SMB (Microsoft DS)",
+                "TCP. File and printer sharing"
+              ],
+              [
+                "514",
+                "Syslog",
+                "UDP. Log messages"
+              ],
+              [
+                "3389",
+                "RDP",
+                "TCP. Windows remote desktop"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-4-ports-secure",
+        "title": "Secure and insecure pairs",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Service",
+              "Clear-text port",
+              "Secure port"
+            ],
+            "rows": [
+              [
+                "Web",
+                "HTTP 80",
+                "HTTPS 443"
+              ],
+              [
+                "Mail retrieval (POP3)",
+                "110",
+                "995"
+              ],
+              [
+                "Mail retrieval (IMAP)",
+                "143",
+                "993"
+              ],
+              [
+                "Mail submission (SMTP)",
+                "25",
+                "587 (submission) or 465 (SMTP over SSL)"
+              ],
+              [
+                "Directory (LDAP)",
+                "389",
+                "636 (LDAPS)"
+              ],
+              [
+                "File transfer",
+                "FTP 20/21",
+                "SFTP over SSH 22, or FTPS 989/990"
+              ],
+              [
+                "Remote shell",
+                "Telnet 23",
+                "SSH 22"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The secure version of a mail protocol is nearly always in the 990s (993, 995) or 465/587 for submission."
+          }
+        ]
+      },
+      {
+        "id": "1-4-ports-infra",
+        "title": "Directory, database, VPN, voice and infrastructure ports",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Group",
+              "Ports"
+            ],
+            "rows": [
+              [
+                "Authentication",
+                "Kerberos 88, RADIUS 1812/1813, TACACS+ 49, LDAP 389, LDAPS 636"
+              ],
+              [
+                "Databases",
+                "Microsoft SQL 1433, MySQL 3306, PostgreSQL 5432"
+              ],
+              [
+                "VPN",
+                "IKE/ISAKMP UDP 500, L2TP UDP 1701, PPTP TCP 1723, OpenVPN 1194"
+              ],
+              [
+                "Voice",
+                "SIP 5060, RTP 5004-5005"
+              ],
+              [
+                "Routing",
+                "BGP TCP 179, RIP UDP 520"
+              ],
+              [
+                "Storage",
+                "iSCSI 3260, NFS 2049, SMB 445"
+              ],
+              [
+                "Windows legacy",
+                "RPC 135, NetBIOS 137-139"
+              ],
+              [
+                "Remote access",
+                "VNC 5900, RDP 3389, X11 6000"
+              ],
+              [
+                "IPv6",
+                "DHCPv6 546-547"
+              ],
+              [
+                "Diagnostics",
+                "Traceroute uses UDP starting near 33434 on many systems"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Unexpected traffic on odd ports can indicate malware. Old remote-access trojans used ports such as 12345 (NetBus), 27374 (Sub7) and 31337 (Back Orifice). Telnet on 23 in a modern network is also a red flag."
+          }
+        ]
+      }
+    ]
   }
 ]
