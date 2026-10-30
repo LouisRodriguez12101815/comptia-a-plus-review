@@ -4428,6 +4428,628 @@
             "text": "Latency is slow, jitter is uneven, and loss means the data is gone. Jitter is what ruins voice calls."
           }
         ]
+      },
+      {
+        "id": "5-4-wireless",
+        "title": "Wireless performance problems",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Channel overlap: 2.4 GHz has three non-overlapping channels in North America (1, 6 and 11). Nearby access points on overlapping channels interfere with each other.",
+              "Insufficient coverage: weak signal in an area. Add or move access points, or add antenna gain.",
+              "Client disassociation: clients are dropped from the access point and must reconnect. Look for weak signal, interference or too many clients.",
+              "Roaming misconfiguration: a client holds on to a distant access point because roaming thresholds are set badly.",
+              "Bottlenecking: the slowest point on the path limits the throughput of the whole transfer."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-troubleshoot-method",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Troubleshooting methodology: the seven steps (5.1)",
+    "chapter": "Network+ · Troubleshooting methodology",
+    "concept": "troubleshooting",
+    "summary": "Put the seven troubleshooting steps in order and match each action to its step.",
+    "sections": [
+      {
+        "id": "5-1-steps",
+        "title": "The seven steps in order",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Step",
+              "What you do",
+              "Typical actions"
+            ],
+            "rows": [
+              [
+                "1. Identify the problem",
+                "Learn what is actually wrong",
+                "Gather information, question users, identify symptoms, find out what changed, duplicate the problem if possible, approach multiple problems individually"
+              ],
+              [
+                "2. Establish a theory of probable cause",
+                "Decide what most likely caused it",
+                "Question the obvious, then consider multiple approaches: top-to-bottom, bottom-to-top, divide and conquer"
+              ],
+              [
+                "3. Test the theory to determine the cause",
+                "Prove or disprove the theory",
+                "If confirmed, decide the next steps. If not, establish a new theory or escalate"
+              ],
+              [
+                "4. Establish a plan of action",
+                "Plan the fix before touching production",
+                "Identify potential effects, rollback, who is affected, change approval"
+              ],
+              [
+                "5. Implement the solution or escalate",
+                "Make the fix, or hand it to someone with the access or skill",
+                "Often done inside an approved maintenance window"
+              ],
+              [
+                "6. Verify full system functionality",
+                "Confirm the original problem is gone",
+                "Ask the users, check for side effects, add preventive measures where applicable"
+              ],
+              [
+                "7. Document findings, actions, outcomes and lessons learned",
+                "Record it for next time",
+                "Keep notes throughout the process, not only at the end"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "The exam asks for the order and for which step a described action belongs to. Learn the verbs: identify, theorize, test, plan, implement, verify, document."
+          }
+        ]
+      },
+      {
+        "id": "5-1-approaches",
+        "title": "Steps 1 and 2 in detail",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Step 1 questions: What are the symptoms? Who and how many are affected? Did anything change recently (new device, update, configuration, move)? Can you reproduce it?",
+              "If several problems are reported at once, separate them and work each one on its own so the fixes do not get tangled together.",
+              "Question the obvious first: is it plugged in, is the link light on, is the port enabled, is the user on the right network?"
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Approach",
+              "How it works",
+              "Example"
+            ],
+            "rows": [
+              [
+                "Bottom-to-top",
+                "Start at OSI Layer 1 and work upward",
+                "Check cable and link lights, then IP addressing, then the application"
+              ],
+              [
+                "Top-to-bottom",
+                "Start at Layer 7 and work downward",
+                "App fails, so test the application, then the transport port, then the network path"
+              ],
+              [
+                "Divide and conquer",
+                "Start at a middle layer, then move up or down depending on the result",
+                "Ping the default gateway (Layer 3). Success means look higher. Failure means look lower"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5-1-finish",
+        "title": "Steps 3 to 7 in detail",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Test the theory on a non-production system or with a low-risk check when you can. A theory that fails sends you back to step 2, or to escalation if the problem is beyond your access or skill.",
+              "The plan of action covers the change itself, the risk, the rollback plan, who is notified and any approval needed.",
+              "Escalate when the fault is outside your control, such as an ISP circuit, or needs someone with more authority.",
+              "Verify with the people who reported the problem. Preventive measures stop it from returning, such as a monitoring alert or a spare part.",
+              "Document the problem, the cause, the fix and what you learned so the next technician can find it quickly."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-troubleshoot-tools",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Troubleshooting tools and device commands (5.5)",
+    "chapter": "Network+ · Troubleshooting tools",
+    "concept": "troubleshooting",
+    "summary": "Match each software tool, hardware tool and device show command to the problem it solves.",
+    "sections": [
+      {
+        "id": "5-5-software",
+        "title": "Software and command-line tools",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Tool",
+              "Where",
+              "Use it to"
+            ],
+            "rows": [
+              [
+                "Protocol analyzer (for example Wireshark)",
+                "Any OS",
+                "Capture packets and decode them by protocol to inspect a conversation"
+              ],
+              [
+                "ping",
+                "All",
+                "Test reachability and round-trip time with ICMP echo"
+              ],
+              [
+                "traceroute / tracert",
+                "traceroute on Linux and macOS, tracert on Windows",
+                "List each router hop along the path and see where it stops"
+              ],
+              [
+                "nslookup",
+                "Windows, Linux, macOS",
+                "Query DNS. Older tool"
+              ],
+              [
+                "dig",
+                "Linux and macOS",
+                "Query DNS with full record detail. The newer choice"
+              ],
+              [
+                "tcpdump",
+                "Linux and macOS",
+                "Capture packets from the command line. Can save a pcap file for Wireshark"
+              ],
+              [
+                "netstat",
+                "All",
+                "Show active connections, listening ports (-a) and the routing table (-r)"
+              ],
+              [
+                "ipconfig / ifconfig / ip",
+                "ipconfig on Windows, ifconfig older Linux and macOS, ip on modern Linux",
+                "View or change IP configuration on the interface"
+              ],
+              [
+                "arp",
+                "All",
+                "View the ARP cache of IP-to-MAC mappings (arp -a)"
+              ],
+              [
+                "Nmap",
+                "Any OS",
+                "Scan hosts for open ports, services and operating system. An active scan that sends probes"
+              ],
+              [
+                "LLDP / CDP",
+                "On network devices",
+                "Learn the name, port and address of directly connected neighbors. LLDP is vendor-neutral. CDP is Cisco proprietary"
+              ],
+              [
+                "Speed tester",
+                "Web or app",
+                "Measure real throughput and latency to an internet server"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5-5-hardware",
+        "title": "Hardware tools",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Tool",
+              "Use it to"
+            ],
+            "rows": [
+              [
+                "Toner (tone generator and inductive probe)",
+                "Find the far end of one cable in a bundle without cutting it"
+              ],
+              [
+                "Cable tester",
+                "Check continuity, shorts, opens and crossed or split pairs"
+              ],
+              [
+                "Tap",
+                "Copy traffic from a link, without disturbing it, to an analyzer. Passive taps need no power; active taps do"
+              ],
+              [
+                "Wi-Fi analyzer",
+                "See nearby access points, channels, signal strength and coverage"
+              ],
+              [
+                "Visual fault locator",
+                "Send visible light down a fiber to find a break, bend or bad connector"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Port mirroring (SPAN) copies traffic inside a switch to another port. A tap does the same job as a separate physical device in the link."
+          }
+        ]
+      },
+      {
+        "id": "5-5-show",
+        "title": "Basic device show commands",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Command",
+              "Shows"
+            ],
+            "rows": [
+              [
+                "show mac address-table",
+                "Which MAC address was learned on which switch port"
+              ],
+              [
+                "show route",
+                "The routing table, including next hops and routes in use"
+              ],
+              [
+                "show interface",
+                "Status, speed, duplex, MTU and error counters such as CRC errors"
+              ],
+              [
+                "show config",
+                "The device configuration as text"
+              ],
+              [
+                "show arp",
+                "IP-to-MAC mappings the device has learned"
+              ],
+              [
+                "show vlan",
+                "VLANs and which ports belong to each"
+              ],
+              [
+                "show power",
+                "Power over Ethernet usage and remaining budget"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Exact command names vary by vendor. Cisco-style names are used here because they match the exam wording."
+          }
+        ]
+      },
+      {
+        "id": "5-5-scenarios",
+        "title": "Pick the tool",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Problem",
+              "Reach for"
+            ],
+            "rows": [
+              [
+                "Site opens by IP address but not by name",
+                "nslookup or dig"
+              ],
+              [
+                "Traffic stops somewhere on the way to a server",
+                "traceroute or tracert"
+              ],
+              [
+                "Find which port a MAC address is on",
+                "show mac address-table"
+              ],
+              [
+                "Find an unknown device or open ports",
+                "Nmap"
+              ],
+              [
+                "Cable in the ceiling needs to be located",
+                "Toner and probe"
+              ],
+              [
+                "New drop has crossed pairs",
+                "Cable tester"
+              ],
+              [
+                "Wi-Fi is weak in one office",
+                "Wi-Fi analyzer"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-troubleshoot-physical",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Cabling and physical interface issues (5.2)",
+    "chapter": "Network+ · Troubleshooting cabling",
+    "concept": "troubleshooting",
+    "summary": "Diagnose bad cables, interface counters, port status, PoE and transceiver problems.",
+    "sections": [
+      {
+        "id": "5-2-cable",
+        "title": "Cable issues",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Issue",
+              "Symptom or cause",
+              "Fix"
+            ],
+            "rows": [
+              [
+                "Single-mode vs multimode mismatch",
+                "Wrong fiber type for the transceiver. High loss or no link",
+                "Match the fiber type and transceiver"
+              ],
+              [
+                "Wrong copper category",
+                "Errors or low speed, such as Cat 5 on a 10 Gbps run",
+                "Use a category rated for the speed"
+              ],
+              [
+                "STP vs UTP",
+                "UTP in a noisy area picks up interference. Shielded twisted pair resists it",
+                "Use STP, grounded correctly, or reroute"
+              ],
+              [
+                "Crosstalk",
+                "Signal from one pair leaks into a neighboring pair",
+                "Better category, proper twist, proper termination"
+              ],
+              [
+                "Interference",
+                "Electrical noise from motors, lights or power cables",
+                "Reroute, shield, or move away from the source"
+              ],
+              [
+                "Attenuation",
+                "Signal weakens with distance, such as copper beyond 100 m",
+                "Shorten the run or add a repeater, switch or fiber"
+              ],
+              [
+                "Improper termination",
+                "Poor punch-down, too much untwisting, wrong pinout. Link slow or intermittent",
+                "Re-terminate and test"
+              ],
+              [
+                "TX/RX transposed",
+                "Transmit and receive swapped, often on a fiber pair. No link",
+                "Flip the pair so transmit meets receive"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5-2-interface",
+        "title": "Interface counters and port status",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Counter",
+              "Means",
+              "Common causes"
+            ],
+            "rows": [
+              [
+                "CRC errors",
+                "Frames arrived corrupted",
+                "Bad cable, interference, bad termination, duplex mismatch"
+              ],
+              [
+                "Runts",
+                "Frames smaller than the 64-byte minimum",
+                "Collisions, duplex mismatch, faulty NIC"
+              ],
+              [
+                "Giants",
+                "Frames larger than the allowed maximum (1518 bytes, 1522 with a VLAN tag)",
+                "MTU mismatch, jumbo frames sent to a port that does not allow them, faulty NIC"
+              ],
+              [
+                "Drops",
+                "Frames the interface discarded",
+                "Congestion or full buffers"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Port status",
+              "Meaning",
+              "Action"
+            ],
+            "rows": [
+              [
+                "Error disabled",
+                "The switch shut the port itself after a violation, such as port security, a loop or BPDU guard",
+                "Remove the cause, then re-enable the port"
+              ],
+              [
+                "Administratively down",
+                "A person shut the port down in the configuration",
+                "Enable it with no shutdown"
+              ],
+              [
+                "Suspended",
+                "A port in a link-aggregation bundle is held out because its settings do not match the others",
+                "Make speed, duplex and VLAN settings match across the bundle"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5-2-hardware",
+        "title": "PoE and transceiver problems",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "PoE power budget exceeded: the switch has a total wattage limit. Add up every powered device. If the total goes over, some devices will not power up.",
+              "Incorrect PoE standard: 802.3af (PoE), 802.3at (PoE+) and 802.3bt (PoE++) deliver increasing power. A camera that needs PoE+ will not run on a plain PoE port.",
+              "An endspan device is the PoE switch itself. A midspan device is an injector placed between a non-PoE switch and the powered device.",
+              "Transceiver mismatch: speed, wavelength (for example 850 nm vs 1310 nm), connector or fiber type must match at both ends.",
+              "Signal strength: switches can show receive light levels. Low levels point to a dirty connector, a bend, a long run or a failing transceiver."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-troubleshoot-services",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network services issues: switching, routing and addressing (5.3)",
+    "chapter": "Network+ · Troubleshooting network services",
+    "concept": "troubleshooting",
+    "summary": "Trace loops, VLAN mistakes, ACLs, routes and IP settings to the right fix.",
+    "sections": [
+      {
+        "id": "5-3-stp",
+        "title": "Spanning tree and switching problems",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A loop between switches makes frames circle forever. Ethernet frames have no hop count, so the result is a broadcast storm and an overwhelmed network.",
+              "Spanning Tree Protocol (STP) prevents loops by blocking redundant paths. Switches exchange BPDUs to learn the topology.",
+              "The root bridge is the switch with the lowest bridge ID (priority first, then the lowest MAC address on a tie).",
+              "A bad root bridge election, such as a slow access switch becoming root, sends traffic down poor paths. Set the priority on the switch you want."
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Port role",
+              "Where",
+              "What it does"
+            ],
+            "rows": [
+              [
+                "Root port",
+                "Non-root switches",
+                "The best path toward the root bridge"
+              ],
+              [
+                "Designated port",
+                "Each segment",
+                "The port that forwards toward the segment, away from the root"
+              ],
+              [
+                "Alternate / blocked port",
+                "Redundant link",
+                "Held in reserve to break the loop until another link fails"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Port states in classic STP: blocking, listening, learning, forwarding. Only forwarding passes user traffic. Learning builds the MAC address table without forwarding frames."
+          }
+        ]
+      },
+      {
+        "id": "5-3-vlan-acl",
+        "title": "VLAN assignment and ACLs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Incorrect VLAN assignment: a device gets an address but cannot reach neighbors because its port is in a different VLAN. Check the port with show vlan or the interface configuration.",
+              "ACLs: a rule that denies traffic can break one service or one direction while everything else works. Look at recent ACL changes and rule order.",
+              "ACLs are checked from top to bottom and the first match wins. An implicit deny sits at the end."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5-3-routing-ip",
+        "title": "Routes and IP configuration",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Problem",
+              "Symptom",
+              "Check"
+            ],
+            "rows": [
+              [
+                "Missing route or default route",
+                "Traffic to a network is dropped",
+                "Routing table. A default route (0.0.0.0/0) catches unknown destinations"
+              ],
+              [
+                "Address pool exhaustion",
+                "New clients get no lease or a 169.254.x.x address",
+                "DHCP scope size and lease time"
+              ],
+              [
+                "Incorrect default gateway",
+                "Local hosts work, nothing beyond the subnet",
+                "Gateway address on the host or in DHCP options"
+              ],
+              [
+                "Incorrect IP address",
+                "Wrong subnet, or the same address as another device",
+                "IP settings and DHCP reservations"
+              ],
+              [
+                "Duplicate IP address",
+                "Conflict warnings and intermittent connectivity",
+                "ARP table, DHCP leases, static assignments"
+              ],
+              [
+                "Incorrect subnet mask",
+                "Host reaches some local devices but not others",
+                "Mask compared with the network design"
+              ]
+            ]
+          }
+        ]
       }
     ]
   }
