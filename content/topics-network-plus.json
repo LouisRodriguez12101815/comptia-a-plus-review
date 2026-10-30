@@ -5320,5 +5320,200 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-disaster-recovery",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Disaster recovery concepts (3.3)",
+    "chapter": "Network+ · Organizational processes",
+    "concept": "disaster-recovery",
+    "summary": "Set recovery targets with RPO and RTO, judge reliability with MTBF and MTTR, choose a cold, warm or hot site, remove single points of failure, and prove the plan with tests.",
+    "sections": [
+      {
+        "id": "3-3-metrics",
+        "title": "Recovery metrics",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Disaster recovery (DR) restores technology after a disruptive event. It is one part of business continuity planning (BCP), which keeps the whole organization working. Recovery targets come from the business, usually from a business impact analysis (BIA) that ranks systems by the cost of losing them."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Metric",
+              "Meaning",
+              "Measured",
+              "Drives"
+            ],
+            "rows": [
+              [
+                "RPO (recovery point objective)",
+                "Maximum acceptable data loss",
+                "Backward in time from the failure to the last good copy",
+                "Backup or replication frequency"
+              ],
+              [
+                "RTO (recovery time objective)",
+                "Maximum acceptable downtime",
+                "Forward in time from the failure until service is back",
+                "Recovery site tier and standing redundancy"
+              ],
+              [
+                "MTBF (mean time between failures)",
+                "Average time a component runs before it fails",
+                "Reliability. Higher is better",
+                "Spare and redundancy planning"
+              ],
+              [
+                "MTTR (mean time to repair)",
+                "Average time to restore a failed component",
+                "Maintainability. Lower is better",
+                "Spares, runbooks, support contracts"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "An RPO of 1 hour means copies at least hourly. A zero RPO needs synchronous replication.",
+              "Set RPO and RTO per system. An order database may need a 5 minute RTO, while an internal wiki can wait two days.",
+              "Availability = MTBF / (MTBF + MTTR). With 1,000 hours between failures and 2 hours to repair, availability is 1000 / 1002, about 99.8 percent.",
+              "Cutting MTTR is usually cheaper than raising MTBF: keep spares, test the runbook and buy a fast support contract."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-3-sites",
+        "title": "Disaster recovery sites",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Site",
+              "What it has",
+              "Recovery time",
+              "Cost"
+            ],
+            "rows": [
+              [
+                "Cold",
+                "Space, power and connectivity, but no equipment or data",
+                "Days to weeks",
+                "Lowest"
+              ],
+              [
+                "Warm",
+                "Installed hardware, data restored from backups or periodic replication",
+                "Hours to a day",
+                "Middle"
+              ],
+              [
+                "Hot",
+                "Full duplicate with continuously replicated data",
+                "Minutes",
+                "Highest"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Pick the tier from the RTO. A tight RTO needs a hot site, a generous one allows a cold site.",
+              "A warm site's data refresh interval sets its RPO. Nightly replication means up to 24 hours of loss.",
+              "Site resiliency also covers moving back to the primary site (failback) after the disaster.",
+              "In the cloud, a pilot light design replicates data continuously but starts compute only at failover."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Cold means bring everything. Warm means bring the data. Hot means just switch."
+          }
+        ]
+      },
+      {
+        "id": "3-3-ha",
+        "title": "High availability",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "High availability (HA) removes single points of failure so one failed part does not cause an outage. DR sites answer the loss of a whole site. HA covers an ordinary failed power supply, cable or router."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Design",
+              "How it works",
+              "Trade-off"
+            ],
+            "rows": [
+              [
+                "Active-passive (active-standby)",
+                "One device carries traffic. The standby watches it and takes over on failure",
+                "Simple, but the standby capacity sits idle"
+              ],
+              [
+                "Active-active",
+                "Both devices carry traffic at once, often behind a load balancer",
+                "More capacity, but needs careful design, and each device must be able to carry the full load alone"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Active-passive pairs must share identical configuration and synchronize state such as session and routing tables, so the standby behaves the same after takeover.",
+              "Two active nodes each at 70 percent load cannot cover each other: the survivor would face 140 percent.",
+              "Redundancy is layered: dual power supplies, NIC teaming to two switches, first-hop redundancy protocols at the gateway, and load balancing."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3-3-testing",
+        "title": "Testing the plan",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Test",
+              "What happens",
+              "Risk"
+            ],
+            "rows": [
+              [
+                "Tabletop exercise",
+                "The team talks through a scenario using the plan, and no systems are touched",
+                "None. Finds missing contacts, roles and dependencies"
+              ],
+              [
+                "Validation test",
+                "Real recovery steps are run to prove the technology works",
+                "Varies"
+              ],
+              [
+                "Parallel test (a validation test)",
+                "Bring the DR site up beside live production and confirm services work",
+                "Low"
+              ],
+              [
+                "Full failover test (a validation test)",
+                "Switch production to the DR site, then fail back",
+                "Highest, but the only real measure of RTO and RPO"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "A plan decays as the environment changes. Test it regularly, track every gap to closure, and schedule failover tests as changes with a rollback plan."
+          }
+        ]
+      }
+    ]
   }
 ]

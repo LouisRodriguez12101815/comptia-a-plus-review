@@ -24016,5 +24016,369 @@
     "answer": 1,
     "explanation": "Objective 3.1. A change request stating the reason starts the process.",
     "weak": false
+  },
+  {
+    "id": "q-n10dr-01",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A requirement says an outage may lose no more than 15 minutes of transactions. Which metric is this?",
+    "choices": [
+      "Mean time to repair",
+      "Recovery point objective",
+      "Recovery time objective",
+      "Mean time between failures"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. The recovery point objective is the maximum data loss measured backward from the failure.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-02",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A requirement says the web store must be back within 30 minutes of a failure. Which metric is this?",
+    "choices": [
+      "Mean time between failures",
+      "Recovery time objective",
+      "Business impact analysis",
+      "Recovery point objective"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. The recovery time objective is the maximum downtime measured forward from the failure.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-03",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "An RPO of 1 hour requires which backup approach?",
+    "choices": [
+      "Copies made at least every hour",
+      "Annual restore tests",
+      "Weekly full backups",
+      "A cold site"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. An RPO of 1 hour needs copies at least every hour, since the last copy may be up to an hour old.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-04",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which RPO requires synchronous replication?",
+    "choices": [
+      "1 week",
+      "8 hours",
+      "Zero",
+      "24 hours"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.3. A zero RPO accepts no data loss, so writes must be replicated synchronously.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-05",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which metric describes the average time a component operates before it fails?",
+    "choices": [
+      "Recovery point objective",
+      "Mean time to repair",
+      "Recovery time objective",
+      "Mean time between failures"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.3. The mean time between failures measures reliability.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-06",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which metric describes the average time needed to restore a failed component?",
+    "choices": [
+      "Service level agreement",
+      "Mean time between failures",
+      "Recovery point objective",
+      "Mean time to repair"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.3. The mean time to repair measures how long fixing a failed component takes.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-07",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A device ran 3,000 hours with 3 failures. What is the MTBF?",
+    "choices": [
+      "1,000 hours",
+      "9,000 hours",
+      "3 hours",
+      "100 hours"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. MTBF is total uptime divided by failures: 3000 / 3 = 1,000 hours.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-08",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Repairs after 3 failures took 6 hours in total. What is the MTTR?",
+    "choices": [
+      "2 hours",
+      "18 hours",
+      "6 hours",
+      "0.5 hours"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. MTTR is total repair time divided by repairs: 6 / 3 = 2 hours.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-09",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which change most cheaply raises availability?",
+    "choices": [
+      "Buy a hot site for every system",
+      "Extend the backup window",
+      "Reduce MTTR with on-site spares and a tested runbook",
+      "Raise the RPO"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.3. Reducing MTTR with spares and a tested runbook raises availability without changing hardware reliability.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-10",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which document ranks systems by the cost of losing them and assigns recovery targets?",
+    "choices": [
+      "Business impact analysis",
+      "Change request",
+      "Cable map",
+      "Service level agreement"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. A business impact analysis assigns each system its recovery targets.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-11",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A database server is restored, but nobody can reach it because the office is flooded. What does this show?",
+    "choices": [
+      "The MTBF was too low",
+      "Disaster recovery succeeded while business continuity failed",
+      "The RPO was zero",
+      "The site was a hot site"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. DR restores technology, but continuity requires people, facilities and processes to work too.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-12",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which DR site provides space, power and connectivity but no equipment or data?",
+    "choices": [
+      "Warm site",
+      "Hot site",
+      "Active site",
+      "Cold site"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.3. A cold site is an empty facility, so everything must be brought in.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-13",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which DR site has installed hardware with data restored from backups or periodic replication?",
+    "choices": [
+      "Passive site",
+      "Cold site",
+      "Hot site",
+      "Warm site"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.3. A warm site sits between cold and hot: hardware is ready and the data is restored.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-14",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which DR site is a full duplicate with continuously replicated data and takes over in minutes?",
+    "choices": [
+      "Backup tape site",
+      "Hot site",
+      "Cold site",
+      "Warm site"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. A hot site is a live duplicate, so failover takes minutes, at the highest cost.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-15",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A company needs a recovery time of several days and has a small budget. Which site fits best?",
+    "choices": [
+      "Cold site",
+      "Warm site with continuous replication",
+      "Hot site",
+      "Active-active cluster"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. A cold site is cheapest, and days of recovery time fit a generous RTO.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-16",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A warm site receives nightly replication. What is its worst-case RPO?",
+    "choices": [
+      "Zero",
+      "1 minute",
+      "1 week",
+      "24 hours"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.3. With nightly replication, up to a day of data may be lost, so the RPO is 24 hours.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-17",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "What is the main weakness of a warm site?",
+    "choices": [
+      "It has no hardware",
+      "It costs more than a hot site",
+      "Its configuration and data can drift from production",
+      "It needs weeks to start"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.3. Drift from production means the warm site may not match the live environment at failover.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-18",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which design has one device carrying traffic while the other waits to take over?",
+    "choices": [
+      "Tabletop",
+      "Active-passive",
+      "Load balancing",
+      "Active-active"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. Active-passive keeps a standby idle until the active device fails.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-19",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which design has two devices both carrying traffic?",
+    "choices": [
+      "Cold standby",
+      "Active-active",
+      "Warm site",
+      "Active-passive"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. In active-active both nodes serve traffic at the same time.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-20",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "What must an active-passive firewall pair share so the standby behaves the same after takeover?",
+    "choices": [
+      "Only the power circuit",
+      "A single IP address pool for DHCP clients",
+      "Only the same color cabling",
+      "Configuration and state such as session tables"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.3. The pair needs identical configuration and synchronized state, such as session and routing tables.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-21",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Two active-active nodes each run at 70 percent load. What risk does this create?",
+    "choices": [
+      "Both nodes become passive",
+      "The survivor would face 140 percent load if one fails",
+      "The MTTR doubles",
+      "The RPO becomes zero"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.3. Each node must be able to carry the full load alone, but 70 plus 70 is 140 percent.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-22",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "A team talks through a data center fire scenario using the DR plan without touching any systems. What is this?",
+    "choices": [
+      "Failback",
+      "Full failover test",
+      "Tabletop exercise",
+      "Parallel test"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.3. A tabletop exercise is a discussion of a scenario with no systems touched.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-23",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which test brings up the DR site beside live production without switching users over?",
+    "choices": [
+      "Parallel test",
+      "Walk-through of the runbook",
+      "Tabletop exercise",
+      "Full failover test"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. A parallel test validates the recovery technology while production keeps running.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-24",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which test is the only real measure of RTO and RPO?",
+    "choices": [
+      "Full failover test",
+      "Document review",
+      "Parallel test",
+      "Tabletop exercise"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.3. Only a full failover shows how long recovery takes and how much data is lost.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-25",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "An administrator must prove a warm site can restore current data and start services without disrupting production. Which test meets this?",
+    "choices": [
+      "Full failover test",
+      "Tabletop exercise",
+      "Parallel test",
+      "Business impact analysis"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.3. A parallel test proves the technology works without a cutover, while a full failover disrupts production.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dr-26",
+    "topicId": "n10-disaster-recovery",
+    "prompt": "Which finding is most typical of a tabletop exercise?",
+    "choices": [
+      "A failed replication link",
+      "A full disk on the backup server",
+      "A missing contact list or unclear roles",
+      "A bad cable"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.3. Tabletop exercises expose missing contacts, unclear roles and unmapped dependencies.",
+    "weak": false
   }
 ]
