@@ -5515,5 +5515,333 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-sdn-overlay",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "SDN, SD-WAN, VXLAN and DCI (1.8)",
+    "chapter": "Network+ · Modern network environments",
+    "concept": "modern-networks",
+    "summary": "Separate the data, control and management planes, see why SD-WAN suits cloud traffic, and learn how VXLAN overlays stretch layer 2 across routed networks and data centers.",
+    "sections": [
+      {
+        "id": "1-8-sdn",
+        "title": "Software-defined networking and SD-WAN",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A router, switch or firewall does three jobs. Software-defined networking (SDN) separates them so the logic can run as software and be managed centrally."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Plane",
+              "Job",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "Data plane (infrastructure layer)",
+                "Forwards traffic from one interface to another",
+                "Forwarding, trunking, encryption, NAT"
+              ],
+              [
+                "Control plane (control layer)",
+                "Decides how traffic is forwarded",
+                "Routing tables, switching tables, NAT tables"
+              ],
+              [
+                "Management plane (application layer)",
+                "How administrators configure and monitor the device",
+                "SSH, console, web interface, APIs"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "SD-WAN applies the same idea to the wide area network. Applications moved from one data center to SaaS and IaaS, so branches need to reach many cloud locations, not only headquarters."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "SD-WAN feature",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Application aware",
+                "Recognizes the application and sends it by the best path, such as email straight to the nearest cloud service"
+              ],
+              [
+                "Zero-touch provisioning",
+                "A new edge device configures itself when it connects, without a technician on site"
+              ],
+              [
+                "Transport agnostic",
+                "Works over fiber, broadband, 5G or DSL, as long as there is IP reachability"
+              ],
+              [
+                "Central policy management",
+                "Policies are set once on a controller and pushed to every edge device"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Network function virtualization (NFV) replaces dedicated appliances with virtual firewalls, routers or load balancers on standard servers.",
+              "Local breakout lets a branch reach cloud services directly instead of hairpinning through the headquarters firewall."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-8-vxlan",
+        "title": "VXLAN and data center interconnect",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An overlay is a network built from tunnels across another network, the underlay. The underlay only delivers packets and never reads what is inside them. VXLAN is the data center overlay."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Detail"
+            ],
+            "rows": [
+              [
+                "VXLAN",
+                "Carries Ethernet (layer 2) frames inside UDP/IP packets, so a layer 2 segment can exist anywhere IP reaches"
+              ],
+              [
+                "VTEP",
+                "VXLAN tunnel endpoint. Usually a leaf switch or hypervisor virtual switch that adds and removes the VXLAN header"
+              ],
+              [
+                "VNI",
+                "VXLAN network identifier. 24 bits, about 16 million segments, compared with 4,096 for a 12-bit VLAN ID"
+              ],
+              [
+                "UDP port",
+                "4789"
+              ],
+              [
+                "Overhead",
+                "About 50 bytes per packet, so the underlay needs a larger MTU, such as jumbo frames"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Data center interconnect (DCI) joins data centers so workloads can fail over or move and keep their IP addresses.",
+              "Stretching VLANs over dark fiber makes spanning tree and broadcast storms span both sites. VXLAN over a routed link keeps failures contained.",
+              "VXLAN does not encrypt. Add IPsec on untrusted links.",
+              "When an overlay fails, check the underlay first. A single link with a small MTU lets small packets pass but stalls large transfers."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-zerotrust-iac",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Zero trust, SASE, infrastructure as code and IPv6 transition (1.8)",
+    "chapter": "Network+ · Modern network environments",
+    "concept": "modern-networks",
+    "summary": "Apply zero trust principles, tell SASE from SSE, use templates, playbooks and Git for automation, and pick dual stack, tunneling or NAT64 for IPv6 coexistence.",
+    "sections": [
+      {
+        "id": "1-8-zta",
+        "title": "Zero trust architecture",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The old perimeter model trusted anything inside the firewall. Zero trust removes that assumption: every request is evaluated on its own, using identity, device posture, resource and context."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Principle",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Verify explicitly (policy-based authentication)",
+                "Authenticate and authorize each request, with stronger checks for riskier context, such as MFA on an unmanaged device"
+              ],
+              [
+                "Least privilege access",
+                "Give one user access to one resource for one session, not the whole network"
+              ],
+              [
+                "Assume breach",
+                "Design as if an attacker is already inside: segment, monitor and contain"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "The policy decision point (PDP) evaluates the request against policy. The policy enforcement point (PEP) allows or blocks the connection.",
+              "Verification is continuous. A device that stops complying loses access during the session.",
+              "ZTNA connects a user to one application and hides everything else. A classic VPN puts the device on the whole internal network.",
+              "Microsegmentation applies policy to each server, VM or container, so every lateral hop is blocked and logged."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-8-sase",
+        "title": "SASE and SSE",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "What it is"
+            ],
+            "rows": [
+              [
+                "SSE (security service edge)",
+                "Cloud-delivered security: secure web gateway (SWG), cloud access security broker (CASB), ZTNA and firewall as a service (FWaaS)"
+              ],
+              [
+                "SASE (secure access service edge)",
+                "SSE plus SD-WAN, delivered from provider points of presence near users"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Users and apps left the office, so hairpinning to a headquarters firewall adds latency. SASE inspects traffic at the edge closest to each user.",
+              "SWG filters web traffic. CASB controls SaaS use and finds shadow IT.",
+              "Exam rule: if the requirement includes SD-WAN or networking, answer SASE. If it is only security services, answer SSE."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-8-iac",
+        "title": "Infrastructure as code and source control",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "With infrastructure as code (IaC) the files are the source of truth and devices are made to match them. The loop is define the desired state, render a configuration, push it through an API, and verify."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Template",
+                "A standard pattern with variables for values that differ, such as host name"
+              ],
+              [
+                "Playbook",
+                "An ordered set of tasks, such as back up, apply, verify and roll back"
+              ],
+              [
+                "Reusable task",
+                "A shared building block, such as the standard NTP configuration"
+              ],
+              [
+                "Idempotent",
+                "Running it twice gives the same result"
+              ],
+              [
+                "Dynamic inventory",
+                "The target device list is generated from a live source, such as IPAM or a cloud API"
+              ],
+              [
+                "Configuration drift",
+                "A device no longer matches its files, usually after a direct change"
+              ],
+              [
+                "Compliance check",
+                "Comparing each device with the desired state on a schedule"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Source control term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Version control (Git)",
+                "Full history, with who changed what and why"
+              ],
+              [
+                "Central repository",
+                "The authoritative copy that clones push to and pull from"
+              ],
+              [
+                "Branch",
+                "A parallel line of work so main is never edited directly"
+              ],
+              [
+                "Merge conflict",
+                "Two branches changed the same lines. A person must choose"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Keep passwords and keys out of the repository, because history is permanent. After an emergency manual fix, put the change back into the files or the next automated run will undo it."
+          }
+        ]
+      },
+      {
+        "id": "1-8-ipv6",
+        "title": "IPv6 coexistence",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Method",
+              "How it works"
+            ],
+            "rows": [
+              [
+                "Dual stack",
+                "Run IPv4 and IPv6 together on the same interfaces. The preferred approach"
+              ],
+              [
+                "Tunneling",
+                "Encapsulate IPv6 packets inside IPv4 to cross networks that do not support IPv6"
+              ],
+              [
+                "NAT64 with DNS64",
+                "Translate between IPv6-only clients and IPv4-only servers. DNS64 builds synthetic AAAA records, often using 64:ff9b::/96"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "IPv6 addresses are 128 bits, written as eight groups of four hexadecimal digits.",
+              "Drop leading zeros in a group, and replace one run of zero groups with :: (only once per address).",
+              "Global unicast starts at 2000::/3, link-local is fe80::/10, unique local is fc00::/7 and multicast is ff00::/8."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
