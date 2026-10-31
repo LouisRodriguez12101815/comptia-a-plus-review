@@ -7508,5 +7508,337 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-cloud-models-connectivity",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Cloud models, services and connectivity (1.3)",
+    "chapter": "Network+ · Networking concepts",
+    "concept": "cloud",
+    "summary": "Separate the four deployment models and the service models, know who is responsible for what, and choose between a VPN and a private connection to the cloud.",
+    "sections": [
+      {
+        "id": "1-3-models",
+        "title": "Deployment and service models",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Deployment model",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "Public",
+                "Provider's shared infrastructure, offered to many customers over the internet"
+              ],
+              [
+                "Private",
+                "Infrastructure used by one organization, on premises or hosted"
+              ],
+              [
+                "Hybrid",
+                "Private and public connected and used together, such as bursting to the public cloud at peak"
+              ],
+              [
+                "Community",
+                "Shared by several organizations with common needs such as compliance"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Service model",
+              "Provider manages",
+              "You manage"
+            ],
+            "rows": [
+              [
+                "SaaS",
+                "Everything, down to the application",
+                "Your data, users and access"
+              ],
+              [
+                "PaaS",
+                "Hardware, operating system and runtime",
+                "Your application code and data"
+              ],
+              [
+                "IaaS",
+                "Hardware and virtualization",
+                "Operating system, patches, applications, data"
+              ],
+              [
+                "DaaS",
+                "Virtual desktop infrastructure",
+                "Desktop images, users and data"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Elasticity: resources grow and shrink automatically with demand. Scalability: the ability to grow to meet demand, often planned.",
+              "Multitenancy: many customers share the same infrastructure, kept logically separate.",
+              "Billing is metered and on demand: you pay for what you use.",
+              "Shared responsibility: the provider secures the cloud itself, the customer secures what they put in it. The more the provider manages, the less you are responsible for."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1-3-network",
+        "title": "Cloud networking and connectivity",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Component",
+              "Role"
+            ],
+            "rows": [
+              [
+                "VPC / virtual network",
+                "Logically isolated network inside a public cloud with your own address range and subnets"
+              ],
+              [
+                "Public subnet",
+                "Has a route to an internet gateway"
+              ],
+              [
+                "Private subnet",
+                "No direct route in from the internet"
+              ],
+              [
+                "Internet gateway",
+                "Lets a VPC exchange traffic with the internet"
+              ],
+              [
+                "NAT gateway",
+                "Lets private-subnet instances reach out to the internet without being reachable from it"
+              ],
+              [
+                "Security group",
+                "Stateful firewall at the instance level. Return traffic is allowed automatically"
+              ],
+              [
+                "Network ACL",
+                "Stateless filter at the subnet level. Rules are needed in both directions"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Connection",
+              "Facts"
+            ],
+            "rows": [
+              [
+                "VPN over the internet",
+                "Encrypted tunnel between the site and the cloud. Fast and cheap to set up, but latency varies with the internet"
+              ],
+              [
+                "Dedicated private connection (Direct Connect style)",
+                "Private circuit that does not cross the public internet. Predictable latency and bandwidth, higher cost and longer setup"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Region = a geographic area. Availability zones = isolated locations inside a region, used to survive a data-center failure."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-physical-install-factors",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Physical installation factors (2.4)",
+    "chapter": "Network+ · Network implementation",
+    "concept": "physical",
+    "summary": "Plan racks, power, cooling, fire suppression and distribution rooms so equipment stays up, cool and secure.",
+    "sections": [
+      {
+        "id": "2-4-rooms",
+        "title": "Rooms, racks and cabling",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "MDF (main distribution frame): the central room where the provider's connection and the core equipment land. IDF (intermediate distribution frame): closets on other floors that connect users and uplink to the MDF.",
+              "The demarc (demarcation point) is where the provider's responsibility ends and the customer's begins.",
+              "Standard racks are 19 inches wide. One rack unit (1U) is 1.75 inches tall, and a full rack is commonly 42U.",
+              "Heavy equipment such as UPS units goes low in the rack for stability.",
+              "Patch panels terminate the permanent cabling. Short patch cables connect them to the switch.",
+              "Cable management: horizontal and vertical managers, labels on both ends, respect bend radius, keep power and data cable apart to avoid interference.",
+              "Twisted-pair channel limit is 100 meters: 90 meters permanent link plus up to 10 meters of patch cables.",
+              "Plenum-rated cable has a fire-resistant, low-smoke jacket and is required in air-handling spaces."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-4-power-cooling",
+        "title": "Power, cooling and safety",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Topic",
+              "Key points"
+            ],
+            "rows": [
+              [
+                "UPS",
+                "Battery backup that carries equipment through short outages and conditions power. A generator provides long-term power, and the UPS bridges until it starts"
+              ],
+              [
+                "PDU",
+                "Distributes power to rack equipment. Metered PDUs show load and switched PDUs allow remote outlet control"
+              ],
+              [
+                "Redundant power",
+                "Dual power supplies on separate PDUs and circuits (A and B feeds)"
+              ],
+              [
+                "Power load",
+                "Total draw must stay below the circuit's capacity"
+              ],
+              [
+                "Airflow",
+                "Hot aisle / cold aisle: racks face each other, cold air enters the fronts, hot air exits into the hot aisle. Mount gear so airflow runs front to back consistently, and use blanking panels in empty slots"
+              ],
+              [
+                "Humidity",
+                "Too dry causes static discharge. Too humid causes condensation and corrosion"
+              ],
+              [
+                "Temperature",
+                "Overheating causes throttling and failures. Use environmental sensors"
+              ],
+              [
+                "Fire suppression",
+                "Prefer clean-agent gas or pre-action dry-pipe systems in server rooms. Wet-pipe water sprinklers risk accidental discharge on equipment"
+              ],
+              [
+                "ESD and grounding",
+                "Wrist straps, anti-static mats, and racks bonded to a grounding bar"
+              ],
+              [
+                "Physical security",
+                "Locking racks, badge access and cameras"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-performance-troubleshooting",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Performance troubleshooting (5.4)",
+    "chapter": "Network+ · Network troubleshooting",
+    "concept": "performance",
+    "summary": "Separate congestion, contention, bottlenecks, latency, jitter and packet loss, pick the tool that measures each, and recognize the wireless performance faults.",
+    "sections": [
+      {
+        "id": "5-4-terms",
+        "title": "Performance terms and tools",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning",
+              "Typical cause or fix"
+            ],
+            "rows": [
+              [
+                "Congestion",
+                "Demand is higher than link capacity, so packets queue and drop",
+                "Add capacity or apply QoS"
+              ],
+              [
+                "Contention",
+                "Devices compete for a shared medium, such as wireless airtime",
+                "Better channel plan, more APs, fewer devices per cell"
+              ],
+              [
+                "Bottleneck",
+                "The slowest point that limits the whole path",
+                "Find it with traceroute and interface utilization, then upgrade it"
+              ],
+              [
+                "Bandwidth",
+                "Theoretical capacity of the link",
+                ""
+              ],
+              [
+                "Throughput",
+                "What you actually achieve",
+                ""
+              ],
+              [
+                "Latency",
+                "Time for a packet to cross the network",
+                "Distance, congestion, slow devices. Satellite links have high latency by nature"
+              ],
+              [
+                "Jitter",
+                "Variation in latency. Harms voice and video",
+                "QoS and removing congestion"
+              ],
+              [
+                "Packet loss",
+                "Packets that never arrive",
+                "Bad cable or interface errors, congestion, wireless interference"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "ping measures round-trip latency and loss. traceroute shows where delay starts. iperf measures throughput between two hosts.",
+              "SNMP interface counters show utilization and errors. NetFlow shows who is using the bandwidth. A packet capture showing many retransmissions points to loss.",
+              "Compare against a baseline to know what normal looks like.",
+              "QoS marks and prioritizes time-sensitive traffic such as voice.",
+              "CRC errors and a duplex mismatch (late collisions) cause retransmissions and slow transfers. Set both ends to match or auto.",
+              "A broadcast storm from a switching loop saturates links. Spanning tree prevents it.",
+              "Oversubscription, such as 48 gigabit ports sharing one gigabit uplink, creates a bottleneck."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5-4-wireless",
+        "title": "Wireless performance faults",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Signal degradation: distance and obstacles lower RSSI and signal-to-noise ratio.",
+              "Insufficient coverage: dead zones. Add or move access points based on a survey.",
+              "Interference: co-channel and adjacent channel, plus microwaves and Bluetooth. A Wi-Fi analyzer shows it.",
+              "Client disassociation: the client drops off the AP. Causes include weak signal at the cell edge, an AP at its client limit and a DFS radar event.",
+              "Roaming misconfiguration: sticky clients cling to a distant AP. Fix with minimum RSSI thresholds, proper cell overlap and 802.11r."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
