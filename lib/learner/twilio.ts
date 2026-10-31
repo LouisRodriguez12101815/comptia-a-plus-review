@@ -2,11 +2,12 @@ import twilio from "twilio";
 import { DailyUsageGuard, type SyncDocuments } from "@/lib/game/room-store";
 import { syncCall } from "@/lib/game/provider-errors";
 import type { LearnerMap } from "@/lib/learner/store";
+import { normalizePhone } from "@/lib/learner/session";
 
 const status = (e: unknown) => (e as { status?: number })?.status;
 
 export type LearnerConfig = {
-  accountSid: string; keySid: string; keySecret: string; syncServiceSid: string; verifyServiceSid: string; secret: string;
+  accountSid: string; keySid: string; keySecret: string; syncServiceSid: string; verifyServiceSid: string; secret: string; allowed: string[];
 };
 
 /** Returns null when sync is not fully configured; the panel then stays hidden. */
@@ -18,7 +19,10 @@ export function learnerConfig(env: Record<string, string | undefined> = process.
   if (!/^AC[0-9a-f]{32}$/i.test(c.accountSid) || !/^SK[0-9a-f]{32}$/i.test(c.keySid) || !c.keySecret) return null;
   if (!/^IS[0-9a-f]{32}$/i.test(c.syncServiceSid) || !/^VA[0-9a-f]{32}$/i.test(c.verifyServiceSid)) return null;
   if (c.secret.length < 32) return null;
-  return c;
+  // Owner-only: sync stays off unless at least one allowed phone number is listed.
+  const allowed = (env.LEARNER_ALLOWED_PHONES ?? "").split(",").map((n) => normalizePhone(n.trim())).filter((n): n is string => !!n);
+  if (!allowed.length) return null;
+  return { ...c, allowed };
 }
 
 export function twilioLearner(config: LearnerConfig) {

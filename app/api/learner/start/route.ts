@@ -1,5 +1,5 @@
 import { RoomError } from "@/lib/game/room-service";
-import { ipOf, json, limits, needConfig, sameOrigin } from "@/lib/learner/api";
+import { ipOf, isAllowedPhone, json, limits, needConfig, sameOrigin } from "@/lib/learner/api";
 import { learnerId, normalizePhone } from "@/lib/learner/session";
 import { twilioLearner } from "@/lib/learner/twilio";
 export const runtime = "nodejs";
@@ -15,6 +15,8 @@ export async function POST(request: Request) {
   const phone = normalizePhone(body.phone);
   if (!phone) return json({ error: "bad_phone" }, 400);
   if (!limits.codePerPhone(learnerId(phone, c.config.secret))) return json({ error: "rate_limited" }, 429);
+  // Same reply for numbers that are not allowed, so nothing is texted (no cost) and nothing is revealed.
+  if (!isAllowedPhone(c.config, phone)) return json({ ok: true });
   try {
     const t = twilioLearner(c.config);
     await t.guard.assertActive(); // stop texting when the daily spend latch has tripped

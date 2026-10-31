@@ -1,5 +1,5 @@
 import { createRateLimiter } from "@/lib/report/issue";
-import { cookieValue, readSession, SESSION_COOKIE, type Session } from "@/lib/learner/session";
+import { cookieValue, learnerId, readSession, SESSION_COOKIE, type Session } from "@/lib/learner/session";
 import { learnerConfig, type LearnerConfig } from "@/lib/learner/twilio";
 
 export const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
@@ -32,5 +32,10 @@ export function needConfig(): { config: LearnerConfig } | { response: Response }
 }
 
 export function sessionOf(request: Request, config: LearnerConfig): Session | null {
-  return readSession(cookieValue(request.headers.get("cookie"), SESSION_COOKIE), config.secret);
+  const session = readSession(cookieValue(request.headers.get("cookie"), SESSION_COOKIE), config.secret);
+  // Removing a number from the allow list ends its sessions immediately.
+  return session && config.allowed.some((phone) => learnerId(phone, config.secret) === session.id) ? session : null;
 }
+
+/** Owner-only: only numbers in LEARNER_ALLOWED_PHONES may receive codes or sign in. */
+export const isAllowedPhone = (config: LearnerConfig, phone: string) => config.allowed.includes(phone);
