@@ -632,21 +632,21 @@
   {
     "id": "q-46",
     "topicId": "networking-storage",
-    "prompt": "A RAID 5 array is rebuilding after a disk replace. Can users keep working on the volume, according to this guide?",
+    "prompt": "A RAID 5 array is rebuilding after a failed disk was replaced. What is true for users on the volume?",
     "choices": [
-      "Yes, RAID 5 is always online",
-      "No — access is blocked until rebuild completes",
-      "Only if it is RAID 0",
-      "Only over Fibre Channel"
+      "The volume is offline until the rebuild finishes",
+      "The volume stays online but runs slower",
+      "The volume is read-only until the rebuild finishes",
+      "The volume stays online at full performance"
     ],
     "answer": 1,
-    "explanation": "Class drill: RAID 5 is not accessible during rebuild. RAID 10 can stay up.",
+    "explanation": "RAID 5 keeps working with one failed disk by rebuilding data from parity, so users keep access, but reads and writes are slower while it rebuilds. A second disk failing before the rebuild finishes would lose the array.",
     "weak": true
   },
   {
     "id": "q-47",
     "topicId": "networking-storage",
-    "prompt": "A RAID 10 array is rebuilding. What does this guide say about access?",
+    "prompt": "A RAID 10 array is rebuilding. What is true about access?",
     "choices": [
       "The volume remains accessible because of mirrored pairs",
       "All I/O is forbidden until month-long rebuild ends",
@@ -654,7 +654,7 @@
       "You must convert to FAT32 first"
     ],
     "answer": 0,
-    "explanation": "Mirrored pairs let RAID 10 stay online during rebuild in these notes.",
+    "explanation": "Mirrored pairs let RAID 10 stay online during a rebuild, though performance drops.",
     "weak": true
   },
   {
@@ -1729,7 +1729,7 @@
   {
     "id": "q-151",
     "topicId": "networking-fundamentals",
-    "prompt": "What is the lowest grade of UTP that is rated for 100 Mbps transmission?",
+    "prompt": "What is the lowest grade of UTP that is rated for 1000 Mbps (gigabit) transmission?",
     "choices": [
       "Cat 5",
       "Cat 5e",
@@ -1737,7 +1737,7 @@
       "Cat 6a"
     ],
     "answer": 1,
-    "explanation": "Cat 5e is the lowest UTP grade rated for 100 Mbps transmission.",
+    "explanation": "Cat 5 is rated for 100 Mbps. Cat 5e is the lowest UTP grade rated for 1000 Mbps (gigabit), and Cat 6 and Cat 6a also support it.",
     "weak": false
   },
   {
@@ -31826,7 +31826,7 @@
       "All traffic moves to the native VLAN"
     ],
     "answer": 1,
-    "explanation": "Redundancy is one of the reasons to aggregate links. The remaining members carry the traffic at lower total capacity.",
+    "explanation": "The bundle keeps working with reduced bandwidth. Redundancy is one of the reasons to aggregate links, and the remaining members carry the traffic at lower total capacity.",
     "weak": false
   },
   {
