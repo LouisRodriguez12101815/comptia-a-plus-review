@@ -19,6 +19,7 @@ export default async function NetworkPlusIndex({ params }: PageProps<"/[locale]/
   setRequestLocale(locale);
   const t = await getTranslations("networkPlusIndex");
   const tChapter = await getTranslations("networkChapters");
+  const ts = await getTranslations("studyPath");
   return (
     <div className="space-y-8">
       <div>
@@ -42,6 +43,11 @@ export default async function NetworkPlusIndex({ params }: PageProps<"/[locale]/
           </li>
         ))}
       </ul>
+      <p>
+        <Link href="/study-path" className="inline-flex min-h-11 items-center text-teal-300 underline">
+          {ts("title")}
+        </Link>
+      </p>
       <p>
         <Link href="/notes?exam=n10-009" className="text-teal-300 underline">
           {t("readNotes")}
