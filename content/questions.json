@@ -606,10 +606,10 @@
     "topicId": "networking-dns-dhcp",
     "prompt": "Ping to a public IP fails and the name also fails. Best first theory?",
     "choices": [
-      "AAAA record typo only",
+      "A typo in the AAAA record only",
       "Broader network/connectivity problem",
-      "exFAT vs NTFS",
-      "Insider Program not on Home"
+      "exFAT versus NTFS on the client",
+      "Insider Program not enabled on Home"
     ],
     "answer": 1,
     "explanation": "If neither IP nor name works, it is not a DNS-only symptom.",
@@ -2002,10 +2002,10 @@
     "topicId": "networking-devices",
     "prompt": "Which statement about routers is correct?",
     "choices": [
-      "They forward broadcasts to all networks",
-      "They forward based on MAC addresses",
+      "They forward broadcasts to all connected networks",
+      "They forward frames based on MAC addresses",
       "They connect two or more networks and block broadcasts",
-      "They build CAM tables"
+      "They build CAM tables of learned MAC addresses"
     ],
     "answer": 2,
     "explanation": "Routers connect networks and forward based on IP/routing tables; every router interface is a broadcast domain because broadcasts do not cross it.",
@@ -2856,9 +2856,9 @@
     "topicId": "n10-ch10",
     "prompt": "Which statement describes the metric that EIGRP uses to choose a path?",
     "choices": [
-      "Hop count with a limit of 15 hops",
-      "Cost from a 100 Mbps reference rate",
-      "The AS path length across networks",
+      "Hop count with a limit of 15 hops per route",
+      "Cost from a 100 Mbps reference rate per interface",
+      "The AS path length across the autonomous systems",
       "Delay, bandwidth, reliability, and load combined"
     ],
     "answer": 3,
@@ -3318,10 +3318,10 @@
     "topicId": "n10-ch7",
     "prompt": "A customer reports that 172.32.0.10 should be private because it starts with 172. What is the correct response?",
     "choices": [
-      "It is private because every 172 address is private",
-      "It is APIPA because it is outside Class B",
+      "It is private because every address that starts with 172 is private",
+      "It is APIPA because it falls outside the Class B private range",
       "It is public because the Class B private range ends at 172.31.255.255",
-      "It is loopback because it is a 172 address"
+      "It is loopback because it is a 172 address on the local host"
     ],
     "answer": 2,
     "explanation": "Class B private addresses run from 172.16.0.0 through 172.31.255.255. 172.32.0.10 is just outside that range and is therefore a public address.",
@@ -3360,10 +3360,10 @@
     "topicId": "n10-ch7",
     "prompt": "Which statement best defines a unicast address?",
     "choices": [
-      "One-to-many communication to a group of hosts",
-      "Delivery to the nearest of several interfaces",
+      "One-to-many communication to a group of subscribed hosts",
+      "Delivery to the nearest of several interfaces sharing one address",
       "An address assigned to an interface for one-to-one communication",
-      "An address used to test the local stack"
+      "An address used to test the local stack on the same host"
     ],
     "answer": 2,
     "explanation": "A unicast address is assigned to a single interface and gives one-to-one communication. One-to-many is multicast and one-to-nearest is anycast.",
@@ -4143,9 +4143,9 @@
     "prompt": "Which OSI layers does the DoD Process/Application layer cover?",
     "choices": [
       "Application, Presentation, and Session",
-      "Application only",
-      "Application and Transport",
-      "Session and Transport"
+      "Application only, with no other layers",
+      "Application and Transport only",
+      "Session and Transport only"
     ],
     "answer": 0,
     "explanation": "Process/Application covers the top three OSI layers, 7 to 5. Transport is Host-to-Host.",
@@ -4310,10 +4310,10 @@
     "topicId": "n10-osi-models",
     "prompt": "Two older switches without Auto-MDIX are connected with a straight-through cable. What happens?",
     "choices": [
-      "The link comes up at half duplex",
-      "A broadcast storm starts",
+      "The link comes up at half duplex on both switches",
+      "A broadcast storm starts on both switches at once",
       "No link, because transmit meets transmit",
-      "The link works normally"
+      "The link works normally without any configuration"
     ],
     "answer": 2,
     "explanation": "No link, because transmit meets transmit: both MDI-X ports send on the same pins, so neither hears the other. N10-009 calls this TX/RX transposed.",
@@ -5757,10 +5757,10 @@
     "topicId": "n10-security",
     "prompt": "What is the purpose of a DMZ?",
     "choices": [
-      "Enables computers on a network to request IP addresses automatically.",
+      "Enables computers on a network to request IP addresses automatically from a pool of available addresses.",
       "A network that exposes an organization's external-facing services while keeping them separate from more sensitive networks.",
-      "A management tool for creating and removing user accounts.",
-      "Translates IP addresses to the host names people type."
+      "A management tool that administrators use for creating, changing and removing user accounts across a domain.",
+      "A service that translates IP addresses into the host names that people type into a browser."
     ],
     "answer": 1,
     "explanation": "A DMZ (screened subnet) holds public servers such as web and mail, separated from the internal LAN by a firewall.",
@@ -5911,9 +5911,9 @@
     "topicId": "n10-l2-l3-switching",
     "prompt": "Which job is a router usually better at than a Layer 3 switch?",
     "choices": [
-      "High port density for access ports",
-      "Switching frames within one VLAN",
-      "Learning MAC addresses",
+      "High port density for access ports at the edge",
+      "Switching frames within one VLAN at wire speed",
+      "Learning MAC addresses from incoming frames",
       "NAT and VPN to the internet over WAN interfaces"
     ],
     "answer": 3,
@@ -5967,9 +5967,9 @@
     "topicId": "n10-l2-l3-switching",
     "prompt": "What is router-on-a-stick?",
     "choices": [
-      "A wireless router mounted on a pole above the building",
-      "A router used only for out-of-band management of switches",
-      "A Layer 3 switch with routed ports on every interface",
+      "A wireless router mounted on a pole above the building to extend coverage",
+      "A router used only for out-of-band management of the access switches",
+      "A Layer 3 switch that has routed ports on every one of its interfaces",
       "One router interface with an 802.1Q subinterface per VLAN on a trunk link"
     ],
     "answer": 3,
@@ -6009,9 +6009,9 @@
     "topicId": "n10-l2-l3-switching",
     "prompt": "Two PCs plug into the same Layer 2 switch, one in VLAN 10 and one in VLAN 30. They cannot ping each other. What is needed?",
     "choices": [
-      "A crossover cable between the two PCs",
-      "A hub placed between the PCs and the switch",
-      "A larger MAC address table on the switch",
+      "A crossover cable placed directly between the two PCs",
+      "A hub placed between the two PCs and the access switch",
+      "A larger MAC address table in the access switch",
       "A router or Layer 3 switch to route between the VLANs"
     ],
     "answer": 3,
@@ -6038,9 +6038,9 @@
     "prompt": "An SVI for VLAN 40 shows down/down even though the VLAN exists. What is the most likely cause?",
     "choices": [
       "No port assigned to VLAN 40 (and no trunk carrying it) is up",
-      "ip routing is enabled on the Layer 3 switch",
-      "The SVI has an IP address and mask configured",
-      "Spanning tree is running on the VLAN"
+      "ip routing is enabled on the Layer 3 switch globally",
+      "The SVI has an IP address and mask configured on it",
+      "Spanning tree is running normally on VLAN 40"
     ],
     "answer": 0,
     "explanation": "An SVI comes up only when its VLAN exists and at least one access port in that VLAN or a trunk carrying it is up.",
@@ -6093,10 +6093,10 @@
     "topicId": "n10-tcpip",
     "prompt": "Which is a characteristic of UDP?",
     "choices": [
-      "Three-way handshake",
+      "Three-way handshake before sending data",
       "Connectionless with no acknowledgments",
-      "Windowing for flow control",
-      "Guaranteed in-order delivery"
+      "Windowing for flow control on each stream",
+      "Guaranteed in-order delivery of every segment"
     ],
     "answer": 1,
     "explanation": "UDP is connectionless: it sends without a handshake, acknowledgments, ordering, or retransmission. The other options describe TCP.",
@@ -6191,9 +6191,9 @@
     "topicId": "n10-tcpip",
     "prompt": "DNS normally answers name lookups over UDP. When does DNS use TCP 53?",
     "choices": [
-      "Never",
-      "Only for reverse lookups",
-      "For every query from a Windows client",
+      "Never, because DNS only ever uses UDP port 53",
+      "Only for reverse lookups of PTR records in in-addr.arpa",
+      "For every query from a Windows client on the LAN",
       "For zone transfers and responses too large for UDP"
     ],
     "answer": 3,
@@ -6303,9 +6303,9 @@
     "topicId": "n10-html-http",
     "prompt": "A user gets an HTTP 404 Not Found. What does this prove?",
     "choices": [
-      "DNS failed, so the name never resolved",
-      "The firewall blocked TCP 443 to the server",
-      "The TLS certificate expired on the server",
+      "DNS failed, so the name never resolved to an address for the browser",
+      "The firewall blocked TCP 443 between the browser and the web server",
+      "The TLS certificate expired on the server, so the handshake failed",
       "The network path works and the server answered, but the page does not exist"
     ],
     "answer": 3,
@@ -6753,10 +6753,10 @@
     ],
     "prompt": "A controlled test changes a NIC’s presented MAC to an allowed address. No false ARP messages are sent. Which conclusion is justified?",
     "choices": [
-      "ARP poisoning is proven by the test",
+      "ARP poisoning is proven by the test, since the MAC changed",
       "MAC spoofing can undermine an address-only allowlist",
-      "The DNS cache is poisoned",
-      "802.1X credentials have been broken"
+      "The DNS cache is poisoned, so names resolve to the wrong host",
+      "802.1X credentials have been broken, since the port accepted the MAC"
     ],
     "answer": 1,
     "explanation": "Copying a presented address is MAC spoofing and weakens MAC-only admission. It does not establish forged ARP bindings, DNS manipulation, or compromise of cryptographic authentication.",
@@ -6787,9 +6787,9 @@
     ],
     "prompt": "A validly signed DNS zone is checked through a trusted DNSSEC validation chain. An analyst claims the lookup is now hidden from observers. What correction is needed?",
     "choices": [
-      "DNSSEC replaces the need for application-layer authentication",
-      "DNSSEC blocks every outage by signing the zone's records",
-      "DNSSEC encrypts only the returned address, not the query",
+      "DNSSEC replaces the need for application-layer authentication on the website",
+      "DNSSEC blocks every outage by signing the zone's records with a trusted key",
+      "DNSSEC encrypts only the returned address, leaving the query itself readable",
       "DNSSEC validates origin and integrity; query confidentiality needs a separate mechanism"
     ],
     "answer": 3,
@@ -6957,10 +6957,10 @@
     ],
     "prompt": "On a classic Cisco IOS routed interface, separate IP ACLs are attached inbound and outbound. A reviewer says that two directions on one interface are forbidden. Which correction applies?",
     "choices": [
-      "No ACL can ever be reused on another interface",
+      "No ACL can ever be reused on another interface in the network",
       "The documented limit is one per interface, protocol, and direction",
-      "One ACL permits only one destination port",
-      "All switch vendors have identical ACL limits"
+      "One ACL permits only one destination port per interface",
+      "All switch vendors have identical ACL limits on every model"
     ],
     "answer": 1,
     "explanation": "Classic IOS documents the direction-qualified limit; separate inbound and outbound application is allowed. Lists can have several entries and be reused. Other platforms and ACL types require their own documentation.",
@@ -6974,10 +6974,10 @@
     ],
     "prompt": "Guests and managed staff use separate VLANs, but unrestricted inter-VLAN routing lets guests reach staff administration ports. Which change addresses the missing boundary?",
     "choices": [
-      "Rename the guest VLAN so it is harder to find",
-      "Trust the guest SSID because it has a login portal",
+      "Rename the guest VLAN so that it is harder to discover",
+      "Trust the guest SSID because it already has a captive login portal",
       "Enforce and test explicit allowed/denied flows at the routed boundary",
-      "Add a honeypot as the only access control"
+      "Add a honeypot to the guest VLAN as the only access control"
     ],
     "answer": 2,
     "explanation": "VLAN separation alone does not restrict routed access. Enforced ACL/firewall policy closes the demonstrated path; names, an AUP portal, or a decoy do not substitute for boundary control.",
@@ -22258,10 +22258,10 @@
     "topicId": "n10-troubleshoot-method",
     "prompt": "After a fix, the technician asks the original users to confirm the issue is gone and adds a monitoring alert. Which step is this?",
     "choices": [
-      "Identify the problem by questioning the users",
+      "Identify the problem by questioning the original users again",
       "Verify full system functionality and implement preventive measures",
-      "Implement the solution or escalate to a higher tier",
-      "Establish a theory of probable cause"
+      "Implement the solution or escalate it to a higher support tier",
+      "Establish a theory of probable cause for the new symptoms"
     ],
     "answer": 1,
     "explanation": "Objective 5.1. Confirming the result with users and adding preventive measures is the verify step.",
@@ -22328,10 +22328,10 @@
     "topicId": "n10-troubleshoot-tools",
     "prompt": "Which tool sends visible light through a fiber strand to locate a break or tight bend?",
     "choices": [
-      "Speed tester",
+      "Internet speed tester",
       "Visual fault locator",
-      "Tone generator",
-      "Cable tester"
+      "Tone generator and probe",
+      "Copper cable tester"
     ],
     "answer": 1,
     "explanation": "Objective 5.5. A visual fault locator shows where light escapes from a damaged fiber or bad connector.",
@@ -22371,9 +22371,9 @@
     "prompt": "Which software tool captures packets and decodes them by protocol so a conversation can be inspected?",
     "choices": [
       "Protocol analyzer",
-      "Cable tester",
-      "Port scanner",
-      "Speed tester"
+      "Copper cable tester",
+      "Port scanner utility",
+      "Internet speed tester"
     ],
     "answer": 0,
     "explanation": "Objective 5.5. A protocol analyzer such as Wireshark captures and decodes packets.",
@@ -22818,10 +22818,10 @@
     "topicId": "n10-troubleshoot-physical",
     "prompt": "A port in a link-aggregation bundle shows a suspended status. What is the likely cause?",
     "choices": [
-      "The cable is too long",
-      "The port is running at full duplex",
+      "The cable is too long for the negotiated speed",
+      "The port is running at full duplex like the others",
       "Its settings do not match the other member ports",
-      "The connected device has no power"
+      "The connected device has no power supplied to it"
     ],
     "answer": 2,
     "explanation": "Objective 5.2. A bundle member with mismatched settings is held out of the bundle as suspended.",
@@ -23323,9 +23323,9 @@
     "prompt": "Users report intermittent drops. The technician reviews the change log and finds a switch firmware update last night. Which step is this?",
     "choices": [
       "Identify the problem by finding out what changed",
-      "Establish a plan of action",
-      "Verify full system functionality",
-      "Implement the solution"
+      "Establish a plan of action to resolve the problem",
+      "Verify full system functionality after the fix",
+      "Implement the solution or escalate the issue"
     ],
     "answer": 0,
     "explanation": "Objective 5.1. Reviewing recent changes is part of identifying the problem.",
@@ -23337,9 +23337,9 @@
     "prompt": "What must be part of the plan of action before changing a production network?",
     "choices": [
       "A rollback plan and the potential effects",
-      "A duplicate of the problem",
-      "A list of closed tickets",
-      "A new theory of probable cause"
+      "A duplicate of the problem on a test device",
+      "A list of closed tickets for the same device",
+      "A new theory of probable cause for the fault"
     ],
     "answer": 0,
     "explanation": "Objective 5.1. The plan of action identifies potential effects and includes how to roll back the change.",
@@ -23364,10 +23364,10 @@
     "topicId": "n10-troubleshoot-method",
     "prompt": "A problem returns a year later and nobody remembers how it was fixed. Which step was skipped?",
     "choices": [
-      "Test the theory",
+      "Test the theory to determine the cause",
       "Document findings, actions, outcomes and lessons learned",
-      "Duplicate the problem",
-      "Approach multiple problems individually"
+      "Duplicate the problem to see the symptom again",
+      "Approach multiple problems individually, one at a time"
     ],
     "answer": 1,
     "explanation": "Objective 5.1. Documentation is how the next technician finds the earlier fix.",
@@ -23392,9 +23392,9 @@
     "topicId": "n10-troubleshoot-method",
     "prompt": "When should a technician escalate?",
     "choices": [
-      "After documenting the fix",
-      "Before gathering any information",
-      "Only when users complain twice",
+      "After documenting the fix and closing the ticket",
+      "Before gathering any information from the user",
+      "Only when users complain about it twice in a row",
       "When the problem is beyond their access or skill"
     ],
     "answer": 3,
@@ -23490,10 +23490,10 @@
     "topicId": "n10-org-documentation",
     "prompt": "Which statement about documentation is true?",
     "choices": [
-      "Documentation is only needed during installation",
+      "Documentation is only needed during the installation and can be discarded after go-live",
       "Wrong documentation can be worse than none, so each artifact needs an owner and a review date",
-      "Logical and physical views should always be merged",
-      "One large diagram should show every layer to avoid duplication"
+      "Logical and physical views should always be merged into a single diagram to save time",
+      "One large diagram should show every layer to avoid duplication between the separate documents"
     ],
     "answer": 1,
     "explanation": "Objective 3.1. Outdated diagrams mislead technicians, so ownership and review dates are required.",
@@ -23505,9 +23505,9 @@
     "prompt": "Which item most directly helps match a cable in hand to the cable map?",
     "choices": [
       "Labels on both ends of the cable",
-      "A spare switch port",
-      "A longer patch cord",
-      "A higher cable category"
+      "A spare switch port near the patch panel",
+      "A longer patch cord in the closet",
+      "A higher cable category on the run"
     ],
     "answer": 0,
     "explanation": "Objective 3.1. Labels on both ends of the cable let the cable be matched to its map entry.",
@@ -23784,10 +23784,10 @@
     "topicId": "n10-org-change-config",
     "prompt": "Which best describes software management in life-cycle management?",
     "choices": [
-      "Drawing rack layouts and floor plans for each closet",
+      "Drawing rack layouts and floor plans for each closet and cabinet",
       "Tracking OS, firmware and application versions, patches and licenses",
-      "Surveying wireless coverage after a layout change",
-      "Labeling cables so faults can be traced quickly"
+      "Surveying wireless coverage and signal strength after a layout change",
+      "Labeling both ends of every cable so faults can be traced quickly"
     ],
     "answer": 1,
     "explanation": "Objective 3.1. Software management tracks versions, patches and licenses.",
@@ -23883,9 +23883,9 @@
     "prompt": "A critical outage can only be stopped by changing a firewall rule right now. What is the right approach?",
     "choices": [
       "Use an emergency change with approval and review it afterward",
-      "Skip documentation entirely because it is urgent",
-      "Wait for the next quarterly maintenance window",
-      "Make the change without telling anyone else"
+      "Skip documentation entirely because the outage is urgent",
+      "Wait for the next quarterly maintenance window to apply it",
+      "Make the change without telling anyone else on the team"
     ],
     "answer": 0,
     "explanation": "Objective 3.1. An emergency change can be approved faster, but it still needs documentation and review afterward.",
@@ -23966,8 +23966,8 @@
     "topicId": "n10-org-change-config",
     "prompt": "Why is a new configuration tested in a lab before production?",
     "choices": [
-      "To shorten the SLA",
-      "To avoid a backup",
+      "To shorten the length of the SLA",
+      "To avoid taking a backup first",
       "To remove the need for approval",
       "To find problems without affecting users"
     ],
@@ -24372,10 +24372,10 @@
     "topicId": "n10-disaster-recovery",
     "prompt": "Which finding is most typical of a tabletop exercise?",
     "choices": [
-      "A failed replication link",
-      "A full disk on the backup server",
+      "A failed replication link between sites",
+      "A full disk on the primary backup server",
       "A missing contact list or unclear roles",
-      "A bad cable"
+      "A bad cable on the core switch"
     ],
     "answer": 2,
     "explanation": "Objective 3.3. Tabletop exercises expose missing contacts, unclear roles and unmapped dependencies.",
@@ -24429,9 +24429,9 @@
     "prompt": "What is the core idea of SDN?",
     "choices": [
       "Separating the control plane from the data plane so control can be centralized in software",
-      "Encrypting every frame so the control plane cannot be read",
-      "Using only IPv6 addresses inside the data center",
-      "Replacing all cabling with wireless links between devices"
+      "Encrypting every frame so the control plane cannot be read by an attacker on the network",
+      "Using only IPv6 addresses inside the data center to avoid any translation between networks",
+      "Replacing all cabling with wireless links between the devices so that no switch ports are needed"
     ],
     "answer": 0,
     "explanation": "Objective 1.8. SDN separates the control plane from the data plane, so control moves into software.",
@@ -24498,9 +24498,9 @@
     "topicId": "n10-sdn-overlay",
     "prompt": "Why does a branch user's email traffic go straight to the cloud in an SD-WAN?",
     "choices": [
-      "Because DHCP hands branch hosts a gateway that points straight at the cloud",
-      "Because spanning tree blocks the path through the data center",
-      "Because the VLANs at the branch are larger than at headquarters",
+      "Because DHCP hands branch hosts a gateway that points straight at the cloud service",
+      "Because spanning tree blocks the path through the data center for branch traffic",
+      "Because the VLANs at the branch are larger than the VLANs at headquarters",
       "Local breakout sends application traffic to the nearest service instead of through headquarters"
     ],
     "answer": 3,
@@ -24526,10 +24526,10 @@
     "topicId": "n10-sdn-overlay",
     "prompt": "Which problem does VXLAN solve?",
     "choices": [
-      "Duplicate MAC addresses on a single access switch",
-      "Weak Wi-Fi passwords on guest networks",
+      "Duplicate MAC addresses on a single access switch in one building",
+      "Weak Wi-Fi passwords on guest networks across several branches",
       "Extending layer 2 segments across routed networks at large scale",
-      "Slow DNS lookups caused by long TTLs"
+      "Slow DNS lookups caused by long TTLs on the authoritative servers"
     ],
     "answer": 2,
     "explanation": "Objective 1.8. VXLAN carries layer 2 frames over layer 3, so layer 2 segments can extend across routed networks.",
@@ -24666,10 +24666,10 @@
     "topicId": "n10-sdn-overlay",
     "prompt": "What is the risk of stretching VLANs over dark fiber between sites?",
     "choices": [
-      "VNIs run out because the VLAN IDs overlap",
+      "VNIs run out because the VLAN IDs overlap between sites",
       "A broadcast storm or spanning tree problem can affect both sites",
-      "DNS stops working across the stretched VLAN",
-      "Packets become encrypted and cannot be inspected"
+      "DNS stops working for every host across the stretched VLAN",
+      "Packets become encrypted and cannot be inspected by tools"
     ],
     "answer": 1,
     "explanation": "Objective 1.8. A stretched VLAN means one broadcast storm or spanning tree event spans both sites.",
@@ -24708,10 +24708,10 @@
     "topicId": "n10-sdn-overlay",
     "prompt": "Which statement about SD-WAN and VXLAN is correct?",
     "choices": [
-      "VXLAN picks the best WAN link for each application based on live path quality",
-      "SD-WAN is a layer 2 tunnel that only runs inside a single data center",
+      "VXLAN picks the best WAN link for each application using live path quality measurements",
+      "SD-WAN is a layer 2 tunnel that only runs inside a single data center network",
       "SD-WAN connects branch sites over multiple links, while VXLAN extends layer 2 segments over IP",
-      "Both replace DNS by resolving names at the overlay edge"
+      "Both technologies replace DNS by resolving host names at the overlay edge"
     ],
     "answer": 2,
     "explanation": "Objective 1.8. SD-WAN connects branch sites over multiple links, and VXLAN extends layer 2 segments over IP.",
@@ -24722,10 +24722,10 @@
     "topicId": "n10-zerotrust-iac",
     "prompt": "Which statement best describes zero trust?",
     "choices": [
-      "VPN users are never checked after connecting",
-      "Everything inside the firewall is trusted",
+      "VPN users are never checked once they connect to the network",
+      "Everything inside the firewall is trusted after the first login",
       "No request is trusted by default, regardless of network location",
-      "Only guests are verified when they connect"
+      "Only guests are verified when they connect to the wireless network"
     ],
     "answer": 2,
     "explanation": "Objective 1.8. Zero trust removes the assumption that internal means trusted.",
@@ -24792,9 +24792,9 @@
     "topicId": "n10-zerotrust-iac",
     "prompt": "How does ZTNA differ from a classic VPN?",
     "choices": [
-      "ZTNA is slower because it adds an extra authentication step",
-      "A VPN hides applications from the user until they log in",
-      "ZTNA needs no authentication once the device is enrolled",
+      "ZTNA is slower because it adds an extra authentication step to each connection to an application",
+      "A VPN hides applications from the user until they log in, while ZTNA shows every application",
+      "ZTNA needs no authentication once the device is enrolled, while a VPN checks every user each time",
       "ZTNA connects a user to a single application, while a VPN places the device on the internal network"
     ],
     "answer": 3,
@@ -24904,10 +24904,10 @@
     "topicId": "n10-zerotrust-iac",
     "prompt": "Why do organizations adopt SASE?",
     "choices": [
-      "To increase the number of VLANs a site can support",
+      "To increase the number of VLANs a site can support at its branch offices",
       "Users and apps are outside the office, so inspection is moved to the edge nearest each user",
-      "To replace IPv4 with IPv6 across the wide area network",
-      "To remove the need for authentication at the edge"
+      "To replace IPv4 with IPv6 so that every branch can use the same address space",
+      "To remove the need for authentication at the edge by trusting the user's network"
     ],
     "answer": 1,
     "explanation": "Objective 1.8. SASE moves inspection to the edge nearest each user instead of hairpinning to headquarters.",
@@ -25311,9 +25311,9 @@
     "prompt": "Why do small and medium networks often choose a collapsed core?",
     "choices": [
       "Fewer devices and lower cost while keeping most hierarchy benefits",
-      "It works only when every client is wireless",
-      "It removes the need for an access layer entirely",
-      "It requires no redundancy between the devices"
+      "It works only when every client connects over wireless links",
+      "It removes the need for an access layer entirely at every site",
+      "It requires no redundancy between the core and distribution devices"
     ],
     "answer": 0,
     "explanation": "Objective 1.6. Collapsing the core reduces cost and complexity for smaller sites.",
@@ -25618,9 +25618,9 @@
     "topicId": "n10-transceivers-fiber",
     "prompt": "Can an SFP+ module be inserted into a QSFP port?",
     "choices": [
-      "Yes, but only copper",
-      "Yes, always",
-      "Yes, if it is multimode",
+      "Yes, but only for copper modules",
+      "Yes, always, because the cages match",
+      "Yes, if it is a multimode module",
       "No, QSFP is a different standard"
     ],
     "answer": 3,
@@ -25744,10 +25744,10 @@
     "topicId": "n10-transceivers-fiber",
     "prompt": "Why do SFP+ RJ45 copper modules often fall short of 100 meters?",
     "choices": [
-      "They only work on Cat 3",
+      "They only work on Cat 3 or older cable",
       "Many are rated only for about 30 meters",
-      "They have no hot-plug support",
-      "They use single-mode fiber"
+      "They have no hot-plug support in the cage",
+      "They use single-mode fiber inside the module"
     ],
     "answer": 1,
     "explanation": "Objective 1.5. Many SFP+ RJ45 modules are rated for around 30 meters.",
@@ -25941,9 +25941,9 @@
     "prompt": "Why should a fiber patch cord not be bent sharply?",
     "choices": [
       "Tight bends exceed the minimum bend radius and cause signal loss or damage",
-      "It improves signal strength by tightening the light path",
-      "It disables DHCP on the connected switch port",
-      "It changes the VLAN assigned to the link"
+      "It improves signal strength by tightening the light path through the core",
+      "It disables the SFP module's laser until the cord is straightened",
+      "It changes the VLAN assigned to the link when the light path shifts"
     ],
     "answer": 0,
     "explanation": "Objective 1.5. Respecting the minimum bend radius prevents signal loss and damage.",
@@ -25954,10 +25954,10 @@
     "topicId": "n10-remote-access-methods",
     "prompt": "What does a VPN do?",
     "choices": [
-      "Blocks all inbound traffic",
+      "Blocks all inbound traffic from the internet",
       "Creates an encrypted tunnel across an untrusted network",
-      "Assigns IP addresses",
-      "Translates private to public addresses"
+      "Assigns IP addresses to hosts on the local subnet",
+      "Translates private addresses to public addresses"
     ],
     "answer": 1,
     "explanation": "Objective 3.5. A VPN builds an encrypted tunnel across an untrusted network.",
@@ -26066,10 +26066,10 @@
     "topicId": "n10-remote-access-methods",
     "prompt": "What is the main advantage of a full tunnel?",
     "choices": [
-      "It allows direct internet access for the user",
+      "It allows direct internet access for the user's own traffic",
       "The corporate security stack can inspect and log everything",
-      "It removes the need for authentication",
-      "It reduces the load on the VPN concentrator"
+      "It removes the need for authentication on the VPN gateway",
+      "It reduces the load on the VPN concentrator at the data center"
     ],
     "answer": 1,
     "explanation": "Objective 3.5. A full tunnel lets the corporate security stack see all traffic.",
@@ -26094,10 +26094,10 @@
     "topicId": "n10-remote-access-methods",
     "prompt": "What is a risk of split tunneling?",
     "choices": [
-      "Passwords are sent in clear text across the tunnel",
+      "Passwords are sent in clear text across the tunnel, so anyone on the path can read them",
       "The organization cannot see the internet traffic, and the device bridges both networks",
-      "The VPN stops encrypting the traffic that it carries",
-      "All traffic slows down because it shares one tunnel"
+      "The VPN stops encrypting all of the traffic that it carries through the tunnel",
+      "All traffic slows down because it shares one tunnel between the user and the corporate site"
     ],
     "answer": 1,
     "explanation": "Objective 3.5. Split tunneling reduces visibility and lets the device bridge the internet and the corporate network.",
@@ -26248,10 +26248,10 @@
     "topicId": "n10-remote-access-methods",
     "prompt": "What is out-of-band management?",
     "choices": [
-      "Managing over Telnet",
-      "Managing through a guest network",
+      "Managing over Telnet on the production network",
+      "Managing through a guest network at the branch",
       "Managing a device over a separate dedicated path",
-      "Managing over the production VLAN"
+      "Managing over the production VLAN with SSH"
     ],
     "answer": 2,
     "explanation": "Objective 3.5. Out-of-band uses a dedicated path independent of production.",
@@ -26305,9 +26305,9 @@
     "prompt": "What is a jump box?",
     "choices": [
       "A hardened host that is the single entry point for administering a protected segment",
-      "A caching server that stores recent DNS answers for faster lookups",
-      "A server that stores copies of configuration files for recovery",
-      "A repeater that extends the wireless range of an access point"
+      "A caching server that stores recent DNS answers for faster lookups by clients",
+      "A server that stores copies of configuration files so devices can be recovered",
+      "A repeater that extends the wireless range of an access point into dead zones"
     ],
     "answer": 0,
     "explanation": "Objective 3.5. A jump box, also called a jump server or bastion host, centralizes and audits administrative access.",
@@ -27158,10 +27158,10 @@
     "topicId": "n10-monitoring-technologies",
     "prompt": "What is an SNMP inform?",
     "choices": [
-      "A query for the next value",
+      "A query for the next value in the MIB",
       "A trap that the manager acknowledges",
-      "A syslog message",
-      "A community string"
+      "A syslog message sent over UDP 514",
+      "A community string used to authenticate polls"
     ],
     "answer": 1,
     "explanation": "Objective 3.2. An inform is an acknowledged trap, so the agent knows it was received.",
@@ -27242,9 +27242,9 @@
     "topicId": "n10-monitoring-technologies",
     "prompt": "An assessor reads a read-write SNMP community string in clear text. What is the best fix?",
     "choices": [
-      "Use a longer community string",
-      "Upgrade from v1 to v2c",
-      "Send traps on UDP port 162",
+      "Use a longer community string for the read-write access",
+      "Upgrade from SNMPv1 to v2c with the same community string",
+      "Send traps on UDP port 162 to a different manager",
       "Migrate the device to SNMPv3 with auth-priv"
     ],
     "answer": 3,
@@ -27466,10 +27466,10 @@
     "topicId": "n10-monitoring-technologies",
     "prompt": "A firewall deny, six login failures and a new admin account come from one host within minutes, but no alert fired. What would have caught it?",
     "choices": [
-      "Longer log retention",
-      "A static utilization threshold",
+      "Longer log retention on the firewall",
+      "A static utilization threshold per port",
       "SIEM correlation across the log sources",
-      "Debug logging on every device"
+      "Debug logging on every single device"
     ],
     "answer": 2,
     "explanation": "Objective 3.2. Each event is routine alone, and only correlation across sources reveals the compromise.",
@@ -27480,9 +27480,9 @@
     "topicId": "n10-monitoring-technologies",
     "prompt": "What does a baseline record?",
     "choices": [
-      "The syslog severity names",
-      "Only the highest utilization ever seen",
-      "The list of VLANs",
+      "The names and numbers of the syslog severity levels",
+      "Only the highest utilization ever seen on the link",
+      "The list of VLANs configured on every switch port",
       "What network metrics look like under normal conditions"
     ],
     "answer": 3,
@@ -27494,9 +27494,9 @@
     "topicId": "n10-monitoring-technologies",
     "prompt": "Why can a fixed 80 percent utilization threshold be a poor alert?",
     "choices": [
-      "It forces every device to use the older SNMPv1 protocol",
-      "It encrypts the alerts so staff cannot read them",
-      "It can only be applied to wireless access points",
+      "It forces every device to use the older SNMPv1 protocol for all polling",
+      "It encrypts the alerts so staff cannot read them without a key",
+      "It can only be applied to wireless access points, not switches",
       "It false-alarms on normal peaks and misses anomalies in quiet hours"
     ],
     "answer": 3,
@@ -27606,10 +27606,10 @@
     "topicId": "n10-dns-records-security",
     "prompt": "Why can the zone apex not be a CNAME?",
     "choices": [
-      "CNAME records only work for mail",
+      "CNAME records only work for mail names",
       "A name with a CNAME can hold no other records",
-      "CNAME values must be IPv6 addresses",
-      "The apex has no TTL"
+      "CNAME values must be IPv6 addresses only",
+      "The apex has no TTL value for resolvers to cache"
     ],
     "answer": 1,
     "explanation": "Objective 3.4. A name with a CNAME can hold no other records, and the apex must hold SOA and NS records. The answer is A name with a CNAME can hold no other records.",
@@ -27634,10 +27634,10 @@
     "topicId": "n10-dns-records-security",
     "prompt": "A site publishes a AAAA record but its IPv6 path is broken. What happens for dual-stack clients?",
     "choices": [
-      "They use the MX record",
-      "Nothing, IPv4 always wins",
+      "They use the MX record to reach the site",
+      "Nothing happens, because IPv4 always wins",
       "They prefer IPv6 and the service fails",
-      "They ignore the AAAA record"
+      "They ignore the AAAA record and use IPv4"
     ],
     "answer": 2,
     "explanation": "Objective 3.4. Dual-stack hosts prefer IPv6, so a AAAA record with no working IPv6 path breaks the service. The answer is They prefer IPv6 and the service fails.",
@@ -27648,10 +27648,10 @@
     "topicId": "n10-dns-records-security",
     "prompt": "MX records show preference 10 on mail1 and 20 on mail2. Which server receives mail while both respond?",
     "choices": [
-      "Neither, equal values are required",
-      "mail2, because higher is preferred",
+      "Neither, because equal preference values are required",
+      "mail2, because the higher preference number is preferred",
       "mail1, because the lowest preference number wins",
-      "Both equally"
+      "Both servers equally, in a round-robin order"
     ],
     "answer": 2,
     "explanation": "Objective 3.4. The lowest MX preference value is preferred, so mail1 with 10 receives the mail. The answer is mail1, because the lowest preference number wins.",
@@ -27690,10 +27690,10 @@
     "topicId": "n10-dns-records-security",
     "prompt": "What does SPF do?",
     "choices": [
-      "Tells receivers to reject failures",
-      "Signs each message with a private key",
+      "Tells receivers to reject messages that fail checks",
+      "Signs each message with a private key held by the sender",
       "Lists the servers allowed to send mail for a domain",
-      "Maps an IP to a name"
+      "Maps an IP address to a host name in a reverse zone"
     ],
     "answer": 2,
     "explanation": "Objective 3.4. SPF lists the servers permitted to send mail for the domain. The answer is Lists the servers allowed to send mail for a domain.",
@@ -27719,9 +27719,9 @@
     "prompt": "What does DMARC tell receiving servers?",
     "choices": [
       "What to do when SPF or DKIM checks fail: none, quarantine or reject",
-      "Which port the receiving server should use for delivery",
-      "Which servers are allowed to send mail for the domain",
-      "Which public key signs the message headers"
+      "Which port the receiving server should use for message delivery",
+      "Which servers are allowed to send mail for the whole domain",
+      "Which public key signs the message headers of each email"
     ],
     "answer": 0,
     "explanation": "Objective 3.4. DMARC sets the action for failed checks: none, quarantine or reject. The answer is What to do when SPF or DKIM checks fail: none, quarantine or reject.",
@@ -27858,10 +27858,10 @@
     "topicId": "n10-dns-records-security",
     "prompt": "An admin edits a zone on the primary but the secondaries still serve old data. What was missed?",
     "choices": [
-      "Adding a PTR record",
+      "Adding a PTR record to the zone",
       "Incrementing the SOA serial",
-      "Raising the TTL",
-      "Enabling DoH"
+      "Raising the TTL on the zone",
+      "Enabling DoH on the primary"
     ],
     "answer": 1,
     "explanation": "Objective 3.4. Without a higher SOA serial the secondaries do not start a transfer. The answer is Incrementing the SOA serial.",
@@ -28194,9 +28194,9 @@
     "topicId": "n10-dhcp-ipam-time",
     "prompt": "Network printers must keep fixed addresses but still pick up gateway and DNS changes made on the server. What meets this?",
     "choices": [
-      "A shorter lease on the printer scope",
-      "A second scope on the same subnet",
-      "An exclusion range that covers the printers",
+      "A shorter lease time on the whole printer scope",
+      "A second scope on the same subnet with the same range",
+      "An exclusion range that covers all of the printers' addresses",
       "A reservation for each printer bound to its MAC address"
     ],
     "answer": 3,
@@ -28222,10 +28222,10 @@
     "topicId": "n10-dhcp-ipam-time",
     "prompt": "New devices on guest Wi-Fi fail to get addresses while existing devices work. What is the likely cause?",
     "choices": [
-      "A missing PTR record for the guest subnet",
+      "A missing PTR record for the guest subnet in the reverse zone",
       "Scope exhaustion from long leases on a high-turnover network",
-      "A rogue DHCP server answering with a bad scope",
-      "An expired DNSSEC signature on the guest zone"
+      "A rogue DHCP server answering with a bad scope on the guest VLAN",
+      "An expired DNSSEC signature on the guest zone that blocks lookups"
     ],
     "answer": 1,
     "explanation": "Objective 3.4. Scope exhaustion shows as new devices failing while existing ones keep working. Shorter leases suit high-turnover networks. The answer is Scope exhaustion from long leases on a high-turnover network.",
@@ -28503,9 +28503,9 @@
     "prompt": "What does IPAM stand for and provide?",
     "choices": [
       "IP address management, a central record of address assignments",
-      "IP aggregation and monitoring, a routing protocol",
-      "Internal private address mapping, a NAT table",
-      "Internet protocol access module, a firewall"
+      "IP aggregation and monitoring, a dynamic routing protocol",
+      "Internal private address mapping, a NAT translation table",
+      "Internet protocol access module, a hardware firewall"
     ],
     "answer": 0,
     "explanation": "Objective 3.4. IPAM is IP address management, the authoritative record of which addresses are assigned, reserved or free. The answer is IP address management, a central record of address assignments.",
@@ -28600,10 +28600,10 @@
     "topicId": "n10-dhcp-ipam-time",
     "prompt": "What does stratum 16 mean?",
     "choices": [
-      "A GPS clock",
+      "A GPS reference clock source",
       "The device is unsynchronized",
-      "The most accurate clock",
-      "A PTP master"
+      "The most accurate clock available",
+      "A PTP grandmaster clock"
     ],
     "answer": 1,
     "explanation": "Objective 3.4. Stratum 16 means unsynchronized and is the value to alert on. The answer is The device is unsynchronized.",
@@ -28727,9 +28727,9 @@
     "prompt": "Logs from two routers show the same link failure hours apart. What is the likely cause?",
     "choices": [
       "The devices' clocks are not synchronized",
-      "A DNSSEC failure",
-      "A rogue DHCP server",
-      "A wrong syslog severity"
+      "A DNSSEC validation failure on the zone",
+      "A rogue DHCP server on the segment",
+      "A wrong syslog severity on the devices"
     ],
     "answer": 0,
     "explanation": "Objective 3.4. Unsynchronized clocks make log correlation impossible. Use NTP. The answer is The devices' clocks are not synchronized.",
@@ -28768,10 +28768,10 @@
     "topicId": "n10-wireless-standards-security",
     "prompt": "Why does channel 1 interfere with channels 2 through 5 in 2.4 GHz?",
     "choices": [
-      "Transmit power is highest on channel 1",
-      "Adjacent channels share the same encryption key",
+      "Transmit power is highest on channel 1 so it reaches further",
+      "Adjacent channels share the same encryption key and so collide",
       "Each channel is 20 MHz wide but centers sit only 5 MHz apart",
-      "Channel 1 is reserved for beacon frames"
+      "Channel 1 is reserved for beacon frames from every access point"
     ],
     "answer": 2,
     "explanation": "Objective 2.3. Channel width is 20 MHz while center spacing is 5 MHz, so neighbors overlap. The answer is Each channel is 20 MHz wide but centers sit only 5 MHz apart.",
@@ -28810,9 +28810,9 @@
     "topicId": "n10-wireless-standards-security",
     "prompt": "A warehouse puts three 2.4 GHz access points on channels 3, 5 and 8. Throughput falls and retries rise. What should be done?",
     "choices": [
-      "Raise transmit power",
-      "Add another AP",
-      "Replace the RADIUS certificate",
+      "Raise transmit power on all three",
+      "Add another AP between them",
+      "Replace the RADIUS server certificate",
       "Reassign them to channels 1, 6 and 11"
     ],
     "answer": 3,
@@ -28909,9 +28909,9 @@
     "prompt": "What does band steering do?",
     "choices": [
       "Pushes dual-band clients onto 5 GHz",
-      "Blocks radar channels",
-      "Pushes clients to 2.4 GHz",
-      "Encrypts the SSID"
+      "Blocks radar channels on the 5 GHz band",
+      "Pushes clients to 2.4 GHz for longer range",
+      "Encrypts the SSID name in beacon frames"
     ],
     "answer": 0,
     "explanation": "Objective 2.3. The AP delays its 2.4 GHz responses so dual-band clients choose 5 GHz. The answer is Pushes dual-band clients onto 5 GHz.",
@@ -29118,10 +29118,10 @@
     "topicId": "n10-wireless-standards-security",
     "prompt": "Does hiding the SSID improve wireless security?",
     "choices": [
-      "Only on 5 GHz, where probe frames are not used",
-      "Yes, it encrypts the traffic that clients send",
+      "Only on 5 GHz, where probe frames are not used by clients",
+      "Yes, it encrypts the traffic that clients send over the air",
       "No, the name still appears in probe and association frames",
-      "Yes, it blocks WPS from being used to join"
+      "Yes, it blocks WPS from being used to join the network"
     ],
     "answer": 2,
     "explanation": "Objective 2.3. Hiding the SSID adds no security because the name is still sent in clear text. The answer is No, the name still appears in probe and association frames.",
@@ -29272,10 +29272,10 @@
     "topicId": "n10-wireless-standards-security",
     "prompt": "Which is an advantage of enterprise over personal wireless mode?",
     "choices": [
-      "No authentication server is needed to run it",
-      "A single shared passphrase that every user types in",
+      "No authentication server is needed to run it, since keys are shared",
+      "A single shared passphrase that every user types in to join",
       "Each user has an identity and unique keys, and one account can be revoked",
-      "It remains compatible with older WEP-only devices"
+      "It remains compatible with older WEP-only devices on the network"
     ],
     "answer": 2,
     "explanation": "Objective 2.3. Enterprise mode gives individual identity, unique session keys and per-user VLANs. The answer is Each user has an identity and unique keys, and one account can be revoked.",
@@ -29412,9 +29412,9 @@
     "topicId": "n10-wireless-standards-security",
     "prompt": "What does a wireless LAN controller do that autonomous APs cannot?",
     "choices": [
-      "Route traffic between VLANs at wire speed",
-      "Replace the access switch that connects the APs",
-      "Assign IP addresses to wireless clients on each SSID",
+      "Route traffic between VLANs at wire speed without needing a Layer 3 switch or router",
+      "Replace the access switch that connects the APs and supplies their Power over Ethernet",
+      "Assign IP addresses to wireless clients on every SSID using a built-in DHCP server",
       "Define SSIDs and policy once, manage channels and power, and coordinate roaming"
     ],
     "answer": 3,
@@ -29510,10 +29510,10 @@
     "topicId": "n10-wireless-standards-security",
     "prompt": "A client clings to a distant AP instead of moving to a closer one. What is this called and how is it fixed?",
     "choices": [
-      "A DFS event, fixed with channel 11",
+      "A DFS event, fixed with a different channel number",
       "A sticky client, fixed with a minimum RSSI threshold",
-      "A rogue AP, fixed with MAC filtering",
-      "An evil twin, fixed with WPS"
+      "A rogue AP, fixed with MAC filtering on the controller",
+      "An evil twin, fixed with WPS on the access point"
     ],
     "answer": 1,
     "explanation": "Objective 2.3. Set a minimum RSSI so the AP disassociates weak clients and they roam. The answer is A sticky client, fixed with a minimum RSSI threshold.",
@@ -29720,9 +29720,9 @@
     "topicId": "n10-cloud-models-connectivity",
     "prompt": "Under the shared responsibility model, who secures the customer's data stored in a SaaS application?",
     "choices": [
-      "Only the customer, who must secure the whole platform",
-      "The internet service provider that carries the traffic",
-      "Only the provider, who handles access and the data",
+      "Only the customer, who must secure the whole platform and application",
+      "The internet service provider that carries the traffic to the cloud",
+      "Only the provider, who handles access and also the customer's data",
       "The customer controls access and data, the provider secures the platform"
     ],
     "answer": 3,
@@ -29847,8 +29847,8 @@
     "prompt": "Which connection to the cloud gives predictable latency and bandwidth without crossing the public internet?",
     "choices": [
       "A dedicated private connection",
-      "A NAT gateway",
-      "A public Wi-Fi hotspot",
+      "A NAT gateway for outbound access",
+      "A public Wi-Fi hotspot at the branch",
       "A VPN over the internet"
     ],
     "answer": 0,
@@ -29860,9 +29860,9 @@
     "topicId": "n10-cloud-models-connectivity",
     "prompt": "Which cloud connection option costs more and takes longer to set up?",
     "choices": [
-      "A proxy",
+      "A proxy server in the data center",
       "A dedicated private connection",
-      "A security group",
+      "A security group on the instance",
       "A VPN over the internet"
     ],
     "answer": 1,
@@ -30070,10 +30070,10 @@
     "topicId": "n10-physical-install-factors",
     "prompt": "What is the purpose of a UPS?",
     "choices": [
-      "Provide long-term power for days from a generator",
+      "Provide long-term power for days from a diesel generator",
       "Battery backup that bridges short outages and conditions power",
       "Distribute power to the outlets in a rack",
-      "Cool the room using redundant air handlers"
+      "Cool the room using redundant air handlers and chillers"
     ],
     "answer": 1,
     "explanation": "Objective 2.4. A UPS carries equipment through short outages. The answer is Battery backup that bridges short outages and conditions power.",
@@ -30336,10 +30336,10 @@
     "topicId": "n10-performance-troubleshooting",
     "prompt": "What is congestion?",
     "choices": [
-      "A DNS failure that stops names resolving",
+      "A DNS failure that stops host names from resolving to addresses",
       "Demand exceeds a link's capacity, so packets queue and drop",
-      "Incorrect VLAN tagging on a trunk link",
-      "A cable fault that corrupts frames"
+      "Incorrect VLAN tagging on a trunk link that carries several VLANs",
+      "A cable fault that corrupts frames on one physical segment"
     ],
     "answer": 1,
     "explanation": "Objective 5.4. Congestion happens when traffic is more than the link can carry. The answer is Demand exceeds a link's capacity, so packets queue and drop.",
@@ -30379,9 +30379,9 @@
     "prompt": "What is the difference between bandwidth and throughput?",
     "choices": [
       "Bandwidth is capacity, throughput is what is actually achieved",
-      "They are identical",
-      "Throughput is capacity, bandwidth is achieved",
-      "Bandwidth is only wireless"
+      "They are identical, since both measure the same thing",
+      "Throughput is capacity, and bandwidth is what is achieved",
+      "Bandwidth is only a wireless measurement, never a wired one"
     ],
     "answer": 0,
     "explanation": "Objective 5.4. Bandwidth is the theoretical maximum, throughput is real. The answer is Bandwidth is capacity, throughput is what is actually achieved.",
@@ -30420,10 +30420,10 @@
     "topicId": "n10-performance-troubleshooting",
     "prompt": "Which three metrics matter most for VoIP quality?",
     "choices": [
-      "Duplex, VLAN and MTU",
-      "Channel, SSID and band",
+      "Duplex, VLAN ID and MTU size",
+      "Channel number, SSID and band",
       "Latency, jitter and packet loss",
-      "Subnet, mask and gateway"
+      "Subnet, mask and default gateway"
     ],
     "answer": 2,
     "explanation": "Objective 5.4. Voice is sensitive to delay, delay variation and loss. The answer is Latency, jitter and packet loss.",
@@ -31191,9 +31191,9 @@
     "prompt": "What happens to traffic that matches no ACL rule?",
     "choices": [
       "It is queued",
-      "It is permitted",
+      "It is permitted by the default rule",
       "It is denied by the implicit deny",
-      "It is logged and forwarded"
+      "It is logged and then forwarded"
     ],
     "answer": 2,
     "explanation": "Objective 4.3. An implicit deny ends every ACL. The answer is It is denied by the implicit deny.",
@@ -31359,9 +31359,9 @@
     "prompt": "Unused switch ports should be handled how?",
     "choices": [
       "Shut down and placed in an unused VLAN",
-      "Set to trunk mode",
-      "Enabled with Telnet",
-      "Left open in the user VLAN"
+      "Set to trunk mode with all VLANs allowed",
+      "Enabled with Telnet for later management",
+      "Left open in the user VLAN for quick use"
     ],
     "answer": 0,
     "explanation": "Objective 4.3. Unused ports are an easy way in. The answer is Shut down and placed in an unused VLAN.",
@@ -31653,9 +31653,9 @@
     "prompt": "Several problems are reported at once. How should you handle them?",
     "choices": [
       "Approach each one individually",
-      "Fix all at once",
-      "Ignore the smaller ones",
-      "Reboot everything"
+      "Fix all of them at the same time",
+      "Ignore the smaller ones for now",
+      "Reboot every affected device"
     ],
     "answer": 0,
     "explanation": "Objective 5.1. Treat multiple problems separately. The answer is Approach each one individually.",
