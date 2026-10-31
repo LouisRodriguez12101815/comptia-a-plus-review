@@ -16,11 +16,12 @@ export async function POST(request: Request) {
   if (!phone) return json({ error: "bad_phone" }, 400);
   if (!limits.codePerPhone(learnerId(phone, c.config.secret))) return json({ error: "rate_limited" }, 429);
   // Same reply for numbers that are not allowed, so nothing is texted (no cost) and nothing is revealed.
-  if (!isAllowedPhone(c.config, phone)) return json({ ok: true });
+  if (!isAllowedPhone(c.config, phone)) { console.info("learner/start: number not on allow list, nothing sent"); return json({ ok: true }); }
   try {
     const t = twilioLearner(c.config);
     await t.guard.assertActive(); // stop texting when the daily spend latch has tripped
     await t.sendCode(phone);
+    console.info("learner/start: verification created");
     return json({ ok: true });
   } catch (e) {
     if (e instanceof RoomError && e.status === 423) return json({ error: "paused" }, 423);
