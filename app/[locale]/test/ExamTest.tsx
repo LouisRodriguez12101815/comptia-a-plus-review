@@ -18,6 +18,7 @@ import { evaluateReadiness } from "@/lib/readiness";
 import { confusionFor, pairFromKey } from "@/lib/confusions";
 import { LookAlike } from "@/app/components/LookAlike";
 import type { Question } from "@/lib/types";
+import { buildWeakReport, type WeakRow, type WeakStatus } from "@/lib/weak-report";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
@@ -166,6 +167,13 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const visited = useRef(new Set<string>());
   const [orders, setOrders] = useState<Record<string, number[]>>({});
   const [flags, setFlags] = useState<string[]>([]);
+  const [reportNote, setReportNote] = useState<{ ok: boolean; text: string } | null>(null);
+  /** Flag for review: a visible toggle, announced to screen readers, shown again on the review screen and the results. */
+  function toggleFlag(id: string) {
+    const next = flags.includes(id) ? flags.filter((f) => f !== id) : [...flags, id];
+    setFlags(next);
+    setAnnounce(t(next.includes(id) ? "flagAdded" : "flagRemoved", { count: next.length }));
+  }
   const [reviewing, setReviewing] = useState(false);
   const warnedIndex = useRef(-1);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -323,6 +331,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setDueIds(priority.filter((id) => draft.some((p) => p.questionId === id)));
     confidenceRef.current = {};
     setConfidence({});
+    setFlags([]);
+    setReviewing(false);
     setRunInfo(kind === "drill" ? { kind, objectiveIds: [] } : { kind: objectiveIds.length === 0 ? "standard" : kind, objectiveIds: kind === "standard" ? [] : objectiveIds });
     setPicks(draft);
     setIndex(0);
@@ -511,7 +521,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
         {reviewing ? <section className={card}>
           <h2 className="text-lg font-semibold">{t("reviewBeforeFinish")}</h2>
-          <div className="mt-3 flex flex-wrap gap-2">{picks.map((pick, i) => <button key={pick.questionId} type="button" className={secondary} onClick={() => navigate(i)}>{i + 1} · {responses[pick.questionId]?.answer === undefined ? t("unanswered") : t("answered")}{flags.includes(pick.questionId) ? " ⚑" : ""}</button>)}</div>
+          <p className="mt-2 text-sm text-slate-300">{t("flaggedCount", { count: flags.length })}</p>
+          {flags.length > 0 && <button type="button" className={`${secondary} mt-2`} onClick={() => navigate(picks.findIndex((pick) => flags.includes(pick.questionId)))}>{t("firstFlagged")}</button>}
+          <div className="mt-3 flex flex-wrap gap-2">{picks.map((pick, i) => <button key={pick.questionId} type="button" className={`${secondary} ${flags.includes(pick.questionId) ? "border-amber-400 bg-amber-950/50" : ""}`} onClick={() => navigate(i)}>{i + 1} · {responses[pick.questionId]?.answer === undefined ? t("unanswered") : t("answered")}{flags.includes(pick.questionId) ? " ⚑" : ""}</button>)}</div>
           <button type="button" className={`${primary} mt-4`} onClick={() => finish(responsesRef.current, picks)}>{t("scoreAll")}</button>
         </section> : <>
         {dueIds.includes(current.id) && (
@@ -549,8 +561,11 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             {index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
           </button>
           <button type="button" className={secondary} disabled={index === 0} onClick={() => navigate(index - 1)}>{t("previousQuestion")}</button>
-          <button type="button" className={secondary} aria-pressed={flags.includes(current.id)} onClick={() => setFlags(prev => prev.includes(current.id) ? prev.filter(id => id !== current.id) : [...prev, current.id])}>{t("flagQuestion")}</button>
-          <button type="button" className={secondary} onClick={() => setReviewing(true)}>{t("reviewBeforeFinish")}</button>
+          <button type="button" aria-pressed={flags.includes(current.id)} onClick={() => toggleFlag(current.id)}
+            className={`${secondary} ${flags.includes(current.id) ? "border-amber-400 bg-amber-950/50 text-amber-100" : ""}`}>
+            {flags.includes(current.id) ? `⚑ ${t("flagged")}` : t("flagQuestion")}
+          </button>
+          <button type="button" className={secondary} onClick={() => setReviewing(true)}>{t("reviewBeforeFinish")}{flags.length > 0 ? ` · ${t("flaggedCount", { count: flags.length })}` : ""}</button>
           {!confirmEnd ? (
             <button type="button" onClick={() => setConfirmEnd(true)} className={secondary}>{t("endTest")}</button>
           ) : (
@@ -595,9 +610,34 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const luckyPicks = scored.filter((p) => confidence[p.questionId] === "guess" && isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const missedObjectiveIds = missedByObjective.map(([id]) => id);
   const retestObjectiveIds = [...new Set([...missedObjectiveIds, ...luckyPicks.map((p) => p.objectiveId)])];
+  const reportRows: WeakRow[] = scored.flatMap((p) => {
+    const q = questionsById[p.questionId];
+    const answer = responses[p.questionId]?.answer;
+    const right = isCorrect(q, answer);
+    const level = confidence[p.questionId];
+    const flagged = flags.includes(p.questionId);
+    const status: WeakStatus | null = !right ? (level === "sure" ? "sure-wrong" : level === "guess" ? "guessed-wrong" : "wrong") : level === "guess" ? "lucky-guess" : flagged ? "flagged" : null;
+    if (!status) return [];
+    return [{ id: p.questionId, objectiveId: p.objectiveId, topicId: q.topicId, topicTitle: getTopic(q.topicId)?.title ?? q.topicId, status, flagged, prompt: q.prompt, picked: answerText(q, answer, t("noAnswer")), correct: answerText(q, q.answer, ""), explanation: q.explanation }];
+  });
+  const reportText = buildWeakReport({ exam, date: new Date().toISOString().slice(0, 10), correct: scored.length - missedPicks.length, total: scored.length, rows: reportRows });
+  async function copyReport() {
+    try { await navigator.clipboard.writeText(reportText); setReportNote({ ok: true, text: t("reportCopied") }); }
+    catch (e) { console.error("Copying the weak-concept report failed", e); setReportNote({ ok: false, text: t("reportCopyFailed") }); } // the text stays on screen to copy by hand
+  }
 
   return (
     <div className="space-y-6">
+      {reportRows.length > 0 && (
+        <section className={card} aria-labelledby="report-heading">
+          <h2 id="report-heading" className="text-lg font-semibold text-white">{t("reportHeading", { count: reportRows.length })}</h2>
+          <p className="mt-1 text-sm text-slate-300">{t("reportIntro")}</p>
+          <button type="button" className={`${secondary} mt-3`} onClick={copyReport}>{t("reportCopy")}</button>
+          <p className="sr-only" role="status" aria-live="polite">{reportNote?.text ?? ""}</p>
+          {reportNote && <p className={`mt-2 text-sm ${reportNote.ok ? "text-emerald-200" : "text-amber-200"}`}>{reportNote.text}</p>}
+          {reportNote && !reportNote.ok && <textarea readOnly value={reportText} rows={8} aria-label={t("reportHeading", { count: reportRows.length })} className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 p-3 font-mono text-xs text-slate-100" />}
+        </section>
+      )}
       {runInfo.kind === "retest" && (
         <section className={card} aria-labelledby="retest-heading">
           <h2 id="retest-heading" className="text-lg font-semibold text-white">{t("retestHeading")}</h2>
@@ -641,6 +681,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                         return (
                           <li key={p.questionId} className="text-sm">
                             <p className="text-slate-400">{q.prompt}</p>
+                            {flags.includes(p.questionId) && (
+                              <p className="mt-1 w-fit rounded-full border border-amber-400/50 bg-amber-400/10 px-3 py-0.5 text-xs font-medium text-amber-100">⚑ {t("flaggedBadge")}</p>
+                            )}
                             {confidence[p.questionId] === "sure" && (
                               <p className="mt-1 w-fit rounded-full border border-rose-400/50 bg-rose-400/10 px-3 py-0.5 text-xs font-medium text-rose-100">{t("sureWrongBadge")}</p>
                             )}

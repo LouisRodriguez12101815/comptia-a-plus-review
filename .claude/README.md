@@ -43,6 +43,7 @@ Agents run in their own context and report back. All are report-only; the caller
 | [objective-gap-auditor](agents/objective-gap-auditor.md) | Deciding which objective to cover next |
 | [answer-key-verifier](agents/answer-key-verifier.md) | New questions were written or a key is disputed |
 | [learner-simulator](agents/learner-simulator.md) | A topic was added or rewritten |
+| [weak-concept-coach](agents/weak-concept-coach.md) | After a timed test: paste the copied weak-concept report to get explanations, visual drafts and practice for the weakest concepts |
 | [ux-a11y-reviewer](agents/ux-a11y-reviewer.md) | UI or visual changes are about to merge |
 | [visual-fact-auditor](agents/visual-fact-auditor.md) | A fact was corrected, or before a visual redraw |
 | [chapter-fact-reviewer](agents/chapter-fact-reviewer.md) | content-fact-check needs one reviewer per chapter |
