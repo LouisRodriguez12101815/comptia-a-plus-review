@@ -7840,5 +7840,321 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-appliances-functions",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Appliances, applications and functions (1.2)",
+    "chapter": "Network+ · Networking concepts",
+    "concept": "appliances",
+    "summary": "Tell firewalls, IDS, IPS, proxies, load balancers and the other network functions apart, and know where each sits and what it does.",
+    "sections": [
+      {
+        "id": "1-2-security",
+        "title": "Security appliances",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Device",
+              "What it does",
+              "Key fact"
+            ],
+            "rows": [
+              [
+                "Firewall",
+                "Permits or denies traffic by rules",
+                "Stateless checks each packet alone. Stateful tracks connections. NGFW adds application awareness, IPS and TLS inspection"
+              ],
+              [
+                "IDS",
+                "Detects and alerts on suspicious traffic",
+                "Passive, usually fed by a tap or SPAN port. Cannot block"
+              ],
+              [
+                "IPS",
+                "Detects and blocks suspicious traffic",
+                "Inline, so a failure or false positive can disrupt traffic"
+              ],
+              [
+                "Proxy (forward)",
+                "Makes requests for clients, can filter and cache",
+                "Hides clients and enforces web policy"
+              ],
+              [
+                "Reverse proxy",
+                "Sits in front of servers and receives client requests for them",
+                "Hides servers, can terminate TLS and balance load"
+              ],
+              [
+                "Load balancer",
+                "Spreads requests across several servers",
+                "Health checks remove failed servers. Gives scale and availability"
+              ],
+              [
+                "VPN concentrator",
+                "Terminates many remote-access VPN tunnels",
+                "Encrypts traffic between remote users and the network"
+              ],
+              [
+                "WAF",
+                "Filters HTTP traffic to a web application",
+                "Blocks SQL injection and cross-site scripting"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "IDS = alert only, out of band. IPS = block, inline."
+          }
+        ]
+      },
+      {
+        "id": "1-2-other",
+        "title": "Other devices and functions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Device or function",
+              "Role"
+            ],
+            "rows": [
+              [
+                "Router",
+                "Forwards packets between networks using Layer 3 addresses"
+              ],
+              [
+                "Layer 2 switch",
+                "Forwards frames by MAC address within a VLAN"
+              ],
+              [
+                "Layer 3 switch",
+                "Switch that can also route between VLANs"
+              ],
+              [
+                "Access point",
+                "Connects wireless clients to the wired network"
+              ],
+              [
+                "Wireless LAN controller",
+                "Centrally configures and manages many access points"
+              ],
+              [
+                "Media converter",
+                "Converts between media such as copper and fiber"
+              ],
+              [
+                "VoIP phone and PBX",
+                "Voice endpoint and call-control system. PoE often powers the phone"
+              ],
+              [
+                "Content delivery network",
+                "Caches content at edge locations near users to cut latency"
+              ],
+              [
+                "Network function virtualization",
+                "Runs functions such as firewalls and routers as software on standard hardware"
+              ],
+              [
+                "Virtual IP and NIC teaming",
+                "A shared address for a group, and several NICs bonded for bandwidth or failover"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Hardware appliances are purpose-built boxes. Virtual appliances run the same function as a VM.",
+              "Placement matters: a firewall sits at the boundary, an IPS sits inline, an IDS watches a mirrored copy.",
+              "A DMZ (screened subnet) holds public-facing servers behind the firewall but apart from the internal LAN."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-security-features-43",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Network security features and defenses (4.3)",
+    "chapter": "Network+ · Network security",
+    "concept": "security-features",
+    "summary": "Apply the controls that harden a network: ACLs, firewall zones, port security, DHCP snooping, DAI, NAC, segmentation and deception.",
+    "sections": [
+      {
+        "id": "4-3-controls",
+        "title": "Controls and what they stop",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Control",
+              "Purpose",
+              "Stops"
+            ],
+            "rows": [
+              [
+                "ACL",
+                "Permit or deny by address, protocol, port. Evaluated top down, first match wins, implicit deny at the end",
+                "Unwanted traffic"
+              ],
+              [
+                "Port security",
+                "Limits the MAC addresses allowed on a switch port and sets a violation action (shutdown, restrict, protect)",
+                "Rogue devices, MAC flooding"
+              ],
+              [
+                "DHCP snooping",
+                "Marks switch ports trusted or untrusted and only lets trusted ports offer addresses",
+                "Rogue DHCP servers"
+              ],
+              [
+                "Dynamic ARP inspection",
+                "Checks ARP replies against the DHCP snooping binding table",
+                "ARP poisoning"
+              ],
+              [
+                "IP source guard",
+                "Drops packets whose source address does not match the binding",
+                "Spoofed source addresses"
+              ],
+              [
+                "802.1X / NAC",
+                "Authenticates a device before it gets network access and can check posture",
+                "Unauthorized and noncompliant devices"
+              ],
+              [
+                "Control plane policing",
+                "Rate-limits traffic aimed at the device's own processor",
+                "Denial of service against the device"
+              ],
+              [
+                "Private VLAN",
+                "Isolates hosts in the same VLAN from each other",
+                "Lateral movement"
+              ],
+              [
+                "Network segmentation",
+                "Splits the network so a breach stays contained",
+                "Spread of compromise"
+              ],
+              [
+                "Honeypot / honeynet",
+                "Decoy system or network that attracts attackers",
+                "Gives early warning and intelligence"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "DHCP snooping builds the binding table. Dynamic ARP inspection and IP source guard both depend on it."
+          }
+        ]
+      },
+      {
+        "id": "4-3-zones",
+        "title": "Zones, hardening and rules",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Zones: untrusted (internet), DMZ or screened subnet, trusted (internal). Traffic is controlled between zones.",
+              "Default deny: allow only what is needed. Rules placed in the wrong order can let or block traffic wrongly.",
+              "Hardening: disable unused ports and services, change default credentials, patch firmware, use SSH instead of Telnet, restrict management access.",
+              "Role-based access control gives administrators only the rights their job needs.",
+              "Geofencing and URL or content filtering restrict access by location or destination.",
+              "Out-of-band management uses a separate path so devices can be managed when the production network is down.",
+              "Unused switch ports should be shut down and placed in an unused VLAN."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "n10-troubleshoot-methodology-51",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Troubleshooting methodology (5.1)",
+    "chapter": "Network+ · Network troubleshooting",
+    "concept": "methodology",
+    "summary": "Know the seven steps in order and what happens at each one.",
+    "sections": [
+      {
+        "id": "5-1-steps",
+        "title": "The seven steps",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Step",
+              "What you do"
+            ],
+            "rows": [
+              [
+                "1. Identify the problem",
+                "Gather information, question users, identify symptoms, determine what changed, duplicate the problem if possible, approach multiple problems individually"
+              ],
+              [
+                "2. Establish a theory of probable cause",
+                "Question the obvious. Consider multiple approaches, such as top-to-bottom or bottom-to-top OSI, or divide and conquer"
+              ],
+              [
+                "3. Test the theory to determine the cause",
+                "If confirmed, determine the next steps. If not confirmed, establish a new theory or escalate"
+              ],
+              [
+                "4. Establish a plan of action",
+                "Plan the fix and identify potential effects"
+              ],
+              [
+                "5. Implement the solution or escalate",
+                "Make the change, or hand it to someone with the authority or skill"
+              ],
+              [
+                "6. Verify full system functionality",
+                "Confirm the fix works and implement preventive measures if applicable"
+              ],
+              [
+                "7. Document",
+                "Record findings, actions, outcomes and lessons learned"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Identify, Theory, Test, Plan, Implement, Verify, Document. Always find out what changed first."
+          }
+        ]
+      },
+      {
+        "id": "5-1-approach",
+        "title": "Approaches and habits",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Top-to-bottom starts at the Application layer and works down. Bottom-to-top starts at Physical and works up. Divide and conquer starts at the middle, such as pinging, then moves up or down.",
+              "Follow-the-path traces the route a packet takes. Compare with a known good device or configuration.",
+              "Change one thing at a time so you know what fixed or broke it.",
+              "If you cannot test your theory or lack authority, escalate.",
+              "Back up configurations before changing them, and make changes in a maintenance window when possible."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
