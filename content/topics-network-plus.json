@@ -7225,5 +7225,288 @@
         ]
       }
     ]
+  },
+  {
+    "id": "n10-wireless-standards-security",
+    "group": "networking",
+    "examCodes": [
+      "n10-009"
+    ],
+    "title": "Wi-Fi bands, standards, security and controllers (2.3)",
+    "chapter": "Network+ · Network implementation",
+    "concept": "wireless",
+    "summary": "Pick channels that do not overlap, match Wi-Fi generations to their features, secure the wireless network with WPA3 and 802.1X, choose antennas, and separate autonomous from controller-managed access points.",
+    "sections": [
+      {
+        "id": "2-3-bands",
+        "title": "Bands, channels and interference",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Band",
+              "Facts",
+              "Best for"
+            ],
+            "rows": [
+              [
+                "2.4 GHz",
+                "11 channels in North America, 13 in much of Europe. Each channel is 20 MHz wide but centers sit 5 MHz apart, so only channels 1, 6 and 11 do not overlap. Longest range, shared with microwave ovens and Bluetooth",
+                "IoT devices, older clients, coverage edges"
+              ],
+              [
+                "5 GHz",
+                "About 25 non-overlapping 20 MHz channels. Shorter range, smaller cells. Channels roughly 52 to 144 share spectrum with radar and require DFS",
+                "Main client band"
+              ],
+              [
+                "6 GHz",
+                "Opened for unlicensed use in 2020. Wi-Fi 6E and Wi-Fi 7 only. Up to 59 channels at 20 MHz. Cleanest band, shortest range",
+                "High-density, new devices"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Co-channel interference: two access points on one channel. Devices hear each other and take turns, so every client slows down.",
+              "Adjacent channel interference: access points on partly overlapping channels such as 3 and 5. They cannot decode each other, do not take turns, and both transmissions fail. It is worse than sharing a channel.",
+              "The correct 2.4 GHz plan reuses 1, 6 and 11 in a repeating pattern. Channels 1, 3, 5 and 7 perform worse than putting everything on channel 1.",
+              "DFS (802.11h): on radar channels the access point listens for 60 seconds before use, and must leave within 10 seconds of detecting radar and stay away 30 minutes. Every client on that AP drops at the same moment.",
+              "Channel bonding joins 20 MHz channels into 40, 80 or 160 MHz (320 MHz in Wi-Fi 7). Each doubling roughly doubles throughput but halves the channel count and lowers signal-to-noise ratio. Use 20 MHz on 2.4 GHz.",
+              "Regulatory domains set legal channels and power by country. A client from another region may not see every channel.",
+              "Band steering delays 2.4 GHz responses to push dual-band clients to 5 GHz. Aggressive steering can strand edge clients."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-3-standards",
+        "title": "Wi-Fi standards",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Name",
+              "IEEE",
+              "Band",
+              "Key points"
+            ],
+            "rows": [
+              [
+                "Wi-Fi 4",
+                "802.11n",
+                "2.4 and 5 GHz",
+                "First MIMO (multiple antennas). Up to about 600 Mbps"
+              ],
+              [
+                "Wi-Fi 5",
+                "802.11ac",
+                "5 GHz only",
+                "MU-MIMO serves several devices at once. Beamforming aims the signal at the client. About 3.5 Gbps"
+              ],
+              [
+                "Wi-Fi 6",
+                "802.11ax",
+                "2.4 and 5 GHz",
+                "OFDMA, MU-MIMO in both directions, target wake time, BSS coloring, 1024-QAM. Up to 9.6 Gbps. Built for crowded places, not just speed"
+              ],
+              [
+                "Wi-Fi 6E",
+                "802.11ax",
+                "Adds 6 GHz",
+                "Same standard with a third, uncongested band"
+              ],
+              [
+                "Wi-Fi 7",
+                "802.11be",
+                "2.4, 5 and 6 GHz",
+                "320 MHz channels, 4K-QAM, multi-link operation (one device uses two bands at once). Up to about 46 Gbps"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Older generations: 802.11b (2.4 GHz, 11 Mbps), 802.11a (5 GHz, 54 Mbps), 802.11g (2.4 GHz, 54 Mbps).",
+              "OFDMA splits a channel into small resource units so one transmission carries data for many devices. It helps most with many small transmissions such as voice and IoT.",
+              "MU-MIMO uses separate spatial streams to talk to several devices at the same time.",
+              "Target wake time lets devices schedule when they wake, which saves battery.",
+              "BSS coloring tags frames so an access point can ignore a neighbor's traffic on the same channel."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-3-ssid",
+        "title": "SSID, BSSID, ESSID and network types",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Term",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "SSID",
+                "Network name users pick, up to 32 characters, case sensitive, not unique"
+              ],
+              [
+                "BSSID",
+                "Identifies one radio on one access point. It is the MAC address of that radio. An AP with 3 SSIDs on 2 bands advertises 6 BSSIDs"
+              ],
+              [
+                "ESSID",
+                "One SSID shared across many access points"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Access points send beacon frames about 10 times a second. Listening for beacons is passive scanning. Sending probe requests is active scanning.",
+              "Roaming is a change of BSSID inside the same ESSID, so the user notices nothing.",
+              "Hiding the SSID adds no security. Beacons still go out with a blank name, and the name appears in clear text in probe and association frames. MAC filtering also fails because MAC addresses are unencrypted and easy to clone.",
+              "Every SSID is beaconed on every radio at the lowest data rate. Keep it to about three SSIDs per radio: corporate, guest, and one for devices that cannot do enterprise authentication.",
+              "Infrastructure mode: clients associate with access points, which bridge to the wired LAN. Ad hoc (IBSS): clients talk directly with no AP, which is a risk in an enterprise.",
+              "Mesh: access points relay traffic wirelessly to each other, with only root nodes wired. Each hop roughly halves throughput.",
+              "Point-to-point links use directional antennas between two fixed sites with line of sight. Point-to-multipoint serves several remote sites from one central site."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-3-security",
+        "title": "Wireless security",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Protocol",
+              "Facts"
+            ],
+            "rows": [
+              [
+                "WEP",
+                "RC4 with a short initialization vector. Key can be recovered in minutes. Obsolete"
+              ],
+              [
+                "WPA",
+                "TKIP stopgap. Also broken"
+              ],
+              [
+                "WPA2",
+                "AES with CCMP. The acceptable baseline. Personal mode is exposed to offline guessing of a captured four-way handshake"
+              ],
+              [
+                "WPA3",
+                "Replaces the shared-key handshake with SAE. Each guess needs a live, rate-limited exchange, and forward secrecy protects recorded traffic. Transition mode lets older clients stay at WPA2 strength"
+              ]
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Mode",
+              "How it works",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Personal (PSK)",
+                "One shared passphrase",
+                "Homes and small offices. No per-user identity. Changing it means touching every device"
+              ],
+              [
+                "Enterprise (802.1X)",
+                "Supplicant (client), authenticator (AP) and RADIUS authentication server using EAP",
+                "Each user authenticates and gets unique keys. Identity in logs, one account can be revoked, per-user VLANs"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Guest network: its own SSID mapped to its own VLAN. The firewall allows the internet and denies internal and management networks. Client isolation stops guests reaching each other. Use a separate DHCP scope with a short lease.",
+              "Captive portal: redirects first web traffic to a terms, login or voucher page. It controls admission only and encrypts nothing. For encryption without a passphrase use WPA3 enhanced open (OWE).",
+              "WPS: push-button or PIN setup. Convenient but weak. The PIN method is vulnerable to brute force.",
+              "Rogue access points and evil twins are unauthorized APs. A Wi-Fi analyzer or wireless controller can find them."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-3-antennas",
+        "title": "Antennas and power",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "An antenna does not create signal. Gain (dBi) only reshapes where the existing energy goes. Every 3 dB roughly doubles power in the favored direction.",
+              "Omnidirectional: 360 degrees horizontally in a donut pattern, about 2 to 5 dBi. Default on ceiling APs. Weak directly above and below, so a high-gain omni is poor for multi-story buildings.",
+              "Semi-directional (patch, panel): 60 to 120 degree wedge, about 6 to 12 dBi. Corridors, aisles, and wall-mounted units facing inward.",
+              "Highly directional (Yagi, parabolic dish): beams of 10 to 25 degrees, about 15 to 30 dBi. Point-to-point links over long distances with careful aiming.",
+              "Raising transmit power in a many-AP deployment makes cells overlap more and creates contention. Reduce power and add APs instead.",
+              "Power is asymmetric: a ceiling AP may transmit at 100 mW while a phone sends about 15 mW. The client hears the AP but the AP may not hear the client.",
+              "Signal bars show RSSI. Performance depends on signal-to-noise ratio."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-3-controllers",
+        "title": "Access points and controllers",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Type",
+              "How it works",
+              "Fit"
+            ],
+            "rows": [
+              [
+                "Autonomous (fat) AP",
+                "Holds its own full configuration",
+                "One to three APs in a small office. Thirty means thirty configurations to keep in sync"
+              ],
+              [
+                "Lightweight AP + wireless LAN controller",
+                "AP is radio hardware plus a tunnel to the controller. Controller defines SSIDs, security and VLANs once",
+                "Larger sites. Controller runs radio resource management (channels and power), coordinates roaming. Deploy it redundantly"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "An access point is a layer 2 bridge between 802.11 and Ethernet. It does not route, assign addresses or perform NAT. It is usually powered by PoE.",
+              "A controller can be a rack appliance, a function inside one AP, or a cloud dashboard. User traffic may tunnel to it or break out locally.",
+              "Fast roaming uses 802.11r. Plan about 15 to 20 percent overlap between adjacent cells."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2-3-trouble",
+        "title": "Wireless troubleshooting",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "First question: can the client join at all, or does it join and perform badly? Cannot join points to configuration or authentication. Joins but slow points to signal, interference or capacity.",
+              "Cannot connect: check SSID, security type (WPA2 vs WPA3), password, RADIUS server reachability, and any MAC filter. If no networks show at all, check that the adapter is enabled and the driver is current.",
+              "Weak signal: distance, low power, and attenuation. Drywall and wood barely attenuate. Glass and concrete are moderate. Metal, brick and stone are significant.",
+              "Signal-to-noise ratio matters more than RSSI. A low ratio causes retries and drops.",
+              "Non-Wi-Fi interference on 2.4 GHz: microwave ovens, Bluetooth and cordless phones. A spectrum or Wi-Fi analyzer shows channel use and interference.",
+              "A wireless site survey and heat map reveal coverage gaps and guide AP placement. Adding APs without a channel plan often makes things worse.",
+              "Sticky client: clings to a distant AP. Fix with a minimum RSSI threshold on the AP and roughly 15 to 20 percent cell overlap. Mismatched security settings between APs sharing an SSID also break roaming.",
+              "Many healthy clients dropped at once can be a DFS radar event, or forged deauthentication frames from an attacker."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
