@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { DeviceIcon } from "@/app/components/icons";
 import { StatusChip } from "@/app/components/StatusChip";
+import { TodayPlan } from "@/app/components/TodayPlan";
 import { trackCounts, tracks } from "@/lib/tracks";
 
 async function NetworkDiagram() {
@@ -39,8 +40,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("homePage");
-  const tHeader = await getTranslations("header");
-  const tMethods = await getTranslations("assessmentWorkflowPage");
   return (
     <div className="space-y-12">
       <section className="grid items-center gap-8 md:grid-cols-2">
@@ -56,30 +55,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <section aria-labelledby="workflow-heading" className="space-y-4">
-        <div>
-          <p className="text-sm uppercase tracking-wide text-teal-300">{t("workflowEyebrow")}</p>
-          <h2 id="workflow-heading" className="mt-1 text-2xl font-semibold text-white">{t("workflowHeading")}</h2>
-          <p className="mt-2 max-w-3xl text-sm text-slate-300">{t("workflowIntro")}</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          <Link href="/coverage" className="rounded-2xl border border-teal-400/40 bg-teal-400/5 p-5 hover:border-teal-400">
-            <span className="text-xs font-medium uppercase tracking-wide text-teal-300">{t("workflowStep", { step: 1 })}</span>
-            <span className="mt-2 block text-lg font-semibold text-white">{tHeader("objectiveLab")}</span>
-            <span className="mt-2 block text-sm text-slate-300">{t("coverageText")}</span>
-          </Link>
-          <Link href="/assessment-workflow" className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 hover:border-teal-400">
-            <span className="text-xs font-medium uppercase tracking-wide text-teal-300">{t("workflowStep", { step: 2 })}</span>
-            <span className="mt-2 block text-lg font-semibold text-white">{tHeader("methods")}</span>
-            <span className="mt-2 block text-sm text-slate-300">{tMethods("metadataDescription")}</span>
-          </Link>
-          <Link href="/test" className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 hover:border-teal-400">
-            <span className="text-xs font-medium uppercase tracking-wide text-teal-300">{t("workflowStep", { step: 3 })}</span>
-            <span className="mt-2 block text-lg font-semibold text-white">{tHeader("testMode")}</span>
-            <span className="mt-2 block text-sm text-slate-300">{t("testText")}</span>
-          </Link>
-        </div>
-      </section>
+      <TodayPlan />
 
       <section aria-labelledby="tracks-heading" className="space-y-4">
         <h2 id="tracks-heading" className="text-lg font-medium text-white">
