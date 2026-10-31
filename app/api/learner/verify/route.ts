@@ -1,4 +1,4 @@
-import { ipOf, isSecure, json, limits, needConfig, sameOrigin } from "@/lib/learner/api";
+import { ipOf, isAllowedPhone, isSecure, json, limits, needConfig, sameOrigin } from "@/lib/learner/api";
 import { learnerId, normalizePhone, SESSION_DAYS, sessionCookie, signSession } from "@/lib/learner/session";
 import { twilioLearner } from "@/lib/learner/twilio";
 export const runtime = "nodejs";
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
   const phone = normalizePhone(body.phone);
   const code = typeof body.code === "string" ? body.code.trim() : "";
   if (!phone || !/^\d{4,10}$/.test(code)) return json({ error: "bad_request" }, 400);
+  if (!isAllowedPhone(c.config, phone)) return json({ error: "wrong_code" }, 401);
   try {
     const ok = await twilioLearner(c.config).checkCode(phone, code);
     if (!ok) return json({ error: "wrong_code" }, 401);

@@ -78,8 +78,15 @@ test('large progress round-trips through chunked map items and shrinks cleanly',
 });
 
 test('sync stays off unless every variable is present and well formed', () => {
-  const ok = { TWILIO_ACCOUNT_SID: 'AC' + 'a'.repeat(32), TWILIO_API_KEY_SID: 'SK' + 'a'.repeat(32), TWILIO_API_KEY_SECRET: 'x', TWILIO_SYNC_SERVICE_SID: 'IS' + 'a'.repeat(32), TWILIO_VERIFY_SERVICE_SID: 'VA' + 'a'.repeat(32), LEARNER_SESSION_SECRET: 'q'.repeat(32) };
+  const ok = { TWILIO_ACCOUNT_SID: 'AC' + 'a'.repeat(32), TWILIO_API_KEY_SID: 'SK' + 'a'.repeat(32), TWILIO_API_KEY_SECRET: 'x', TWILIO_SYNC_SERVICE_SID: 'IS' + 'a'.repeat(32), TWILIO_VERIFY_SERVICE_SID: 'VA' + 'a'.repeat(32), LEARNER_SESSION_SECRET: 'q'.repeat(32), LEARNER_ALLOWED_PHONES: '(305) 555-0123' };
   assert.ok(learnerConfig(ok));
   for (const k of Object.keys(ok)) assert.equal(learnerConfig({ ...ok, [k]: '' }), null, k);
   assert.equal(learnerConfig({ ...ok, LEARNER_SESSION_SECRET: 'short' }), null);
+});
+
+test('owner-only: sync is off without an allowed number and keeps only valid numbers', () => {
+  const ok = { TWILIO_ACCOUNT_SID: 'AC' + 'a'.repeat(32), TWILIO_API_KEY_SID: 'SK' + 'a'.repeat(32), TWILIO_API_KEY_SECRET: 'x', TWILIO_SYNC_SERVICE_SID: 'IS' + 'a'.repeat(32), TWILIO_VERIFY_SERVICE_SID: 'VA' + 'a'.repeat(32), LEARNER_SESSION_SECRET: 'q'.repeat(32) };
+  assert.equal(learnerConfig({ ...ok }), null);
+  assert.equal(learnerConfig({ ...ok, LEARNER_ALLOWED_PHONES: 'not a number' }), null);
+  assert.deepEqual(learnerConfig({ ...ok, LEARNER_ALLOWED_PHONES: '305-555-0123, +44 20 7946 0958' }).allowed, ['+13055550123', '+442079460958']);
 });
