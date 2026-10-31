@@ -1,10 +1,23 @@
-import { address, calculate, cidr, contained, overlaps, smallestPrefix } from "@/lib/subnet/ipv4";
+import { AddressFormatError, address, addressProblem, calculate, cidr, contained, overlaps, smallestPrefix } from "@/lib/subnet/ipv4";
 import type { Allocation, DesignMission, Exercise } from "@/lib/subnet/types";
 
 /** Player-facing feedback. `text` is the English source (also used by tests and logs); `key`/`values` look up the translation in the subnetGrading namespace. Content text without a key stays as-is. */
 export type Feedback = { text: string; key?: string; values?: Record<string, string | number> };
 const fb = (key: string, text: string, values?: Record<string, string | number>): Feedback => ({ text, key, values });
 
+/** Class 10 validator. Returns { ok, value, errors } and never throws, so a bad typed value is a normal result the screen can show.
+ *  Expected problems (empty, wrong shape) are checked with an if. try/except is only for the unpredictable, and it catches the specific error class. */
+export function validateTypedAddress(raw: unknown, field = "address"): { ok: boolean; value: number | null; errors: Feedback[] } {
+  const problem = addressProblem(raw);
+  if (problem) return { ok: false, value: null, errors: [fb("fieldError", `${field}: ${problem}`, { field, message: problem })] };
+  try {
+    return { ok: true, value: address(raw as string), errors: [] };
+  } catch (e) {
+    if (e instanceof AddressFormatError) return { ok: false, value: null, errors: [fb("fieldError", `${field}: ${e.message}`, { field, message: e.message })] };
+    console.error("validateTypedAddress failed unexpectedly", e); // developers see the detail; the player sees a safe message
+    return { ok: false, value: null, errors: [fb("fieldUnexpected", `${field}: Something unexpected went wrong checking this value. Try again.`, { field })] };
+  }
+}
 export const detectiveSteps = [
   {id:"mask",label:"Subnet mask and block size",fields:["mask","blockSize"],objective:"Translate an IPv4 prefix into a mask and increment"},
   {id:"bounds",label:"Network and broadcast",fields:["network","broadcast"],objective:"Find the aligned network and broadcast boundaries"},
@@ -20,7 +33,11 @@ export function detectiveGrade(exercise: Exercise, step: string, values: Record<
     const text=(values[field] ?? "").trim();
     if (field === "isHost") { if(text !== String(expected.isHost)) errors.push(fb("isHost","Reconsider whether the given address equals the network or broadcast boundary; neither is usable in this exercise.")); }
     else if(field === "capacity" || field === "blockSize") { if(!/^\d+$/.test(text) || Number(text) !== expected[field]) errors.push(field === "capacity" ? fb("capacity","Capacity: use 2^(32 − prefix) − 2, reserving network and broadcast.") : fb("blockSize",`Block size: look at the prefix boundary in octet ${expected.blockOctet}; use 256 minus that mask octet (256 for a full host octet).`,{octet:expected.blockOctet})); }
-    else { try { if(address(text) !== address(expected[field])) errors.push(field === "mask" ? fb("mask","Mask: the prefix is the number of leading 1 bits, followed by host 0 bits.") : fb("alignField",`${field}: align the network down to its block boundary; broadcast is the final address and usable addresses lie strictly between.`,{field})); } catch(e) { errors.push(fb("fieldError",`${field}: ${(e as Error).message}`,{field,message:(e as Error).message})); } }
+    else {
+      const typed = validateTypedAddress(text, field);
+      if (!typed.ok) errors.push(...typed.errors);
+      else if (typed.value !== address(expected[field])) errors.push(field === "mask" ? fb("mask","Mask: the prefix is the number of leading 1 bits, followed by host 0 bits.") : fb("alignField",`${field}: align the network down to its block boundary; broadcast is the final address and usable addresses lie strictly between.`,{field}));
+    }
   }
   return {ok:errors.length===0,errors};
 }

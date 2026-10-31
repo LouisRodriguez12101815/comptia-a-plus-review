@@ -26,6 +26,11 @@ export function requestHint(session: Session, challenge: Challenge): Session {
 export function advance(session: Session, challenge: Challenge): Session {
   return solved(session, challenge) ? { ...session, roundIndex: session.roundIndex + 1 } : session;
 }
+/** Class 10: zero attempts is a normal state for a new run, so it is checked with an if. Nothing is thrown and nothing becomes NaN. */
+export function safePercent(part: number, whole: number): number | null {
+  if (!whole) return null;
+  return Math.round(part / whole * 100);
+}
 export function summarize(session: Session, challenge: Challenge) {
   const rows = challenge.rounds.map((round) => {
     const receipt = receiptFor(session, round.id);
@@ -41,7 +46,7 @@ export function summarize(session: Session, challenge: Challenge) {
   return { rows, points: rows.reduce((sum, row) => sum + row.points, 0), fullAwards, hintedAwards, hints: rows.filter((row) => row.hintUsed).length,
     completed: rows.filter((row) => row.complete).length, attempted, firstCorrect,
     retries: challenge.rounds.reduce((n, round) => n + Math.max(0, (session.receipts[round.id]?.attemptedIds.length ?? 0) - 1), 0),
-    firstAttemptAccuracy: attempted ? Math.round(firstCorrect / attempted * 100) : null,
+    firstAttemptAccuracy: safePercent(firstCorrect, attempted),
     recommendations: rows.filter((row) => row.misconceptions.length || row.hintUsed).map((row) => ({ objective: row.round.objective, sourceIds: row.round.sourceIds })) };
 }
 /** Display only. First true branch wins, as in Python if / elif / else. The clean branch is finished and hints === 0. Zero is a real count; null, "", and a non-number are not. Points are unchanged. */
@@ -86,23 +91,35 @@ export function shortWalkText(rows: { title: string; hintUsed: boolean }[], stop
   const stopLabel = walk.stoppedEarly ? `Stopped after ${walk.kept.length} unaided matches.` : "Stopped because the round list ended.";
   return `Short walk: ${list}. ${skipLabel} ${stopLabel}`;
 }
+export type RestoreResult = { ok: true; session: Session } | { ok: false; reason: "empty" | "unreadable" | "mismatch" | "unexpected" };
+/** Class 10. Nothing saved is an expected case (checked with an if). Unreadable text is the one error we expect (SyntaxError, caught by name). Anything else is logged for developers and reported as a safe "unexpected". */
+export function restoreSessionChecked(raw: string | null, challenge: Challenge): RestoreResult {
+  if (!raw) return { ok: false, reason: "empty" };
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); }
+  catch (e) {
+    if (e instanceof SyntaxError) return { ok: false, reason: "unreadable" };
+    console.error("restoreSession failed unexpectedly", e);
+    return { ok: false, reason: "unexpected" };
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { ok: false, reason: "mismatch" };
+  const session = parsed as Session;
+  if (session.challengeId !== challenge.id || session.version !== challenge.version || !Number.isInteger(session.roundIndex) || session.roundIndex < 0 || session.roundIndex > challenge.rounds.length || !session.receipts || typeof session.receipts !== "object" || Array.isArray(session.receipts)) return { ok: false, reason: "mismatch" };
+  for (const id of Object.keys(session.receipts)) {
+    const index = challenge.rounds.findIndex((r) => r.id === id), receipt = session.receipts[id];
+    if (index < 0 || index > session.roundIndex || !receipt || typeof receipt.hintUsed !== "boolean" || !Array.isArray(receipt.attemptedIds) || new Set(receipt.attemptedIds).size !== receipt.attemptedIds.length) return { ok: false, reason: "mismatch" };
+    const round = challenge.rounds[index];
+    if (receipt.attemptedIds.some((id) => !round.choices.some((c) => c.id === id))) return { ok: false, reason: "mismatch" };
+    const correctAt = receipt.attemptedIds.indexOf(round.correctAnswerId);
+    if (correctAt >= 0 && correctAt !== receipt.attemptedIds.length - 1) return { ok: false, reason: "mismatch" };
+  }
+  if (challenge.rounds.slice(0, session.roundIndex).some((r) => !session.receipts[r.id]?.attemptedIds.includes(r.correctAnswerId))) return { ok: false, reason: "mismatch" };
+  return { ok: true, session };
+}
 /** Restore only a valid sequential session for this content revision; scores/accuracy are always recomputed. */
 export function restoreSession(raw: string | null, challenge: Challenge): Session | null {
-  if (!raw) return null;
-  try {
-    const session = JSON.parse(raw) as Session;
-    if (session.challengeId !== challenge.id || session.version !== challenge.version || !Number.isInteger(session.roundIndex) || session.roundIndex < 0 || session.roundIndex > challenge.rounds.length || !session.receipts || typeof session.receipts !== "object" || Array.isArray(session.receipts)) return null;
-    for (const id of Object.keys(session.receipts)) {
-      const index = challenge.rounds.findIndex((r) => r.id === id), receipt = session.receipts[id];
-      if (index < 0 || index > session.roundIndex || !receipt || typeof receipt.hintUsed !== "boolean" || !Array.isArray(receipt.attemptedIds) || new Set(receipt.attemptedIds).size !== receipt.attemptedIds.length) return null;
-      const round = challenge.rounds[index];
-      if (receipt.attemptedIds.some((id) => !round.choices.some((c) => c.id === id))) return null;
-      const correctAt = receipt.attemptedIds.indexOf(round.correctAnswerId);
-      if (correctAt >= 0 && correctAt !== receipt.attemptedIds.length - 1) return null;
-    }
-    if (challenge.rounds.slice(0, session.roundIndex).some((r) => !session.receipts[r.id]?.attemptedIds.includes(r.correctAnswerId))) return null;
-    return session;
-  } catch { return null; }
+  const result = restoreSessionChecked(raw, challenge);
+  return result.ok ? result.session : null;
 }
 export function shuffle<T>(items: readonly T[], random: () => number = Math.random): T[] {
   const result = [...items];
