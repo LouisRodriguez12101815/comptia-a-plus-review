@@ -37,6 +37,7 @@ function domainViews(): DomainView[] {
  */
 export async function NetworkPlusDomains({ own }: { own: Topic[] }) {
   const t = await getTranslations("networkPlusDomains");
+  const tv = await getTranslations("networkPlusVideos");
   const domains = domainViews();
   const mapped = new Set(domains.flatMap((domain) => domain.objectives.flatMap((objective) => objective.topics.map((topic) => topic.id))));
   const unmapped = own.filter((topic) => !mapped.has(topic.id));
@@ -70,9 +71,12 @@ export async function NetworkPlusDomains({ own }: { own: Topic[] }) {
       <div>
         <h2 id="domains-heading" className="text-lg font-medium text-white">{t("title")}</h2>
         <p className="mt-1 text-sm text-slate-400">{t("body")}</p>
+        <Link href="/networking/videos" className="mt-2 inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">
+          {tv("watchAll")}
+        </Link>
       </div>
       <div className="space-y-3">
-        {domains.map((domain) => {
+        {domains.map((domain, index) => {
           const topicCount = new Set(domain.objectives.flatMap((objective) => objective.topics.map((topic) => topic.id))).size;
           return (
             <details key={domain.id} className="track-accent-border group rounded-2xl border bg-slate-900/70 p-4">
@@ -85,7 +89,12 @@ export async function NetworkPlusDomains({ own }: { own: Topic[] }) {
                   {t("domainMeta", { weight: domain.weight, count: topicCount })} <span aria-hidden="true">▾</span>
                 </span>
               </summary>
-              <ol className="mt-3 space-y-4">
+              <p className="mt-3">
+                <Link href={`/networking/videos#domain-${index + 1}`} className="inline-flex min-h-11 items-center text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200">
+                  {tv("watch")}
+                </Link>
+              </p>
+              <ol className="mt-1 space-y-4">
                 {domain.objectives.map((objective) => (
                   <li key={objective.id}>
                     <p className="text-sm font-medium text-slate-100">

@@ -1,0 +1,223 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.923
+Welcome to domain five of the Network Plus N10-009 exam: network troubleshooting.
+
+00:00:04.923 --> 00:00:10.029
+At twenty-four percent, this is the heaviest domain, so it is worth the most points.
+
+00:00:10.029 --> 00:00:19.389
+We will cover the troubleshooting methodology, cabling and interface problems, service problems, performance problems, and the tools you use to find them.
+
+00:00:20.089 --> 00:00:23.733
+The methodology has seven steps, always in the same order.
+
+00:00:23.733 --> 00:00:25.367
+One, identify the problem.
+
+00:00:25.367 --> 00:00:33.850
+Gather information, question users, find out what changed, duplicate the problem if you can, and handle multiple problems individually.
+
+00:00:33.850 --> 00:00:38.500
+Two, establish a theory of probable cause, and question the obvious first.
+
+00:00:38.500 --> 00:00:39.946
+Three, test the theory.
+
+00:00:39.946 --> 00:00:41.705
+If it is confirmed, move on.
+
+00:00:41.705 --> 00:00:44.093
+If not, make a new theory or escalate.
+
+00:00:44.093 --> 00:00:48.303
+Four, establish a plan of action and identify the possible effects.
+
+00:00:48.303 --> 00:00:50.942
+Five, implement the solution, or escalate.
+
+00:00:50.942 --> 00:00:55.655
+Six, verify full system functionality and put preventive measures in place.
+
+00:00:55.655 --> 00:00:58.986
+Seven, document your findings, actions, and outcomes.
+
+00:00:58.986 --> 00:01:03.510
+Exam questions love to ask which step comes next, so memorize the order.
+
+00:01:04.210 --> 00:01:07.125
+When you build your theory, you can choose an approach.
+
+00:01:07.125 --> 00:01:10.092
+Top-down starts at the application layer and works down.
+
+00:01:10.092 --> 00:01:12.848
+Bottom-up starts at the physical layer and works up.
+
+00:01:12.848 --> 00:01:18.995
+Divide and conquer starts in the middle, for example with a ping, and then moves up or down depending on the result.
+
+00:01:18.995 --> 00:01:23.605
+You can also follow the path the traffic takes, or compare against a device that works.
+
+00:01:23.605 --> 00:01:28.057
+Whatever you do, change only one thing at a time so you know what fixed the problem.
+
+00:01:28.757 --> 00:01:32.539
+Now objective five point two: cabling and interface problems.
+
+00:01:32.539 --> 00:01:34.709
+Read the interface state carefully.
+
+00:01:34.709 --> 00:01:41.406
+Down and down usually means a bad or unplugged cable, the wrong cable type, or a dead device at the far end.
+
+00:01:41.406 --> 00:01:48.226
+Up and down means the signal is there but layer two is not working, which points to a mismatch or the far end.
+
+00:01:48.226 --> 00:01:52.008
+Administratively down means someone ran the shutdown command.
+
+00:01:52.008 --> 00:01:57.898
+Err-disabled means a protection feature, such as port security or B P D U guard, shut the port.
+
+00:01:57.898 --> 00:02:03.355
+And C R C errors or late collisions point to a duplex or speed mismatch, or bad cabling.
+
+00:02:04.055 --> 00:02:06.761
+Physical problems have a short list of causes.
+
+00:02:06.761 --> 00:02:12.408
+Attenuation means the signal weakens with distance, and copper is limited to one hundred meters.
+
+00:02:12.408 --> 00:02:17.880
+Crosstalk and E M I come from interference, so keep copper away from power cables and motors.
+
+00:02:17.880 --> 00:02:26.410
+A transceiver mismatch, meaning the wrong type, speed, or wavelength, will keep a link down, and single-mode and multimode fiber cannot be mixed.
+
+00:02:26.410 --> 00:02:31.352
+Dirty or sharply bent fiber loses light, and a visual fault locator shows you where.
+
+00:02:31.352 --> 00:02:35.587
+With Power over Ethernet, the switch can simply run out of power budget.
+
+00:02:36.287 --> 00:02:39.426
+Objective five point three covers network services.
+
+00:02:39.426 --> 00:02:44.718
+If a host gets an address from the wrong scope, its switch port is in the wrong V LAN.
+
+00:02:44.718 --> 00:02:53.148
+If new clients get addresses starting with one sixty-nine dot two fifty-four, the D H C P pool is exhausted or the server did not answer.
+
+00:02:53.148 --> 00:03:00.779
+If clients receive a gateway or D N S server you never configured, suspect a rogue D H C P server, and use D H C P snooping.
+
+00:03:00.779 --> 00:03:05.579
+If a host works on its own subnet but nowhere else, check the default gateway.
+
+00:03:05.579 --> 00:03:08.656
+If it works by I P but fails by name, it is D N S.
+
+00:03:08.656 --> 00:03:12.963
+And two hosts with intermittent loss can mean a duplicate I P address.
+
+00:03:13.663 --> 00:03:16.182
+Some faults live in routing and switching.
+
+00:03:16.182 --> 00:03:20.440
+An M T U mismatch lets small packets pass while large ones are dropped.
+
+00:03:20.440 --> 00:03:24.578
+A routing loop sends packets in circles until the T T L reaches zero.
+
+00:03:24.578 --> 00:03:30.215
+Asymmetric routing sends replies back on a different path, and stateful devices may drop them.
+
+00:03:30.215 --> 00:03:34.713
+A native V LAN mismatch on a trunk puts untagged frames in the wrong V LAN.
+
+00:03:34.713 --> 00:03:42.029
+In spanning tree, know the port roles: the root port, designated ports, and the alternate port that blocks to stop a loop.
+
+00:03:42.029 --> 00:03:46.647
+And when one port fails while others work, check the A C L or firewall rules.
+
+00:03:47.347 --> 00:03:49.877
+Objective five point four is performance.
+
+00:03:49.877 --> 00:03:52.654
+Congestion happens when bandwidth is used up.
+
+00:03:52.654 --> 00:03:56.356
+Latency, jitter, and packet loss hurt voice and video first.
+
+00:03:56.356 --> 00:04:01.786
+On wireless, the usual culprits are interference, weak signal, and overlapping channels.
+
+00:04:01.786 --> 00:04:09.498
+Repeated disassociation messages mean the client's signal is too weak or noisy, or that roaming or authentication is failing.
+
+00:04:09.498 --> 00:04:13.324
+Too many clients on one access point also slows everyone down.
+
+00:04:13.324 --> 00:04:18.137
+Typical fixes are Q o S, cleaner channels, and moving or adding access points.
+
+00:04:18.837 --> 00:04:21.506
+Objective five point five is the toolbox.
+
+00:04:21.506 --> 00:04:23.915
+Ping tests reachability with I C M P.
+
+00:04:23.915 --> 00:04:27.236
+Trace R T or traceroute shows each hop on the path.
+
+00:04:27.236 --> 00:04:29.710
+N S lookup and dig show D N S answers.
+
+00:04:29.710 --> 00:04:34.462
+I P config, if config, or the I P command show a host's address settings.
+
+00:04:34.462 --> 00:04:37.718
+A R P shows the mapping from I P to mac addresses.
+
+00:04:37.718 --> 00:04:40.778
+Net stat lists connections and listening ports.
+
+00:04:40.778 --> 00:04:42.991
+N map scans a host for open ports.
+
+00:04:42.991 --> 00:04:48.721
+And T C P dump or Wireshark captures packets so you can see exactly what is on the wire.
+
+00:04:49.421 --> 00:04:54.479
+On network devices, show interface gives the state, errors, speed, and duplex.
+
+00:04:54.479 --> 00:05:01.223
+Show V LAN and show config verify the setup, and show power inline shows the Power over Ethernet budget.
+
+00:05:01.223 --> 00:05:06.735
+L L D P is the vendor-neutral neighbor discovery protocol, while C D P is Cisco only.
+
+00:05:06.735 --> 00:05:17.889
+For hardware, use a cable tester or loopback adapter on copper, a tone generator and probe to trace a cable, and an O T D R or visual fault locator to find breaks in fiber.
+
+00:05:18.589 --> 00:05:24.042
+To recap domain five: know the seven steps in order, and always start with what changed.
+
+00:05:24.042 --> 00:05:26.645
+Read the interface state before you guess.
+
+00:05:26.645 --> 00:05:32.657
+Match the symptom to its cause, whether that is the V LAN, D H C P, D N S, the gateway, or M T U.
+
+00:05:32.657 --> 00:05:36.066
+Pick the tool that answers the question you are asking.
+
+00:05:36.066 --> 00:05:39.227
+And finish by verifying the fix and documenting it.
+
+00:05:39.227 --> 00:05:39.846
+Good luck.
