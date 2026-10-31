@@ -164,6 +164,17 @@ for (const t of topics) {
       if (share > 0.4 || share < 0.1) add("warn", "answer-balance", t.id, `position ${"ABCD"[pos]} is ${Math.round(share * 100)}% of ${single.length} single-answer questions`);
     }
   }
+  /* length cue: the keyed answer should not be noticeably longer than every distractor */
+  const sized = single.filter((q) => q.choices.length >= 4 && q.answer >= 0 && q.answer < q.choices.length);
+  if (sized.length >= 12) {
+    const cued = sized.filter((q) => {
+      const keyLen = q.choices[q.answer].length;
+      const rest = q.choices.filter((_, i) => i !== q.answer).map((c) => c.length);
+      return keyLen >= Math.max(...rest) * 1.15;
+    }).length;
+    const share = cued / sized.length;
+    if (share > 0.35) add("warn", "answer-length", t.id, `the keyed answer is at least 15% longer than every distractor in ${Math.round(share * 100)}% of ${sized.length} questions (aim for about 15% or less)`);
+  }
   if (/-ch\d+$/.test(t.id) && t.id.startsWith("n10")) {
     if (qs.length < 15) add("warn", "coverage", t.id, `${qs.length} quiz questions (target 15 or more)`);
     if (cs.length < 10) add("warn", "coverage", t.id, `${cs.length} flashcards (target 10 or more)`);
