@@ -54,7 +54,7 @@ function HeaderMenu({ label, active, items }: { label: ReactNode; active: boolea
         <span aria-hidden="true" className={`text-xs transition-transform ${open ? "rotate-180" : ""}`}>▾</span>
       </button>
       {open ? (
-        <ul id={panelId} className="absolute left-0 z-40 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700 bg-slate-950 p-2 shadow-xl">
+        <ul id={panelId} className="absolute left-0 z-50 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-700 bg-slate-950 p-2 shadow-xl">
           {items.map((item) => (
             <li key={item.href}>
               <Link
@@ -99,7 +99,7 @@ export function SiteHeader() {
   const searchActive = pathname.startsWith("/search");
 
   return (
-    <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+    <header className="relative z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
