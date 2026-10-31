@@ -6,7 +6,7 @@ import { NextPractice } from "@/app/components/practice/NextPractice";
 import { useEffect, useRef, useState } from "react";
 import { ComponentArt } from "@/app/components/practice/ComponentArt";
 import { PacketDiagram } from "@/app/components/practice/PacketDiagram";
-import { advance, isComplete, newSession, readinessState, restoreSession, shortWalk, shuffle, solved, submit, summarize, requestHint } from "@/lib/practice/session";
+import { advance, isComplete, newSession, readinessState, restoreSessionChecked, shortWalk, shuffle, solved, submit, summarize, requestHint } from "@/lib/practice/session";
 import type { Challenge, Choice, Session, Source } from "@/lib/practice/types";
 
 const button = "rounded-xl border border-cyan-300 bg-cyan-300 px-5 py-3 font-semibold text-slate-950 hover:bg-cyan-200 disabled:opacity-50";
@@ -23,8 +23,14 @@ export function ChallengePlayer({ challenge, sources }: { challenge: Challenge; 
   useEffect(() => { if (started) heading.current?.focus(); }, [roundIndex, started]); // Focus follows the learning task, never an animation.
   function begin(resume = false) {
     let saved: Session | null = null;
-    if (resume) { try { saved = restoreSession(localStorage.getItem(key), challenge); } catch {} }
-    if (resume && !saved) { setNotice(t("noValidSession")); return; }
+    if (resume) {
+      let raw: string | null = null;
+      try { raw = localStorage.getItem(key); }
+      catch (e) { console.error("Reading saved practice failed", e); setNotice(t("storageUnavailable")); return; } // developers get the detail, the player gets a safe message
+      const result = restoreSessionChecked(raw, challenge);
+      if (!result.ok) { setNotice(t(result.reason === "unreadable" ? "savedUnreadable" : "noValidSession")); return; }
+      saved = result.session;
+    }
     setNotice(""); setOrders(Object.fromEntries(challenge.rounds.map((round) => [round.id, shuffle(round.choices)])));
     setSession(saved ?? newSession(challenge));
   }

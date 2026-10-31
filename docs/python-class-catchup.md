@@ -1,6 +1,6 @@
 # Python class catch-up
 
-Living record for Classes 2–7 and Class 9. The app is the CompTIA practice games at https://comptia-a-plus-review.vercel.app. The course site is TypeScript, so each item stays in that language and the Python idea is named beside it.
+Living record for Classes 2–7, Class 9 and Class 10. The app is the CompTIA practice games at https://comptia-a-plus-review.vercel.app. The course site is TypeScript, so each item stays in that language and the Python idea is named beside it.
 
 Update this file in the same turn as any class change: planned, built, verified, or shipped. Status values are `not started`, `planned`, `built locally`, and `on the live site`.
 
@@ -25,6 +25,7 @@ Update this file in the same turn as any class change: planned, built, verified,
 | 6 | Conditionals | Merged to main | Component Match and Follow the Packet | Readiness: clean finish, hinted finish, or not finished |
 | 7 | Loops | Merged to main | Component Match and Follow the Packet debrief | A short walk of unaided rounds that skips hints and stops after 3 |
 | 9 | Comprehensions and lambda | Merged to main | VLSM Architect sort step | Ranked requirements, and links only |
+| 10 | Error handling and reliability | Built locally | Practice resume, practice progress line, VLSM Architect typed answers | Clear messages for unreadable saved progress and bad typed addresses, with no crashes |
 
 The separate Python practice app from the slide decks (Days 2–7) still has no URL in the PDFs. This log covers the features inside the CompTIA games only.
 
@@ -177,6 +178,23 @@ A clean run lists the first three rounds and says `Skipped 0 hinted rounds.`
 Checked: practice session tests passed for an empty list, one round, four rounds that stop after three, two skipped hints, and a walk that reaches the end. A local Component Match run showed the hinted walk on a wide window and a phone-width window, then the clean walk. Follow the Packet showed its own three unaided titles after one hint. Outage Ops was not changed.
 
 One change to make yourself: stop the walk after 4 unaided matches instead of 3.
+
+## Class 10 — Error handling and reliability
+
+Status: built locally. Branch `class-10-error-handling`, based on main `094650a`. Not pushed, no pull request, not deployed.
+
+Source: the recording named `Python Class 9.mp4`, which is actually Class 10. Best practices taken from it: validate expected problems with an `if`; use `try`/`except` only for the unpredictable and catch the specific error; never write a bare `except`; give the user a clear message and keep details for developers; return a normal result instead of crashing; test with one good baseline and change one thing at a time.
+
+Where and how:
+
+- **Saved practice progress.** `restoreSessionChecked` in `lib/practice/session.ts`. Nothing saved is an `if` case. Unreadable text is the one expected error (`SyntaxError`, caught by name). Anything else is logged with `console.error` and shown as a safe message. `restoreSession` still exists and returns the session or null. The player now says whether saved progress was unreadable (`savedUnreadable`), the browser would not let the site read storage (`storageUnavailable`), or there was simply nothing valid to resume (`noValidSession`).
+- **Zero is normal.** `safePercent` replaces the inline accuracy line. Zero first attempts is checked with an `if` and shows “—”, never NaN and never an exception.
+- **Typed addresses.** `validateTypedAddress` in `lib/subnet/grading.ts` returns `{ ok, value, errors }` and never throws. `addressProblem` in `lib/subnet/ipv4.ts` checks the expected problems (empty, wrong shape, octet above 255, leading zero, not text) without an exception. `address()` now throws `AddressFormatError`, a specific class. Unexpected errors are logged and shown as `fieldUnexpected`. The Subnet Detective steps use the validator, and the feedback text for bad input is the same as before.
+- **Messages.** `savedUnreadable`, `storageUnavailable` and `fieldUnexpected` are in English, Spanish, French and Portuguese.
+
+Checked: `tests/practice-error-handling.test.mjs` runs a baseline and then one change at a time (28 cases). Practice tests 84 of 84, subnet tests 24 of 24, content tests 2 of 2, TypeScript clean, lint 0 errors. The browser behaviour was not walked through, and the production build was not run.
+
+One change to make yourself: add the same check to the Outage Ops saved-room load.
 
 ## Class 9 — Comprehensions and lambda
 

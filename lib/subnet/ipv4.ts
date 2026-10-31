@@ -1,8 +1,18 @@
 /** IPv4 values use exact unsigned Number arithmetic; no signed 32-bit bitwise coercions. */
+/** A typed address that is not four decimal octets. Callers catch this class only, so a real bug is never reported as bad user input. */
+export class AddressFormatError extends Error {}
+const ADDRESS_MESSAGE = "Enter four decimal octets from 0 to 255; avoid leading zeros.";
+/** Class 10: an expected input problem is checked with an if, not an exception. Returns the plain-language message, or null when the text is fine. */
+export function addressProblem(raw: unknown): string | null {
+  if (typeof raw !== "string") return ADDRESS_MESSAGE;
+  const octets = raw.trim().split(".");
+  if (octets.length !== 4 || octets.some((s) => !/^(0|[1-9]\d{0,2})$/.test(s) || Number(s) > 255)) return ADDRESS_MESSAGE;
+  return null;
+}
 export function address(text: string): number {
-  const octets = text.trim().split(".");
-  if (octets.length !== 4 || octets.some((s) => !/^(0|[1-9]\d{0,2})$/.test(s) || Number(s) > 255)) throw new Error("Enter four decimal octets from 0 to 255; avoid leading zeros.");
-  return octets.reduce((value, octet) => value * 256 + Number(octet), 0);
+  const problem = addressProblem(text);
+  if (problem) throw new AddressFormatError(problem);
+  return text.trim().split(".").reduce((value, octet) => value * 256 + Number(octet), 0);
 }
 export function dotted(value: number): string {
   if (!Number.isInteger(value) || value < 0 || value > 2 ** 32 - 1) throw new Error("Address is outside unsigned IPv4 space.");
