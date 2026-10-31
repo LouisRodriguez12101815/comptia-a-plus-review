@@ -27558,5 +27558,1195 @@
     "answer": 0,
     "explanation": "Objective 3.2. Environmental monitors track temperature, humidity, water and door access to protect equipment.",
     "weak": false
+  },
+  {
+    "id": "q-n10dns-01",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which DNS record maps a name to an IPv4 address?",
+    "choices": [
+      "AAAA record",
+      "A record",
+      "MX record",
+      "PTR record"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. The A record maps a name to an IPv4 address. The answer is A record.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-02",
+    "topicId": "n10-dns-records-security",
+    "prompt": "A zone needs a record that points a host name at its IPv6 address. Which type is used?",
+    "choices": [
+      "A record",
+      "SRV record",
+      "CNAME record",
+      "AAAA record"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. The AAAA (quad A) record maps a name to an IPv6 address. The answer is AAAA record.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-03",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which record makes one name an alias for another name?",
+    "choices": [
+      "A",
+      "PTR",
+      "CNAME",
+      "NS"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. A CNAME points one name to another canonical name, never to an address. The answer is CNAME.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-04",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Why can the zone apex not be a CNAME?",
+    "choices": [
+      "CNAME records only work for mail",
+      "A name with a CNAME can hold no other records",
+      "CNAME values must be IPv6 addresses",
+      "The apex has no TTL"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. A name with a CNAME can hold no other records, and the apex must hold SOA and NS records. The answer is A name with a CNAME can hold no other records.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-05",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Several A records exist for one name and resolvers rotate the order. What is this called, and what is its limit?",
+    "choices": [
+      "DNSSEC, which cannot encrypt",
+      "Round-robin DNS, which cannot check server health",
+      "Zone transfer, which needs TCP",
+      "Reverse lookup, which needs PTR"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Round-robin DNS spreads load but cannot check server health. The answer is Round-robin DNS, which cannot check server health.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-06",
+    "topicId": "n10-dns-records-security",
+    "prompt": "A site publishes a AAAA record but its IPv6 path is broken. What happens for dual-stack clients?",
+    "choices": [
+      "They use the MX record",
+      "Nothing, IPv4 always wins",
+      "They prefer IPv6 and the service fails",
+      "They ignore the AAAA record"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Dual-stack hosts prefer IPv6, so a AAAA record with no working IPv6 path breaks the service. The answer is They prefer IPv6 and the service fails.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-07",
+    "topicId": "n10-dns-records-security",
+    "prompt": "MX records show preference 10 on mail1 and 20 on mail2. Which server receives mail while both respond?",
+    "choices": [
+      "Neither, equal values are required",
+      "mail2, because higher is preferred",
+      "mail1, because the lowest preference number wins",
+      "Both equally"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. The lowest MX preference value is preferred, so mail1 with 10 receives the mail. The answer is mail1, because the lowest preference number wins.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-08",
+    "topicId": "n10-dns-records-security",
+    "prompt": "What may an MX record target?",
+    "choices": [
+      "A name that has an A or AAAA record",
+      "A CNAME",
+      "A TXT record",
+      "A bare IP address"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. The MX target must be a name with an A or AAAA record, never a CNAME. The answer is A name that has an A or AAAA record.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-09",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which record type carries SPF, DKIM and DMARC policy?",
+    "choices": [
+      "SOA",
+      "TXT",
+      "SRV",
+      "MX"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. TXT records hold free text, which now carries email sender policy. The answer is TXT.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-10",
+    "topicId": "n10-dns-records-security",
+    "prompt": "What does SPF do?",
+    "choices": [
+      "Tells receivers to reject failures",
+      "Signs each message with a private key",
+      "Lists the servers allowed to send mail for a domain",
+      "Maps an IP to a name"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. SPF lists the servers permitted to send mail for the domain. The answer is Lists the servers allowed to send mail for a domain.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-11",
+    "topicId": "n10-dns-records-security",
+    "prompt": "What does DKIM publish in DNS?",
+    "choices": [
+      "A reject policy",
+      "A public key that verifies message signatures",
+      "A mail server name",
+      "A list of allowed sender IPs"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. DKIM publishes a public key so receivers can verify message signatures. The answer is A public key that verifies message signatures.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-12",
+    "topicId": "n10-dns-records-security",
+    "prompt": "What does DMARC tell receiving servers?",
+    "choices": [
+      "What to do when SPF or DKIM checks fail: none, quarantine or reject",
+      "Which port to use",
+      "Which servers may send",
+      "Which key signs the message"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. DMARC sets the action for failed checks: none, quarantine or reject. The answer is What to do when SPF or DKIM checks fail: none, quarantine or reject.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-13",
+    "topicId": "n10-dns-records-security",
+    "prompt": "A domain has two SPF TXT records. What is the result?",
+    "choices": [
+      "They are merged",
+      "Mail is delivered twice",
+      "Both are invalidated",
+      "The newer one wins"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Only one SPF record is allowed, and a second one invalidates both. The answer is Both are invalidated.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-14",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which record lists the authoritative servers for a zone?",
+    "choices": [
+      "PTR",
+      "SOA",
+      "NS",
+      "TXT"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. NS records name the authoritative servers for a zone. The answer is NS.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-15",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which record holds the serial number that secondary servers compare?",
+    "choices": [
+      "SOA",
+      "A",
+      "PTR",
+      "NS"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. The SOA record holds the serial number and other zone administration data. The answer is SOA.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-16",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which record maps an IP address back to a name?",
+    "choices": [
+      "SRV",
+      "PTR",
+      "CNAME",
+      "A"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. The PTR record maps an address back to a name in a reverse zone. The answer is PTR.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-17",
+    "topicId": "n10-dns-records-security",
+    "prompt": "A new mail server has correct A and MX records, but receivers reject its mail because the sending address does not resolve to a name. Which record should be added?",
+    "choices": [
+      "A PTR record for the sending address",
+      "An NS record for the mail server",
+      "A CNAME for the mail server",
+      "A second MX with higher preference"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. A PTR record for the sending address gives the reverse lookup that receiving servers check. The answer is A PTR record for the sending address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-18",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which record identifies a service by server and port, such as VoIP or messaging?",
+    "choices": [
+      "SRV",
+      "CNAME",
+      "TXT",
+      "MX"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. The SRV record names both the server and the port for a service. The answer is SRV.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-19",
+    "topicId": "n10-dns-records-security",
+    "prompt": "What is the TTL on a DNS record?",
+    "choices": [
+      "The lease time",
+      "The number of hops allowed",
+      "The signature lifetime",
+      "How many seconds a resolver may cache the answer"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. TTL sets how many seconds a resolver may cache the answer. The answer is How many seconds a resolver may cache the answer.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-20",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Where do PTR records for addresses live?",
+    "choices": [
+      "In the hosts file",
+      "In the SOA record",
+      "In the forward zone",
+      "In a reverse zone under in-addr.arpa"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. PTR records live in a reverse zone under in-addr.arpa with the octets reversed. The answer is In a reverse zone under in-addr.arpa.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-21",
+    "topicId": "n10-dns-records-security",
+    "prompt": "A secondary DNS server obtains its zone data how?",
+    "choices": [
+      "By zone transfer from the primary",
+      "By DNSSEC",
+      "By manual typing",
+      "By DHCP"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. A secondary holds a read-only copy obtained by zone transfer. The answer is By zone transfer from the primary.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-22",
+    "topicId": "n10-dns-records-security",
+    "prompt": "An admin edits a zone on the primary but the secondaries still serve old data. What was missed?",
+    "choices": [
+      "Adding a PTR record",
+      "Incrementing the SOA serial",
+      "Raising the TTL",
+      "Enabling DoH"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Without a higher SOA serial the secondaries do not start a transfer. The answer is Incrementing the SOA serial.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-23",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which zone transfer copies only the changes?",
+    "choices": [
+      "RA guard",
+      "AXFR",
+      "DNSSEC",
+      "IXFR"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. IXFR sends only changes, while AXFR copies the whole zone. The answer is IXFR.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-24",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which transport do zone transfers use?",
+    "choices": [
+      "TCP 853",
+      "UDP 67",
+      "TCP 53",
+      "UDP 123"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. AXFR and IXFR use TCP port 53. The answer is TCP 53.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-25",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Why restrict zone transfers?",
+    "choices": [
+      "It breaks DNSSEC",
+      "It removes the SOA",
+      "It speeds up queries",
+      "An unrestricted transfer reveals every host name in the zone"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. Unrestricted zone transfers reveal every host name. The answer is An unrestricted transfer reveals every host name in the zone.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-26",
+    "topicId": "n10-dns-records-security",
+    "prompt": "A response comes from a recursive resolver's cache. How is it classed?",
+    "choices": [
+      "Signed by DNSSEC",
+      "Non-authoritative, possibly stale until the TTL expires",
+      "Authoritative and always current",
+      "Invalid"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Cached answers are non-authoritative and may be stale until the TTL expires. The answer is Non-authoritative, possibly stale until the TTL expires.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-27",
+    "topicId": "n10-dns-records-security",
+    "prompt": "The authoritative server returns the right record but users still get the old one. What is the cause?",
+    "choices": [
+      "A stale cache at the resolver",
+      "An expired DS record",
+      "A missing PTR",
+      "A wrong SOA serial"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. Disagreement between the authoritative server and the resolver means the cache is stale. The answer is A stale cache at the resolver.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-28",
+    "topicId": "n10-dns-records-security",
+    "prompt": "An attacker plants a forged record in a resolver so all its clients are redirected. What is this?",
+    "choices": [
+      "Round-robin",
+      "Cache poisoning",
+      "Zone transfer",
+      "DNS hijacking of the client"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Cache poisoning plants the forged entry in a resolver until the TTL expires. The answer is Cache poisoning.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-29",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Malware changes which resolver a victim's computer uses. What is this attack?",
+    "choices": [
+      "Round-robin DNS",
+      "Cache poisoning",
+      "Zone transfer",
+      "DNS hijacking"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. Hijacking changes which resolver the victim uses, through malware, a compromised router or a rogue DHCP server. The answer is DNS hijacking.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-30",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which control proves DNS answers are genuine and unmodified?",
+    "choices": [
+      "DoH",
+      "DoT",
+      "A reservation",
+      "DNSSEC"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. DNSSEC signs record sets, giving authenticity and integrity. The answer is DNSSEC.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-31",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Does DNSSEC encrypt DNS queries?",
+    "choices": [
+      "Yes, with TLS",
+      "Yes, on port 853",
+      "No, it provides authenticity and integrity, not confidentiality",
+      "Only for MX records"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. DNSSEC provides authenticity and integrity, not confidentiality. The answer is No, it provides authenticity and integrity, not confidentiality.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-32",
+    "topicId": "n10-dns-records-security",
+    "prompt": "What does a DS record in the parent zone contain?",
+    "choices": [
+      "The child's serial number",
+      "The child's private key",
+      "A hash of the child zone's key, linking the chain of trust",
+      "The child's mail servers"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Each parent publishes a DS record, a hash of the child's key, forming the chain up to the root trust anchor. The answer is A hash of the child zone's key, linking the chain of trust.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-33",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Authoritative servers return correct records, but validating resolvers return SERVFAIL. What is the most likely cause?",
+    "choices": [
+      "Expired DNSSEC signatures",
+      "Browsers using DoH",
+      "Unrestricted zone transfers",
+      "A missed zone serial"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. Validating resolvers refuse data with expired signatures, while non-validating resolvers still serve it. The answer is Expired DNSSEC signatures.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-34",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which port does DNS over TLS use?",
+    "choices": [
+      "TCP 853",
+      "TCP 443",
+      "UDP 53",
+      "UDP 123"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. DoT encrypts queries on port 853. The answer is TCP 853.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-35",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Which port does DNS over HTTPS use?",
+    "choices": [
+      "TCP 443",
+      "TCP 4460",
+      "UDP 67",
+      "TCP 853"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. DoH carries queries inside ordinary web traffic on port 443. The answer is TCP 443.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-36",
+    "topicId": "n10-dns-records-security",
+    "prompt": "An admin must keep DNS lookups from being read by on-path observers. Which should be chosen?",
+    "choices": [
+      "DNSSEC",
+      "A PTR record",
+      "Zone transfers",
+      "DNS over HTTPS"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. DoH encapsulates lookups in HTTPS, hiding the names from on-path observers. DNSSEC protects integrity, not privacy. The answer is DNS over HTTPS.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dns-37",
+    "topicId": "n10-dns-records-security",
+    "prompt": "Why is DoH harder for an enterprise to manage than DoT?",
+    "choices": [
+      "It has no encryption",
+      "It uses UDP 123",
+      "It needs a hosts file",
+      "It hides in ordinary web traffic on port 443 and can bypass filtering"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. DoH blends with normal HTTPS traffic, so it can bypass enterprise filtering and monitoring. The answer is It hides in ordinary web traffic on port 443 and can bypass filtering.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-01",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What are the four DHCP messages in order?",
+    "choices": [
+      "Discover, Request, Offer, Acknowledge",
+      "Discover, Offer, Request, Acknowledge",
+      "Request, Offer, Discover, Acknowledge",
+      "Offer, Discover, Acknowledge, Request"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. The exchange is Discover, Offer, Request, Acknowledge (DORA). The answer is Discover, Offer, Request, Acknowledge.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-02",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which ports does DHCPv4 use?",
+    "choices": [
+      "TCP 67 and 68",
+      "UDP 546 and 547",
+      "UDP 68 on the server and 67 on the client",
+      "UDP 67 on the server and UDP 68 on the client"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. DHCP runs over UDP with the server on 67 and the client on 68. The answer is UDP 67 on the server and UDP 68 on the client.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-03",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What source and destination does a DHCP Discover use?",
+    "choices": [
+      "0.0.0.0 to 255.255.255.255",
+      "169.254.0.1 to 224.0.0.1",
+      "127.0.0.1 to 127.0.0.1",
+      "The gateway to the server"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. A client with no address broadcasts from 0.0.0.0 to the limited broadcast address 255.255.255.255. The answer is 0.0.0.0 to 255.255.255.255.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-04",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Why does the client broadcast its DHCP Request?",
+    "choices": [
+      "To reach a relay",
+      "To renew at T1",
+      "Because it has no MAC address",
+      "So servers whose offers were not chosen can release them"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. The broadcast Request tells other servers their offers were not accepted so they release them. The answer is So servers whose offers were not chosen can release them.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-05",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "At what point does a client first try to renew its lease?",
+    "choices": [
+      "T2, at 87.5 percent",
+      "At expiry",
+      "T1, at 50 percent of the lease",
+      "At 25 percent"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Renewal begins at T1, 50 percent of the lease, with a unicast request to the issuing server. The answer is T1, at 50 percent of the lease.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-06",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What does the client do at T2?",
+    "choices": [
+      "Broadcasts a request to any DHCP server (87.5 percent of the lease)",
+      "Releases the address",
+      "Starts a full Discover",
+      "Uses APIPA"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. If renewal fails, the client broadcasts a request to any server at T2, 87.5 percent. The answer is Broadcasts a request to any DHCP server (87.5 percent of the lease).",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-07",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "How many DHCP scopes does a subnet use?",
+    "choices": [
+      "One scope per VLAN trunk",
+      "One scope per server",
+      "Two scopes minimum",
+      "One scope per subnet"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. The rule is one scope per subnet, each with its own mask, gateway, DNS servers and lease time. The answer is One scope per subnet.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-08",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "A router's address is inside the DHCP pool and conflicts with a client. What should have been configured?",
+    "choices": [
+      "A shorter lease",
+      "A second scope",
+      "An exclusion for the router address",
+      "A reservation by MAC"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. An exclusion removes statically configured addresses from the assignable range. The answer is An exclusion for the router address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-09",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Network printers must keep fixed addresses but still pick up gateway and DNS changes made on the server. What meets this?",
+    "choices": [
+      "A shorter lease",
+      "A second scope on the same subnet",
+      "An exclusion range for the printers",
+      "A reservation for each printer bound to its MAC address"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. A reservation delivers the same address through DHCP, so scope changes reach each printer at renewal. The answer is A reservation for each printer bound to its MAC address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-10",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "A reserved device gets new hardware and loses its fixed address. Why?",
+    "choices": [
+      "The scope was deleted",
+      "The lease expired",
+      "The option 3 was removed",
+      "The reservation is bound to the old MAC address"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. The reservation ties the address to a MAC address, and new hardware changes it. The answer is The reservation is bound to the old MAC address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-11",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "New devices on guest Wi-Fi fail to get addresses while existing devices work. What is the likely cause?",
+    "choices": [
+      "A missing PTR record",
+      "Scope exhaustion from long leases on a high-turnover network",
+      "A rogue DHCP server",
+      "Expired DNSSEC"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Scope exhaustion shows as new devices failing while existing ones keep working. Shorter leases suit high-turnover networks. The answer is Scope exhaustion from long leases on a high-turnover network.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-12",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which DHCP option carries DNS servers?",
+    "choices": [
+      "Option 3",
+      "Option 15",
+      "Option 51",
+      "Option 6"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. Option 6 carries DNS servers, option 3 the gateway, option 1 the mask. The answer is Option 6.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-13",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which DHCP option carries the default gateway?",
+    "choices": [
+      "Option 3",
+      "Option 42",
+      "Option 6",
+      "Option 66"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. Option 3 is the default gateway. The answer is Option 3.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-14",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which DHCP option supplies NTP servers?",
+    "choices": [
+      "Option 51",
+      "Option 42",
+      "Option 6",
+      "Option 150"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Option 42 names the NTP servers. The answer is Option 42.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-15",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which DHCP options name the TFTP server and boot file for network booting?",
+    "choices": [
+      "Option 42",
+      "Options 66 and 67",
+      "Options 1 and 3",
+      "Options 6 and 15"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Option 66 names the TFTP server and option 67 the boot file name. The answer is Options 66 and 67.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-16",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Clients on one remote subnet cannot get DHCP leases and fall back to 169.254 addresses, while other subnets work. What is the first thing to check?",
+    "choices": [
+      "The IP helper address on that subnet's gateway interface",
+      "The NTP stratum",
+      "The SOA serial",
+      "The DNSSEC chain"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. A relay fault gives APIPA on one VLAN only. Check the helper address on the client-facing interface. The answer is The IP helper address on that subnet's gateway interface.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-17",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "On which interface is the IP helper address configured?",
+    "choices": [
+      "The management port",
+      "The loopback interface",
+      "The server-facing interface",
+      "The client-facing interface of the gateway"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. Placing the helper on the server-facing interface is the most common relay error. The answer is The client-facing interface of the gateway.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-18",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What does a DHCP relay agent do with the client's broadcast?",
+    "choices": [
+      "Forwards the broadcast unchanged",
+      "Converts it to multicast",
+      "Sends a new unicast to the configured DHCP server",
+      "Drops it"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. The relay originates a new unicast packet to the server, keeping the broadcast boundary intact. The answer is Sends a new unicast to the configured DHCP server.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-19",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "How does the DHCP server pick the right scope for a relayed request?",
+    "choices": [
+      "From the client's MAC address",
+      "From option 15",
+      "From the lease time",
+      "From the gateway IP address field the relay fills in"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. The relay stamps the gateway IP address field and the server uses it to select the scope. The answer is From the gateway IP address field the relay fills in.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-20",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "A client shows 169.254.88.201 and no network access. What does this indicate?",
+    "choices": [
+      "It is an RFC 1918 address needing NAT",
+      "It could not reach a DHCP server",
+      "The NIC has failed",
+      "The loopback adapter is misconfigured"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. A 169.254 address is APIPA, self-assigned when DHCP does not answer. The answer is It could not reach a DHCP server.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-21",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Clients receive the wrong gateway and DNS from an unknown DHCP server. Which switch feature blocks this?",
+    "choices": [
+      "DHCP snooping",
+      "Port mirroring",
+      "BPDU guard",
+      "RA guard"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. DHCP snooping blocks DHCP server replies from untrusted ports. The answer is DHCP snooping.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-22",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which Windows commands force a client to request a new DHCP lease?",
+    "choices": [
+      "ipconfig /release then ipconfig /renew",
+      "nslookup",
+      "ipconfig /flushdns",
+      "ping -t"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. Release then renew forces a new DHCP request. The answer is ipconfig /release then ipconfig /renew.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-23",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which mechanism lets IPv6 hosts build addresses with no server and no lease?",
+    "choices": [
+      "Stateful DHCPv6",
+      "SLAAC",
+      "APIPA",
+      "DHCP relay"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Stateless address autoconfiguration needs no server or lease. The answer is SLAAC.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-24",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "In SLAAC, what does the router advertisement carry?",
+    "choices": [
+      "The host's full address",
+      "The DNS servers only",
+      "The /64 prefix and default gateway",
+      "The lease time"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. The router advertisement carries the prefix and the default gateway; the host adds its own interface identifier. The answer is The /64 prefix and default gateway.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-25",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which RA flag tells hosts to get their address from a DHCPv6 server?",
+    "choices": [
+      "O flag",
+      "A flag",
+      "M flag",
+      "L flag"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. The M flag sends hosts to a server for the address (stateful DHCPv6). The answer is M flag.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-26",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Hosts build addresses with SLAAC but names do not resolve, and SLAAC must stay. Which change fixes it?",
+    "choices": [
+      "Set the O flag and use a stateless DHCPv6 server",
+      "Move the IP helper to the server-facing interface",
+      "Use privacy identifiers instead of EUI-64",
+      "Enable RA guard on access ports"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. The O flag sends hosts to a stateless DHCPv6 server for settings such as DNS while SLAAC supplies the address. The answer is Set the O flag and use a stateless DHCPv6 server.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-27",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which ports does DHCPv6 use?",
+    "choices": [
+      "TCP 546 and 547",
+      "UDP 546 for clients and 547 for servers",
+      "UDP 67 and 68",
+      "UDP 123"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. DHCPv6 clients use UDP 546 and servers use UDP 547. The answer is UDP 546 for clients and 547 for servers.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-28",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Why does DHCPv6 use multicast?",
+    "choices": [
+      "It avoids relays",
+      "DHCPv6 uses TCP",
+      "IPv6 has no broadcast",
+      "It is faster"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. IPv6 has no broadcast, so DHCPv6 sends to multicast addresses. The answer is IPv6 has no broadcast.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-29",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "DHCPv6 reservations are keyed on which identifier?",
+    "choices": [
+      "MAC address only",
+      "Option 3",
+      "DUID",
+      "SOA serial"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. DHCPv6 reservations use a DUID rather than a MAC address. The answer is DUID.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-30",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What does RA guard on access switches do?",
+    "choices": [
+      "Blocks rogue DHCP servers",
+      "Drops rogue router advertisements",
+      "Synchronizes clocks",
+      "Encrypts DNS"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. RA guard drops router advertisements from untrusted ports. The answer is Drops rogue router advertisements.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-31",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What does IPAM stand for and provide?",
+    "choices": [
+      "IP address management, a central record of address assignments",
+      "IP aggregation and monitoring, a routing protocol",
+      "Internal private address mapping, a NAT table",
+      "Internet protocol access module, a firewall"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. IPAM is IP address management, the authoritative record of which addresses are assigned, reserved or free. The answer is IP address management, a central record of address assignments.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-32",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What is DDI?",
+    "choices": [
+      "DNSSEC, DoH and IPFIX",
+      "Dynamic data interface",
+      "DNS, DHCP and IPAM combined",
+      "Dual DHCP instances"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. DDI combines DNS, DHCP and IPAM so their records stay in sync. The answer is DNS, DHCP and IPAM combined.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-33",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which tool gives a centralized view of address assignments and subnet utilization?",
+    "choices": [
+      "IPAM",
+      "SLAAC",
+      "SPAN",
+      "SNMP trap"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. IPAM shows subnet utilization and who owns each address. The answer is IPAM.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-34",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "A shared spreadsheet of IP addresses keeps causing duplicates. What replaces it?",
+    "choices": [
+      "A larger subnet",
+      "An IPAM system with change history and conflict checks",
+      "More NTP servers",
+      "A longer DHCP lease"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. IPAM provides one authoritative copy, a change history and conflict prevention at assignment. The answer is An IPAM system with change history and conflict checks.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-35",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What does NTP use?",
+    "choices": [
+      "UDP 319",
+      "TCP 123",
+      "TCP 4460",
+      "UDP 123"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. NTP runs over UDP port 123. The answer is UDP 123.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-36",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What is a stratum 0 device?",
+    "choices": [
+      "An internal router",
+      "A public NTP pool server",
+      "A reference clock such as GPS or an atomic clock",
+      "A DHCP server"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Stratum 0 is a physical reference clock that is not on the network. The answer is A reference clock such as GPS or an atomic clock.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-37",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "A server syncs from a stratum 2 source. What is its stratum?",
+    "choices": [
+      "16",
+      "2",
+      "3",
+      "1"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Each hop adds 1, so a client of a stratum 2 source is stratum 3. The answer is 3.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-38",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What does stratum 16 mean?",
+    "choices": [
+      "A GPS clock",
+      "The device is unsynchronized",
+      "The most accurate clock",
+      "A PTP master"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Stratum 16 means unsynchronized and is the value to alert on. The answer is The device is unsynchronized.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-39",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Does a lower stratum number mean a better-quality source?",
+    "choices": [
+      "No, it measures port number",
+      "No, it measures distance from a reference clock",
+      "Yes, but only above 8",
+      "Yes, always"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. Stratum measures distance from a reference, not quality. The answer is No, it measures distance from a reference clock.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-40",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Why does a clock more than 5 minutes off break Active Directory logons?",
+    "choices": [
+      "Kerberos rejects tickets when clocks differ by more than 5 minutes",
+      "DHCP leases expire",
+      "The switch drops VLANs",
+      "DNS records are deleted"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. Kerberos rejects tickets when clocks differ by more than 5 minutes. The answer is Kerberos rejects tickets when clocks differ by more than 5 minutes.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-41",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Why are three or four NTP sources better than two?",
+    "choices": [
+      "Four sources are faster",
+      "An outlier can be rejected, but two disagreeing servers cannot be resolved",
+      "Two sources use TCP",
+      "Three sources avoid UTC"
+    ],
+    "answer": 1,
+    "explanation": "Objective 3.4. With several sources NTP can reject an outlier. Two that disagree cannot be resolved. The answer is An outlier can be rejected, but two disagreeing servers cannot be resolved.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-42",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "A trading firm needs sub-microsecond timestamps across its data center. Which solution?",
+    "choices": [
+      "PTP with switches acting as boundary or transparent clocks",
+      "NTS with keys over TCP 4460",
+      "NTP with four stratum 1 servers",
+      "SNTP on every server"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. PTP reaches sub-microsecond accuracy because supporting switches timestamp messages in hardware. The answer is PTP with switches acting as boundary or transparent clocks.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-43",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which ports does PTP use?",
+    "choices": [
+      "UDP 123",
+      "UDP 546 and 547",
+      "TCP 4460",
+      "UDP 319 and 320"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. PTP uses UDP ports 319 and 320. The answer is UDP 319 and 320.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-44",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "What problem does NTS solve?",
+    "choices": [
+      "NTP cannot cross routers",
+      "NTP uses TCP",
+      "NTP cannot do UTC",
+      "Classic NTP has almost no authentication"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. NTS uses TLS-established keys to authenticate NTP exchanges. The answer is Classic NTP has almost no authentication.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-45",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which port does NTS use to establish keys?",
+    "choices": [
+      "UDP 123",
+      "TCP 853",
+      "TCP 4460",
+      "UDP 319"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. NTS uses TLS over TCP port 4460 to set up keys, then time flows over UDP 123. The answer is TCP 4460.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-46",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Why should all devices point only at internal NTP servers?",
+    "choices": [
+      "DHCP requires it",
+      "Internal servers are always stratum 0",
+      "Devices that each use public pools can drift apart while each reports synchronization",
+      "Public pools use TCP"
+    ],
+    "answer": 2,
+    "explanation": "Objective 3.4. Two or three internal servers keep every device on a common time source. The answer is Devices that each use public pools can drift apart while each reports synchronization.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-47",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Logs from two routers show the same link failure hours apart. What is the likely cause?",
+    "choices": [
+      "The devices' clocks are not synchronized",
+      "DNSSEC failure",
+      "A rogue DHCP server",
+      "The syslog severity is wrong"
+    ],
+    "answer": 0,
+    "explanation": "Objective 3.4. Unsynchronized clocks make log correlation impossible. Use NTP. The answer is The devices' clocks are not synchronized.",
+    "weak": false
+  },
+  {
+    "id": "q-n10dhcp-48",
+    "topicId": "n10-dhcp-ipam-time",
+    "prompt": "Which DHCP option would deliver NTP server addresses to clients?",
+    "choices": [
+      "Option 67",
+      "Option 15",
+      "Option 6",
+      "Option 42"
+    ],
+    "answer": 3,
+    "explanation": "Objective 3.4. Option 42 carries NTP servers. The answer is Option 42.",
+    "weak": false
   }
 ]
