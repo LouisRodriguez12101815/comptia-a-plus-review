@@ -23742,10 +23742,10 @@
     "topicId": "n10-org-change-config",
     "prompt": "Why is a device past end of support a security concern?",
     "choices": [
-      "It cannot be backed up",
-      "Its warranty doubles",
-      "It no longer receives security fixes",
-      "It stops accepting IP addresses"
+      "It can no longer be backed up",
+      "It stops accepting new addresses",
+      "It no longer gets security fixes",
+      "Its warranty period doubles"
     ],
     "answer": 2,
     "explanation": "Objective 3.1. It no longer receives security fixes, so new vulnerabilities stay open.",
@@ -23756,8 +23756,8 @@
     "topicId": "n10-org-change-config",
     "prompt": "Which action belongs to decommissioning a switch?",
     "choices": [
-      "Apply the golden configuration to the replacement switch",
-      "Wipe the configuration and remove it from inventory and monitoring",
+      "Apply the golden configuration to a new unit",
+      "Wipe the configuration and remove it from inventory",
       "Run a predictive survey of the new floor plan",
       "Open a maintenance window for the planned upgrade"
     ],
@@ -23771,9 +23771,9 @@
     "prompt": "What should be done with stored data before retiring a device?",
     "choices": [
       "Leave it intact for the recycler to handle",
-      "Back up what is needed and securely wipe the rest",
-      "Convert it to an SLA record",
-      "Copy it to a rack diagram"
+      "Back up what is needed, then wipe the rest",
+      "Convert it into a service level record",
+      "Copy it onto the rack diagram for reference"
     ],
     "answer": 1,
     "explanation": "Objective 3.1. Back up what is needed and securely wipe the rest.",
@@ -23826,10 +23826,10 @@
     "topicId": "n10-org-change-config",
     "prompt": "A change is scheduled for Saturday at 2 a.m. when few users are active. What is this called?",
     "choices": [
-      "A maintenance window",
-      "An SLA breach",
-      "A decommission",
-      "A baseline"
+      "A scheduled maintenance window",
+      "A service level breach",
+      "A decommission event",
+      "A baseline snapshot"
     ],
     "answer": 0,
     "explanation": "Objective 3.1. A time set aside for planned work is a maintenance window.",
@@ -23841,9 +23841,9 @@
     "prompt": "Who typically approves a significant change?",
     "choices": [
       "A change advisory board",
-      "Any end user",
-      "The cable vendor",
-      "The DHCP server"
+      "Any end user who asks",
+      "The cable vendor on site",
+      "The DHCP server itself"
     ],
     "answer": 0,
     "explanation": "Objective 3.1. A change advisory board reviews and approves significant changes.",
@@ -23896,9 +23896,9 @@
     "topicId": "n10-org-change-config",
     "prompt": "A technician makes a backup of a router configuration before editing it. What does this support?",
     "choices": [
-      "Raising signal strength",
-      "Increasing throughput",
-      "Shortening the lease time",
+      "Raising wireless signal strength",
+      "Increasing link throughput",
+      "Shortening the DHCP lease time",
       "Rolling back if the change fails"
     ],
     "answer": 3,
@@ -23922,7 +23922,7 @@
   {
     "id": "q-n10chg-16",
     "topicId": "n10-org-change-config",
-    "prompt": "Which configuration is the one currently running and the standard for new devices of that type?",
+    "prompt": "Which configuration is the one currently running on a device in service?",
     "choices": [
       "Backup configuration",
       "Golden configuration",
@@ -23930,7 +23930,7 @@
       "Predictive configuration"
     ],
     "answer": 2,
-    "explanation": "Objective 3.1. The configuration in use, and the standard for new devices, is the production configuration.",
+    "explanation": "Objective 3.1. The configuration running on a device in service is the production configuration. The golden configuration is the tested, approved reference used for new devices and integrity checks.",
     "weak": false
   },
   {
@@ -23954,7 +23954,7 @@
     "choices": [
       "Disable the integrity check so the alert stops",
       "Ignore it unless users complain about the router",
-      "Restore the router to match, or approve the change and update the baseline",
+      "Restore it to match, or approve and update the baseline",
       "Delete the golden configuration and save the current one"
     ],
     "answer": 2,
@@ -23968,8 +23968,8 @@
     "choices": [
       "To shorten the length of the SLA",
       "To avoid taking a backup first",
-      "To remove the need for approval",
-      "To find problems without affecting users"
+      "To remove the need for any approval",
+      "Finding problems without affecting users"
     ],
     "answer": 3,
     "explanation": "Objective 3.1. Testing in a lab finds problems without affecting users.",
@@ -23981,8 +23981,8 @@
     "prompt": "Why does good change documentation help after a disaster?",
     "choices": [
       "It prevents all outages from ever occurring",
-      "It replaces the need for backups",
-      "It shows how to rebuild the system and its changes",
+      "It replaces the need for regular backups",
+      "It shows how to rebuild the system and changes",
       "It extends the hardware warranty period"
     ],
     "answer": 2,
@@ -32135,6 +32135,216 @@
     ],
     "answer": 2,
     "explanation": "RDP uses TCP 3389. SMB is 445 and NTP is 123.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-01",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A new PC on VLAN 20 gets an address from the VLAN 10 DHCP scope. What is the most likely cause?",
+    "choices": [
+      "The switch port sits in the wrong VLAN",
+      "The DHCP server has no free leases",
+      "The PC has a failing network card",
+      "DNS returns a stale host record"
+    ],
+    "answer": 0,
+    "explanation": "A host gets the scope of the VLAN its access port belongs to. An address from the wrong scope means an incorrect VLAN assignment on the port.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-02",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "Several new laptops show 169.254.x.x addresses while older devices work. The DHCP scope has 0 free addresses. What is the problem?",
+    "choices": [
+      "A rogue DHCP server is answering",
+      "The default gateway is down",
+      "A duplex mismatch on the uplink",
+      "Address pool exhaustion"
+    ],
+    "answer": 3,
+    "explanation": "When every address in the scope is leased, new clients get no offer and self-assign APIPA addresses. Shorten lease times or enlarge the scope.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-03",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A host can reach devices on its own subnet but nothing beyond it. Its IP and mask are correct. What should be checked next?",
+    "choices": [
+      "The DNS server address",
+      "The default gateway setting",
+      "The NTP server",
+      "The MAC address table"
+    ],
+    "answer": 1,
+    "explanation": "Local traffic works without a gateway. Failure only beyond the subnet points to a missing or wrong default gateway.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-04",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "Two hosts report intermittent connectivity, and both show the same IP address in their settings. What is this?",
+    "choices": [
+      "An address pool exhaustion",
+      "A routing loop",
+      "An IP address conflict",
+      "An asymmetric route"
+    ],
+    "answer": 2,
+    "explanation": "Two devices using the same IP cause a conflict, so each loses traffic intermittently. Find the duplicate and fix the static or reserved address.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-05",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A host with address 192.168.1.50/24 cannot reach 192.168.2.10 on the same switch, although a router connects the two networks. What is the likely cause?",
+    "choices": [
+      "The host has no default gateway set",
+      "The switch ports run at half duplex",
+      "The DNS server is unreachable",
+      "The ARP table is full on the switch"
+    ],
+    "answer": 0,
+    "explanation": "Different subnets need a gateway to reach each other. Without a default gateway, the host cannot send traffic off its subnet.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-06",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "Users report they receive wrong gateway and DNS addresses from DHCP, and the addresses differ from what the administrator configured. What is the most likely cause?",
+    "choices": [
+      "Address pool exhaustion",
+      "A rogue DHCP server",
+      "A spanning tree loop",
+      "A duplicate MAC address"
+    ],
+    "answer": 1,
+    "explanation": "A device handing out its own DHCP settings is a rogue DHCP server. DHCP snooping on the switch blocks untrusted DHCP offers.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-07",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "Pings to a server by IP succeed, but ping by hostname fails. The hosts file is empty. What is the most likely cause?",
+    "choices": [
+      "The default gateway is wrong",
+      "The subnet mask is wrong",
+      "The VLAN is wrong",
+      "The DNS server setting is wrong"
+    ],
+    "answer": 3,
+    "explanation": "Reaching the IP shows routing works. Name failures point to DNS, such as a wrong server address or a missing record.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-08",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "In spanning tree, a switch port that is blocking traffic to prevent a loop is playing which role?",
+    "choices": [
+      "Root port",
+      "Designated port",
+      "Trunk port",
+      "Alternate port"
+    ],
+    "answer": 3,
+    "explanation": "An alternate port (blocking) is a backup path that is not forwarding. Root and designated ports forward traffic.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-09",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "Which spanning tree port role forwards frames toward the root bridge on a non-root switch?",
+    "choices": [
+      "Designated port",
+      "Root port",
+      "Blocked port",
+      "Edge port"
+    ],
+    "answer": 1,
+    "explanation": "Each non-root switch picks one root port, the best path to the root bridge. Designated ports forward away from the root on each segment.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-10",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A large file transfer across a VPN stalls, though small pings work. Packets with the Don't Fragment bit set are dropped. What is the likely cause?",
+    "choices": [
+      "An MTU mismatch",
+      "An expired DHCP lease",
+      "A wrong subnet mask",
+      "A bad DNS record"
+    ],
+    "answer": 0,
+    "explanation": "Small packets pass but large ones are dropped when the path MTU is smaller than the packet. Lower the MTU or allow fragmentation.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-11",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A packet circulates between two routers until its TTL reaches zero. What is this problem called?",
+    "choices": [
+      "Asymmetric routing",
+      "Address pool exhaustion",
+      "Rogue access point",
+      "A routing loop"
+    ],
+    "answer": 3,
+    "explanation": "A routing loop sends packets in a circle until TTL expires. Misconfigured static routes or slow convergence often cause it.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-12",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "Traffic to a server leaves through one firewall and its replies return through another, and the second firewall drops them. What is this?",
+    "choices": [
+      "A broadcast storm",
+      "A DHCP conflict",
+      "Asymmetric routing",
+      "A native VLAN mismatch"
+    ],
+    "answer": 2,
+    "explanation": "This is asymmetric routing. When the forward and return paths differ, stateful devices on one path see only half the session and may drop it.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-13",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A trunk link between two switches carries traffic, but untagged frames end up in the wrong VLAN. What mismatch is likely?",
+    "choices": [
+      "Duplex",
+      "Native VLAN",
+      "MTU",
+      "Spanning tree priority"
+    ],
+    "answer": 1,
+    "explanation": "Untagged frames on a trunk belong to the native VLAN. If the two ends use different native VLANs, untagged traffic lands in the wrong VLAN.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-14",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "After a firewall change, users can reach web servers but not an internal application on a custom port. What should be reviewed first?",
+    "choices": [
+      "The firewall or ACL rules for that port",
+      "The patch cable to the server",
+      "The wireless channel in use",
+      "The DHCP lease time for clients"
+    ],
+    "answer": 0,
+    "explanation": "Some services work and one port fails, so check ACL or firewall rules that block that port.",
+    "weak": false
+  },
+  {
+    "id": "q-n10svc-15",
+    "topicId": "n10-troubleshoot-services",
+    "prompt": "A wireless client keeps losing its connection and the log shows repeated disassociation messages from the access point. Which cause fits?",
+    "choices": [
+      "Weak signal or interference at the client",
+      "A bad DNS record for the controller",
+      "A full MAC address table on the switch",
+      "An NTP time offset on the AP"
+    ],
+    "answer": 0,
+    "explanation": "Disassociation happens when the client's signal is too weak or noisy, or when roaming or authentication fails.",
     "weak": false
   }
 ]

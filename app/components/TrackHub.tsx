@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { DeviceIcon, ToolIcon } from "@/app/components/icons";
 import { LearnerSync } from "@/app/components/LearnerSync";
+import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
@@ -17,9 +18,6 @@ const tileBase =
 export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const t = await getTranslations("trackHub");
   const tTrack = await getTranslations("tracks");
-  const tHeader = await getTranslations("header");
-  const tCoverage = await getTranslations("coverageDashboard");
-  const tMethods = await getTranslations("assessmentWorkflowPage");
   const tChapter = await getTranslations("networkChapters");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
@@ -122,36 +120,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
             </Link>
           ))}
         </section>
-        <section aria-label="Objective-first study workflow" className="grid gap-4 md:grid-cols-2">
-          <Link href="/coverage" className="rounded-2xl border track-accent-border track-accent-surface p-5 hover:border-[var(--track-accent-line)]">
-            <p className="text-xs font-medium uppercase tracking-wide track-accent-text">{track.code}</p>
-            <h2 className="mt-2 text-lg font-semibold text-white">{tHeader("objectiveLab")}</h2>
-            <p className="mt-2 text-sm text-slate-300">{tCoverage("intro")}</p>
-          </Link>
-          <Link href="/assessment-workflow" className="track-accent-border rounded-2xl border bg-slate-900/60 p-5 transition hover:bg-slate-900">
-            <p className="text-xs font-medium uppercase tracking-wide track-accent-text">{tHeader("methods")}</p>
-            <h2 className="mt-2 text-lg font-semibold text-white">{tMethods("title")}</h2>
-            <p className="mt-2 text-sm text-slate-300">{tMethods("metadataDescription")}</p>
-          </Link>
-        </section>
         </>
-      ) : null}
-
-      {track.focus && track.focus !== "all" && counts.questions > 0 ? (
-        <section aria-labelledby="test-mode-heading" className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border track-accent-border track-accent-surface p-5">
-          <div>
-            <h2 id="test-mode-heading" className="text-lg font-medium text-white">{t("testModeTitle")}</h2>
-            <p className="mt-1 max-w-xl text-sm text-slate-300">
-              {t("testModeBody", { code: track.code })}
-            </p>
-          </div>
-          <Link
-            href={`/test?exam=${track.focus}`}
-            className="track-accent-button inline-flex min-h-11 items-center rounded-full px-5 py-2 font-medium transition"
-          >
-            {t("startTest")}
-          </Link>
-        </section>
       ) : null}
 
       {missed.length > 0 ? (
@@ -281,6 +250,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           <ProgressDashboard />
           <LearnerSync />
 
+          {track.id === "networking" ? (
+            <NetworkPlusDomains own={own} />
+          ) : (
           <section id="topics" aria-labelledby="notes-heading" className="space-y-4">
             <h2 id="notes-heading" className="text-lg font-medium text-white">
               {t("chaptersInTrack")}
@@ -307,6 +279,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
               ))}
             </ul>
           </section>
+          )}
 
           {shared.length > 0 ? (
             <section aria-labelledby="shared-heading" className="space-y-4">
