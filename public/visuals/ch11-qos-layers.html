@@ -47,7 +47,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
 <div class="wrap">
 
 <h1>Which QoS marking works at which layer?</h1>
-<p class="lede">Quality of service marks traffic so it gets priority. Pick a method to see the layer it works at and the field that holds the mark. Then pick a CoS value to see its queue.</p>
+<p class="lede">Pick a marking method to see its layer and field. A CoS value is a priority marking, not a universal hardware queue number; queue mapping depends on the device and policy.</p>
 <div class="card">
   <style>.seg{padding:8px 10px;border:2px solid var(--line);border-radius:8px;font-size:13px;background:var(--bg)}.seg.hi{border-color:var(--good);background:var(--good-soft);font-weight:600}</style>
   <p class="lab">Method</p>
@@ -56,10 +56,10 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
   <div id="l2" style="display:flex;flex-wrap:wrap;gap:4px"></div>
   <p class="lab">Layer 3: IP packet header</p>
   <div id="l3" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-  <p class="lab">CoS value (3 bits, eight queues)</p>
+  <p class="lab">CoS value (3 bits, eight priority values)</p>
   <div class="ctrls" id="q" role="group" aria-label="CoS value"></div>
   <div class="out" id="out" aria-live="polite"></div>
-  <p class="answer"><strong>Review question 3 (answer D) and written lab 10.</strong> CoS is the Layer 2 QoS marking. It is a 3-bit field inside the 802.1Q tag, which gives eight queues. ToS and DiffServ are Layer 3 methods in the IP header.</p>
+  <p class="answer"><strong>Marking is not queue count.</strong> CoS is a Layer 2 marking with eight possible values. ToS/DiffServ markings are in the Layer 3 IP header. Hardware queue counts and mappings are platform-specific. Source: <a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960cx_3650cx/software/release/15-2_3_e/configuration/guide/b_1523e_consolidated_2960cx_3560cx_cg/b_consolidated_152ex_2960-X_cg_chapter_011100.html">Cisco Catalyst 2960-CX/3560-CX QoS guide</a>, Restrictions for QoS. N10-009 1.2 / 2.2 supporting context.</p>
 </div>
 
 </div>
@@ -68,7 +68,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
 const L2=['Dest MAC','Src MAC','TPID 0x8100','CoS (3 bits)','DEI','VLAN ID (12 bits)','Type','Data'];
 const L3=['Version','ToS / DSCP byte','Length','Src IP','Dst IP','Data'];
 const methods={
- cos:{name:'CoS (802.1Q, Layer 2)', l2:3, l3:-1, txt:'<strong>CoS</strong> is a Layer 2 marking. It is a 3-bit field in the 802.1Q tag, so it can express eight queue values (0 to 7).'},
+ cos:{name:'CoS (802.1Q, Layer 2)', l2:3, l3:-1, txt:'<strong>CoS</strong> is a Layer 2 marking. Its 3-bit field represents eight priority values (0 to 7), not a guaranteed eight hardware queues.'},
  tos:{name:'ToS (IP, Layer 3)', l2:-1, l3:1, txt:'<strong>ToS</strong> is a Layer 3 method. It sits in the IP header, not the Ethernet frame.'},
  diff:{name:'DiffServ (IP, Layer 3)', l2:-1, l3:1, txt:'<strong>DiffServ</strong> is also a Layer 3 method. It uses the same IP header byte as ToS.'}
 };
@@ -91,7 +91,7 @@ function draw(){
   qDiv.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(Number(b.dataset.q)===q)); });
   document.getElementById('l2').innerHTML=seg(L2,m.l2);
   document.getElementById('l3').innerHTML=seg(L3,m.l3);
-  const extra = cur==='cos' ? ' A frame marked CoS '+q+' is placed in queue '+q+' of 8.' : ' Layer 3 marks do not affect the CoS queue.';
+  const extra = cur==='cos' ? ' This frame carries priority value '+q+'. Its queue depends on the configured device mapping.' : ' The device policy determines how Layer 3 markings map to forwarding treatment.';
   document.getElementById('out').innerHTML=m.txt+extra;
 }
 draw();

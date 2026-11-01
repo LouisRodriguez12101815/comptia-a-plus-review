@@ -2231,7 +2231,8 @@
             "items": [
               "RIP uses hop count. 1 to 15 is usable, and 16 or more is unreachable.",
               "OSPF uses cost: reference bandwidth (100 Mbps) divided by interface bandwidth. Faster links cost less.",
-              "EIGRP uses a composite metric of delay, bandwidth, reliability, and load, weighted by K values."
+              "EIGRP uses a composite metric of delay, bandwidth, reliability, and load, weighted by K values.",
+              "By default K1 (bandwidth) and K3 (delay) are the only active terms; K2, K4, and K5 default to zero, so load and reliability are not used unless explicitly configured."
             ]
           }
         ]
@@ -2442,7 +2443,7 @@
           {
             "type": "bullets",
             "items": [
-              "Adding a VLAN increases the number of broadcast domains. It also increases the number of collision domains.",
+              "Adding a VLAN increases the number of broadcast domains. On existing switch hardware, the number of collision domains does not change — each full-duplex port is already its own collision domain.",
               "All switch ports start in VLAN 1 from the factory. VLANs 1 and 1002 to 1005 are protected by IOS and cannot be deleted.",
               "Static VLANs are configured manually on each port. The node does not know which VLAN it is in.",
               "Dynamic VLANs assign a port based on the device's MAC address, using a VMPS (VLAN Membership Policy Server). They are deprecated, and 802.1X is the recommended replacement.",
@@ -2481,7 +2482,7 @@
               [
                 "Voice",
                 "Voice traffic on an access port",
-                "Tags only when the CoS value is changed from the default"
+                "Tagging depends on mode: tagged with voice VLAN ID (vlan-id mode), tagged VLAN 0 with CoS priority (dot1p mode), or untagged. CoS priority is set independently."
               ]
             ]
           },
@@ -2524,7 +2525,7 @@
               "STP (802.1D) prevents loops in switched networks. RSTP (802.1w) is the faster version.",
               "The root bridge is the switch with the lowest priority. If every priority is at the default, the lowest MAC address wins.",
               "The default state for an STP port is blocking.",
-              "It takes 50 seconds for STP to converge from blocking to forwarding."
+              "With classic 802.1D default timers and no PortFast, a new designated port normally reaches forwarding in about 30 seconds: 15 seconds listening plus 15 seconds learning. A blocked port recovering after loss of superior BPDUs can first wait 20 seconds for max-age expiry, making that recovery case about 50 seconds in total."
             ]
           }
         ]
@@ -2561,7 +2562,7 @@
           {
             "type": "bullets",
             "items": [
-              "CoS is the layer 2 QoS method. It is a 3-bit field in the 802.1Q tag that maps to eight queues.",
+              "CoS is the layer 2 QoS method. It is a 3-bit field in the 802.1Q tag with eight values (0–7); the number of queues implemented depends on the platform.",
               "ToS and DiffServ are layer 3 QoS methods.",
               "802.3at delivers 25.5 watts of power over Ethernet (PoE)."
             ]
@@ -2638,7 +2639,7 @@
               [
                 "10",
                 "Direct benefit of adding VLANs",
-                "B. More broadcast domains and more collision domains (book answer)"
+                "A. More broadcast domains, with no change to collision domains on existing hardware"
               ],
               [
                 "11",
@@ -2731,7 +2732,7 @@
               ],
               [
                 "50 seconds",
-                "Time for STP to converge from blocking to forwarding"
+                "Worst-case STP convergence after topology change (MaxAge 20 s + Listening 15 s + Learning 15 s); new designated port is about 30 s"
               ],
               [
                 "Forward/filter",
@@ -2779,7 +2780,7 @@
                 "1"
               ],
               [
-                "EIGRP",
+                "Internal EIGRP",
                 "90"
               ],
               [
@@ -3099,16 +3100,16 @@
             "type": "bullets",
             "items": [
               "Exam objective 2.1 lists three factors for route selection: prefix length, administrative distance, and metric.",
-              "A router first prefers the route with the longest matching prefix, because it is the most specific.",
-              "If prefix lengths tie, the router prefers the lowest administrative distance.",
-              "If administrative distance also ties, the router prefers the lowest metric."
+              "Forwarding: among installed routes that match a packet's destination, choose the longest matching prefix. Administrative distance and protocol metrics are not compared again for each packet.",
+              "Route installation: each routing protocol selects its candidate path using its own algorithm and metric. For usable candidates to the same destination prefix and length from different sources, Cisco routers prefer the lowest administrative distance.",
+              "Do not compare raw metrics from different protocols. Routes with different prefix lengths can coexist in the routing table; a more specific route can forward traffic even when its source has a higher administrative distance."
             ]
           },
           {
             "type": "table",
             "headers": [
               "Route source",
-              "Typical administrative distance"
+              "Default Cisco administrative distance"
             ],
             "rows": [
               [
@@ -3124,7 +3125,7 @@
                 "20"
               ],
               [
-                "EIGRP",
+                "Internal EIGRP",
                 "90"
               ],
               [
