@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { ExplanationText } from "@/app/components/ExplanationText";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
@@ -169,7 +170,7 @@ export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string
                 <p className="mt-1 text-sm text-teal-200">
                   {t("correctAnswer", { answer: answerLabel(question, question.answer) })}
                 </p>
-                <p className="mt-2 text-sm text-slate-400">{question.explanation}</p>
+                <p className="mt-2 text-sm text-slate-400"><ExplanationText text={question.explanation} /></p>
               </article>
             ))}
           </section>
@@ -232,7 +233,7 @@ export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string
       </ul>
       {revealed && (
         <p className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300">
-          {current.explanation}
+          <ExplanationText text={current.explanation} />
         </p>
       )}
       <button
