@@ -6,6 +6,8 @@ Reviewed branch `network-plus-readiness-phase1a`, base commit `ade49de` (the Git
 
 No question, chapter, visualization, answer key, progress format or application UI was changed. The only implementation is the requested local read-only exporter and its tests, test-command integration, and ignore rules. Phase 2/3 topics remain subject to approval after the evidence is available.
 
+Numbering follow-up: the matrix and topic IDs were already corrected on the merged Phase 1a base. The numbering PR aligns the 3.3/3.4 titles and fixes four remaining access-method explanation labels from 3.4 to 3.5; the scores and quotations below remain the original audit snapshot. See [the numbering build report](build-report-2026-11-01-n10-objective-numbering.md) for unchanged per-objective question counts.
+
 ## Reference documents followed
 
 Read `review/README-for-agent.md` first, then all six supplied references: `feature-rollout-standard.md`, `vercel-deployment-sop.md`, `build-report-2026-10-20-learner-accounts.md`, `build-report-2026-10-17-fsrs-and-a11y.md`, `n10-009-gap-audit-2026-10-30.md`, and `objective-coverage-2026-10-17.md`. None is missing on this branch. Existing build-report format (Added / Verified / Not verified / Notes) is retained. GitHub delivery is authorized; Vercel deployment is explicitly prohibited and was not attempted.
