@@ -1,5 +1,6 @@
 "use client";
 
+import { ExplanationText } from "@/app/components/ExplanationText";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
@@ -102,7 +103,7 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
           return (
             <li key={p.questionId} className="rounded-xl border border-violet-900/70 bg-slate-950/50 p-4 text-sm">
               <p className="text-slate-400"><span className="font-mono text-teal-300">{p.objectiveId}</span> {q.prompt}</p>
-              <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{ruleLabel}</span> {ruleText(q.explanation)}</p>
+              <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{ruleLabel}</span> <ExplanationText text={ruleText(q.explanation)} /></p>
               {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{notesLabel(topic.title)}</Link>}
             </li>
           );
@@ -688,7 +689,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                               <p className="mt-1 w-fit rounded-full border border-rose-400/50 bg-rose-400/10 px-3 py-0.5 text-xs font-medium text-rose-100">{t("sureWrongBadge")}</p>
                             )}
                             <FixPick question={q} picked={responses[p.questionId]?.answer} pickedLine={(answer) => t("fixPicked", { answer })} noAnswer={t("noAnswer")} answerLabel={t("lookAlikeAnswer")} pickedLabel={t("lookAlikePicked")} />
-                            <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{t("fixRule")}</span> {ruleText(q.explanation)}</p>
+                            <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{t("fixRule")}</span> <ExplanationText text={ruleText(q.explanation)} /></p>
                             <div className="mt-1 flex flex-wrap gap-x-4">
                               {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("fixNotes", { title: topic.title })}</Link>}
                               {labs.slice(0, 2).map((lab) => <a key={lab.file} href={`/visuals/${lab.file}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("fixLab", { title: lab.title })}</a>)}
@@ -831,7 +832,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                     })}
                   </p>
                   {!ok && <p className="mt-1 text-sm text-teal-200">{t("correctAnswer", { answer: answerText(q, q.answer, t("noAnswer")) })}</p>}
-                  <p className="mt-2 text-sm text-slate-400">{q.explanation}</p>
+                  <p className="mt-2 text-sm text-slate-400"><ExplanationText text={q.explanation} /></p>
                   <div className="mt-2 flex flex-wrap gap-x-4">
                     {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("studyTopic", { title: topic.title })}</Link>}
                     <button type="button" onClick={() => reportContent(`Question ${q.id}: ${q.prompt}`, "Wrong answer key")} className="inline-flex min-h-11 items-center text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200">{t("disputeQuestion")}</button>

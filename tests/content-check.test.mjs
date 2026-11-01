@@ -50,3 +50,34 @@ test("the checker still catches seeded mistakes", () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// The renderer accepts only authored local notes links; other text stays literal.
+import { parseRelatedConcept } from "../lib/explanation.ts";
+
+test("related concept parser keeps a local route/anchor and descriptive label", () => {
+  assert.deepEqual(parseRelatedConcept("Related concept: [DHCP lease exchange](/notes/n10-dhcp-ipam-time#3-4-dhcp)"), {
+    label: "DHCP lease exchange", href: "/notes/n10-dhcp-ipam-time#3-4-dhcp",
+  });
+});
+
+test("related concept parser leaves legacy prose and unsafe or malformed links as text", () => {
+  for (const text of [
+    "Plain explanation", "Related concept: /notes/n10-ch7#public-private",
+    "Related concept: [External](https://example.com)", "Related concept: [Script](javascript:alert(1))",
+    "Related concept: [Traversal](/notes/../private#data)", "Related concept: [No anchor](/notes/n10-ch7)",
+    "Related concept: [Bad anchor](/notes/n10-ch7#<script>)",
+  ]) assert.equal(parseRelatedConcept(text), null);
+});
+
+test("authored related-concept links resolve to an existing notes route and section", () => {
+  const load = name => JSON.parse(fs.readFileSync(path.join(repo, "content", `${name}.json`), "utf8"));
+  const topics = [...load("topics"), ...load("topics-network-plus")];
+  for (const question of load("questions")) {
+    for (const line of question.explanation.split("\n").filter(line => line.startsWith("Related concept: ["))) {
+      const link = parseRelatedConcept(line);
+      assert.ok(link, question.id);
+      const [topicId, sectionId] = link.href.slice("/notes/".length).split("#");
+      assert.ok(topics.find(topic => topic.id === topicId)?.sections.some(section => section.id === sectionId), `${question.id}: ${link.href}`);
+    }
+  }
+});
