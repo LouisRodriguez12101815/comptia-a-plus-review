@@ -138,3 +138,32 @@ test('Core 2 missed-on-exam flags mark exactly the 14 reported objectives and th
   assert.deepEqual(filterCoverage(rows, { missedOnly: true }), flagged);
   assert.equal(filterCoverage(rows, { missedOnly: false }).length, rows.length);
 });
+
+test('Network+ operations numbering and dedicated-topic labels follow N10-009', async () => {
+  const { readFileSync } = await import('node:fs');
+  const load = name => JSON.parse(readFileSync(new URL(`../content/${name}.json`, import.meta.url), 'utf8'));
+  const expected = [
+    ['3.3', 'Explain disaster recovery (DR) concepts', ['n10-disaster-recovery']],
+    ['3.4', 'Given a scenario, implement IPv4 and IPv6 network services', ['n10-dns-records-security', 'n10-dhcp-ipam-time']],
+    ['3.5', 'Compare and contrast network access and management methods', ['n10-remote-access-methods']],
+  ];
+  const network = objectives.exams.find(exam => exam.code === 'n10-009');
+  const own = network.domains.flatMap(domain => domain.objectives);
+  const topics = load('topics-network-plus');
+  const questions = load('questions');
+  for (const [id, title, topicIds] of expected) {
+    const objective = own.find(row => row.id === id);
+    assert.equal(objective.title, title);
+    for (const topicId of topicIds) {
+      assert.ok(objective.topics.includes(topicId), `${id}: ${topicId}`);
+      const topic = topics.find(row => row.id === topicId);
+      assert.ok(topic.title.includes(`(${id})`), topicId);
+      assert.ok(topic.sections.every(section => section.id.startsWith(id.replace('.', '-') + '-')), topicId);
+      for (const question of questions.filter(row => row.topicId === topicId)) {
+        const label = question.explanation.match(/^Objective (\d+\.\d+)\./);
+        if (label) assert.equal(label[1], id, question.id);
+        if (question.objectiveIds?.['n10-009']) assert.ok(question.objectiveIds['n10-009'].includes(id), question.id);
+      }
+    }
+  }
+});

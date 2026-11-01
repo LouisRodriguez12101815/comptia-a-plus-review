@@ -570,7 +570,7 @@
       "APIPA — DHCP failed"
     ],
     "answer": 3,
-    "explanation": "169.254.x.x is APIPA. The client could not get a real DHCP address.",
+    "explanation": "Why: “APIPA — DHCP failed” is the intended interpretation for an automatically configured Windows interface: 169.254.32.10 is IPv4 link-local, indicating no usable DHCP lease.\nOther option — A valid DHCP lease from the router: would provide the configured scope’s address, not this automatic fallback.\nOther option — A public IPv6 address: this is dotted-decimal IPv4.\nOther option — A successful WDS capture: captures a deployment image; it does not explain this address.\nMemory hook: 169.254 is a local fallback lane, not the road to remote networks.\nCommon trap: This address does not identify the DHCP failure’s root cause or prove the server is down.\nRelated concept: /notes/networking-dns-dhcp#dhcp",
     "weak": true
   },
   {
@@ -612,7 +612,7 @@
       "Insider Program not enabled on Home"
     ],
     "answer": 1,
-    "explanation": "If neither IP nor name works, it is not a DNS-only symptom.",
+    "explanation": "Why: Broader network/connectivity problem is the best initial theory because an IP-only test also fails; name resolution alone cannot explain that observation.\nOther option — A typo in the AAAA record only: affects that IPv6 DNS answer, not an independent IPv4 ping.\nOther option — exFAT versus NTFS on the client: concerns local filesystem format.\nOther option — Insider Program not enabled on Home: concerns Windows preview enrollment.\nMemory hook: If the numeric address also fails, look beyond the address book.\nCommon trap: A failed ping is evidence to investigate, not proof of an outage: filtering may block ICMP.\nRelated concept: /notes/networking-dns-dhcp#dns",
     "weak": true
   },
   {
@@ -2904,7 +2904,7 @@
       "Frames are handled in software, so latency rises a little for each frame"
     ],
     "answer": 2,
-    "explanation": "A switch uses ASICs for hardware forwarding, which gives the lowest latency and highest bandwidth, unlike a hub that repeats everything to every port. Software-based forwarding describes a bridge, which has higher latency than a switch.",
+    "explanation": "Why: “Lower latency and higher bandwidth, with frames sent only where needed” describes the intended known-unicast benefit of hardware switching over a hub; broadcasts and unknown unicasts still flood within their VLAN.\nOther option — Every signal copied everywhere: describes a hub’s repeating behavior.\nOther option — Per-hop packet decapsulation: does not explain this local hardware-switching benefit.\nOther option — Software handling raises latency: does not match the stated ASIC forwarding; software performance depends on implementation.\nMemory hook: A hub announces to everyone; a switch uses its learned address book.\nCommon trap: Selective forwarding is not universal: flooding still exists.\nRelated concept: /notes/n10-ch11#mac-learning",
     "weak": false
   },
   {
@@ -3257,7 +3257,7 @@
       "169.254.0.1 through 169.254.255.254"
     ],
     "answer": 0,
-    "explanation": "192.168.0.0 through 192.168.255.255 is the Class C private range. 172.16 to 172.31 is Class B private, 10.x is Class A private, and 169.254.x.x is APIPA, which is not a private range you assign.",
+    "explanation": "Why: 192.168.0.0 through 192.168.255.255 is the private block containing the historical Class C networks.\nOther option — 172.16.0.0 through 172.31.255.255: also private, historically Class B.\nOther option — 10.0.0.0 through 10.255.255.255: also private, historically Class A.\nOther option — 169.254.0.1 through 169.254.255.254: within IPv4 link-local space, not the requested private block.\nMemory hook: Private blocks: 10/8, 172.16/12, 192.168/16.\nCommon trap: Historical classes do not determine today’s subnet mask; use the configured prefix.\nRelated concept: /notes/n10-ch7#public-private",
     "weak": false
   },
   {
@@ -3773,7 +3773,7 @@
       "Accounting"
     ],
     "answer": 2,
-    "explanation": "Authentication verifies identity. Authorization decides what an authenticated identity may do, and nonrepudiation prevents a sender from denying a message.",
+    "explanation": "Why: Authentication verifies the claimed identity of a user or device.\nOther option — Authorization: decides which actions an identity may perform.\nOther option — Nonrepudiation: supports evidence against later denial of an action or message.\nOther option — Accounting: records activity or resource usage.\nMemory hook: Authentication checks the badge; authorization checks the door permissions; accounting keeps the log.\nCommon trap: Proving who you are does not itself grant every permission.\nRelated concept: /notes/n10-security#iam-terms",
     "weak": false
   },
   {
@@ -4095,7 +4095,7 @@
       "Data Link"
     ],
     "answer": 0,
-    "explanation": "Layer 4 is Transport (segments, TCP and UDP). Network is 3, Session is 5, and Data Link is 2.",
+    "explanation": "Why: Transport is Layer 4: TCP/UDP provide communication between applications using ports.\nOther option — Network: Layer 3 handles IP addressing and routing.\nOther option — Session: Layer 5 manages dialogue sessions.\nOther option — Data Link: Layer 2 handles frames and local-link delivery.\nMemory hook: From the wire upward: bits → frames → packets → transport.\nCommon trap: Do not swap a router’s Layer 3 job with TCP’s Layer 4 job.\nRelated concept: /notes/n10-osi-models#osi-layers",
     "weak": false
   },
   {
@@ -16673,7 +16673,7 @@
       "Community"
     ],
     "answer": 0,
-    "explanation": "Objective 1.3. Hybrid combines on-premises and cloud resources, with data and apps moving between them.",
+    "explanation": "Why: Hybrid combines distinct on-premises/private and public-cloud environments, fitting the required split of data and applications.\nOther option — Public: uses provider infrastructure shared among customers; alone it does not describe this split.\nOther option — Private: serves one organization; alone it omits the public-cloud part.\nOther option — Community: serves organizations with shared requirements, not this deployment split.\nMemory hook: Hybrid is a bridge joining two environments.\nCommon trap: Hybrid describes the combination, not simply who owns a server.\nRelated concept: /notes/n10-cloud-models-connectivity#1-3-models",
     "weak": false
   },
   {
@@ -16729,7 +16729,7 @@
       "2, 5 and 8"
     ],
     "answer": 0,
-    "explanation": "Objective 2.3. 1, 6 and 11 are the non-overlapping 2.4 GHz channels in the US.",
+    "explanation": "Why: 1, 6 and 11 provide non-overlapping 2.4 GHz channels for the usual US 20 MHz channel plan.\nOther option — 1, 4 and 7: spacing is too small; neighboring channel spectra overlap.\nOther option — 3, 6 and 9: these three-channel gaps overlap.\nOther option — 2, 5 and 8: these gaps also overlap.\nMemory hook: Three parking spaces: 1 → 6 → 11, five channel numbers apart.\nCommon trap: Different channel numbers can still overlap; regulatory domain and channel width matter.\nRelated concept: /notes/n10-wireless-standards-security#2-3-bands",
     "weak": false
   },
   {
@@ -16785,7 +16785,7 @@
       "MDF"
     ],
     "answer": 0,
-    "explanation": "Objective 2.4. A UPS is battery backup. A PDU distributes power in the rack.",
+    "explanation": "Why: UPS supplies stored battery energy during a short power interruption, keeping equipment running within its capacity.\nOther option — PDU: distributes power to equipment; distribution alone provides no battery backup.\nOther option — Patch panel: terminates and organizes cable connections.\nOther option — MDF: the main distribution location for network cabling/equipment.\nMemory hook: UPS is a reserve tank; PDU is the pipe distributing power.\nCommon trap: More power outlets do not create stored energy or unlimited runtime.\nRelated concept: /notes/n10-physical-install-factors#2-4-power-cooling",
     "weak": false
   },
   {
@@ -16841,7 +16841,7 @@
       "FTP"
     ],
     "answer": 0,
-    "explanation": "Objective 3.4. SSH runs on port 22 and encrypts the session; Telnet is plain text on port 23.",
+    "explanation": "Why: SSH provides an encrypted remote shell, replacing Telnet’s unencrypted terminal access.\nOther option — RDP: remote graphical desktop access, not the shell replacement asked for.\nOther option — VNC: remote display/control, not an SSH-style terminal protocol.\nOther option — FTP: file transfer, not secure remote terminal access.\nMemory hook: SSH wraps the terminal conversation in a secure envelope.\nCommon trap: Encryption alone does not make every remote-access protocol the same kind of session.\nRelated concept: /notes/n10-remote-access-methods#3-5-methods",
     "weak": false
   },
   {
@@ -16855,7 +16855,7 @@
       "RDP to a server"
     ],
     "answer": 1,
-    "explanation": "Objective 3.4. Out-of-band uses a separate path that does not depend on the production network.",
+    "explanation": "Objective 3.5. Out-of-band uses a separate path that does not depend on the production network.",
     "weak": false
   },
   {
@@ -16869,7 +16869,7 @@
       "Hot aisle"
     ],
     "answer": 2,
-    "explanation": "Objective 3.4. A jump host is one monitored entry point, protected with MFA.",
+    "explanation": "Objective 3.5. A jump host is one monitored entry point, protected with MFA.",
     "weak": false
   },
   {
@@ -16883,7 +16883,7 @@
       "Split tunnel"
     ],
     "answer": 3,
-    "explanation": "Objective 3.4. Split tunnel sends only corporate traffic through the VPN.",
+    "explanation": "Objective 3.5. Split tunnel sends only corporate traffic through the VPN.",
     "weak": false
   },
   {
@@ -16897,7 +16897,7 @@
       "Bandwidth"
     ],
     "answer": 0,
-    "explanation": "Objective 5.4. Jitter is uneven delay, which disrupts voice and video.",
+    "explanation": "Why: Jitter means variation in packet arrival delay, which can disrupt voice playout even on a fast link. It is the keyed answer, but the symptom alone is not conclusive.\nOther option — Latency: delay itself, rather than variation between packets.\nOther option — Packet loss: missing packets can also make speech choppy; measure it before excluding it.\nOther option — Bandwidth: carrying capacity, not arrival regularity.\nMemory hook: Latency is a late bus; jitter is an unpredictable bus schedule.\nCommon trap: Fast throughput does not prove good voice timing, and choppiness does not uniquely prove jitter.\nRelated concept: /notes/n10-performance-troubleshooting#5-4-terms",
     "weak": false
   },
   {
@@ -16911,7 +16911,7 @@
       "The fastest link"
     ],
     "answer": 1,
-    "explanation": "Objective 5.4. The slowest link sets the throughput over a path.",
+    "explanation": "Why: The 100 Mbps link is the bottleneck: every packet on this path must traverse it, limiting end-to-end throughput to at most that rate before overhead.\nOther option — The 1 Gbps link: has spare capacity but cannot accelerate the slower link.\nOther option — The average of both: averages do not remove a serial bottleneck.\nOther option — The fastest link: states an upper capacity for one segment, not the whole path.\nMemory hook: A wide road still queues at a narrow bridge.\nCommon trap: Actual throughput can be below the bottleneck rate because of overhead or congestion.\nRelated concept: /notes/n10-performance-troubleshooting#5-4-terms",
     "weak": false
   },
   {
@@ -16925,7 +16925,7 @@
       "Channel width"
     ],
     "answer": 2,
-    "explanation": "Objective 5.4. RSSI measures received signal strength; SNR measures signal relative to noise.",
+    "explanation": "Why: RSSI indicates received signal strength at the wireless client.\nOther option — SNR: compares signal level with noise, measuring relative quality.\nOther option — BSSID: identifies a basic service set, commonly by an AP radio’s MAC address.\nOther option — Channel width: the radio-frequency span used by a channel.\nMemory hook: RSSI is how loud the speaker sounds; SNR asks whether you can hear it above the crowd.\nCommon trap: A strong signal can still perform poorly when interference or noise is high.\nRelated concept: /notes/n10-performance-troubleshooting#5-4-wireless",
     "weak": false
   },
   {
@@ -16939,7 +16939,7 @@
       "Packet loss"
     ],
     "answer": 3,
-    "explanation": "Objective 5.4. Packet loss means the data is gone, not merely late.",
+    "explanation": "Why: Packet loss means expected packets do not reach the receiver, rather than merely arriving late.\nOther option — Latency: time taken to deliver data.\nOther option — Jitter: variation in delivery delay.\nOther option — Contention: devices competing for shared access; it can contribute to problems but is not the missing-packet measurement.\nMemory hook: Latency: late parcel. Jitter: irregular deliveries. Loss: parcel never arrives.\nCommon trap: Symptoms such as choppy audio may involve several metrics; count loss separately.\nRelated concept: /notes/n10-performance-troubleshooting#5-4-terms",
     "weak": false
   },
   {
@@ -22113,7 +22113,7 @@
       "Identify the problem"
     ],
     "answer": 3,
-    "explanation": "Objective 5.1. Gathering information, questioning users and identifying symptoms belong to the first step, identify the problem.",
+    "explanation": "Why: Identify the problem comes first: collect the user’s description, symptoms and relevant logs before choosing a cause.\nOther option — Test the theory to determine the cause: checks an already proposed explanation.\nOther option — Establish a plan of action: chooses a repair strategy after diagnosis.\nOther option — Establish a theory of probable cause: proposes explanations from the collected evidence.\nMemory hook: Collect clues → propose a cause → test it.\nCommon trap: Reading an error is evidence gathering, not proof that a theory has been tested.\nRelated concept: /notes/n10-troubleshoot-method#5-1-steps",
     "weak": false
   },
   {
@@ -22127,7 +22127,7 @@
       "Identify, plan, theorize, test, implement, document, verify"
     ],
     "answer": 0,
-    "explanation": "Objective 5.1. The order is identify the problem, theory of probable cause, test the theory, plan of action, implement or escalate, verify full functionality, then document.",
+    "explanation": "Why: Identify, theorize, test, plan, implement, verify, document keeps evidence, diagnosis, repair and confirmation in a useful order.\nOther option — Theorize, identify, test, implement, plan, verify, document: guesses before gathering facts and implements before planning.\nOther option — Identify, theorize, implement, test, plan, document, verify: changes before testing/planning and closes before verifying.\nOther option — Identify, plan, theorize, test, implement, document, verify: plans before diagnosing and documents before verification.\nMemory hook: Clues → cause → proof → plan → fix → check → record.\nCommon trap: Documenting a change is not a substitute for verifying restored functionality.\nRelated concept: /notes/n10-troubleshoot-method#5-1-steps",
     "weak": false
   },
   {
@@ -22141,7 +22141,7 @@
       "Establish a plan of action"
     ],
     "answer": 1,
-    "explanation": "Objective 5.1. Determining whether anything has changed is part of identifying the problem.",
+    "explanation": "Why: Identify the problem includes finding recent changes that may help explain the symptoms.\nOther option — Document findings and lessons learned: records the work and results.\nOther option — Verify full system functionality: checks the outcome after repair.\nOther option — Establish a plan of action: decides how to address a diagnosed problem.\nMemory hook: Ask what changed before deciding what to change.\nCommon trap: A recent update is a clue, not automatic proof of the cause.\nRelated concept: /notes/n10-troubleshoot-method#5-1-approaches",
     "weak": false
   },
   {
@@ -22155,7 +22155,7 @@
       "Apply one fix to all three at once"
     ],
     "answer": 1,
-    "explanation": "Objective 5.1. When there are multiple problems, approach each individually so the fixes do not interfere with each other.",
+    "explanation": "Why: Approach the problems individually: separate the unrelated symptoms and investigate each so one attempted fix does not obscure another.\nOther option — Wait for more reports before starting: delays collecting evidence already available.\nOther option — Escalate all three before gathering information: escalation may help later, but does not replace initial investigation.\nOther option — Apply one fix to all three at once: assumes a shared cause without evidence.\nMemory hook: Give each fault its own case file before deciding the cases are connected.\nCommon trap: Same reporting time does not establish a common root cause.\nRelated concept: /notes/n10-troubleshoot-method#5-1-approaches",
     "weak": false
   },
   {
@@ -22309,7 +22309,7 @@
       "Toner and inductive probe"
     ],
     "answer": 3,
-    "explanation": "Objective 5.5. A tone generator puts a signal on the cable and the inductive probe finds it without cutting the cable.",
+    "explanation": "Why: Toner and inductive probe trace a cable: the generator injects a signal and the probe detects it at the far end.\nOther option — Cable tester that checks pinout and continuity: checks wiring integrity rather than tracing by tone.\nOther option — Wi-Fi analyzer that shows channel use: examines radio networks.\nOther option — Network tap that copies traffic from a link: supplies traffic to an analyzer.\nMemory hook: The toner calls; the probe listens for that cable’s voice.\nCommon trap: Finding a cable is different from proving it is correctly wired.\nRelated concept: /notes/n10-troubleshoot-tools#5-5-hardware",
     "weak": false
   },
   {
@@ -22323,7 +22323,7 @@
       "Cable tester"
     ],
     "answer": 3,
-    "explanation": "Objective 5.5. A cable tester checks continuity and wiring, including shorts, opens and crossed pairs.",
+    "explanation": "Why: Cable tester checks copper wiring for shorts, opens and incorrect pair connections.\nOther option — Wi-Fi analyzer: measures wireless channel and signal conditions.\nOther option — Protocol analyzer: inspects captured network traffic, not copper continuity.\nOther option — Toner and inductive probe: traces a cable’s location without certifying its pinout.\nMemory hook: Toner finds the wire; tester checks its wiring.\nCommon trap: A cable being found, or even showing link, does not prove every pair is wired correctly.\nRelated concept: /notes/n10-troubleshoot-tools#5-5-hardware",
     "weak": false
   },
   {
@@ -22337,7 +22337,7 @@
       "Copper cable tester"
     ],
     "answer": 1,
-    "explanation": "Objective 5.5. A visual fault locator shows where light escapes from a damaged fiber or bad connector.",
+    "explanation": "Why: Visual fault locator injects visible light into fiber; escaping light can reveal a damaged section, connector fault or tight bend.\nOther option — Internet speed tester: measures end-to-end performance, not the fiber fault’s location.\nOther option — Tone generator and probe: normally traces copper conductors using an electrical signal.\nOther option — Copper cable tester: checks electrical wiring rather than optical fiber.\nMemory hook: A visible glow marks where light escapes the intended path.\nCommon trap: A visual fault locator is not an OTDR distance trace; follow optical safety procedures.\nRelated concept: /notes/n10-troubleshoot-tools#5-5-hardware",
     "weak": false
   },
   {
@@ -22351,7 +22351,7 @@
       "Visual fault locator"
     ],
     "answer": 0,
-    "explanation": "Objective 5.5. A tap copies traffic from a link to an analyzer. Port mirroring does the same job inside a switch.",
+    "explanation": "Why: Network tap provides a copy of traffic crossing a link to a monitoring device, such as a protocol analyzer.\nOther option — Cable tester: checks wiring and continuity.\nOther option — Toner: identifies a cable using a tracing signal.\nOther option — Visual fault locator: finds visible-light escapes in fiber.\nMemory hook: A tap is an observation window; the analyzer is the observer.\nCommon trap: Capturing traffic is different from analyzing it. Installing a tap may interrupt the link; the question describes observation once installed.\nRelated concept: /notes/n10-monitoring-technologies#3-2-traffic",
     "weak": false
   },
   {
@@ -22659,7 +22659,7 @@
       "Crosstalk on a copper pair"
     ],
     "answer": 0,
-    "explanation": "Objective 5.2. An incorrect cable type causes this: single-mode and multimode fiber must match the transceivers, and a mismatch causes heavy loss or no link.",
+    "explanation": "Why: Incorrect cable type matches the stated mismatch: the installed fiber must suit the transceivers’ optical specifications.\nOther option — An administratively down port: intentionally disabled by configuration, not a fiber-type mismatch.\nOther option — A duplicate IP address: an addressing conflict, not mismatched optical media.\nOther option — Crosstalk on a copper pair: interference between copper circuits, not this fiber issue.\nMemory hook: Match both ends and the path: optic → fiber → optic.\nCommon trap: A connector fitting physically does not prove the optical media is compatible.\nRelated concept: /notes/n10-troubleshoot-physical#5-2-cable",
     "weak": false
   },
   {
@@ -22883,7 +22883,7 @@
       "Address pool exhaustion"
     ],
     "answer": 0,
-    "explanation": "Objective 5.3. Ethernet frames have no hop count, so a loop makes them circle until the network is overwhelmed.",
+    "explanation": "Why: A switching loop lets broadcasts circulate and multiply across the redundant Layer 2 path; Ethernet frames have no IP-style hop limit.\nOther option — An incorrect subnet mask: changes local-versus-remote IP decisions.\nOther option — A duplicate IP address: causes address conflicts, not this new physical loop.\nOther option — Address pool exhaustion: prevents new DHCP leases; it does not create a cable loop.\nMemory hook: Two connected doors form a circle; a broadcast keeps taking another lap.\nCommon trap: A switching storm is not fixed by changing an IP address or subnet mask.\nRelated concept: /notes/n10-troubleshoot-services#5-3-stp",
     "weak": false
   },
   {
@@ -22897,7 +22897,7 @@
       "Power over Ethernet"
     ],
     "answer": 1,
-    "explanation": "Objective 5.3. Spanning Tree Protocol blocks redundant paths to prevent loops. With it disabled, redundant links create a switching loop.",
+    "explanation": "Why: Spanning Tree Protocol creates a loop-free Layer 2 topology by blocking redundant forwarding paths.\nOther option — VTP: distributes VLAN configuration on supporting Cisco devices.\nOther option — Port security: restricts source MAC addresses on a port.\nOther option — Power over Ethernet: supplies electrical power to attached devices.\nMemory hook: STP closes one road in a circle while leaving a backup route available.\nCommon trap: Redundancy is useful only when forwarding loops are prevented.\nRelated concept: /notes/n10-troubleshoot-services#5-3-stp",
     "weak": false
   },
   {
@@ -22911,7 +22911,7 @@
       "The switch with the highest MAC address"
     ],
     "answer": 1,
-    "explanation": "Objective 5.3. The lowest bridge ID wins the election. Priority is compared first, then the lowest MAC address.",
+    "explanation": "Why: The switch with the lowest bridge ID becomes root. The ID includes bridge priority, an extended system ID where used, and the switch MAC address.\nOther option — The switch with the most ports: port count is not the election criterion.\nOther option — The first switch that was powered on: startup order does not determine the final winner.\nOther option — The switch with the highest MAC address: with equal priority/system ID, the lowest MAC wins.\nMemory hook: Compare ID numbers like race times: lower wins.\nCommon trap: A low MAC alone does not beat a better bridge priority.\nRelated concept: /notes/n10-troubleshoot-services#5-3-stp",
     "weak": false
   },
   {
@@ -22925,7 +22925,7 @@
       "Designated port"
     ],
     "answer": 0,
-    "explanation": "Objective 5.3. Each non-root switch has one root port toward the root bridge.",
+    "explanation": "Why: Root port is the non-root switch’s selected best path toward the root bridge, based first on path cost.\nOther option — Alternate port: provides a backup path toward the root in RSTP.\nOther option — Disabled port: does not participate in forwarding.\nOther option — Designated port: provides a segment’s selected forwarding path toward the root; it is a different role.\nMemory hook: Root bridge is the destination; root port is this switch’s chosen exit toward it.\nCommon trap: The root bridge itself has no root port in that spanning-tree instance.\nRelated concept: /notes/n10-troubleshoot-services#5-3-stp",
     "weak": false
   },
   {
@@ -23415,7 +23415,7 @@
       "Rack diagram"
     ],
     "answer": 0,
-    "explanation": "Objective 3.1. A cable map ties each wall jack to its patch panel position and switch port. The other documents do not trace that path.",
+    "explanation": "Why: Cable map records physical cable endpoints, tying the wall jack to a patch-panel position and switch port.\nOther option — Wireless heat map: shows wireless coverage or signal conditions.\nOther option — Layer 3 diagram: shows logical IP networks and routing.\nOther option — Rack diagram: shows equipment placement in the rack, not necessarily individual cable endpoints.\nMemory hook: Follow a parcel label: jack → panel → port.\nCommon trap: Physical location, logical connectivity and wireless coverage require different documents.\nRelated concept: /notes/n10-org-documentation#3-1-diagrams",
     "weak": false
   },
   {
@@ -24031,7 +24031,7 @@
       "Mean time between failures"
     ],
     "answer": 1,
-    "explanation": "Objective 3.3. The recovery point objective is the maximum data loss measured backward from the failure.",
+    "explanation": "Why: Recovery point objective limits acceptable data loss, expressed as time before the disruption: here, 15 minutes of transactions.\nOther option — Mean time to repair: average time spent repairing failures.\nOther option — Recovery time objective: target duration for restoring service after disruption.\nOther option — Mean time between failures: average operating time between failures.\nMemory hook: RPO looks backward for missing data; RTO looks forward to restored service.\nCommon trap: A 15-minute data-loss limit is not a 15-minute downtime limit.\nRelated concept: /notes/n10-disaster-recovery#3-3-metrics",
     "weak": false
   },
   {
@@ -24395,7 +24395,7 @@
       "Management plane"
     ],
     "answer": 0,
-    "explanation": "Objective 1.8. The data plane, also called the infrastructure layer, does the forwarding.",
+    "explanation": "Why: Data plane forwards packets or frames using forwarding information already available to the device.\nOther option — Control plane: calculates paths and builds forwarding information.\nOther option — Application plane: expresses application requirements or policy to an SDN controller.\nOther option — Management plane: configures and monitors the system.\nMemory hook: Control draws the map; data follows it; management maintains the equipment.\nCommon trap: Deciding a route and forwarding a packet are separate jobs.\nRelated concept: /notes/n10-sdn-overlay#1-8-sdn",
     "weak": false
   },
   {
@@ -24731,7 +24731,7 @@
       "Only guests are verified when they connect to the wireless network"
     ],
     "answer": 2,
-    "explanation": "Objective 1.8. Zero trust removes the assumption that internal means trusted.",
+    "explanation": "Why: “No request is trusted by default, regardless of network location” fits zero trust: access needs explicit authorization.\nOther option — VPN users never checked again: a tunnel secures transport, not permanent trust.\nOther option — Everything inside trusted after login: perimeter membership does not establish ongoing authorization.\nOther option — Only guests verified: zero trust also applies to staff, devices and services.\nMemory hook: A building badge is checked at the resource’s door, not accepted forever at the street gate.\nCommon trap: Internal location alone is not evidence of trustworthiness.\nRelated concept: /notes/n10-zerotrust-iac#1-8-zta",
     "weak": false
   },
   {
@@ -25123,7 +25123,7 @@
       "Full mesh"
     ],
     "answer": 1,
-    "explanation": "Objective 1.6. A star topology connects every device to a central device, typically a switch.",
+    "explanation": "Why: Star connects each endpoint to a central device, such as the switch in this question.\nOther option — Bus: devices share a backbone medium.\nOther option — Ring: devices connect around a closed loop.\nOther option — Full mesh: each device has a direct connection to every other device.\nMemory hook: Draw spokes meeting at a hub: that is a star.\nCommon trap: A central switch describes topology, not a guarantee that the network has no single failure point.\nRelated concept: /notes/n10-topologies-architecture#1-6-topologies",
     "weak": false
   },
   {
@@ -25557,7 +25557,7 @@
       "QSFP28"
     ],
     "answer": 2,
-    "explanation": "Objective 1.5. SFP+ is the same size as SFP but supports 10 Gbps.",
+    "explanation": "Why: SFP+ is the SFP-sized form factor associated here with 10 Gbps Ethernet.\nOther option — SFP: commonly 1 Gbps Ethernet, not the 10 Gbps choice here.\nOther option — SFP28: supports 25 Gbps Ethernet in a similar-sized module.\nOther option — QSFP28: a larger quad-lane form factor commonly used for 100 Gbps.\nMemory hook: For these Ethernet generations: SFP 1 → SFP+ 10 → SFP28 25.\nCommon trap: A matching physical size does not guarantee a port supports the module’s rate.\nRelated concept: /notes/n10-transceivers-fiber#1-5-transceivers",
     "weak": false
   },
   {
@@ -26369,7 +26369,7 @@
       "23"
     ],
     "answer": 0,
-    "explanation": "Objective 1.4. FTP control connection uses port 21 by default.",
+    "explanation": "Why: 21 is FTP’s default TCP control port, used for commands and replies.\nOther option — 69: TFTP’s initial UDP request port, not FTP control.\nOther option — 22: SSH, including SFTP over SSH.\nOther option — 23: Telnet remote terminal access.\nMemory hook: FTP has a command desk on 21; file data uses a separate connection.\nCommon trap: FTP control and FTP data are separate; SFTP is a different protocol.\nRelated concept: /notes/n10-ports-reference#1-4-ports-core",
     "weak": false
   },
   {
@@ -27069,7 +27069,7 @@
       "Network management station"
     ],
     "answer": 3,
-    "explanation": "Objective 3.2. The manager, or network management station, polls devices and shows the data.",
+    "explanation": "Why: Network management station is the SNMP manager that polls managed devices and collects their responses.\nOther option — Agent: device-side software answering management requests.\nOther option — MIB: defines managed objects and their identifiers.\nOther option — Trap: an unsolicited notification sent by a device.\nMemory hook: Manager asks; agent answers; MIB is the dictionary; trap rings the alarm.\nCommon trap: A notification is not a polling station, and a dictionary does not send requests.\nRelated concept: /notes/n10-monitoring-technologies#3-2-snmp",
     "weak": false
   },
   {
@@ -28091,7 +28091,7 @@
       "Offer, Discover, Acknowledge, Request"
     ],
     "answer": 1,
-    "explanation": "Objective 3.4. The exchange is Discover, Offer, Request, Acknowledge (DORA). The answer is Discover, Offer, Request, Acknowledge.",
+    "explanation": "Why: Discover, Offer, Request, Acknowledge describes initial DHCPv4 allocation: find servers, receive an offer, select it, then receive confirmation.\nOther option — Discover, Request, Offer, Acknowledge: requests before receiving an offer.\nOther option — Request, Offer, Discover, Acknowledge: starts at selection rather than discovery.\nOther option — Offer, Discover, Acknowledge, Request: offers before discovery and confirms before selection.\nMemory hook: DORA: Discover a room, hear an Offer, Request it, get Acknowledgement.\nCommon trap: Renewal can use a shorter exchange; this question asks the initial four-message sequence.\nRelated concept: /notes/n10-dhcp-ipam-time#3-4-dhcp",
     "weak": false
   },
   {
@@ -30779,7 +30779,7 @@
       "Reverse proxy"
     ],
     "answer": 2,
-    "explanation": "Objective 1.2. An IDS is passive and alerts. The answer is IDS.",
+    "explanation": "Why: IDS detects suspicious activity and alerts; it does not itself block traffic in the passive role described.\nOther option — IPS: prevention can block traffic, commonly inline.\nOther option — Load balancer: distributes requests among servers.\nOther option — Reverse proxy: receives requests on behalf of backend servers.\nMemory hook: IDS is the alarm; IPS can act as the gate.\nCommon trap: Detection and prevention are different actions, even when one product supports both.\nRelated concept: /notes/n10-appliances-functions#1-2-security",
     "weak": false
   },
   {
@@ -31087,7 +31087,7 @@
       "DHCP snooping"
     ],
     "answer": 2,
-    "explanation": "Objective 4.3. Port security caps and tracks MACs per port. The answer is Port security.",
+    "explanation": "Why: Port security limits or learns permitted source MAC addresses on a switch port, subject to platform configuration.\nOther option — Dynamic ARP inspection: validates ARP bindings rather than setting a MAC admission limit.\nOther option — Private VLAN: restricts communication between ports within a VLAN.\nOther option — DHCP snooping: filters DHCP messages and builds binding information.\nMemory hook: Port security is a port’s MAC guest list.\nCommon trap: A MAC limit is not proof of device identity; MAC addresses can be spoofed.\nRelated concept: /notes/n10-security-features-43#4-3-controls",
     "weak": false
   },
   {
