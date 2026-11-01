@@ -367,10 +367,12 @@
       "topics": [
         "n10-ch9"
       ],
-      "statement": "Route selection: longest prefix, then lowest AD, then lowest metric",
-      "source": "Chapter 9 notes (objective 2.1)",
+      "statement": "Forwarding uses longest-prefix match among installed routes; Cisco AD compares usable same-prefix route sources during installation, after protocol-specific path selection",
+      "source": "N10-009 2.1; Cisco Understand Administrative Distance, Routing Protocol Best Path Selection / RIB Route Comparison / Longest Prefix Match (Forwarding), retrieved 2026-11-01: https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html",
       "require": [
-        "prefix length[^\\n]{0,100}administrative distance[^\\n]{0,100}metric"
+        "Forwarding:[^\\n]{0,120}longest matching prefix",
+        "Route installation:[^\\n]{0,350}lowest administrative distance",
+        "Do not compare raw metrics from different protocols"
       ],
       "forbid": [
         {
@@ -452,20 +454,30 @@
       "topics": [
         "n10-ch11"
       ],
-      "statement": "STP is 802.1D, RSTP is 802.1w; default port state is blocking; convergence takes 50 seconds",
-      "source": "Chapter 11 notes and written lab",
+      "statement": "STP is 802.1D, RSTP is 802.1w; default port state is blocking; topology-change convergence ~50 s (MaxAge 20 s + Listening 15 s + Learning 15 s); new designated port (newly cabled) ~30 s (Listening + Learning only)",
+      "source": "N10-009 2.2 / 5.3; Cisco PortFast Background Information https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10586-65.pdf; STP troubleshooting Packet Corruption https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10556-16.html; default timers https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/19120-122.html; retrieved 2026-11-01",
       "require": [
         "802\\.1D",
         "802\\.1w",
-        "default state[^\\n]{0,40}blocking"
+        "default state[^\\n]{0,40}blocking",
+        "new designated port normally reaches forwarding in about 30 seconds",
+        "recovery case about 50 seconds"
       ],
       "numeric": [
         {
           "patterns": [
-            "(\\d+) seconds for STP"
+            "recovery case about (\\d+) seconds"
           ],
           "allowed": [
             50
+          ]
+        },
+        {
+          "patterns": [
+            "new designated port normally reaches forwarding in about (\\d+) seconds"
+          ],
+          "allowed": [
+            30
           ]
         }
       ],
@@ -477,6 +489,30 @@
         {
           "pattern": "\\bSTP[^\\n]{0,10}\\(802\\.1w\\)",
           "reason": "STP is 802.1D"
+        }
+      ]
+    },
+    {
+      "id": "n10-eigrp-default-metric",
+      "topics": ["n10-ch10"],
+      "statement": "Classic EIGRP uses bandwidth and delay by default; load and reliability are not active with default K-values",
+      "source": "N10-009 2.1; RFC 7868 section 5.5, retrieved 2026-11-01: https://www.rfc-editor.org/rfc/rfc7868#section-5.5",
+      "require": [
+        "By default K1 \\(bandwidth\\) and K3 \\(delay\\)",
+        "load and reliability are not used unless explicitly configured"
+      ],
+      "kinds": ["notes"]
+    },
+    {
+      "id": "n10-cos-values-not-queues",
+      "topics": ["n10-ch11"],
+      "statement": "The 3-bit CoS field has eight priority values, not a universal eight hardware queues",
+      "source": "N10-009 1.2 / 2.2 supporting context; Cisco Catalyst 2960-CX/3560-CX IOS 15.2(3)E QoS guide, Restrictions for QoS; retrieved 2026-11-01: https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960cx_3650cx/software/release/15-2_3_e/configuration/guide/b_1523e_consolidated_2960cx_3560cx_cg/b_consolidated_152ex_2960-X_cg_chapter_011100.html",
+      "require": ["eight values", "number of queues implemented depends on the platform"],
+      "forbid": [
+        {
+          "pattern": "(?:maps|mapping) to eight queues",
+          "reason": "CoS values and hardware queues are not necessarily one-to-one"
         }
       ]
     },
@@ -638,7 +674,7 @@
         "n10-ch10"
       ],
       "statement": "Split horizon: a router does not advertise a route back out the interface it learned it on",
-      "source": "Chapter 10 notes (added with the split horizon section; confirm against the book)",
+      "source": "RFC 1058 section 2.2.1, simple split horizon; https://www.rfc-editor.org/rfc/rfc1058",
       "require": [
         "split horizon",
         "interface"
@@ -1150,7 +1186,7 @@
     "q-n10c11-01": "Lower latency and higher bandwidth, with frames sent only where needed",
     "q-n10c11-02": "That 00:aa is reachable through port 3, learned from the source address",
     "q-n10c11-03": "Floods the frame to all ports in VLAN 20 only, not other VLANs",
-    "q-n10c11-04": "More broadcast domains and more collision domains than before the split",
+    "q-n10c11-04": "More broadcast domains, with no change to the number of collision domains",
     "q-n10c11-05": "VLAN 1 is protected by IOS, as are VLANs 1002 to 1005, so it cannot be deleted",
     "q-n10c11-06": "Static VLANs, configured manually while the node stays unaware of it",
     "q-n10c11-07": "Plain frames, because the VLAN tag is removed before leaving the port",
@@ -1158,10 +1194,10 @@
     "q-n10c11-09": "A 12-bit VLAN ID inside the 4-byte tag, after the source MAC address",
     "q-n10c11-10": "802.1Q, the open-standard trunking protocol",
     "q-n10c11-11": "The one with the lowest MAC address, since the priorities tie",
-    "q-n10c11-12": "The port starts in blocking and needs 50 seconds to reach forwarding",
+    "q-n10c11-12": "The port starts in blocking and needs about 30 seconds to reach forwarding",
     "q-n10c11-13": "Create a new VLAN, add a routed SVI, and apply ACLs on the VLAN interface",
     "q-n10c11-14": "Port security, which caps the MAC addresses allowed on the port",
-    "q-n10c11-15": "CoS, a 3-bit field in the 802.1Q tag that maps to eight queues",
+    "q-n10c11-15": "CoS, a 3-bit field in the 802.1Q tag with eight priority values",
     "q-n10c11-16": "802.3at, the PoE standard delivering 25.5 watts of power",
     "q-n10c11-17": "VTP, which copies the VLAN database from the server switch",
     "q-n10c11-18": "A trunk carries many MAC addresses, so use an access port instead",
@@ -1206,6 +1242,8 @@
     "q-n10c10-21": "The internal route, because its AD of 90 is lower",
     "q-n10c10-22": "Never uses it, because the source is unknown",
     "q-n10c10-23": "Administrative distance",
+    "q-n10c10-24": "It does not advertise the route out Serial0, but still advertises it out its other interfaces",
+    "q-n10c10-25": "A route being advertised back to the router that sent it, which can create a routing loop",
     "q-n10sec-01": "Authentication",
     "q-n10sec-02": "Nonrepudiation",
     "q-n10sec-03": "The server's public key",

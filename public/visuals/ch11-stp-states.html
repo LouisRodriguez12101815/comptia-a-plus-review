@@ -46,8 +46,8 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
 <body>
 <div class="wrap">
 
-<h1>STP port states and the 50-second wait</h1>
-<p class="lede">An 802.1D port starts in the blocking state. Moving a port from blocking to forwarding takes 50 seconds. Drag the slider or press Play to watch the port move through each state.</p>
+<h1>Classic STP recovery: a 50-second scenario</h1>
+<p class="lede">This example starts when a blocked port loses its last superior BPDU: 20 seconds of max-age expiry, then 15 seconds listening and 15 seconds learning. A newly active designated port without PortFast normally needs only the two forward-delay periods, about 30 seconds. Default classic 802.1D timers are assumed.</p>
 <div class="card">
   <div style="display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--line)" aria-hidden="true">
     <div style="flex:20;background:var(--bad-soft);padding:8px 10px;font-size:13px"><strong>Blocking</strong><br>20 s</div>
@@ -55,11 +55,11 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute
     <div style="flex:15;background:var(--accent-soft);padding:8px 10px;font-size:13px"><strong>Learning</strong><br>15 s</div>
   </div>
   <div style="position:relative;height:14px;margin-top:4px" aria-hidden="true"><div id="mark" style="position:absolute;top:0;left:0;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid var(--ink);transform:translateX(-7px)"></div></div>
-  <label class="lab" for="t">Seconds since the port came up: <span id="tv">0</span></label>
+  <label class="lab" for="t">Seconds since the last superior BPDU: <span id="tv">0</span></label>
   <input id="t" type="range" min="0" max="50" value="0" style="width:100%">
   <div class="ctrls" style="margin-top:8px"><button type="button" id="play">Play</button><button type="button" id="reset">Reset</button></div>
   <div class="out" id="out" aria-live="polite"></div>
-  <p class="answer"><strong>Written lab 7 and 8.</strong> Blocking is the default state for an 802.1D STP port, and convergence from blocking to forwarding takes 50 seconds (20 s + 15 s + 15 s).</p>
+  <p class="answer"><strong>Do not memorize 50 seconds for every port.</strong> Here the recovery waits for max age: 20 + 15 + 15 = 50 seconds. A new designated port with default timers and no PortFast normally spends 15 seconds listening and 15 seconds learning. Sources: Cisco <a href="https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10586-65.pdf">PortFast background</a> and <a href="https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10556-16.html">STP troubleshooting, Packet Corruption</a>. N10-009 2.2 / 5.3.</p>
 </div>
 
 </div>
@@ -70,7 +70,7 @@ function state(t){
   if(t>=50)return['Forwarding','The port sends and receives data frames. Convergence is complete.'];
   if(t>=35)return['Learning','The port builds its MAC address table but still does not forward data frames.'];
   if(t>=20)return['Listening','The port takes part in the STP election and processes BPDUs, but does not learn MAC addresses or forward data.'];
-  return['Blocking','The default state. The port receives BPDUs but does not forward data frames, which prevents loops.'];
+  return['Blocking','In this scenario, previously received superior BPDU information is aging out. No user data is forwarded. This is not a mandatory 20-second wait on every new host port.'];
 }
 function draw(){
   const t=Number(range.value);tv.textContent=t;

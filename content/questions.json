@@ -2938,15 +2938,16 @@
   {
     "id": "q-n10c11-04",
     "topicId": "n10-ch11",
+    "objectiveIds": { "n10-009": ["2.2"] },
     "prompt": "An admin splits one large flat switched network into three VLANs without adding hardware. What is the direct result?",
     "choices": [
-      "More broadcast domains, with no change to the number of collision domains",
+      "More broadcast domains and more collision domains than before the split",
       "The network keeps a single broadcast domain but gains three times the bandwidth",
       "Fewer broadcast domains, because the traffic is now grouped by function",
-      "More broadcast domains and more collision domains than before the split"
+      "More broadcast domains, with no change to the number of collision domains"
     ],
     "answer": 3,
-    "explanation": "Per the chapter, adding VLANs increases both the number of broadcast domains and the number of collision domains. Saying only broadcast domains grow is tempting, but the chapter states collision domains rise too.",
+    "explanation": "More broadcast domains, with no change to the number of collision domains: VLANs segment traffic logically and create separate broadcast domains, but without adding physical ports each full-duplex switch port remains its own collision domain regardless of VLAN assignment.",
     "weak": false
   },
   {
@@ -3050,15 +3051,16 @@
   {
     "id": "q-n10c11-12",
     "topicId": "n10-ch11",
-    "prompt": "A new PC is cabled to a port running STP (802.1D) and cannot reach the network for a while. What is the best explanation?",
+    "objectiveIds": { "n10-009": ["2.2"] },
+    "prompt": "A new PC is cabled to a designated port running classic STP (802.1D) with default timers and PortFast disabled. It cannot reach the network immediately. What is the best explanation?",
     "choices": [
       "The port starts in blocking and RSTP deliberately adds a 50 second wait",
       "The port starts in forwarding and then spends 50 seconds learning MACs",
-      "The port starts in blocking and needs about 5 seconds to reach forwarding",
-      "The port starts in blocking and needs 50 seconds to reach forwarding"
+      "The port starts in blocking and needs 50 seconds to reach forwarding",
+      "The port starts in blocking and needs about 30 seconds to reach forwarding"
     ],
     "answer": 3,
-    "explanation": "Blocking is the default STP port state, and convergence from blocking to forwarding takes 50 seconds. RSTP (802.1w) is the faster version, so it would not add that delay.",
+    "explanation": "The port starts in blocking and needs about 30 seconds to reach forwarding: a new designated port (the PC sends no BPDUs so the switch port wins immediately) transitions through Listening (15 s) and Learning (15 s) without waiting for MaxAge. The 50-second path applies to a previously blocked port that must wait for MaxAge (20 s) after losing superior BPDUs. RSTP (802.1w) is faster and would not add that delay.",
     "weak": false
   },
   {
@@ -3092,15 +3094,16 @@
   {
     "id": "q-n10c11-15",
     "topicId": "n10-ch11",
+    "objectiveIds": { "n10-009": ["2.2"] },
     "prompt": "A VoIP rollout needs prioritization at layer 2 using a value carried in the VLAN tag. Which method fits?",
     "choices": [
       "DiffServ, a layer 3 marking that is carried inside the 802.1Q tag",
-      "CoS, a 3-bit field in the 802.1Q tag that maps to eight queues",
+      "CoS, a 3-bit field in the 802.1Q tag with eight priority values",
       "ToS, a layer 3 marking that is carried in the IP header",
       "CoS, a 12-bit field in the 802.1Q tag that maps to eight queues"
     ],
     "answer": 1,
-    "explanation": "CoS is the layer 2 QoS method, a 3-bit field in the 802.1Q tag mapping to eight queues. ToS and DiffServ are layer 3 methods, and 12 bits is the size of the VLAN ID, not CoS.",
+    "explanation": "CoS, a 3-bit field in the 802.1Q tag with eight priority values, is the Layer 2 marking requested. The number of hardware queues and their mappings depend on the platform and policy; eight values do not guarantee eight queues. ToS and DiffServ are Layer 3 methods; 12 bits identifies the VLAN ID, not CoS.",
     "weak": false
   },
   {
