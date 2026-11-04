@@ -1,0 +1,16 @@
+{
+  "kind": "revised",
+  "facts": [
+    { "claim": "Ethernet frames carry no hop count or time to live, so a looping broadcast frame circles until a port refuses it.", "objectives": ["n10-009 5.3"], "sources": ["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"] },
+    { "claim": "Spanning Tree Protocol elects the root bridge with the lowest bridge ID (priority first, then lowest MAC address) and blocks redundant paths to prevent loops.", "objectives": ["n10-009 5.3"], "sources": ["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"] },
+    { "claim": "Classic 802.1D port states are blocking, listening, learning and forwarding; only forwarding passes user traffic, and learning builds the MAC table without forwarding.", "objectives": ["n10-009 5.3"], "sources": ["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"] },
+    { "claim": "Classic 802.1D defaults are a 2 second hello, 15 second forward delay and 20 second max age, so a direct failure recovers in about 30 seconds and an indirect failure in about 50.", "objectives": ["n10-009 5.3"], "sources": ["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"] }
+  ],
+  "simplifications": [
+    "Harbor Street is an invented example LAN. Numbers marked assumed are teaching values.",
+    "The simulator floods each broadcast out every forwarding port and ignores VLANs, queuing and switch CPU limits; link load is an arbitrary toy scale.",
+    "Time is slowed so the 30 second STP walk takes about 12 real seconds.",
+    "The simulator shows classic STP. Rapid STP converges faster and uses discarding, learning and forwarding states.",
+    "BPDU protection and edge-port settings in ADR-003 go beyond the site's current notes."
+  ]
+}
