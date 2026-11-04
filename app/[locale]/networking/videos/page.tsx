@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
+import { conceptVideoPaths, conceptVideosByObjective } from "@/lib/concept-videos";
 
 const EXAM = "n10-009";
 
@@ -15,6 +17,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("networkPlusVideos");
+  const tc = await getTranslations("conceptVideos");
   const domains = objectives.exams.find((exam) => exam.code === EXAM)?.domains ?? [];
 
   return (
@@ -57,6 +60,38 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           );
         })}
       </ol>
+      <section className="space-y-4" aria-labelledby="concept-videos">
+        <h2 id="concept-videos" className="scroll-mt-6 text-2xl font-semibold text-white">{tc("indexHeading")}</h2>
+        <p className="max-w-3xl text-slate-300">{tc("indexIntro")}</p>
+        {conceptVideosByObjective().map(({ objective, videos }) => {
+          const title = domains.flatMap((d) => d.objectives).find((o) => o.id === objective)?.title;
+          return (
+            <div key={objective} className="space-y-2">
+              <h3 className="text-lg font-medium text-slate-200">
+                <span className="font-mono text-teal-300">{objective}</span> {title}
+              </h3>
+              <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {videos.map((video) => (
+                  <li key={video.slug} className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60">
+                    <Link href={`/networking/videos/${video.slug}`} className="block">
+                      <Image
+                        src={conceptVideoPaths(video.slug).poster}
+                        alt=""
+                        width={640}
+                        height={360}
+                        unoptimized
+                        className="aspect-video w-full object-cover"
+                      />
+                      <span className="block p-3 text-sm font-medium text-teal-300 underline-offset-4 hover:underline">{video.title}</span>
+                      <span className="block px-3 pb-3 text-xs text-slate-400">{tc("seconds", { seconds: Math.round(video.duration) })}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </section>
       <p>
         <Link href="/networking#topics" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">
           {t("backToTopics")}
