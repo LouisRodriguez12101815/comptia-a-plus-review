@@ -1,0 +1,17 @@
+{
+  "kind": "revised",
+  "facts": [
+    { "claim": "Classful addressing fixes the network size by the first octet: Class A /8, Class B /16 (65,534 hosts), Class C /24 (254 hosts). Usable hosts in a block are 2 to the power of the host bits minus 2.", "objectives": ["n10-009 1.7"], "sources": ["https://www.rfc-editor.org/rfc/rfc791"] },
+    { "claim": "CIDR replaced classful allocation with prefixes of any length and aggregation of routes; VLSM gives each segment a block sized to its need.", "objectives": ["n10-009 1.7"], "sources": ["https://www.rfc-editor.org/rfc/rfc4632"] },
+    { "claim": "RFC 1918 reserves 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16 for private use; they are not routed on the Internet.", "objectives": ["n10-009 1.7"], "sources": ["https://www.rfc-editor.org/rfc/rfc1918"] },
+    { "claim": "PAT lets many inside hosts share one public address, telling conversations apart by port number in a translation table.", "objectives": ["n10-009 1.7"], "sources": ["https://www.rfc-editor.org/rfc/rfc3022"] },
+    { "claim": "A client that cannot reach DHCP configures a 169.254.x.x APIPA address with mask 255.255.0.0.", "objectives": ["n10-009 1.7"], "sources": ["https://www.rfc-editor.org/rfc/rfc3927"] }
+  ],
+  "simplifications": [
+    "Meridian Freight, its hosts and its counts are invented for teaching.",
+    "The allocation tool ignores growth, reserved gateway addresses and non-power-of-two real-world constraints.",
+    "The NAT table model assumes one public address, one protocol and about 64,512 source ports. Real devices differ.",
+    "The history is compressed. RFC 1519 (1993) was later replaced by RFC 4632, and the free IPv4 pool ran out in February 2011.",
+    "The /31 note (RFC 3021) and the double-NAT behavior go beyond the site's current notes."
+  ]
+}

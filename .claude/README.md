@@ -27,6 +27,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 | [exam-visual-designer](skills/exam-visual-designer/SKILL.md) | A visual explains with paragraphs instead of a picture |
 | [hardware-diagram-designer](skills/hardware-diagram-designer/SKILL.md) | A hardware chapter needs a board map or part drill |
 | [network-diagram-designer](skills/network-diagram-designer/SKILL.md) | A networking visual, packet path or VLSM view |
+| [forensic-concept-investigator](skills/forensic-concept-investigator/SKILL.md) | A concept needs clarifying through failure, history and tradeoffs, in chat or as a case-file page |
 | [architecture-sad-designer](skills/architecture-sad-designer/SKILL.md) | The hardest concept of a high-weight domain needs an architecture document with diagrams and a simulator |
 | [learning-challenge-designer](skills/learning-challenge-designer/SKILL.md) | A practice mission with feedback and retries |
 | [rubric-audit](skills/rubric-audit/SKILL.md) | Grading how completely the notes and study material cover the official exam objectives, before an exam or after adding notes |
@@ -49,3 +50,4 @@ Agents run in their own context and report back. All are report-only; the caller
 | [visual-fact-auditor](agents/visual-fact-auditor.md) | A fact was corrected, or before a visual redraw |
 | [chapter-fact-reviewer](agents/chapter-fact-reviewer.md) | content-fact-check needs one reviewer per chapter |
 | [sad-reviewer](agents/sad-reviewer.md) | An architecture-document visual was built or changed |
+| [forensic-investigator](agents/forensic-investigator.md) | The forensic persona writes a case file for one concept, grounded in the notes and cited history |
