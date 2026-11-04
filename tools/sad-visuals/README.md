@@ -19,5 +19,8 @@ Current pages:
 | --- | --- | --- |
 | `n10-sad-zero-rpo.html` | N10-009 3.3 | `n10-disaster-recovery` |
 | `n10-sad-stp-broadcast-storm.html` | N10-009 5.3 | `n10-troubleshoot-services` |
+| `n10-case-ipv4-addressing.html` | N10-009 1.7 | `n10-ch8` |
 
-Both describe invented systems. Numbers are teaching values. The `.agents/` copies for other assistants are not updated by this folder.
+Add `"kind": "case-file"` to `meta.json` for a failure-first case file (see the `forensic-concept-investigator` skill). It uses four required sections instead of the five architecture sections.
+
+All pages describe invented systems or scenarios. Numbers are teaching values. The `.agents/` copies for other assistants are not updated by this folder.

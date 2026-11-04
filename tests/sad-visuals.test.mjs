@@ -10,6 +10,12 @@ const json = (rel) => JSON.parse(text(rel));
 const sources = readdirSync(new URL("tools/sad-visuals/sources/", root), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
 const trackVisuals = json("content/track-visuals.json");
 const objectiveKeys = new Set(json("content/objectives.json").exams.flatMap((e) => e.domains.flatMap((d) => d.objectives.map((o) => `${e.code} ${o.id}`))));
+const CASE_SECTIONS = [
+  "## 1. The Post-Mortem Case Study (The Smoking Gun)",
+  "## 2. Excavating the Strata (The Historical Context)",
+  "## 3. The Structural Scar Tissue (The Concept Revealed)",
+  "## 4. The Forensic Tradeoff (The Collateral Damage)",
+];
 const SECTIONS = [
   "## 1. Executive Summary & System Context",
   "## 2. Logical & Building Block View",
@@ -19,7 +25,7 @@ const SECTIONS = [
 ];
 
 test("there is at least one architecture document source", () => {
-  assert.ok(sources.length >= 2);
+  assert.ok(sources.length >= 3);
 });
 
 test("built pages match their sources", () => {
@@ -34,11 +40,12 @@ for (const slug of sources) {
   const md = text(`${dir}/SAD.md`);
   const diagrams = text(`${dir}/diagrams.js`);
   const meta = json(`${dir}/meta.json`);
+  const isCase = meta.kind === "case-file";
 
-  test(`${slug}: document starts with the title and has the five sections in order`, () => {
-    assert.match(md, /^# .+: System Architecture Document\n/);
+  test(`${slug}: document starts with the title and has its required sections in order`, () => {
+    assert.match(md, isCase ? /^# Case File [\d.]+: .+\n/ : /^# .+: System Architecture Document\n/);
     let at = -1;
-    for (const heading of SECTIONS) {
+    for (const heading of isCase ? CASE_SECTIONS : SECTIONS) {
       const i = md.indexOf(`\n${heading}\n`);
       assert.ok(i > at, `missing or out of order: ${heading}`);
       at = i;
@@ -47,11 +54,11 @@ for (const slug of sources) {
 
   test(`${slug}: every diagram marker has a mount call`, () => {
     const markers = [...md.matchAll(/<!--diagram:(\w+)-->/g)].map((m) => m[1]);
-    assert.ok(markers.length >= 5);
+    assert.ok(markers.length >= (isCase ? 3 : 5));
     for (const name of markers) assert.ok(diagrams.includes(`q('${name}')`), `no q('${name}') in diagrams.js`);
   });
 
-  test(`${slug}: every ADR has status, options, decision and consequences`, () => {
+  test(`${slug}: every ADR has status, options, decision and consequences`, { skip: isCase }, () => {
     const adrs = md.split(/\n#### ADR-/).slice(1);
     assert.ok(adrs.length >= 3);
     for (const adr of adrs) {
