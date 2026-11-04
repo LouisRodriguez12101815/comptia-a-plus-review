@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero RPO needs synchronous replication: architecture document</title>
+<style>
+:root{--bg:#0f1220;--panel:#171b2e;--panel2:#1e2340;--line:#3a4270;--text:#e8ebf7;--mute:#9aa3c7;--blue:#58a6ff;--teal:#3ddbb0;--yellow:#ffd166;--coral:#ff6b6b;--ok:#3ddbb0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{display:grid;grid-template-columns:240px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:24px 16px;border-right:1px solid var(--line);font-size:14px}
+nav a{display:block;color:var(--mute);text-decoration:none;padding:4px 0}
+nav a:hover{color:var(--text)}
+nav a.h2{color:var(--text);font-weight:600;margin-top:12px}
+main{padding:24px 32px 96px;min-width:0}
+h1{font-size:30px;line-height:1.2;margin:0 0 8px}
+h2{font-size:24px;margin:48px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:28px 0 6px;color:var(--blue)}
+h4{font-size:16px;margin:24px 0 6px;color:var(--yellow)}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+code{background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.88em;color:var(--teal)}
+blockquote{margin:12px 0;padding:10px 16px;border-left:4px solid var(--yellow);background:var(--panel)}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel2)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:16px 0}
+.fig svg{width:100%;height:auto;display:block}
+.cap{color:var(--mute);font-size:13px;margin:6px 2px 0}
+.ctl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:8px 0 12px;font-size:14px}
+.ctl label{display:flex;gap:8px;align-items:center}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--blue)}
+button.danger{border-color:var(--coral);color:var(--coral)}
+button.on{background:var(--blue);color:#0b1020;border-color:var(--blue)}
+.seg{display:inline-flex}.seg button{border-radius:0}.seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 12px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--mute);font-size:12px}
+.banner{margin-top:10px;padding:10px 14px;border-radius:8px;font-weight:600;display:none}
+.banner.good{display:block;background:#12372f;border:1px solid var(--teal);color:var(--teal)}
+.banner.bad{display:block;background:#3d1a22;border:1px solid var(--coral);color:var(--coral)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--mute);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+svg text{fill:var(--text);font-family:inherit}
+svg .m{fill:var(--mute)}
+@media(max-width:820px){.wrap{display:block}nav{display:none}main{padding:16px}}
+.banner.warn{display:block;background:#3a3216;border:1px solid var(--yellow);color:var(--yellow)}
+
+</style>
+</head>
+<body>
+<div class="wrap"><nav id="nav" aria-label="Document sections"></nav><main id="doc"><noscript>This document needs JavaScript to draw its diagrams.</noscript>Loading…</main></div>
+<script type="application/json" id="visual-facts">{"kind":"revised","facts":[{"claim":"Recovery point objective (RPO) is the maximum acceptable data loss, measured backward in time from the failure to the last good copy; a zero RPO needs synchronous replication.","objectives":["n10-009 3.3"],"sources":["https://www.postgresql.org/docs/current/warm-standby.html"]},{"claim":"With synchronous replication a commit is acknowledged only after a standby confirms it, so every commit pays at least one network round trip.","objectives":["n10-009 3.3"],"sources":["https://www.postgresql.org/docs/current/warm-standby.html"]},{"claim":"A hot site is continuously replicated and can take over in minutes; recovery time depends on the site tier.","objectives":["n10-009 3.3"],"sources":["https://www.comptia.org/certifications/network"]}],"simplifications":["Ledgerline is an invented example system. Every number is an assumed teaching value, not a measurement.","The simulator uses 5 microseconds per kilometer one way and ignores queuing, routing detours and jitter.","The failover time budget is a design budget, not a test result."]}</script>
+<script>
+window.SAD_MD = "# Ledgerline Payment Ledger: System Architecture Document\n\n## 1. Executive Summary & System Context\n\n### 1.1 Purpose and source material\n- Illustrative system. Built to teach Network+ N10-009 objective 3.3, \"Explain disaster-recovery concepts\".\n- Hardest idea in that objective: **a zero RPO forces synchronous replication, and synchronous replication costs latency and availability**.\n- Not a production design. Numbers marked \"assumed\" are teaching values, not measurements.\n\n| Input | Value (assumed) |\n|---|---|\n| Core problem solved | Payment ledger that never loses an acknowledged transaction when one site is lost |\n| Technical stack | PostgreSQL, stateless API servers, DNS-based global traffic manager, 3-node consensus store, object storage for backups |\n| Known constraints | RPO = 0 for acknowledged writes; RTO ≤ 15 min; inter-site RTT ≤ 5 ms; 2,000 TPS peak; encryption in transit and at rest |\n| Key integrations | Card processor API, bank settlement files, OIDC identity provider, monitoring and paging |\n\n### 1.2 System boundary\n- Begins at TLS termination on the traffic manager.\n- Ends at outbound calls to the card processor and the bank.\n- Inside: API tier, ledger database and standbys, failover manager, outbox worker, backups, observability agents.\n- Outside: merchant applications, identity provider, processor, bank, paging service.\n\n### 1.3 External dependencies\n\n| System or actor | Type | Direction | Protocol | Data | If it fails |\n|---|---|---|---|---|---|\n| Merchant application | Client system | In | HTTPS (TLS 1.2+), REST/JSON | Transfer requests | Merchant retries with same key |\n| Operations engineer | Human | In | HTTPS console behind SSO | Runbooks, failover approvals | Failover still automatic |\n| Identity provider | External system | Out | OIDC over HTTPS | Tokens, signing keys | New sign-ins fail; cached keys keep working until expiry |\n| Card processor | External system | Out | HTTPS REST | Authorization calls | Outbox retries later |\n| Bank settlement | External system | Out | SFTP batch files | Settlement files | Settlement delayed |\n| Monitoring and paging | External system | Out | HTTPS push, webhook | Metrics, alerts | Blind, but service continues |\n\n\u003c!--diagram:context-->\n\n### 1.4 Quality goals\n- **Durability:** zero loss of acknowledged transactions after loss of one site.\n- **Recovery:** service restored within 15 minutes (RTO).\n- **Latency:** p99 write ≤ 50 ms (assumed).\n- **Throughput:** 2,000 transactions per second at peak (assumed).\n\n### 1.5 Constraints and their consequences\n\n| Constraint | Consequence for the design |\n|---|---|\n| RPO = 0 | Commit waits for a second site (synchronous replication) |\n| RTO ≤ 15 min | Hot standby and automated promotion |\n| Inter-site RTT ≤ 5 ms | Sites close together, about 100 km of fiber |\n| One site may be lost | Third site holds a tie-breaking vote |\n| Encryption everywhere | TLS on every hop, encrypted disks and backups |\n\n### 1.6 View map\n\n| Document section | arc42 | Kruchten 4+1 | C4 |\n|---|---|---|---|\n| 1 | Sections 1 to 3 | Scenarios (the \"+1\") | Level 1, System Context |\n| 2 | Section 5 | Logical view | Level 2 Containers, Level 3 Components |\n| 3 | Section 6 | Process view | Dynamic diagram |\n| 4 | Section 7 | Physical (deployment) view | Deployment diagram |\n| 5 | Section 9 | Decisions across all views | Not applicable |\n\n## 2. Logical & Building Block View\n\n### 2.1 Containers\n\n| Container | Responsibility | Technology (assumed) | Scales by |\n|---|---|---|---|\n| Traffic manager | Health-checked routing to the active site | DNS-based global load balancer | Managed service |\n| API tier | Authenticate, validate, write ledger entries | Stateless service, N nodes per site | Add nodes |\n| Ledger database (primary) | Single writer, durable ledger | PostgreSQL | Scale up |\n| Synchronous standbys DR-A, DR-B | Second-site copy, ready to promote | PostgreSQL streaming replicas | Fixed pair |\n| Failover manager and consensus store | Decide who is primary, prevent split brain | 3 nodes across 3 sites | Fixed |\n| Outbox worker | Forward committed transfers to the processor | Background worker | Add workers |\n| Backup store | Point-in-time recovery and ransomware defense | Object storage, versioned | Managed service |\n| Observability agent | Metrics, logs, traces | Agent on every node | One per node |\n\n\u003c!--diagram:containers-->\n\n### 2.2 Components inside the API tier\n- **Auth middleware:** validates OIDC token.\n- **Idempotency guard:** returns the stored result for a repeated key.\n- **Ledger service:** writes balanced debit and credit rows in one transaction.\n- **Outbox writer:** records the follow-up call in the same transaction.\n- **Health endpoint:** reports \"writes unavailable\" when commits cannot reach a standby.\n\n### 2.3 Interfaces and contracts\n\n| From to | Style | Protocol | Contract |\n|---|---|---|---|\n| Merchant to API | Synchronous | HTTPS REST | `POST /v1/transfers` with required `Idempotency-Key`; 201 only after the commit is durable on two sites; 409 if key reused with a different body; 503 with `Retry-After` when writes are unavailable |\n| API to primary | Synchronous | SQL over TLS | One transaction per transfer; `COMMIT` returns only after standby acknowledgment |\n| Primary to standbys | Streaming | WAL replication over TLS | Commit waits for a flush acknowledgment from any 1 of 2 DR standbys |\n| Outbox worker to processor | Asynchronous | HTTPS REST | At-least-once delivery; processor call carries the transfer id as its idempotency key |\n| Failover manager to nodes | Heartbeat | TLS to consensus store | Leader lease with a 10 second time to live |\n\n### 2.4 Cross-cutting concerns\n- **Authentication and authorization:** OIDC tokens at the edge; mutual TLS between services.\n- **Logging:** structured JSON; one trace id per request; no card numbers in logs.\n- **Error handling:** bounded retries; exponential backoff with jitter; circuit breaker toward the processor.\n- **Retries are safe:** every write carries an idempotency key.\n- **Data formats:** money as integer minor units plus ISO 4217 currency; timestamps in UTC.\n- **Time:** NTP on every node; alarm on clock skew.\n- **Configuration:** identical immutable images at both sites.\n\n## 3. Runtime & Process View\n\n### 3.1 Critical flow: create a transfer\n1. Merchant sends `POST /v1/transfers` with an `Idempotency-Key`.\n2. Traffic manager routes to a healthy API node in the active site.\n3. API validates the token and the body.\n4. Idempotency guard checks for a prior result.\n5. API opens a transaction and writes debit, credit, and outbox rows.\n6. API issues `COMMIT`.\n7. Primary flushes the log to its local disk.\n8. Primary streams the log to the DR standbys.\n9. One standby flushes to its disk and acknowledges.\n10. Primary receives the first acknowledgment and completes the commit.\n11. API returns 201.\n12. Outbox worker forwards the transfer to the processor later.\n\n> **Rule:** the merchant sees success only after step 10. That is what makes the acknowledgment a promise.\n\n\u003c!--diagram:sequence-->\n\n### 3.2 Latency: why zero RPO is expensive\n- Light in fiber covers about 5 µs per km one way.\n- Commit latency ≈ local flush + round trip + remote flush.\n- 80 km path: round trip ≥ 0.8 ms (a lower bound; real routes are longer).\n- 1,000 km path: round trip ≥ 10 ms, so one session tops out near 100 commits per second.\n- Concurrency recovers throughput. Latency per transaction stays.\n- Asynchronous replication removes the round trip from the commit path.\n- The price: RPO becomes the replication lag, never zero.\n\n\u003c!--diagram:simulator-->\n\n### 3.3 Failure flows\n- **A. One DR standby fails:** commits continue on the other one; alert raised; no RPO impact.\n- **B. Both DR standbys unreachable:** primary stops completing commits, because RPO 0 cannot be met; API returns 503 with `Retry-After`. Switching to asynchronous mode needs human approval, because it ends the zero-RPO promise.\n- **C. Primary site lost:**\n  1. Leader lease expires after about 10 seconds.\n  2. Site B and the witness reach quorum.\n  3. Failover manager fences the old primary so it cannot accept writes.\n  4. DR-A replays any remaining log and is promoted.\n  5. DR-B follows the new primary.\n  6. Traffic manager health checks fail Site A and route to Site B.\n  7. API nodes reconnect.\n  8. Merchants retry unacknowledged requests with the same key; duplicates are detected.\n\n### 3.4 Consistency, concurrency, performance\n- Single writer; no multi-master conflicts.\n- Transfers use `SERIALIZABLE`; retry on SQLSTATE 40001.\n- Lock rows in a fixed order to avoid deadlocks.\n- Reporting reads may use a standby; lag of a few seconds is accepted.\n- Backpressure: bounded connection pool; 503 when the commit queue grows.\n\n## 4. Deployment View\n\n### 4.1 Topology\n\n| Node | Site | Count | Role |\n|---|---|---|---|\n| API server | A and B | 3 each | Serve traffic (active site only) |\n| Ledger primary | A | 1 | Single writer |\n| DR standby | B | 2 | Synchronous quorum members, promotion candidates |\n| Consensus node | A, B, Witness | 1 each | Leader election |\n| Traffic manager | Managed | 1 service | Route to active site |\n| Backup bucket | Third location | 1 | Point-in-time recovery |\n\n\u003c!--diagram:deployment-->\n\n### 4.2 Environments\n\n| Environment | Topology | Replication | Purpose |\n|---|---|---|---|\n| Development | Single node | None | Feature work |\n| Staging | Two sites, reduced size | Synchronous | Weekly failover test |\n| Production | Two sites plus witness | Synchronous, quorum 1 of 2 | Live traffic |\n\n### 4.3 Scaling boundaries\n- API tier scales out by adding nodes.\n- Database scales up; one primary is the write ceiling.\n- Beyond the ceiling: partition the ledger by tenant (needs its own decision record).\n- Synchronous commit wait grows with distance, not with CPU.\n\n### 4.4 Network isolation and firewalls\n- Four zones: public edge, application, data, management.\n- Only the traffic manager faces the internet.\n- Data zone accepts SQL only from the application zone.\n- Replication allowed only between data zones of Site A and Site B.\n- Management access through a bastion with SSO and recorded sessions.\n- Site-to-site links: two diverse fiber paths, encrypted.\n\n### 4.5 High availability and failover\n- Inside a site: dual power, dual top-of-rack switches, NIC teaming, anti-affinity.\n- Across sites: Site B is a hot site (continuously replicated, minutes to switch).\n- Witness site prevents split brain.\n- Failback is planned and manual, after the old site is rebuilt and resynchronized.\n\n| Failover step | Design budget (assumed, not measured) |\n|---|---|\n| Detect failure | 10 to 30 s |\n| Reach quorum and fence old primary | 30 s |\n| Promote standby | 60 s |\n| Shift traffic | 60 to 120 s |\n| Verify and reconcile | 5 min |\n| **Total (must stay under RTO)** | **under 15 min** |\n\n- Prove it with a tabletop exercise, a parallel test, then a full failover test.\n\n## 5. Architecture Decision Records & Tradeoffs\n\n#### ADR-001: Synchronous replication for ledger commits\n- **Status:** Accepted.\n- **Context:** Ledger acknowledgments are promises; RPO must be zero for a single-site loss.\n- **Option A, asynchronous streaming:** fast commits, no dependence on the link; RPO equals replication lag, never zero.\n- **Option B, nightly backup or log shipping:** cheapest; RPO measured in hours.\n- **Option C, synchronous replication:** zero loss of acknowledged commits; commit waits one round trip.\n- **Decision:** Option C.\n- **Consequences (+):** acknowledgment means durable on two sites.\n- **Consequences (−):** every commit pays the round trip; writes depend on the inter-site link.\n\n#### ADR-002: Quorum commit with two DR standbys (any 1 of 2)\n- **Status:** Accepted.\n- **Context:** One synchronous standby is a single point of failure for writes.\n- **Option A, one remote standby:** simple; if it fails, commits stall.\n- **Option B, local standby only:** fast; does not survive loss of the site.\n- **Option C, any 1 of 2 remote standbys:** survives one standby failure; costs a second remote server.\n- **Decision:** Option C.\n- **Consequences (+):** one standby can fail without stopping writes.\n- **Consequences (−):** more hardware; if both fail, writes stop by design.\n\n#### ADR-003: Metro distance between sites\n- **Status:** Accepted.\n- **Context:** Distance sets the round trip; the budget is 5 ms.\n- **Option A, same campus:** lowest latency; one fire or flood takes both.\n- **Option B, metro (about 100 km):** about 1 ms round trip; independent buildings and power.\n- **Option C, continental (1,000 km or more):** survives a regional disaster; round trip ≥ 10 ms on every commit.\n- **Decision:** Option B.\n- **Consequences (+):** low commit latency with site independence.\n- **Consequences (−):** a regional disaster can take both sites. Residual risk accepted. Mitigation: later add an asynchronous third copy far away, with RPO above zero for regional loss, and keep versioned off-site backups.\n\n#### ADR-004: Three-site consensus for automatic failover\n- **Status:** Accepted.\n- **Context:** Fast RTO needs automation; two-site automation risks split brain.\n- **Option A, manual failover:** safe; misses the 15-minute RTO at night.\n- **Option B, two-site automatic:** fast; a link cut can produce two primaries.\n- **Option C, three voters including a witness:** majority decides; needs a third location.\n- **Decision:** Option C.\n- **Consequences (+):** no split brain; automatic recovery.\n- **Consequences (−):** third site to run; fencing must be tested.\n\n#### ADR-005: Idempotency keys and an outbox\n- **Status:** Accepted.\n- **Context:** After failover, merchants cannot tell whether an unacknowledged request committed.\n- **Option A, two-phase commit with the processor:** strong guarantees; couples availability to the processor.\n- **Option B, fire and forget:** simple; loses or duplicates calls.\n- **Option C, idempotency key plus transactional outbox:** retries are safe; delivery is at least once.\n- **Decision:** Option C.\n- **Consequences (+):** safe retries; processor outages do not block commits.\n- **Consequences (−):** extra table and worker; processor must honor idempotency keys.\n";
+window.SAD_BACK = {"href":"/en/networking/visuals","label":"Network+ visuals"};
+</script>
+<script>
+const C={blue:'#58a6ff',teal:'#3ddbb0',yellow:'#ffd166',coral:'#ff6b6b',line:'#3a4270',mute:'#9aa3c7',fill:'#1e2340'};
+
+/* ---------- mini markdown ---------- */
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const inl=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+function md(src){
+  const L=src.split('\n');let out=[],i=0,slug=[];
+  while(i<L.length){
+    const l=L[i];
+    let m;
+    if(!l.trim()){i++;continue}
+    if((m=l.match(/^<!--diagram:(\w+)-->/))){out.push(`<div data-diagram="${m[1]}"></div>`);i++;continue}
+    if((m=l.match(/^(#{1,4}) (.*)/))){const n=m[1].length,id='s'+slug.length;slug.push({n,t:m[2],id});out.push(`<h${n} id="${id}">${inl(m[2])}</h${n}>`);i++;continue}
+    if(l.startsWith('|')){const rows=[];while(i<L.length&&L[i].startsWith('|')){rows.push(L[i]);i++}
+      const cells=r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const h=cells(rows[0]);let t='<div class="tw"><table><thead><tr>'+h.map(c=>`<th>${inl(c)}</th>`).join('')+'</tr></thead><tbody>';
+      rows.slice(2).forEach(r=>{t+='<tr>'+cells(r).map(c=>`<td>${inl(c)}</td>`).join('')+'</tr>'});
+      out.push(t+'</tbody></table></div>');continue}
+    if(l.startsWith('>')){const b=[];while(i<L.length&&L[i].startsWith('>')){b.push(L[i].replace(/^>\s?/,''));i++}out.push(`<blockquote>${inl(b.join(' '))}</blockquote>`);continue}
+    if(/^\d+\. /.test(l)){let t='<ol>';while(i<L.length&&/^\d+\. /.test(L[i])){t+=`<li>${inl(L[i].replace(/^\d+\. /,''))}</li>`;i++}out.push(t+'</ol>');continue}
+    if(l.startsWith('- ')){let t='<ul>';
+      while(i<L.length&&L[i].startsWith('- ')){t+=`<li>${inl(L[i].slice(2))}`;i++;
+        if(i<L.length&&/^\s+\d+\. /.test(L[i])){t+='<ol>';while(i<L.length&&/^\s+\d+\. /.test(L[i])){t+=`<li>${inl(L[i].replace(/^\s+\d+\. /,''))}</li>`;i++}t+='</ol>'}
+        t+='</li>'}
+      out.push(t+'</ul>');continue}
+    out.push(`<p>${inl(l)}</p>`);i++;
+  }
+  return {html:out.join('\n'),slug};
+}
+
+/* ---------- svg helpers ---------- */
+const svg=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Diagram. The caption below explains it." xmlns="http://www.w3.org/2000/svg"><defs>${['blue','teal','yellow','coral','mute'].map(k=>`<marker id="ar-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C[k]}"/></marker>`).join('')}</defs>${inner}</svg>`;
+const box=(x,y,w,h,t,col='blue',sub='',dash=false)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${C.fill}" stroke="${C[col]}" stroke-width="2" ${dash?'stroke-dasharray="6 4"':''}/><text x="${x+w/2}" y="${y+h/2+(sub?-2:5)}" text-anchor="middle" font-size="14" font-weight="600">${t}</text>${sub?`<text class="m" x="${x+w/2}" y="${y+h/2+15}" text-anchor="middle" font-size="11">${sub}</text>`:''}`;
+const arrow=(x1,y1,x2,y2,col='blue',lab='',dash=false,lx=0,ly=-6,both=false)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${C[col]}" stroke-width="2" ${dash?'stroke-dasharray="6 4"':''} marker-end="url(#ar-${col})" ${both?`marker-start="url(#ar-${col})"`:''}/>${lab?`<text class="m" x="${(x1+x2)/2+lx}" y="${(y1+y2)/2+ly}" text-anchor="middle" font-size="11">${lab}</text>`:''}`;
+const label=(x,y,t,col='mute',a='middle',s=12)=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="${s}" fill="${C[col]||col}" style="fill:${C[col]||col}">${t}</text>`;
+const group=(x,y,w,h,t,col='mute')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="none" stroke="${C[col]}" stroke-width="1.5" stroke-dasharray="4 4"/>${label(x+12,y+20,t,col,'start',13)}`;
+
+/* ---------- toggle wrapper ---------- */
+function toggleFig(el,btns,render,cap){
+  const wrap=mkFig(`<div class="ctl"><span class="seg"></span></div><div class="canvas"></div><figcaption class="cap">${cap}</figcaption>`);
+  const seg=wrap.querySelector('.seg'),cv=wrap.querySelector('.canvas');
+  btns.forEach((b,i)=>{const e=document.createElement('button');e.textContent=b[0];e.onclick=()=>{[...seg.children].forEach(x=>x.classList.remove('on'));e.classList.add('on');cv.innerHTML=render(b[1])};seg.appendChild(e);if(i===0)e.click()});
+  el.replaceWith(wrap);
+}
+function mkFig(inner){const h=document.createElement('div');h.innerHTML='<figure class="fig">'+inner+'</figure>';return h.firstChild}
+function staticFig(el,html,cap){el.replaceWith(mkFig(html+`<figcaption class="cap">${cap}</figcaption>`))}
+
+/* ---------- boot: runs after the per-document diagrams file defines mount(q) ---------- */
+function bootSad(){
+  const doc=document.getElementById('doc');
+  try{
+    const {html,slug}=md(window.SAD_MD);
+    doc.innerHTML=html;
+    const back=window.SAD_BACK?`<a class="h2" href="${window.SAD_BACK.href}" target="_top">${esc(window.SAD_BACK.label)}</a>`:'';
+    document.getElementById('nav').innerHTML=back+'<b style="display:block;margin-top:14px;font-size:13px;color:var(--text)">Contents</b>'+slug.filter(s=>s.n===2||s.n===3).map(s=>`<a class="${s.n===2?'h2':''}" href="#${s.id}">${esc(s.t)}</a>`).join('');
+    mount(n=>doc.querySelector(`[data-diagram=${n}]`));
+  }catch(err){doc.innerHTML='<p style="color:#ff6b6b">Could not render this document: '+esc(String(err.message||err))+'</p>'}
+}
+
+</script>
+<script>
+/* ---------- diagrams ---------- */
+function dContext(){
+  return svg(900,440,
+   box(350,170,200,100,'Ledgerline','teal','Payment ledger')+
+   box(20,70,170,60,'Merchant app','blue','Client system')+box(20,300,170,60,'Ops engineer','blue','Person, via SSO')+
+   box(710,30,170,60,'Identity provider','mute','OIDC')+box(710,120,170,60,'Card processor','mute','HTTPS REST')+
+   box(710,210,170,60,'Bank settlement','mute','SFTP files')+box(710,300,170,60,'Monitoring and paging','mute','Metrics, alerts')+
+   arrow(190,100,350,200,'blue','POST /v1/transfers',false,-10,-8)+arrow(190,330,350,250,'blue','Runbooks, approvals',false,0,16)+
+   arrow(550,190,710,60,'mute','Token checks',true,0,-6)+arrow(550,200,710,150,'mute','Outbox calls',false,0,-8)+
+   arrow(550,240,710,240,'mute','Batch files',false,0,-8)+arrow(550,260,710,330,'mute','Telemetry',true,0,14)+
+   label(450,395,'Boundary: TLS termination in, processor and bank calls out','mute')+
+   label(450,420,'Level 1: System Context. Solid = request path. Dashed = supporting traffic.','mute'));
+}
+function dContainers(){
+  return svg(900,540,
+   group(200,60,640,330,'Site A (primary)','blue')+group(200,405,640,115,'Site B (hot standby) and witness site','teal')+
+   box(20,170,130,60,'Traffic manager','blue','DNS, health checks')+
+   box(230,100,150,60,'API tier','blue','Stateless, N nodes')+
+   box(430,100,170,60,'Ledger primary','yellow','PostgreSQL, single writer')+
+   box(660,100,150,60,'Backup store','mute','Versioned objects')+
+   box(230,230,150,60,'Failover manager','mute','Leader lease 10 s')+
+   box(640,230,170,60,'Outbox worker','blue','At-least-once')+
+   box(640,320,170,50,'Card processor','mute','External')+
+   box(400,445,130,55,'DR-A standby','teal','Sync')+box(550,445,130,55,'DR-B standby','teal','Sync')+box(700,445,125,55,'Consensus','mute','3 voters, 1 at witness')+
+   arrow(150,200,230,135,'blue','HTTPS',false,-6,-6)+arrow(380,130,430,130,'blue','SQL',false,0,-8)+
+   arrow(470,160,465,445,'teal','',false)+arrow(560,160,615,445,'teal','',false)+
+   label(520,335,'WAL stream','teal','middle',12)+label(520,351,'commit waits 1 of 2','teal','middle',12)+
+   arrow(600,130,660,130,'mute','Backups',true,0,-8)+
+   arrow(725,290,725,320,'mute','',false)+
+   arrow(380,260,640,260,'mute','',true)+label(400,252,'','mute')+
+   label(450,40,'Level 2: Containers. Teal = synchronous replication path. Yellow = single writer.','mute'));
+}
+function dSequence(mode){
+  const X=[70,250,430,620,820],N=['Merchant','Traffic mgr','API','Primary DB','Standby (Site B)'];
+  let s=X.map((x,i)=>box(x-62,10,124,34,N[i],i==3?'yellow':i==4?'teal':'blue')+`<line x1="${x}" y1="44" x2="${x}" y2="${mode==='sync'?470:400}" stroke="${C.line}" stroke-dasharray="4 4"/>`).join('');
+  const msg=(y,a,b,t,col='blue',d=false)=>arrow(X[a],y,X[b],y,col,'',d)+label((X[a]+X[b])/2,y-6,t,'mute');
+  s+=msg(75,0,1,'POST + Idempotency-Key')+msg(105,1,2,'route')+msg(135,2,3,'BEGIN, write rows, COMMIT');
+  s+=`<rect x="${X[3]-10}" y="150" width="20" height="26" fill="${C.yellow}" opacity=".35"/>`+label(X[3]+18,168,'flush local disk','yellow','start',11);
+  if(mode==='sync'){
+    s+=msg(205,3,4,'stream log (one-way delay)','teal');
+    s+=`<rect x="${X[4]-10}" y="215" width="20" height="26" fill="${C.teal}" opacity=".35"/>`+label(X[4]-18,233,'flush remote disk','teal','end',11);
+    s+=msg(275,4,3,'ack (one-way delay back)','teal',true);
+    s+=`<rect x="${X[3]-6}" y="175" width="12" height="108" fill="${C.coral}" opacity=".4"/>`+label(X[3]-14,260,'COMMIT blocked','coral','end',12);
+    s+=msg(315,3,2,'commit complete','yellow',true)+msg(345,2,0,'201 Created (durable on two sites)','teal',true);
+    s+=label(450,385,'Round trip is on the critical path of every commit.','coral')
+     +label(450,410,'Outbox worker forwards to the processor later, off this path.','mute');
+    s+=`<rect x="${X[3]-4}" y="205" width="${X[4]-X[3]+8}" height="0" />`;
+  }else{
+    s+=msg(215,3,2,'commit complete (no wait)','yellow',true)+msg(245,2,0,'201 Created (durable on one site only)','coral',true);
+    s+=msg(300,3,4,'stream log later (lag)','mute',true)+`<rect x="${X[4]-10}" y="310" width="20" height="26" fill="${C.teal}" opacity=".35"/>`;
+    s+=label(450,375,'Fast. But between 201 and the remote flush the promise rests on one site.','coral');
+  }
+  return svg(900,mode==='sync'?490:420,s);
+}
+function dDeploy(lost){const LOST_T=lost?'Routes to Site B':'Routes to Site A';
+  const a=lost?'coral':'blue',b=lost?'yellow':'teal';
+  let s=group(20,30,380,300,'Site A'+(lost?' (LOST)':' (active)'),a)+group(500,30,380,300,'Site B'+(lost?' (promoted)':' (hot standby)'),b)+group(320,360,260,110,'Witness site','mute');
+  const dim=lost?'mute':'blue';
+  s+=box(40,60,150,44,'API x3',dim)+box(40,120,150,44,lost?'Old primary (fenced)':'Ledger primary',lost?'coral':'yellow','',lost)+box(40,180,150,44,'Consensus node',dim)+box(40,240,150,44,'Backup agent','mute');
+  s+=box(520,60,150,44,'API x3',lost?'teal':'mute')+box(520,120,150,44,lost?'DR-A: new primary':'DR-A standby',lost?'yellow':'teal')+box(520,180,150,44,lost?'DR-B follows':'DR-B standby','teal')+box(520,240,150,44,'Consensus node','blue');
+  s+=box(690,60,170,44,'Traffic manager','blue',LOST_T)+box(690,120,170,44,'Backup bucket','mute','Third location');
+  s+=box(350,395,200,50,'Consensus node','blue','Third vote');
+  if(!lost){
+    s+=arrow(190,142,520,142,'teal','Synchronous WAL (~100 km, ~1 ms RTT)',false,0,-8)+arrow(190,142,520,195,'teal','',false);
+    s+=arrow(190,202,520,262,'blue','',true,0,0,true)+arrow(115,224,350,420,'blue','',true)+arrow(595,284,550,420,'blue','',true);
+  }else{
+    s+=`<line x1="40" y1="75" x2="380" y2="320" stroke="${C.coral}" stroke-width="3"/><line x1="380" y1="75" x2="40" y2="320" stroke="${C.coral}" stroke-width="3"/>`;
+    s+=arrow(595,284,550,420,'blue','quorum: B + witness',true,105,22)+arrow(595,164,595,180,'yellow','',false);
+    
+    s+=label(450,352,'Lease expires ~10 s, quorum, fence, promote, shift traffic, reconcile','mute');
+  }
+  s+=label(450,490,lost?'After the failure: no acknowledged write lost, because every ack required Site B.':'Level: Deployment. Teal = synchronous replication. Dashed = consensus heartbeats.',lost?'teal':'mute');
+  return svg(900,510,s);
+}
+
+/* ---------- simulator ---------- */
+function simulator(el){
+  const S=25; // real ms per simulated ms (slow motion)
+  const INTERVAL=40, FLUSH=0.5;
+  const w=mkFig(`
+  <div class="ctl">
+    <span class="seg"><button data-m="sync" class="on">Synchronous</button><button data-m="async">Asynchronous</button></span>
+    <label>Distance <input id="dist" type="range" min="10" max="2000" value="100" step="10"> <b id="distv">100 km</b></label>
+    <label>Async lag <input id="lag" type="range" min="0" max="200" value="80" step="10"> <b id="lagv">80 ms</b></label>
+  </div>
+  <div class="ctl"><button id="go">Pause</button><button id="boom" class="danger">Disaster: lose Site A</button><button id="rst">Reset</button><span class="m" style="color:var(--mute);font-size:13px">Slow motion: 1 simulated ms = ${S} real ms</span></div>
+  <svg id="simsvg" viewBox="0 0 900 300" role="img" aria-label="Replication simulator animation. Stats below the animation report the result."></svg>
+  <div class="legend"><span><i style="background:${C.teal}"></i>Acknowledged and on both sites</span><span><i style="background:${C.yellow}"></i>Acknowledged, only on Site A (at risk)</span><span><i style="background:${C.coral}"></i>Acknowledged, then lost</span><span><i style="background:#6b7299"></i>Not acknowledged (in flight)</span></div>
+  <div class="stats">
+    <div class="stat"><b id="s-rtt">-</b><span>Round trip (lower bound)</span></div>
+    <div class="stat"><b id="s-lat">-</b><span>Commit latency seen by client</span></div>
+    <div class="stat"><b id="s-tps">-</b><span>Max commits/s, one session</span></div>
+    <div class="stat"><b id="s-acked">0</b><span>Acknowledged writes</span></div>
+    <div class="stat"><b id="s-lost">0</b><span>Acknowledged writes lost</span></div>
+  </div>
+  <div id="ban" class="banner"></div>
+  <figcaption class="cap">Teaching model. Fiber delay 5 µs per km one way, round trip = 0.01 ms per km, plus 0.5 ms flush at each end. Not a measurement of any real system.</figcaption>`);
+  el.replaceWith(w);
+  const $=s=>w.querySelector(s),svgEl=$('#simsvg');
+  let mode='sync',writes,simT,last,running,dead,deadAt,nid;
+  const XA=130,XB=770,Y=110;
+  function reset(){writes=[];simT=0;last=null;running=true;dead=false;deadAt=null;nid=1;$('#go').textContent='Pause';$('#boom').disabled=false;$('#ban').className='banner';$('#ban').textContent='';stats()}
+  const km=()=>+$('#dist').value, lag=()=>+$('#lag').value;
+  const ow=()=>km()*0.005, rtt=()=>km()*0.01;
+  function stats(){
+    $('#s-rtt').textContent=rtt().toFixed(1)+' ms';
+    const lat=mode==='sync'?rtt()+2*FLUSH:FLUSH;
+    $('#s-lat').textContent=lat.toFixed(1)+' ms';
+    $('#s-tps').textContent=Math.floor(1000/lat).toLocaleString();
+    $('#distv').textContent=km()+' km';$('#lagv').textContent=lag()+' ms';
+    $('#lagv').parentElement.style.opacity=mode==='async'?1:.4;
+  }
+  function addWrite(){
+    const t0=simT,o=ow();
+    let standbyAt,ackAt;
+    if(mode==='sync'){standbyAt=t0+FLUSH+o+FLUSH;ackAt=standbyAt+o}
+    else{ackAt=t0+FLUSH;standbyAt=t0+FLUSH+lag()+o+FLUSH}
+    writes.push({id:nid++,t0,ackAt,standbyAt,mode,o,lost:false});
+    if(writes.length>14)writes.shift();
+  }
+  function state(wr){
+    if(dead){
+      if(wr.ackAt<=deadAt&&wr.standbyAt>deadAt)return'lost';
+      if(wr.ackAt>deadAt)return'unacked';
+    }
+    if(simT<wr.ackAt)return'unacked';
+    return simT>=wr.standbyAt?'safe':'risk';
+  }
+  const colr={safe:C.teal,risk:C.yellow,lost:C.coral,unacked:'#6b7299'};
+  let ackedTotal=0,lostTotal=0,counted=new Set();
+  function draw(){
+    let s=`<rect x="40" y="40" width="180" height="140" rx="12" fill="${C.fill}" stroke="${dead?C.coral:C.yellow}" stroke-width="2"/>`+
+      `<rect x="680" y="40" width="180" height="140" rx="12" fill="${C.fill}" stroke="${C.teal}" stroke-width="2"/>`+
+      label(130,62,dead?'Site A (LOST)':'Site A: primary',dead?'coral':'yellow','middle',14)+label(770,62,'Site B: standby','teal','middle',14)+
+      `<line x1="${XA+90}" y1="${Y}" x2="${XB-90}" y2="${Y}" stroke="${C.line}" stroke-width="3" stroke-dasharray="${dead?'3 6':'0'}"/>`+
+      label(450,Y-14,km()+' km of fiber, one way '+ow().toFixed(2)+' ms','mute');
+    if(dead)s+=`<line x1="45" y1="45" x2="215" y2="175" stroke="${C.coral}" stroke-width="4"/><line x1="215" y1="45" x2="45" y2="175" stroke="${C.coral}" stroke-width="4"/>`;
+    // ledger chips
+    writes.forEach((wr,i)=>{
+      const st=state(wr);
+      const cx=55+(i%7)*24, cy=82+Math.floor(i/7)*30;
+      s+=`<rect x="${cx}" y="${cy}" width="20" height="22" rx="4" fill="${colr[st]=== '#6b7299'?'none':colr[st]}" stroke="${colr[st]}" stroke-width="2"/>`;
+      const onB=simT>=wr.standbyAt&&!(dead&&wr.standbyAt>deadAt);
+      const bx=695+(i%7)*24,by=82+Math.floor(i/7)*30;
+      s+=onB?`<rect x="${bx}" y="${by}" width="20" height="22" rx="4" fill="${C.teal}"/>`:`<rect x="${bx}" y="${by}" width="20" height="22" rx="4" fill="none" stroke="${C.line}" stroke-dasharray="3 3"/>`;
+      // packets
+      const sendStart=wr.t0+FLUSH, arrive=wr.standbyAt-FLUSH;
+      const lim=dead?deadAt:simT;
+      const pos=(t0,t1,t,fromA)=>{const p=Math.min(1,Math.max(0,(t-t0)/(t1-t0||1)));return fromA?XA+90+p*(XB-XA-180):XB-90-p*(XB-XA-180)};
+      const fwdStart=wr.mode==='sync'?sendStart:sendStart+lag();
+      if(simT>=fwdStart&&simT<arrive&&!(dead&&fwdStart>deadAt)){const px=dead&&simT>deadAt?pos(fwdStart,arrive,deadAt,true):pos(fwdStart,arrive,simT,true);s+=`<circle cx="${px}" cy="${Y+(i%3-1)*8}" r="6" fill="${C.blue}"/>`}
+      if(wr.mode==='sync'&&simT>=wr.standbyAt&&simT<wr.ackAt&&!dead){s+=`<circle cx="${pos(wr.standbyAt,wr.ackAt,simT,false)}" cy="${Y+(i%3-1)*8}" r="5" fill="${C.teal}"/>`}
+    });
+    // client ack indicator
+    s+=label(130,205,'Client sees 201 after:','mute','middle',12)+label(130,226,(mode==='sync'?(rtt()+2*FLUSH).toFixed(1):FLUSH.toFixed(1))+' ms',mode==='sync'?'coral':'teal','middle',20);
+    s+=label(770,205,dead?'Promoted copy holds:':'Standby holds:','mute','middle',12)+label(770,226,writes.filter(x=>simT>=x.standbyAt&&!(dead&&x.standbyAt>deadAt)).length+' of '+writes.length+' recent writes','teal','middle',16);
+    s+=label(450,270,'Blue = log streaming to Site B. Teal = acknowledgment returning (sync only).','mute');
+    svgEl.innerHTML=s;
+  }
+  function tally(){
+    let a=0,l=0;
+    // full-history counters
+    writes.forEach(wr=>{if(!counted.has(wr.id+':a')&&simT>=wr.ackAt&&!(dead&&wr.ackAt>deadAt)){counted.add(wr.id+':a');ackedTotal++}});
+    $('#s-acked').textContent=ackedTotal;$('#s-lost').textContent=lostTotal;
+  }
+  function boom(){
+    if(dead)return;dead=true;deadAt=simT;
+    const lostNow=writes.filter(wr=>wr.ackAt<=deadAt&&wr.standbyAt>deadAt);
+    lostTotal+=lostNow.length;
+    const unacked=writes.filter(wr=>wr.ackAt>deadAt).length;
+    const onB=writes.filter(wr=>wr.standbyAt<=deadAt);
+    const win=onB.length?(deadAt-Math.max(...onB.map(x=>x.standbyAt))):deadAt;
+    const ban=$('#ban');
+    if(lostNow.length===0){ban.className='banner good';ban.textContent=`Zero acknowledged writes lost. ${unacked} in-flight write${unacked===1?'':'s'} were never acknowledged, so those merchants retry with the same idempotency key. RPO = 0.`}
+    else{ban.className='banner bad';ban.textContent=`${lostNow.length} acknowledged write${lostNow.length===1?'':'s'} lost. Merchants were told "success" and the data is gone. Newest write on Site B was ${win.toFixed(0)} ms old at failure, so RPO here is about ${Math.max(win,lag()).toFixed(0)} ms, not zero.`}
+    $('#boom').disabled=true;tally();
+  }
+  let acc=0;
+  function frame(ts){
+    if(last===null)last=ts;
+    const dt=(ts-last)/S;last=ts;
+    if(running&&!dead){simT+=dt;acc+=dt;while(acc>=INTERVAL){acc-=INTERVAL;addWrite()}}
+    if(!dead){tally()}
+    draw();requestAnimationFrame(frame);
+  }
+  w.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;w.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===b));stats()});
+  $('#dist').oninput=stats;$('#lag').oninput=stats;
+  $('#go').onclick=()=>{running=!running;$('#go').textContent=running?'Pause':'Resume'};
+  $('#boom').onclick=boom;
+  $('#rst').onclick=()=>{counted=new Set();ackedTotal=0;lostTotal=0;acc=0;reset()};
+  window.__sim={get dead(){return dead},boom,setMode:m=>w.querySelector(`[data-m=${m}]`).click(),get lost(){return lostTotal},get simT(){return simT}};
+  reset();requestAnimationFrame(frame);
+}
+
+
+function mount(q){
+  staticFig(q('context'),dContext(),'C4 Level 1. One system, six neighbors.');
+  staticFig(q('containers'),dContainers(),'C4 Level 2. Teal path is what makes RPO zero.');
+  toggleFig(q('sequence'),[['Synchronous commit','sync'],['Asynchronous commit','async']],dSequence,'Process view of one transfer. Flip the toggle to see where the acknowledgment moves.');
+  simulator(q('simulator'));
+  toggleFig(q('deployment'),[['Normal operation',false],['Lose Site A',true]],dDeploy,'Deployment view. Flip the toggle to watch the failover end state.');
+}
+
+bootSad();
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Switching loops, broadcast storms and spanning tree: architecture document</title>
+<style>
+:root{--bg:#0f1220;--panel:#171b2e;--panel2:#1e2340;--line:#3a4270;--text:#e8ebf7;--mute:#9aa3c7;--blue:#58a6ff;--teal:#3ddbb0;--yellow:#ffd166;--coral:#ff6b6b;--ok:#3ddbb0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{display:grid;grid-template-columns:240px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:24px 16px;border-right:1px solid var(--line);font-size:14px}
+nav a{display:block;color:var(--mute);text-decoration:none;padding:4px 0}
+nav a:hover{color:var(--text)}
+nav a.h2{color:var(--text);font-weight:600;margin-top:12px}
+main{padding:24px 32px 96px;min-width:0}
+h1{font-size:30px;line-height:1.2;margin:0 0 8px}
+h2{font-size:24px;margin:48px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:28px 0 6px;color:var(--blue)}
+h4{font-size:16px;margin:24px 0 6px;color:var(--yellow)}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+code{background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.88em;color:var(--teal)}
+blockquote{margin:12px 0;padding:10px 16px;border-left:4px solid var(--yellow);background:var(--panel)}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel2)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:16px 0}
+.fig svg{width:100%;height:auto;display:block}
+.cap{color:var(--mute);font-size:13px;margin:6px 2px 0}
+.ctl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:8px 0 12px;font-size:14px}
+.ctl label{display:flex;gap:8px;align-items:center}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--blue)}
+button.danger{border-color:var(--coral);color:var(--coral)}
+button.on{background:var(--blue);color:#0b1020;border-color:var(--blue)}
+.seg{display:inline-flex}.seg button{border-radius:0}.seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 12px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--mute);font-size:12px}
+.banner{margin-top:10px;padding:10px 14px;border-radius:8px;font-weight:600;display:none}
+.banner.good{display:block;background:#12372f;border:1px solid var(--teal);color:var(--teal)}
+.banner.bad{display:block;background:#3d1a22;border:1px solid var(--coral);color:var(--coral)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--mute);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+svg text{fill:var(--text);font-family:inherit}
+svg .m{fill:var(--mute)}
+@media(max-width:820px){.wrap{display:block}nav{display:none}main{padding:16px}}
+.banner.warn{display:block;background:#3a3216;border:1px solid var(--yellow);color:var(--yellow)}
+
+</style>
+</head>
+<body>
+<div class="wrap"><nav id="nav" aria-label="Document sections"></nav><main id="doc"><noscript>This document needs JavaScript to draw its diagrams.</noscript>Loading…</main></div>
+<script type="application/json" id="visual-facts">{"kind":"revised","facts":[{"claim":"Ethernet frames carry no hop count or time to live, so a looping broadcast frame circles until a port refuses it.","objectives":["n10-009 5.3"],"sources":["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"]},{"claim":"Spanning Tree Protocol elects the root bridge with the lowest bridge ID (priority first, then lowest MAC address) and blocks redundant paths to prevent loops.","objectives":["n10-009 5.3"],"sources":["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"]},{"claim":"Classic 802.1D port states are blocking, listening, learning and forwarding; only forwarding passes user traffic, and learning builds the MAC table without forwarding.","objectives":["n10-009 5.3"],"sources":["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"]},{"claim":"Classic 802.1D defaults are a 2 second hello, 15 second forward delay and 20 second max age, so a direct failure recovers in about 30 seconds and an indirect failure in about 50.","objectives":["n10-009 5.3"],"sources":["https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html"]}],"simplifications":["Harbor Street is an invented example LAN. Numbers marked assumed are teaching values.","The simulator floods each broadcast out every forwarding port and ignores VLANs, queuing and switch CPU limits; link load is an arbitrary toy scale.","Time is slowed so the 30 second STP walk takes about 12 real seconds.","The simulator shows classic STP. Rapid STP converges faster and uses discarding, learning and forwarding states.","BPDU protection and edge-port settings in ADR-003 go beyond the site's current notes."]}</script>
+<script>
+window.SAD_MD = "# Harbor Street Office LAN: System Architecture Document\n\n## 1. Executive Summary & System Context\n\n### 1.1 Purpose and source material\n- Illustrative system. Built to teach Network+ N10-009 objective 5.3, \"Given a scenario, troubleshoot common issues with network services\".\n- Objective 5 (network troubleshooting) carries the highest domain weight on the exam: 24 percent.\n- Hardest idea inside it: **a switching loop never dies, because Ethernet frames carry no hop count. Spanning Tree Protocol (STP) prevents the loop by blocking a redundant link, and it pays for that with a slow recovery.**\n- Not a production design. Numbers marked \"assumed\" are teaching values.\n\n| Input | Value (assumed) |\n|---|---|\n| Core problem solved | Two-floor office LAN that survives one cable or switch uplink failure without a broadcast storm |\n| Technical stack | Three Layer 2 switches in a triangle, three VLANs, one router and firewall, DHCP and DNS server, SNMP monitoring |\n| Known constraints | One link may fail with no manual action; recovery within 60 seconds; no loops, ever; no budget for a fourth switch |\n| Key integrations | Router and firewall uplink, DHCP and DNS server, syslog and SNMP collector, console access for the engineer |\n\n### 1.2 System boundary\n- Begins at the access ports where hosts plug in.\n- Ends at the router's LAN-facing port.\n- Inside: three switches, their trunk links, VLANs, MAC address tables, STP.\n- Outside: the router and firewall, the internet, the DHCP and DNS server's own configuration.\n\n### 1.3 External dependencies\n\n| System or actor | Type | Direction | Protocol | Data | If it fails |\n|---|---|---|---|---|---|\n| Floor 1 and Floor 2 hosts | Client systems | In | Ethernet | Frames, ARP and DHCP broadcasts | Local users offline |\n| Router and firewall | External system | Out | Ethernet trunk | Routed traffic | No internet; local LAN still works |\n| DHCP and DNS server | External system | Out | DHCP, DNS | Leases, names | New hosts get no address |\n| Monitoring collector | External system | Out | SNMP, syslog | Counters, traps | Blind, but service continues |\n| Network engineer | Human | In | SSH or console | `show` commands | Self-healing still works |\n\n\u003c!--diagram:context-->\n\n### 1.4 Quality goals\n- **No loops:** a frame must never circle the topology.\n- **Availability:** one link failure causes a short outage, never a storm.\n- **Predictability:** the root bridge is chosen on purpose, not by luck.\n- **Diagnosability:** a tired engineer can find the fault from counters and `show` output.\n\n### 1.5 Constraints and their consequences\n\n| Constraint | Consequence for the design |\n|---|---|\n| Redundant uplinks wanted | A physical loop exists, so STP is mandatory |\n| Ethernet has no hop count | Nothing else stops a looping frame |\n| Recovery within 60 seconds | Classic STP (about 30 to 50 seconds) just fits; Rapid STP is better |\n| Small budget | Triangle of existing switches; no routed access layer |\n\n### 1.6 View map\n\n| Document section | arc42 | Kruchten 4+1 | C4 |\n|---|---|---|---|\n| 1 | Sections 1 to 3 | Scenarios (the \"+1\") | Level 1, System Context |\n| 2 | Section 5 | Logical view | Level 2 Containers, Level 3 Components |\n| 3 | Section 6 | Process view | Dynamic diagram |\n| 4 | Section 7 | Physical (deployment) view | Deployment diagram |\n| 5 | Section 9 | Decisions across all views | Not applicable |\n\n## 2. Logical & Building Block View\n\n### 2.1 Containers\n\n| Container | Responsibility | Technology (assumed) | Scales by |\n|---|---|---|---|\n| Access switch SW2 | Hosts on Floor 1, uplinks to SW1 and SW3 | Managed Layer 2 switch | Add ports |\n| Access switch SW3 | Hosts on Floor 2, uplinks to SW1 and SW2 | Managed Layer 2 switch | Add ports |\n| Root switch SW1 | Spanning tree root, router uplink | Managed Layer 2 or 3 switch | Replace |\n| VLANs 10, 20, 99 | Users, voice, management | 802.1Q tags on trunks | Add VLANs |\n| Spanning tree process | Elect root, assign port roles, block redundant links | STP on every switch | Per VLAN or per instance |\n\n\u003c!--diagram:containers-->\n\n### 2.2 Components inside one switch\n- **MAC learning:** records which port each source address was seen on.\n- **Forwarding decision:** known destination goes out one port; unknown or broadcast floods out every other port.\n- **Port state gate:** only a port in the forwarding state may send or receive user frames.\n- **STP engine:** reads BPDUs from neighbors and sets port roles and states.\n- **Counters:** CRC, runts, giants, drops, MAC moves.\n\n### 2.3 Interfaces and contracts\n\n| From to | Style | Protocol | Contract |\n|---|---|---|---|\n| Host to switch | Frame | Ethernet | Broadcast reaches every port in the VLAN |\n| Switch to switch | Trunk | 802.1Q | Carries tagged frames for all VLANs |\n| Switch to switch | Control | BPDU, multicast `01-80-C2-00-00-00` | Root sends a hello every 2 seconds (802.1D default) |\n| Switch to engineer | Management | SSH, SNMP, syslog | `show spanning-tree`, `show mac address-table`, interface counters |\n\n### 2.4 Cross-cutting concerns\n- **Loop control:** STP on every switch, never disabled.\n- **Root placement:** explicit priority on SW1; a lower-capacity access switch must never win the election.\n- **Logging:** topology change events sent to syslog.\n- **Time:** NTP on every switch so log lines line up.\n- **Change control:** every cable move and STP change goes through the change process.\n\n## 3. Runtime & Process View\n\n### 3.1 Critical flow: one ARP broadcast\n1. Host A on SW2 sends an ARP request to the broadcast address.\n2. SW2 learns Host A on its access port.\n3. SW2 floods the frame out every other forwarding port: toward SW1 and toward SW3.\n4. SW1 receives its copy, learns Host A, and floods it toward SW3.\n5. SW3 receives a copy from SW1, learns Host A, delivers it to Host B, and floods onward.\n6. With STP on, SW3's port toward SW2 is blocked. It discards the copy from SW2 and never sends one back. The frame ends.\n7. With STP off, SW3 floods the copy back to SW2 and SW1. Each switch receives it again and floods it again. The frame never ends.\n\n> **Rule:** a broadcast frame lives until a port refuses it. Only a blocked port, a cut cable or a power-off refuses it.\n\n\u003c!--diagram:sequence-->\n\n### 3.2 Why a loop becomes a storm\n- Ethernet has no time to live. Layer 3 packets do; Layer 2 frames do not.\n- A single broadcast in a triangle leaves two copies circling in opposite directions forever.\n- Hosts keep sending ARP, DHCP and other broadcasts, so each new broadcast adds two more permanent copies.\n- Switches learn the same source address on two ports in turn. The MAC table flaps.\n- Links fill, the switch CPU saturates, and normal traffic cannot get through.\n- Extra redundant links make copies multiply, so a meshed loop collapses faster than a triangle.\n\n\u003c!--diagram:simulator-->\n\n### 3.3 Failure flows\n- **A. Access cable unplugged:** one host offline; STP unaffected.\n- **B. Link SW1 to SW3 fails (direct failure):**\n  1. SW3 loses its root port.\n  2. SW3's blocked port toward SW2 becomes the new root port candidate.\n  3. It moves blocking, listening (15 seconds), learning (15 seconds), forwarding.\n  4. Hosts behind SW3 are offline for about 30 seconds.\n  5. SW3 and SW1 flush their MAC tables on the topology change notice and relearn.\n- **C. Indirect failure (a switch in the path dies silently):** neighbors wait for the max age timer, 20 seconds, before reacting. Add the 30 second state walk: roughly 50 seconds.\n- **D. Someone plugs in a cheap switch with a low priority:** it can win the root election and reshape every path. This is the \"bad root bridge\" fault.\n\n### 3.4 Consistency, concurrency, performance\n- Port state changes are local decisions made from BPDUs; every switch converges on the same tree.\n- Only the forwarding state passes user traffic. Learning builds the MAC table without forwarding.\n- Compare counters to a baseline. A MAC address moving between ports many times a second means a loop.\n- Mismatched duplex and CRC errors slow a link without creating a storm. Do not confuse them.\n\n## 4. Deployment View\n\n### 4.1 Topology\n\n| Node | Location | Count | Role |\n|---|---|---|---|\n| SW1 | Wiring closet, Floor 1 | 1 | Root bridge, router uplink |\n| SW2 | Floor 1 | 1 | Access, hosts and phones |\n| SW3 | Floor 2 | 1 | Access, hosts and phones |\n| Router and firewall | Closet | 1 | Gateway |\n| Trunk links | Between switches | 3 | SW1-SW2, SW1-SW3, SW2-SW3 |\n\n\u003c!--diagram:deployment-->\n\n### 4.2 Environments\n\n| Environment | Topology | Loop protection | Purpose |\n|---|---|---|---|\n| Lab | Three spare switches | STP on | Rehearse a link cut |\n| Production | Triangle above | STP on, root fixed on SW1 | Live traffic |\n\n### 4.3 Scaling boundaries\n- Each added switch adds a loop risk; STP handles it but convergence time grows with tree depth.\n- Beyond about two closets, route between them (Layer 3) so each broken link stays small.\n- One broadcast domain per VLAN: too many hosts in a VLAN means too much broadcast traffic.\n\n### 4.4 Network isolation\n- VLAN 10 users, VLAN 20 voice, VLAN 99 management.\n- Management VLAN reachable only from the engineer's jump host.\n- Unused ports shut down and placed in an unused VLAN.\n\n### 4.5 High availability and failover\n\n| Failover step (direct link failure) | Classic 802.1D timer |\n|---|---|\n| Link down detected | Immediate |\n| Blocked port to listening | 15 seconds (forward delay) |\n| Listening to learning | 15 seconds (forward delay) |\n| Learning to forwarding | Total about 30 seconds |\n| **Indirect failure adds max age** | **20 seconds, about 50 seconds total** |\n\n- Timers are 802.1D defaults. Rapid STP converges much faster.\n- Failback: restoring the cut link triggers another topology change. Schedule it.\n- Prove it with a lab cut, a documented rollback and a monitored production test.\n\n## 5. Architecture Decision Records & Tradeoffs\n\n#### ADR-001: Redundant triangle protected by STP\n- **Status:** Accepted.\n- **Context:** One uplink failure must not take a floor offline.\n- **Option A, no redundancy:** no loop possible; any link failure is an outage.\n- **Option B, redundant links with no loop control:** fast recovery on paper; a storm in practice.\n- **Option C, redundant links plus STP:** one path active, one held in reserve.\n- **Decision:** Option C.\n- **Consequences (+):** survives one link failure; no loop.\n- **Consequences (−):** the reserve link carries no traffic; recovery is not instant.\n\n#### ADR-002: Fix the root bridge on SW1\n- **Status:** Accepted.\n- **Context:** The default election picks the lowest bridge ID, which comes down to the lowest MAC address when priorities tie.\n- **Option A, accept the default:** zero effort; an old access switch may win and send traffic the long way.\n- **Option B, set a low priority on SW1:** predictable paths.\n- **Option C, set SW1 and a named backup root:** predictable even after SW1 dies.\n- **Decision:** Option C.\n- **Consequences (+):** paths are known and documented.\n- **Consequences (−):** priority settings must be kept in the configuration baseline.\n\n#### ADR-003: Protect access ports\n- **Status:** Accepted. Beyond the site's current notes; verify against the objectives before relying on it for the exam.\n- **Context:** Users plug in hubs, cheap switches and loops of patch cable.\n- **Option A, trust users:** simple; one patch cable can start a storm.\n- **Option B, port security and storm control only:** limits damage.\n- **Option C, edge-port settings plus BPDU protection:** access ports that hear a BPDU shut themselves down.\n- **Decision:** Option C.\n- **Consequences (+):** a rogue switch cannot join the tree.\n- **Consequences (−):** a legitimate switch plugged into a user port will be shut down.\n\n#### ADR-004: Alert on topology changes\n- **Status:** Accepted.\n- **Context:** A flapping link causes repeated STP recalculation and repeated outages.\n- **Option A, none:** nobody notices until users complain.\n- **Option B, syslog and SNMP traps for topology change and MAC moves:** early warning.\n- **Decision:** Option B.\n- **Consequences (+):** loops and flaps show up in minutes.\n- **Consequences (−):** alert tuning needed to avoid noise.\n\n#### ADR-005: Rapid STP in production\n- **Status:** Accepted.\n- **Context:** Classic STP needs 30 to 50 seconds. The goal is under 60, with margin.\n- **Option A, classic STP:** matches the four exam states exactly; slow.\n- **Option B, Rapid STP (802.1w):** converges in seconds; uses different port states (discarding, learning, forwarding).\n- **Decision:** Option B in production. The simulator shows classic timers because the exam teaches the four classic states.\n- **Consequences (+):** shorter outages.\n- **Consequences (−):** teaching material and production differ; engineers must know both.\n";
+window.SAD_BACK = {"href":"/en/networking/visuals","label":"Network+ visuals"};
+</script>
+<script>
+const C={blue:'#58a6ff',teal:'#3ddbb0',yellow:'#ffd166',coral:'#ff6b6b',line:'#3a4270',mute:'#9aa3c7',fill:'#1e2340'};
+
+/* ---------- mini markdown ---------- */
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const inl=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+function md(src){
+  const L=src.split('\n');let out=[],i=0,slug=[];
+  while(i<L.length){
+    const l=L[i];
+    let m;
+    if(!l.trim()){i++;continue}
+    if((m=l.match(/^<!--diagram:(\w+)-->/))){out.push(`<div data-diagram="${m[1]}"></div>`);i++;continue}
+    if((m=l.match(/^(#{1,4}) (.*)/))){const n=m[1].length,id='s'+slug.length;slug.push({n,t:m[2],id});out.push(`<h${n} id="${id}">${inl(m[2])}</h${n}>`);i++;continue}
+    if(l.startsWith('|')){const rows=[];while(i<L.length&&L[i].startsWith('|')){rows.push(L[i]);i++}
+      const cells=r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const h=cells(rows[0]);let t='<div class="tw"><table><thead><tr>'+h.map(c=>`<th>${inl(c)}</th>`).join('')+'</tr></thead><tbody>';
+      rows.slice(2).forEach(r=>{t+='<tr>'+cells(r).map(c=>`<td>${inl(c)}</td>`).join('')+'</tr>'});
+      out.push(t+'</tbody></table></div>');continue}
+    if(l.startsWith('>')){const b=[];while(i<L.length&&L[i].startsWith('>')){b.push(L[i].replace(/^>\s?/,''));i++}out.push(`<blockquote>${inl(b.join(' '))}</blockquote>`);continue}
+    if(/^\d+\. /.test(l)){let t='<ol>';while(i<L.length&&/^\d+\. /.test(L[i])){t+=`<li>${inl(L[i].replace(/^\d+\. /,''))}</li>`;i++}out.push(t+'</ol>');continue}
+    if(l.startsWith('- ')){let t='<ul>';
+      while(i<L.length&&L[i].startsWith('- ')){t+=`<li>${inl(L[i].slice(2))}`;i++;
+        if(i<L.length&&/^\s+\d+\. /.test(L[i])){t+='<ol>';while(i<L.length&&/^\s+\d+\. /.test(L[i])){t+=`<li>${inl(L[i].replace(/^\s+\d+\. /,''))}</li>`;i++}t+='</ol>'}
+        t+='</li>'}
+      out.push(t+'</ul>');continue}
+    out.push(`<p>${inl(l)}</p>`);i++;
+  }
+  return {html:out.join('\n'),slug};
+}
+
+/* ---------- svg helpers ---------- */
+const svg=(w,h,inner)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Diagram. The caption below explains it." xmlns="http://www.w3.org/2000/svg"><defs>${['blue','teal','yellow','coral','mute'].map(k=>`<marker id="ar-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C[k]}"/></marker>`).join('')}</defs>${inner}</svg>`;
+const box=(x,y,w,h,t,col='blue',sub='',dash=false)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${C.fill}" stroke="${C[col]}" stroke-width="2" ${dash?'stroke-dasharray="6 4"':''}/><text x="${x+w/2}" y="${y+h/2+(sub?-2:5)}" text-anchor="middle" font-size="14" font-weight="600">${t}</text>${sub?`<text class="m" x="${x+w/2}" y="${y+h/2+15}" text-anchor="middle" font-size="11">${sub}</text>`:''}`;
+const arrow=(x1,y1,x2,y2,col='blue',lab='',dash=false,lx=0,ly=-6,both=false)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${C[col]}" stroke-width="2" ${dash?'stroke-dasharray="6 4"':''} marker-end="url(#ar-${col})" ${both?`marker-start="url(#ar-${col})"`:''}/>${lab?`<text class="m" x="${(x1+x2)/2+lx}" y="${(y1+y2)/2+ly}" text-anchor="middle" font-size="11">${lab}</text>`:''}`;
+const label=(x,y,t,col='mute',a='middle',s=12)=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="${s}" fill="${C[col]||col}" style="fill:${C[col]||col}">${t}</text>`;
+const group=(x,y,w,h,t,col='mute')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="none" stroke="${C[col]}" stroke-width="1.5" stroke-dasharray="4 4"/>${label(x+12,y+20,t,col,'start',13)}`;
+
+/* ---------- toggle wrapper ---------- */
+function toggleFig(el,btns,render,cap){
+  const wrap=mkFig(`<div class="ctl"><span class="seg"></span></div><div class="canvas"></div><figcaption class="cap">${cap}</figcaption>`);
+  const seg=wrap.querySelector('.seg'),cv=wrap.querySelector('.canvas');
+  btns.forEach((b,i)=>{const e=document.createElement('button');e.textContent=b[0];e.onclick=()=>{[...seg.children].forEach(x=>x.classList.remove('on'));e.classList.add('on');cv.innerHTML=render(b[1])};seg.appendChild(e);if(i===0)e.click()});
+  el.replaceWith(wrap);
+}
+function mkFig(inner){const h=document.createElement('div');h.innerHTML='<figure class="fig">'+inner+'</figure>';return h.firstChild}
+function staticFig(el,html,cap){el.replaceWith(mkFig(html+`<figcaption class="cap">${cap}</figcaption>`))}
+
+/* ---------- boot: runs after the per-document diagrams file defines mount(q) ---------- */
+function bootSad(){
+  const doc=document.getElementById('doc');
+  try{
+    const {html,slug}=md(window.SAD_MD);
+    doc.innerHTML=html;
+    const back=window.SAD_BACK?`<a class="h2" href="${window.SAD_BACK.href}" target="_top">${esc(window.SAD_BACK.label)}</a>`:'';
+    document.getElementById('nav').innerHTML=back+'<b style="display:block;margin-top:14px;font-size:13px;color:var(--text)">Contents</b>'+slug.filter(s=>s.n===2||s.n===3).map(s=>`<a class="${s.n===2?'h2':''}" href="#${s.id}">${esc(s.t)}</a>`).join('');
+    mount(n=>doc.querySelector(`[data-diagram=${n}]`));
+  }catch(err){doc.innerHTML='<p style="color:#ff6b6b">Could not render this document: '+esc(String(err.message||err))+'</p>'}
+}
+
+</script>
+<script>
+/* ---------- diagrams for the Harbor Street LAN / STP document ---------- */
+function dContext(){
+  return svg(900,420,
+   box(350,150,200,100,'Office LAN','teal','3 switches, 3 VLANs')+
+   box(20,60,170,60,'Floor 1 and 2 hosts','blue','PCs, phones, AP')+box(20,290,170,60,'Network engineer','blue','SSH or console')+
+   box(710,50,170,60,'Router and firewall','mute','Gateway')+box(710,140,170,60,'DHCP and DNS server','mute','Leases, names')+
+   box(710,230,170,60,'Monitoring collector','mute','SNMP, syslog')+
+   arrow(190,95,350,180,'blue','Frames, ARP, DHCP',false,-10,-8)+arrow(190,320,350,230,'blue','show commands',false,0,16)+
+   arrow(550,170,710,80,'mute','Routed traffic',false,0,-6)+arrow(550,200,710,170,'mute','DHCP, DNS',false,0,-8)+
+   arrow(550,230,710,260,'mute','Traps, logs',true,0,16)+
+   label(450,330,'Boundary: host access ports in, router port out','mute')+
+   label(450,400,'Level 1: System Context. Solid = user traffic. Dashed = supporting traffic.','mute'));
+}
+function dContainers(){
+  return svg(900,420,
+   group(150,60,740,230,'One switch: logical building blocks','blue')+
+   box(20,130,110,50,'Frame in','mute')+
+   box(170,120,140,70,'MAC learning','blue','source address to port')+
+   box(340,120,150,70,'Forwarding decision','blue','known: one port, else flood')+
+   box(520,120,150,70,'Port state gate','yellow','only forwarding passes')+
+   box(710,130,150,50,'Frame out','mute')+
+   box(340,230,150,50,'STP engine','teal','roles and states')+
+   box(170,320,150,50,'BPDUs from neighbors','mute')+box(520,320,170,50,'Counters, syslog, SNMP','mute')+
+   arrow(130,155,170,155,'blue')+arrow(310,155,340,155,'blue')+arrow(490,155,520,155,'blue')+arrow(670,155,710,155,'blue')+
+   arrow(415,230,595,190,'teal','sets port states',false,30,-4)+arrow(245,320,360,280,'mute','',false)+arrow(520,345,440,285,'mute','',true)+
+   label(450,40,'Level 3: Components. Teal path is the loop control.','mute'));
+}
+function dSequence(mode){
+  const X=[70,260,450,640,830],N=['Host A','SW2','SW1 (root)','SW3','Host B'];
+  const on=mode==='on';
+  let s=X.map((x,i)=>box(x-60,10,120,34,N[i],i==2?'yellow':i==0||i==4?'mute':'blue')+`<line x1="${x}" y1="44" x2="${x}" y2="${on?330:430}" stroke="${C.line}" stroke-dasharray="4 4"/>`).join('');
+  const msg=(y,a,b,t,col='blue',d=false)=>arrow(X[a],y,X[b],y,col,'',d)+label((X[a]+X[b])/2,y-6,t,'mute');
+  s+=msg(75,0,1,'ARP broadcast')+msg(110,1,2,'flood (copy 1)')+msg(145,1,3,'flood (copy 2)','blue')+msg(180,2,3,'SW1 floods onward');
+  if(on){
+    s+=`<text x="${X[3]-8}" y="148" text-anchor="end" font-size="14" style="fill:${C.coral}">✗</text>`+label(X[3]-22,140,'blocked port discards copy 2','coral','end',11);
+    s+=msg(215,3,4,'delivered once','teal',true);
+    s+=label(450,265,'Copy 2 never gets forwarded. The frame ends here.','teal','middle',14)+
+       label(450,295,'Blocked ports: no forwarding, no sending, no learning.','mute');
+  }else{
+    s+=msg(215,3,4,'delivered','teal',true);
+    s+=msg(250,3,2,'SW3 floods it back','coral')+msg(285,3,1,'and to SW2','coral')+msg(320,2,3,'SW1 floods again','coral')+msg(355,1,2,'SW2 floods again','coral');
+    s+=label(450,395,'No port ever refuses it. Two copies circle forever, one each way.','coral','middle',14)+label(450,420,'Every new broadcast adds two more permanent copies.','mute');
+  }
+  return svg(900,on?340:440,s);
+}
+function dDeploy(cut){
+  const SW={1:[450,40],2:[110,230],3:[690,230]};
+  const sw=(k,t,col,sub)=>box(SW[k][0],SW[k][1],140,56,t,col,sub);
+  let s=sw(1,'SW1','yellow','Root bridge')+sw(2,'SW2','blue','Floor 1 access')+sw(3,'SW3','blue','Floor 2 access')+
+   box(10,330,100,40,'Host A','mute')+box(790,330,100,40,'Host B','mute')+box(740,60,140,44,'Router','mute','Gateway');
+  s+=arrow(160,330,160,286,'mute','',false)+arrow(790,350,780,286,'mute','',false);
+  s+=arrow(590,68,740,82,'mute','',false);
+  const chip=(x,y,t,col)=>`<rect x="${x-38}" y="${y-12}" width="76" height="20" rx="5" fill="#0f1220" stroke="${C[col]}"/>`+label(x,y+3,t,col,'middle',11);
+  // SW1-SW2 link
+  s+=arrow(450,90,220,235,'teal','',false)+chip(420,112,'DP forwarding','teal')+chip(240,215,'RP forwarding','blue');
+  // SW2-SW3 link
+  if(!cut){
+    s+=arrow(250,262,690,262,'blue','',true)+chip(320,282,'DP forwarding','teal')+chip(620,282,'ALT blocked','coral');
+    s+=arrow(520,90,720,235,'teal','',false)+chip(540,112,'DP forwarding','teal')+chip(700,215,'RP forwarding','blue');
+    s+=label(450,330,'The blocked port holds the redundant link in reserve.','mute')+label(450,356,'It still listens to BPDUs, so it knows when to wake up.','mute');
+  }else{
+    s+=`<line x1="520" y1="90" x2="720" y2="235" stroke="${C.coral}" stroke-width="3"/><text x="620" y="170" text-anchor="middle" font-size="26" style="fill:${C.coral}">✗</text>`;
+    s+=arrow(250,262,690,262,'teal','',false)+chip(320,282,'DP forwarding','teal')+chip(620,282,'RP forwarding','blue');
+    s+=label(450,330,'After listening (15 s) and learning (15 s) the old blocked port forwards.','teal')+label(450,356,'Hosts behind SW3 were offline for about 30 seconds (classic 802.1D, direct failure).','mute');
+  }
+  s+=label(450,392,'DP = designated port, RP = root port, ALT = alternate (blocked). Level: Deployment.','mute');
+  return svg(900,410,s);
+}
+
+/* ---------- storm simulator ---------- */
+function simulator(el){
+  const HOP=1.0, MS=400, CAP=36, MAXF=600;
+  const NODE={SW1:{x:450,y:80},SW2:{x:190,y:270},SW3:{x:710,y:270}};
+  const LK={L12:{a:'SW1',b:'SW2'},L13:{a:'SW1',b:'SW3'},L23:{a:'SW2',b:'SW3'}};
+  const PORTS={SW1:['L12','L13'],SW2:['L12','L23'],SW3:['L13','L23']};
+  const w=mkFig(`
+  <div class="ctl">
+    <span class="seg"><button data-s="off">STP off</button><button data-s="on" class="on">STP on</button></span>
+    <button id="send">Send one broadcast from Host A</button>
+    <label>Background broadcasts <input id="rate" type="range" min="0" max="2" step="0.1" value="0"> <b id="ratev">0 per s</b></label>
+  </div>
+  <div class="ctl"><button id="cut" class="danger">Cut link SW1 to SW3</button><button id="go">Pause</button><button id="rst">Reset</button><span style="color:var(--mute);font-size:13px">Time is slowed: 1 simulated second = 0.4 real seconds. Frame hop = 1 simulated second.</span></div>
+  <svg id="simsvg" viewBox="0 0 900 400" role="img" aria-label="Three switches in a triangle. Dots are broadcast frames. Stats below report the result."></svg>
+  <div class="legend"><span><i style="background:${C.blue}"></i>Broadcast frame in flight</span><span><i style="background:${C.coral}"></i>Blocked or cut</span><span><i style="background:${C.yellow}"></i>Listening or learning</span><span><i style="background:${C.teal}"></i>Forwarding</span></div>
+  <div class="stats">
+    <div class="stat"><b id="s-fr">0</b><span>Frames in flight</span></div>
+    <div class="stat"><b id="s-ut">0%</b><span>Link load (toy scale)</span></div>
+    <div class="stat"><b id="s-rx">0</b><span>Copies Host B received</span></div>
+    <div class="stat"><b id="s-dup">0</b><span>Duplicate deliveries</span></div>
+    <div class="stat"><b id="s-mv">0</b><span>MAC table moves</span></div>
+    <div class="stat"><b id="s-out">-</b><span>Hosts behind SW3 offline</span></div>
+  </div>
+  <div id="ban" class="banner"></div>
+  <figcaption class="cap">Teaching model. Each switch floods a broadcast out every forwarding port except the one it arrived on. Link load is frames in flight divided by an arbitrary capacity of ${CAP}. Classic 802.1D timers: 15 s listening, 15 s learning. Not a measurement of any real switch.</figcaption>`);
+  el.replaceWith(w);
+  const $=s=>w.querySelector(s),svgEl=$('#simsvg');
+  let stp,simT,frames,bid,seen,rx,dup,moves,mac,ports,up,sent,drops,outageAt,outageLen,running=true,acc=0,last=null,nextId;
+  function reset(){
+    simT=0;frames=[];bid=0;seen=new Set();rx=0;dup=0;moves=0;mac={};sent=0;drops=[];outageAt=null;outageLen=null;acc=0;nextId=1;
+    up={L12:true,L13:true,L23:true};
+    ports={};for(const n in PORTS){ports[n]={};PORTS[n].forEach(l=>ports[n][l]={state:'forwarding',role:stp?'DP':'-',until:null})}
+    if(stp){ports.SW2.L12.role='RP';ports.SW3.L13.role='RP';ports.SW3.L23={state:'blocked',role:'ALT',until:null}}
+    $('#cut').disabled=false;$('#ban').className='banner';$('#ban').textContent='';
+  }
+  const pos=(n,l,f)=>{const a=NODE[n],b=NODE[l.a===n?l.b:l.a];return {x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f}};
+  function spawn(from,link,id){if(frames.length>=MAXF)return;const lk=LK[link];frames.push({id:nextId++,bid:id,link,from,to:lk.a===from?lk.b:lk.a,t0:simT})}
+  function flood(n,except,id){PORTS[n].forEach(l=>{if(l===except||!up[l])return;if(stp&&ports[n][l].state!=='forwarding')return;spawn(n,l,id)})}
+  function learn(n,port){if(mac[n]!==undefined&&mac[n]!==port)moves++;mac[n]=port}
+  function deliver(n,id){if(n!=='SW3'&&n!=='SW2')return;const key=id+n;if(seen.has(key))dup++;else seen.add(key);if(n==='SW3')rx++}
+  function arrive(f){
+    const n=f.to,p=ports[n][f.link];
+    if(stp&&p.state!=='forwarding'){if(p.state==='learning')learn(n,f.link);const q=pos(n,LK[f.link],0.15);drops.push({x:q.x,y:q.y,t:simT});return}
+    learn(n,f.link);
+    if(n==='SW2'){/* own broadcast came back to Host A */ if(f.bid>0){if(seen.has(f.bid+'A'))dup++;else seen.add(f.bid+'A');dup+=0}}
+    deliver(n,f.bid);
+    flood(n,f.link,f.bid);
+  }
+  function sendOne(){sent++;bid++;mac.SW2='H';seen.add(bid+'A');flood('SW2','H',bid)}
+  function setStp(v){stp=v;w.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('on',(b.dataset.s==='on')===v));reset()}
+  function cut(){
+    up.L13=false;frames=frames.filter(f=>f.link!=='L13');$('#cut').disabled=true;
+    if(stp){ports.SW3.L13={state:'down',role:'-',until:null};ports.SW1.L13={state:'down',role:'-',until:null};
+      ports.SW3.L23={state:'listening',role:'RP',until:simT+15};outageAt=simT}
+    else setBan('warn','Link cut with STP off. The loop is gone, so the storm drains away. Unplugging a cable is how many real storms get stopped.');
+  }
+  function tickStp(){
+    const p=ports.SW3.L23;
+    if(p.until!==null&&simT>=p.until){
+      if(p.state==='listening'){p.state='learning';p.until=simT+15}
+      else if(p.state==='learning'){p.state='forwarding';p.until=null;outageLen=simT-outageAt;
+        setBan('good',`STP converged. The old blocked port is now the root port and forwards. Hosts behind SW3 were offline about ${Math.round(outageLen)} simulated seconds.`)}
+    }
+  }
+  function setBan(k,t){const b=$('#ban');b.className='banner '+k;b.textContent=t}
+  const roleCol=p=>p.state==='forwarding'?'teal':p.state==='blocked'||p.state==='down'?'coral':'yellow';
+  function draw(){
+    let s='';
+    for(const l in LK){
+      const a=NODE[LK[l].a],b=NODE[LK[l].b];
+      const bl=(stp&&(ports[LK[l].a][l].state==='blocked'||ports[LK[l].b][l].state==='blocked'));
+      s+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${!up[l]?C.coral:bl?C.coral:C.line}" stroke-width="4" ${!up[l]||bl?'stroke-dasharray="8 6"':''}/>`;
+      if(!up[l]){const m=pos(LK[l].a,LK[l],0.5);s+=`<text x="${m.x}" y="${m.y+9}" text-anchor="middle" font-size="26" style="fill:${C.coral}">✗</text>`}
+    }
+    s+=`<line x1="190" y1="270" x2="70" y2="350" stroke="${C.line}" stroke-width="3"/><line x1="710" y1="270" x2="830" y2="350" stroke="${C.line}" stroke-width="3"/>`;
+    s+=box(10,340,120,44,'Host A','mute')+box(770,340,120,44,'Host B','mute');
+    const nm={SW1:'SW1 (root)',SW2:'SW2',SW3:'SW3'};
+    for(const n in NODE){const q=NODE[n];s+=box(q.x-60,q.y-26,120,52,nm[n],n==='SW1'?'yellow':'blue')}
+    for(const n in PORTS)PORTS[n].forEach(l=>{
+      const p=ports[n][l];if(!stp&&false)return;const q=pos(n,LK[l],0.27);
+      const t=stp?`${p.role==='-'?'':p.role+' '}${p.state}`:'forwarding';const col=stp?roleCol(p):'teal';
+      s+=`<rect x="${q.x-42}" y="${q.y-10}" width="84" height="19" rx="5" fill="#0f1220" stroke="${C[col]}"/><text x="${q.x}" y="${q.y+4}" text-anchor="middle" font-size="11" style="fill:${C[col]}">${t}</text>`});
+    frames.forEach(f=>{const lk=LK[f.link];const pr=Math.min(1,(simT-f.t0)/HOP);const a=NODE[f.from],b=NODE[f.to];
+      const off=((f.id%3)-1)*5,dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+      s+=`<circle cx="${a.x+dx*pr-dy/len*off}" cy="${a.y+dy*pr+dx/len*off}" r="5" fill="${C.blue}" opacity=".9"/>`});
+    drops=drops.filter(d=>simT-d.t<1.2);
+    drops.forEach(d=>{s+=`<text x="${d.x}" y="${d.y-12}" text-anchor="middle" font-size="22" style="fill:${C.coral}">✗</text>`});
+    const ut=Math.min(1,frames.length/CAP);
+    s+=`<rect x="300" y="360" width="300" height="16" rx="8" fill="#1e2340" stroke="${C.line}"/><rect x="300" y="360" width="${300*ut}" height="16" rx="8" fill="${ut<.5?C.teal:ut<1?C.yellow:C.coral}"/>`+label(450,352,'Link load','mute','middle',12);
+    svgEl.innerHTML=s;
+    $('#s-fr').textContent=frames.length;$('#s-ut').textContent=Math.round(ut*100)+'%';$('#s-rx').textContent=rx;$('#s-dup').textContent=dup;$('#s-mv').textContent=moves;
+    const dn=stp&&outageAt!==null&&outageLen===null;
+    $('#s-out').textContent=outageAt===null?'-':(outageLen!==null?Math.round(outageLen)+' s':Math.round(simT-outageAt)+' s so far');
+    if(dn)setBan('warn',`Link cut. SW3's blocked port is ${ports.SW3.L23.state}. It cannot forward user frames yet, so Host B is unreachable.`);
+    else if(!stp&&ut>=1&&up.L13&&up.L12&&up.L23)setBan('bad','Broadcast storm. Links are saturated and legitimate traffic cannot get through. Turn STP on, or cut a link to break the loop.');
+    else if(!stp&&sent>0&&frames.length>0&&up.L13)setBan('warn',`Every copy keeps circling. No switch ever refuses it. ${frames.length} copies and counting. Each broadcast you send adds two permanent copies.`);
+    else if(stp&&sent>0&&frames.length===0&&outageAt===null&&dup===0)setBan('good','The broadcast reached each host once and ended. The blocked port discarded the only extra copy.');
+  }
+  function frame(ts){
+    if(last===null)last=ts;const dt=(ts-last)/MS;last=ts;
+    if(running){simT+=dt;
+      const rate=+$('#rate').value;if(rate>0){acc+=dt*rate;while(acc>=1){acc-=1;sendOne()}}
+      const due=frames.filter(f=>simT-f.t0>=HOP);frames=frames.filter(f=>simT-f.t0<HOP);due.forEach(arrive);
+      if(stp)tickStp();}
+    draw();requestAnimationFrame(frame);
+  }
+  w.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>setStp(b.dataset.s==='on'));
+  $('#send').onclick=sendOne;$('#cut').onclick=cut;
+  $('#go').onclick=()=>{running=!running;$('#go').textContent=running?'Pause':'Resume'};
+  $('#rst').onclick=()=>reset();
+  $('#rate').oninput=()=>{$('#ratev').textContent=(+$('#rate').value)+' per s'};
+  window.__sim={sendOne,cut,setStp,get frames(){return frames.length},get moves(){return moves},get dup(){return dup},get rx(){return rx},get outage(){return outageLen},get simT(){return simT},fast(sec){const n=Math.round(sec*20);for(let i=0;i<n;i++){simT+=0.05;const due=frames.filter(f=>simT-f.t0>=HOP);frames=frames.filter(f=>simT-f.t0<HOP);due.forEach(arrive);if(stp)tickStp()}}};
+  setStp(true);requestAnimationFrame(frame);
+}
+
+function mount(q){
+  staticFig(q('context'),dContext(),'C4 Level 1. One LAN, five neighbors.');
+  staticFig(q('containers'),dContainers(),'Logical view of one switch. The port state gate is what makes STP work.');
+  toggleFig(q('sequence'),[['STP off (loop)','off'],['STP on (SW3 port blocked)','on']],dSequence,'Process view of one ARP broadcast. Flip the toggle to see where the frame ends.');
+  simulator(q('simulator'));
+  toggleFig(q('deployment'),[['Normal operation',false],['After cutting SW1 to SW3',true]],dDeploy,'Physical view with spanning tree port roles. Flip the toggle for the failover end state.');
+}
+
+bootSad();
+</script>
+</body>
+</html>
