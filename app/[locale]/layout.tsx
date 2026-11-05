@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
@@ -50,6 +51,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <TrackBar />
             <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">{children}</main>
             <SiteFooter />
+            <SpeedInsights />
           </TrackTheme>
         </NextIntlClientProvider>
       </body>
