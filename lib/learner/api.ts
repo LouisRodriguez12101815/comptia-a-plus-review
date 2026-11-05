@@ -24,6 +24,7 @@ export const limits = {
   codePerPhone: createRateLimiter(3, 10 * 60_000),
   checkPerIp: createRateLimiter(10, 10 * 60_000),
   savePerLearner: createRateLimiter(30, 60_000),
+  studyEventPerLearner: createRateLimiter(300, 60 * 60_000),
 };
 
 export function needConfig(): { config: LearnerConfig } | { response: Response } {
