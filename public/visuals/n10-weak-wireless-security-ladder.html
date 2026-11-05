@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WEP, WPA2, WPA3 and enterprise mode</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-size:13px;font-weight:600}
+input[type=range]{width:min(360px,100%);accent-color:var(--accent)}
+figure{margin:8px 0 0}
+svg{width:100%;height:auto;display:block;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+figcaption{margin-top:8px;font-size:13px;color:var(--muted)}
+.out{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+code,.cmd{font-family:ui-monospace,Menlo,Consolas,monospace}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .m{fill:var(--muted)}
+svg .b{stroke:var(--accent);fill:var(--accent-soft)}
+svg .g{stroke:var(--good);fill:var(--good-soft)}
+svg .w{stroke:var(--warm);fill:var(--warm-soft)}
+svg .r{stroke:var(--bad);fill:var(--bad-soft)}
+svg .n{stroke:var(--line);fill:var(--surface)}
+svg rect,svg line,svg path{stroke-width:2}
+svg .ln-b{stroke:var(--accent);fill:none}
+svg .ln-g{stroke:var(--good);fill:none}
+svg .ln-r{stroke:var(--bad);fill:none}
+svg .ln-m{stroke:var(--muted);fill:none}
+svg .dash{stroke-dasharray:6 5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>WEP, WPA2, WPA3 and enterprise mode</h1>
+<p class="lede">Pick a protocol to see what it is built on and the attack it does or does not stop.</p>
+<div class="card">
+  <div class="ctrls" id="modes" role="group" aria-label="Protocol"><button type="button" data-k="wep" aria-pressed="true">WEP</button><button type="button" data-k="wpa2" aria-pressed="false">WPA2-Personal</button><button type="button" data-k="wpa3" aria-pressed="false">WPA3-Personal</button><button type="button" data-k="ent" aria-pressed="false">Enterprise (802.1X)</button><button type="button" data-k="wps" aria-pressed="false">WPS PIN</button></div>
+  <figure>
+    <svg id="svg" viewBox="0 0 760 300" role="img" aria-label="Diagram"></svg>
+    <figcaption id="cap"></figcaption>
+  </figure>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Rules to keep.</strong> WEP is RC4 and obsolete. WPA2 is AES with CCMP. WPA3 replaces the shared-key handshake with SAE. Enterprise mode authenticates each user with 802.1X and a RADIUS server. The WPS PIN method can be brute-forced.</p>
+</div>
+</div>
+<script type="application/json" id="visual-facts">{"kind": "revised", "facts": [{"claim": "WEP uses the RC4 cipher with a short initialization vector and can be cracked in minutes; WPA2 uses AES with CCMP; WPA3 replaces the pre-shared-key handshake with simultaneous authentication of equals (SAE).", "objectives": ["n10-009 2.3"], "sources": ["https://en.wikipedia.org/wiki/Wired_Equivalent_Privacy", "https://en.wikipedia.org/wiki/Wi-Fi_Protected_Access"]}, {"claim": "Enterprise mode authenticates each user through 802.1X with a RADIUS server; the WPS PIN setup method is vulnerable to brute-force attack.", "objectives": ["n10-009 2.3"], "sources": ["https://en.wikipedia.org/wiki/IEEE_802.1X", "https://en.wikipedia.org/wiki/Wi-Fi_Protected_Setup"]}], "simplifications": ["Only the exam-level facts are shown; WPA and TKIP, the 192-bit WPA3-Enterprise suite and transition modes are left out."]}</script>
+<script>
+
+const NS='http://www.w3.org/2000/svg';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const R=(x,y,w,h,c,rx)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx??8}" class="${c}"/>`;
+const T=(x,y,s,o)=>`<text x="${x}" y="${y}" text-anchor="${(o&&o.a)||'middle'}"${o&&o.c?` class="${o.c}"`:''}${o&&o.b?' font-weight="700"':''}>${esc(s)}</text>`;
+const L=(x1,y1,x2,y2,c,arrow)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${c}"${arrow?' marker-end="url(#ah)"':''}/>`;
+const DEFS='<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>';
+function draw(svgId,labelId,inner,label){const s=document.getElementById(svgId);s.innerHTML=DEFS+inner;s.setAttribute('aria-label',label);document.getElementById(labelId).textContent=label;}
+function pressed(groupId,key){document.querySelectorAll('#'+groupId+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===key)));}
+
+
+const S={
+ wep:['WEP','RC4','Obsolete: a short initialization vector lets it be cracked in minutes.','r','Do not use'],
+ wpa2:['WPA2-Personal','AES with CCMP','A shared password. A captured four-way handshake can be guessed offline.','b','Still common'],
+ wpa3:['WPA3-Personal','SAE handshake','Simultaneous authentication of equals replaces the shared-key handshake. Each guess needs a live, rate-limited exchange, so offline guessing fails.','g','Current'],
+ ent:['Enterprise','802.1X + RADIUS','Each user authenticates with individual credentials checked by a RADIUS server. Works with WPA2 or WPA3.','g','Best for organizations'],
+ wps:['WPS PIN','Setup shortcut','The PIN method can be brute-forced. Turn it off.','r','Weak']};
+function show(k){
+ const p=S[k];
+ let s=R(60,60,300,90,p[3])+T(210,100,p[0],{b:1})+T(210,128,p[4],{c:'m'});
+ s+=R(400,60,300,90,'n')+T(550,100,p[1],{b:1})+T(550,128,'what it is built on',{c:'m'});
+ s+=L(360,105,400,105,'ln-m',1);
+ const w=[];let ln='';p[2].split(' ').forEach(x=>{if((ln+' '+x).length>62){w.push(ln);ln=x}else ln=(ln?ln+' ':'')+x});w.push(ln);
+ s+=R(60,180,640,40+w.length*26,'n');w.forEach((t,i)=>{s+=T(380,212+i*26,t,{c:'m'})});
+ draw('svg','cap',s,p[0]+': '+p[1]+'. '+p[2]);document.getElementById('out').innerHTML='<strong>'+p[0]+'</strong> uses <strong>'+p[1]+'</strong>. '+p[2];pressed('modes',k);
+}
+document.querySelectorAll('#modes button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.k)));
+show('wpa2');
+
+</script>
+</body>
+</html>
