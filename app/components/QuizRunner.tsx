@@ -36,7 +36,7 @@ function answerLabel(question: Question, pick: number | number[] | undefined) {
   return indices.map((i) => question.choices[i]).join(" · ");
 }
 
-export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string; questionIds?: string[] }) {
+export function QuizRunner({ initialTopic, questionIds, scoped = false }: { initialTopic: string; questionIds?: string[]; scoped?: boolean }) {
   const t = useTranslations("quizRunner");
   const [focus, setFocus] = useStudyFocus();
   const [topicId, setTopicId] = useState(initialTopic);
@@ -108,10 +108,12 @@ export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string
   if (!started) {
     return (
       <div className="space-y-5">
-        <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-          <ExamFocusPicker focus={focus} onChange={changeFocus} />
-        </section>
-        <select
+        {scoped ? null : (
+          <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+            <ExamFocusPicker focus={focus} onChange={changeFocus} />
+          </section>
+        )}
+        {scoped ? null : <select
           aria-label={t("chooseQuiz")}
           value={topicId}
           onChange={(event) => setTopicId(event.target.value)}
@@ -124,7 +126,7 @@ export function QuizRunner({ initialTopic, questionIds }: { initialTopic: string
               {topic.chapter}: {topic.title}
             </option>
           ))}
-        </select>
+        </select>}
         <p className="text-sm text-slate-400">
           {t("poolSummary", { count: pool.length })}
         </p>
