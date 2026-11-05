@@ -8,6 +8,7 @@ import {
   videoForQuestion,
   visualForQuestion,
 } from "../lib/weak-areas.ts";
+import { n10RemediationForQuestion } from "../lib/n10-remediation.ts";
 
 const question = (id, topicId = "topic-a") => ({
   id,
@@ -111,6 +112,25 @@ test("NTP-source remediation teaches consensus and outlier rejection", () => {
   assert.equal(result.whyWrongKey, "ntpConsensus");
 });
 
+test("addressing misses use the intended contrast clusters and exclude the missed question", () => {
+  const cases = [
+    ["q-n10c7-16", "ipv6-eui64", "eui64BitFlip"],
+    ["q-n10c7-18", "ipv4-private-link-local", "apipaPrefix"],
+    ["q-n10c7-23", "layer2-delivery", "ipBroadcastVsMacBroadcast"],
+    ["q-n10c7-27", "ipv6-eui64", "ipv4Ipv6Representation"],
+  ];
+  const alternatives = cases.map(([id]) => question(id, "n10-ch7"));
+  for (const [id, clusterId, guidanceKey] of cases) {
+    const metadata = n10RemediationForQuestion(id);
+    assert.equal(metadata?.clusterId, clusterId);
+    assert.equal(metadata?.examClueKey, guidanceKey);
+    const result = remediationForQuestion({ question: question(id, "n10-ch7"), misses: 1, latestMissAt: 5 }, { questions: alternatives });
+    assert.equal(result.clusterId, clusterId);
+    assert.equal(result.examClueKey, guidanceKey);
+    assert.equal(result.retryQuestionIds.includes(id), false);
+  }
+});
+
 test("all supported locales provide the authored remediation keys", () => {
   for (const locale of ["en", "es", "fr", "pt"]) {
     const messages = JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
@@ -120,6 +140,32 @@ test("all supported locales provide the authored remediation keys", () => {
     assert.equal(Object.keys(remediation.memoryRules).length, 16);
     assert.equal(Object.keys(remediation.whyWrong).length, 16);
   }
+});
+
+test("all supported locales provide addressing remediation keys", () => {
+  for (const locale of ["en", "es", "fr", "pt"]) {
+    const messages = JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
+    const remediation = messages.weakAreas.addressingRemediation;
+    assert.deepEqual(Object.keys(remediation.clusters).sort(), ["ipv4PrivateLinkLocal", "ipv6Eui64", "layer2Delivery"].sort());
+    assert.equal(Object.keys(remediation.examClues).length, 9);
+    assert.equal(Object.keys(remediation.memoryRules).length, 9);
+    assert.equal(Object.keys(remediation.whyWrong).length, 9);
+    assert.ok(remediation.examClues.eui64BitFlip);
+    assert.ok(remediation.memoryRules.apipaPrefix);
+  }
+});
+
+test("APIPA content uses link-local CIDR terminology", () => {
+  const questions = JSON.parse(readFileSync(new URL("../content/questions.json", import.meta.url), "utf8"));
+  const topics = JSON.parse(readFileSync(new URL("../content/topics-network-plus.json", import.meta.url), "utf8"));
+  const apipaQuestion = questions.find((item) => item.id === "q-n10c7-18");
+  const addressingTopic = topics.find((item) => item.id === "n10-ch7");
+  const topicText = JSON.stringify(addressingTopic);
+  assert.match(apipaQuestion.explanation, /169\.254\.0\.0\/16/);
+  assert.match(apipaQuestion.explanation, /255\.255\.0\.0/);
+  assert.doesNotMatch(apipaQuestion.explanation, /Class B mask/);
+  assert.match(topicText, /169\.254\.0\.0\/16 \(255\.255\.0\.0\)/);
+  assert.doesNotMatch(topicText, /default Class B mask/);
 });
 
 test("saved mock wrong-choice history is shown without fabricating quiz history", () => {
