@@ -1,0 +1,45 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.000 --> 00:00:06.063
+AWS IAM policies come in two flavors, and the difference is simple: what is the policy attached to?
+
+00:00:08.000 --> 00:00:09.177
+Here is a user.
+
+00:00:09.187 --> 00:00:11.140
+And here is an S3 bucket.
+
+00:00:11.150 --> 00:00:15.380
+An identity-based policy is attached to an IAM user, group, or role.
+
+00:00:15.390 --> 00:00:18.500
+It defines what that identity is allowed to do.
+
+00:00:18.600 --> 00:00:20.708
+The permission travels with the caller.
+
+00:00:20.718 --> 00:00:24.004
+So when the user asks for the bucket, the request is allowed.
+
+00:00:25.533 --> 00:00:28.331
+Now watch the same idea attach somewhere else.
+
+00:00:28.341 --> 00:00:35.813
+A resource-based policy attaches to the resource itself, like a bucket policy, and it names the principals who may come in.
+
+00:00:37.733 --> 00:00:38.512
+Same account?
+
+00:00:38.522 --> 00:00:41.149
+A single Allow from either policy is enough.
+
+00:00:41.159 --> 00:00:47.741
+But across accounts, the identity policy must allow the action, and the resource policy must allow the caller.
+
+00:00:47.751 --> 00:00:50.677
+If either side is missing, the request is denied.
+
+00:00:53.800 --> 00:00:58.505
+So next time you read a policy, ask first: what is this attached to?
