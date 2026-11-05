@@ -21,6 +21,13 @@ const progress = {
     questionIds: [questionId],
     missedIds: [questionId],
     at: Date.now(),
+  }, {
+    topicId: "n10-dhcp-ipam-time",
+    correct: 0,
+    total: 1,
+    questionIds: ["q-n10dhcp-05"],
+    missedIds: ["q-n10dhcp-05"],
+    at: Date.now() + 1,
   }],
   mockAttempts: [],
   schedules: {},
@@ -39,6 +46,15 @@ try {
 
   const card = page.locator(`[data-remediation-card="${questionId}"]`);
   await card.waitFor();
+
+  const clusterCard = page.locator('[data-remediation-card="q-n10dhcp-05"]');
+  await clusterCard.waitFor();
+  await page.locator('[data-cluster-summary] [data-cluster-id="dhcp-lifecycle"]').waitFor();
+  assert.ok(await clusterCard.locator("[data-remediation-clue]").count() === 1);
+  assert.ok(await clusterCard.locator("[data-remediation-rule]").count() === 1);
+  const retryHref = await clusterCard.locator("[data-remediation-retry]").getAttribute("href");
+  assert.match(retryHref, /questions=/);
+  assert.equal(retryHref.includes("q-n10dhcp-05"), false);
 
   assert.match(await card.textContent(), /static default route/i);
   assert.ok(await card.locator("[data-remediation-video]").count() > 0);

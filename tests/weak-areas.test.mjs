@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   rankMissedQuestions,
+  rankMissedClusters,
   remediationForQuestion,
   videoForQuestion,
   visualForQuestion,
@@ -76,6 +77,46 @@ test("repeated misses are prioritized, with recency breaking ties", () => {
     rankMissedQuestions(progress, [question("q1"), question("q2")]).map((row) => row.question.id),
     ["q1", "q2"],
   );
+});
+
+test("missed clusters rank by count, recency, and stable id", () => {
+  const rows = [
+    { clusterId: "time", clusterLabel: "Time", misses: 2, latestMissAt: 10 },
+    { clusterId: "dhcp", clusterLabel: "DHCP", misses: 2, latestMissAt: 20 },
+    { clusterId: "ipam", clusterLabel: "IPAM", misses: 1, latestMissAt: 30 },
+  ];
+  assert.deepEqual(rankMissedClusters(rows), [rows[1], rows[0], rows[2]]);
+});
+
+test("missing cluster metadata falls back to the topic and remains deterministic", () => {
+  const result = remediationForQuestion({ question: question("q-unknown", "topic-a"), misses: 1, latestMissAt: 5 }, { topicTitleFor: () => "Fallback topic" });
+  assert.equal(result.clusterId, "topic:topic-a");
+  assert.equal(result.clusterLabel, "Fallback topic");
+  assert.equal(result.examClue, undefined);
+  assert.equal(result.memoryRule, undefined);
+});
+
+test("authored N10 clue and memory rule are available for the DHCP cluster", () => {
+  const result = remediationForQuestion({ question: question("q-n10dhcp-06", "n10-dhcp-ipam-time"), misses: 1, latestMissAt: 5 });
+  assert.match(result.examClue, /87\.5%/);
+  assert.match(result.memoryRule, /T2/);
+  assert.match(result.whyWrong, /T2/);
+});
+
+test("saved mock wrong-choice history is shown without fabricating quiz history", () => {
+  const progress = emptyProgress();
+  progress.quizAttempts = [{ topicId: "topic-a", questionIds: ["q1"], missedIds: ["q1"], at: 1 }];
+  progress.mockAttempts = [{ questionIds: ["q1"], missedIds: ["q1"], wrongChoices: { q1: 1 }, at: 2 }];
+  const ranked = rankMissedQuestions(progress, [question("q1")]);
+  assert.equal(ranked[0].selectedChoice, 1);
+  const withoutMock = rankMissedQuestions({ ...progress, mockAttempts: [] }, [question("q1")]);
+  assert.equal(withoutMock[0].selectedChoice, undefined);
+});
+
+test("concept retry excludes the same missed question when alternatives exist", () => {
+  const missed = { question: question("q-n10dhcp-05", "n10-dhcp-ipam-time"), misses: 1, latestMissAt: 5 };
+  const result = remediationForQuestion(missed, { questions: [question("q-n10dhcp-04", "n10-dhcp-ipam-time"), missed.question, question("q-n10dhcp-06", "n10-dhcp-ipam-time")] });
+  assert.deepEqual(result.retryQuestionIds, ["q-n10dhcp-04", "q-n10dhcp-06"]);
 });
 
 test("mock-test misses and older attempts without questionIds remain supported", () => {

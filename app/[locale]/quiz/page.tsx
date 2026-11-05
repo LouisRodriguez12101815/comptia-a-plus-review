@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EnsureTopicFocus } from "@/app/components/EnsureTopicFocus";
 import { focusForTopic } from "@/lib/chapter";
-import { getTopic } from "@/lib/content";
+import { getTopic, questions as allQuestions } from "@/lib/content";
 import { getConcept } from "@/lib/concepts";
 import { getDomainQuiz } from "@/lib/domain-quiz";
 import { QuizRunner } from "@/app/components/QuizRunner";
@@ -20,9 +20,12 @@ export default async function QuizPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("quizPage");
-  const { topic, domain: domainParam, concept: conceptParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string };
+  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string };
   const concept = getConcept(conceptParam);
   const domain = getDomainQuiz(domainParam);
+  const questionIds = questionIdsParam
+    ? [...new Set(questionIdsParam.split(",").filter((id) => allQuestions.some((question) => question.id === id)))]
+    : undefined;
   const chapter = topic && !domain && !concept ? getTopic(topic) : undefined;
   return (
     <div className="space-y-6">
@@ -37,7 +40,9 @@ export default async function QuizPage({
       {chapter && <ChapterStrip topicId={chapter.id} current="quiz" />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       {(domain || concept) && <EnsureTopicFocus codes={["n10-009"]} preferred="n10-009" />}
-      {concept ? (
+      {questionIds && questionIds.length > 0 ? (
+        <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped />
+      ) : concept ? (
         <QuizRunner initialTopic="all" questionIds={concept.questionIds} scoped />
       ) : domain ? (
         <QuizRunner initialTopic="all" questionIds={domain.questionIds} scoped />
