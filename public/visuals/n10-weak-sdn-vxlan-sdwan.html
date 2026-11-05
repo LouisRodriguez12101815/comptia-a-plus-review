@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SDN planes, VXLAN and SD-WAN local breakout</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-size:13px;font-weight:600}
+input[type=range]{width:min(360px,100%);accent-color:var(--accent)}
+figure{margin:8px 0 0}
+svg{width:100%;height:auto;display:block;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+figcaption{margin-top:8px;font-size:13px;color:var(--muted)}
+.out{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+code,.cmd{font-family:ui-monospace,Menlo,Consolas,monospace}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .m{fill:var(--muted)}
+svg .b{stroke:var(--accent);fill:var(--accent-soft)}
+svg .g{stroke:var(--good);fill:var(--good-soft)}
+svg .w{stroke:var(--warm);fill:var(--warm-soft)}
+svg .r{stroke:var(--bad);fill:var(--bad-soft)}
+svg .n{stroke:var(--line);fill:var(--surface)}
+svg rect,svg line,svg path{stroke-width:2}
+svg .ln-b{stroke:var(--accent);fill:none}
+svg .ln-g{stroke:var(--good);fill:none}
+svg .ln-r{stroke:var(--bad);fill:none}
+svg .ln-m{stroke:var(--muted);fill:none}
+svg .dash{stroke-dasharray:6 5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>SDN planes, VXLAN and SD-WAN local breakout</h1>
+<p class="lede">Four ideas from objective 1.8 that the practice quiz keeps mixing up. Pick a view and read the picture, then the rule underneath it.</p>
+<div class="card">
+  <div class="ctrls" id="modes" role="group" aria-label="View"><button type="button" data-k="trad" aria-pressed="true">Planes in one device</button><button type="button" data-k="sdn" aria-pressed="false">SDN controller</button><button type="button" data-k="vx" aria-pressed="false">VXLAN wrapper</button><button type="button" data-k="hair" aria-pressed="false">SD-WAN: hairpin</button><button type="button" data-k="lb" aria-pressed="false">SD-WAN: local breakout</button></div>
+  <figure>
+    <svg id="svg" viewBox="0 0 760 300" role="img" aria-label="Diagram"></svg>
+    <figcaption id="cap"></figcaption>
+  </figure>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Rules to keep.</strong> The control plane builds the routing and switching tables, the data plane forwards using them, and the management plane is how you configure the device. VXLAN is UDP port 4789 with a 24-bit VNI. Local breakout sends trusted application traffic straight to the cloud instead of through headquarters.</p>
+</div>
+</div>
+<script type="application/json" id="visual-facts">{"kind": "revised", "facts": [{"claim": "A network device has a management plane (configuration), a control plane (builds forwarding and routing tables) and a data plane (forwards packets using those tables). SDN moves the control plane into a central controller.", "objectives": ["n10-009 1.8"], "sources": ["https://www.rfc-editor.org/rfc/rfc7426"]}, {"claim": "VXLAN encapsulates Ethernet frames in UDP on destination port 4789 and identifies each segment with a 24-bit VXLAN Network Identifier (VNI), about 16.7 million segments; a VLAN ID is 12 bits.", "objectives": ["n10-009 1.8"], "sources": ["https://www.rfc-editor.org/rfc/rfc7348", "https://en.wikipedia.org/wiki/IEEE_802.1Q"]}, {"claim": "SD-WAN local breakout lets a branch edge send trusted internet and SaaS traffic directly out of the branch based on application-aware policy instead of backhauling it through headquarters.", "objectives": ["n10-009 1.8"], "sources": ["https://docs.versa-networks.com/Secure_SD-WAN/01_Configuration_from_Director/SD-WAN_Configuration/Advanced_SD-WAN_Configuration/Configure_Direct_Breakout_to_the_Internet", "https://www.networkacademy.io/index.php/ccie-enterprise/sdwan/direct-internet-access-nat-dia"]}], "simplifications": ["The diagrams show one controller and three switches; real SDN designs add redundant controllers.", "Routers and switches also keep some control-plane work locally; the picture shows the textbook split.", "Path delay is shown as a longer line, not a measurement."]}</script>
+<script>
+
+const NS='http://www.w3.org/2000/svg';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const R=(x,y,w,h,c,rx)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx??8}" class="${c}"/>`;
+const T=(x,y,s,o)=>`<text x="${x}" y="${y}" text-anchor="${(o&&o.a)||'middle'}"${o&&o.c?` class="${o.c}"`:''}${o&&o.b?' font-weight="700"':''}>${esc(s)}</text>`;
+const L=(x1,y1,x2,y2,c,arrow)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${c}"${arrow?' marker-end="url(#ah)"':''}/>`;
+const DEFS='<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>';
+function draw(svgId,labelId,inner,label){const s=document.getElementById(svgId);s.innerHTML=DEFS+inner;s.setAttribute('aria-label',label);document.getElementById(labelId).textContent=label;}
+function pressed(groupId,key){document.querySelectorAll('#'+groupId+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===key)));}
+
+
+const info={
+ trad:['In one device all three planes sit inside the box.','<strong>Control plane</strong> builds the routing and MAC tables. <strong>Data plane</strong> looks each packet up and forwards it. <strong>Management plane</strong> is how you configure it (SSH, SNMP). A routing table is a control-plane product, not a management-plane one.'],
+ sdn:['In SDN the control plane moves into a central controller.','The controller pushes forwarding rules down to the switches. The switches keep the data plane. One brain, many simple forwarders.'],
+ vx:['VXLAN wraps the original Ethernet frame in UDP, port 4789, with a 24-bit VNI.','<strong>2<sup>24</sup> = 16,777,216</strong> segments, against <strong>2<sup>12</sup> = 4,096</strong> for a VLAN ID. Port 5060 is SIP voice, not VXLAN.'],
+ hair:['Old way: branch cloud traffic detours through headquarters (hairpinning).','The packet goes to headquarters first and then out to the cloud service, adding delay.'],
+ lb:['Local breakout: the branch sends application traffic straight to the cloud.','Application-aware policy recognises email or web apps and breaks them out locally. DHCP only hands out an address and gateway; it does not choose per-application paths.']};
+function show(k){
+ let s='';
+ if(k==='trad'){
+  s+=R(180,20,400,260,'n',14)+T(380,44,'Router or switch',{b:1});
+  s+=R(220,60,320,60,'w')+T(380,86,'Management plane',{b:1})+T(380,106,'you configure it: SSH, SNMP',{c:'m'});
+  s+=R(220,140,320,60,'g')+T(380,166,'Control plane',{b:1})+T(380,186,'builds the routing and MAC tables',{c:'m'});
+  s+=R(220,220,320,50,'b')+T(380,242,'Data plane',{b:1})+T(380,260,'forwards each packet using the tables',{c:'m'});
+  s+=L(380,220,380,200,'ln-m dash',1);
+ }else if(k==='sdn'){
+  s+=R(270,20,220,60,'g')+T(380,46,'SDN controller',{b:1})+T(380,66,'control plane',{c:'m'});
+  [[110,'Switch 1'],[330,'Switch 2'],[550,'Switch 3']].forEach(a=>{s+=R(a[0],190,100,60,'b')+T(a[0]+50,216,a[1],{b:1})+T(a[0]+50,236,'data plane',{c:'m'});s+=L(380,80,a[0]+50,190,'ln-g',1);});
+  s+=T(530,118,'forwarding rules pushed down',{a:'start',c:'m'});
+ }else if(k==='vx'){
+  s+=R(20,120,90,50,'b')+T(65,150,'VM A',{b:1})+R(650,120,90,50,'b')+T(695,150,'VM B',{b:1});
+  s+=R(270,20,220,40,'n')+T(380,45,'Outer IP');
+  s+=R(270,66,220,40,'w')+T(380,91,'UDP port 4789',{b:1});
+  s+=R(270,112,220,40,'g')+T(380,137,'VXLAN header: 24-bit VNI',{b:1});
+  s+=R(270,158,220,40,'b')+T(380,183,'Original Ethernet frame');
+  s+=L(110,145,270,145,'ln-m dash',1)+L(490,145,650,145,'ln-m dash',1);
+  s+=T(380,240,'VNI: 2^24 = 16,777,216 segments   |   VLAN ID: 2^12 = 4,096',{b:1})+T(380,266,'5060 is the SIP voice port, not VXLAN',{c:'m'});
+ }else{
+  s+=R(30,200,110,50,'b')+T(85,230,'Branch',{b:1})+R(325,30,110,50,'w')+T(380,60,'Headquarters',{b:1})+R(620,200,110,50,'g')+T(675,230,'Cloud email',{b:1});
+  if(k==='hair'){s+=L(110,200,335,80,'ln-r',1)+L(425,80,650,200,'ln-r',1)+T(380,150,'hairpin: extra delay',{c:'m'});}
+  else{s+=L(140,225,620,225,'ln-g',1)+T(380,205,'direct: email and web apps break out locally',{b:1})+T(380,270,'policy: trusted apps go local',{c:'m'});}
+ }
+ draw('svg','cap',s,info[k][0]);document.getElementById('out').innerHTML=info[k][1];pressed('modes',k);
+}
+document.querySelectorAll('#modes button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.k)));
+show('trad');
+
+</script>
+</body>
+</html>

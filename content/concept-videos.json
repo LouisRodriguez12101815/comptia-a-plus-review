@@ -52,6 +52,58 @@
     "transcript": "CompTIA Network Plus, domain 1, Networking concepts, which is 23 percent of the exam. This lesson covers objective 1 point 6. Compare and contrast network topologies, architectures, and types. Under provider links, there's one that depends on how far away you are. D S L delivers internet over ordinary telephone lines. The farther your home or office is from the provider's equipment, the weaker the signal, and the slower the connection. Distance goes up, speed goes down. That is the signature of D S L. If a question mentions telephone lines and speed that drops with distance from the provider, the answer is D S L. That's objective one point six."
   },
   {
+    "slug": "sd-wan-local-breakout",
+    "title": "SD-WAN Local Breakout: Skip the Headquarters Detour",
+    "description": "With local breakout an SD-WAN edge sends trusted cloud application traffic straight out of the branch instead of through headquarters. Network+ N10-009 objective 1.8.",
+    "exam": "n10-009",
+    "objective": "1.8",
+    "topicId": "n10-sdn-overlay",
+    "questionId": "q-n10sdn-09",
+    "duration": 67.0,
+    "published": "2026-11-05",
+    "takeaway": "Local breakout = app traffic goes direct, not via HQ",
+    "transcript": "CompTIA Network Plus, domain 1, Networking concepts, which is 23 percent of the exam. This lesson covers objective 1 point 8. Summarize evolving use cases for modern network environments. Today's concept: why a branch user's email goes straight to the cloud in an SD-WAN. A branch office, a headquarters, and a cloud email service. The old way sent everything to headquarters first, and then out to the cloud. That detour is called hairpinning, and it adds delay. With SD-WAN local breakout, the branch edge device recognizes the application and sends trusted cloud traffic straight to the nearest service. DHCP is not the reason. It only gives out an address and a default gateway. It does not choose a path per application. For the exam, when branch cloud traffic skips headquarters, the answer is local breakout, driven by application-aware policy. DHCP only hands out addresses and a gateway. That's objective one point eight."
+  },
+  {
+    "slug": "sdn-control-plane-vs-data-plane",
+    "title": "SDN: Control, Data and Management Planes",
+    "description": "The control plane builds routing and switching tables, the data plane forwards packets, and the management plane is how you configure the device. SDN centralizes the control plane. Network+ N10-009 1.8.",
+    "exam": "n10-009",
+    "objective": "1.8",
+    "topicId": "n10-sdn-overlay",
+    "questionId": "q-n10sdn-02",
+    "duration": 78.9,
+    "published": "2026-11-05",
+    "takeaway": "Control plane builds tables, data plane forwards",
+    "transcript": "CompTIA Network Plus, domain 1, Networking concepts, which is 23 percent of the exam. This lesson covers objective 1 point 8. Summarize evolving use cases for modern network environments. Today's concept: the three planes of a network device, and which one builds the tables. Every router and switch does three jobs. Each job is called a plane. The management plane is how you configure the device, for example over SSH or SNMP. The control plane is the brain. It builds the routing table and the switching table. The data plane does the work. For every packet it looks up the table and forwards it. It never builds the table itself. A common mistake is to say management plane, because you configure things there. But configuring is not building the tables. In software-defined networking, the control plane moves into one central controller. The controller pushes forwarding rules down to the switches. The switches keep only the data plane. On the exam, ask who builds the routing and switching tables. That is the control plane. The data plane only forwards, and the management plane is how you configure the device. That's objective one point eight."
+  },
+  {
+    "slug": "vxlan-udp-4789-and-24-bit-vni",
+    "title": "VXLAN: UDP Port 4789 and the 24-Bit VNI",
+    "description": "VXLAN wraps a Layer 2 frame in UDP port 4789 and tags it with a 24-bit VNI, about 16 million segments versus 4,094 usable VLANs. Network+ N10-009 objective 1.8.",
+    "exam": "n10-009",
+    "objective": "1.8",
+    "topicId": "n10-sdn-overlay",
+    "questionId": "q-n10sdn-14",
+    "duration": 76.2,
+    "published": "2026-11-05",
+    "takeaway": "VXLAN = UDP 4789, 24-bit VNI",
+    "transcript": "CompTIA Network Plus, domain 1, Networking concepts, which is 23 percent of the exam. This lesson covers objective 1 point 8. Summarize evolving use cases for modern network environments. Today's concept: the two numbers to remember for VXLAN. Two virtual machines sit in different racks, with a routed IP network between them. They need to behave as if they share one Layer 2 network. So VXLAN takes the original Ethernet frame and wraps it. The wrapper is a UDP packet addressed to port four seven eight nine, plus a VXLAN header that carries the VNI, the virtual network identifier. A VLAN ID has twelve bits, so about four thousand segments. The VNI has twenty four bits, which is more than sixteen million segments. If an answer offers five oh six oh, that is the SIP voice port. VXLAN is four seven eight nine. For the exam, VXLAN means UDP port four seven eight nine and a twenty four bit VNI. Five oh six oh is the port for SIP voice, and a VLAN ID is only twelve bits. That's objective one point eight."
+  },
+  {
+    "slug": "administrative-distance-beats-metric",
+    "title": "Administrative Distance Is Compared Before Metric",
+    "description": "A router compares administrative distance first and installs the lowest. Metrics only choose between routes from the same source. Network+ N10-009 objective 2.1.",
+    "exam": "n10-009",
+    "objective": "2.1",
+    "topicId": "n10-ch10",
+    "questionId": "q-n10c10-03",
+    "duration": 77.6,
+    "published": "2026-11-05",
+    "takeaway": "Lowest AD wins · metric only breaks ties",
+    "transcript": "CompTIA Network Plus, domain 2, Network implementation, which is 20 percent of the exam. This lesson covers objective 2 point 1. Explain characteristics of routing technologies. Today's concept: when two routes disagree, what does the router compare first? A router learns a default route two ways. One is typed in by an administrator, a static route. The other is learned from RIP. RIP shows a lower metric, just one hop. That tempts people to choose RIP. But the router does not compare those numbers first. First it compares administrative distance, which measures how much the router trusts the source. Static is one. RIP is one hundred twenty. One is lower than one hundred twenty, so the static route is installed. The decision is made before the metric is ever looked at. Metric only matters when two routes come from the same protocol, such as two RIP paths with one hop and three hops. For the exam, administrative distance decides between route sources, and the lowest one wins. Metric is only used to choose among routes from the same protocol. That's objective two point one."
+  },
+  {
     "slug": "glbp-load-balancing-gateways",
     "title": "GLBP: First Hop Redundancy With Load Balancing",
     "description": "GLBP is the first hop redundancy protocol that can spread client traffic across several gateways at once, unlike HSRP and VRRP. Network+ N10-009 objective 2.1.",
@@ -63,6 +115,32 @@
     "published": "2026-11-03",
     "takeaway": "Spread traffic across gateways = GLBP",
     "transcript": "CompTIA Network Plus, domain 2, Network implementation, which is 20 percent of the exam. This lesson covers objective 2 point 1. Explain characteristics of routing technologies. Inside it, first hop redundancy protocols. Which one can share the load? Three clients share two gateways for redundancy. With H S R P or V R R P, one router is active, or master, and carries all the traffic. The other waits as a standby. G L B P, which is Cisco proprietary, changes that. It hands out different gateways to different clients, so both routers forward traffic at the same time. HSRP and VRRP normally send everything through one active router. G L B P adds load balancing across the gateways. That's objective two point one."
+  },
+  {
+    "slug": "bssid-changes-essid-stays-when-roaming",
+    "title": "Roaming: The BSSID Changes, the ESSID Stays",
+    "description": "When a client roams between access points in one wireless network, the BSSID of the access point changes while the ESSID, the network name, stays the same. Network+ N10-009 objective 2.3.",
+    "exam": "n10-009",
+    "objective": "2.3",
+    "topicId": "n10-wireless-standards-security",
+    "questionId": "q-n10wl-26",
+    "duration": 67.4,
+    "published": "2026-11-05",
+    "takeaway": "Roaming: new BSSID, same ESSID",
+    "transcript": "CompTIA Network Plus, domain 2, Network implementation, which is 20 percent of the exam. This lesson covers objective 2 point 3. Given a scenario, select and configure wireless devices and technologies. Today's concept: what changes, and what does not, when a user roams between access points. Two access points broadcast the same network name, Office. That shared name is the ESSID. But each access point radio has its own hardware address, the BSSID. A user sits near the first access point. The laptop is associated with BSSID zero one. The user walks across the building. The laptop moves to the second access point. The BSSID changed from zero one to zero two. The ESSID stayed Office, so the user notices nothing. For the exam, the network name is the ESSID, and it stays the same while you roam. The BSSID identifies each access point's radio, so it changes. That's objective two point three."
+  },
+  {
+    "slug": "wifi-6-6e-and-7-generations",
+    "title": "Wi-Fi 6, 6E and 7: Which Is Which?",
+    "description": "802.11ax is Wi-Fi 6 on 2.4 and 5 GHz, Wi-Fi 6E adds the 6 GHz band, and 802.11be is Wi-Fi 7 with multi-link operation. Network+ N10-009 objective 2.3.",
+    "exam": "n10-009",
+    "objective": "2.3",
+    "topicId": "n10-wireless-standards-security",
+    "questionId": "q-n10wl-13",
+    "duration": 80.9,
+    "published": "2026-11-05",
+    "takeaway": "ax = Wi-Fi 6 · 6E = 6 GHz · be = Wi-Fi 7 (MLO)",
+    "transcript": "CompTIA Network Plus, domain 2, Network implementation, which is 20 percent of the exam. This lesson covers objective 2 point 3. Given a scenario, select and configure wireless devices and technologies. Today's concept: matching Wi-Fi generations to standards, bands and features. Here are the recent generations, from Wi-Fi four to Wi-Fi seven. Each has an IEEE standard behind it. Eight oh two dot eleven N, A C, A X, and B E. Wi-Fi six uses the two point four and five gigahertz bands. Wi-Fi six E is the same standard, extended into the six gigahertz band. Wi-Fi seven uses all three. Two features separate them. BSS coloring is a Wi-Fi six feature, it tags frames so an access point can ignore a neighbor on the same channel. Multi-link operation arrives with Wi-Fi seven. So ax is Wi-Fi six, not seven. And five gigahertz is not the new band. The new band is six gigahertz. For the exam, eight oh two dot eleven A X is Wi-Fi six. Six E adds the six gigahertz band. Eight oh two dot eleven B E is Wi-Fi seven, and it brings multi-link operation. That's objective two point three."
   },
   {
     "slug": "twisted-pair-100-meter-channel",
@@ -117,6 +195,19 @@
     "transcript": "CompTIA Network Plus, domain 3, Network operations, which is 19 percent of the exam. This lesson covers objective 3 point 5. Compare and contrast network access and management methods. Today's concept is out-of-band management. Normally an admin manages a switch over the same production network that carries everyone's traffic. That's in-band. Out-of-band adds a second, dedicated path, like a console server, that does not depend on production. Independence is the test. A management VLAN on the production switches is still in-band. Now the production network fails. The in-band path is gone. But the admin can still reach the switch, because the dedicated path never touched production. For the exam, out-of-band means a dedicated path that is independent of production. If the network is down and you can still manage the device, that's out-of-band. That's objective three point five."
   },
   {
+    "slug": "tacacs-plus-tcp-49-vs-radius-udp-1812",
+    "title": "TACACS+ Uses TCP 49, RADIUS Uses UDP 1812",
+    "description": "TACACS+ runs over TCP port 49, while RADIUS authentication uses UDP port 1812. Network+ N10-009 objective 4.1.",
+    "exam": "n10-009",
+    "objective": "4.1",
+    "topicId": "n10-risk-compliance",
+    "questionId": "q-n10risk-08",
+    "duration": 71.8,
+    "published": "2026-11-05",
+    "takeaway": "TACACS+ = TCP 49 · RADIUS = UDP 1812/1813",
+    "transcript": "CompTIA Network Plus, domain 4, Network security, which is 14 percent of the exam. This lesson covers objective 4 point 1. Explain the importance of basic network security concepts. Today's concept: the transport and port for TACACS plus, and how it differs from RADIUS. A network device sends logins to an AAA server. Two common choices are TACACS plus and RADIUS. TACACS plus travels over TCP, port forty nine. RADIUS travels over UDP. Port eighteen twelve carries authentication, and port eighteen thirteen carries accounting. The common mix-up is to pair TACACS plus with UDP eighteen twelve. That port belongs to RADIUS. A simple hook: T for TCP, T for TACACS plus. TACACS plus also protects the whole packet body, while RADIUS hides only the password. For the exam, TACACS plus is T for TCP, port forty nine. RADIUS is UDP, with eighteen twelve for authentication and eighteen thirteen for accounting. That's objective four point one."
+  },
+  {
     "slug": "dnssec-is-not-encryption",
     "title": "DNSSEC Does Not Hide Your DNS Queries",
     "description": "DNSSEC proves who sent a DNS answer and that it was not changed, but it does not encrypt the lookup. Network+ N10-009 objective 4.3.",
@@ -154,5 +245,18 @@
     "published": "2026-11-03",
     "takeaway": "Has an IP but can't reach neighbors: check the port's VLAN",
     "transcript": "CompTIA Network Plus, domain 5, Network troubleshooting, which is 24 percent of the exam. This lesson covers objective 5 point 3. Given a scenario, troubleshoot common issues with network services. Here's a classic scenario. The device has an address, but nothing works. Three PCs on one switch. A and B work together fine. PC C got an address by D H C P, but it can't reach its neighbors. Notice its port sits in a different VLAN, so it landed on a different network. The port's VLAN decides the subnet, and the subnet decides who you can reach. So check the VLAN on the switch port first. Move the port into the right VLAN and the problem goes away. When a device gets a DHCP address but can't talk to neighbors that work fine, check the V LAN assigned to its switch port first. That's objective five point three."
+  },
+  {
+    "slug": "ip-addr-vs-ipconfig-vs-tracert",
+    "title": "ip addr, ipconfig and tracert: Which OS, Which Job?",
+    "description": "On modern Linux, ip addr shows IP address information. ipconfig is the Windows equivalent, and tracert traces a path rather than showing an address. Network+ N10-009 objective 5.5.",
+    "exam": "n10-009",
+    "objective": "5.5",
+    "topicId": "n10-troubleshoot-tools",
+    "questionId": "q-n10t-14",
+    "duration": 72.8,
+    "published": "2026-11-05",
+    "takeaway": "Show my IP: ip addr (Linux) · ipconfig (Windows)",
+    "transcript": "CompTIA Network Plus, domain 5, Network troubleshooting, which is 24 percent of the exam. This lesson covers objective 5 point 5. Given a scenario, use the appropriate tool or protocol to solve networking issues. Today's concept: three commands that look alike, and which operating system and job each belongs to. Two jobs, two operating systems. The first job is showing your own IP address information. The second is tracing the path to another host. On modern Linux, ip addr shows the address. On Windows, the command is ipconfig. Linux still has the older ifconfig, but ip is the modern tool. For tracing, Linux uses traceroute and Windows uses tracert. So tracert is the wrong answer for a question about address information. It lists the routers along a path. It does not show your own address. For the exam, to see IP address information on modern Linux, use IP space ADDR. Ipconfig is Windows. And tracert traces a path, it does not show your address. That's objective five point five."
   }
 ]
