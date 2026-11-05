@@ -2,18 +2,26 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { ExplanationText } from "@/app/components/ExplanationText";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
-import { getQuestions, getTopics, questions as allQuestions } from "@/lib/content";
+import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuestions } from "@/lib/content";
+import { conceptVideos } from "@/lib/concept-videos";
 import { freshFirstIds, shuffleQuestionChoices } from "@/lib/exam-test.mjs";
 import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
 import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback";
+import { selectInlineRemediation } from "@/lib/inline-remediation";
+import { rankMissedQuestions } from "@/lib/weak-areas";
+import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
+import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
 
 export function QuizRunner({ initialTopic, questionIds, scoped = false }: { initialTopic: string; questionIds?: string[]; scoped?: boolean }) {
   const t = useTranslations("quizRunner");
+  const remediationT = useTranslations("weakAreas.remediation");
+  const addressingT = useTranslations("weakAreas.addressingRemediation");
   const [focus, setFocus] = useStudyFocus();
   const [topicId, setTopicId] = useState(initialTopic);
   const [started, setStarted] = useState(false);
@@ -33,9 +41,30 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
 
   const current = quiz[index];
   const multi = current !== undefined && Array.isArray(current.answer);
+  const revealed = current !== undefined && answers[current.id] !== undefined;
+  const correct = current !== undefined && revealed && isCorrectPick(current, answers[current.id]);
   const correctCount = quiz.filter((question) =>
     isCorrectPick(question, answers[question.id]),
   ).length;
+  const inlineRemediation = useMemo(() => {
+    if (!current || !revealed || correct) return undefined;
+    const priorMisses = rankMissedQuestions(getProgressSnapshot(), allQuestions)
+      .find((row) => row.question.id === current.id)?.misses ?? 0;
+    const resourceFocus = current.examCodes?.[0] ?? getTopic(current.topicId)?.examCodes[0] ?? focus;
+    const pick = answers[current.id];
+    return selectInlineRemediation(current, {
+      selectedChoice: typeof pick === "number" ? pick : undefined,
+      priorMisses,
+      flashcards: getFlashcards(current.topicId, resourceFocus),
+      videos: conceptVideos,
+      visualsForTopic: visualItemsForTopic,
+      questions: allQuestions,
+    });
+  }, [answers, correct, current, focus, revealed]);
+
+  const guidance = (section: string, key: string) => n10AddressingGuidanceKeys.has(key)
+    ? addressingT(`${section}.${key}` as never)
+    : remediationT(`${section}.${key}` as never);
 
   function changeFocus(nextFocus: StudyFocus) {
     setFocus(nextFocus);
@@ -164,9 +193,6 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     );
   }
 
-  const revealed = answers[current.id] !== undefined;
-  const correct = revealed && isCorrectPick(current, answers[current.id]);
-
   return (
     <div className="space-y-5">
       <p className="text-sm text-slate-400">
@@ -234,6 +260,28 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
           <p className="text-slate-300">
             <ExplanationText text={current.explanation} />
           </p>
+          {!correct && inlineRemediation && (
+            <details data-inline-remediation className="mt-4 rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+              <summary data-inline-remediation-toggle className="cursor-pointer font-semibold text-amber-200">{t("learnThisNow")}</summary>
+              <div className="mt-3 space-y-3 text-slate-300">
+                <p className="text-xs uppercase tracking-wide text-slate-400">{t("learnThisNowIntro")}</p>
+                {inlineRemediation.priorMisses > 0 && <p data-inline-repeated-miss className="text-amber-200">{t("repeatedMiss", { count: inlineRemediation.priorMisses + 1 })}</p>}
+                {inlineRemediation.whyWrongKey && <p data-inline-why-wrong><strong>{t("whyWrong")}</strong> {guidance("whyWrong", inlineRemediation.whyWrongKey)}</p>}
+                {inlineRemediation.examClueKey && <p data-inline-exam-clue><strong>{t("examClue")}</strong> {guidance("examClues", inlineRemediation.examClueKey)}</p>}
+                {inlineRemediation.memoryRuleKey && <p data-inline-memory-rule><strong>{t("memoryRule")}</strong> {guidance("memoryRules", inlineRemediation.memoryRuleKey)}</p>}
+                {inlineRemediation.visual && <Link data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</Link>}
+                {inlineRemediation.flashcards.length > 0 && <section data-inline-flashcards aria-label={t("flashcards")}>
+                  <h3 className="font-semibold text-white">{t("flashcards")}</h3>
+                  <ul className="mt-2 space-y-2">
+                    {inlineRemediation.flashcards.map((card) => <li key={card.id} className="rounded-lg border border-slate-700 px-3 py-2"><p className="font-medium text-slate-100">{card.front}</p><p className="mt-1 text-slate-400">{card.back}</p></li>)}
+                  </ul>
+                </section>}
+                {inlineRemediation.video && <Link data-inline-video href={`/networking/videos/${inlineRemediation.video.slug}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: inlineRemediation.video.title })}</Link>}
+                <Link data-inline-notes href={inlineRemediation.notesHref} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
+                {inlineRemediation.retryQuestionIds.length > 0 && <Link data-inline-retry href={`/quiz?questions=${encodeURIComponent(inlineRemediation.retryQuestionIds.join(","))}&exam=n10-009`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
+              </div>
+            </details>
+          )}
         </div>
       )}
       <button

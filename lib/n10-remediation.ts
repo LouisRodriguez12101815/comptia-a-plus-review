@@ -10,6 +10,18 @@ export type N10RemediationMetadata = {
 
 type Cluster = { questionIds: string[] };
 
+export const n10AddressingGuidanceKeys = new Set([
+  "rfc1918Ranges",
+  "apipaVsPrivate",
+  "rfc1918Boundary",
+  "apipaPrefix",
+  "privateRouting",
+  "eui64BitFlip",
+  "ipv4Ipv6Representation",
+  "unicastMulticastBroadcast",
+  "ipBroadcastVsMacBroadcast",
+]);
+
 const clusters: Record<string, Cluster> = {
   "dhcp-lifecycle": { questionIds: ["q-n10dhcp-04", "q-n10dhcp-05", "q-n10dhcp-06", "q-n10dhcp-15"] },
   "time-synchronization": { questionIds: ["q-n10dhcp-35", "q-n10dhcp-40", "q-n10dhcp-41", "q-n10dhcp-42", "q-n10dhcp-43", "q-n10dhcp-47"] },
