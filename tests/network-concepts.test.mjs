@@ -72,8 +72,8 @@ test("weak-concept report groups misses by concept, most missed first, and stays
   assert.doesNotMatch(plain, /By concept/);
 });
 
-test("the three chapters that were split into concepts leave no question uncovered", () => {
-  const split = new Set(["n10-wireless-standards-security", "n10-sdn-overlay", "n10-zerotrust-iac"]);
+test("the chapters that were fully split into concepts leave no question uncovered", () => {
+  const split = new Set(["n10-wireless-standards-security", "n10-sdn-overlay", "n10-zerotrust-iac", "n10-ch9", "n10-ch10", "n10-remote-access-methods", "n10-security-features-43", "n10-ch21"]);
   const covered = new Set(data.concepts.flatMap((c) => c.questionIds));
   const list = Array.isArray(questions) ? questions : questions.questions;
   const missing = list.filter((q) => q.id.startsWith("q-n10") && split.has(q.topicId) && !covered.has(q.id)).map((q) => q.id);
