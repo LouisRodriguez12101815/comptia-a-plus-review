@@ -39,7 +39,6 @@ export async function roomRequest(request: Request, operation: Operation, codeIn
   headers.set("X-Outage-Ops-Build", BUILD_COMMIT);
   const requestId = randomUUID();
   headers.set("X-Outage-Ops-Request-Id", requestId);
-  if (operation !== "get") console.info("outage_ops_room_request", { requestId, operation, event: "started" });
   const respond = (value: unknown, status = 200) => {
     if (operation !== "get") console.info("outage_ops_room_request", { requestId, operation, event: status < 400 ? "succeeded" : "failed", httpStatus: status });
     return Response.json(value, { status, headers });
