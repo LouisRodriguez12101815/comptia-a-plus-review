@@ -130,18 +130,39 @@ type TelemetryRecord = { key: string; event: StudyEvent };
 const legacyChunkPattern = /^telemetry-\d+$/;
 const eventPattern = /^telemetry-event-/;
 const migratedEventPattern = /^telemetry-event-legacy-/;
+const migrationMarker = "telemetry-migration-v1";
 const telemetryItems = (items: { key: string }[]) =>
-  items.filter((item) => legacyChunkPattern.test(item.key) || eventPattern.test(item.key));
+  items.filter((item) => legacyChunkPattern.test(item.key) || eventPattern.test(item.key) || item.key === migrationMarker);
+const hasMigrationMarker = (items: { key: string; data?: unknown }[]) =>
+  items.some((item) => item.key === migrationMarker && (item.data as { complete?: unknown } | undefined)?.complete === true);
 
 function parseStoredEvents(items: { key: string; data?: unknown }[]): TelemetryRecord[] {
+  const independent = new Map<string, TelemetryRecord>();
+  items.filter((item) => eventPattern.test(item.key) && migratedEventPattern.test(item.key))
+    .sort((a, b) => a.key.localeCompare(b.key))
+    .concat(items.filter((item) => eventPattern.test(item.key) && !migratedEventPattern.test(item.key)).sort((a, b) => a.key.localeCompare(b.key)))
+    .forEach((item) => {
+      try {
+        const value = (item as { data?: { e?: unknown } }).data?.e;
+        independent.set(item.key, { key: item.key, event: parsePersistedStudyEvent(value) });
+      } catch { /* discard malformed historical records */ }
+    });
+  if (hasMigrationMarker(items)) return [...independent.values()];
+
   const legacy = items.filter((item) => legacyChunkPattern.test(item.key))
     .sort((a, b) => Number(a.key.slice(10)) - Number(b.key.slice(10)));
   const records = new Map<string, TelemetryRecord>();
   if (legacy.length) {
     const raw = legacy.map((item) => String(((item as { data?: { s?: string } }).data?.s) ?? "")).join("");
     let parsed: unknown;
-    try { parsed = JSON.parse(raw); } catch { throw new Error("invalid_telemetry_store"); }
-    if (!Array.isArray(parsed)) throw new Error("invalid_telemetry_store");
+    try { parsed = JSON.parse(raw); } catch {
+      if (independent.size) return [...independent.values()];
+      throw new Error("invalid_telemetry_store");
+    }
+    if (!Array.isArray(parsed)) {
+      if (independent.size) return [...independent.values()];
+      throw new Error("invalid_telemetry_store");
+    }
     parsed.forEach((value, index) => {
       try {
         const key = `telemetry-event-legacy-${String(index).padStart(6, "0")}`;
@@ -149,15 +170,7 @@ function parseStoredEvents(items: { key: string; data?: unknown }[]): TelemetryR
       } catch { /* discard malformed historical records */ }
     });
   }
-  items.filter((item) => eventPattern.test(item.key) && migratedEventPattern.test(item.key))
-    .sort((a, b) => a.key.localeCompare(b.key))
-    .concat(items.filter((item) => eventPattern.test(item.key) && !migratedEventPattern.test(item.key)).sort((a, b) => a.key.localeCompare(b.key)))
-    .forEach((item) => {
-    try {
-      const value = (item as { data?: { e?: unknown } }).data?.e;
-      records.set(item.key, { key: item.key, event: parsePersistedStudyEvent(value) });
-    } catch { /* discard malformed historical records */ }
-  });
+  for (const [key, record] of independent) records.set(key, record);
   return [...records.values()];
 }
 
@@ -180,11 +193,15 @@ export async function appendTelemetry(map: LearnerMap, event: StudyEvent): Promi
   const appended = [...records, { key: `telemetry-event-${Date.now()}-${randomUUID()}`, event }].slice(-TELEMETRY_MAX_EVENTS);
   const retained = new Set(appended.map(({ key }) => key));
   const hadLegacyChunks = items.some((item) => legacyChunkPattern.test(item.key));
-  if (hadLegacyChunks) {
+  const migrationComplete = hasMigrationMarker(items);
+  if (hadLegacyChunks && !migrationComplete) {
     for (const record of appended) await map.set(record.key, { e: record.event });
+    await map.set(migrationMarker, { complete: true });
   } else {
     const latest = appended.at(-1);
     if (latest) await map.set(latest.key, { e: latest.event });
   }
-  for (const item of items) if (!retained.has(item.key)) await map.remove(item.key);
+  const keep = new Set(retained);
+  if (migrationComplete || hadLegacyChunks) keep.add(migrationMarker);
+  for (const item of items) if (!keep.has(item.key)) await map.remove(item.key);
 }

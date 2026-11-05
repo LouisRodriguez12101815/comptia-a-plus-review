@@ -28,6 +28,11 @@ function fakeMap() {
   };
 }
 
+async function seedLegacyChunks(map, events) {
+  const raw = JSON.stringify(events);
+  for (let i = 0; i < raw.length; i += 12_000) await map.set(`telemetry-${i / 12_000}`, { s: raw.slice(i, i + 12_000) });
+}
+
 test("valid study events parse with only approved learning metadata", () => {
   const parsed = parseStudyEvent(event({ type: "question_answered" }));
   assert.equal(parsed.exam, "n10-009");
@@ -135,6 +140,37 @@ test("a partial legacy migration remains readable and can be retried without dup
   await appendTelemetry(map, parseStudyEvent(event({ questionId: "q-new" })));
   assert.deepEqual((await loadTelemetry(map)).map((item) => item.questionId), ["q-legacy-a", "q-legacy-b", "q-new"]);
   assert.equal(map.items.has("telemetry-0"), false);
+});
+
+test("multi-chunk migration uses a completion marker and interrupted cleanup is retry-safe", async () => {
+  const events = Array.from({ length: TELEMETRY_MAX_EVENTS }, (_, index) => event({ questionId: `q-legacy-${index}`, at: Date.now() + index }));
+  const map = fakeMap();
+  await seedLegacyChunks(map, events);
+  const legacyKeys = [...map.items.keys()].filter((key) => /^telemetry-\d+$/.test(key));
+  assert.ok(legacyKeys.length > 1);
+  await appendTelemetry(map, parseStudyEvent(event({ questionId: "q-after-migration" })));
+  assert.equal(map.items.has("telemetry-migration-v1"), true);
+  assert.equal([...map.items.keys()].some((key) => /^telemetry-\d+$/.test(key)), false);
+  assert.equal((await loadTelemetry(map)).length, TELEMETRY_MAX_EVENTS);
+
+  const interrupted = fakeMap();
+  await seedLegacyChunks(interrupted, events);
+  const remove = interrupted.remove;
+  let removals = 0;
+  interrupted.remove = async (key) => {
+    if (/^telemetry-\d+$/.test(key) && ++removals === 2) throw new Error("simulated_cleanup_failure");
+    return remove(key);
+  };
+  await assert.rejects(appendTelemetry(interrupted, parseStudyEvent(event({ questionId: "q-interrupted" }))), /simulated_cleanup_failure/);
+  assert.equal(interrupted.items.has("telemetry-migration-v1"), true);
+  assert.equal((await loadTelemetry(interrupted)).length, TELEMETRY_MAX_EVENTS);
+  interrupted.remove = remove;
+  await appendTelemetry(interrupted, parseStudyEvent(event({ questionId: "q-retry" })));
+  const final = await loadTelemetry(interrupted);
+  assert.equal(final.length, TELEMETRY_MAX_EVENTS);
+  assert.equal(new Set(final.map((item) => item.questionId)).size, TELEMETRY_MAX_EVENTS);
+  assert.equal(final.some((item) => item.questionId === "q-retry"), true);
+  assert.equal([...interrupted.items.keys()].some((key) => /^telemetry-\d+$/.test(key)), false);
 });
 
 test("telemetry submission is best effort when the network fails", async () => {
