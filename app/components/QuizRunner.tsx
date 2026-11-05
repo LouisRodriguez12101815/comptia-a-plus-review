@@ -87,22 +87,19 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     );
   }
 
+  /** Locks in the pick so the right answer and explanation show. Moving on is a separate step. */
   function submit() {
     if (!current || picked.length === 0) return;
-    const value = multi ? picked : picked[0];
-    const nextAnswers = { ...answers, [current.id]: value };
-    setAnswers(nextAnswers);
-    if (index + 1 >= quiz.length) {
-      const missed = quiz
-        .filter((question) => !isCorrectPick(question, nextAnswers[question.id]))
-        .map((question) => question.id);
-      const correct = quiz.length - missed.length;
-      recordQuiz({ topicId, correct, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed });
-      setDone(true);
-      return;
-    }
-    setIndex(index + 1);
-    setPicked([]);
+    setAnswers({ ...answers, [current.id]: multi ? picked : picked[0] });
+  }
+
+  /** After the last explanation: record the sitting once and show the score. */
+  function finish() {
+    const missed = quiz
+      .filter((question) => !isCorrectPick(question, answers[question.id]))
+      .map((question) => question.id);
+    recordQuiz({ topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed });
+    setDone(true);
   }
 
   if (!started) {
@@ -253,7 +250,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
             return;
           }
           if (index + 1 === quiz.length) {
-            setDone(true);
+            finish();
             return;
           }
           setIndex(index + 1);
