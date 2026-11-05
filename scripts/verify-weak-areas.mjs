@@ -8,7 +8,7 @@ const option = (name, fallback) => {
   return index < 0 ? fallback : args[index + 1];
 };
 
-const origin = option("--url", "http://127.0.0.1:3000");
+const origin = option("--url", "http://localhost:3000");
 const progressKey = "comptia-a-plus-review-progress-v1";
 const questionId = "q-n10c10-03";
 const clusterQuestionId = "q-n10dhcp-05";
