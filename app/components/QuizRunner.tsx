@@ -269,7 +269,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                 {inlineRemediation.whyWrongKey && <p data-inline-why-wrong><strong>{t("whyWrong")}</strong> {guidance("whyWrong", inlineRemediation.whyWrongKey)}</p>}
                 {inlineRemediation.examClueKey && <p data-inline-exam-clue><strong>{t("examClue")}</strong> {guidance("examClues", inlineRemediation.examClueKey)}</p>}
                 {inlineRemediation.memoryRuleKey && <p data-inline-memory-rule><strong>{t("memoryRule")}</strong> {guidance("memoryRules", inlineRemediation.memoryRuleKey)}</p>}
-                {inlineRemediation.visual && <Link data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</Link>}
+                {inlineRemediation.visual && <a data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</a>}
                 {inlineRemediation.flashcards.length > 0 && <section data-inline-flashcards aria-label={t("flashcards")}>
                   <h3 className="font-semibold text-white">{t("flashcards")}</h3>
                   <ul className="mt-2 space-y-2">

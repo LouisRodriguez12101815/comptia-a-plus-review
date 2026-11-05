@@ -87,3 +87,9 @@ test("inline remediation UI keys are present in every supported locale", () => {
     }
   }
 });
+
+test("static visual links stay unprefixed on localized quiz routes", () => {
+  const quizRunner = readFileSync("app/components/QuizRunner.tsx", "utf8");
+  assert.match(quizRunner, /<a data-inline-visual href=\{`\/visuals\/\$\{inlineRemediation\.visual\.file\}`\}/);
+  assert.doesNotMatch(quizRunner, /<Link data-inline-visual/);
+});
