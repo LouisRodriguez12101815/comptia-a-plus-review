@@ -19,6 +19,7 @@ function keyTerms(text) {
   const found = new Set();
   for (const m of text.matchAll(/\d[\d.,/]*\d|\b[A-Z][A-Za-z0-9+]*[A-Z0-9+][A-Za-z0-9+]*\b|[a-z]{6,}/g)) {
     const term = m[0].toLowerCase();
+    if (/^\d+\.\d+\.\d+\.\d+/.test(term)) continue; // dotted IPv4 literals are examples, not terms
     if (!STOP.has(term)) found.add(term);
   }
   return [...found];
