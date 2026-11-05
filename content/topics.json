@@ -7487,6 +7487,63 @@
         ]
       },
       {
+        "id": "iam-policy-evaluation",
+        "title": "IAM policy evaluation: identity vs resource policies",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Every policy is the same kind of object; the classification question is what it is attached to. An identity-based policy attaches to an IAM user, group, or role and defines what that identity can do, so the permission travels with the caller. A resource-based policy attaches to the resource itself (an S3 bucket, an SQS queue, an AWS KMS key) and defines which principals may access it and what they may do with it. Resource-based policies are inline only, while identity-based policies can be managed or inline."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Aspect",
+              "Identity-based",
+              "Resource-based"
+            ],
+            "rows": [
+              [
+                "Attached to",
+                "IAM user, group, or role",
+                "The resource (bucket, queue, key)"
+              ],
+              [
+                "Managed or inline",
+                "Both",
+                "Inline only"
+              ],
+              [
+                "Names principals",
+                "Never; defines the attached identity",
+                "Yes; Principal element names who may come in"
+              ],
+              [
+                "Same-account evaluation",
+                "Any single Allow is enough",
+                "Any single Allow is enough"
+              ],
+              [
+                "Cross-account evaluation",
+                "Caller needs an Allow from both sides",
+                "Grants access without a role switch"
+              ]
+            ]
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Read any policy by asking first: what is this attached to?",
+              "Same account: a single Allow from either policy wins; an explicit Deny always wins. Cross-account: the principal needs an Allow from both the identity policy and the resource policy.",
+              "Cost implication: neither policy type carries an AWS fee. The real cost is size and management limits: managed identity policies max out at 6,144 characters, resource policies at 20 KB, and a resource has one policy document, so many inline attachments become a management burden."
+            ]
+          },
+          {
+            "type": "callout",
+            "text": "Transfer exercise: A data team in account B reads objects from a bucket in account A. Which policy grants what, and why does the caller still need an Allow from its own identity policy? Answer with the cross-account intersection rule, then check yourself with the IAM policy evaluation visual on the Visuals page."
+          }
+        ]
+      },
+      {
         "id": "workload",
         "title": "Protect workloads and network boundaries",
         "blocks": [
