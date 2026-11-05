@@ -12,6 +12,10 @@ export type VisualItem = {
   group: string;
 };
 
+export function visualItemsForTopic(topicId: string): VisualItem[] {
+  return visualsByTopic[topicId] ?? [];
+}
+
 export type VisualChapter = {
   id: string;
   /** Short label, for example "Network+ · Chapter 9". */
@@ -52,7 +56,7 @@ export function visualChapters(focus: StudyFocus | null): VisualChapter[] {
         label: topic.chapter,
         title: topic.title,
         notesHref: `/notes/${topic.id}`,
-        visuals: visualsByTopic[topic.id] ?? [],
+        visuals: visualItemsForTopic(topic.id),
       }),
     );
   const ready = all
