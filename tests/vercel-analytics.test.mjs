@@ -12,3 +12,18 @@ test("Web Analytics redaction removes every search q value but preserves the rou
   assert.ok(!event.url.includes("learner-secret"));
   assert.ok(!event.url.includes("q="));
 });
+
+test("Speed Insights redaction removes q while preserving its vital event shape", () => {
+  const event = redactSearchQuery({
+    type: "vital",
+    url: "/search?q=learner-secret&lang=fr#results",
+    route: "/search",
+  });
+
+  assert.deepEqual(event, {
+    type: "vital",
+    url: "/search?lang=fr#results",
+    route: "/search",
+  });
+  assert.ok(!JSON.stringify(event).includes("learner-secret"));
+});

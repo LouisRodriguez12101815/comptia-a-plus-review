@@ -1,10 +1,7 @@
-export type AnalyticsEvent = {
-  type: "pageview" | "event";
-  url: string;
-};
+export type AnalyticsEvent = { url: string };
 
-/** Remove free-form search text before a Web Analytics event is sent. */
-export function redactSearchQuery(event: AnalyticsEvent): AnalyticsEvent {
+/** Remove free-form search text before a Vercel analytics event is sent. */
+export function redactSearchQuery<T extends AnalyticsEvent>(event: T): T {
   const url = new URL(event.url, "https://vercel-analytics.invalid");
   if (!url.searchParams.has("q")) return event;
 
@@ -13,5 +10,5 @@ export function redactSearchQuery(event: AnalyticsEvent): AnalyticsEvent {
   return {
     ...event,
     url: absolute ? url.toString() : `${url.pathname}${url.search}${url.hash}`,
-  };
+  } as T;
 }
