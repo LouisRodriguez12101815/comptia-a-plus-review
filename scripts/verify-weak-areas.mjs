@@ -48,7 +48,7 @@ try {
   const page = await context.newPage();
   await page.goto(`${origin}/en/weak-areas`, { waitUntil: "networkidle" });
 
-  assert.match(page.url(), /\/en\/weak-areas(?:[/?#]|$)/, "Weak Areas did not remain on the explicit English route");
+  assert.equal(new URL(page.url()).pathname, "/weak-areas", "Weak Areas did not resolve to the canonical English pathname");
   const storedProgress = await page.evaluate((key) => {
     const raw = window.localStorage.getItem(key);
     return raw ? JSON.parse(raw) : null;
