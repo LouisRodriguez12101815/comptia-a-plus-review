@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mergeProgress } from '../lib/learner/merge.ts';
 import { learnerId, normalizePhone, readSession, signSession, cookieValue } from '../lib/learner/session.ts';
 import { loadRemote, saveRemote, splitChunks } from '../lib/learner/store.ts';
-import { learnerConfig } from '../lib/learner/twilio.ts';
+import { createSyncMapItemIdempotently, learnerConfig } from '../lib/learner/twilio.ts';
 
 const empty = () => ({ studyFocus: 'n10-009', knownCards: {}, unknownCards: {}, quizAttempts: [], mockAttempts: [], schedules: {} });
 const sched = (iso) => ({ due: iso, last_review: iso, stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 2 });
@@ -89,4 +89,31 @@ test('owner-only: sync is off without an allowed number and keeps only valid num
   assert.equal(learnerConfig({ ...ok }), null);
   assert.equal(learnerConfig({ ...ok, LEARNER_ALLOWED_PHONES: 'not a number' }), null);
   assert.deepEqual(learnerConfig({ ...ok, LEARNER_ALLOWED_PHONES: '305-555-0123, +44 20 7946 0958' }).allowed, ['+13055550123', '+442079460958']);
+});
+
+test('concurrent deterministic migration item creates are idempotent', async () => {
+  let item;
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const create = async () => {
+    await gate;
+    if (item) throw Object.assign(new Error('item already exists'), { status: 409 });
+    item = { questionId: 'q-legacy-0' };
+  };
+  const update = async () => { item = { questionId: 'q-legacy-0' }; };
+  const first = createSyncMapItemIdempotently(create, update);
+  const second = createSyncMapItemIdempotently(create, update);
+  release();
+  await Promise.all([first, second]);
+  assert.deepEqual(item, { questionId: 'q-legacy-0' });
+});
+
+test('deterministic migration item creation does not hide unexpected provider errors', async () => {
+  const providerError = Object.assign(new Error('provider unavailable'), { status: 503 });
+  let updated = false;
+  await assert.rejects(
+    createSyncMapItemIdempotently(async () => { throw providerError; }, async () => { updated = true; }),
+    (error) => error === providerError,
+  );
+  assert.equal(updated, false);
 });

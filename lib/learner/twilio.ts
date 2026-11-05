@@ -6,6 +6,22 @@ import { normalizePhone } from "@/lib/learner/session";
 
 const status = (e: unknown) => (e as { status?: number })?.status;
 
+/**
+ * A deterministic Sync Map item may be created by another distributed request between
+ * our missing-item update and create calls. In that one expected case, update the item
+ * that won the race; all other provider errors remain failures.
+ */
+export async function createSyncMapItemIdempotently(
+  create: () => Promise<unknown>,
+  update: () => Promise<unknown>,
+): Promise<void> {
+  try { await create(); }
+  catch (error) {
+    if (status(error) !== 409) throw error;
+    await update();
+  }
+}
+
 export type LearnerConfig = {
   accountSid: string; keySid: string; keySecret: string; syncServiceSid: string; verifyServiceSid: string; secret: string; allowed: string[];
 };
@@ -54,7 +70,10 @@ export function twilioLearner(config: LearnerConfig) {
           if (status(e) !== 404) throw e;
           try { await syncCall("documents.create", () => sync.syncMaps.create({ uniqueName: name }), [409]); }
           catch (e2) { if (status(e2) !== 409) throw e2; }
-          await syncCall("documents.create", () => map().syncMapItems.create({ key, data }));
+          await createSyncMapItemIdempotently(
+            () => syncCall("documents.create", () => map().syncMapItems.create({ key, data }), [409]),
+            () => syncCall("documents.update", () => map().syncMapItems(key).update({ data }), [404]),
+          );
         }
       },
       async remove(key) { try { await syncCall("documents.update", () => map().syncMapItems(key).remove(), [404]); } catch (e) { if (status(e) !== 404) throw e; } },
