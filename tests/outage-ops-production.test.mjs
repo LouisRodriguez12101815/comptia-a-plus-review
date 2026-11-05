@@ -98,6 +98,24 @@ class Documents {
   async update(name, data, revision) { if (this.values.get(name)?.revision !== revision) throw upstream(412, 20412); this.values.set(name, { data: structuredClone(data), revision: String(++this.revision) }); }
 }
 
+test("successful room writes emit one terminal server log with request correlation", async () => {
+  const documents = new Documents(), guard = new DailyUsageGuard(documents);
+  const infrastructure = () => ({ store: new TwilioRoomStore(documents, guard) });
+  const logs = [], originalInfo = console.info;
+  console.info = (...args) => logs.push(args);
+  try {
+    const response = await roomRequest(new Request("https://example.test/api/game/rooms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname: "Tester" }),
+    }), "create", "", infrastructure);
+    assert.equal(response.status, 201);
+    assert.deepEqual(logs.map(([name, event]) => [name, event.event]), [["outage_ops_room_request", "succeeded"]]);
+    assert.equal(logs[0][1].operation, "create");
+    assert.equal(logs[0][1].requestId, response.headers.get("X-Outage-Ops-Request-Id"));
+  } finally { console.info = originalInfo; }
+});
+
 test("HTTP two-player regression: stored assignments are actionable, discovery validates owners, GET token works, and disconnect stops blocking", async () => {
   const documents = new Documents(), guard = new DailyUsageGuard(documents), permissionWrites = [];
   const infra = () => ({ store: new TwilioRoomStore(documents, guard), guard,

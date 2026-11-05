@@ -7,6 +7,8 @@ import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { TrackBar } from "@/app/components/TrackBar";
 import { TrackTheme } from "@/app/components/TrackTheme";
+import { WebAnalytics } from "@/app/components/WebAnalytics";
+import { WebSpeedInsights } from "@/app/components/WebSpeedInsights";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -50,6 +52,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <TrackBar />
             <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">{children}</main>
             <SiteFooter />
+            <WebAnalytics />
+            <WebSpeedInsights />
           </TrackTheme>
         </NextIntlClientProvider>
       </body>
