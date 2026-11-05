@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildExamPool, draftFocused } from '../lib/exam-test.mjs';
+import { buildExamPool, draftFocused, draftTest, mulberry32 } from '../lib/exam-test.mjs';
 import { objectiveTopicMap, questionObjectiveIds } from '../lib/question-objectives.mjs';
 import { auditQuestionObjectives } from '../scripts/audit-n10-question-objectives.mjs';
 
@@ -37,6 +37,12 @@ test('questions without explicit mappings retain topic fallback', () => {
   assert.deepEqual(questionObjectiveIds({ topicId: 'n10-troubleshoot-method' }, 'n10-009', topicMap), ['5.1']);
 });
 
+test('unmapped questions in broad or unknown topics resolve to no objective', () => {
+  const topicMap = objectiveTopicMap(n10);
+  assert.deepEqual(questionObjectiveIds({ topicId: 'n10-ch11' }, 'n10-009', topicMap), []);
+  assert.deepEqual(questionObjectiveIds({ topicId: 'not-in-objective-matrix' }, 'n10-009', topicMap), []);
+});
+
 test('objective metadata does not affect another certification track', () => {
   const question = { topicId: 'n10-ch11', objectiveIds: { 'n10-009': ['2.2'] } };
   assert.deepEqual(questionObjectiveIds(question, '220-1201', new Map()), []);
@@ -44,10 +50,46 @@ test('objective metadata does not affect another certification track', () => {
 
 test('focused Network+ drafting stays unique and uses the explicit objective pool', () => {
   const pool = buildExamPool({ objectives, questions, topics, examCode: 'n10-009' });
-  const draft = draftFocused(pool, 20, () => 0.42, { objectiveIds: ['2.2'], share: 1 });
+  const draft = draftFocused(pool, 3, () => 0.42, { objectiveIds: ['2.2'], share: 1 });
   assert.equal(new Set(draft.map((item) => item.questionId)).size, draft.length);
   assert.ok(draft.length > 0);
   assert.ok(draft.every((item) => item.objectiveId === '2.2'));
+});
+
+test('ambiguous questions do not enter focused drafts for either overlapping objective', () => {
+  const pool = buildExamPool({ objectives, questions, topics, examCode: 'n10-009' });
+  const ambiguousIds = new Set(questions
+    .filter((question) => question.topicId === 'n10-ch11' && !question.objectiveIds?.['n10-009'])
+    .map((question) => question.id));
+  for (const objectiveId of ['2.2', '4.3']) {
+    const draft = draftFocused(pool, 20, mulberry32(7), { objectiveIds: [objectiveId], share: 1 });
+    assert.ok(draft.every((item) => !ambiguousIds.has(item.questionId)), objectiveId);
+  }
+});
+
+test('explicit mapping in a broad topic enters only its mapped objective', () => {
+  const pool = buildExamPool({ objectives, questions, topics, examCode: 'n10-009' });
+  const mapped = 'q-n10c11-04';
+  const forSwitching = pool.domains.flatMap((domain) => domain.objectives.filter((objective) => objective.id === '2.2').flatMap((objective) => objective.questionIds));
+  const forSecurity = pool.domains.flatMap((domain) => domain.objectives.filter((objective) => objective.id === '4.3').flatMap((objective) => objective.questionIds));
+  assert.ok(forSwitching.includes(mapped));
+  assert.equal(forSecurity.includes(mapped), false);
+});
+
+test('a full Network+ draft still reaches the configured 90-question maximum', () => {
+  const pool = buildExamPool({ objectives, questions, topics, examCode: 'n10-009' });
+  const draft = draftTest(pool, 90, mulberry32(2026));
+  assert.ok(pool.totalUnique >= 90);
+  assert.equal(draft.length, 90);
+  assert.equal(new Set(draft.map((item) => item.questionId)).size, 90);
+});
+
+test('AWS objective pools retain their explicit-mapping behavior', () => {
+  const pool = buildExamPool({ objectives, questions, topics, examCode: 'clf-c02' });
+  const draft = draftTest(pool, 65, mulberry32(2026));
+  assert.ok(pool.totalUnique >= 65);
+  assert.equal(draft.length, 65);
+  assert.equal(new Set(draft.map((item) => item.questionId)).size, 65);
 });
 
 test('the audit detects invalid objective IDs', () => {
@@ -63,6 +105,8 @@ test('the audit detects an N10-009 mapping on a question outside the exam', () =
 test('the audit reports topic-only and unresolved questions', () => {
   const report = auditQuestionObjectives({ objectives, questions: [{ id: 'q-topic', topicId: 'n10-ch11', examCodes: ['n10-009'] }, { id: 'q-none', topicId: 'not-in-objective-matrix', examCodes: ['n10-009'] }], topics });
   assert.equal(report.topicOnly, 1);
+  assert.equal(report.ambiguousTopicOnly, 1);
+  assert.equal(report.noObjective, 1);
   assert.equal(report.unresolved, 2);
 });
 
