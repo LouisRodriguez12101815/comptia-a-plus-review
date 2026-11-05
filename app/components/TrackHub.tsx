@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { DeviceIcon, ToolIcon } from "@/app/components/icons";
 import { LearnerSync } from "@/app/components/LearnerSync";
+import { NetworkPlusDomainQuiz } from "@/app/components/NetworkPlusDomainQuiz";
 import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
@@ -251,7 +252,10 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           <LearnerSync />
 
           {track.id === "networking" ? (
-            <NetworkPlusDomains own={own} />
+            <>
+              <NetworkPlusDomainQuiz />
+              <NetworkPlusDomains own={own} />
+            </>
           ) : (
           <section id="topics" aria-labelledby="notes-heading" className="space-y-4">
             <h2 id="notes-heading" className="text-lg font-medium text-white">
