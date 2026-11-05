@@ -1,9 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EnsureTopicFocus } from "@/app/components/EnsureTopicFocus";
 import { focusForTopic } from "@/lib/chapter";
-import { getTopic, questions as allQuestions } from "@/lib/content";
+import { getTopic, questions as allQuestions, topics as allTopics } from "@/lib/content";
 import { getConcept } from "@/lib/concepts";
 import { getDomainQuiz } from "@/lib/domain-quiz";
+import { isStudyFocus } from "@/lib/exams";
+import { controlledQuestionIds } from "@/lib/controlled-question-pool";
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
 
@@ -20,11 +22,11 @@ export default async function QuizPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("quizPage");
-  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string };
+  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string; exam?: string };
   const concept = getConcept(conceptParam);
   const domain = getDomainQuiz(domainParam);
   const questionIds = questionIdsParam
-    ? [...new Set(questionIdsParam.split(",").filter((id) => allQuestions.some((question) => question.id === id)))]
+    ? controlledQuestionIds(questionIdsParam.split(","), allQuestions, allTopics, isStudyFocus(examParam) ? examParam : "all")
     : undefined;
   const chapter = topic && !domain && !concept ? getTopic(topic) : undefined;
   return (

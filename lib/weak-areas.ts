@@ -17,10 +17,11 @@ export type Remediation = MissedQuestion & {
   visual?: VisualItem;
   notesHref: string;
   clusterId: string;
-  clusterLabel: string;
-  examClue?: string;
-  memoryRule?: string;
-  whyWrong?: string;
+  clusterKey: string;
+  clusterLabel?: string;
+  examClueKey?: string;
+  memoryRuleKey?: string;
+  whyWrongKey?: string;
   selectedAnswer?: string;
   retryQuestionIds: string[];
 };
@@ -117,7 +118,7 @@ export function remediationForQuestion(
     ? n10RemediationForQuestion(question.id)
     : undefined;
   const clusterId = authored?.clusterId ?? `topic:${question.topicId}`;
-  const clusterLabel = authored?.clusterLabel ?? options.topicTitleFor?.(question.topicId) ?? question.topicId;
+  const clusterKey = authored?.clusterKey ?? `topic:${question.topicId}`;
   return {
     ...missed,
     topicTitle: options.topicTitleFor?.(question.topicId) ?? question.topicId,
@@ -125,10 +126,11 @@ export function remediationForQuestion(
     visual: visualForQuestion(question, options.visualsForTopic),
     notesHref: `/notes/${question.topicId}`,
     clusterId,
-    clusterLabel,
-    examClue: authored?.examClue,
-    memoryRule: authored?.memoryRule,
-    whyWrong: authored?.whyWrong,
+    clusterKey,
+    clusterLabel: authored ? undefined : options.topicTitleFor?.(question.topicId) ?? question.topicId,
+    examClueKey: authored?.examClueKey,
+    memoryRuleKey: authored?.memoryRuleKey,
+    whyWrongKey: authored?.whyWrongKey,
     selectedAnswer: missed.selectedChoice === undefined ? undefined : question.choices[missed.selectedChoice],
     retryQuestionIds: authored && options.questions
       ? n10ClusterQuestionIds(authored.clusterId, options.questions, question.id)
@@ -138,7 +140,8 @@ export function remediationForQuestion(
 
 export type MissedCluster = {
   clusterId: string;
-  clusterLabel: string;
+  clusterKey: string;
+  clusterLabel?: string;
   misses: number;
   latestMissAt: number;
 };
@@ -148,6 +151,7 @@ export function rankMissedClusters(remediation: Remediation[], limit = 4): Misse
   for (const item of remediation) {
     const previous = clusters.get(item.clusterId) ?? {
       clusterId: item.clusterId,
+      clusterKey: item.clusterKey,
       clusterLabel: item.clusterLabel,
       misses: 0,
       latestMissAt: 0,

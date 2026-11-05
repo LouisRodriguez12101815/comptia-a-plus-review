@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import {
   rankMissedQuestions,
@@ -81,9 +82,9 @@ test("repeated misses are prioritized, with recency breaking ties", () => {
 
 test("missed clusters rank by count, recency, and stable id", () => {
   const rows = [
-    { clusterId: "time", clusterLabel: "Time", misses: 2, latestMissAt: 10 },
-    { clusterId: "dhcp", clusterLabel: "DHCP", misses: 2, latestMissAt: 20 },
-    { clusterId: "ipam", clusterLabel: "IPAM", misses: 1, latestMissAt: 30 },
+    { clusterId: "time", clusterKey: "time", clusterLabel: "Time", misses: 2, latestMissAt: 10 },
+    { clusterId: "dhcp", clusterKey: "dhcp", clusterLabel: "DHCP", misses: 2, latestMissAt: 20 },
+    { clusterId: "ipam", clusterKey: "ipam", clusterLabel: "IPAM", misses: 1, latestMissAt: 30 },
   ];
   assert.deepEqual(rankMissedClusters(rows), [rows[1], rows[0], rows[2]]);
 });
@@ -92,15 +93,26 @@ test("missing cluster metadata falls back to the topic and remains deterministic
   const result = remediationForQuestion({ question: question("q-unknown", "topic-a"), misses: 1, latestMissAt: 5 }, { topicTitleFor: () => "Fallback topic" });
   assert.equal(result.clusterId, "topic:topic-a");
   assert.equal(result.clusterLabel, "Fallback topic");
-  assert.equal(result.examClue, undefined);
-  assert.equal(result.memoryRule, undefined);
+  assert.equal(result.examClueKey, undefined);
+  assert.equal(result.memoryRuleKey, undefined);
 });
 
 test("authored N10 clue and memory rule are available for the DHCP cluster", () => {
   const result = remediationForQuestion({ question: question("q-n10dhcp-06", "n10-dhcp-ipam-time"), misses: 1, latestMissAt: 5 });
-  assert.match(result.examClue, /87\.5%/);
-  assert.match(result.memoryRule, /T2/);
-  assert.match(result.whyWrong, /T2/);
+  assert.equal(result.examClueKey, "dhcpT2");
+  assert.equal(result.memoryRuleKey, "dhcpT2");
+  assert.equal(result.whyWrongKey, "dhcpT2");
+});
+
+test("all supported locales provide the authored remediation keys", () => {
+  for (const locale of ["en", "es", "fr", "pt"]) {
+    const messages = JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
+    const remediation = messages.weakAreas.remediation;
+    assert.deepEqual(Object.keys(remediation.clusters).sort(), ["dhcpLifecycle", "ipamDdi", "ipv6Controls", "timeSynchronization"].sort());
+    assert.equal(Object.keys(remediation.examClues).length, 15);
+    assert.equal(Object.keys(remediation.memoryRules).length, 15);
+    assert.equal(Object.keys(remediation.whyWrong).length, 15);
+  }
 });
 
 test("saved mock wrong-choice history is shown without fabricating quiz history", () => {
