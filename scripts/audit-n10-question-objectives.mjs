@@ -12,7 +12,9 @@ export function auditQuestionObjectives({ objectives, questions, topics, examCod
   const eligible = questions.filter((question) => (question.examCodes ?? topicCodes.get(question.topicId) ?? []).includes(examCode));
   const eligibleIds = new Set(eligible.map((question) => question.id));
   const rows = eligible.map((question) => {
-    const hasExplicit = Array.isArray(question.objectiveIds?.[examCode]);
+    const hasObjectiveList = Array.isArray(question.objectiveIds?.[examCode]);
+    const hasExplicit = hasObjectiveList && question.objectiveIds[examCode].length > 0;
+    const optedOut = hasObjectiveList && question.objectiveIds[examCode].length === 0;
     const explicit = hasExplicit ? [...question.objectiveIds[examCode]] : [];
     const inferred = [...(topicObjectives.get(question.topicId) ?? [])];
     const effective = questionObjectiveIds(question, examCode, topicObjectives);
@@ -20,14 +22,15 @@ export function auditQuestionObjectives({ objectives, questions, topics, examCod
       id: question.id,
       topicId: question.topicId,
       explicit,
+      optedOut,
       inferred,
       effective,
       invalid: explicit.filter((id) => !validIds.has(id)),
-      topicOnly: !hasExplicit && inferred.length > 0,
+      topicOnly: !hasExplicit && !optedOut && inferred.length > 0,
       safeFallback: !hasExplicit && inferred.length === 1,
       ambiguousTopicOnly: !hasExplicit && inferred.length > 1,
-      noObjective: !hasExplicit && inferred.length === 0,
-      unresolved: !hasExplicit && inferred.length !== 1,
+      noObjective: optedOut || (!hasExplicit && inferred.length === 0),
+      unresolved: optedOut || (!hasExplicit && inferred.length !== 1),
     };
   });
   const explicitRows = rows.filter((row) => row.explicit.length > 0);
@@ -35,7 +38,7 @@ export function auditQuestionObjectives({ objectives, questions, topics, examCod
   return {
     examCode,
     total: rows.length,
-    explicit: rows.filter((row) => Array.isArray(questions.find((question) => question.id === row.id)?.objectiveIds?.[examCode])).length,
+    explicit: rows.filter((row) => row.explicit.length > 0).length,
     topicOnly: rows.filter((row) => row.topicOnly).length,
     safeFallback: rows.filter((row) => row.safeFallback).length,
     ambiguousTopicOnly: rows.filter((row) => row.ambiguousTopicOnly).length,

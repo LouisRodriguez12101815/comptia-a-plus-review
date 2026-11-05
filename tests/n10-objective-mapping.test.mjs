@@ -43,6 +43,14 @@ test('unmapped questions in broad or unknown topics resolve to no objective', ()
   assert.deepEqual(questionObjectiveIds({ topicId: 'not-in-objective-matrix' }, 'n10-009', topicMap), []);
 });
 
+test('review-corrected Network+ mappings stay objective-specific', () => {
+  const topicMap = objectiveTopicMap(n10);
+  const byId = Object.fromEntries(questions.map((question) => [question.id, question]));
+  assert.deepEqual(questionObjectiveIds(byId['q-n10dns-28'], 'n10-009', topicMap), ['4.2']);
+  assert.deepEqual(questionObjectiveIds(byId['q-n10sf-15'], 'n10-009', topicMap), ['4.1']);
+  assert.deepEqual(questionObjectiveIds(byId['q-n10web-05'], 'n10-009', topicMap), []);
+});
+
 test('objective metadata does not affect another certification track', () => {
   const question = { topicId: 'n10-ch11', objectiveIds: { 'n10-009': ['2.2'] } };
   assert.deepEqual(questionObjectiveIds(question, '220-1201', new Map()), []);
@@ -65,6 +73,12 @@ test('ambiguous questions do not enter focused drafts for either overlapping obj
     const draft = draftFocused(pool, 20, mulberry32(7), { objectiveIds: [objectiveId], share: 1 });
     assert.ok(draft.every((item) => !ambiguousIds.has(item.questionId)), objectiveId);
   }
+});
+
+test('the HTML acronym question is excluded from focused objective practice', () => {
+  const pool = buildExamPool({ objectives, questions, topics, examCode: 'n10-009' });
+  const draft = draftFocused(pool, 20, mulberry32(11), { objectiveIds: ['1.4'], share: 1 });
+  assert.equal(draft.some((item) => item.questionId === 'q-n10web-05'), false);
 });
 
 test('explicit mapping in a broad topic enters only its mapped objective', () => {
