@@ -3512,7 +3512,7 @@
             "type": "bullets",
             "items": [
               "RADIUS uses UDP 1812 for authentication and UDP 1813 for accounting (RFC 2865 and RFC 2866). It encrypts only the password in the packet.",
-              "TACACS+ uses TCP 49 and encrypts the full payload. It separates authentication, authorization, and accounting.",
+              "TACACS+ uses TCP 49 and obfuscates the full packet body (RFC 8907 calls this obfuscation, not true encryption). It separates authentication, authorization, and accounting.",
               "LDAP uses TCP 389; LDAPS uses TCP 636 with TLS. LDAP is a directory service that stores user and group information."
             ]
           }
@@ -3707,6 +3707,46 @@
             "type": "callout",
             "kind": "tip",
             "text": "Audits check compliance over time, not just at one point. Policies, processes, and procedures are what make compliance repeatable."
+          }
+        ]
+      },
+      {
+        "id": "aaa-ports",
+        "title": "AAA protocols and directory ports",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "RADIUS uses UDP 1812 for authentication and UDP 1813 for accounting. It hides only the password inside the packet.",
+              "TACACS+ uses TCP 49. It obfuscates the whole packet body (RFC 8907 calls this obfuscation, not true encryption) and keeps authentication, authorization and accounting separate. T for TCP, T for TACACS+.",
+              "LDAP uses TCP 389 and LDAPS uses TCP 636. LDAP is a directory of users and groups, not an AAA protocol."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "least-privilege-factors",
+        "title": "Least privilege and authentication factors",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Least privilege gives a user only the permissions needed to do the job. Zero trust is a different idea: it verifies every request.",
+              "The three factor types are something you know (password), something you have (token or smart card) and something you are (a biometric such as a fingerprint). Multifactor authentication combines at least two different types."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tls-key-pairs",
+        "title": "TLS and key pairs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "TLS protects web traffic. During its handshake it uses an asymmetric key pair to set up the encryption used for the session.",
+              "A certificate binds a public key to an identity. A self-signed certificate is trusted only after you add it to the trusted root store."
+            ]
           }
         ]
       }
