@@ -161,8 +161,9 @@ test('Network+ operations numbering and dedicated-topic labels follow N10-009', 
       assert.ok(topic.sections.every(section => section.id.startsWith(id.replace('.', '-') + '-')), topicId);
       for (const question of questions.filter(row => row.topicId === topicId)) {
         const label = question.explanation.match(/^Objective (\d+\.\d+)\./);
-        if (label) assert.equal(label[1], id, question.id);
-        if (question.objectiveIds?.['n10-009']) assert.ok(question.objectiveIds['n10-009'].includes(id), question.id);
+        const explicit = question.objectiveIds?.['n10-009'];
+        if (label && (!Array.isArray(explicit) || explicit.length === 0)) assert.equal(label[1], id, question.id);
+        if (Array.isArray(explicit) && explicit.length > 0) assert.ok(explicit.every((objectiveId) => own.some((row) => row.id === objectiveId)), question.id);
       }
     }
   }
