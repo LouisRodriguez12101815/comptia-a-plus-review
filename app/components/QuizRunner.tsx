@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ExplanationText } from "@/app/components/ExplanationText";
@@ -15,6 +15,7 @@ import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback"
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
+import { isN10Question, sendStudyEvent } from "@/lib/study-telemetry";
 import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
 
@@ -29,6 +30,9 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   const [picked, setPicked] = useState<number[]>([]);
   const [answers, setAnswers] = useState<Record<string, number | number[]>>({});
   const [done, setDone] = useState(false);
+  const telemetryAnswered = useRef(new Set<string>());
+  const telemetryRemediation = useRef(new Set<string>());
+  const telemetryCompleted = useRef(false);
 
   const idKey = questionIds ? questionIds.join("|") : null;
   const pool = useMemo(() => {
@@ -81,6 +85,18 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     setPicked([]);
     setAnswers({});
     setDone(false);
+    telemetryAnswered.current.clear();
+    telemetryRemediation.current.clear();
+    telemetryCompleted.current = false;
+    const n10Questions = deck.filter(isN10Question);
+    if (n10Questions.length > 0) {
+      sendStudyEvent({
+        type: "quiz_started",
+        exam: "n10-009",
+        topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
+        questionCount: n10Questions.length,
+      });
+    }
     setStarted(true);
   }
 
@@ -95,7 +111,20 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   /** Locks in the pick so the right answer and explanation show. Moving on is a separate step. */
   function submit() {
     if (!current || picked.length === 0) return;
-    setAnswers({ ...answers, [current.id]: multi ? picked : picked[0] });
+    const answer = multi ? picked : picked[0];
+    if (isN10Question(current) && !telemetryAnswered.current.has(current.id)) {
+      telemetryAnswered.current.add(current.id);
+      const correctAnswer = isCorrectPick(current, answer);
+      const priorMisses = rankMissedQuestions(getProgressSnapshot(), allQuestions)
+        .find((row) => row.question.id === current.id)?.misses ?? 0;
+      sendStudyEvent({
+        type: "question_answered",
+        question: current,
+        correct: correctAnswer,
+        missCount: correctAnswer ? undefined : priorMisses + 1,
+      });
+    }
+    setAnswers({ ...answers, [current.id]: answer });
   }
 
   /** After the last explanation: record the sitting once and show the score. */
@@ -104,6 +133,20 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
       .filter((question) => !isCorrectPick(question, answers[question.id]))
       .map((question) => question.id);
     recordQuiz({ topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed });
+    if (!telemetryCompleted.current) {
+      telemetryCompleted.current = true;
+      const n10Questions = quiz.filter(isN10Question);
+      if (n10Questions.length > 0) {
+        sendStudyEvent({
+          type: "quiz_completed",
+          exam: "n10-009",
+          topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
+          questionCount: n10Questions.length,
+          correctCount: n10Questions.filter((question) => isCorrectPick(question, answers[question.id])).length,
+          missedCount: n10Questions.filter((question) => !isCorrectPick(question, answers[question.id])).length,
+        });
+      }
+    }
     setDone(true);
   }
 
@@ -261,7 +304,12 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
             <ExplanationText text={current.explanation} />
           </p>
           {!correct && inlineRemediation && (
-            <details data-inline-remediation className="mt-4 rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+            <details data-inline-remediation onToggle={(event) => {
+              if (event.currentTarget.open && !telemetryRemediation.current.has(current.id) && isN10Question(current)) {
+                telemetryRemediation.current.add(current.id);
+                sendStudyEvent({ type: "remediation_opened", question: current });
+              }
+            }} className="mt-4 rounded-lg border border-slate-700 bg-slate-900/70 p-3">
               <summary data-inline-remediation-toggle className="cursor-pointer font-semibold text-amber-200">{t("learnThisNow")}</summary>
               <div className="mt-3 space-y-3 text-slate-300">
                 <p className="text-xs uppercase tracking-wide text-slate-400">{t("learnThisNowIntro")}</p>
@@ -269,16 +317,18 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                 {inlineRemediation.whyWrongKey && <p data-inline-why-wrong><strong>{t("whyWrong")}</strong> {guidance("whyWrong", inlineRemediation.whyWrongKey)}</p>}
                 {inlineRemediation.examClueKey && <p data-inline-exam-clue><strong>{t("examClue")}</strong> {guidance("examClues", inlineRemediation.examClueKey)}</p>}
                 {inlineRemediation.memoryRuleKey && <p data-inline-memory-rule><strong>{t("memoryRule")}</strong> {guidance("memoryRules", inlineRemediation.memoryRuleKey)}</p>}
-                {inlineRemediation.visual && <a data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</a>}
+                {inlineRemediation.visual && <a data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} onClick={() => sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "visual" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</a>}
                 {inlineRemediation.flashcards.length > 0 && <section data-inline-flashcards aria-label={t("flashcards")}>
                   <h3 className="font-semibold text-white">{t("flashcards")}</h3>
                   <ul className="mt-2 space-y-2">
-                    {inlineRemediation.flashcards.map((card) => <li key={card.id} className="rounded-lg border border-slate-700 px-3 py-2"><p className="font-medium text-slate-100">{card.front}</p><p className="mt-1 text-slate-400">{card.back}</p></li>)}
+                    {inlineRemediation.flashcards.map((card) => <li key={card.id} className="rounded-lg border border-slate-700 px-3 py-2"><details onToggle={(event) => {
+                      if (event.currentTarget.open && isN10Question(current)) sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "flashcard" });
+                    }}><summary className="cursor-pointer font-medium text-slate-100">{card.front}</summary><p className="mt-2 text-slate-400">{card.back}</p></details></li>)}
                   </ul>
                 </section>}
-                {inlineRemediation.video && <Link data-inline-video href={`/networking/videos/${inlineRemediation.video.slug}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: inlineRemediation.video.title })}</Link>}
-                <Link data-inline-notes href={inlineRemediation.notesHref} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
-                {inlineRemediation.retryQuestionIds.length > 0 && <Link data-inline-retry href={`/quiz?questions=${encodeURIComponent(inlineRemediation.retryQuestionIds.join(","))}&exam=n10-009`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
+                {inlineRemediation.video && <Link data-inline-video href={`/networking/videos/${inlineRemediation.video.slug}`} onClick={() => sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "video" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: inlineRemediation.video.title })}</Link>}
+                <Link data-inline-notes href={inlineRemediation.notesHref} onClick={() => sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "notes" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
+                {inlineRemediation.retryQuestionIds.length > 0 && <Link data-inline-retry href={`/quiz?questions=${encodeURIComponent(inlineRemediation.retryQuestionIds.join(","))}&exam=n10-009`} onClick={() => sendStudyEvent({ type: "similar_question_started", question: current, resourceType: "retry" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
               </div>
             </details>
           )}

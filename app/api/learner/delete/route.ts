@@ -4,7 +4,7 @@ import { twilioLearner } from "@/lib/learner/twilio";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** Delete everything saved for this learner, then sign out. Works even when texting is paused. */
+/** Delete everything saved for this learner, including telemetry, then sign out. Works even when texting is paused. */
 export async function POST(request: Request) {
   const c = needConfig();
   if ("response" in c) return c.response;
