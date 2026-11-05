@@ -19,6 +19,7 @@ import { evaluateReadiness } from "@/lib/readiness";
 import { confusionFor, pairFromKey } from "@/lib/confusions";
 import { LookAlike } from "@/app/components/LookAlike";
 import type { Question } from "@/lib/types";
+import { conceptTitleByQuestion } from "@/lib/concepts";
 import { buildWeakReport, type WeakRow, type WeakStatus } from "@/lib/weak-report";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
@@ -611,6 +612,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const luckyPicks = scored.filter((p) => confidence[p.questionId] === "guess" && isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const missedObjectiveIds = missedByObjective.map(([id]) => id);
   const retestObjectiveIds = [...new Set([...missedObjectiveIds, ...luckyPicks.map((p) => p.objectiveId)])];
+  const conceptTitles = conceptTitleByQuestion();
   const reportRows: WeakRow[] = scored.flatMap((p) => {
     const q = questionsById[p.questionId];
     const answer = responses[p.questionId]?.answer;
@@ -619,7 +621,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const flagged = flags.includes(p.questionId);
     const status: WeakStatus | null = !right ? (level === "sure" ? "sure-wrong" : level === "guess" ? "guessed-wrong" : "wrong") : level === "guess" ? "lucky-guess" : flagged ? "flagged" : null;
     if (!status) return [];
-    return [{ id: p.questionId, objectiveId: p.objectiveId, topicId: q.topicId, topicTitle: getTopic(q.topicId)?.title ?? q.topicId, status, flagged, prompt: q.prompt, picked: answerText(q, answer, t("noAnswer")), correct: answerText(q, q.answer, ""), explanation: q.explanation }];
+    return [{ id: p.questionId, objectiveId: p.objectiveId, topicId: q.topicId, topicTitle: getTopic(q.topicId)?.title ?? q.topicId, conceptTitle: exam === "n10-009" ? conceptTitles.get(p.questionId) : undefined, status, flagged, prompt: q.prompt, picked: answerText(q, answer, t("noAnswer")), correct: answerText(q, q.answer, ""), explanation: q.explanation }];
   });
   const reportText = buildWeakReport({ exam, date: new Date().toISOString().slice(0, 10), correct: scored.length - missedPicks.length, total: scored.length, rows: reportRows });
   async function copyReport() {

@@ -10,6 +10,8 @@ export type WeakRow = {
   objectiveId: string;
   topicId: string;
   topicTitle: string;
+  /** Named concept the question belongs to, when it has one (see lib/concepts.ts). */
+  conceptTitle?: string;
   status: WeakStatus;
   flagged: boolean;
   prompt: string;
@@ -46,12 +48,22 @@ export function buildWeakReport(input: { exam: string; date: string; correct: nu
     const worst = list.reduce((w, r) => (rank(r.status) < rank(w) ? r.status : w), list[0].status);
     lines.push(`| ${objective} | ${list.length} | ${STATUS_TITLE[worst]} |`);
   }
+  // Concepts with the most misses come first, so the coach can build the weakest ones first.
+  const byConcept = new Map<string, WeakRow[]>();
+  for (const row of rows) if (row.conceptTitle) byConcept.set(row.conceptTitle, [...(byConcept.get(row.conceptTitle) ?? []), row]);
+  if (byConcept.size) {
+    lines.push("", "## By concept", "", "| Concept | Questions | Worst status |", "| --- | --- | --- |");
+    for (const [concept, list] of [...byConcept].sort((a, b) => b[1].length - a[1].length)) {
+      const worst = list.reduce((w, r) => (rank(r.status) < rank(w) ? r.status : w), list[0].status);
+      lines.push(`| ${concept} | ${list.length} | ${STATUS_TITLE[worst]} |`);
+    }
+  }
   for (const status of STATUS_ORDER) {
     const group = rows.filter((row) => row.status === status);
     if (!group.length) continue;
     lines.push("", `## ${STATUS_TITLE[status]}`);
     group.forEach((row, i) => {
-      lines.push("", `### ${i + 1}. ${row.objectiveId} · ${row.topicTitle} (${row.id})${row.flagged ? " ⚑" : ""}`, "", `Question: ${clean(row.prompt)}`);
+      lines.push("", `### ${i + 1}. ${row.objectiveId} · ${row.conceptTitle ? `${row.conceptTitle} — ` : ""}${row.topicTitle} (${row.id})${row.flagged ? " ⚑" : ""}`, "", `Question: ${clean(row.prompt)}`);
       if (status !== "lucky-guess" && status !== "flagged") lines.push(`I picked: ${clean(row.picked)}`);
       lines.push(`Correct answer: ${clean(row.correct)}`, `Site explanation: ${clean(row.explanation)}`, `Notes: /notes/${row.topicId}`);
     });
