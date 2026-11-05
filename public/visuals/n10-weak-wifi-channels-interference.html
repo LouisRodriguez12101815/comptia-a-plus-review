@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.4 GHz channels and interference</title>
+<style>
+:root{--bg:#eef3fa;--surface:#ffffff;--ink:#0f1d33;--muted:#44546e;--line:#c5d2e3;--accent:#1d4f91;--accent-soft:#dde8f7;--good:#1f6a4a;--good-soft:#d9efe3;--bad:#a13a2c;--bad-soft:#f8dedb;--warm:#7a5418;--warm-soft:#f5ead8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1424;--surface:#13223a;--ink:#e7eef9;--muted:#a9b8cf;--line:#2a3d5c;--accent:#7cc4ff;--accent-soft:#1a3354;--good:#8fe0b4;--good-soft:#173a2d;--bad:#ffab9c;--bad-soft:#3e1f1d;--warm:#f2c57f;--warm-soft:#3a2d18;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 16px}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 40px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 6px;text-wrap:balance}
+.lede{margin:0 0 16px;color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-size:13px;font-weight:600}
+input[type=range]{width:min(360px,100%);accent-color:var(--accent)}
+figure{margin:8px 0 0}
+svg{width:100%;height:auto;display:block;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+figcaption{margin-top:8px;font-size:13px;color:var(--muted)}
+.out{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px;min-height:48px}
+.out strong{color:var(--ink)}
+code,.cmd{font-family:ui-monospace,Menlo,Consolas,monospace}
+.answer{margin-top:14px;font-size:14px;color:var(--muted);max-width:72ch}
+.answer strong{color:var(--ink)}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .m{fill:var(--muted)}
+svg .b{stroke:var(--accent);fill:var(--accent-soft)}
+svg .g{stroke:var(--good);fill:var(--good-soft)}
+svg .w{stroke:var(--warm);fill:var(--warm-soft)}
+svg .r{stroke:var(--bad);fill:var(--bad-soft)}
+svg .n{stroke:var(--line);fill:var(--surface)}
+svg rect,svg line,svg path{stroke-width:2}
+svg .ln-b{stroke:var(--accent);fill:none}
+svg .ln-g{stroke:var(--good);fill:none}
+svg .ln-r{stroke:var(--bad);fill:none}
+svg .ln-m{stroke:var(--muted);fill:none}
+svg .dash{stroke-dasharray:6 5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>2.4 GHz channels and interference</h1>
+<p class="lede">Pick two access point channels and see whether they overlap. Same channel means co-channel interference; partly overlapping means adjacent-channel interference.</p>
+<div class="card">
+  <p><label for="c1">AP 1 channel: <output id="v1">1</output></label><br><input id="c1" type="range" min="1" max="11" value="1" aria-describedby="out"></p>
+  <p><label for="c2">AP 2 channel: <output id="v2">6</output></label><br><input id="c2" type="range" min="1" max="11" value="6" aria-describedby="out"></p>
+  <figure>
+    <svg id="svg" viewBox="0 0 760 300" role="img" aria-label="Diagram"></svg>
+    <figcaption id="cap"></figcaption>
+  </figure>
+  <div class="out" id="out" aria-live="polite"></div>
+  <p class="answer"><strong>Rules to keep.</strong> In 2.4 GHz only channels 1, 6 and 11 avoid each other. Same channel is co-channel interference: devices take turns. Partly overlapping channels are adjacent-channel interference, which is worse because frames are corrupted.</p>
+</div>
+</div>
+<script type="application/json" id="visual-facts">{"kind": "revised", "facts": [{"claim": "2.4 GHz Wi-Fi channels are spaced 5 MHz apart but are about 20 MHz wide, so channels 1, 6 and 11 are the set of three that do not overlap.", "objectives": ["n10-009 2.3"], "sources": ["https://en.wikipedia.org/wiki/List_of_WLAN_channels"]}, {"claim": "Co-channel interference is two access points on the same channel sharing airtime by taking turns; adjacent-channel interference from partly overlapping channels corrupts frames and is worse.", "objectives": ["n10-009 2.3"], "sources": ["https://en.wikipedia.org/wiki/List_of_WLAN_channels"]}], "simplifications": ["Channels are treated as 20 MHz wide in the US channel plan, channels 1 to 11 only.", "Real interference also depends on signal strength and distance, which the picture does not model."]}</script>
+<script>
+
+const NS='http://www.w3.org/2000/svg';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const R=(x,y,w,h,c,rx)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx??8}" class="${c}"/>`;
+const T=(x,y,s,o)=>`<text x="${x}" y="${y}" text-anchor="${(o&&o.a)||'middle'}"${o&&o.c?` class="${o.c}"`:''}${o&&o.b?' font-weight="700"':''}>${esc(s)}</text>`;
+const L=(x1,y1,x2,y2,c,arrow)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${c}"${arrow?' marker-end="url(#ah)"':''}/>`;
+const DEFS='<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>';
+function draw(svgId,labelId,inner,label){const s=document.getElementById(svgId);s.innerHTML=DEFS+inner;s.setAttribute('aria-label',label);document.getElementById(labelId).textContent=label;}
+function pressed(groupId,key){document.querySelectorAll('#'+groupId+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===key)));}
+
+
+function render(){
+ const a=+document.getElementById('c1').value,b=+document.getElementById('c2').value;
+ document.getElementById('v1').textContent=a;document.getElementById('v2').textContent=b;
+ const x=c=>40+(c-1)*(680/12)+0;const w=4*(680/12);
+ let s='';
+ for(let c=1;c<=11;c++)s+=L(x(c)+w/2,230,x(c)+w/2,240,'ln-m',0)+T(x(c)+w/2,256,String(c),{c:'m'});
+ s+=`<rect x="${x(a)}" y="40" width="${w}" height="70" rx="10" class="b" style="fill-opacity:.55"/>`+T(x(a)+w/2,80,'AP 1',{b:1});
+ s+=`<rect x="${x(b)}" y="120" width="${w}" height="70" rx="10" class="g" style="fill-opacity:.55"/>`+T(x(b)+w/2,160,'AP 2',{b:1});
+ const d=Math.abs(a-b);let kind,msg,cls;
+ if(d===0){kind='Co-channel interference';msg='Same channel: the two access points hear each other and take turns, so airtime is shared.';}
+ else if(d<5){kind='Adjacent-channel interference';msg='The channels overlap partly. The devices cannot decode each other and do not take turns, so frames are corrupted. This is worse than co-channel.';}
+ else{kind='No overlap';msg='These channels are far enough apart (five or more channel numbers). 1, 6 and 11 is the standard clean set.';}
+ s+=T(380,285,kind,{b:1});
+ draw('svg','cap',s,'AP 1 on channel '+a+' and AP 2 on channel '+b+': '+kind+'.');
+ document.getElementById('out').innerHTML='<strong>'+kind+'.</strong> '+msg;
+}
+document.getElementById('c1').addEventListener('input',render);document.getElementById('c2').addEventListener('input',render);
+render();
+
+</script>
+</body>
+</html>
