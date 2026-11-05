@@ -14,6 +14,11 @@ import { remediationForQuestion, rankMissedClusters, rankMissedQuestions } from 
 export function WeakAreas() {
   const t = useTranslations("weakAreas");
   const r = useTranslations("weakAreas.remediation");
+  const a = useTranslations("weakAreas.addressingRemediation");
+  const addressingKeys = new Set(["ipv4PrivateLinkLocal", "ipv6Eui64", "layer2Delivery"]);
+  const addressingGuidanceKeys = new Set(["rfc1918Ranges", "apipaVsPrivate", "rfc1918Boundary", "apipaPrefix", "privateRouting", "eui64BitFlip", "ipv4Ipv6Representation", "unicastMulticastBroadcast", "ipBroadcastVsMacBroadcast"]);
+  const clusterLabel = (key: string, fallback?: string) => addressingKeys.has(key) ? a(`clusters.${key}` as never) : fallback ?? r(`clusters.${key}` as never);
+  const guidance = (section: string, key: string) => addressingGuidanceKeys.has(key) ? a(`${section}.${key}` as never) : r(`${section}.${key}` as never);
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
 
   const remediation = useMemo(
@@ -44,7 +49,7 @@ export function WeakAreas() {
       <ul className="grid gap-3 sm:grid-cols-2">
         {clusters.map((cluster, index) => <li key={cluster.clusterId} data-cluster-id={cluster.clusterId} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">{index === 0 ? t("primaryWeakness") : index === 1 ? t("secondaryWeakness") : t("otherWeakness")}</p>
-          <p className="mt-1 font-semibold text-white">{cluster.clusterLabel ?? r(`clusters.${cluster.clusterKey}` as never)}</p>
+          <p className="mt-1 font-semibold text-white">{clusterLabel(cluster.clusterKey, cluster.clusterLabel)}</p>
           <p className="mt-1 text-sm text-slate-300">{t("clusterMisses", { count: cluster.misses })}</p>
         </li>)}
       </ul>
@@ -64,11 +69,11 @@ export function WeakAreas() {
           <div className="space-y-2 text-sm">
             {item.selectedAnswer && <p className="text-slate-300"><strong>{t("yourAnswer")}</strong> {item.selectedAnswer}</p>}
             <p className="text-teal-100"><strong>{t("correctAnswer")}</strong> {answer}</p>
-            {item.whyWrongKey && <p data-remediation-why-wrong className="text-slate-300"><strong>{t("whyWrong")}</strong> {r(`whyWrong.${item.whyWrongKey}` as never)}</p>}
+            {item.whyWrongKey && <p data-remediation-why-wrong className="text-slate-300"><strong>{t("whyWrong")}</strong> {guidance("whyWrong", item.whyWrongKey)}</p>}
             <p className="text-slate-300"><strong>{t("why")}</strong> <ExplanationText text={item.question.explanation} /></p>
-            {item.examClueKey && <p data-remediation-clue className="text-slate-300"><strong>{t("examClue")}</strong> {r(`examClues.${item.examClueKey}` as never)}</p>}
-            {item.memoryRuleKey && <p data-remediation-rule className="text-amber-200"><strong>{t("memoryRule")}</strong> {r(`memoryRules.${item.memoryRuleKey}` as never)}</p>}
-            <p data-remediation-cluster className="text-slate-400"><strong>{t("conceptCluster")}</strong> {item.clusterLabel ?? r(`clusters.${item.clusterKey}` as never)}</p>
+            {item.examClueKey && <p data-remediation-clue className="text-slate-300"><strong>{t("examClue")}</strong> {guidance("examClues", item.examClueKey)}</p>}
+            {item.memoryRuleKey && <p data-remediation-rule className="text-amber-200"><strong>{t("memoryRule")}</strong> {guidance("memoryRules", item.memoryRuleKey)}</p>}
+            <p data-remediation-cluster className="text-slate-400"><strong>{t("conceptCluster")}</strong> {clusterLabel(item.clusterKey, item.clusterLabel)}</p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
             {item.video && <Link data-remediation-video href={`/networking/videos/${item.video.slug}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: item.video.title })}</Link>}
