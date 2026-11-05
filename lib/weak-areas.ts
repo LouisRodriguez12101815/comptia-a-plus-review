@@ -2,11 +2,13 @@ import type { Progress } from "@/lib/progress";
 import type { ConceptVideo } from "@/lib/concept-videos";
 import type { VisualItem } from "@/lib/visuals";
 import type { Question } from "@/lib/types";
+import { n10ClusterQuestionIds, n10RemediationForQuestion } from "@/lib/n10-remediation";
 
 export type MissedQuestion = {
   question: Question;
   misses: number;
   latestMissAt: number;
+  selectedChoice?: number;
 };
 
 export type Remediation = MissedQuestion & {
@@ -14,12 +16,21 @@ export type Remediation = MissedQuestion & {
   video?: ConceptVideo;
   visual?: VisualItem;
   notesHref: string;
+  clusterId: string;
+  clusterKey: string;
+  clusterLabel?: string;
+  examClueKey?: string;
+  memoryRuleKey?: string;
+  whyWrongKey?: string;
+  selectedAnswer?: string;
+  retryQuestionIds: string[];
 };
 
 type Attempt = {
   questionIds?: string[];
   missedIds?: string[];
   at?: number;
+  wrongChoices?: Record<string, number>;
 };
 
 function attemptsFrom(progress: Progress): Attempt[] {
@@ -31,7 +42,7 @@ export function rankMissedQuestions(
   questions: Question[],
 ): MissedQuestion[] {
   const byId = new Map(questions.map((question) => [question.id, question]));
-  const counts = new Map<string, { misses: number; latestMissAt: number }>();
+  const counts = new Map<string, { misses: number; latestMissAt: number; selectedChoice?: number; selectedAt?: number }>();
 
   for (const attempt of attemptsFrom(progress)) {
     const shown = new Set(attempt.questionIds ?? []);
@@ -40,15 +51,22 @@ export function rankMissedQuestions(
       if (shown.size > 0 && !shown.has(id)) continue;
       if (!byId.has(id)) continue;
       const previous = counts.get(id) ?? { misses: 0, latestMissAt: 0 };
+      const selectedChoice = attempt.wrongChoices?.[id];
       counts.set(id, {
         misses: previous.misses + 1,
         latestMissAt: Math.max(previous.latestMissAt, at),
+        selectedChoice: Number.isInteger(selectedChoice) && (previous.selectedAt ?? -1) <= at
+          ? selectedChoice
+          : previous.selectedChoice,
+        selectedAt: Number.isInteger(selectedChoice) && (previous.selectedAt ?? -1) <= at
+          ? at
+          : previous.selectedAt,
       });
     }
   }
 
   return [...counts.entries()]
-    .map(([id, result]) => ({ question: byId.get(id)!, ...result }))
+    .map(([id, result]) => ({ question: byId.get(id)!, misses: result.misses, latestMissAt: result.latestMissAt, selectedChoice: result.selectedChoice }))
     .sort(
       (a, b) =>
         b.misses - a.misses ||
@@ -92,14 +110,59 @@ export function remediationForQuestion(
     videos?: ConceptVideo[];
     visualsForTopic?: (topicId: string) => VisualItem[];
     topicTitleFor?: (topicId: string) => string | undefined;
+    questions?: Question[];
   } = {},
 ): Remediation {
   const { question } = missed;
+  const authored = question.examCodes?.includes("n10-009") || question.topicId.startsWith("n10-")
+    ? n10RemediationForQuestion(question.id)
+    : undefined;
+  const clusterId = authored?.clusterId ?? `topic:${question.topicId}`;
+  const clusterKey = authored?.clusterKey ?? `topic:${question.topicId}`;
   return {
     ...missed,
     topicTitle: options.topicTitleFor?.(question.topicId) ?? question.topicId,
     video: videoForQuestion(question, options.videos),
     visual: visualForQuestion(question, options.visualsForTopic),
     notesHref: `/notes/${question.topicId}`,
+    clusterId,
+    clusterKey,
+    clusterLabel: authored ? undefined : options.topicTitleFor?.(question.topicId) ?? question.topicId,
+    examClueKey: authored?.examClueKey,
+    memoryRuleKey: authored?.memoryRuleKey,
+    whyWrongKey: authored?.whyWrongKey,
+    selectedAnswer: missed.selectedChoice === undefined ? undefined : question.choices[missed.selectedChoice],
+    retryQuestionIds: authored && options.questions
+      ? n10ClusterQuestionIds(authored.clusterId, options.questions, question.id)
+      : [],
   };
+}
+
+export type MissedCluster = {
+  clusterId: string;
+  clusterKey: string;
+  clusterLabel?: string;
+  misses: number;
+  latestMissAt: number;
+};
+
+export function rankMissedClusters(remediation: Remediation[], limit = 4): MissedCluster[] {
+  const clusters = new Map<string, MissedCluster>();
+  for (const item of remediation) {
+    const previous = clusters.get(item.clusterId) ?? {
+      clusterId: item.clusterId,
+      clusterKey: item.clusterKey,
+      clusterLabel: item.clusterLabel,
+      misses: 0,
+      latestMissAt: 0,
+    };
+    clusters.set(item.clusterId, {
+      ...previous,
+      misses: previous.misses + item.misses,
+      latestMissAt: Math.max(previous.latestMissAt, item.latestMissAt),
+    });
+  }
+  return [...clusters.values()]
+    .sort((a, b) => b.misses - a.misses || b.latestMissAt - a.latestMissAt || a.clusterId.localeCompare(b.clusterId))
+    .slice(0, limit);
 }
