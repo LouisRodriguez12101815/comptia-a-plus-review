@@ -43,7 +43,8 @@ export function twilioLearner(config: LearnerConfig) {
     return {
       async list() {
         try {
-          const items = await syncCall("documents.fetch", () => map().syncMapItems.list({ limit: 100 }), [404]);
+          // Telemetry uses one independent item per event (up to 200); include progress items too.
+          const items = await syncCall("documents.fetch", () => map().syncMapItems.list({ limit: 1000 }), [404]);
           return items.map((i) => ({ key: i.key, data: i.data }));
         } catch (e) { if (status(e) === 404) return []; throw e; }
       },
