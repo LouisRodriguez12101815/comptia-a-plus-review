@@ -9,32 +9,8 @@ import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getQuestions, getTopics, questions as allQuestions } from "@/lib/content";
 import { freshFirstIds, shuffleQuestionChoices } from "@/lib/exam-test.mjs";
 import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
+import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback";
 import type { Question, StudyFocus } from "@/lib/types";
-
-function correctIndices(question: Question): number[] {
-  return Array.isArray(question.answer) ? question.answer : [question.answer];
-}
-
-function sameSet(a: number[], b: number[]) {
-  if (a.length !== b.length) return false;
-  const sortedA = [...a].sort((x, y) => x - y);
-  const sortedB = [...b].sort((x, y) => x - y);
-  return sortedA.every((value, i) => value === sortedB[i]);
-}
-
-function isCorrectPick(question: Question, pick: number | number[] | undefined) {
-  if (pick === undefined || pick === null) return false;
-  if (Array.isArray(question.answer)) {
-    return Array.isArray(pick) && sameSet(pick, question.answer);
-  }
-  return pick === question.answer;
-}
-
-function answerLabel(question: Question, pick: number | number[] | undefined) {
-  if (pick === undefined || pick === null) return "—";
-  const indices = Array.isArray(pick) ? pick : [pick];
-  return indices.map((i) => question.choices[i]).join(" · ");
-}
 
 export function QuizRunner({ initialTopic, questionIds, scoped = false }: { initialTopic: string; questionIds?: string[]; scoped?: boolean }) {
   const t = useTranslations("quizRunner");
@@ -189,6 +165,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   }
 
   const revealed = answers[current.id] !== undefined;
+  const correct = revealed && isCorrectPick(current, answers[current.id]);
 
   return (
     <div className="space-y-5">
@@ -200,8 +177,8 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
           multi: multi ? "yes" : "no",
         })}
       </p>
-      <h2 className="text-xl font-medium text-white">{current.prompt}</h2>
-      <ul className="space-y-2">
+      <h2 data-quiz-question className="text-xl font-medium text-white">{current.prompt}</h2>
+      <ul data-quiz-choices className="space-y-2">
         {current.choices.map((choice, choiceIndex) => {
           const isPicked = picked.includes(choiceIndex);
           const isRight = correctIndices(current).includes(choiceIndex);
@@ -231,9 +208,33 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
         })}
       </ul>
       {revealed && (
-        <p className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300">
-          <ExplanationText text={current.explanation} />
-        </p>
+        <div
+          data-quiz-feedback
+          role="status"
+          aria-live="polite"
+          className={`space-y-2 rounded-xl border bg-slate-950 px-4 py-3 text-sm ${
+            correct
+              ? "border-teal-300/50 text-teal-100"
+              : "border-rose-300/50 text-rose-100"
+          }`}
+        >
+          <p className="font-semibold">
+            {t(correct ? "correctStatus" : "incorrectStatus")}
+          </p>
+          <p>
+            {t("yourAnswer", {
+              answer: answerLabel(current, answers[current.id]),
+            })}
+          </p>
+          <p>
+            {t("correctAnswer", {
+              answer: answerLabel(current, current.answer),
+            })}
+          </p>
+          <p className="text-slate-300">
+            <ExplanationText text={current.explanation} />
+          </p>
+        </div>
       )}
       <button
         type="button"
