@@ -3,40 +3,27 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { ExplanationText } from "@/app/components/ExplanationText";
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { getTopic, questions } from "@/lib/content";
+import { conceptVideos } from "@/lib/concept-videos";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
-
-const questionById = new Map(questions.map((q) => [q.id, q]));
-
-function primaryTopic(topicId: string | string[]): string {
-  return Array.isArray(topicId) ? topicId[0] : topicId;
-}
+import { visualItemsForTopic } from "@/lib/visuals";
+import { remediationForQuestion, rankMissedQuestions } from "@/lib/weak-areas";
 
 export function WeakAreas() {
   const t = useTranslations("weakAreas");
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
 
-  // Count how many recorded sittings missed each question, from quizzes and mock exams.
-  const { missCounts, topicCounts } = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const attempt of progress.quizAttempts) {
-      for (const id of new Set(attempt.missedIds)) counts.set(id, (counts.get(id) ?? 0) + 1);
-    }
-    for (const attempt of progress.mockAttempts) {
-      for (const id of new Set(attempt.missedIds)) counts.set(id, (counts.get(id) ?? 0) + 1);
-    }
-    const byTopic = new Map<string, number>();
-    for (const [id, n] of counts) {
-      const q = questionById.get(id);
-      if (!q) continue;
-      const topic = primaryTopic(q.topicId as string | string[]);
-      byTopic.set(topic, (byTopic.get(topic) ?? 0) + n);
-    }
-    return { missCounts: counts, topicCounts: [...byTopic.entries()].sort((a, b) => b[1] - a[1]) };
-  }, [progress]);
-
-  const missedIds = [...missCounts.keys()].filter((id) => questionById.has(id));
+  const remediation = useMemo(
+    () => rankMissedQuestions(progress, questions).map((missed) => remediationForQuestion(missed, {
+      videos: conceptVideos,
+      visualsForTopic: visualItemsForTopic,
+      topicTitleFor: (topicId) => getTopic(topicId)?.title,
+    })),
+    [progress],
+  );
+  const missedIds = remediation.map(({ question }) => question.id);
 
   if (missedIds.length === 0) {
     return <section className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5">
@@ -49,19 +36,30 @@ export function WeakAreas() {
   }
 
   return <div className="space-y-6">
-    <section className="space-y-3" aria-labelledby="weak-topics-heading">
-      <h2 id="weak-topics-heading" className="text-xl font-semibold text-white">{t("topicsHeading")}</h2>
-      <ul className="grid gap-3 sm:grid-cols-2">{topicCounts.map(([topicId, misses]) => {
-        const topic = getTopic(topicId);
-        return <li key={topicId} className="space-y-3 rounded-2xl border border-slate-700 bg-slate-900/60 p-4">
-          <p className="font-semibold text-white">{topic?.title ?? topicId}</p>
-          <p className="text-sm text-slate-300">{t("missCount", { count: misses })}</p>
-          <div className="flex flex-wrap gap-3 text-sm">
-            <Link href={`/notes/${topicId}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
-            <Link href={`/quiz?topic=${topicId}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("drillTopic")}</Link>
+    <section className="space-y-3" aria-labelledby="weak-remediation-heading">
+      <h2 id="weak-remediation-heading" className="text-xl font-semibold text-white">{t("remediationHeading")}</h2>
+      {remediation.map((item) => {
+        const answer = Array.isArray(item.question.answer)
+          ? item.question.answer.map((index) => item.question.choices[index]).join(" · ")
+          : item.question.choices[item.question.answer];
+        return <article key={item.question.id} data-remediation-card={item.question.id} className="space-y-4 rounded-2xl border border-amber-900/70 bg-slate-900 p-5">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">{t("missedStatus", { count: item.misses })}</p>
+            <h3 className="mt-2 text-lg font-semibold text-white">{item.question.prompt}</h3>
+            <p className="mt-2 text-sm text-slate-400">{t("topicContext", { topic: item.topicTitle })}</p>
           </div>
-        </li>;
-      })}</ul>
+          <div className="space-y-2 text-sm">
+            <p className="text-teal-100"><strong>{t("correctAnswer")}</strong> {answer}</p>
+            <p className="text-slate-300"><strong>{t("why")}</strong> <ExplanationText text={item.question.explanation} /></p>
+          </div>
+          <div className="flex flex-wrap gap-3 text-sm">
+            {item.video && <Link data-remediation-video href={`/networking/videos/${item.video.slug}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: item.video.title })}</Link>}
+            {item.visual && <Link data-remediation-visual href={`/visuals/${item.visual.file}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("exploreVisual", { title: item.visual.title })}</Link>}
+            <Link data-remediation-notes href={item.notesHref} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
+            <Link data-remediation-retry href={`/quiz?topic=${encodeURIComponent(item.question.topicId)}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("retryQuestion")}</Link>
+          </div>
+        </article>;
+      })}
     </section>
     <section className="space-y-3" aria-labelledby="missed-drill-heading">
       <h2 id="missed-drill-heading" className="text-xl font-semibold text-white">{t("drillHeading")}</h2>
