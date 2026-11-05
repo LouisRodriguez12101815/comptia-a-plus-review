@@ -143,6 +143,7 @@ test("all supported locales provide the authored remediation keys", () => {
 });
 
 test("all supported locales provide addressing remediation keys", () => {
+  const addressingKeys = ["rfc1918Ranges", "apipaVsPrivate", "rfc1918Boundary", "apipaPrefix", "privateRouting", "eui64BitFlip", "ipv4Ipv6Representation", "unicastMulticastBroadcast", "ipBroadcastVsMacBroadcast"];
   for (const locale of ["en", "es", "fr", "pt"]) {
     const messages = JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
     const remediation = messages.weakAreas.addressingRemediation;
@@ -150,8 +151,11 @@ test("all supported locales provide addressing remediation keys", () => {
     assert.equal(Object.keys(remediation.examClues).length, 9);
     assert.equal(Object.keys(remediation.memoryRules).length, 9);
     assert.equal(Object.keys(remediation.whyWrong).length, 9);
-    assert.ok(remediation.examClues.eui64BitFlip);
-    assert.ok(remediation.memoryRules.apipaPrefix);
+    for (const key of addressingKeys) {
+      assert.ok(remediation.examClues[key], `${locale} is missing exam clue ${key}`);
+      assert.ok(remediation.memoryRules[key], `${locale} is missing memory rule ${key}`);
+      assert.ok(remediation.whyWrong[key], `${locale} is missing why-wrong guidance ${key}`);
+    }
   }
 });
 
