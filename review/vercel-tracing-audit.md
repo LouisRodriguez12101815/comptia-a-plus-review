@@ -53,4 +53,4 @@ If diagnosis later requires more detail, inspect a real trace first and add one 
 
 ## Privacy findings
 
-No existing tracing or logging code was found that writes phone numbers, email addresses, learner IDs, room tokens, cookies, auth tokens, Twilio credentials/SIDs, GitHub credentials, answer text, request bodies, arbitrary question IDs, or free-form user text. The recommendation preserves that boundary and does not add any custom attributes.
+The existing `study_event` Runtime Log is emitted only after authentication and schema validation. It contains the event's allow-listed telemetry fields, which can include `sessionId` and `questionId` when present for that event type. The schema validates their shape and event semantics; it does not establish that those identifiers were verified against the authored question bank. No phone numbers, email addresses, room tokens, cookies, auth tokens, Twilio credentials/SIDs, GitHub credentials, answer text, request bodies, arbitrary telemetry fields, or free-form user text are logged. The recommendation preserves this boundary and does not add tracing attributes.

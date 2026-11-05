@@ -25,14 +25,14 @@ There is no `instrumentation.*` file and no third-party APM integration. The loc
 | `/api/learner/telemetry` | At most study-event activity from signed-in N10-009 sessions, bounded to 300/hour/learner | Validated `study_event` only; bounded to 200 stored events; serial client submission; failure is best-effort | KEEP; do not duplicate in Web Analytics |
 | `/api/learner/delete` | Rare account/data deletion | Provider failure status is logged; removes progress and telemetry through the existing map | KEEP; monitor failures |
 | `/api/report` | Infrequent problem reports; 5/IP/10 minutes | Error logs contain status/name, not body; GitHub API is the latency boundary and has an 8-second timeout | KEEP; low expected volume |
-| `/api/game/**` | Potentially high during multiplayer rooms: room creation, polling/actions, token and Sync operations | Non-GET operations emit structured start/success/failure logs with request ID and HTTP status; provider failures emit sanitized reasons | KEEP; this is the main request/log-volume watch item |
+| `/api/game/**` | Potentially high during multiplayer rooms: room creation, polling/actions, token and Sync operations | Non-GET operations emit one terminal structured success/failure log with request ID and HTTP status; 5xx provider failures emit a separate sanitized reason | KEEP; this is the main request/log-volume watch item |
 | `/api/game/usage-trigger` | External webhook-driven and expected to be low volume | Response is no-store; route has no verbose application logging | KEEP; use status/duration and webhook failures |
 
-The learner routes require the existing authenticated learner session before sync, deletion, or telemetry is accepted. Telemetry remains in the separate Twilio learner map and does not alter progress storage. No phone number, token, cookie, answer text, or arbitrary request body is included in the validated `study_event` log.
+The learner routes require the existing authenticated learner session before sync, deletion, or telemetry is accepted. Telemetry remains in the separate Twilio learner map and does not alter progress storage. The validated `study_event` log contains only allow-listed telemetry fields, which may include `sessionId` and `questionId` where the event provides them; it does not include a phone number, token, cookie, answer text, or arbitrary request body.
 
 ## Cost/watch items
 
-- Multiplayer room traffic is the most likely source of repeated function invocations and logs. `room-api.ts` logs every non-GET operation at start and completion, and provider failures add another record. The logs are structured and useful, but room polling/actions should be watched for volume before adding more logging.
+- Multiplayer room traffic is the most likely source of repeated function invocations and logs. `room-api.ts` emits one terminal request record for each non-GET operation when execution reaches `respond()`, and provider failures can add a separate record. A request that fails before `respond()` is reached may have no terminal request record, so function failures and the separate 5xx failure signal remain important. Room polling/actions should be watched for volume before adding more logging.
 - Twilio Sync and Verify calls are external latency and quota boundaries. A slow provider call extends function duration; a high sign-in or multiplayer rate can increase both invocations and provider usage. Existing rate limits, timeouts, daily game usage guard, and sanitized provider errors are important controls.
 - Learner sync accepts up to 400 KB and report requests up to 12 KB. These limits prevent unbounded request work, but sync payload size and duration should be checked if usage grows.
 - The telemetry endpoint is intentionally bounded, authenticated, validated, and best-effort. Its 200-event retention cap and 300-events/hour/learner limit should remain in place. Do not route these events into a second analytics product.
@@ -43,7 +43,7 @@ The learner routes require the existing authenticated learner session before syn
 ## Logging audit
 
 - **KEEP:** `study_event` in `/api/learner/telemetry`; it is emitted only after schema validation and contains only the allow-listed event fields.
-- **KEEP / monitor:** `outage_ops_room_request` start/success/failure logs; request IDs and sanitized status/reason fields make multiplayer failures traceable. Watch volume rather than removing the correlation fields.
+- **KEEP / monitor:** terminal `outage_ops_room_request` success/failure logs; request IDs and sanitized status fields make completed multiplayer requests traceable. A separate `outage_ops_room_failure` record preserves 5xx provider diagnostics; a request that never reaches `respond()` may have no terminal request record. Watch volume rather than removing the correlation fields.
 - **KEEP:** learner/report errors that record route and status (and report error name) without request bodies or secrets.
 - **REDUCE only if measured:** client-side multiplayer sync-status logs and other browser `console.error` diagnostics are not Vercel Runtime Logs. They should not be promoted to server logging without a demonstrated debugging need.
 - **No REMOVE finding:** no server log inspected here records phone numbers, cookies, tokens, credentials, free-form answers, or arbitrary request bodies. The learner allow-list message intentionally does not reveal the submitted number.
@@ -53,7 +53,7 @@ The learner routes require the existing authenticated learner session before syn
 
 1. Create a small recurring dashboard/checklist review for the game route group and learner route group: invocations, p50/p95 duration, 4xx/5xx rate, and Runtime Log volume. Use existing logs and filters; add no code.
 2. Compare Twilio-related route duration and failures after meaningful learner or multiplayer traffic changes. This distinguishes provider latency from application work without adding an APM vendor.
-3. If measured log volume becomes material, aggregate or sample high-frequency successful multiplayer start/success records while retaining all failures and request correlation. Do this only with a measured threshold and regression tests; do not remove diagnostics preemptively.
+3. If measured log volume becomes material, aggregate or sample high-frequency successful multiplayer terminal records while retaining all failures and request correlation. Do this only with a measured threshold and regression tests; do not remove diagnostics preemptively.
 
 ## Do not add yet
 
