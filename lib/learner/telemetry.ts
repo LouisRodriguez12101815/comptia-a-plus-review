@@ -33,10 +33,15 @@ export type StudyEvent = {
   missedCount?: number;
 };
 
-const keys = new Set([
-  "v", "type", "at", "exam", "sessionId", "questionId", "topicId", "objectiveId",
-  "correct", "missCount", "resourceType", "questionCount", "correctCount", "missedCount",
-]);
+const baseKeys = ["v", "type", "at", "exam", "sessionId"];
+const fieldsByType: Record<StudyEventType, Set<string>> = {
+  quiz_started: new Set([...baseKeys, "topicId", "questionCount"]),
+  question_answered: new Set([...baseKeys, "questionId", "topicId", "objectiveId", "correct", "missCount"]),
+  remediation_opened: new Set([...baseKeys, "questionId", "topicId", "objectiveId"]),
+  remediation_resource_opened: new Set([...baseKeys, "questionId", "topicId", "objectiveId", "resourceType"]),
+  similar_question_started: new Set([...baseKeys, "questionId", "topicId", "objectiveId", "resourceType"]),
+  quiz_completed: new Set([...baseKeys, "topicId", "questionCount", "correctCount", "missedCount"]),
+};
 const idPattern = /^[A-Za-z0-9._:-]{1,128}$/;
 const sessionPattern = /^[A-Za-z0-9_-]{16,80}$/;
 const resources = new Set<StudyResourceType>(["flashcard", "visual", "video", "notes", "retry"]);
@@ -57,15 +62,16 @@ const optionalCount = (value: unknown, name: string): number | undefined => {
 export function parseStudyEvent(value: unknown): StudyEvent {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("invalid_event");
   const input = value as Record<string, unknown>;
-  if ([...Object.keys(input)].some((key) => !keys.has(key))) throw new Error("unknown_event_field");
   if (input.v !== STUDY_EVENT_VERSION || !studyEventTypes.includes(input.type as StudyEventType)) throw new Error("invalid_event_type");
+  const type = input.type as StudyEventType;
+  if ([...Object.keys(input)].some((key) => !fieldsByType[type].has(key))) throw new Error("unknown_event_field");
   if (!Number.isInteger(input.at) || Math.abs(Date.now() - (input.at as number)) > 7 * 86400_000) throw new Error("invalid_event_time");
   if (input.exam !== "n10-009") throw new Error("invalid_exam");
   if (typeof input.sessionId !== "string" || !sessionPattern.test(input.sessionId)) throw new Error("invalid_session");
 
   const event: StudyEvent = {
     v: STUDY_EVENT_VERSION,
-    type: input.type as StudyEventType,
+    type,
     at: input.at as number,
     exam: "n10-009",
     sessionId: input.sessionId,
@@ -92,6 +98,21 @@ export function parseStudyEvent(value: unknown): StudyEvent {
   if (questionCount !== undefined) event.questionCount = questionCount;
   if (correctCount !== undefined) event.correctCount = correctCount;
   if (missedCount !== undefined) event.missedCount = missedCount;
+
+  if (type === "quiz_started") {
+    if (event.questionCount === undefined || event.questionCount < 1) throw new Error("invalid_question_count");
+  }
+  if (type === "question_answered") {
+    if (!event.questionId || !event.topicId || event.correct === undefined) throw new Error("incomplete_answer_event");
+    if (event.correct && event.missCount !== undefined) throw new Error("invalid_correct_miss_count");
+  }
+  if (type === "remediation_opened" && (!event.questionId || !event.topicId)) throw new Error("incomplete_remediation_event");
+  if (type === "remediation_resource_opened" && (!event.questionId || !event.topicId || !event.resourceType)) throw new Error("incomplete_resource_event");
+  if (type === "similar_question_started" && (!event.questionId || !event.topicId || event.resourceType !== "retry")) throw new Error("invalid_retry_event");
+  if (type === "quiz_completed") {
+    if (event.questionCount === undefined || event.questionCount < 1 || event.correctCount === undefined || event.missedCount === undefined
+      || event.correctCount + event.missedCount !== event.questionCount) throw new Error("invalid_completion_counts");
+  }
   return event;
 }
 

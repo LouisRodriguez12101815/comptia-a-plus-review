@@ -29,10 +29,22 @@ function fakeMap() {
 }
 
 test("valid study events parse with only approved learning metadata", () => {
-  const parsed = parseStudyEvent(event({ type: "remediation_resource_opened", resourceType: "visual" }));
+  const parsed = parseStudyEvent(event({ type: "question_answered" }));
   assert.equal(parsed.exam, "n10-009");
-  assert.equal(parsed.resourceType, "visual");
+  assert.equal(parsed.correct, false);
   assert.equal("phone" in parsed, false);
+});
+
+test("event-specific invariants reject malformed but type-valid payloads", () => {
+  const base = { v: 1, at: Date.now(), exam: "n10-009", sessionId: "session-1234567890" };
+  assert.throws(() => parseStudyEvent({ ...base, type: "quiz_started", questionCount: 0 }), /invalid_question_count/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "quiz_started", questionCount: 1, questionId: "q1" }), /unknown_event_field/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "question_answered", topicId: "n10-ch7", correct: true }), /incomplete_answer_event/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "question_answered", questionId: "q1", topicId: "n10-ch7", correct: true, missCount: 1 }), /invalid_correct_miss_count/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "remediation_opened", questionId: "q1" }), /incomplete_remediation_event/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "remediation_resource_opened", questionId: "q1", topicId: "n10-ch7" }), /incomplete_resource_event/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "similar_question_started", questionId: "q1", topicId: "n10-ch7", resourceType: "visual" }), /invalid_retry_event/);
+  assert.throws(() => parseStudyEvent({ ...base, type: "quiz_completed", questionCount: 2, correctCount: 2, missedCount: 1 }), /invalid_completion_counts/);
 });
 
 test("unknown event types and arbitrary client fields are rejected", () => {
@@ -96,6 +108,31 @@ test("non-Network+ activity is not submitted", async () => {
   sendStudyEvent({ type: "question_answered", question: other, correct: false });
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(calls.length, 0);
+  global.window = previousWindow;
+  global.fetch = previousFetch;
+});
+
+test("rapid study events are serialized so normal same-browser writes are not overlapped", async () => {
+  const previousWindow = global.window;
+  const previousFetch = global.fetch;
+  let active = 0;
+  let maximumActive = 0;
+  let calls = 0;
+  global.window = { sessionStorage: { getItem: () => null, setItem: () => undefined } };
+  global.fetch = () => {
+    calls += 1;
+    active += 1;
+    maximumActive = Math.max(maximumActive, active);
+    return new Promise((resolve) => setTimeout(() => {
+      active -= 1;
+      resolve({ ok: true });
+    }, 5));
+  };
+  sendStudyEvent({ type: "quiz_started", exam: "n10-009", questionCount: 1 });
+  sendStudyEvent({ type: "quiz_started", exam: "n10-009", questionCount: 1 });
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  assert.equal(calls, 2);
+  assert.equal(maximumActive, 1);
   global.window = previousWindow;
   global.fetch = previousFetch;
 });

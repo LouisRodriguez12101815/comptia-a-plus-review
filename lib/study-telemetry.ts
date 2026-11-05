@@ -21,6 +21,7 @@ const SESSION_KEY = "comptia-a-plus-study-session-v1";
 const topicExamCodes = new Map(
   [...topics, ...networkPlusTopics].map((topic) => [topic.id, topic.examCodes]),
 );
+let submissionQueue = Promise.resolve();
 
 export function isN10Question(question: Question): boolean {
   return question.examCodes?.includes("n10-009") ?? topicExamCodes.get(question.topicId)?.includes("n10-009") ?? false;
@@ -75,10 +76,21 @@ export function sendStudyEvent(input: StudyEventInput): void {
   if (!question && input.topicId && !topicExamCodes.get(input.topicId)?.includes("n10-009")) return;
   if (!question && !input.topicId && input.exam !== "n10-009") return;
   const body = buildStudyEvent(input, sessionId());
-  void fetch("/api/learner/telemetry", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    keepalive: true,
-  }).catch(() => undefined);
+  submissionQueue = submissionQueue.then(async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5_000);
+    try {
+      await fetch("/api/learner/telemetry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        keepalive: true,
+        signal: controller.signal,
+      });
+    } catch {
+      // Telemetry is observational and must never block studying.
+    } finally {
+      clearTimeout(timeout);
+    }
+  });
 }

@@ -93,7 +93,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
       sendStudyEvent({
         type: "quiz_started",
         exam: "n10-009",
-        topicId: topicId === "all" ? undefined : topicId,
+        topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
         questionCount: n10Questions.length,
       });
     }
@@ -140,7 +140,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
         sendStudyEvent({
           type: "quiz_completed",
           exam: "n10-009",
-          topicId: topicId === "all" ? undefined : topicId,
+          topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
           questionCount: n10Questions.length,
           correctCount: n10Questions.filter((question) => isCorrectPick(question, answers[question.id])).length,
           missedCount: n10Questions.filter((question) => !isCorrectPick(question, answers[question.id])).length,
