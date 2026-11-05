@@ -104,14 +104,21 @@ test("authored N10 clue and memory rule are available for the DHCP cluster", () 
   assert.equal(result.whyWrongKey, "dhcpT2");
 });
 
+test("NTP-source remediation teaches consensus and outlier rejection", () => {
+  const result = remediationForQuestion({ question: question("q-n10dhcp-41", "n10-dhcp-ipam-time"), misses: 1, latestMissAt: 5 });
+  assert.equal(result.examClueKey, "ntpConsensus");
+  assert.equal(result.memoryRuleKey, "ntpConsensus");
+  assert.equal(result.whyWrongKey, "ntpConsensus");
+});
+
 test("all supported locales provide the authored remediation keys", () => {
   for (const locale of ["en", "es", "fr", "pt"]) {
     const messages = JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
     const remediation = messages.weakAreas.remediation;
     assert.deepEqual(Object.keys(remediation.clusters).sort(), ["dhcpLifecycle", "ipamDdi", "ipv6Controls", "timeSynchronization"].sort());
-    assert.equal(Object.keys(remediation.examClues).length, 15);
-    assert.equal(Object.keys(remediation.memoryRules).length, 15);
-    assert.equal(Object.keys(remediation.whyWrong).length, 15);
+    assert.equal(Object.keys(remediation.examClues).length, 16);
+    assert.equal(Object.keys(remediation.memoryRules).length, 16);
+    assert.equal(Object.keys(remediation.whyWrong).length, 16);
   }
 });
 

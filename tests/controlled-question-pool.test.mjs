@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { controlledQuestionIds } from "../lib/controlled-question-pool.ts";
+import { controlledQuestionIds, questionIdsFromParam } from "../lib/controlled-question-pool.ts";
 
 const topics = [
   { id: "networking", examCodes: ["n10-009"] },
@@ -10,6 +10,10 @@ const questions = [
   { id: "n10-q1", topicId: "networking" },
   { id: "aws-q1", topicId: "aws" },
 ];
+
+test("repeated query parameters normalize into one controlled ID list", () => {
+  assert.deepEqual(questionIdsFromParam(["n10-q1", "n10-q1,n10-q2"]), ["n10-q1", "n10-q1", "n10-q2"]);
+});
 
 test("controlled pools retain valid IDs, remove duplicates, and ignore unknown IDs", () => {
   assert.deepEqual(

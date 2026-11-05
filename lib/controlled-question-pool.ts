@@ -1,6 +1,10 @@
 import { examMatches } from "@/lib/exams";
 import type { Question, StudyFocus, Topic } from "@/lib/types";
 
+export function questionIdsFromParam(value: string | string[] | undefined): string[] {
+  return (Array.isArray(value) ? value : value === undefined ? [] : [value]).flatMap((part) => part.split(","));
+}
+
 /** Resolve a controlled quiz pool while preserving the caller's question order. */
 export function controlledQuestionIds(
   rawIds: readonly string[],

@@ -24,7 +24,7 @@ const metadata: Record<string, N10RemediationMetadata> = {
   "q-n10dhcp-15": { clusterId: "dhcp-lifecycle", clusterKey: "dhcpLifecycle", examClueKey: "dhcpOptions", memoryRuleKey: "dhcpOptions", whyWrongKey: "dhcpOptions" },
   "q-n10dhcp-35": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "ntpPort", memoryRuleKey: "ntpPort", whyWrongKey: "ntpPort" },
   "q-n10dhcp-40": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "kerberosClock", memoryRuleKey: "kerberosClock", whyWrongKey: "kerberosClock" },
-  "q-n10dhcp-41": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "ntpSources", memoryRuleKey: "ntpSources", whyWrongKey: "ntpSources" },
+  "q-n10dhcp-41": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "ntpConsensus", memoryRuleKey: "ntpConsensus", whyWrongKey: "ntpConsensus" },
   "q-n10dhcp-42": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "ptpPrecision", memoryRuleKey: "ptpPrecision", whyWrongKey: "ptpPrecision" },
   "q-n10dhcp-43": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "ptpPorts", memoryRuleKey: "ptpPorts", whyWrongKey: "ptpPorts" },
   "q-n10dhcp-47": { clusterId: "time-synchronization", clusterKey: "timeSynchronization", examClueKey: "logTime", memoryRuleKey: "logTime", whyWrongKey: "logTime" },
