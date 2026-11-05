@@ -3,7 +3,7 @@ import { chromium } from "playwright";
 
 const args = process.argv.slice(2);
 const i = args.indexOf("--url");
-const origin = i >= 0 ? args[i + 1] : "http://127.0.0.1:3000";
+const origin = i >= 0 ? args[i + 1] : "http://localhost:3000";
 const key = "comptia-a-plus-review-progress-v1";
 
 const browser = await chromium.launch({ headless: true });
@@ -62,6 +62,13 @@ try {
     assert.ok(
       status === "Correct" || status === "Incorrect"
     );
+
+    const inlineRemediation = page.locator("[data-inline-remediation]");
+    assert.equal(await inlineRemediation.count(), status === "Incorrect" ? 1 : 0);
+    if (status === "Incorrect") {
+      await page.locator("[data-inline-remediation-toggle]").click();
+      await inlineRemediation.locator("[data-inline-why-wrong], [data-inline-exam-clue], [data-inline-memory-rule], [data-inline-flashcards], [data-inline-notes]").first().waitFor();
+    }
 
     assert.match(text ?? "", /Your answer:/);
     assert.match(text ?? "", /Correct:/);

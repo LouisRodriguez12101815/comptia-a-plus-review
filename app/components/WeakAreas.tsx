@@ -9,6 +9,7 @@ import { getTopic, questions } from "@/lib/content";
 import { conceptVideos } from "@/lib/concept-videos";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
 import { visualItemsForTopic } from "@/lib/visuals";
+import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
 import { remediationForQuestion, rankMissedClusters, rankMissedQuestions } from "@/lib/weak-areas";
 
 export function WeakAreas() {
@@ -16,9 +17,8 @@ export function WeakAreas() {
   const r = useTranslations("weakAreas.remediation");
   const a = useTranslations("weakAreas.addressingRemediation");
   const addressingKeys = new Set(["ipv4PrivateLinkLocal", "ipv6Eui64", "layer2Delivery"]);
-  const addressingGuidanceKeys = new Set(["rfc1918Ranges", "apipaVsPrivate", "rfc1918Boundary", "apipaPrefix", "privateRouting", "eui64BitFlip", "ipv4Ipv6Representation", "unicastMulticastBroadcast", "ipBroadcastVsMacBroadcast"]);
   const clusterLabel = (key: string, fallback?: string) => addressingKeys.has(key) ? a(`clusters.${key}` as never) : fallback ?? r(`clusters.${key}` as never);
-  const guidance = (section: string, key: string) => addressingGuidanceKeys.has(key) ? a(`${section}.${key}` as never) : r(`${section}.${key}` as never);
+  const guidance = (section: string, key: string) => n10AddressingGuidanceKeys.has(key) ? a(`${section}.${key}` as never) : r(`${section}.${key}` as never);
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
 
   const remediation = useMemo(
