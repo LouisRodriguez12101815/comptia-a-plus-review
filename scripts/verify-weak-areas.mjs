@@ -46,6 +46,14 @@ try {
   }, { key: progressKey, value: progress });
 
   const page = await context.newPage();
+  const pageErrors = [];
+  const consoleErrors = [];
+  page.on("pageerror", (error) => {
+    pageErrors.push(String(error?.stack ?? error));
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
   await page.goto(`${origin}/en/weak-areas`, { waitUntil: "networkidle" });
 
   assert.equal(new URL(page.url()).pathname, "/weak-areas", "Weak Areas did not resolve to the canonical English pathname");
@@ -57,6 +65,22 @@ try {
   assert.equal(storedProgress.studyFocus, "n10-009");
   assert.ok(storedProgress.quizAttempts.some((attempt) => attempt.questionIds?.includes(questionId)));
   assert.ok(storedProgress.quizAttempts.some((attempt) => attempt.questionIds?.includes(clusterQuestionId)));
+
+  const cardIds = await page.locator("[data-remediation-card]").evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("data-remediation-card")),
+  );
+  const bodyText = await page.locator("body").innerText();
+  const diagnostic = {
+    url: page.url(),
+    title: await page.title(),
+    bodyText,
+    cardIds,
+    hasClusterSummary: await page.locator("[data-cluster-summary]").count() > 0,
+    emptyStateVisible: bodyText.includes("No missed questions yet"),
+    consoleErrors,
+    pageErrors,
+  };
+  assert.ok(cardIds.includes(questionId), `Expected Weak Areas remediation card was not rendered: ${JSON.stringify(diagnostic)}`);
 
   const card = page.locator(`[data-remediation-card="${questionId}"]`);
   await card.waitFor();
