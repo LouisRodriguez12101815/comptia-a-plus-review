@@ -200,8 +200,10 @@ const awsClf: TopFive = {
         "RDS/Aurora = relational; DynamoDB = key-value/document NoSQL; ElastiCache = in-memory cache; Redshift = data warehouse.",
         "Route 53 = DNS; CloudFront = CDN; Direct Connect = dedicated private connectivity; Site-to-Site VPN = encrypted internet tunnel.",
         "CloudWatch = metrics/logs/alarms; CloudTrail = API audit; Config = resource configuration history/rules.",
+        "AI cue: Comprehend analyzes text; Lex builds chat; Polly speaks; Transcribe writes speech; Translate changes language; Textract extracts forms; Rekognition analyzes images/video; SageMaker AI builds custom models.",
+        "Analytics cue: Athena queries S3; Glue transforms/catalogs; EMR processes big data; Kinesis streams; OpenSearch searches indexed data; Quick/Quick Sight visualizes; Redshift warehouses.",
       ],
-      drills: ["aws-clf-service-compare", "aws-clf-domain-cues"],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-ai-analytics-compare"],
     },
     {
       id: "security",

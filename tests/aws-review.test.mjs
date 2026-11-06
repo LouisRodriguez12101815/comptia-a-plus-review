@@ -76,3 +76,16 @@ test('practice evidence rejects stale banks, old attempts, repeated multi items 
   for (const patch of [{ bankVersion: 'v1' }, { at: now - 91 * 86400000 }, { at: now + 1000 }, { correctIds: [] }, { multiQuestionIds: ['q0'] }, { domains: base.domains.slice(0, 3) }]) assert.notEqual(evaluate(patch).status, 'ready', JSON.stringify(patch));
   assert.notEqual(evaluate({}, 1).status, 'ready');
 });
+
+test('CLF-C02 objective 3.7 expansion is original, mapped, and remains partial', () => {
+  const expanded = questions.filter(q => q.id.startsWith('q-clf37-'));
+  const objective = objectives.exams.find(e => e.code === 'clf-c02').domains.flatMap(d => d.objectives).find(o => o.id === '3.7');
+  assert.equal(expanded.length, 14);
+  assert.equal(new Set(expanded.map(q => q.id)).size, expanded.length);
+  assert.ok(expanded.every(q => q.examCodes.includes('clf-c02') && q.objectiveIds['clf-c02'].length === 1 && q.objectiveIds['clf-c02'][0] === '3.7'));
+  assert.ok(expanded.every(q => q.choices.length === 4 && !Array.isArray(q.answer)));
+  assert.equal(objective.status, 'partial');
+  assert.ok(objective.topics.includes('aws-clf-ai-analytics'));
+  const newServices = ['Comprehend', 'Transcribe', 'Translate', 'Lex', 'Polly', 'Textract', 'Rekognition', 'SageMaker', 'Athena', 'Glue', 'Kinesis', 'Quick', 'Redshift', 'OpenSearch'];
+  for (const service of newServices) assert.ok(expanded.some(q => q.prompt.includes(service) || q.choices.some(choice => choice.includes(service)) || q.explanation.includes(service)), service);
+});

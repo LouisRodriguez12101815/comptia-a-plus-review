@@ -2375,7 +2375,37 @@ const c2OsConcepts: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfAiAnalytics: DrillDeck = {
+  id: "aws-clf-ai-analytics-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.7",
+  topic: "AI/ML and analytics service selection",
+  modes: [
+    { id: "requirementToService", from: "requirement", to: "service" },
+    { id: "serviceToRequirement", from: "service", to: "requirement" },
+  ],
+  tables: [{ id: "service-selection", fields: ["requirement", "service"] }],
+  items: [
+    { id: "sentiment", objective: "3.7", fields: { requirement: "Sentiment and key phrases from reviews", service: "Amazon Comprehend" }, detail: "Comprehend analyzes meaning in text; Translate changes language.", hook: "Meaning in text = Comprehend", wrong: { service: ["Amazon Translate", "Amazon Lex", "Amazon Polly"] } },
+    { id: "chatbot", objective: "3.7", fields: { requirement: "Build an intent-based chatbot", service: "Amazon Lex" }, detail: "Lex builds conversational interfaces; Amazon Q is an AWS AI assistant.", hook: "Build the bot = Lex", wrong: { service: ["Amazon Q", "Amazon Comprehend", "Amazon SageMaker AI"] } },
+    { id: "speech-out", objective: "3.7", fields: { requirement: "Convert text to spoken audio", service: "Amazon Polly" }, detail: "Polly is text-to-speech; Transcribe is speech-to-text.", hook: "Polly speaks", wrong: { service: ["Amazon Transcribe", "Amazon Translate", "Amazon Lex"] } },
+    { id: "speech-in", objective: "3.7", fields: { requirement: "Convert recordings to searchable text", service: "Amazon Transcribe" }, detail: "Transcribe converts speech to text; Polly converts text to speech.", hook: "Transcribe writes", wrong: { service: ["Amazon Polly", "Amazon Comprehend", "Amazon Textract"] } },
+    { id: "translation", objective: "3.7", fields: { requirement: "Translate an article between languages", service: "Amazon Translate" }, detail: "Translate changes language; Comprehend extracts meaning from text.", hook: "Language change = Translate", wrong: { service: ["Amazon Comprehend", "Amazon Polly", "Amazon Lex"] } },
+    { id: "forms", objective: "3.7", fields: { requirement: "Extract fields from scanned forms", service: "Amazon Textract" }, detail: "Textract extracts document text and structured fields; Rekognition analyzes visual content.", hook: "Forms = Textract", wrong: { service: ["Amazon Rekognition", "Amazon Comprehend", "Amazon Athena"] } },
+    { id: "images", objective: "3.7", fields: { requirement: "Identify objects in video", service: "Amazon Rekognition" }, detail: "Rekognition analyzes images and video; Textract focuses on documents.", hook: "Visual recognition = Rekognition", wrong: { service: ["Amazon Textract", "Amazon Transcribe", "Amazon Polly"] } },
+    { id: "custom-model", objective: "3.7", fields: { requirement: "Build and train a custom ML model", service: "Amazon SageMaker AI" }, detail: "SageMaker AI is the custom model workflow; task-specific services are simpler when they fit.", hook: "Custom model = SageMaker AI", wrong: { service: ["Amazon Comprehend", "Amazon Lex", "Amazon Quick Sight"] } },
+    { id: "s3-sql", objective: "3.7", fields: { requirement: "Run SQL directly over S3 files", service: "Amazon Athena" }, detail: "Athena queries S3 data without managing database servers; it is not a warehouse.", hook: "S3 SQL = Athena", wrong: { service: ["Amazon Redshift", "AWS Glue", "Amazon EMR"] } },
+    { id: "etl", objective: "3.7", fields: { requirement: "Transform and catalog datasets", service: "AWS Glue" }, detail: "Glue integrates, transforms, and catalogs data; Athena queries it.", hook: "Prepare/catalog = Glue", wrong: { service: ["Amazon Athena", "Amazon Kinesis", "Amazon Quick Sight"] } },
+    { id: "big-data", objective: "3.7", fields: { requirement: "Managed big-data framework processing", service: "Amazon EMR" }, detail: "EMR provides managed big-data processing; this is not the ad hoc SQL cue for Athena.", hook: "Big data frameworks = EMR", wrong: { service: ["Amazon Athena", "AWS Glue", "Amazon Redshift"] } },
+    { id: "stream", objective: "3.7", fields: { requirement: "Ingest and process live telemetry", service: "Amazon Kinesis" }, detail: "Kinesis handles streams; SQS is the durable queue choice.", hook: "Live stream = Kinesis", wrong: { service: ["Amazon SQS", "Amazon Athena", "Amazon Redshift"] } },
+    { id: "search", objective: "3.7", fields: { requirement: "Search indexed application logs", service: "Amazon OpenSearch Service" }, detail: "OpenSearch searches indexed data; CloudWatch monitors metrics, logs, and alarms.", hook: "Indexed search = OpenSearch", wrong: { service: ["Amazon CloudWatch", "Amazon Athena", "AWS Glue"] } },
+    { id: "dashboard", objective: "3.7", fields: { requirement: "Build executive BI dashboards", service: "Amazon Quick Sight" }, detail: "Amazon Quick / Quick Sight provides BI visualization; Athena performs queries.", hook: "BI dashboard = Quick Sight", wrong: { service: ["Amazon Athena", "Amazon Redshift", "Amazon OpenSearch Service"] } },
+    { id: "warehouse", objective: "3.7", fields: { requirement: "Analytics data warehouse", service: "Amazon Redshift" }, detail: "Redshift is the warehouse choice; RDS/Aurora serve relational application workloads.", hook: "Warehouse = Redshift", wrong: { service: ["Amazon RDS", "Amazon Athena", "Amazon DynamoDB"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

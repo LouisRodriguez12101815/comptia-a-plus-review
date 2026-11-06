@@ -12615,5 +12615,82 @@
         ]
       }
     ]
+  },
+  {
+    "id": "aws-clf-ai-analytics",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 3.7 — AI/ML and analytics selection",
+    "chapter": "CLF-C02 · Objective 3.7",
+    "summary": "Choose an AWS AI/ML or analytics service from the business requirement, with emphasis on nearby distractors.",
+    "sections": [
+      {
+        "id": "ai-decision-table",
+        "title": "AI requirement → service",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement", "Service", "Why", "Common distractor"],
+            "rows": [
+              ["Extract sentiment, entities, or key phrases from text", "Amazon Comprehend", "Prebuilt natural-language analysis", "Amazon Translate changes language; it does not provide sentiment analysis"],
+              ["Build a chatbot or conversational voice/text interface", "Amazon Lex", "Conversational interface with intents", "Amazon Q is an AI assistant; SageMaker AI is for building/training models"],
+              ["Convert text into spoken audio", "Amazon Polly", "Text-to-speech", "Amazon Transcribe converts speech to text"],
+              ["Convert a recording into a searchable transcript", "Amazon Transcribe", "Speech-to-text", "Amazon Polly produces audio from text"],
+              ["Translate text between supported languages", "Amazon Translate", "Machine translation", "Amazon Comprehend analyzes language rather than translating it"],
+              ["Recognize objects or activity in images or video", "Amazon Rekognition", "Image and video analysis", "Amazon Textract extracts text and fields from documents"],
+              ["Extract printed text and form fields from scanned documents", "Amazon Textract", "Document and form analysis", "Amazon Rekognition analyzes visual content"],
+              ["Build, train, and deploy a custom ML model", "Amazon SageMaker AI", "Managed model-development workflow", "A task-specific AI service is simpler when it already fits the requirement"],
+              ["Use an AWS AI assistant for work or information tasks", "Amazon Q", "AWS AI assistant capability", "Lex is for building a conversational interface into an application"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "analytics-decision-table",
+        "title": "Analytics requirement → service",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement", "Service", "Exam cue"],
+            "rows": [
+              ["Run ad hoc SQL directly over data in S3", "Amazon Athena", "Serverless query service; not a permanent warehouse"],
+              ["Process large datasets with managed big-data frameworks", "Amazon EMR", "Managed cluster processing; no Hadoop administration required here"],
+              ["Integrate, prepare, transform, or catalog data", "AWS Glue", "ETL and data catalog concepts"],
+              ["Ingest and process live streaming data", "Amazon Kinesis", "Streaming telemetry or events; not a durable work queue"],
+              ["Search and analyze indexed logs or documents", "Amazon OpenSearch Service", "Search/log analytics over indexed data"],
+              ["Create executive BI dashboards", "Amazon Quick / Amazon Quick Sight capability", "Current naming is Amazon Quick; Quick Sight is the BI capability"],
+              ["Run analytics against a managed data warehouse", "Amazon Redshift", "Warehouse workload; not an OLTP database"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Start with the verb: query, transform, stream, search, visualize, or warehouse. Then choose the service whose primary job matches that verb."
+          }
+        ]
+      },
+      {
+        "id": "confusion-pairs",
+        "title": "High-yield confusion pairs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Polly speaks text; Transcribe writes down speech. Comprehend finds meaning in text; Translate changes its language.",
+              "Textract extracts fields from documents; Rekognition analyzes objects, scenes, and activity in images or video.",
+              "Lex is used to build a conversational interface; Amazon Q is an AWS AI assistant. SageMaker AI is for custom model workflows, not the default answer to every AI requirement.",
+              "Athena queries S3 data; Glue integrates and catalogs data; EMR processes large datasets with managed frameworks.",
+              "Kinesis handles streams; SQS is a queue. OpenSearch searches indexed data; CloudWatch monitors metrics, logs, and alarms.",
+              "Redshift is a data warehouse; RDS/Aurora are relational application databases. Amazon Quick / Quick Sight is for BI visualization, not ad hoc SQL over S3."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      }
+    ]
   }
 ]
