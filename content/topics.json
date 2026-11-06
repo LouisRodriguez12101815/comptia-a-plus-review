@@ -6569,6 +6569,44 @@
         ]
       },
       {
+        "id": "data-network-storage-transfer",
+        "title": "3.4–3.6 — Data, network and storage decisions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement cue", "Recognition choice"],
+            "rows": [
+              ["Relational SQL", "RDS / Aurora"],
+              ["Key-value or document access", "DynamoDB"],
+              ["Repeated reads and low latency", "ElastiCache"],
+              ["Move or replicate database data", "DMS"],
+              ["Convert schema or database code", "SCT"],
+              ["Logically isolated network", "VPC"],
+              ["Stateful resource traffic", "Security group"],
+              ["Stateless subnet traffic", "Network ACL"],
+              ["DNS", "Route 53"],
+              ["Encrypted internet connection", "VPN"],
+              ["Dedicated private path", "Direct Connect"],
+              ["Object storage", "S3"],
+              ["Persistent EC2 block", "EBS"],
+              ["Temporary local block", "Instance store"],
+              ["Shared file storage", "EFS / FSx"],
+              ["Hybrid storage integration", "Storage Gateway"],
+              ["Centralized backup policy", "AWS Backup"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Exam traps: RDS is not DynamoDB; DynamoDB is not a cache; DMS moves data while SCT helps convert schema/code; VPC is not a subnet; security groups are stateful/resource-level while NACLs are stateless/subnet-level; VPN is not Direct Connect; Direct Connect is not an encryption guarantee; S3 is not EBS; EBS is not instance store; lifecycle is not backup."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope guard: CLF-C02 recognition does not require SQL syntax, database-engine administration, DynamoDB key design, cache-cluster configuration, route-table or CIDR implementation, security-rule authoring, Direct Connect provisioning, lifecycle JSON, EBS tuning or file-system mount commands."
+          }
+        ]
+      },
+      {
         "id": "objective-clf-c02-3-4",
         "title": "3.4 — Database models and migration responsibilities",
         "blocks": [

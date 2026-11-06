@@ -208,8 +208,12 @@ const awsClf: TopFive = {
         "Infrastructure cue: one AZ failure = Multi-AZ; Region failure = Multi-Region when justified; user proximity for supported delivery = edge; residency constrains permitted Regions.",
         "Compute cue: VM control = EC2; event-driven function = Lambda; Kubernetes = EKS; AWS container orchestration = ECS; serverless containers = Fargate; capacity = Auto Scaling; traffic = load balancer.",
         "Domain 3 traps: CLI is not SDK; hybrid is not multi-cloud; Region is not AZ; AZ is not edge; ECS/EKS are not Fargate; Auto Scaling is not load balancing.",
+        "Database cue: relational SQL = RDS/Aurora; key-value/document = DynamoDB; repeated low-latency reads = ElastiCache; move data = DMS; convert schema/code = SCT.",
+        "Network cue: VPC is the isolated network; security group is stateful/resource-level; NACL is stateless/subnet-level; Route 53 is DNS; VPN is encrypted internet; Direct Connect is dedicated private connectivity.",
+        "Storage cue: S3 object; EBS persistent EC2 block; instance store ephemeral local block; EFS/FSx file; Storage Gateway hybrid; AWS Backup centralized backup; Lifecycle transitions or expires S3 objects.",
+        "Domain 3 data/network/storage traps: managed database does not remove customer responsibility; DMS is not SCT; Inspector is not a firewall; Direct Connect is not encryption by itself; lifecycle is not backup.",
       ],
-      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-cloud-tech-core", "aws-clf-ai-analytics-compare", "aws-clf-other-services-compare"],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-cloud-tech-core", "aws-clf-data-network-storage", "aws-clf-ai-analytics-compare", "aws-clf-other-services-compare"],
     },
     {
       id: "security",

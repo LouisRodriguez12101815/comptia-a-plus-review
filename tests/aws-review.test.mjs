@@ -305,3 +305,30 @@ test('CLF-C02 objectives 3.1–3.3 expand transfer coverage without teaching imp
   assert.equal(objectiveFor('3.2').status, 'partial');
   assert.equal(objectiveFor('3.3').status, 'partial');
 });
+
+test('CLF-C02 objectives 3.4–3.6 expand data, network and storage transfer coverage', () => {
+  const exam = objectives.exams.find(item => item.code === 'clf-c02');
+  const objectiveFor = id => exam.domains.flatMap(domain => domain.objectives).find(objective => objective.id === id);
+  const objectiveIds = ['3.4', '3.5', '3.6'];
+  const added = questions.filter(question => /^q-clf3[456]-/.test(question.id));
+  const topic = topics.find(item => item.id === 'aws-clf-technology-services');
+  const cards = flashcards.filter(card => card.topicId === topic.id && /^fc-clf(34|35|36)-/.test(card.id));
+  const corpus = JSON.stringify({ topic, questions: added, cards });
+  const addedCorpus = JSON.stringify({ questions: added, cards });
+  assert.equal(added.length, 42);
+  assert.equal(new Set(added.map(question => question.id)).size, added.length);
+  assert.ok(added.every(question => question.examCodes.length === 1 && question.examCodes[0] === 'clf-c02'));
+  assert.ok(added.every(question => objectiveIds.includes(question.objectiveIds['clf-c02'][0])));
+  for (const id of objectiveIds) assert.equal(added.filter(question => question.objectiveIds['clf-c02'][0] === id).length, 14);
+  assert.equal(added.filter(question => Array.isArray(question.answer)).length, 4);
+  for (const cue of ['EC2-hosted', 'managed', 'RDS', 'Aurora', 'DynamoDB', 'ElastiCache', 'DMS', 'SCT', 'VPC', 'subnet', 'gateway', 'security group', 'NACL', 'stateful', 'stateless', 'Inspector', 'Route 53', 'VPN', 'Direct Connect', 'S3', 'storage class', 'Lifecycle', 'EBS', 'instance store', 'EFS', 'FSx', 'Storage Gateway', 'AWS Backup', 'object', 'block', 'file', 'ephemeral']) assert.match(corpus, new RegExp(cue, 'i'), cue);
+  for (const implementation of ['CREATE TABLE', 'SELECT .* FROM', 'partition-key design', 'route-table implementation', 'CIDR subnet calculations', 'lifecycle JSON', 'mount command']) assert.doesNotMatch(addedCorpus, new RegExp(implementation, 'i'), implementation);
+  assert.equal(topic.sections.some(section => section.id === 'data-network-storage-transfer'), true);
+  assert.ok(visuals['aws-clf-technology-services'].some(item => item.file === 'aws-clf-database-network-decisions.html'));
+  assert.ok(visuals['aws-clf-technology-services'].some(item => item.file === 'aws-clf-storage-decisions.html'));
+  assert.ok(read('labs').some(lab => lab.slug === 'aws-clf-data-platform-selection'));
+  const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
+  assert.match(drills, /id: "aws-clf-data-network-storage"/);
+  assert.match(readFileSync(new URL('../lib/study/topFive.ts', import.meta.url), 'utf8'), /aws-clf-data-network-storage/);
+  for (const id of objectiveIds) assert.equal(objectiveFor(id).status, 'partial');
+});

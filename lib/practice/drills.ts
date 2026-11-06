@@ -2637,7 +2637,51 @@ const awsClfCloudTechCore: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfDataNetworkStorage: DrillDeck = {
+  id: "aws-clf-data-network-storage",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.4–3.6",
+  topic: "Database, network and storage decisions",
+  modes: [
+    { id: "workloadToDatabase", from: "workload", to: "database" },
+    { id: "networkToChoice", from: "requirement", to: "choice" },
+    { id: "storageToChoice", from: "storage", to: "choice" },
+    { id: "confusionPair", from: "cue", to: "distinction" },
+  ],
+  tables: [
+    { id: "database-cues", fields: ["workload", "database"] },
+    { id: "network-cues", fields: ["requirement", "choice"] },
+    { id: "storage-cues", fields: ["storage", "choice"] },
+    { id: "confusion-pairs", fields: ["cue", "distinction"] },
+  ],
+  items: [
+    { id: "rds", objective: "3.4", fields: { workload: "Relational SQL application", database: "RDS / Aurora" }, detail: "RDS and Aurora are managed relational cues.", hook: "Relational = RDS/Aurora", wrong: { database: ["DynamoDB", "ElastiCache", "DMS"] } },
+    { id: "dynamodb", objective: "3.4", fields: { workload: "Key-value or document access", database: "DynamoDB" }, detail: "DynamoDB is managed NoSQL key-value/document storage.", hook: "Key-value = DynamoDB", wrong: { database: ["RDS", "Aurora", "ElastiCache"] } },
+    { id: "cache", objective: "3.4", fields: { workload: "Repeated reads need low latency", database: "ElastiCache" }, detail: "ElastiCache is managed in-memory caching, not automatically a primary database.", hook: "Hot repeat reads = Cache", wrong: { database: ["DynamoDB", "RDS", "SCT"] } },
+    { id: "dms", objective: "3.4", fields: { workload: "Move or replicate database data", database: "DMS" }, detail: "DMS moves or replicates data during database migration.", hook: "Move data = DMS", wrong: { database: ["SCT", "ElastiCache", "Route 53"] } },
+    { id: "sct", objective: "3.4", fields: { workload: "Convert schema or database code", database: "SCT" }, detail: "SCT helps convert schema or database code between engines.", hook: "Convert schema = SCT", wrong: { database: ["DMS", "RDS", "EBS"] } },
+    { id: "vpc", objective: "3.5", fields: { requirement: "Logically isolated AWS network", choice: "VPC" }, detail: "A VPC is the logically isolated virtual network.", hook: "Isolated network = VPC", wrong: { choice: ["Subnet", "Route 53", "NACL"] } },
+    { id: "subnet", objective: "3.5", fields: { requirement: "Network segment inside a VPC", choice: "Subnet" }, detail: "A subnet is a segment within a VPC.", hook: "Segment = Subnet", wrong: { choice: ["VPC", "VPN", "Inspector"] } },
+    { id: "sg", objective: "3.5", fields: { requirement: "Stateful resource-level traffic control", choice: "Security group" }, detail: "Security groups are stateful resource-level controls.", hook: "Stateful resource = SG", wrong: { choice: ["NACL", "Route 53", "Inspector"] } },
+    { id: "nacl", objective: "3.5", fields: { requirement: "Stateless subnet-level traffic control", choice: "Network ACL" }, detail: "Network ACLs are stateless subnet-level controls.", hook: "Stateless subnet = NACL", wrong: { choice: ["Security group", "VPN", "DMS"] } },
+    { id: "dns", objective: "3.5", fields: { requirement: "Domain-name resolution", choice: "Route 53" }, detail: "Route 53 is the DNS and domain-name routing cue.", hook: "Names = Route 53", wrong: { choice: ["Load balancer", "Direct Connect", "VPC"] } },
+    { id: "vpn", objective: "3.5", fields: { requirement: "Encrypted connection over the internet", choice: "VPN" }, detail: "VPN provides encrypted network connectivity over an internet path.", hook: "Encrypted internet = VPN", wrong: { choice: ["Direct Connect", "Route 53", "Inspector"] } },
+    { id: "direct-connect", objective: "3.5", fields: { requirement: "Dedicated private network path", choice: "Direct Connect" }, detail: "Direct Connect is the dedicated private connectivity cue, not an automatic encryption guarantee.", hook: "Dedicated private = DX", wrong: { choice: ["VPN", "Route 53", "Security group"] } },
+    { id: "inspector", objective: "3.5", fields: { requirement: "Vulnerability and unintended exposure assessment", choice: "Inspector" }, detail: "Inspector assesses supported workloads; it is not a packet filter.", hook: "Vulnerabilities = Inspector", wrong: { choice: ["NACL", "Security group", "VPN"] } },
+    { id: "s3", objective: "3.6", fields: { storage: "Objects and static assets", choice: "S3" }, detail: "S3 is object storage.", hook: "Objects = S3", wrong: { choice: ["EBS", "EFS", "Instance store"] } },
+    { id: "ebs", objective: "3.6", fields: { storage: "Persistent EC2 block device", choice: "EBS" }, detail: "EBS is persistent block storage for EC2.", hook: "Persistent EC2 disk = EBS", wrong: { choice: ["S3", "Instance store", "EFS"] } },
+    { id: "instance-store", objective: "3.6", fields: { storage: "Temporary local block", choice: "Instance store" }, detail: "Instance store is ephemeral local block storage.", hook: "Temporary local = Instance store", wrong: { choice: ["EBS", "S3", "AWS Backup"] } },
+    { id: "efs", objective: "3.6", fields: { storage: "Shared Linux file system", choice: "EFS" }, detail: "EFS provides managed shared file semantics.", hook: "Shared files = EFS", wrong: { choice: ["S3", "EBS", "DMS"] } },
+    { id: "gateway", objective: "3.6", fields: { storage: "On-premises plus AWS storage integration", choice: "Storage Gateway" }, detail: "Storage Gateway is the hybrid storage integration cue.", hook: "Hybrid storage = Gateway", wrong: { choice: ["EFS", "S3 Lifecycle", "Route 53"] } },
+    { id: "backup", objective: "3.6", fields: { storage: "Centralized backup policy", choice: "AWS Backup" }, detail: "AWS Backup manages backup policies for supported resources.", hook: "Backup policy = AWS Backup", wrong: { choice: ["S3 Lifecycle", "Replication", "Instance store"] } },
+    { id: "sg-nacl", objective: "3.5", fields: { cue: "Security group versus NACL", distinction: "Stateful resource-level versus stateless subnet-level" }, detail: "The boundary and state model distinguish these controls.", hook: "Resource/state versus subnet/stateless", wrong: { distinction: ["DNS versus backup", "Object versus block"] } },
+    { id: "dms-sct", objective: "3.4", fields: { cue: "DMS versus SCT", distinction: "Move/replicate data versus convert schema/code" }, detail: "Migration may use both tools, but their jobs differ.", hook: "Move versus convert", wrong: { distinction: ["Cache versus DNS", "Block versus file"] } },
+    { id: "s3-ebs", objective: "3.6", fields: { cue: "S3 versus EBS", distinction: "Object storage versus persistent EC2 block" }, detail: "Choose from access semantics rather than the word storage alone.", hook: "Object versus block", wrong: { distinction: ["DNS versus VPN", "Relational versus cache"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
