@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CLF-C02 Domain 4 chooser</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; padding: 1rem; background: Canvas; color: CanvasText; line-height: 1.45; }
+    main { max-width: 70rem; margin: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
+    section { border: 1px solid color-mix(in srgb, CanvasText 30%, transparent); border-radius: .7rem; padding: 1rem; }
+    h2 { margin-top: 0; }
+    li { margin: .45rem 0; }
+    strong { color: #60a5fa; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid color-mix(in srgb, CanvasText 30%, transparent); padding: .5rem; text-align: left; vertical-align: top; }
+    th { background: color-mix(in srgb, CanvasText 10%, transparent); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Domain 4: choose by the requirement</h1>
+    <figure>
+      <svg role="img" aria-label="A flow from a pricing, cost, or support question to the matching AWS resource" viewBox="0 0 900 120" width="100%" height="auto">
+        <rect x="20" y="25" width="180" height="70" rx="12" fill="#2563eb"/><text x="110" y="55" fill="white" text-anchor="middle">Read the requirement</text><text x="110" y="75" fill="white" text-anchor="middle">price, cost, or support</text>
+        <path d="M205 60h80M270 52l10 8-10 8M380 60h80M445 52l10 8-10 8M555 60h80M620 52l10 8-10 8" stroke="currentColor" stroke-width="3" fill="none"/>
+        <rect x="285" y="25" width="100" height="70" rx="12" fill="#15803d"/><text x="335" y="65" fill="white" text-anchor="middle">Choose by</text><text x="335" y="82" fill="white" text-anchor="middle">purpose</text>
+        <rect x="460" y="25" width="100" height="70" rx="12" fill="#7c3aed"/><text x="510" y="65" fill="white" text-anchor="middle">Compare</text><text x="510" y="82" fill="white" text-anchor="middle">tradeoffs</text>
+        <rect x="635" y="25" width="220" height="70" rx="12" fill="#b45309"/><text x="745" y="65" fill="white" text-anchor="middle">Pick the AWS resource</text><text x="745" y="82" fill="white" text-anchor="middle">that answers the cue</text>
+      </svg>
+      <figcaption>Separate discount, capacity, estimation, analysis, alerting, health, recommendations, and support-case cues.</figcaption>
+    </figure>
+    <div class="grid">
+      <section>
+        <h2>Pricing and capacity</h2>
+        <ul>
+          <li>No commitment → <strong>On-Demand</strong></li>
+          <li>Interruptible spare capacity → <strong>Spot</strong></li>
+          <li>Steady eligible usage → <strong>Savings Plan / RI</strong></li>
+          <li>Guarantee launch capacity → <strong>Capacity Reservation</strong></li>
+          <li>Host-level visibility/licensing → <strong>Dedicated Host</strong></li>
+          <li>Dedicated tenancy without host control → <strong>Dedicated Instance</strong></li>
+        </ul>
+      </section>
+      <section>
+        <h2>Cost question</h2>
+        <ul>
+          <li>Before deployment → <strong>Pricing Calculator</strong></li>
+          <li>Actual spend/trends → <strong>Cost Explorer</strong></li>
+          <li>Threshold alert → <strong>Budgets</strong></li>
+          <li>Detailed records → <strong>Cost and Usage Report</strong></li>
+          <li>Team/project attribution → <strong>Activated cost allocation tags</strong></li>
+          <li>Multiple-account billing → <strong>Organizations</strong></li>
+        </ul>
+      </section>
+      <section>
+        <h2>Support or signal</h2>
+        <ul>
+          <li>Reference → <strong>Documentation/whitepapers</strong></li>
+          <li>Troubleshooting → <strong>Knowledge Center / re:Post</strong></li>
+          <li>Patterns → <strong>Prescriptive Guidance</strong></li>
+          <li>Case → <strong>Support Center</strong></li>
+          <li>Recommendation → <strong>Trusted Advisor</strong></li>
+          <li>Health event → <strong>AWS Health</strong></li>
+          <li>Abuse report → <strong>Trust and Safety</strong></li>
+        </ul>
+      </section>
+    </div>
+    <table>
+      <thead><tr><th>Do not conflate</th><th>Distinction</th></tr></thead>
+      <tbody>
+        <tr><td>Discount vs capacity</td><td>RI/Savings Plans can discount eligible usage; Capacity Reservations address launch capacity.</td></tr>
+        <tr><td>Calculator vs Explorer vs Budgets</td><td>Estimate planned cost; analyze actual spend; alert on thresholds.</td></tr>
+        <tr><td>Trusted Advisor vs Health</td><td>Recommendations/checks versus account or service health events.</td></tr>
+        <tr><td>Marketplace vs Professional Services</td><td>Third-party products/procurement versus AWS-delivered project expertise.</td></tr>
+      </tbody>
+    </table>
+    <script type="application/json" id="visual-facts">{"facts":[{"claim":"Capacity Reservations address capacity, while Savings Plans and Reserved Instances are pricing commitment concepts.","objectives":["clf-c02 4.1"],"sources":["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations.html","https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"]},{"claim":"Pricing Calculator estimates planned cost, Cost Explorer analyzes spend, and Budgets alerts on thresholds.","objectives":["clf-c02 4.2"],"sources":["https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html","https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html","https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"]},{"claim":"AWS Health reports health information while Trusted Advisor provides supported recommendations and checks.","objectives":["clf-c02 4.3"],"sources":["https://docs.aws.amazon.com/health/latest/ug/awshealth.html","https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"]}],"simplifications":["This visual uses recognition-level cues and omits changing prices, response-time tables, and implementation details."]}</script>
+  </main>
+</body>
+</html>

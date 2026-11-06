@@ -6712,8 +6712,35 @@
               [
                 "Reserve capacity in an Availability Zone",
                 "Capacity Reservation"
+              ],
+              [
+                "Dedicated physical host with host-level visibility or licensing needs",
+                "Dedicated Host"
+              ],
+              [
+                "Dedicated hardware tenancy without host allocation control",
+                "Dedicated Instance"
               ]
             ]
+          }
+        ]
+      },
+      {
+        "id": "pricing-factors",
+        "title": "Storage and data-transfer pricing factors",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Storage cost depends on class or tier, stored volume, requests, retrieval charges, minimum storage duration where applicable, lifecycle transitions, and data transfer—not only GB stored.",
+              "Rarely accessed data with long retrieval tolerance should lead you to compare archival-class behavior and retrieval costs rather than automatically choosing the lowest storage rate.",
+              "Inbound and outbound transfer may price differently. Inter-Region, inter-AZ, and service-to-service transfer have service-specific rules, so architecture placement affects cost."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Pricing questions are relative decisions: identify commitment, interruption tolerance, capacity guarantee, tenancy, storage access pattern, and transfer path before comparing rates."
           }
         ]
       },
@@ -6812,7 +6839,8 @@
             "items": [
               "Pricing Calculator estimates a planned design from assumptions. Cost Explorer analyzes costs/usage and supports forecasts; detailed billing exports support more granular analysis. None of these validates a bad architecture assumption automatically.",
               "Budgets can alert on actual/forecast amounts and utilization/coverage; notifications and billing data have delay. A budget is not an instantaneous spending cap. Any budget action requires separate supported configuration and permissions.",
-              "Organizations provides consolidated billing. Apply and activate eligible cost-allocation tag keys for billing analysis; merely attaching a tag does not guarantee its immediate appearance in reports. Account boundaries and allocation rules determine financial ownership."
+              "Organizations provides consolidated billing. Apply and activate eligible cost-allocation tag keys for billing analysis; merely attaching a tag does not guarantee its immediate appearance in reports. Account boundaries and allocation rules determine financial ownership.",
+              "The Cost and Usage Report provides detailed cost and usage records for granular analysis. It is a reporting dataset, not a real-time spending cap."
             ]
           },
           {
@@ -6839,12 +6867,28 @@
             "items": [
               "Current AWS documentation lists Basic Support and paid offerings including Business Support+, Enterprise Support and Unified Operations. Compare current technical-support scope, response targets and designated guidance rather than memorizing retired plan names or treating response targets as resolution guarantees.",
               "Use documentation, re:Post/Knowledge Center and Prescriptive Guidance for self-service knowledge. Support Center handles support cases; support entitlements determine the available channel and technical response. Trusted Advisor and AWS Health/Health API expose different recommendation and health signals.",
-              "AWS Partners include software vendors and integrators; Marketplace distributes third-party products and purchasing entitlements. Professional Services and solutions architects address different assistance needs. Report suspected AWS-resource abuse through the appropriate Trust and Safety process, rather than sending it to an unrelated billing alert."
+              "AWS Partners include software vendors and integrators; Marketplace distributes third-party products and purchasing entitlements. Professional Services and solutions architects address different assistance needs. Report suspected AWS-resource abuse through the appropriate Trust and Safety process, rather than sending it to an unrelated billing alert.",
+              "Older study material may still show Developer Support, Business Support, or Enterprise On-Ramp during the 2026 transition; the current study set recognizes Basic Support, Business Support+, Enterprise Support, and Unified Operations as the current plan names."
             ]
           },
           {
             "type": "paragraph",
             "text": "Worked decision: A team needs information about an AWS event affecting its account resources, rather than a general architecture recommendation. Which resource should it check? Choose AWS Health and the relevant Health API/dashboard information. AWS Health provides relevant health/event information; Trusted Advisor recommendations and cost estimation serve different purposes. Marketplace and infrastructure templates do not replace the event/health signal."
+          },
+          {
+            "type": "table",
+            "headers": ["Need", "Resource"],
+            "rows": [
+              ["Authoritative service reference", "AWS documentation or whitepapers"],
+              ["Troubleshooting knowledge", "Knowledge Center or AWS re:Post"],
+              ["Patterns and implementation guidance", "AWS Prescriptive Guidance"],
+              ["Open an eligible support case", "Support Center"],
+              ["Best-practice recommendation", "Trusted Advisor"],
+              ["Account or service health event", "AWS Health / Health API"],
+              ["Suspected abuse of an AWS resource", "Trust and Safety"],
+              ["Third-party software or service", "AWS Marketplace / AWS Partner"],
+              ["AWS-delivered project expertise", "Professional Services or solutions architect"]
+            ]
           },
           {
             "type": "callout",

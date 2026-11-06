@@ -2432,7 +2432,63 @@ const awsClfAccessCompare: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfCostCompare: DrillDeck = {
+  id: "aws-clf-cost-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "4.1, 4.2",
+  topic: "Pricing models and cost tools",
+  modes: [
+    { id: "workloadToModel", from: "workload", to: "choice" },
+    { id: "costNeedToTool", from: "costNeed", to: "choice" },
+  ],
+  tables: [
+    { id: "purchase-models", fields: ["workload", "choice"] },
+    { id: "cost-tools", fields: ["costNeed", "choice"] },
+  ],
+  items: [
+    { id: "flexible", objective: "4.1", fields: { workload: "Uncertain demand with no commitment", choice: "On-Demand" }, detail: "On-Demand provides flexibility without a long-term commitment.", hook: "No commitment = On-Demand", wrong: { choice: ["Savings Plans", "Reserved Instances", "Capacity Reservation"] } },
+    { id: "interruptible", objective: "4.1", fields: { workload: "Restartable batch work using spare capacity", choice: "Spot" }, detail: "Spot is discounted spare capacity and can be interrupted.", hook: "Can stop = Spot", wrong: { choice: ["On-Demand", "Dedicated Host", "Capacity Reservation"] } },
+    { id: "steady", objective: "4.1", fields: { workload: "Steady eligible usage with a commitment discount", choice: "Savings Plan or Reserved Instance" }, detail: "Commitment models can reduce steady-use cost; they are not capacity guarantees.", hook: "Steady = commitment", wrong: { choice: ["Spot", "Capacity Reservation", "On-Demand"] } },
+    { id: "capacity", objective: "4.1", fields: { workload: "Guarantee launch capacity in a selected AZ", choice: "Capacity Reservation" }, detail: "Capacity Reservations address capacity; they are not simply discount instruments.", hook: "Capacity = reservation", wrong: { choice: ["Savings Plan", "Reserved Instance", "Cost allocation tag"] } },
+    { id: "host", objective: "4.1", fields: { workload: "Host-level licensing or physical-server visibility", choice: "Dedicated Host" }, detail: "Dedicated Host provides a dedicated physical server with host-level control.", hook: "Host control = Dedicated Host", wrong: { choice: ["Dedicated Instance", "Spot", "Savings Plan"] } },
+    { id: "estimate", objective: "4.2", fields: { costNeed: "Estimate before deployment", choice: "AWS Pricing Calculator" }, detail: "Calculator estimates planned architecture cost from assumptions.", hook: "Before = Calculator", wrong: { choice: ["Cost Explorer", "Budgets", "CUR"] } },
+    { id: "analyze", objective: "4.2", fields: { costNeed: "Analyze actual spend and trends", choice: "AWS Cost Explorer" }, detail: "Cost Explorer analyzes existing costs and usage.", hook: "Actual spend = Explorer", wrong: { choice: ["Pricing Calculator", "Budgets", "Cost allocation tags"] } },
+    { id: "alert", objective: "4.2", fields: { costNeed: "Alert when forecast or actual spend crosses a threshold", choice: "AWS Budgets" }, detail: "Budgets provides configured threshold alerts; it is not a real-time hard cap.", hook: "Threshold = Budgets", wrong: { choice: ["Cost Explorer", "CUR", "Pricing Calculator"] } },
+    { id: "detail", objective: "4.2", fields: { costNeed: "Detailed cost and usage records", choice: "Cost and Usage Report" }, detail: "CUR supplies granular billing and usage data for reporting.", hook: "Detailed records = CUR", wrong: { choice: ["Budgets", "Organizations", "AWS Health"] } },
+    { id: "attribute", objective: "4.2", fields: { costNeed: "Attribute spend to teams or projects", choice: "Cost allocation tags" }, detail: "Activate eligible tag keys for billing allocation; activation and data availability can be delayed.", hook: "Attribute = tags", wrong: { choice: ["Budgets", "Cost Explorer", "Spot"] } },
+    { id: "consolidate", objective: "4.2", fields: { costNeed: "Consolidate billing across accounts", choice: "AWS Organizations" }, detail: "Organizations provides multi-account management and consolidated billing context.", hook: "Accounts together = Organizations", wrong: { choice: ["CUR", "Trusted Advisor", "Pricing Calculator"] } },
+  ],
+};
+
+const awsClfSupportResources: DrillDeck = {
+  id: "aws-clf-support-resources",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "4.3",
+  topic: "AWS support and technical resources",
+  modes: [
+    { id: "needToResource", from: "supportNeed", to: "resource" },
+    { id: "signalToResource", from: "operationalSignal", to: "resource" },
+  ],
+  tables: [
+    { id: "support-resources", fields: ["supportNeed", "resource"] },
+    { id: "operational-signals", fields: ["operationalSignal", "resource"] },
+  ],
+  items: [
+    { id: "reference", objective: "4.3", fields: { supportNeed: "Authoritative service reference", resource: "AWS documentation / whitepapers" }, detail: "Official documentation and whitepapers are authoritative technical references.", hook: "Reference = docs", wrong: { resource: ["AWS re:Post", "Support Center", "AWS Marketplace"] } },
+    { id: "troubleshooting", objective: "4.3", fields: { supportNeed: "AWS troubleshooting article", resource: "Knowledge Center" }, detail: "Knowledge Center provides AWS support and troubleshooting knowledge.", hook: "Troubleshooting = Knowledge Center", wrong: { resource: ["Pricing Calculator", "AWS Health", "Marketplace"] } },
+    { id: "patterns", objective: "4.3", fields: { supportNeed: "Implementation patterns and strategies", resource: "Prescriptive Guidance" }, detail: "Prescriptive Guidance provides patterns and implementation guidance.", hook: "Patterns = Prescriptive", wrong: { resource: ["Support Center", "Budgets", "Trust and Safety"] } },
+    { id: "case", objective: "4.3", fields: { supportNeed: "Open an eligible support case", resource: "Support Center" }, detail: "Support Center handles eligible support cases according to plan entitlements.", hook: "Case = Support Center", wrong: { resource: ["Trusted Advisor", "AWS Health", "Marketplace"] } },
+    { id: "recommendation", objective: "4.3", fields: { operationalSignal: "Best-practice recommendation", resource: "Trusted Advisor" }, detail: "Trusted Advisor provides supported recommendations and checks.", hook: "Recommendation = Trusted Advisor", wrong: { resource: ["AWS Health", "Trust and Safety", "Support Center"] } },
+    { id: "health", objective: "4.3", fields: { operationalSignal: "Account or service health event", resource: "AWS Health" }, detail: "AWS Health provides relevant health information through dashboard/API.", hook: "Health event = AWS Health", wrong: { resource: ["Trusted Advisor", "AWS re:Post", "Budgets"] } },
+    { id: "abuse", objective: "4.3", fields: { operationalSignal: "Suspected AWS-resource abuse", resource: "Trust and Safety" }, detail: "Trust and Safety is the appropriate abuse-reporting path.", hook: "Abuse = Trust and Safety", wrong: { resource: ["Support Center", "Marketplace", "Cost Explorer"] } },
+    { id: "third-party", objective: "4.3", fields: { supportNeed: "Discover third-party software", resource: "AWS Marketplace / Partner Network" }, detail: "Marketplace and partners provide third-party software/services; they are not automatically AWS-native or compliant.", hook: "Third-party = Marketplace/Partner", wrong: { resource: ["Professional Services", "AWS Health", "Trusted Advisor"] } },
+    { id: "experts", objective: "4.3", fields: { supportNeed: "Transformation project and architecture guidance", resource: "Professional Services / solutions architect" }, detail: "Professional Services assists with projects; solutions architects provide architecture guidance.", hook: "Project expertise = AWS experts", wrong: { resource: ["AWS Marketplace", "Budgets", "Trust and Safety"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfSupportResources, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

@@ -109,3 +109,35 @@ test('CLF-C02 objective 2.3 access-management expansion is mapped and stays part
   assert.match(readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8'), /id: "aws-clf-access-compare"/);
   for (const o of exam.domains.flatMap(d => d.objectives).filter(o => o.id !== '2.3')) assert.equal(o.status, 'partial', `unexpected CLF status change: ${o.id}`);
 });
+
+test('CLF-C02 Domain 4 expansion is objective-specific, current, and remains partial', () => {
+  const groups = {
+    '4.1': questions.filter(q => q.id.startsWith('q-clf41-')),
+    '4.2': questions.filter(q => q.id.startsWith('q-clf42-')),
+    '4.3': questions.filter(q => q.id.startsWith('q-clf43-')),
+  };
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const objectiveFor = id => exam.domains.flatMap(d => d.objectives).find(o => o.id === id);
+  assert.equal(groups['4.1'].length, 10);
+  assert.equal(groups['4.2'].length, 9);
+  assert.equal(groups['4.3'].length, 10);
+  const all = Object.values(groups).flat();
+  assert.equal(new Set(all.map(q => q.id)).size, all.length);
+  for (const [objectiveId, items] of Object.entries(groups)) {
+    assert.ok(items.every(q => q.examCodes.length === 1 && q.examCodes[0] === 'clf-c02'));
+    assert.ok(items.every(q => q.objectiveIds['clf-c02'].length === 1 && q.objectiveIds['clf-c02'][0] === objectiveId));
+    assert.ok(items.every(q => q.choices.length === 4 && !Array.isArray(q.answer)));
+    assert.equal(objectiveFor(objectiveId).status, 'partial');
+  }
+  const topic = topics.find(t => t.id === 'aws-clf-billing-support');
+  assert.ok(topic.sections.some(s => s.id === 'pricing-factors'));
+  assert.ok(flashcards.filter(c => c.topicId === topic.id).length >= 40);
+  const corpus = JSON.stringify({ topic, questions: all, cards: flashcards.filter(c => c.topicId === topic.id) });
+  for (const concept of ['Capacity Reservation', 'Dedicated Host', 'Dedicated Instance', 'Spot', 'Savings Plans', 'Pricing Calculator', 'Cost Explorer', 'Budgets', 'Cost and Usage Report', 'cost allocation', 'Organizations', 'Trusted Advisor', 'AWS Health', 'Trust and Safety', 'Marketplace', 'Professional Services']) assert.match(corpus, new RegExp(concept, 'i'), concept);
+  assert.match(corpus, /Business Support\+.*Enterprise Support.*Unified Operations/s);
+  assert.doesNotMatch(corpus, /Developer Support, Business Support, and Enterprise On-Ramp are the current paid plans/i);
+  const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
+  assert.match(drills, /id: "aws-clf-cost-compare"/);
+  assert.match(drills, /id: "aws-clf-support-resources"/);
+  for (const o of exam.domains.flatMap(d => d.objectives).filter(o => !['4.1', '4.2', '4.3'].includes(o.id))) assert.equal(o.status, 'partial', `unexpected CLF status change: ${o.id}`);
+});
