@@ -21,7 +21,7 @@ const devicePaths = {
 
 export function InteractiveLabDiagram() {
   const t = useTranslations("homePage");
-  const [active, setActive] = useState("router");
+  const [active, setActive] = useState<(typeof devices)[number]["id"]>("router");
   const selected = devices.find((device) => device.id === active) ?? devices[2];
   return (
     <div className={`interactive-lab-diagram active-${active}`} data-active-device={active}>
