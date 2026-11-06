@@ -93,6 +93,13 @@ body {
   animation-delay: 2.75s;
 }
 
+@keyframes lab-mark-signal {
+  0%, 100% { transform: translateX(0); opacity: 0.35; }
+  45%, 65% { transform: translateX(34px); opacity: 1; }
+}
+
+.lab-mark-packet { animation: lab-mark-signal 3.8s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .packet {
     animation: none;
@@ -103,6 +110,8 @@ body {
   .packet-late {
     display: none;
   }
+
+  .lab-mark-packet { animation: none; opacity: 0.8; }
 
   html {
     scroll-behavior: auto;
@@ -404,6 +413,102 @@ body {
 .study-sequence-step {
   border: 1px solid var(--track-accent-line);
   background: linear-gradient(180deg, var(--track-accent-soft), rgba(21, 34, 56, 0.38));
+}
+
+.network-workspace { position: relative; isolation: isolate; }
+
+.certification-ambient {
+  --ambient-color: var(--track-accent, #38bdf8);
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--ambient-color) 42%, transparent);
+}
+
+.ambient-workflow { --ambient-color: #818cf8; }
+.ambient-discovery { --ambient-color: #22d3ee; }
+.ambient-progress { --ambient-color: #34d399; }
+.ambient-objectives { --ambient-color: #fbbf24; }
+
+.certification-aura {
+  position: absolute;
+  inset: 4% 12%;
+  background:
+    radial-gradient(ellipse at 16% 28%, color-mix(in srgb, var(--ambient-color) 11%, transparent), transparent 40%),
+    radial-gradient(ellipse at 84% 64%, color-mix(in srgb, var(--color-cyan-400) 7%, transparent), transparent 44%);
+  filter: blur(22px);
+  animation: ambient-breathe 21s ease-in-out infinite;
+}
+
+.certification-topology {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.14;
+}
+
+.certification-packet { opacity: 0; }
+
+.motion-orb { color: var(--ambient-color, var(--track-accent, #22d3ee)); opacity: 0.75; }
+.motion-orb-halo { fill: currentColor; opacity: 0.22; filter: blur(3px); }
+.motion-orb-core { fill: currentColor; filter: drop-shadow(0 0 4px currentColor); }
+.ambient-orbs { opacity: 0.9; }
+
+@keyframes ambient-breathe {
+  0%, 100% { transform: scale(0.98) translate3d(-1%, -1%, 0); opacity: 0.65; }
+  50% { transform: scale(1.03) translate3d(1%, 1%, 0); opacity: 1; }
+}
+
+.methodology-flow { color: var(--track-accent); }
+
+.workflow-packet { filter: drop-shadow(0 0 5px var(--color-cyan-300)); }
+
+.lab-device {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.lab-device:hover,
+.lab-device:focus-visible,
+.lab-device.is-active {
+  filter: drop-shadow(0 0 7px var(--track-accent));
+  transform: scale(1.06);
+}
+
+.interactive-lab-diagram { position: relative; }
+.lab-route-layer { color: var(--track-accent, #22d3ee); opacity: 0; transition: opacity 420ms ease; }
+.interactive-lab-diagram.active-laptop .lab-route-layer,
+.interactive-lab-diagram.active-switch .lab-route-layer,
+.interactive-lab-diagram.active-router .lab-route-layer,
+.interactive-lab-diagram.active-server .lab-route-layer { opacity: 0.82; }
+.lab-route { stroke-dasharray: 5 7; animation: lab-route-flow 2.8s linear infinite; }
+
+@keyframes lab-route-flow { to { stroke-dashoffset: -24; } }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .certification-topology { opacity: 0.06; }
+  .certification-topology path { display: none; }
+}
+
+@media (max-width: 767px) {
+  .certification-ambient { display: none; }
+  .interactive-lab-diagram .lab-route-layer > .motion-orb ~ .motion-orb { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .certification-aura,
+  .certification-packet,
+  .workflow-packet,
+  .lab-route { animation: none; }
+  .certification-packet,
+  .workflow-packet { display: none; }
+  .motion-orb { display: none; }
+  .lab-route { stroke-dasharray: none; }
 }
 
 @keyframes blueprint-pulse {

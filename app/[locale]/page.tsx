@@ -1,40 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { DeviceIcon } from "@/app/components/icons";
+import { InteractiveLabDiagram } from "@/app/components/InteractiveLabDiagram";
 import { StatusChip } from "@/app/components/StatusChip";
-import { TodayPlan } from "@/app/components/TodayPlan";
 import { trackCounts, tracks } from "@/lib/tracks";
-
-async function NetworkDiagram() {
-  const t = await getTranslations("homePage");
-  return (
-    <svg
-      viewBox="0 0 420 120"
-      role="img"
-      aria-label={t("diagramLabel")}
-      className="w-full"
-    >
-      <path d="M72 50H348" className="stroke-slate-800" strokeWidth="3" strokeLinecap="round" />
-      <path d="M72 50H348" className="stroke-slate-700" strokeWidth="1" strokeDasharray="2 8" strokeLinecap="round" />
-      <g className="track-accent-text">
-        <DeviceIcon name="laptop" x={24} y={26} />
-        <DeviceIcon name="switch" x={124} y={26} />
-        <DeviceIcon name="router" x={224} y={26} />
-        <DeviceIcon name="server" x={324} y={26} />
-      </g>
-      <g className="fill-slate-400 font-mono text-[11px]" textAnchor="middle">
-        <text x="48" y="92">{t("deviceLaptop")}</text>
-        <text x="148" y="92">{t("deviceSwitch")}</text>
-        <text x="248" y="92">{t("deviceRouter")}</text>
-        <text x="348" y="92">{t("deviceServer")}</text>
-      </g>
-      <circle cx="372" cy="22" r="5" className="fill-emerald-400" />
-      <text x="382" y="26" className="fill-slate-300 font-mono text-[10px]">{t("statusUp")}</text>
-      <circle cx="72" cy="50" r="5" className="packet fill-teal-400" />
-      <circle cx="72" cy="50" r="5" className="packet packet-late fill-teal-300" />
-    </svg>
-  );
-}
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -42,20 +11,19 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations("homePage");
   return (
     <div className="space-y-12">
-      <section className="grid items-center gap-8 md:grid-cols-2">
+      <section className="grid items-center gap-8 rounded-3xl border border-teal-400/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.12),transparent_48%)] p-5 sm:p-8 md:grid-cols-2">
         <div className="space-y-4">
-          <p className="text-sm uppercase tracking-wide text-teal-300">{t("eyebrow")}</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white">Certification Review</h1>
-          <p className="max-w-xl text-slate-300">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-teal-300">{t("eyebrow")}</p>
+          <h1 className="text-5xl font-semibold tracking-[-0.04em] text-white sm:text-6xl">{t("productName")}</h1>
+          <p className="max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
             {t("intro")}
           </p>
+          <Link href="/methodology" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 hover:border-teal-300 hover:text-white">{t("methodologyLink")}</Link>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <NetworkDiagram />
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-[0_18px_60px_rgba(34,211,238,.08)]">
+          <InteractiveLabDiagram />
         </div>
       </section>
-
-      <TodayPlan />
 
       <section aria-labelledby="tracks-heading" className="space-y-4">
         <h2 id="tracks-heading" className="text-lg font-medium text-white">

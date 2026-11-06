@@ -5,6 +5,7 @@ import { LearnerSync } from "@/app/components/LearnerSync";
 import { NetworkPlusConcepts } from "@/app/components/NetworkPlusConcepts";
 import { NetworkPlusDomainQuiz } from "@/app/components/NetworkPlusDomainQuiz";
 import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
+import { NetworkWorkspaceNav } from "@/app/components/NetworkWorkspaceNav";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
@@ -38,7 +39,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const workspaceLinks = track.focus ? [
     { label: t("workspaceOverview"), href: track.href },
     ...(track.id === "core2" ? [{ label: t("core2ReviewTools"), href: "/core2/review-tools" }] : []),
-    { label: t("workspaceTopics"), href: `${track.href}#topics` },
+    { label: t("workspaceTopics"), href: `${track.href}#${track.id === "networking" ? "objectives" : "topics"}` },
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
     ...(counts.cards > 0 ? [{ label: tTrack("tools.flashcards.label"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ label: tTrack("tools.quiz.label"), href: "/quiz" }] : []),
@@ -59,9 +60,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   ] : [];
 
   return (
-    <div className={`track-shell track-${track.id}`}>
+    <div className={`track-shell track-${track.id} ${track.id === "networking" ? "network-workspace" : ""}`}>
       <SetTrackFocus focus={track.focus} />
-      <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
+      {track.id !== "networking" ? <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
         <summary className="cursor-pointer list-none font-medium text-white">
           {t("studyMenu")} <span className="track-accent-text ml-2" aria-hidden="true">▾</span>
         </summary>
@@ -72,9 +73,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
             </Link>
           ))}
         </nav>
-      </details>
-      <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
-        <aside className="study-sidebar sticky top-5 hidden h-fit rounded-2xl p-3 lg:block">
+      </details> : null}
+      <div className={track.id === "networking" ? "" : "grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]"}>
+        {track.id !== "networking" ? <aside className="study-sidebar sticky top-5 hidden h-fit rounded-2xl p-3 lg:block">
           <p className="track-accent-text px-3 pb-2 text-xs font-semibold uppercase tracking-[0.18em]">{track.code}</p>
           <nav className="grid gap-1" aria-label="Study workspace">
             {workspaceLinks.map((item) => (
@@ -83,10 +84,10 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
               </Link>
             ))}
           </nav>
-        </aside>
+        </aside> : null}
         <div className="min-w-0 space-y-10">
 
-      <header className="track-workspace-hero rounded-3xl p-6 sm:p-8">
+      <header id="overview" className="track-workspace-hero scroll-mt-24 rounded-3xl p-6 sm:p-8">
         <p className="text-sm text-slate-400">
           <Link href="/" className="hover:text-white">
             {tTrack("home")}
@@ -110,6 +111,14 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           </div>
         </div>
       </header>
+
+      {track.id === "networking" ? (
+        <>
+          <LearnerSync compact />
+          <NetworkWorkspaceNav />
+          <section id="progress" className="scroll-mt-24" aria-label={t("workspaceResults")}><ProgressDashboard /></section>
+        </>
+      ) : null}
 
       {track.focus ? (
         <>
@@ -149,7 +158,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </section>
       ) : null}
 
-      <section aria-labelledby="tools-heading" className="space-y-4">
+      <section id={track.id === "networking" ? "study" : undefined} aria-labelledby="tools-heading" className="scroll-mt-24 space-y-4">
         <h2 id="tools-heading" className="text-lg font-medium text-white">
           {t("studyTools")}
         </h2>
@@ -195,7 +204,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
       </section>
 
       {track.id === "networking" ? (
-        <section aria-labelledby="chapters-heading" className="space-y-4">
+        <section id={track.id === "networking" ? "visuals" : undefined} aria-labelledby="chapters-heading" className="scroll-mt-24 space-y-4">
           <div>
             <h2 id="chapters-heading" className="text-lg font-medium text-white">
               {t("chapterVisualsTitle")}
@@ -249,13 +258,25 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
       {track.focus ? (
         <>
-          <ProgressDashboard />
-          <LearnerSync />
+          {track.id !== "networking" ? <><ProgressDashboard /><LearnerSync /></> : null}
 
           {track.id === "networking" ? (
             <>
               <NetworkPlusConcepts />
               <NetworkPlusDomainQuiz />
+              <section id="practice" className="scroll-mt-24 space-y-4" aria-labelledby="network-practice-heading">
+                <div>
+                  <h2 id="network-practice-heading" className="text-lg font-medium text-white">{t("practiceTitle")}</h2>
+                  <p className="mt-1 text-sm text-slate-400">{t("practiceBody")}</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    ["/practice-games", t("practiceGames")],
+                    ["/scenario-builder", t("scenarioBuilder")],
+                    ["/subnet-sources", t("subnetPractice")],
+                  ].map(([href, label]) => <Link key={href} href={href} className="track-accent-border rounded-2xl border bg-slate-900/70 p-4 font-medium text-white hover:bg-slate-900">{label}</Link>)}
+                </div>
+              </section>
               <NetworkPlusDomains own={own} />
             </>
           ) : (
