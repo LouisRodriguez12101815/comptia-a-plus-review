@@ -452,6 +452,11 @@ body {
 
 .certification-packet { opacity: 0; }
 
+.motion-orb { color: var(--ambient-color, var(--track-accent, #22d3ee)); opacity: 0.75; }
+.motion-orb-halo { fill: currentColor; opacity: 0.22; filter: blur(3px); }
+.motion-orb-core { fill: currentColor; filter: drop-shadow(0 0 4px currentColor); }
+.ambient-orbs { opacity: 0.9; }
+
 @keyframes ambient-breathe {
   0%, 100% { transform: scale(0.98) translate3d(-1%, -1%, 0); opacity: 0.65; }
   50% { transform: scale(1.03) translate3d(1%, 1%, 0); opacity: 1; }
@@ -475,6 +480,16 @@ body {
   transform: scale(1.06);
 }
 
+.interactive-lab-diagram { position: relative; }
+.lab-route-layer { color: var(--track-accent, #22d3ee); opacity: 0; transition: opacity 420ms ease; }
+.interactive-lab-diagram.active-laptop .lab-route-layer,
+.interactive-lab-diagram.active-switch .lab-route-layer,
+.interactive-lab-diagram.active-router .lab-route-layer,
+.interactive-lab-diagram.active-server .lab-route-layer { opacity: 0.82; }
+.lab-route { stroke-dasharray: 5 7; animation: lab-route-flow 2.8s linear infinite; }
+
+@keyframes lab-route-flow { to { stroke-dashoffset: -24; } }
+
 @media (min-width: 768px) and (max-width: 1023px) {
   .certification-topology { opacity: 0.06; }
   .certification-topology path { display: none; }
@@ -482,14 +497,18 @@ body {
 
 @media (max-width: 767px) {
   .certification-ambient { display: none; }
+  .interactive-lab-diagram .motion-orb:nth-child(n + 2) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .certification-aura,
   .certification-packet,
-  .workflow-packet { animation: none; }
+  .workflow-packet,
+  .lab-route { animation: none; }
   .certification-packet,
   .workflow-packet { display: none; }
+  .motion-orb { display: none; }
+  .lab-route { stroke-dasharray: none; }
 }
 
 @keyframes blueprint-pulse {

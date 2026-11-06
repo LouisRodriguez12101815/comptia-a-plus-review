@@ -1,3 +1,5 @@
+import { OrbField } from "@/app/components/OrbMotionSystem";
+
 export type AmbientVariant = "lab" | "network" | "hardware" | "software" | "cloud" | "security" | "azure" | "ccna" | "workflow" | "discovery" | "progress" | "objectives";
 
 const paths: Record<AmbientVariant, string[]> = {
@@ -33,6 +35,7 @@ export function CertificationAmbient({ variant }: { variant: AmbientVariant }) {
             });
           })}
         </g>
+        <OrbField paths={motifPaths} className="ambient-orbs" />
         <circle className="certification-packet" cx="0" cy="0" r="4" fill="var(--color-cyan-300)">
           <animateMotion dur="19s" repeatCount="indefinite" path={motifPaths[0]} />
         </circle>
