@@ -274,3 +274,34 @@ test('CLF-C02 objective 1.3 expansion covers migration decisions', () => {
   assert.match(drills, /id: "aws-clf-migration-compare"/);
   for (const item of allObjectives) assert.equal(item.status, expectedClfStatuses[item.id], `unexpected CLF status change: ${item.id}`);
 });
+
+test('CLF-C02 objectives 3.1–3.3 expand transfer coverage without teaching implementation skills', () => {
+  const exam = objectives.exams.find(item => item.code === 'clf-c02');
+  const objectiveFor = id => exam.domains.flatMap(domain => domain.objectives).find(objective => objective.id === id);
+  const objectiveIds = ['3.1', '3.2', '3.3'];
+  const added = questions.filter(question => /^q-clf3[123]-/.test(question.id));
+  const topic = topics.find(item => item.id === 'aws-clf-technology-services');
+  const cards = flashcards.filter(card => card.topicId === topic.id && /^fc-clf(31|32|33)-/.test(card.id));
+  const corpus = JSON.stringify({ topic, questions: added, cards });
+  assert.equal(added.length, 38);
+  assert.equal(new Set(added.map(question => question.id)).size, added.length);
+  assert.ok(added.every(question => question.examCodes.length === 1 && question.examCodes[0] === 'clf-c02'));
+  assert.ok(added.every(question => objectiveIds.includes(question.objectiveIds['clf-c02'][0])));
+  assert.equal(added.filter(question => question.objectiveIds['clf-c02'][0] === '3.1').length, 12);
+  assert.equal(added.filter(question => question.objectiveIds['clf-c02'][0] === '3.2').length, 12);
+  assert.equal(added.filter(question => question.objectiveIds['clf-c02'][0] === '3.3').length, 14);
+  assert.equal(added.filter(question => Array.isArray(question.answer)).length, 3);
+  for (const cue of ['Console', 'CLI', 'SDK', 'API', 'CloudFormation', 'on-premises', 'hybrid', 'Region', 'Availability Zone', 'edge', 'Multi-AZ', 'Multi-Region', 'residency', 'EC2', 'compute optimized', 'memory optimized', 'storage optimized', 'Lambda', 'ECS', 'EKS', 'Fargate', 'Auto Scaling', 'load balancer']) assert.match(corpus, new RegExp(cue, 'i'), cue);
+  for (const trap of ['CLI command memorization', 'SDK programming', 'CloudFormation syntax', 'Kubernetes administration', 'model-number memorization', 'load-balancer configuration', 'VPC implementation']) assert.match(corpus, new RegExp(trap.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), trap);
+  assert.equal(topic.sections.some(section => section.id === 'domain3-transfer-decisions'), true);
+  assert.ok(visuals['aws-clf-technology-services'].some(item => item.file === 'aws-clf-deploy-global-decisions.html'));
+  assert.ok(visuals['aws-clf-technology-services'].some(item => item.file === 'aws-clf-compute-decisions.html'));
+  const labs = read('labs');
+  assert.ok(labs.some(lab => lab.slug === 'aws-clf-cloud-platform-selection'));
+  const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
+  assert.match(drills, /id: "aws-clf-cloud-tech-core"/);
+  assert.match(readFileSync(new URL('../lib/study/topFive.ts', import.meta.url), 'utf8'), /aws-clf-cloud-tech-core/);
+  assert.equal(objectiveFor('3.1').status, 'partial');
+  assert.equal(objectiveFor('3.2').status, 'partial');
+  assert.equal(objectiveFor('3.3').status, 'partial');
+});

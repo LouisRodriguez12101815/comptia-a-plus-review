@@ -204,8 +204,12 @@ const awsClf: TopFive = {
         "Analytics cue: Athena queries S3; Glue transforms/catalogs; EMR processes big data; Kinesis streams; OpenSearch searches indexed data; Quick/Quick Sight visualizes; Redshift warehouses.",
         "Objective 3.8 cue: SQS queues; SNS fans out; EventBridge routes events; Step Functions coordinates workflows; Connect is a contact center; SES sends application email; CodeBuild builds; CodePipeline orchestrates delivery; X-Ray traces.",
         "Objective 3.8 end-user cue: AppStream streams an application; WorkSpaces provides a desktop; WorkSpaces Secure Browser provides browser-only access. Amplify targets frontend/mobile apps; IoT Core targets connected devices; AWS Support provides AWS assistance.",
+        "Operating-method cue: human one-off inspection = Console; repeatable shell work = CLI; application code = SDK/API; repeatable versioned infrastructure = IaC/CloudFormation.",
+        "Infrastructure cue: one AZ failure = Multi-AZ; Region failure = Multi-Region when justified; user proximity for supported delivery = edge; residency constrains permitted Regions.",
+        "Compute cue: VM control = EC2; event-driven function = Lambda; Kubernetes = EKS; AWS container orchestration = ECS; serverless containers = Fargate; capacity = Auto Scaling; traffic = load balancer.",
+        "Domain 3 traps: CLI is not SDK; hybrid is not multi-cloud; Region is not AZ; AZ is not edge; ECS/EKS are not Fargate; Auto Scaling is not load balancing.",
       ],
-      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-ai-analytics-compare", "aws-clf-other-services-compare"],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-cloud-tech-core", "aws-clf-ai-analytics-compare", "aws-clf-other-services-compare"],
     },
     {
       id: "security",

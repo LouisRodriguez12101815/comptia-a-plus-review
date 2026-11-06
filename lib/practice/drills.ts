@@ -2599,7 +2599,45 @@ const awsClfSecurityTransfer: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfCloudTechCore: DrillDeck = {
+  id: "aws-clf-cloud-tech-core",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.1–3.3",
+  topic: "Cloud operating methods, infrastructure and compute",
+  modes: [
+    { id: "requirementToChoice", from: "requirement", to: "choice" },
+    { id: "confusionPair", from: "cue", to: "distinction" },
+  ],
+  tables: [
+    { id: "method-and-service", fields: ["requirement", "choice"] },
+    { id: "confusion-pairs", fields: ["cue", "distinction"] },
+  ],
+  items: [
+    { id: "console", objective: "3.1", fields: { requirement: "Human, graphical, one-time inspection", choice: "Management Console" }, detail: "The console fits interactive browser-based administration.", hook: "Human + visual = Console", wrong: { choice: ["CLI", "SDK", "CloudFormation"] } },
+    { id: "cli", objective: "3.1", fields: { requirement: "Repeatable shell administration", choice: "CLI/script" }, detail: "The CLI supports command-line interaction and scripting.", hook: "Shell repeat = CLI", wrong: { choice: ["Console", "SDK", "Edge location"] } },
+    { id: "sdk", objective: "3.1", fields: { requirement: "Application code calling AWS", choice: "SDK/API" }, detail: "An SDK or API provides programmatic application access.", hook: "Application = SDK/API", wrong: { choice: ["Console", "CLI only", "AZ"] } },
+    { id: "iac", objective: "3.1", fields: { requirement: "Consistent versioned provisioning", choice: "IaC / CloudFormation" }, detail: "IaC defines repeatable infrastructure rather than relying on remembered clicks.", hook: "Repeatable resources = IaC", wrong: { choice: ["Console only", "Support case", "Edge location"] } },
+    { id: "hybrid", objective: "3.1", fields: { requirement: "On-premises systems plus AWS resources", choice: "Hybrid" }, detail: "Hybrid combines on-premises and cloud environments; it is not multi-cloud by definition.", hook: "On-prem + cloud = Hybrid", wrong: { choice: ["Cloud-only", "On-premises only", "Multi-AZ"] } },
+    { id: "az", objective: "3.2", fields: { requirement: "Survive one AZ failure", choice: "Multi-AZ" }, detail: "Multi-AZ addresses an Availability Zone failure within a Region.", hook: "One AZ fails = Multi-AZ", wrong: { choice: ["Multi-Region", "Edge", "One subnet"] } },
+    { id: "region", objective: "3.2", fields: { requirement: "Recover from a Region outage", choice: "Multi-Region" }, detail: "Regional disaster recovery may require another permitted Region.", hook: "Region fails = another Region", wrong: { choice: ["Multi-AZ only", "Edge", "Auto Scaling"] } },
+    { id: "edge", objective: "3.2", fields: { requirement: "Lower latency for supported global content delivery", choice: "Edge location" }, detail: "Edge delivery places supported content or services closer to users.", hook: "User proximity = Edge", wrong: { choice: ["AZ", "Region database", "EC2 family"] } },
+    { id: "residency", objective: "3.2", fields: { requirement: "Keep data in an approved geography", choice: "Permitted Region selection" }, detail: "Residency constrains where processing and storage may occur.", hook: "Residency = permitted Region", wrong: { choice: ["Global replication always", "Any edge", "Load balancer"] } },
+    { id: "ec2", objective: "3.3", fields: { requirement: "Long-running workload with guest-OS control", choice: "EC2" }, detail: "EC2 provides VM-style control.", hook: "VM control = EC2", wrong: { choice: ["Lambda", "Fargate", "SQS"] } },
+    { id: "lambda", objective: "3.3", fields: { requirement: "Event-driven function", choice: "Lambda" }, detail: "Lambda runs suitable functions without customer server management.", hook: "Function = Lambda", wrong: { choice: ["EC2", "EKS", "EBS"] } },
+    { id: "kubernetes", objective: "3.3", fields: { requirement: "Explicit Kubernetes requirement", choice: "EKS" }, detail: "EKS is the managed Kubernetes cue.", hook: "Kubernetes = EKS", wrong: { choice: ["ECS", "Fargate", "Lambda"] } },
+    { id: "containers", objective: "3.3", fields: { requirement: "Containers without managing servers", choice: "Fargate" }, detail: "Fargate is serverless container compute, not an orchestrator.", hook: "Serverless containers = Fargate", wrong: { choice: ["EKS", "ECS", "Lambda"] } },
+    { id: "capacity", objective: "3.3", fields: { requirement: "Increase or decrease compute with demand", choice: "Auto Scaling" }, detail: "Auto Scaling adjusts capacity according to demand or policies.", hook: "Capacity changes = Auto Scaling", wrong: { choice: ["Load balancer", "CloudTrail", "Route 53"] } },
+    { id: "traffic", objective: "3.3", fields: { requirement: "Distribute requests across targets", choice: "Load balancer" }, detail: "A load balancer spreads incoming traffic; it does not itself add capacity.", hook: "Traffic spreads = Load balancer", wrong: { choice: ["Auto Scaling", "Lambda", "Budgets"] } },
+    { id: "cli-sdk", objective: "3.1", fields: { cue: "CLI versus SDK", distinction: "Shell command/script versus application code" }, detail: "CLI is command-line administration; SDK/API is software-to-AWS integration.", hook: "Shell ≠ application", wrong: { distinction: ["Both are physical infrastructure", "Both are billing tools"] } },
+    { id: "region-az", objective: "3.2", fields: { cue: "Region versus AZ", distinction: "Geographic area versus isolated location within it" }, detail: "Regions contain multiple AZs.", hook: "Region contains AZ", wrong: { distinction: ["They are synonyms", "AZ contains Regions"] } },
+    { id: "az-edge", objective: "3.2", fields: { cue: "AZ versus edge", distinction: "Failure domain versus user-proximity delivery point" }, detail: "AZs host regional workloads; edge locations serve selected edge services closer to users.", hook: "Failure domain ≠ edge", wrong: { distinction: ["Both are Regions", "Edge is a subnet"] } },
+    { id: "ecs-eks", objective: "3.3", fields: { cue: "ECS versus EKS", distinction: "AWS orchestration versus managed Kubernetes" }, detail: "EKS is the explicit Kubernetes cue; ECS is AWS container orchestration.", hook: "Kubernetes = EKS", wrong: { distinction: ["ECS is always Kubernetes", "They are load balancers"] } },
+    { id: "scaling-balancing", objective: "3.3", fields: { cue: "Auto Scaling versus load balancing", distinction: "Adjust capacity versus distribute traffic" }, detail: "They solve different problems and are often combined.", hook: "Capacity versus traffic", wrong: { distinction: ["Both are backups", "Both are orchestrators"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
