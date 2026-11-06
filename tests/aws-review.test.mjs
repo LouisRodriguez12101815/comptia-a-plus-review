@@ -141,3 +141,23 @@ test('CLF-C02 Domain 4 expansion is objective-specific, current, and remains par
   assert.match(drills, /id: "aws-clf-support-resources"/);
   for (const o of exam.domains.flatMap(d => d.objectives).filter(o => !['4.1', '4.2', '4.3'].includes(o.id))) assert.equal(o.status, 'partial', `unexpected CLF status change: ${o.id}`);
 });
+
+test('CLF-C02 completeness audit keeps every objective evidenced and honestly partial', () => {
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const allObjectives = exam.domains.flatMap(domain => domain.objectives);
+  const questionIds = new Set(questions.map(question => question.id));
+  const topicIds = new Set(topics.map(topic => topic.id));
+
+  assert.equal(allObjectives.length, 19);
+  assert.equal(new Set(allObjectives.map(objective => objective.id)).size, 19);
+  assert.ok(allObjectives.every(objective => objective.status === 'partial'));
+  assert.ok(allObjectives.every(objective => objective.note && objective.note.length > 80));
+  assert.ok(allObjectives.every(objective => objective.topics.every(topicId => topicIds.has(topicId))));
+  assert.ok(allObjectives.every(objective => objective.reviewEvidence?.section && objective.reviewEvidence?.scopeUrl));
+  assert.ok(allObjectives.every(objective => questionIds.has(objective.reviewEvidence.questionId)));
+
+  for (const objectiveId of ['2.3', '3.7', '4.1', '4.2', '4.3']) {
+    const objective = allObjectives.find(item => item.id === objectiveId);
+    assert.equal(objective.reviewEvidence.checked, '2026-11-06', objectiveId);
+  }
+});
