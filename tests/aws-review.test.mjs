@@ -244,6 +244,20 @@ test('CLF-C02 objective 3.8 expansion covers current category cues without out-o
   assert.match(drills, /id: "aws-clf-other-services-compare"/);
 });
 
+test('CLF-C02 Domain 3 re-audit keeps the conservative status map', () => {
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const domain3 = exam.domains.find(domain => domain.id === '3.0');
+  assert.deepEqual(
+    Object.fromEntries(domain3.objectives.map(objective => [objective.id, objective.status])),
+    {
+      '3.1': 'partial', '3.2': 'partial', '3.3': 'partial', '3.4': 'partial',
+      '3.5': 'partial', '3.6': 'partial', '3.7': 'covered', '3.8': 'covered',
+    },
+  );
+  assert.ok(domain3.objectives.every(objective => objective.reviewEvidence?.scopeUrl));
+  assert.ok(domain3.objectives.every(objective => objective.reviewEvidence?.checked === '2026-11-06'));
+});
+
 test('CLF-C02 objective 1.3 expansion covers migration decisions', () => {
   const exam = objectives.exams.find(e => e.code === 'clf-c02');
   const allObjectives = exam.domains.flatMap(domain => domain.objectives);
