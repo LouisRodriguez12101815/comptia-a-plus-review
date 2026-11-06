@@ -50,6 +50,29 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         </div>
       </section>
 
+      <section aria-labelledby="mapping-heading" className="grid gap-4 lg:grid-cols-2">
+        <article className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+          <h2 id="mapping-heading" className="text-xl font-semibold tracking-tight text-white">{t("mappingHeading")}</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-300">{t("mappingBody")}</p>
+          <p className="mt-4 rounded-xl border border-indigo-400/30 bg-indigo-400/5 p-3 font-mono text-sm text-indigo-200">{t("mappingFormula")}</p>
+        </article>
+        <article className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+          <h2 className="text-xl font-semibold tracking-tight text-white">{t("syncHeading")}</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-300">{t("syncBody")}</p>
+        </article>
+      </section>
+
+      <section aria-labelledby="repository-heading" className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
+        <h2 id="repository-heading" className="text-xl font-semibold tracking-tight text-white">{t("repositoryHeading")}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">{t("repositoryBody")}</p>
+        <ol className="mt-5 grid gap-3 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-4">
+          {["rubric", "sources", "map", "coverage", "gaps", "assets", "validate", "deploy"].map((key, index) => (
+            <li key={key} className="rounded-xl border border-slate-800 bg-slate-950/70 p-3"><span className="font-mono text-indigo-300">{index + 1}. </span>{t(`fork.${key}`)}</li>
+          ))}
+        </ol>
+        <p className="mt-5 text-sm text-slate-400">{t("forkTelemetry")}</p>
+      </section>
+
       <aside className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm text-slate-300">
         <h2 className="font-semibold text-white">{t("nextHeading")}</h2>
         <p className="mt-2 leading-6">{t("nextBody")}</p>

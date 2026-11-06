@@ -12,6 +12,19 @@ type MenuGroup = { label: string; items: MenuItem[]; active: boolean };
 
 const pill = "inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm";
 
+function LabMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 44 24" className="lab-mark h-6 w-11 shrink-0">
+      <path d="M3 12h10l6-8 6 16 6-8h10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="3" cy="12" r="2" className="fill-teal-300" />
+      <circle cx="19" cy="4" r="2" className="fill-indigo-300" />
+      <circle cx="25" cy="20" r="2" className="fill-teal-300" />
+      <circle cx="41" cy="12" r="2" className="fill-indigo-300" />
+      <circle cx="3" cy="12" r="1.5" className="lab-mark-packet fill-white" />
+    </svg>
+  );
+}
+
 /** A compact desktop dropdown that is keyboard-dismissible and returns focus to its trigger. */
 function HeaderMenu({ label, active, items }: { label: ReactNode; active: boolean; items: MenuItem[] }) {
   const [open, setOpen] = useState(false);
@@ -200,28 +213,24 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 sm:gap-3 sm:py-4">
-        <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
-          <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(34,211,238,.6)]" />
-          Tech Certification Lab
-        </Link>
-        <div className="flex items-center gap-2">
-          <LocaleSwitcher />
-          <MobileNavigation groups={groups} search={search} label={t("mobileMenu")} closeLabel={t("closeMenu")} />
-        </div>
-        <nav className="hidden w-full flex-wrap items-center justify-end gap-2 lg:flex" aria-label={t("tracksLabel")}>
-          <HeaderMenu label={current ? tTracks(`${current.id}.short`) : t("chooseTrack")} active={groups[0].active} items={trackItems} />
-          <HeaderMenu label={t("studyMenu")} active={groups[1].active} items={studyItems} />
-          <HeaderMenu label={t("testMenu")} active={groups[2].active} items={testItems} />
-          <HeaderMenu label={t("practiceMenu")} active={groups[3].active} items={practiceItems} />
-          <HeaderMenu label={t("progressMenu")} active={groups[4].active} items={progressItems} />
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:py-4">
+        <nav className="hidden items-center gap-2 lg:flex" aria-label={t("tracksLabel")}>
           <Link href="/methodology" aria-current={groups[5].active ? "page" : undefined} className={`${pill} ${groups[5].active ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
             {t("methodology")}
           </Link>
-          <Link href={search.href} aria-current={search.current ? "page" : undefined} className={`${pill} ${search.current ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
-            {search.label}
-          </Link>
+          <HeaderMenu label={current ? tTracks(`${current.id}.short`) : t("chooseTrack")} active={groups[0].active} items={trackItems} />
         </nav>
+        <Link href="/" className="flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
+          <LabMark />
+          <span>Tech Certification Lab</span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link href={search.href} aria-current={search.current ? "page" : undefined} aria-label={search.label} className={`${pill} px-2.5 ${search.current ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
+            <span aria-hidden="true">⌕</span><span className="hidden sm:inline">{search.label}</span>
+          </Link>
+          <LocaleSwitcher />
+          <MobileNavigation groups={groups} search={search} label={t("mobileMenu")} closeLabel={t("closeMenu")} />
+        </div>
       </div>
     </header>
   );

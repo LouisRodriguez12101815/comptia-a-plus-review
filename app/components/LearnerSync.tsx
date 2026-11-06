@@ -21,7 +21,7 @@ async function post(path: string, body?: unknown): Promise<{ ok: boolean; status
   }
 }
 
-export function LearnerSync() {
+export function LearnerSync({ compact = false }: { compact?: boolean }) {
   const t = useTranslations("learnerSync");
   const [phase, setPhase] = useState<Phase>("loading");
   const [phone, setPhone] = useState("");
@@ -90,9 +90,9 @@ export function LearnerSync() {
   const run = async (fn: () => Promise<void>) => { setBusy(true); setError(""); setMessage(""); try { await fn(); } finally { setBusy(false); } };
 
   return (
-    <section aria-labelledby="learner-sync-title" className="mt-8 rounded-2xl border border-slate-800 p-5">
-      <h2 id="learner-sync-title" className="text-lg font-semibold text-white">{t("title")}</h2>
-      <p className="mt-1 text-sm text-slate-300">{phase === "in" ? t("signedIn", { last4 }) : t("intro")}</p>
+    <section aria-labelledby="learner-sync-title" className={`${compact ? "rounded-2xl bg-slate-900/60 p-4" : "mt-8 rounded-2xl border border-slate-800 p-5"}`}>
+      <h2 id="learner-sync-title" className="text-lg font-semibold text-white">{phase === "in" && compact ? t("syncedTitle") : phase === "out" && compact ? t("localTitle") : t("title")}</h2>
+      <p className="mt-1 text-sm text-slate-300">{phase === "in" ? (compact ? t("syncedBody", { last4 }) : t("signedIn", { last4 })) : compact ? t("localBody") : t("intro")}</p>
 
       {phase === "out" && (
         <form className="mt-4 grid max-w-sm gap-3" onSubmit={(e) => { e.preventDefault(); void run(async () => {

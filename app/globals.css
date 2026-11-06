@@ -93,6 +93,13 @@ body {
   animation-delay: 2.75s;
 }
 
+@keyframes lab-mark-signal {
+  0%, 100% { transform: translateX(0); opacity: 0.35; }
+  45%, 65% { transform: translateX(34px); opacity: 1; }
+}
+
+.lab-mark-packet { animation: lab-mark-signal 3.8s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .packet {
     animation: none;
@@ -103,6 +110,8 @@ body {
   .packet-late {
     display: none;
   }
+
+  .lab-mark-packet { animation: none; opacity: 0.8; }
 
   html {
     scroll-behavior: auto;

@@ -7,7 +7,7 @@ export async function NetworkPlusDomainQuiz() {
   const t = await getTranslations("networkPlusDomainQuiz");
   const domains = domainQuizzes();
   return (
-    <section id="quiz-by-domain" aria-labelledby="domain-quiz-heading" className="space-y-4">
+    <section id="test" aria-labelledby="domain-quiz-heading" className="scroll-mt-24 space-y-4">
       <div>
         <h2 id="domain-quiz-heading" className="text-lg font-medium text-white">{t("title")}</h2>
         <p className="mt-1 text-sm text-slate-400">{t("body")}</p>

@@ -67,8 +67,9 @@ export async function NetworkPlusDomains({ own }: { own: Topic[] }) {
   };
 
   return (
-    <section id="topics" aria-labelledby="domains-heading" className="space-y-4">
+    <section id="objectives" aria-labelledby="domains-heading" className="scroll-mt-24 space-y-4">
       <div>
+        <span id="topics" className="block scroll-mt-24" aria-hidden="true" />
         <h2 id="domains-heading" className="text-lg font-medium text-white">{t("title")}</h2>
         <p className="mt-1 text-sm text-slate-400">{t("body")}</p>
         <Link href="/networking/videos" className="mt-2 inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">
