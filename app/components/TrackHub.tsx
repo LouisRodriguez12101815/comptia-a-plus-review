@@ -6,7 +6,6 @@ import { NetworkPlusConcepts } from "@/app/components/NetworkPlusConcepts";
 import { NetworkPlusDomainQuiz } from "@/app/components/NetworkPlusDomainQuiz";
 import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
 import { NetworkWorkspaceNav } from "@/app/components/NetworkWorkspaceNav";
-import { NetworkAmbient } from "@/app/components/NetworkAmbient";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
@@ -62,7 +61,6 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
   return (
     <div className={`track-shell track-${track.id} ${track.id === "networking" ? "network-workspace" : ""}`}>
-      {track.id === "networking" ? <NetworkAmbient /> : null}
       <SetTrackFocus focus={track.focus} />
       {track.id !== "networking" ? <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
         <summary className="cursor-pointer list-none font-medium text-white">

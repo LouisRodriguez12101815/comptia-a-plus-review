@@ -16,8 +16,10 @@ export function MethodologyWorkflow() {
         <p className="max-w-md text-sm text-slate-400">{t("workflowBody")}</p>
       </div>
       <svg aria-hidden="true" viewBox="0 0 1000 120" className="methodology-flow mt-6 hidden w-full md:block">
-        <path d="M70 60H930" fill="none" stroke="var(--track-accent-line)" strokeWidth="2" strokeDasharray="4 8" />
-        <circle className="workflow-packet" cx="70" cy="60" r="5" fill="var(--color-cyan-300)" />
+        <path id="methodology-workflow-path" d="M70 60 C220 12 330 108 500 60 S780 12 930 60" fill="none" stroke="var(--track-accent-line)" strokeWidth="2" strokeDasharray="4 8" />
+        <circle className="workflow-packet" cx="70" cy="60" r="5" fill="var(--color-cyan-300)">
+          <animateMotion dur="9s" repeatCount="indefinite"><mpath href="#methodology-workflow-path" /></animateMotion>
+        </circle>
       </svg>
       <ol className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {steps.map((step, index) => (

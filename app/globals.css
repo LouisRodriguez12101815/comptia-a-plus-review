@@ -415,76 +415,81 @@ body {
   background: linear-gradient(180deg, var(--track-accent-soft), rgba(21, 34, 56, 0.38));
 }
 
-.network-workspace {
-  position: relative;
-  isolation: isolate;
-}
+.network-workspace { position: relative; isolation: isolate; }
 
-.network-ambient {
-  position: absolute;
+.certification-ambient {
+  --ambient-color: var(--track-accent, #38bdf8);
+  position: fixed;
   z-index: -1;
-  top: -12rem;
-  right: -28vw;
-  bottom: -12rem;
-  left: -28vw;
+  inset: 0;
   overflow: hidden;
   pointer-events: none;
-  color: color-mix(in srgb, var(--track-accent) 42%, transparent);
+  color: color-mix(in srgb, var(--ambient-color) 42%, transparent);
 }
 
-.ambient-aura {
+.ambient-workflow { --ambient-color: #818cf8; }
+.ambient-discovery { --ambient-color: #22d3ee; }
+.ambient-progress { --ambient-color: #34d399; }
+.ambient-objectives { --ambient-color: #fbbf24; }
+
+.certification-aura {
   position: absolute;
-  inset: 8% 18%;
+  inset: 4% 12%;
   background:
-    radial-gradient(ellipse at 18% 32%, color-mix(in srgb, var(--track-accent) 12%, transparent), transparent 42%),
-    radial-gradient(ellipse at 82% 62%, color-mix(in srgb, var(--color-cyan-400) 8%, transparent), transparent 44%);
-  filter: blur(20px);
+    radial-gradient(ellipse at 16% 28%, color-mix(in srgb, var(--ambient-color) 11%, transparent), transparent 40%),
+    radial-gradient(ellipse at 84% 64%, color-mix(in srgb, var(--color-cyan-400) 7%, transparent), transparent 44%);
+  filter: blur(22px);
   animation: ambient-breathe 21s ease-in-out infinite;
 }
 
-.ambient-topology {
+.certification-topology {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.16;
+  opacity: 0.14;
 }
+
+.certification-packet { opacity: 0; }
 
 @keyframes ambient-breathe {
   0%, 100% { transform: scale(0.98) translate3d(-1%, -1%, 0); opacity: 0.65; }
   50% { transform: scale(1.03) translate3d(1%, 1%, 0); opacity: 1; }
 }
 
-@keyframes ambient-packet-travel {
-  0% { transform: translate(0, 0); opacity: 0; }
-  12%, 78% { opacity: 1; }
-  100% { transform: translate(680px, 328px); opacity: 0; }
+.methodology-flow { color: var(--track-accent); }
+
+.workflow-packet { filter: drop-shadow(0 0 5px var(--color-cyan-300)); }
+
+.lab-device {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 180ms ease, filter 180ms ease;
 }
 
-.ambient-packet { animation: ambient-packet-travel 18s linear infinite; }
-
-.methodology-flow { color: var(--track-accent); }
-.workflow-packet { animation: workflow-packet-travel 9s linear infinite; }
-
-@keyframes workflow-packet-travel {
-  0% { transform: translateX(0); opacity: 0; }
-  12%, 80% { opacity: 1; }
-  100% { transform: translateX(860px); opacity: 0; }
+.lab-device:hover,
+.lab-device:focus-visible,
+.lab-device.is-active {
+  filter: drop-shadow(0 0 7px var(--track-accent));
+  transform: scale(1.06);
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .ambient-topology { opacity: 0.08; }
-  .ambient-topology path { display: none; }
+  .certification-topology { opacity: 0.06; }
+  .certification-topology path { display: none; }
 }
 
 @media (max-width: 767px) {
-  .network-ambient { display: none; }
+  .certification-ambient { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-aura,
-  .ambient-packet,
+  .certification-aura,
+  .certification-packet,
   .workflow-packet { animation: none; }
+  .certification-packet,
+  .workflow-packet { display: none; }
 }
 
 @keyframes blueprint-pulse {
