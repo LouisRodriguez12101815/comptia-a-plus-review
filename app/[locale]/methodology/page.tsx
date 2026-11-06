@@ -3,6 +3,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MethodologyWorkflow } from "@/app/components/MethodologyWorkflow";
 
+const workflowAreas = ["ingest", "map", "assess", "drill", "remediate", "measure"] as const;
+const forkSteps = ["rubric", "sources", "map", "coverage", "gaps", "assets", "validate", "deploy"] as const;
+
 export async function generateMetadata({ params }: PageProps<"/[locale]/methodology">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "methodologyPage" });
@@ -44,7 +47,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
       <section aria-labelledby="areas-heading" className="space-y-4">
         <h2 id="areas-heading" className="text-2xl font-semibold tracking-tight text-white">{t("areasHeading")}</h2>
         <div className="divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900/40 sm:grid sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
-          {["ingest", "map", "assess", "drill", "remediate", "measure"].map((key) => (
+          {workflowAreas.map((key) => (
             <article key={key} className="p-5">
               <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-indigo-300">{t(`${key}Title`)}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-300">{t(`${key}Body`)}</p>
@@ -69,7 +72,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         <h2 id="repository-heading" className="text-xl font-semibold tracking-tight text-white">{t("repositoryHeading")}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">{t("repositoryBody")}</p>
         <ol className="mt-5 grid gap-3 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-4">
-          {["rubric", "sources", "map", "coverage", "gaps", "assets", "validate", "deploy"].map((key, index) => (
+          {forkSteps.map((key, index) => (
             <li key={key} className="rounded-xl border border-slate-800 bg-slate-950/70 p-3"><span className="font-mono text-indigo-300">{index + 1}. </span>{t(`fork.${key}`)}</li>
           ))}
         </ol>
