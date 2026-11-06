@@ -3512,5 +3512,19 @@
       {"id":"cutover-rollback","title":"Cutover and rollback","blocks":[{"type":"table","headers":["Checkpoint","Pass condition","Rollback trigger"],"rows":[["Pilot","Representative workload behaves as expected","Required dependency fails"],["Data validation","Required data is present and consistent","Integrity or replication check fails"],["Application test","Users and integrations pass acceptance checks","Critical workflow fails"],["Cutover","Traffic/users can use the target","Business acceptance or security check fails"]]},{"type":"paragraph","text":"This is a guided planning exercise, not evidence of a completed cloud deployment. No AWS account or paid resource is needed."}]},
       {"id":"references","title":"Technical references","blocks":[{"type":"bullets","items":["Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html","Technical reference: https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/welcome.html","Technical reference: https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"]}]}
     ]
+  },
+  {
+    "slug": "aws-clf-security-responsibility",
+    "title": "AWS CLF Lab — Security Responsibility and Tool Selection",
+    "subtitle": "Cloud Practitioner · Objectives 2.1, 2.2 and 2.4 · Guided paper exercise",
+    "summary": "Assign responsibility and select governance and security resources for a mixed EC2, RDS, Lambda and web workload without creating live AWS resources.",
+    "skills": ["Shared responsibility", "CloudWatch", "CloudTrail", "Config", "Artifact", "WAF", "Shield", "GuardDuty", "Firewall Manager", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-security-compliance", "aws-clf-security-transfer"],
+    "sections": [
+      {"id":"scenario","title":"Scenario","blocks":[{"type":"paragraph","text":"A company runs an EC2 web tier, an RDS database, a Lambda function, S3 data and a public web endpoint. Complete this as a paper exercise; no AWS account or billable resource is needed."}]},
+      {"id":"responsibility","title":"Assign responsibility","blocks":[{"type":"table","headers":["Question","Your answer","Reason"],"rows":[["Who patches the EC2 guest OS?","",""],["Who operates the physical AWS hardware?","",""],["Who controls Lambda code and IAM?","",""],["Who protects application data and database-user access on RDS?","",""]]},{"type":"callout","kind":"tip","text":"AWS operates more of the platform in RDS and Lambda, but managed services do not remove customer responsibility for data, identities, permissions or supplied code."}]},
+      {"id":"tools","title":"Choose the evidence or control","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Operational metric and alarm","",""],["API/account audit history","",""],["Resource configuration history/rules","",""],["AWS compliance report","",""],["DDoS protection","",""],["Web-request filtering","",""],["Threat detection","",""],["Centralized firewall policy","",""]]}]},
+      {"id":"review","title":"Verify the distinctions","blocks":[{"type":"bullets","items":["CloudWatch is operational observation; CloudTrail is API activity; Config is configuration state; Artifact is compliance documentation.","WAF filters web requests; Shield addresses DDoS; GuardDuty detects threats; Firewall Manager centrally manages supported policies.","AWS compliance evidence does not automatically make the customer's workload compliant."]}]}
+    ]
   }
 ]

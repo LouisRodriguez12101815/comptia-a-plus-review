@@ -240,6 +240,32 @@ const awsClf: TopFive = {
       drills: ["aws-clf-domain-cues", "aws-clf-migration-compare"],
     },
     {
+      id: "well-architected",
+      title: "Well-Architected pillar decisions",
+      domains: ["1"],
+      objectives: "1.2",
+      why: "Objective 1.2 scenarios reward distinguishing the six pillars by the primary requirement rather than treating every good design outcome as the same pillar.",
+      facts: [
+        "Operational Excellence = run and improve; Security = protect; Reliability = recover and remain available.",
+        "Performance Efficiency = use resources effectively; Cost Optimization = avoid unnecessary spend; Sustainability = reduce environmental impact.",
+        "Reliability is not Performance Efficiency, and Cost Optimization is not Sustainability.",
+      ],
+      drills: ["aws-clf-well-architected-compare"],
+    },
+    {
+      id: "security-transfer",
+      title: "Responsibility and security-service distinctions",
+      domains: ["2"],
+      objectives: "2.1, 2.2, 2.4",
+      why: "Security questions combine service-dependent responsibility with precise evidence and control cues.",
+      facts: [
+        "EC2 customer: guest OS, applications, data, IAM and configuration; RDS/Lambda shift more platform work to AWS but not customer data or access.",
+        "CloudWatch = metrics/alarms; CloudTrail = API activity; Config = configuration history; Artifact = compliance documents.",
+        "WAF = web requests; Shield = DDoS; GuardDuty = threats; Firewall Manager = central policy.",
+      ],
+      drills: ["aws-clf-security-transfer"],
+    },
+    {
       id: "billing",
       title: "Pricing models, cost tools, and Organizations",
       domains: ["4"],

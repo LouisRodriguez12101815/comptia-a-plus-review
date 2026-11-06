@@ -2549,7 +2549,57 @@ const awsClfSupportResources: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfWellArchitectedCompare: DrillDeck = {
+  id: "aws-clf-well-architected-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "1.2",
+  topic: "Well-Architected pillar decisions",
+  modes: [
+    { id: "scenarioToPillar", from: "scenario", to: "pillar" },
+    { id: "pillarToFocus", from: "pillar", to: "focus" },
+  ],
+  tables: [
+    { id: "pillar-cues", fields: ["scenario", "pillar"] },
+    { id: "pillar-focus", fields: ["pillar", "focus"] },
+  ],
+  items: [
+    { id: "operations", objective: "1.2", fields: { scenario: "Repeatable operations and continual improvement", pillar: "Operational Excellence", focus: "Run and improve", }, detail: "Operational Excellence concerns operating and improving workloads.", hook: "Operate = Operational Excellence", wrong: { pillar: ["Reliability", "Cost Optimization", "Security"] } },
+    { id: "security", objective: "1.2", fields: { scenario: "Protect identities, data and systems", pillar: "Security", focus: "Protect", }, detail: "Security protects systems, data and identities.", hook: "Protect = Security", wrong: { pillar: ["Reliability", "Sustainability", "Performance Efficiency"] } },
+    { id: "reliability", objective: "1.2", fields: { scenario: "Continue and recover after component failure", pillar: "Reliability", focus: "Resilience and recovery", }, detail: "Reliability is the resilience and recovery cue.", hook: "Recover = Reliability", wrong: { pillar: ["Performance Efficiency", "Security", "Cost Optimization"] } },
+    { id: "performance", objective: "1.2", fields: { scenario: "Use resources and technology efficiently", pillar: "Performance Efficiency", focus: "Effective resource use", }, detail: "Performance Efficiency concerns effective workload resource use.", hook: "Efficient resources = Performance", wrong: { pillar: ["Reliability", "Sustainability", "Operational Excellence"] } },
+    { id: "cost", objective: "1.2", fields: { scenario: "Avoid unnecessary cloud spend", pillar: "Cost Optimization", focus: "Value for spend", }, detail: "Cost Optimization targets unnecessary spending.", hook: "Spend = Cost", wrong: { pillar: ["Sustainability", "Security", "Reliability"] } },
+    { id: "sustainability", objective: "1.2", fields: { scenario: "Reduce environmental impact", pillar: "Sustainability", focus: "Environmental impact", }, detail: "Sustainability addresses environmental impacts.", hook: "Environment = Sustainability", wrong: { pillar: ["Cost Optimization", "Performance Efficiency", "Security"] } },
+  ],
+};
+
+const awsClfSecurityTransfer: DrillDeck = {
+  id: "aws-clf-security-transfer",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "2.1, 2.2, 2.4",
+  topic: "Security and governance transfer",
+  modes: [
+    { id: "requirementToService", from: "requirement", to: "service" },
+    { id: "workloadToOwner", from: "workload", to: "owner" },
+  ],
+  tables: [
+    { id: "security-cues", fields: ["requirement", "service"] },
+    { id: "responsibility", fields: ["workload", "owner"] },
+  ],
+  items: [
+    { id: "patch", objective: "2.1", fields: { workload: "EC2 guest OS patch", owner: "Customer", requirement: "API audit", service: "CloudTrail" }, detail: "EC2 guest OS patching is customer responsibility; CloudTrail records API activity.", hook: "EC2 OS = customer; API = CloudTrail", wrong: { owner: ["AWS", "ISP"], service: ["CloudWatch", "Config"] } },
+    { id: "physical", objective: "2.1", fields: { workload: "Physical AWS host", owner: "AWS", requirement: "Configuration history", service: "AWS Config" }, detail: "AWS manages physical infrastructure; Config tracks supported resource configuration.", hook: "Physical = AWS; config = Config", wrong: { owner: ["Customer", "Application vendor"], service: ["Artifact", "CloudWatch"] } },
+    { id: "lambda", objective: "2.1", fields: { workload: "Lambda code and IAM", owner: "Customer", requirement: "Operational alarm", service: "CloudWatch" }, detail: "Customers own Lambda code/IAM; CloudWatch provides metrics and alarms.", hook: "Lambda code = customer; alarm = Watch", wrong: { owner: ["AWS", "ISP"], service: ["CloudTrail", "Artifact"] } },
+    { id: "artifact", objective: "2.2", fields: { requirement: "Compliance documents", service: "AWS Artifact" }, detail: "Artifact supplies AWS compliance reports and agreements.", hook: "Documents = Artifact", wrong: { service: ["CloudWatch", "Config", "GuardDuty"] } },
+    { id: "waf", objective: "2.4", fields: { requirement: "Filter web requests", service: "AWS WAF" }, detail: "WAF filters web requests.", hook: "Web filter = WAF", wrong: { service: ["Shield", "GuardDuty", "Inspector"] } },
+    { id: "shield", objective: "2.4", fields: { requirement: "DDoS protection", service: "AWS Shield" }, detail: "Shield provides DDoS protection.", hook: "DDoS = Shield", wrong: { service: ["WAF", "Config", "Artifact"] } },
+    { id: "guard", objective: "2.4", fields: { requirement: "Detect suspicious activity", service: "Amazon GuardDuty" }, detail: "GuardDuty detects threats from AWS signals.", hook: "Detect = GuardDuty", wrong: { service: ["Inspector", "WAF", "Trusted Advisor"] } },
+    { id: "manager", objective: "2.4", fields: { requirement: "Central firewall policy", service: "AWS Firewall Manager" }, detail: "Firewall Manager centrally manages supported policies.", hook: "Central policy = Firewall Manager", wrong: { service: ["WAF", "Shield", "Marketplace"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

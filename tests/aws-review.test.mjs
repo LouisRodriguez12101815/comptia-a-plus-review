@@ -110,6 +110,48 @@ test('CLF-C02 objective 2.3 access-management expansion is mapped and stays part
   for (const o of exam.domains.flatMap(d => d.objectives).filter(o => o.id !== '2.3')) assert.equal(o.status, 'partial', `unexpected CLF status change: ${o.id}`);
 });
 
+test('CLF-C02 design and security transfer expansion is mapped, localized, and remains partial', () => {
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const objectiveFor = id => exam.domains.flatMap(d => d.objectives).find(o => o.id === id);
+  const pillar = questions.filter(q => q.id.startsWith('q-clf12-'));
+  const responsibility = questions.filter(q => q.id.startsWith('q-clf21-'));
+  const governance = questions.filter(q => q.id.startsWith('q-clf22-'));
+  const security = questions.filter(q => q.id.startsWith('q-clf24-'));
+  assert.equal(pillar.length, 10);
+  assert.equal(responsibility.length, 10);
+  assert.equal(governance.length, 12);
+  assert.equal(security.length, 12);
+  assert.equal(new Set([...pillar, ...responsibility, ...governance, ...security].map(q => q.id)).size, 44);
+  assert.ok(pillar.every(q => q.topicId === 'aws-clf-well-architected-decisions' && q.objectiveIds['clf-c02'][0] === '1.2'));
+  assert.ok(responsibility.every(q => q.topicId === 'aws-clf-security-transfer' && q.objectiveIds['clf-c02'][0] === '2.1'));
+  assert.ok(governance.every(q => q.objectiveIds['clf-c02'][0] === '2.2'));
+  assert.ok(security.every(q => q.objectiveIds['clf-c02'][0] === '2.4'));
+  assert.ok(pillar.some(q => Array.isArray(q.answer)));
+  assert.ok(responsibility.some(q => Array.isArray(q.answer)));
+  assert.ok(governance.some(q => Array.isArray(q.answer)));
+  for (const id of ['1.2', '2.1', '2.2', '2.4']) {
+    assert.equal(objectiveFor(id).status, 'partial');
+    assert.ok(objectiveFor(id).topics.includes(id === '1.2' ? 'aws-clf-well-architected-decisions' : 'aws-clf-security-transfer'));
+  }
+  const topic = topics.find(t => t.id === 'aws-clf-well-architected-decisions');
+  const securityTopic = topics.find(t => t.id === 'aws-clf-security-transfer');
+  assert.ok(JSON.stringify(topic.sections.find(s => s.id === 'six-pillars')).includes('Sustainability'));
+  assert.ok(securityTopic.sections.some(s => s.id === 'responsibility'));
+  assert.ok(securityTopic.sections.some(s => JSON.stringify(s).includes('Artifact')));
+  const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
+  assert.match(drills, /id: "aws-clf-well-architected-compare"/);
+  assert.match(drills, /id: "aws-clf-security-transfer"/);
+  const visualsText = JSON.stringify(visuals);
+  assert.match(visualsText, /aws-clf-well-architected-decisions/);
+  assert.match(visualsText, /aws-clf-security-transfer/);
+  for (const locale of ['en', 'es', 'fr', 'pt']) {
+    const messages = JSON.parse(readFileSync(new URL('../messages/' + locale + '.json', import.meta.url)));
+    assert.ok(messages.drillDecks['aws-clf-well-architected-compare']);
+    assert.ok(messages.drillDecks['aws-clf-security-transfer']);
+  }
+  for (const o of exam.domains.flatMap(d => d.objectives)) assert.equal(o.status, 'partial', 'unexpected CLF status change: ' + o.id);
+});
+
 test('CLF-C02 Domain 4 expansion is objective-specific, current, and remains partial', () => {
   const groups = {
     '4.1': questions.filter(q => q.id.startsWith('q-clf41-')),

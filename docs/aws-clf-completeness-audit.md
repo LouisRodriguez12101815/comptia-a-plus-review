@@ -96,3 +96,7 @@ Do not bulk-generate content from this audit. Use the P1 order above to design s
 
 The focused branch `content/aws-clf-objective-1-3` adds a targeted Objective 1.3 expansion covering CAF/readiness, migration strategy selection, discovery, migration resources, database replication, and validation/cutover scenarios. This is follow-up work after the 2026-11-06 audit, not a change to the original audit result. Objective 1.3 remains `partial` pending re-audit of current scope and unseen transfer breadth.
 
+## Post-audit follow-up — grouped transfer expansion
+
+After the original audit, a focused CLF-C02 transfer expansion added independent scenario practice for Objective 1.2 Well-Architected pillar decisions and Domain 2 Objectives 2.1, 2.2 and 2.4 security, governance, responsibility and service-selection decisions. The original audit matrix and result remain historical; these additions do not promote any objective beyond partial.
+

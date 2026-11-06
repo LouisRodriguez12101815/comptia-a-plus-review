@@ -12978,5 +12978,34 @@
       {"id":"common-traps","title":"Common migration traps","blocks":[{"type":"bullets","items":["Rehost is not refactor: minimal change and major redesign are different constraints.","Retain is not retire: retain defers migration; retire removes an unnecessary workload.","Migration is not replacement: repurchase changes the product model.","Discovery comes before moving blindly; CAF readiness concerns organizational adoption, not just infrastructure."]}]},
       {"id":"objective-clf-c02-1-3","title":"1.3 transfer exercise","blocks":[{"type":"callout","kind":"tip","text":"Assess the business driver and readiness, discover dependencies and utilization, choose the least-change strategy that satisfies the constraint, plan migration or replication, then validate before cutover with a rollback trigger."},{"type":"paragraph","text":"Scope note: the CLF-C02 objective explicitly covers cloud adoption strategies and migration-journey resources. The lifecycle shown here is a planning model for recognition and transfer, not a claim that the exam requires a detailed migration runbook."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"}]}
     ]
+  },
+  {
+    "id": "aws-clf-well-architected-decisions",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 1.2 — Well-Architected design decisions",
+    "chapter": "CLF-C02 · Domain 1 · Objective 1.2",
+    "summary": "Scenario practice for choosing among the six AWS Well-Architected pillars without drifting into advanced architecture design.",
+    "sections": [
+      {"id":"six-pillars","title":"The six pillars","blocks":[{"type":"table","headers":["Requirement cue","Pillar"],"rows":[["Operate and improve processes","Operational Excellence"],["Protect systems and data","Security"],["Continue through component failure","Reliability"],["Use resources efficiently for the workload","Performance Efficiency"],["Avoid unnecessary spend","Cost Optimization"],["Reduce environmental impact","Sustainability"]]}]},
+      {"id":"confusion-pairs","title":"Pillar confusion pairs","blocks":[{"type":"bullets","items":["Reliability is continued operation and recovery; Performance Efficiency is selecting and using resources effectively.","Cost Optimization is avoiding unnecessary spend; Sustainability is reducing environmental impact.","Security protects identities, data and systems; Reliability addresses failure and recovery.","Operational Excellence concerns running and improving workloads; Reliability concerns resilience outcomes."]}]},
+      {"id":"transfer","title":"Scenario transfer","blocks":[{"type":"callout","kind":"tip","text":"Name the requirement outcome first, then choose the pillar whose primary concern matches it. A single design can support several pillars, but answer the stated constraint rather than a neighboring benefit."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"}]}
+    ]
+  },
+  {
+    "id": "aws-clf-security-transfer",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Domain 2 — Security transfer decisions",
+    "chapter": "CLF-C02 · Domain 2 · Objectives 2.1, 2.2 and 2.4",
+    "summary": "Requirement-driven practice for shared responsibility, governance evidence, encryption and AWS security resources.",
+    "sections": [
+      {"id":"responsibility","title":"Responsibility changes by service","blocks":[{"type":"table","headers":["Service","Customer retains","AWS manages more of"],"rows":[["EC2","Guest OS patches, applications, data, IAM and configuration","Physical infrastructure"],["RDS","Data, database users, access and supported configuration","Database platform and underlying infrastructure"],["Lambda","Code, data, IAM and function configuration","Platform and runtime infrastructure"]]}]},
+      {"id":"governance","title":"Governance evidence chooser","blocks":[{"type":"table","headers":["Need","Tool"],"rows":[["Operational metrics, logs or alarms","Amazon CloudWatch"],["AWS API/account activity","AWS CloudTrail"],["Resource configuration history and compliance rules","AWS Config"],["AWS compliance reports or agreements","AWS Artifact"]]},{"type":"paragraph","text":"Encryption in transit protects data moving across networks; encryption at rest protects stored data. AWS KMS is the recognition-level key-management service. AWS compliance does not automatically make a customer workload compliant; obligations differ by industry and geography."}]},
+      {"id":"security-resources","title":"Security service cues","blocks":[{"type":"table","headers":["Requirement","Tool"],"rows":[["Filter web requests","AWS WAF"],["DDoS protection","AWS Shield"],["Detect suspicious activity from AWS signals","Amazon GuardDuty"],["Centrally manage firewall policies","AWS Firewall Manager"],["Recommendations across supported areas","AWS Trusted Advisor"],["Third-party security product","AWS Marketplace"]]}, {"type":"bullets","items":["Inspector focuses on supported workload vulnerabilities; Security Hub aggregates security findings. Knowledge Center, Security Center and Security Blog provide AWS security information."]}]},
+      {"id":"transfer","title":"Cross-objective transfer","blocks":[{"type":"callout","kind":"tip","text":"Classify the requirement before naming a service: responsibility boundary, operational observation, API audit, configuration state, compliance evidence, request filtering, DDoS, threat detection or centralized policy."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"}]}
+    ]
   }
 ]
