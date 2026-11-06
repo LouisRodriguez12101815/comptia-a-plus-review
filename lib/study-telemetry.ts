@@ -69,13 +69,37 @@ function sessionId(): string {
 }
 
 /** Best effort only: telemetry failures are deliberately invisible to quiz interactions. */
-export function sendStudyEvent(input: StudyEventInput): void {
-  if (typeof window === "undefined") return;
+function eventBody(input: StudyEventInput): string | null {
+  if (typeof window === "undefined") return null;
   const question = input.question;
-  if (question && !isN10Question(question)) return;
-  if (!question && input.topicId && !topicExamCodes.get(input.topicId)?.includes("n10-009")) return;
-  if (!question && !input.topicId && input.exam !== "n10-009") return;
-  const body = buildStudyEvent(input, sessionId());
+  if (question && !isN10Question(question)) return null;
+  if (!question && input.topicId && !topicExamCodes.get(input.topicId)?.includes("n10-009")) return null;
+  if (!question && !input.topicId && input.exam !== "n10-009") return null;
+  return JSON.stringify(buildStudyEvent(input, sessionId()));
+}
+
+function sendImmediately(body: string): void {
+  try {
+    const payload = new Blob([body], { type: "application/json" });
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function"
+      && navigator.sendBeacon("/api/learner/telemetry", payload)) return;
+  } catch {
+    // Fall through to fetch when Beacon is unavailable or rejects the payload.
+  }
+  void fetch("/api/learner/telemetry", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+    credentials: "same-origin",
+    keepalive: true,
+  }).catch(() => {
+    // Telemetry is observational and must never block studying.
+  });
+}
+
+export function sendStudyEvent(input: StudyEventInput): void {
+  const body = eventBody(input);
+  if (!body) return;
   submissionQueue = submissionQueue.then(async () => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5_000);
@@ -83,7 +107,8 @@ export function sendStudyEvent(input: StudyEventInput): void {
       await fetch("/api/learner/telemetry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body,
+        credentials: "same-origin",
         keepalive: true,
         signal: controller.signal,
       });
@@ -93,4 +118,10 @@ export function sendStudyEvent(input: StudyEventInput): void {
       clearTimeout(timeout);
     }
   });
+}
+
+/** Sends navigation-triggering telemetry outside the ordinary queue. Best effort only. */
+export function sendStudyEventOnNavigation(input: StudyEventInput): void {
+  const body = eventBody(input);
+  if (body) sendImmediately(body);
 }

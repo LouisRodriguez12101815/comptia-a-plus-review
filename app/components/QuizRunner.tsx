@@ -15,7 +15,7 @@ import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback"
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
-import { isN10Question, sendStudyEvent } from "@/lib/study-telemetry";
+import { isN10Question, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
 import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
 
@@ -317,7 +317,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                 {inlineRemediation.whyWrongKey && <p data-inline-why-wrong><strong>{t("whyWrong")}</strong> {guidance("whyWrong", inlineRemediation.whyWrongKey)}</p>}
                 {inlineRemediation.examClueKey && <p data-inline-exam-clue><strong>{t("examClue")}</strong> {guidance("examClues", inlineRemediation.examClueKey)}</p>}
                 {inlineRemediation.memoryRuleKey && <p data-inline-memory-rule><strong>{t("memoryRule")}</strong> {guidance("memoryRules", inlineRemediation.memoryRuleKey)}</p>}
-                {inlineRemediation.visual && <a data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} onClick={() => sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "visual" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</a>}
+                {inlineRemediation.visual && <a data-inline-visual href={`/visuals/${inlineRemediation.visual.file}`} onClick={() => sendStudyEventOnNavigation({ type: "remediation_resource_opened", question: current, resourceType: "visual" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("viewVisual", { title: inlineRemediation.visual.title })}</a>}
                 {inlineRemediation.flashcards.length > 0 && <section data-inline-flashcards aria-label={t("flashcards")}>
                   <h3 className="font-semibold text-white">{t("flashcards")}</h3>
                   <ul className="mt-2 space-y-2">
@@ -326,9 +326,9 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                     }}><summary className="cursor-pointer font-medium text-slate-100">{card.front}</summary><p className="mt-2 text-slate-400">{card.back}</p></details></li>)}
                   </ul>
                 </section>}
-                {inlineRemediation.video && <Link data-inline-video href={`/networking/videos/${inlineRemediation.video.slug}`} onClick={() => sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "video" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: inlineRemediation.video.title })}</Link>}
-                <Link data-inline-notes href={inlineRemediation.notesHref} onClick={() => sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "notes" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
-                {inlineRemediation.retryQuestionIds.length > 0 && <Link data-inline-retry href={`/quiz?questions=${encodeURIComponent(inlineRemediation.retryQuestionIds.join(","))}&exam=n10-009`} onClick={() => sendStudyEvent({ type: "similar_question_started", question: current, resourceType: "retry" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
+                {inlineRemediation.video && <Link data-inline-video href={`/networking/videos/${inlineRemediation.video.slug}`} onClick={() => sendStudyEventOnNavigation({ type: "remediation_resource_opened", question: current, resourceType: "video" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: inlineRemediation.video.title })}</Link>}
+                <Link data-inline-notes href={inlineRemediation.notesHref} onClick={() => sendStudyEventOnNavigation({ type: "remediation_resource_opened", question: current, resourceType: "notes" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
+                {inlineRemediation.retryQuestionIds.length > 0 && <Link data-inline-retry href={`/quiz?questions=${encodeURIComponent(inlineRemediation.retryQuestionIds.join(","))}&exam=n10-009`} onClick={() => sendStudyEventOnNavigation({ type: "similar_question_started", question: current, resourceType: "retry" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
               </div>
             </details>
           )}
