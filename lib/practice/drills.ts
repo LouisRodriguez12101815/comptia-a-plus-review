@@ -2461,6 +2461,40 @@ const awsClfCostCompare: DrillDeck = {
   ],
 };
 
+const awsClfOtherServicesCompare: DrillDeck = {
+  id: "aws-clf-other-services-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.8",
+  topic: "Other AWS service category decisions",
+  modes: [
+    { id: "requirementToService", from: "requirement", to: "service" },
+    { id: "serviceToRequirement", from: "service", to: "requirement" },
+    { id: "confusionPair", from: "confusion", to: "service" },
+  ],
+  tables: [
+    { id: "requirement-service", fields: ["requirement", "service"] },
+    { id: "confusion-pairs", fields: ["confusion", "service"] },
+  ],
+  items: [
+    { id: "queue", objective: "3.8", fields: { requirement: "Durable asynchronous queue", service: "Amazon SQS", confusion: "Queue", }, detail: "SQS decouples producers and consumers with durable queueing.", hook: "Queue = SQS", wrong: { service: ["Amazon SNS", "Amazon EventBridge", "AWS Step Functions"] } },
+    { id: "fanout", objective: "3.8", fields: { requirement: "Publish to many subscribers", service: "Amazon SNS", confusion: "Fanout", }, detail: "SNS provides publish/subscribe fanout.", hook: "Fanout = SNS", wrong: { service: ["Amazon SQS", "Amazon EventBridge", "Amazon SES"] } },
+    { id: "routing", objective: "3.8", fields: { requirement: "Route events using rules", service: "Amazon EventBridge", confusion: "Event routing", }, detail: "EventBridge routes events from sources to targets.", hook: "Route events = EventBridge", wrong: { service: ["Amazon SNS", "Amazon SQS", "AWS Step Functions"] } },
+    { id: "workflow", objective: "3.8", fields: { requirement: "Coordinate workflow steps", service: "AWS Step Functions", confusion: "Workflow", }, detail: "Step Functions coordinates multi-step workflows.", hook: "Workflow = Step Functions", wrong: { service: ["Amazon EventBridge", "Amazon SQS", "AWS CodePipeline"] } },
+    { id: "contact", objective: "3.8", fields: { requirement: "Cloud contact center", service: "Amazon Connect", confusion: "Contact center", }, detail: "Connect is the cloud contact-center choice.", hook: "Contact center = Connect", wrong: { service: ["Amazon SES", "AWS Support", "Amazon WorkSpaces"] } },
+    { id: "email", objective: "3.8", fields: { requirement: "Application or transactional email", service: "Amazon SES", confusion: "Email", }, detail: "SES sends application email.", hook: "Application email = SES", wrong: { service: ["Amazon SNS", "Amazon Connect", "Amazon SQS"] } },
+    { id: "build", objective: "3.8", fields: { requirement: "Compile, build, and test source", service: "AWS CodeBuild", confusion: "Build", }, detail: "CodeBuild performs source build and test work.", hook: "Build = CodeBuild", wrong: { service: ["AWS CodePipeline", "AWS X-Ray", "AWS Amplify"] } },
+    { id: "pipeline", objective: "3.8", fields: { requirement: "Orchestrate delivery stages", service: "AWS CodePipeline", confusion: "Pipeline", }, detail: "CodePipeline coordinates delivery stages.", hook: "Pipeline = CodePipeline", wrong: { service: ["AWS CodeBuild", "AWS X-Ray", "Amazon EventBridge"] } },
+    { id: "trace", objective: "3.8", fields: { requirement: "Trace a distributed request", service: "AWS X-Ray", confusion: "Trace", }, detail: "X-Ray provides distributed request tracing.", hook: "Trace = X-Ray", wrong: { service: ["Amazon CloudWatch", "AWS CodePipeline", "AWS Config"] } },
+    { id: "application", objective: "3.8", fields: { requirement: "Stream an application", service: "Amazon AppStream 2.0", confusion: "Application", }, detail: "AppStream streams applications to users.", hook: "Application = AppStream", wrong: { service: ["Amazon WorkSpaces", "Amazon WorkSpaces Secure Browser", "Amazon Connect"] } },
+    { id: "desktop", objective: "3.8", fields: { requirement: "Managed virtual desktop", service: "Amazon WorkSpaces", confusion: "Desktop", }, detail: "WorkSpaces provides managed virtual desktops.", hook: "Desktop = WorkSpaces", wrong: { service: ["Amazon AppStream 2.0", "Amazon WorkSpaces Secure Browser", "Amazon Connect"] } },
+    { id: "browser", objective: "3.8", fields: { requirement: "Secure browser-only access", service: "Amazon WorkSpaces Secure Browser", confusion: "Browser", }, detail: "Secure Browser provides browser-only access to web applications.", hook: "Browser = Secure Browser", wrong: { service: ["Amazon WorkSpaces", "Amazon AppStream 2.0", "Amazon SES"] } },
+    { id: "frontend", objective: "3.8", fields: { requirement: "Frontend web or mobile application", service: "AWS Amplify", confusion: "Frontend/mobile", }, detail: "Amplify supports frontend web and mobile application development and deployment.", hook: "Frontend = Amplify", wrong: { service: ["AWS CodeBuild", "Amazon Connect", "Amazon IoT Core"] } },
+    { id: "devices", objective: "3.8", fields: { requirement: "Connect and manage IoT devices", service: "Amazon IoT Core", confusion: "Devices", }, detail: "IoT Core supports connected-device interaction and device-to-cloud messaging.", hook: "Devices = IoT Core", wrong: { service: ["Amazon EventBridge", "AWS Amplify", "Amazon WorkSpaces"] } },
+    { id: "support", objective: "3.8", fields: { requirement: "AWS business or technical assistance", service: "AWS Support", confusion: "Support", }, detail: "AWS Support is the recognition-level customer-enablement choice.", hook: "AWS assistance = Support", wrong: { service: ["AWS Marketplace", "Amazon Connect", "AWS X-Ray"] } },
+  ],
+};
+
 const awsClfSupportResources: DrillDeck = {
   id: "aws-clf-support-resources",
   certification: "AWS Cloud Practitioner",
@@ -2488,7 +2522,7 @@ const awsClfSupportResources: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfSupportResources, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfOtherServicesCompare, awsClfSupportResources, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

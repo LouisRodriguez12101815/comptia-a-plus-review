@@ -12880,5 +12880,83 @@
         ]
       }
     ]
+  },
+  {
+    "id": "aws-clf-other-service-categories",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 3.8 — Other AWS service categories",
+    "chapter": "CLF-C02 · Domain 3 · Objective 3.8",
+    "summary": "Choose a non-core AWS service from a short business requirement across application integration, business applications, customer enablement, developer tools, end-user computing, frontend/mobile, and IoT.",
+    "sections": [
+      {
+        "id": "application-integration",
+        "title": "Application integration",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Mental model","Common distractor"],"rows":[
+          ["Durable asynchronous queue between producers and consumers","Amazon SQS","queue","SNS fanout"],
+          ["Publish one message to many subscribers","Amazon SNS","publish/fanout","SQS queue"],
+          ["Route events to targets using rules","Amazon EventBridge","event routing","Step Functions"],
+          ["Coordinate multiple workflow steps","AWS Step Functions","workflow orchestration","EventBridge"]
+        ]}]
+      },
+      {
+        "id": "business-applications",
+        "title": "Business applications",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Common distractor"],"rows":[
+          ["Cloud contact center","Amazon Connect","Amazon SES"],
+          ["Send application or transactional email","Amazon SES","Amazon SNS"]
+        ]}]
+      },
+      {
+        "id": "customer-enablement",
+        "title": "Customer enablement",
+        "blocks": [{"type":"paragraph","text":"A requirement for AWS business or technical assistance points to AWS Support. Objective 3.8 recognition is intentionally brief; use the Domain 4 support material for plan and entitlement detail."}]
+      },
+      {
+        "id": "developer-tools",
+        "title": "Developer tools",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Mental model","Common distractor"],"rows":[
+          ["Compile, build, or test source code","AWS CodeBuild","build","CodePipeline"],
+          ["Orchestrate software delivery stages","AWS CodePipeline","pipeline","CodeBuild"],
+          ["Trace a request across distributed services","AWS X-Ray","distributed tracing","CloudWatch"]
+        ]}]
+      },
+      {
+        "id": "end-user-computing",
+        "title": "End-user computing",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Mental model","Common distractor"],"rows":[
+          ["Stream an application to a user","Amazon AppStream 2.0","application","WorkSpaces"],
+          ["Provide a managed virtual desktop","Amazon WorkSpaces","desktop","AppStream 2.0"],
+          ["Provide secure browser-only access to websites/apps","Amazon WorkSpaces Secure Browser","browser","WorkSpaces"]
+        ]}]
+      },
+      {
+        "id": "frontend-mobile",
+        "title": "Frontend and mobile",
+        "blocks": [{"type":"paragraph","text":"AWS Amplify is the recognition-level choice for developing and deploying frontend web or mobile applications. The cue is the frontend/mobile application requirement, not a request to build or orchestrate backend source-code delivery."}]
+      },
+      {
+        "id": "internet-of-things",
+        "title": "Internet of Things",
+        "blocks": [{"type":"paragraph","text":"Amazon IoT Core connects and manages interactions with IoT devices and supports device-to-cloud messaging at recognition level. Do not expand this review into IoT Device Defender or Greengrass; they are not required answers in this focused service set."}]
+      },
+      {
+        "id": "confusion-pairs",
+        "title": "Cross-category confusion pairs",
+        "blocks": [{"type":"bullets","items":[
+          "SQS queues; SNS fans out; EventBridge routes events; Step Functions coordinates workflow steps.",
+          "Connect is a cloud contact center; SES sends application email.",
+          "CodeBuild builds; CodePipeline orchestrates delivery; X-Ray traces distributed requests.",
+          "AppStream streams applications; WorkSpaces provides desktops; Secure Browser provides browser-only access.",
+          "Amplify targets frontend/mobile applications; IoT Core targets connected devices; AWS Support provides AWS assistance."
+        ]}]
+      },
+      {
+        "id": "objective-clf-c02-3-8",
+        "title": "3.8 transfer exercise",
+        "blocks": [{"type":"callout","kind":"tip","text":"Read the business verb first: queue, fan out, route, coordinate, contact, email, build, pipeline, trace, stream, desktop, browser, frontend, device, or support. Select the service whose primary job matches that verb, then reject the neighboring service that solves a different problem."},{"type":"paragraph","text":"Scope note: AWS describes the Objective 3.8 service list as non-exhaustive and subject to change. This review uses the current explicitly named service set and should be rechecked against the live AWS CLF-C02 Domain 3 page."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"}]
+      }
+    ]
   }
 ]

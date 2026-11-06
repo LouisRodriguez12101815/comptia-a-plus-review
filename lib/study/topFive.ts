@@ -202,8 +202,10 @@ const awsClf: TopFive = {
         "CloudWatch = metrics/logs/alarms; CloudTrail = API audit; Config = resource configuration history/rules.",
         "AI cue: Comprehend analyzes text; Lex builds chat; Polly speaks; Transcribe writes speech; Translate changes language; Textract extracts forms; Rekognition analyzes images/video; SageMaker AI builds custom models.",
         "Analytics cue: Athena queries S3; Glue transforms/catalogs; EMR processes big data; Kinesis streams; OpenSearch searches indexed data; Quick/Quick Sight visualizes; Redshift warehouses.",
+        "Objective 3.8 cue: SQS queues; SNS fans out; EventBridge routes events; Step Functions coordinates workflows; Connect is a contact center; SES sends application email; CodeBuild builds; CodePipeline orchestrates delivery; X-Ray traces.",
+        "Objective 3.8 end-user cue: AppStream streams an application; WorkSpaces provides a desktop; WorkSpaces Secure Browser provides browser-only access. Amplify targets frontend/mobile apps; IoT Core targets connected devices; AWS Support provides AWS assistance.",
       ],
-      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-ai-analytics-compare"],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-ai-analytics-compare", "aws-clf-other-services-compare"],
     },
     {
       id: "security",

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Which non-core AWS service do I need?</title>
+<style>
+body{margin:0;background:#0b1220;color:#f1f5f9;font:15px/1.5 system-ui;padding:20px}.wrap{max-width:1040px;margin:auto}.card{border:1px solid #334155;border-radius:16px;background:#111c30;padding:18px;margin-top:16px}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;margin:0 0 10px;color:#7dd3fc}p{color:#b8c5d6}table{border-collapse:collapse;width:100%}th,td{border:1px solid #334155;padding:9px;text-align:left;vertical-align:top}th{color:#67e8f9}code{color:#fde68a}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid div{border:1px solid #155e75;border-radius:12px;padding:12px;background:#0f2436}.note{font-size:13px;color:#94a3b8}@media(max-width:760px){.grid{grid-template-columns:1fr}table{font-size:13px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Which non-core AWS service do I need?</h1>
+<p>Read the business verb first. Choose the service whose primary job matches the requirement, then reject the nearby service that solves a different problem.</p>
+<section class="card grid" aria-label="Objective 3.8 service categories">
+<div><h2>Integration</h2><code>SQS · SNS · EventBridge · Step Functions</code><p class="note">queue · fanout · route · coordinate</p></div>
+<div><h2>Business</h2><code>Connect · SES</code><p class="note">contact center · application email</p></div>
+<div><h2>Developer</h2><code>CodeBuild · CodePipeline · X-Ray</code><p class="note">build · pipeline · trace</p></div>
+<div><h2>End user</h2><code>AppStream · WorkSpaces · Secure Browser</code><p class="note">application · desktop · browser</p></div>
+<div><h2>Frontend</h2><code>Amplify</code><p class="note">frontend/mobile application</p></div>
+<div><h2>IoT and support</h2><code>IoT Core · AWS Support</code><p class="note">devices · AWS assistance</p></div>
+</section>
+<section class="card">
+<h2>Decision map</h2>
+<table>
+<thead><tr><th>Requirement</th><th>Choose</th><th>Common distractor</th></tr></thead>
+<tbody>
+<tr><td>Durable asynchronous queue</td><td>Amazon SQS</td><td>Amazon SNS fanout</td></tr>
+<tr><td>Publish one message to many subscribers</td><td>Amazon SNS</td><td>Amazon SQS queue</td></tr>
+<tr><td>Route events by rules</td><td>Amazon EventBridge</td><td>AWS Step Functions workflow</td></tr>
+<tr><td>Coordinate workflow steps</td><td>AWS Step Functions</td><td>Amazon EventBridge routing</td></tr>
+<tr><td>Cloud contact center / application email</td><td>Amazon Connect / Amazon SES</td><td>They are not interchangeable</td></tr>
+<tr><td>Build / delivery orchestration / distributed trace</td><td>AWS CodeBuild / CodePipeline / X-Ray</td><td>Each has a different job</td></tr>
+<tr><td>Stream application / provide desktop / secure browser</td><td>AppStream / WorkSpaces / Secure Browser</td><td>Choose by application vs desktop vs browser</td></tr>
+<tr><td>Frontend/mobile app / connected devices / AWS assistance</td><td>Amplify / IoT Core / AWS Support</td><td>CodeBuild, EventBridge, and Connect solve different needs</td></tr>
+</tbody>
+</table>
+<p class="note">CLF-C02 recognition level. AWS describes the Objective 3.8 service list as non-exhaustive and subject to change; recheck the current official scope before relying on this visual.</p>
+</section>
+<section class="card">
+<figure>
+<svg role="img" aria-label="Flow from a business requirement to an AWS service category" viewBox="0 0 900 150" style="display:block;width:100%;height:auto">
+<path d="M80 75H820" fill="none" stroke="#155e75" stroke-width="8" stroke-linecap="round"/>
+<g fill="#67e8f9" stroke="#0b1220" stroke-width="5"><circle cx="120" cy="75" r="27"/><circle cx="300" cy="75" r="27"/><circle cx="480" cy="75" r="27"/><circle cx="660" cy="75" r="27"/><circle cx="820" cy="75" r="27"/></g>
+<g fill="#0b1220" font-size="16" font-family="system-ui" text-anchor="middle"><text x="120" y="80">Need</text><text x="300" y="80">Verb</text><text x="480" y="80">Category</text><text x="660" y="80">Service</text><text x="820" y="80">Why</text></g>
+</svg>
+<figcaption class="note">Requirement → business verb → category → service → distractor check.</figcaption>
+</figure>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{"facts":[
+{"claim":"Amazon SQS provides queueing to decouple producers and consumers.","objectives":["clf-c02 3.8"],"sources":["https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"]},
+{"claim":"Amazon SNS provides publish/subscribe messaging and fanout.","objectives":["clf-c02 3.8"],"sources":["https://docs.aws.amazon.com/sns/latest/dg/welcome.html"]},
+{"claim":"Amazon EventBridge routes events from sources to targets using rules.","objectives":["clf-c02 3.8"],"sources":["https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"]},
+{"claim":"AWS CodeBuild builds and tests source code, AWS CodePipeline orchestrates delivery stages, and AWS X-Ray traces distributed requests.","objectives":["clf-c02 3.8"],"sources":["https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html","https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html","https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"]},
+{"claim":"AppStream 2.0 streams applications, WorkSpaces provides virtual desktops, and WorkSpaces Secure Browser provides browser-only access.","objectives":["clf-c02 3.8"],"sources":["https://docs.aws.amazon.com/appstream2/latest/developerguide/what-is-appstream.html","https://docs.aws.amazon.com/workspaces/latest/adminguide/amazon-workspaces.html","https://docs.aws.amazon.com/workspaces-web/latest/adminguide/what-is.html"]},
+{"claim":"AWS Amplify supports frontend web and mobile applications and AWS IoT Core supports connected-device interaction.","objectives":["clf-c02 3.8"],"sources":["https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html","https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html"]}
+],"simplifications":["The map uses recognition-level business cues and omits implementation limits, pricing, and architecture configuration.","Objective 3.8 service lists are non-exhaustive and subject to change."]}
+</script>
+</body>
+</html>

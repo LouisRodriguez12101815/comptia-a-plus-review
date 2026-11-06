@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { buildExamPool, draftTest, allocateByWeight, mulberry32, shuffleQuestionChoices, shuffleChoiceOrder, assessmentVersion, isCorrect, approximatePassPercent, sessionDurationSeconds } from '../lib/exam-test.mjs';
 import { evaluateReadiness } from '../lib/readiness.ts';
 const read = name => JSON.parse(readFileSync(new URL(`../content/${name}.json`, import.meta.url)));
-const questions = read('questions'), topics = read('topics'), objectives = read('objectives'), flashcards = read('flashcards');
+const questions = read('questions'), topics = read('topics'), objectives = read('objectives'), flashcards = read('flashcards'), visuals = read('track-visuals');
 for (const code of ['clf-c02', 'saa-c03']) {
   const bank = questions.filter(q => q.examCodes?.includes(code));
   const pool = buildExamPool({ questions, topics, objectives, examCode: code });
@@ -160,4 +160,37 @@ test('CLF-C02 completeness audit keeps every objective evidenced and honestly pa
     const objective = allObjectives.find(item => item.id === objectiveId);
     assert.equal(objective.reviewEvidence.checked, '2026-11-06', objectiveId);
   }
+});
+
+test('CLF-C02 objective 3.8 expansion covers current category cues without out-of-scope answers', () => {
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const objective = exam.domains.flatMap(domain => domain.objectives).find(item => item.id === '3.8');
+  const added = questions.filter(question => question.id.startsWith('q-clf38-'));
+  const topic = topics.find(item => item.id === 'aws-clf-other-service-categories');
+  const cards = flashcards.filter(card => card.topicId === topic.id);
+  const answerCorpus = JSON.stringify({ questions: added.map(question => ({ choices: question.choices, answer: question.answer })), cards });
+  const categories = {
+    integration: ['SQS', 'SNS', 'EventBridge', 'Step Functions'],
+    business: ['Connect', 'SES'],
+    customerEnablement: ['AWS Support'],
+    developer: ['CodeBuild', 'CodePipeline', 'X-Ray'],
+    endUser: ['AppStream', 'WorkSpaces', 'Secure Browser'],
+    frontend: ['Amplify'],
+    iot: ['IoT Core'],
+  };
+
+  assert.equal(added.length, 16);
+  assert.equal(new Set(added.map(question => question.id)).size, added.length);
+  assert.ok(added.every(question => question.examCodes.length === 1 && question.examCodes[0] === 'clf-c02'));
+  assert.ok(added.every(question => question.objectiveIds['clf-c02'].length === 1 && question.objectiveIds['clf-c02'][0] === '3.8'));
+  assert.equal(topic.sections.length, 9);
+  for (const [category, services] of Object.entries(categories)) {
+    assert.ok(services.every(service => answerCorpus.includes(service)), `${category} missing service cue`);
+  }
+  assert.doesNotMatch(answerCorpus, /CodeDeploy|Greengrass|Device Defender/);
+  assert.equal(objective.status, 'partial');
+  assert.ok(objective.topics.includes('aws-clf-other-service-categories'));
+  assert.equal(visuals['aws-clf-other-service-categories'][0].file, 'aws-clf-other-service-categories.html');
+  const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
+  assert.match(drills, /id: "aws-clf-other-services-compare"/);
 });
