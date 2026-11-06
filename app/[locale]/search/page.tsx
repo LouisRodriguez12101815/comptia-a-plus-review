@@ -30,7 +30,7 @@ export default async function SearchPage({ params, searchParams }: PageProps<"/[
       <header className="space-y-2">
         <h1 className="text-4xl font-bold">{t("title")}</h1>
         <p className="text-slate-300">{t("intro")}</p>
-        <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-sm text-slate-400">{t("mappingNote")}</p>
+        <p className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-sm text-slate-400">{t("mappingNote")} <Link href="/methodology" className="text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("methodologyLink")}</Link></p>
       </header>
 
       <form method="get" role="search" className="grid gap-3 rounded-2xl border border-slate-700 bg-slate-900 p-4 sm:grid-cols-[1fr_auto]">

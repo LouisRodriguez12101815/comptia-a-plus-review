@@ -6,6 +6,7 @@ import { NetworkPlusConcepts } from "@/app/components/NetworkPlusConcepts";
 import { NetworkPlusDomainQuiz } from "@/app/components/NetworkPlusDomainQuiz";
 import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
 import { NetworkWorkspaceNav } from "@/app/components/NetworkWorkspaceNav";
+import { NetworkAmbient } from "@/app/components/NetworkAmbient";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
@@ -61,8 +62,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
   return (
     <div className={`track-shell track-${track.id} ${track.id === "networking" ? "network-workspace" : ""}`}>
+      {track.id === "networking" ? <NetworkAmbient /> : null}
       <SetTrackFocus focus={track.focus} />
-      <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
+      {track.id !== "networking" ? <details className="study-sidebar mb-5 rounded-2xl p-3 lg:hidden">
         <summary className="cursor-pointer list-none font-medium text-white">
           {t("studyMenu")} <span className="track-accent-text ml-2" aria-hidden="true">▾</span>
         </summary>
@@ -73,9 +75,9 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
             </Link>
           ))}
         </nav>
-      </details>
-      <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
-        <aside className="study-sidebar sticky top-5 hidden h-fit rounded-2xl p-3 lg:block">
+      </details> : null}
+      <div className={track.id === "networking" ? "" : "grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]"}>
+        {track.id !== "networking" ? <aside className="study-sidebar sticky top-5 hidden h-fit rounded-2xl p-3 lg:block">
           <p className="track-accent-text px-3 pb-2 text-xs font-semibold uppercase tracking-[0.18em]">{track.code}</p>
           <nav className="grid gap-1" aria-label="Study workspace">
             {workspaceLinks.map((item) => (
@@ -84,7 +86,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
               </Link>
             ))}
           </nav>
-        </aside>
+        </aside> : null}
         <div className="min-w-0 space-y-10">
 
       <header id="overview" className="track-workspace-hero scroll-mt-24 rounded-3xl p-6 sm:p-8">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { MethodologyWorkflow } from "@/app/components/MethodologyWorkflow";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/methodology">): Promise<Metadata> {
   const { locale } = await params;
@@ -38,11 +39,13 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         </div>
       </section>
 
+      <MethodologyWorkflow />
+
       <section aria-labelledby="areas-heading" className="space-y-4">
         <h2 id="areas-heading" className="text-2xl font-semibold tracking-tight text-white">{t("areasHeading")}</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900/40 sm:grid sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
           {["ingest", "map", "assess", "drill", "remediate", "measure"].map((key) => (
-            <article key={key} className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+            <article key={key} className="p-5">
               <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-indigo-300">{t(`${key}Title`)}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-300">{t(`${key}Body`)}</p>
             </article>
