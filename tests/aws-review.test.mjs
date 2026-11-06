@@ -194,3 +194,34 @@ test('CLF-C02 objective 3.8 expansion covers current category cues without out-o
   const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
   assert.match(drills, /id: "aws-clf-other-services-compare"/);
 });
+
+test('CLF-C02 objective 1.3 expansion covers migration decisions and remains partial', () => {
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const allObjectives = exam.domains.flatMap(domain => domain.objectives);
+  const objective = allObjectives.find(item => item.id === '1.3');
+  const added = questions.filter(question => question.id.startsWith('q-clf13-'));
+  const topic = topics.find(item => item.id === 'aws-clf-migration-decisions');
+  const cards = flashcards.filter(card => card.topicId === topic.id);
+  const corpus = JSON.stringify({ topic, questions: added, cards });
+  const requiredCues = [
+    ['CAF/readiness', /CAF|readiness/],
+    ['strategy selection', /Rehost|Replatform|Refactor|Repurchase|Retire|Retain/],
+    ['discovery', /discovery|dependencies|utilization/i],
+    ['database replication', /replication|Database Migration Service|DMS/],
+    ['validation/cutover', /validation|cutover|rollback/i],
+  ];
+
+  assert.equal(added.length, 14);
+  assert.equal(new Set(added.map(question => question.id)).size, added.length);
+  assert.ok(added.every(question => question.examCodes.length === 1 && question.examCodes[0] === 'clf-c02'));
+  assert.ok(added.every(question => question.objectiveIds['clf-c02'].length === 1 && question.objectiveIds['clf-c02'][0] === '1.3'));
+  assert.equal(topic.sections.length, 9);
+  for (const [label, pattern] of requiredCues) assert.match(corpus, pattern, label);
+  assert.equal(objective.status, 'partial');
+  assert.ok(objective.topics.includes('aws-clf-migration-decisions'));
+  assert.equal(objective.reviewEvidence.section, 'aws-clf-migration-decisions#objective-clf-c02-1-3');
+  assert.equal(visuals['aws-clf-migration-decisions'][0].file, 'aws-clf-migration-decisions.html');
+  const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
+  assert.match(drills, /id: "aws-clf-migration-compare"/);
+  for (const item of allObjectives.filter(item => item.id !== '1.3')) assert.equal(item.status, 'partial', `unexpected CLF status change: ${item.id}`);
+});

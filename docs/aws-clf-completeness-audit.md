@@ -92,3 +92,7 @@ None identified as a repository correctness blocker. However, the site should no
 
 Do not bulk-generate content from this audit. Use the P1 order above to design small, objective-specific expansions with explicit sources, comparison drills, and independent questions; then rerun the same matrix before promoting any objective. Keep the current `partial` statuses and their precise notes until the full standard is demonstrated.
 
+## Post-audit work
+
+The focused branch `content/aws-clf-objective-1-3` adds a targeted Objective 1.3 expansion covering CAF/readiness, migration strategy selection, discovery, migration resources, database replication, and validation/cutover scenarios. This is follow-up work after the 2026-11-06 audit, not a change to the original audit result. Objective 1.3 remains `partial` pending re-audit of current scope and unseen transfer breadth.
+
