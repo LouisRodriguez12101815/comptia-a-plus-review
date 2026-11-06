@@ -281,7 +281,7 @@ const awsClf: TopFive = {
       why: "Billing questions are small in weight but highly learnable because each tool and purchasing option has a distinct purpose.",
       facts: [
         "Pricing Calculator estimates planned cost; Cost Explorer analyzes actual spend; Budgets alerts on thresholds.",
-        "On-Demand = flexibility; commitment models can reduce steady-use cost; Spot = interruption-tolerant spare capacity.",
+        "On-Demand = flexibility; Savings Plans/Reserved pricing = commitment discount; Spot = interruption-tolerant spare capacity.",
         "Organizations supports multi-account management and consolidated billing.",
         "Cost allocation tags help attribute spend to teams, projects, or environments.",
         "Capacity Reservation reserves launch capacity; an RI or Savings Plan is primarily a discount/commitment concept. Dedicated Host provides host-level visibility; Dedicated Instance provides dedicated tenancy without that same control.",
@@ -300,7 +300,7 @@ const awsClf: TopFive = {
         "AWS re:Post is a managed community knowledge/Q&A resource.",
         "Prescriptive Guidance provides patterns and implementation guidance.",
         "Support Center handles eligible cases; Trusted Advisor provides recommendations; AWS Health reports health events; Trust and Safety handles suspected abuse.",
-        "Current study names include Basic Support, Business Support+, Enterprise Support and Unified Operations; verify changing details rather than relying on stale plan tables.",
+        "Basic = general baseline; Business Support+ = production technical support; Enterprise = strategic business-critical guidance; Unified Operations = highest proactive mission-critical operations help. Developer/Business/Enterprise On-Ramp are transitional legacy names.",
         "Marketplace/partners provide third-party solutions, while Professional Services and solutions architects provide AWS-delivered expertise and architecture guidance.",
       ],
       drills: ["aws-clf-domain-cues", "aws-clf-support-resources"],

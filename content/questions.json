@@ -33631,6 +33631,217 @@
     "explanation": "Professional Services assists with projects and transformations, while solutions architects provide architecture guidance.", "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://aws.amazon.com/professional-services/"]
   },
   {
+    "id": "q-clf41-11", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A company wants a discount for changing eligible compute usage across instance families, while another team wants a discount tied more closely to EC2 configuration attributes. Which distinction is correct?",
+    "choices": ["Savings Plans generally provide broader eligible-compute commitment flexibility; Reserved Instances are more closely tied to instance attributes", "Savings Plans reserve an AZ; Reserved Instances are interruptible", "Savings Plans are storage lifecycle rules; Reserved Instances are DNS records", "They are both guarantees of physical capacity"],
+    "answer": 0,
+    "explanation": "Savings Plans provide pricing savings in exchange for a commitment to eligible compute usage, while Reserved Instance pricing is more closely tied to instance configuration and scope. Neither statement turns a pricing discount into an automatic capacity guarantee.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html", "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"]
+  },
+  {
+    "id": "q-clf41-12", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A team must guarantee that an EC2 workload can launch in one selected Availability Zone, but it is also comparing discount programs. Which requirement is addressed specifically by a Capacity Reservation?",
+    "choices": ["Launch capacity in the selected AZ", "A lower price for every eligible compute hour", "Protection from all Spot interruptions", "Host-level licensing visibility"],
+    "answer": 0,
+    "explanation": "A Capacity Reservation addresses EC2 capacity availability in a specific Availability Zone. Savings Plans or Reserved Instances may address pricing separately; a capacity reservation is not automatically a discount.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations.html"]
+  },
+  {
+    "id": "q-clf41-13", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A restartable batch job can tolerate interruptions and has flexible completion timing. Which choice fits better than a capacity guarantee?",
+    "choices": ["Spot Instances", "Capacity Reservation", "Dedicated Host", "On-Demand with a guaranteed AZ reservation"],
+    "answer": 0,
+    "explanation": "Spot is intended for discounted unused capacity when the workload can tolerate interruption. It is not appropriate when uninterrupted availability or guaranteed capacity is the primary requirement.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"]
+  },
+  {
+    "id": "q-clf41-14", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A software license is tied to physical sockets or cores, and the customer needs visibility into the dedicated server. Which EC2 tenancy choice is the strongest cue?",
+    "choices": ["Dedicated Host", "Dedicated Instance", "Spot Instance", "Savings Plan"],
+    "answer": 0,
+    "explanation": "A Dedicated Host provides a dedicated physical server with host-level visibility and control that can support licensing requirements. A Dedicated Instance provides single-tenant hardware without the same host-level allocation model.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html"]
+  },
+  {
+    "id": "q-clf41-15", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "Which two statements correctly separate commitment discounts from capacity assurance?",
+    "choices": ["Savings Plans provide pricing savings in exchange for eligible usage commitment", "A Capacity Reservation addresses EC2 launch capacity in a specific AZ", "Spot provides guaranteed capacity when the price is low", "Dedicated Instances provide host-level licensing control", "An RI automatically guarantees capacity in every AZ"],
+    "answer": [0, 1],
+    "explanation": "Savings Plans are pricing commitments, while Capacity Reservations address launch capacity in a selected Availability Zone. Spot remains interruptible and an RI discount does not automatically guarantee capacity in every AZ.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html", "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations.html"]
+  },
+  {
+    "id": "q-clf41-16", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "Which statement best distinguishes an EC2 Reserved Instance from a Capacity Reservation?",
+    "choices": ["Reserved Instance pricing is a commitment/discount concept; Capacity Reservation is a capacity-availability concept", "Reserved Instances are always interruptible; Capacity Reservations are always Spot", "Reserved Instances apply to S3 objects; Capacity Reservations apply to IAM users", "They are two names for the same AZ guarantee"],
+    "answer": 0,
+    "explanation": "Reserved Instances primarily affect eligible EC2 pricing through a commitment and scope/attribute rules. Capacity Reservations address launch capacity in an Availability Zone; do not collapse the two concepts.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html", "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations.html"]
+  },
+  {
+    "id": "q-clf41-17", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A design review compares an S3 archive, cross-Region replication, and a high-volume data pipeline. Which statement belongs in the pricing discussion?",
+    "choices": ["Storage class, requests, retrieval behavior, and transfer path can all affect cost", "Only stored gigabytes matter", "Replication and lifecycle are always free and identical", "Transfer cost is determined by IAM policy size"],
+    "answer": 0,
+    "explanation": "At Cloud Practitioner level, compare storage class, stored amount, requests, retrieval characteristics, lifecycle behavior, and service-specific data-transfer paths rather than memorizing a single per-GB rate.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://aws.amazon.com/s3/pricing/", "https://aws.amazon.com/pricing/"]
+  },
+  {
+    "id": "q-clf41-18", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A small workload has unpredictable demand and no justified usage commitment. Which pricing model is the safest starting cue?",
+    "choices": ["On-Demand", "Savings Plans", "Reserved Instances", "Capacity Reservation"],
+    "answer": 0,
+    "explanation": "On-Demand provides flexible pay-as-you-go compute without a long-term commitment. It is not guaranteed to be the lowest total cost, but it fits uncertainty when commitment is not justified.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.1"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html"]
+  },
+  {
+    "id": "q-clf42-10", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "Finance needs the authoritative amount owed for the billing period, while an analyst wants to explore cost trends by service. Which pairing is correct?",
+    "choices": ["Bills/invoice for amount owed; Cost Explorer for analysis", "Cost Explorer for the final invoice; Budgets for amount owed", "Pricing Calculator for historical charges; CUR for a threshold alert", "Organizations for invoice detail; Health for trend analysis"],
+    "answer": 0,
+    "explanation": "Bills or invoices represent charges owed for the billing period. Cost Explorer is an analysis tool for cost and usage trends; its presentation need not match the invoice at every moment because data treatment and refresh timing differ.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html", "https://aws.amazon.com/aws-cost-management/aws-billing/"]
+  },
+  {
+    "id": "q-clf42-11", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A finance team wants to assign spend to Project and Environment dimensions, while the company also needs one payer view across accounts. Which distinction is correct?",
+    "choices": ["Cost allocation tags attribute spend; Organizations supports account structure and consolidated billing", "Organizations creates every cost tag automatically; Budgets becomes the payer", "Cost Explorer replaces account consolidation; tags guarantee historical reassignment", "Marketplace provides consolidated billing and Support Center allocates costs"],
+    "answer": 0,
+    "explanation": "Eligible cost allocation tags help attribute spend to business dimensions after activation and data availability. AWS Organizations supports multi-account management and consolidated billing; the two solve different problems.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html", "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"]
+  },
+  {
+    "id": "q-clf42-12", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "Which sequence correctly maps a planned architecture, existing spend, a threshold notification, and detailed billing records?",
+    "choices": ["Pricing Calculator; Cost Explorer; AWS Budgets; Cost and Usage Report", "Cost Explorer; Pricing Calculator; CUR; AWS Budgets", "AWS Budgets; CUR; Pricing Calculator; Cost Explorer", "Organizations; AWS Health; Support Center; Marketplace"],
+    "answer": 0,
+    "explanation": "The timing and output cues are distinct: estimate with Pricing Calculator, analyze with Cost Explorer, alert with Budgets, and obtain detailed reporting records from the Cost and Usage Report.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html", "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html", "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html", "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html"]
+  },
+  {
+    "id": "q-clf42-13", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A monthly budget notification arrives after a charge has already been incurred. What should the learner recognize?",
+    "choices": ["Budgets provides threshold monitoring and alerts, not an instantaneous hard spending cap", "Budgets guarantees that no charge can be accepted", "Cost Explorer is broken because every view must equal the invoice immediately", "A cost allocation tag reverses the charge"],
+    "answer": 0,
+    "explanation": "Budgets supports configured thresholds, notifications, and supported actions, but billing data and notifications can have delay. It should not be taught as an instantaneous prevention mechanism.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"]
+  },
+  {
+    "id": "q-clf42-14", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "Which two pairings correctly match a cost-management need to a resource?",
+    "choices": ["Estimate a planned design — AWS Pricing Calculator", "Investigate current or historical spend — AWS Cost Explorer", "Set a threshold alert — AWS Marketplace", "Produce detailed usage records — AWS Health", "Combine account bills — AWS Budgets"],
+    "answer": [0, 1],
+    "explanation": "Pricing Calculator estimates planned cost and Cost Explorer analyzes current or historical cost and usage. Budgets, CUR, and Organizations have distinct threshold, reporting, and account-consolidation roles.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html", "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"]
+  },
+  {
+    "id": "q-clf42-15", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A new cost allocation tag is activated after several months of charges. What is the safest interpretation?",
+    "choices": ["It supports future billing attribution after availability; it does not rewrite all historical charges", "It deletes all untagged charges", "It creates a hard budget cap", "It converts prior charges to a free tier"],
+    "answer": 0,
+    "explanation": "Cost allocation tags are an attribution mechanism that requires activation and billing-data availability. Adding or activating a tag should not be taught as a time machine for historical billing.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html"]
+  },
+  {
+    "id": "q-clf42-16", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A company needs one financial view across member accounts but still wants detailed line-item records for analysis. Which pairing fits?",
+    "choices": ["AWS Organizations for consolidated billing structure; Cost and Usage Report for detailed records", "Budgets for account structure; Marketplace for line items", "Cost Explorer for payer hierarchy; AWS Health for usage records", "Pricing Calculator for consolidated invoices; tags for account creation"],
+    "answer": 0,
+    "explanation": "Organizations supports multi-account structure and consolidated billing, while the Cost and Usage Report supplies detailed cost and usage records for reporting and analysis.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html", "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html"]
+  },
+  {
+    "id": "q-clf42-17", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "An analyst wants to find why current spend changed, not to design a future estimate or set an alert. Which resource is the closest fit?",
+    "choices": ["AWS Cost Explorer", "AWS Pricing Calculator", "AWS Budgets", "AWS Support Center"],
+    "answer": 0,
+    "explanation": "Cost Explorer is the analysis cue for current or historical cost and usage patterns. Pricing Calculator estimates planned designs, while Budgets monitors thresholds.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.2"]},
+    "sourceUrls": ["https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"]
+  },
+  {
+    "id": "q-clf43-11", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A learner needs account, billing, documentation, and general self-service resources but does not have a normal technical-support case. Which support tier is the baseline cue?",
+    "choices": ["Basic Support", "Business Support+", "Enterprise Support", "Unified Operations"],
+    "answer": 0,
+    "explanation": "Basic Support is the baseline for customer service, account and billing assistance, documentation, community, and other general resources. Do not imply it includes normal enhanced technical-support cases.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]},
+    "sourceUrls": ["https://aws.amazon.com/premiumsupport/plans/"]
+  },
+  {
+    "id": "q-clf43-12", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"],
+    "prompt": "A company runs production workloads and needs 24/7 technical support with AWS expert engagement, but does not describe strategic account-level guidance. Which current tier is the strongest cue?",
+    "choices": ["Business Support+", "Basic Support", "AWS Marketplace", "AWS re:Post"],
+    "answer": 0,
+    "explanation": "Business Support+ is the current recognition cue for production workloads needing 24/7 technical support and AWS expert engagement. Use Enterprise or Unified Operations when the scenario adds deeper strategic or mission-critical proactive operations needs.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]},
+    "sourceUrls": ["https://aws.amazon.com/premiumsupport/plans/"]
+  },
+  {
+    "id": "q-clf43-13", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A business-critical workload needs designated strategic guidance and Technical Account Manager support. Which current support tier is the strongest cue?",
+    "choices": ["Enterprise Support", "Basic Support", "AWS Health", "AWS Knowledge Center"], "answer": 0,
+    "explanation": "Enterprise Support is distinguished by deeper proactive and strategic guidance, including a Technical Account Manager cue. It is not merely a faster response-time choice.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://aws.amazon.com/premiumsupport/plans/"]
+  },
+  {
+    "id": "q-clf43-14", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A mission-critical workload requires the highest current enhanced support tier, proactive operations/resilience assistance, and application-specific expertise. Which cue fits?",
+    "choices": ["Unified Operations", "Business Support+", "AWS Trusted Advisor only", "AWS Marketplace"], "answer": 0,
+    "explanation": "Unified Operations is the highest current enhanced support-tier cue for mission-critical workloads requiring proactive operations, resilience assistance, and application-specific expertise. It is not a generic managed service.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://aws.amazon.com/premiumsupport/plans/"]
+  },
+  {
+    "id": "q-clf43-15", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A customer needs to create and manage an eligible AWS technical-support case. Which resource is the normal entry point?",
+    "choices": ["Support Center", "AWS re:Post", "AWS Health", "AWS Marketplace"], "answer": 0,
+    "explanation": "Support Center is the case-management entry point when the account's support entitlements permit the case. Documentation, re:Post, and Health serve different needs.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://docs.aws.amazon.com/awssupport/latest/user/getting-started.html"]
+  },
+  {
+    "id": "q-clf43-16", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A learner wants shared AWS community expertise and troubleshooting discussion, not a guaranteed private engineer case. Which resource is the best cue?",
+    "choices": ["AWS re:Post", "Support Center", "AWS Health", "AWS Professional Services"], "answer": 0,
+    "explanation": "AWS re:Post is a community and knowledge resource. It should not be treated as a guaranteed private support case; Support Center is the case path when entitlements allow it.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://repost.aws/"]
+  },
+  {
+    "id": "q-clf43-17", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "Which two pairings correctly distinguish AWS technical resources?",
+    "choices": ["AWS Health — account or service health events", "Trusted Advisor — supported best-practice recommendations/checks", "Marketplace — private AWS support case management", "Support Center — third-party software catalog", "Professional Services — community Q&A forum"],
+    "answer": [0, 1],
+    "explanation": "AWS Health reports relevant account or service health information, while Trusted Advisor provides supported recommendations and checks. Marketplace, Support Center, and Professional Services have different purposes.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://docs.aws.amazon.com/health/latest/ug/awshealth.html", "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"]
+  },
+  {
+    "id": "q-clf43-18", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A customer needs AWS-delivered transformation expertise, while another team is comparing external organizations that provide AWS-qualified services. Which distinction is correct?",
+    "choices": ["Professional Services provides AWS-delivered project expertise; AWS Partners are external qualified organizations", "Partners are AWS employees; Professional Services is a software catalog", "Marketplace provides AWS project staffing; Partners issue support plans", "Support Center and Professional Services are the same case channel"], "answer": 0,
+    "explanation": "AWS Professional Services provides AWS-delivered expertise for major initiatives, while AWS Partners are external organizations that provide AWS-related services or solutions. Do not imply partners are AWS employees.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://aws.amazon.com/professional-services/", "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/aws-partner-network.html"]
+  },
+  {
+    "id": "q-clf43-19", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A company wants to procure a third-party software product rather than open a technical-support case. Which resource fits?",
+    "choices": ["AWS Marketplace", "Support Center", "AWS Health", "AWS Budgets"], "answer": 0,
+    "explanation": "AWS Marketplace is the catalog and procurement cue for third-party software and services. It is not Support Center and does not grant a support plan by itself.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://docs.aws.amazon.com/marketplace/latest/buyerguide/what-is-marketplace.html"]
+  },
+  {
+    "id": "q-clf43-20", "topicId": "aws-clf-billing-support", "examCodes": ["clf-c02"], "prompt": "A study guide lists Developer Support, Business Support, and Enterprise On-Ramp as the current standard paid lineup for a new subscription. What should the learner do?",
+    "choices": ["Treat the list as legacy/transitional and verify the current plan page", "Use it unchanged because all old plan names remain current", "Replace every plan with AWS Marketplace", "Assume Basic Support includes every enhanced technical entitlement"], "answer": 0,
+    "explanation": "Developer Support and Business Support stopped accepting new subscriptions on December 2, 2025 and are scheduled for discontinuation on January 1, 2027; Enterprise On-Ramp is also in transition. Current study cues are Basic Support, Business Support+, Enterprise Support, and Unified Operations.",
+    "weak": false, "objectiveIds": {"clf-c02": ["4.3"]}, "sourceUrls": ["https://aws.amazon.com/premiumsupport/plans/"]
+  },
+  {
     "id":"q-clf38-01","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],
     "prompt":"A producer must place work in a durable buffer so consumers can process it asynchronously. Which service fits?",
     "choices":["Amazon SQS","Amazon SNS","Amazon EventBridge","AWS Step Functions"],"answer":0,

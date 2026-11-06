@@ -167,15 +167,16 @@ test('CLF-C02 Domain 4 expansion is objective-specific, current, and remains par
   };
   const exam = objectives.exams.find(e => e.code === 'clf-c02');
   const objectiveFor = id => exam.domains.flatMap(d => d.objectives).find(o => o.id === id);
-  assert.equal(groups['4.1'].length, 10);
-  assert.equal(groups['4.2'].length, 9);
-  assert.equal(groups['4.3'].length, 10);
+  assert.equal(groups['4.1'].length, 18);
+  assert.equal(groups['4.2'].length, 17);
+  assert.equal(groups['4.3'].length, 20);
   const all = Object.values(groups).flat();
   assert.equal(new Set(all.map(q => q.id)).size, all.length);
   for (const [objectiveId, items] of Object.entries(groups)) {
     assert.ok(items.every(q => q.examCodes.length === 1 && q.examCodes[0] === 'clf-c02'));
     assert.ok(items.every(q => q.objectiveIds['clf-c02'].length === 1 && q.objectiveIds['clf-c02'][0] === objectiveId));
-    assert.ok(items.every(q => q.choices.length === 4 && !Array.isArray(q.answer)));
+    assert.ok(items.every(q => q.choices.length >= 4));
+    assert.ok(items.filter(q => Array.isArray(q.answer)).length >= 1);
     assert.equal(objectiveFor(objectiveId).status, expectedClfStatuses[objectiveId]);
   }
   const topic = topics.find(t => t.id === 'aws-clf-billing-support');
@@ -184,11 +185,29 @@ test('CLF-C02 Domain 4 expansion is objective-specific, current, and remains par
   const corpus = JSON.stringify({ topic, questions: all, cards: flashcards.filter(c => c.topicId === topic.id) });
   for (const concept of ['Capacity Reservation', 'Dedicated Host', 'Dedicated Instance', 'Spot', 'Savings Plans', 'Pricing Calculator', 'Cost Explorer', 'Budgets', 'Cost and Usage Report', 'cost allocation', 'Organizations', 'Trusted Advisor', 'AWS Health', 'Trust and Safety', 'Marketplace', 'Professional Services']) assert.match(corpus, new RegExp(concept, 'i'), concept);
   assert.match(corpus, /Business Support\+.*Enterprise Support.*Unified Operations/s);
-  assert.doesNotMatch(corpus, /Developer Support, Business Support, and Enterprise On-Ramp are the current paid plans/i);
+  assert.doesNotMatch(corpus, /Developer Support, Business Support, and Enterprise On-Ramp are the current (?:standard )?paid plans/i);
+  assert.match(corpus, /stopped accepting new subscriptions on December 2, 2025/i);
+  assert.match(corpus, /scheduled for discontinuation on January 1, 2027/i);
   const drills = readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8');
   assert.match(drills, /id: "aws-clf-cost-compare"/);
   assert.match(drills, /id: "aws-clf-support-resources"/);
   for (const o of exam.domains.flatMap(d => d.objectives)) assert.equal(o.status, expectedClfStatuses[o.id], `unexpected CLF status change: ${o.id}`);
+});
+
+test('CLF-C02 Domain 4 refresh preserves current support and billing distinctions', () => {
+  const domain = topics.find(topic => topic.id === 'aws-clf-billing-support');
+  const corpus = JSON.stringify({ topic: domain, questions: questions.filter(q => /^q-clf4[123]-/.test(q.id)), cards: flashcards.filter(c => c.topicId === domain.id) });
+  for (const cue of ['On-Demand', 'Savings Plans', 'Reserved Instance', 'Spot', 'Capacity Reservation', 'Dedicated Host', 'Dedicated Instance', 'Pricing Calculator', 'Cost Explorer', 'AWS Budgets', 'Cost and Usage Report', 'invoice', 'cost allocation', 'AWS Organizations', 'Basic Support', 'Business Support+', 'Enterprise Support', 'Unified Operations', 'AWS Health', 'Trusted Advisor', 'Support Center', 'AWS re:Post', 'Marketplace', 'Professional Services']) assert.match(corpus, new RegExp(cue, 'i'), cue);
+  assert.match(corpus, /Savings Plans.*(?:do not|not).*capacity|capacity.*(?:do not|not).*Savings Plans/i);
+  assert.match(corpus, /Spot.*interrupt/i);
+  assert.match(corpus, /Developer Support.*December 2, 2025.*January 1, 2027/s);
+  const teachingText = JSON.stringify({ topic: domain, explanations: questions.filter(q => /^q-clf4[123]-/.test(q.id)).map(q => q.explanation), cards: flashcards.filter(c => c.topicId === domain.id) });
+  assert.doesNotMatch(teachingText, /Developer Support, Business Support, and Enterprise On-Ramp (?:are|as) the current (?:standard )?paid/i);
+  for (const id of ['4.1', '4.2', '4.3']) {
+    const objective = JSON.parse(readFileSync(new URL('../content/objectives.json', import.meta.url))).exams.find(e => e.code === 'clf-c02').domains.flatMap(d => d.objectives).find(o => o.id === id);
+    assert.equal(objective.status, 'partial');
+    assert.equal(objective.reviewEvidence.checked, undefined, `${id} must not claim live verification`);
+  }
 });
 
 test('CLF-C02 completeness audit keeps every objective evidenced and matches the audited status map', () => {
@@ -205,7 +224,7 @@ test('CLF-C02 completeness audit keeps every objective evidenced and matches the
   assert.ok(allObjectives.every(objective => objective.reviewEvidence?.section && objective.reviewEvidence?.scopeUrl));
   assert.ok(allObjectives.every(objective => questionIds.has(objective.reviewEvidence.questionId)));
 
-  for (const objectiveId of ['2.3', '3.7', '4.1', '4.2', '4.3']) {
+  for (const objectiveId of ['2.3', '3.7']) {
     const objective = allObjectives.find(item => item.id === objectiveId);
     assert.equal(objective.reviewEvidence.checked, '2026-11-06', objectiveId);
   }
