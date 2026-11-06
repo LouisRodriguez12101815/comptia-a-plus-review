@@ -2454,8 +2454,10 @@
             "items": [
               "Protect the root user and enable MFA.",
               "Create named workforce access instead of shared credentials.",
+              "Distinguish workforce federation/Identity Center from the EC2 workload role.",
               "Use least-privilege policies.",
               "Use an IAM role for the EC2 application instead of embedding access keys.",
+              "Classify a database password as an application secret and an encryption key as a KMS responsibility.",
               "Identify CloudTrail for API auditing and Artifact for compliance reports."
             ]
           }
@@ -2474,7 +2476,8 @@
             "items": [
               "1. Draw root, named federated workforce identities, and an EC2 role as separate principals. Root has MFA and no routine workload keys.",
               "2. For an app reading prefix reports/, write an allow for s3:GetObject on arn:aws:s3:::example/reports/*; distinguish ListBucket on the bucket ARN with a prefix condition.",
-              "3. Test the policy on paper against reports/jan.csv, private/payroll.csv and s3:DeleteObject. Record allow, implicit deny and explicit deny separately."
+              "3. Test the policy on paper against reports/jan.csv, private/payroll.csv and s3:DeleteObject. Record allow, implicit deny and explicit deny separately.",
+              "4. Self-check the storage decision: Secrets Manager holds the application's database password; KMS manages an encryption key; neither replaces the EC2 role."
             ]
           },
           {
@@ -2490,7 +2493,10 @@
             "type": "bullets",
             "items": [
               "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
-              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+              "Technical reference: https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+              "Technical reference: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+              "Technical reference: https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
             ]
           }
         ]

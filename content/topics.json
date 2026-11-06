@@ -6411,8 +6411,8 @@
                 "Data integration and ETL"
               ],
               [
-                "Amazon QuickSight",
-                "Business intelligence dashboards"
+                "Amazon Quick / Amazon Quick Sight",
+                "Business intelligence dashboards; Amazon Quick is the current in-scope service name, while Quick Sight is its BI capability and older terminology may still appear"
               ],
               [
                 "Amazon SageMaker AI",
@@ -12688,6 +12688,150 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-access-management",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 2.3 — Access management decisions",
+    "chapter": "CLF-C02 · Domain 2",
+    "summary": "Choose the right identity, authentication method, permission source, credential lifetime, or secret store for a Cloud Practitioner scenario.",
+    "sections": [
+      {
+        "id": "identity-chooser",
+        "title": "Who or what needs access?",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement", "Best concept", "Why", "Common distractor"],
+            "rows": [
+              ["EC2 application needs S3", "IAM role", "Workload receives temporary credentials", "Embedded access key"],
+              ["Employees use a corporate identity provider", "IAM Identity Center / federation", "Centralized workforce SSO", "Shared IAM user"],
+              ["Organize IAM users", "IAM group", "Groups collect permissions for users", "IAM role"],
+              ["A principal must be assumable", "IAM role", "Roles are assumable identities", "IAM group"],
+              ["Store an application database password", "Secrets Manager", "Stores and can rotate application secrets", "KMS key"],
+              ["Control encryption keys", "AWS KMS", "Manages encryption keys", "Secrets Manager"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Start with the actor: workforce, workload, or application secret. Then ask how it authenticates, where permissions come from, and whether credentials need to be long-lived."
+          }
+        ]
+      },
+      {
+        "id": "authentication-authorization",
+        "title": "Authentication versus authorization",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Question", "Examples"],
+            "rows": [
+              ["Authentication: who are you?", "Password, MFA, federation, temporary session credentials"],
+              ["Authorization: what may you do?", "IAM policies, role permissions, applicable resource policies, explicit denies"]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "MFA strengthens authentication; it does not grant permissions. A password policy controls IAM-user password requirements; a permissions policy defines allowed actions. An explicit deny overrides an applicable allow at recognition level."
+          }
+        ]
+      },
+      {
+        "id": "root-mfa",
+        "title": "Root protection and MFA",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Protect the account root user with strong MFA and do not use it for routine administration.",
+              "Do not create or use root access keys for ordinary work; use named workforce identities instead.",
+              "Some account tasks may still require root. Check the current AWS root-user task guidance rather than memorizing an unverified list."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "credentials",
+        "title": "Long-lived versus temporary credentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Access keys are programmatic credentials and should not be embedded in source code, AMIs, scripts, or repositories.",
+              "Prefer IAM roles and temporary credentials for workloads where supported.",
+              "Remove or rotate credentials that are no longer required and protect any remaining credentials as secrets.",
+              "IAM users can be appropriate when a specific long-lived identity is required; they are not categorically forbidden."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "users-groups-roles-federation",
+        "title": "Users, groups, roles, and federation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "An IAM user is a long-lived identity; an IAM group organizes IAM users and is not itself assumable.",
+              "An IAM role is an assumable identity that commonly provides temporary credentials to a workload, person, or cross-account principal.",
+              "IAM Identity Center and federation connect workforce identities to centralized AWS access without sharing IAM-user credentials.",
+              "Choose the identity pattern from the scenario rather than treating every access request as a new IAM user."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "policies-least-privilege",
+        "title": "Policies and least privilege",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A permissions policy defines allowed or denied actions; a user, group, or role receives permissions but is not itself the permission rule.",
+              "Managed policies are reusable; inline policies attach directly to one identity.",
+              "Least privilege grants only the actions and resources required for the task."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "secrets-keys-roles",
+        "title": "Secrets, encryption keys, and roles",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Need", "Choose", "Do not confuse it with"],
+            "rows": [
+              ["Application password or API secret", "AWS Secrets Manager", "KMS encryption key"],
+              ["Encryption key management", "AWS KMS", "IAM access key"],
+              ["Temporary workload permissions", "IAM role", "Stored application secret"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "common-traps",
+        "title": "Common exam traps",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Group is not role: a group organizes users; a role is assumable.",
+              "MFA is not authorization: it adds an authentication factor but does not define API permissions.",
+              "KMS is not Secrets Manager: KMS manages encryption keys; Secrets Manager stores application secrets.",
+              "Workload is not embedded credentials: use a role and temporary credentials instead of a hard-coded access key."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
           }
         ]
       }

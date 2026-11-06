@@ -2405,7 +2405,34 @@ const awsClfAiAnalytics: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfAccessCompare: DrillDeck = {
+  id: "aws-clf-access-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "2.3",
+  topic: "Access management decisions",
+  modes: [
+    { id: "identityChooser", from: "requirement", to: "choice" },
+    { id: "controlChooser", from: "securityNeed", to: "choice" },
+  ],
+  tables: [
+    { id: "identity-chooser", fields: ["requirement", "choice"] },
+    { id: "control-chooser", fields: ["securityNeed", "choice"] },
+  ],
+  items: [
+    { id: "workforce", objective: "2.3", fields: { requirement: "Employees use a corporate identity provider", choice: "IAM Identity Center / federation" }, detail: "Centralized workforce access fits Identity Center and federation; do not share an IAM user.", hook: "People + corporate IdP = federation", wrong: { choice: ["Shared IAM user", "EC2 instance profile", "AWS KMS"] } },
+    { id: "workload", objective: "2.3", fields: { requirement: "EC2 application needs S3 without stored keys", choice: "IAM role + temporary credentials" }, detail: "A workload role avoids embedded long-lived keys.", hook: "Workload = role", wrong: { choice: ["Root access key", "IAM group", "Public bucket"] } },
+    { id: "organize", objective: "2.3", fields: { requirement: "Organize several IAM users", choice: "IAM group" }, detail: "Groups organize users; groups are not assumable identities.", hook: "Group = collection", wrong: { choice: ["IAM role", "Secrets Manager", "MFA"] } },
+    { id: "assume", objective: "2.3", fields: { requirement: "An identity must be assumable", choice: "IAM role" }, detail: "Roles are assumable and commonly provide temporary credentials.", hook: "Assumable = role", wrong: { choice: ["IAM group", "Password policy", "KMS key"] } },
+    { id: "secret", objective: "2.3", fields: { requirement: "Store an application database password", choice: "AWS Secrets Manager" }, detail: "Secrets Manager stores and manages application secrets; KMS manages encryption keys.", hook: "Application secret = Secrets Manager", wrong: { choice: ["AWS KMS", "IAM role", "CloudTrail"] } },
+    { id: "key", objective: "2.3", fields: { requirement: "Manage encryption keys", choice: "AWS KMS" }, detail: "KMS is the key-management service, not the application password store.", hook: "Encryption key = KMS", wrong: { choice: ["Secrets Manager", "IAM group", "IAM Identity Center"] } },
+    { id: "factor", objective: "2.3", fields: { securityNeed: "Add a second sign-in factor", choice: "MFA" }, detail: "MFA strengthens authentication; it does not define permissions.", hook: "Second factor = MFA", wrong: { choice: ["Permissions policy", "Password policy", "IAM group"] } },
+    { id: "permissions", objective: "2.3", fields: { securityNeed: "Define allowed API actions", choice: "Permissions policy" }, detail: "Policies define authorization; a role, user, or group receives permissions.", hook: "Allowed actions = policy", wrong: { choice: ["MFA", "Password policy", "Secrets Manager"] } },
+    { id: "password", objective: "2.3", fields: { securityNeed: "Require IAM-user password complexity", choice: "Account password policy" }, detail: "Password policies govern IAM-user passwords, not API permissions.", hook: "Password rules = password policy", wrong: { choice: ["Permissions policy", "MFA", "KMS"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

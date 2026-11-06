@@ -215,9 +215,11 @@ const awsClf: TopFive = {
         "AWS secures the infrastructure of the cloud; customers secure data, identities, permissions, and many workload configurations.",
         "Protect the root user, use MFA, apply least privilege, and prefer roles/temporary credentials for workloads.",
         "KMS manages encryption keys; Secrets Manager stores and rotates application secrets.",
+        "Authentication answers who you are; authorization answers what you may do. Groups organize users, while roles are assumable identities.",
+        "Workforce federation/Identity Center fits employees using a corporate IdP; an EC2 workload generally needs a role, not an embedded access key.",
         "Artifact = compliance reports; GuardDuty = threat detection; Inspector = vulnerability management; Shield = DDoS; WAF = web request filtering.",
       ],
-      drills: ["aws-clf-service-compare", "aws-clf-domain-cues"],
+      drills: ["aws-clf-service-compare", "aws-clf-domain-cues", "aws-clf-access-compare"],
     },
     {
       id: "global-cloud",

@@ -8423,5 +8423,117 @@
     "front": "Choose a prebuilt AI task service vs custom model workflow",
     "back": "Use the task-specific service when it fits: Comprehend, Lex, Polly, Transcribe, Translate, Rekognition, or Textract. Use SageMaker AI for a custom model workflow.",
     "weak": false
+  },
+  {
+    "id": "fc-clf23-workforce",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Employees already use a corporate identity provider for AWS access",
+    "back": "Think IAM Identity Center and federation for centralized workforce access, not shared IAM-user credentials.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-ec2-role",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "An EC2 application needs S3 access without stored keys",
+    "back": "Use an IAM role with temporary credentials. Do not embed an IAM-user access key in the application.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-user-group-role",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Organize several IAM users versus provide an assumable identity",
+    "back": "An IAM group organizes users; an IAM role is assumable and commonly supplies temporary credentials. A group is not a role.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-authz",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Who are you versus what may you do?",
+    "back": "Authentication proves identity with a password, MFA, federation, or session credentials. Authorization uses policies and permissions to decide allowed actions.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-mfa-policy",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "MFA versus a permissions policy",
+    "back": "MFA adds an authentication factor; a permissions policy defines allowed or denied actions. MFA does not grant authorization.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-password-policy",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Password complexity versus API permissions",
+    "back": "An IAM account password policy controls IAM-user password requirements. A permissions policy controls actions and resources.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-root",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Routine administration with the AWS account root user",
+    "back": "Protect root with strong MFA, avoid routine use and root access keys, and use named workforce identities. Some account tasks may still require root.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-access-keys",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Access keys found in source code or an AMI",
+    "back": "Treat them as exposed long-lived programmatic credentials: remove or rotate them and use roles with temporary credentials for workloads where supported.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-temporary",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Why prefer temporary credentials for a workload?",
+    "back": "They reduce the exposure of long-lived access keys and are commonly delivered through an assumable IAM role.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-least-privilege",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Least privilege in an access scenario",
+    "back": "Grant only the actions and resources required for the task; do not use root or broad credentials when a narrower role or policy fits.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-managed-inline",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Reusable policy versus one-identity policy",
+    "back": "Managed policies are reusable; inline policies attach directly to one identity. Both are permission policies, not identities.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-secrets-kms",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Application database password versus encryption key",
+    "back": "Use AWS Secrets Manager for application secrets and AWS KMS for encryption key management. They are not interchangeable.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-role-secret",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "Temporary AWS permissions versus an application secret",
+    "back": "An IAM role supplies temporary credentials and permissions to an assumable identity; Secrets Manager stores application secrets.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf23-explicit-deny",
+    "topicId": "aws-clf-access-management",
+    "examCodes": ["clf-c02"],
+    "front": "An applicable Allow and explicit Deny both exist",
+    "back": "At recognition level, the explicit Deny wins. Policies provide authorization; authentication is a separate question.",
+    "weak": false
   }
 ]

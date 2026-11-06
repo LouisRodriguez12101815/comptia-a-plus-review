@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { buildExamPool, draftTest, allocateByWeight, mulberry32, shuffleQuestionChoices, shuffleChoiceOrder, assessmentVersion, isCorrect, approximatePassPercent, sessionDurationSeconds } from '../lib/exam-test.mjs';
 import { evaluateReadiness } from '../lib/readiness.ts';
 const read = name => JSON.parse(readFileSync(new URL(`../content/${name}.json`, import.meta.url)));
-const questions = read('questions'), topics = read('topics'), objectives = read('objectives');
+const questions = read('questions'), topics = read('topics'), objectives = read('objectives'), flashcards = read('flashcards');
 for (const code of ['clf-c02', 'saa-c03']) {
   const bank = questions.filter(q => q.examCodes?.includes(code));
   const pool = buildExamPool({ questions, topics, objectives, examCode: code });
@@ -88,4 +88,24 @@ test('CLF-C02 objective 3.7 expansion is original, mapped, and remains partial',
   assert.ok(objective.topics.includes('aws-clf-ai-analytics'));
   const newServices = ['Comprehend', 'Transcribe', 'Translate', 'Lex', 'Polly', 'Textract', 'Rekognition', 'SageMaker', 'Athena', 'Glue', 'Kinesis', 'Quick', 'Redshift', 'OpenSearch'];
   for (const service of newServices) assert.ok(expanded.some(q => q.prompt.includes(service) || q.choices.some(choice => choice.includes(service)) || q.explanation.includes(service)), service);
+});
+
+test('CLF-C02 objective 2.3 access-management expansion is mapped and stays partial', () => {
+  const expanded = questions.filter(q => q.id.startsWith('q-clf23-'));
+  const exam = objectives.exams.find(e => e.code === 'clf-c02');
+  const objective = exam.domains.flatMap(d => d.objectives).find(o => o.id === '2.3');
+  const topic = topics.find(t => t.id === 'aws-clf-access-management');
+  assert.equal(expanded.length, 14);
+  assert.equal(new Set(expanded.map(q => q.id)).size, expanded.length);
+  assert.ok(expanded.every(q => q.examCodes.length === 1 && q.examCodes[0] === 'clf-c02'));
+  assert.ok(expanded.every(q => q.objectiveIds['clf-c02'].length === 1 && q.objectiveIds['clf-c02'][0] === '2.3'));
+  assert.ok(expanded.every(q => q.choices.length === 4 && !Array.isArray(q.answer)));
+  assert.equal(objective.status, 'partial');
+  assert.ok(objective.topics.includes('aws-clf-access-management'));
+  assert.ok(topic.sections.some(s => s.id === 'authentication-authorization'));
+  assert.ok(flashcards.filter(c => c.topicId === 'aws-clf-access-management').length >= 12);
+  const corpus = JSON.stringify({ topic, questions: expanded, cards: flashcards.filter(c => c.topicId === topic.id) });
+  for (const concept of ['role', 'group', 'Identity Center', 'federation', 'MFA', 'access key', 'password policy', 'temporary', 'Secrets Manager', 'KMS']) assert.match(corpus, new RegExp(concept, 'i'), concept);
+  assert.match(readFileSync(new URL('../lib/practice/drills.ts', import.meta.url), 'utf8'), /id: "aws-clf-access-compare"/);
+  for (const o of exam.domains.flatMap(d => d.objectives).filter(o => o.id !== '2.3')) assert.equal(o.status, 'partial', `unexpected CLF status change: ${o.id}`);
 });
