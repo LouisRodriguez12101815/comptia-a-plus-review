@@ -25,7 +25,7 @@ export function InteractiveLabDiagram() {
   const selected = devices.find((device) => device.id === active) ?? devices[2];
   return (
     <div className={`interactive-lab-diagram active-${active}`} data-active-device={active}>
-      <svg viewBox="0 0 420 120" role="img" aria-label={t("diagramLabel")} className="w-full">
+      <svg viewBox="0 0 420 120" role="group" aria-label={t("diagramLabel")} className="w-full">
         <path d="M72 50H348" className="stroke-slate-800" strokeWidth="3" strokeLinecap="round" />
         <path d="M72 50H348" className="stroke-slate-700" strokeWidth="1" strokeDasharray="2 8" strokeLinecap="round" />
         <g className="lab-route-layer" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
