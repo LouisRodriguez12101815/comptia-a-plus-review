@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 
   const t = await getTranslations({ locale, namespace: "metadata" });
   return {
-    title: "Certification Review",
+    title: "Tech Certification Lab",
     description: t("description"),
   };
 }

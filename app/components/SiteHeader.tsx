@@ -184,7 +184,8 @@ export function SiteHeader() {
     { href: "/coverage", label: t("coverage"), match: (p) => p.startsWith("/coverage") },
   ]);
   const methodologyItems = makeItems([
-    { href: "/assessment-workflow", label: t("methodologyLink"), match: (p) => p.startsWith("/assessment-workflow") },
+    { href: "/methodology", label: t("methodologyLink"), match: (p) => p.startsWith("/methodology") },
+    { href: "/assessment-workflow", label: t("assessmentWorkflow"), match: (p) => p.startsWith("/assessment-workflow") },
   ]);
   const search: MenuItem = { href: "/search", label: t("search"), current: pathname.startsWith("/search") };
   const nonCertificationActive = [studyItems, testItems, practiceItems, progressItems, methodologyItems].some((items) => items.some((item) => item.current)) || search.current;
@@ -202,7 +203,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 sm:gap-3 sm:py-4">
         <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
           <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(34,211,238,.6)]" />
-          Certification Review
+          Tech Certification Lab
         </Link>
         <div className="flex items-center gap-2">
           <LocaleSwitcher />
@@ -214,7 +215,9 @@ export function SiteHeader() {
           <HeaderMenu label={t("testMenu")} active={groups[2].active} items={testItems} />
           <HeaderMenu label={t("practiceMenu")} active={groups[3].active} items={practiceItems} />
           <HeaderMenu label={t("progressMenu")} active={groups[4].active} items={progressItems} />
-          <HeaderMenu label={t("methodology")} active={groups[5].active} items={methodologyItems} />
+          <Link href="/methodology" aria-current={groups[5].active ? "page" : undefined} className={`${pill} ${groups[5].active ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
+            {t("methodology")}
+          </Link>
           <Link href={search.href} aria-current={search.current ? "page" : undefined} className={`${pill} ${search.current ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
             {search.label}
           </Link>
