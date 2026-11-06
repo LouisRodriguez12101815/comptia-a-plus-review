@@ -3496,5 +3496,21 @@
         ]
       }
     ]
+  },
+  {
+    "slug": "aws-clf-migration-planning",
+    "title": "AWS CLF Lab — Migration Planning and Validation",
+    "subtitle": "Cloud Practitioner · Objective 1.3 · Guided paper exercise",
+    "summary": "Plan a paper-only migration for a three-tier application and database in a closing data center; no AWS account or billable resources are required.",
+    "skills": ["Business drivers", "CAF readiness", "Migration strategies", "Dependency discovery", "Database replication", "Validation and rollback", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-cloud-concepts", "aws-clf-migration-decisions"],
+    "sections": [
+      {"id":"scenario","title":"Scenario and business driver","blocks":[{"type":"paragraph","text":"A company must close a data center. It has a customer-facing web tier, an application tier, and a relational database. The deadline is short, some components have dependencies, and the business cannot accept unvalidated data or a failed cutover."},{"type":"bullets","items":["Write two business outcomes the move should achieve.","Identify a readiness gap that CAF perspectives could help organize.","State which constraint would make you retain a component temporarily rather than force migration."]}]},
+      {"id":"strategy","title":"Choose the strategy by component","blocks":[{"type":"table","headers":["Component","Constraint","Your strategy","Reason"],"rows":[["Web tier","Minimal code change and fast exit","Rehost / other","Explain the constraint"],["Application tier","Selected managed-service improvement","Replatform / other","Explain the change boundary"],["Database","Replication and compatibility must be validated","Replatform / other","Explain the data and cutover plan"]]},{"type":"callout","kind":"tip","text":"There is no single mandatory strategy for every component. Select from the business constraint; do not choose refactor merely because cloud-native is attractive."}]},
+      {"id":"discover","title":"Discover before moving","blocks":[{"type":"bullets","items":["List application-to-database and application-to-external-service dependencies.","Record utilization information and business criticality for each tier.","Identify data, network relationships, security controls, and owners that must participate in the plan."]}]},
+      {"id":"replication","title":"Database replication decision","blocks":[{"type":"paragraph","text":"Decide whether database replication is useful for reducing downtime before cutover. Record that replication synchronizes data but does not prove schema, query, transaction, or application compatibility."},{"type":"paragraph","text":"Choose validation checks: row counts and integrity, representative application queries, permissions, dependent services, and business acceptance."}]},
+      {"id":"cutover-rollback","title":"Cutover and rollback","blocks":[{"type":"table","headers":["Checkpoint","Pass condition","Rollback trigger"],"rows":[["Pilot","Representative workload behaves as expected","Required dependency fails"],["Data validation","Required data is present and consistent","Integrity or replication check fails"],["Application test","Users and integrations pass acceptance checks","Critical workflow fails"],["Cutover","Traffic/users can use the target","Business acceptance or security check fails"]]},{"type":"paragraph","text":"This is a guided planning exercise, not evidence of a completed cloud deployment. No AWS account or paid resource is needed."}]},
+      {"id":"references","title":"Technical references","blocks":[{"type":"bullets","items":["Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html","Technical reference: https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/welcome.html","Technical reference: https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"]}]}
+    ]
   }
 ]

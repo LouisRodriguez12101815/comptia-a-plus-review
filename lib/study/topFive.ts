@@ -234,8 +234,10 @@ const awsClf: TopFive = {
         "A Region contains multiple isolated Availability Zones; edge locations are separate points of presence for supported edge services.",
         "Multi-AZ improves availability within a Region; multi-Region designs address regional DR, sovereignty, or global latency.",
         "Cloud economics favor rightsizing, automation, variable usage-based spending, and reducing overprovisioning.",
+        "Migration cues: minimal change = rehost; selected optimization = replatform; major redesign = refactor; replace the product = repurchase; unnecessary = retire; defer = retain.",
+        "Discover dependencies before moving, and validate application/data/business outcomes before cutover with a rollback trigger.",
       ],
-      drills: ["aws-clf-domain-cues"],
+      drills: ["aws-clf-domain-cues", "aws-clf-migration-compare"],
     },
     {
       id: "billing",

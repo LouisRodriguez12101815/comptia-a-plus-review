@@ -2461,6 +2461,33 @@ const awsClfCostCompare: DrillDeck = {
   ],
 };
 
+const awsClfMigrationCompare: DrillDeck = {
+  id: "aws-clf-migration-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "1.3",
+  topic: "Migration and adoption decisions",
+  modes: [
+    { id: "constraintToStrategy", from: "constraint", to: "strategy" },
+    { id: "needToResource", from: "need", to: "resource" },
+    { id: "phaseToAction", from: "phase", to: "action" },
+  ],
+  tables: [
+    { id: "strategy-chooser", fields: ["constraint", "strategy"] },
+    { id: "resource-chooser", fields: ["need", "resource"] },
+    { id: "lifecycle", fields: ["phase", "action"] },
+  ],
+  items: [
+    { id: "minimal", objective: "1.3", fields: { constraint: "Minimal code change", strategy: "Rehost", need: "General server migration", resource: "Application Migration Service", phase: "Discover", action: "Map dependencies and utilization" }, detail: "Rehost moves with minimal application change; discover dependencies before moving.", hook: "Minimal change = rehost", wrong: { strategy: ["Replatform", "Refactor", "Retire"] } },
+    { id: "managed", objective: "1.3", fields: { constraint: "Selected managed-service improvement", strategy: "Replatform", need: "Database movement or replication", resource: "AWS Database Migration Service", phase: "Choose strategy", action: "Match change to the business constraint" }, detail: "Replatform makes limited optimizations; DMS supports database movement but is not a strategy.", hook: "Limited optimization = replatform", wrong: { strategy: ["Rehost", "Refactor", "Retain"] } },
+    { id: "redesign", objective: "1.3", fields: { constraint: "Major cloud-native redesign", strategy: "Refactor / re-architect", need: "Online data transfer", resource: "AWS DataSync", phase: "Prepare", action: "Plan target, pilot, and rollback" }, detail: "Refactoring changes architecture substantially; DataSync transfers data but does not migrate application behavior.", hook: "Major redesign = refactor", wrong: { strategy: ["Rehost", "Repurchase", "Retire"] } },
+    { id: "replacement", objective: "1.3", fields: { constraint: "Replace the product model", strategy: "Repurchase", need: "Assess dependencies and utilization", resource: "Discovery / Migration Evaluator", phase: "Migrate", action: "Move or replicate the workload" }, detail: "Repurchase replaces the implementation; assessment informs the plan before migration.", hook: "Replace product = repurchase", wrong: { strategy: ["Rehost", "Retain", "Refactor"] } },
+    { id: "unneeded", objective: "1.3", fields: { constraint: "Workload has no remaining business use", strategy: "Retire", need: "Hybrid storage connection", resource: "AWS Storage Gateway", phase: "Validate", action: "Check data, application, security, and business outcomes" }, detail: "Retire removes an unnecessary workload; Storage Gateway supports hybrid storage scenarios.", hook: "Unneeded = retire", wrong: { strategy: ["Retain", "Rehost", "Replatform"] } },
+    { id: "defer", objective: "1.3", fields: { constraint: "Must remain on premises for now", strategy: "Retain", need: "Organizational adoption readiness", resource: "AWS Cloud Adoption Framework", phase: "Cut over", action: "Transition users or traffic after checks pass" }, detail: "Retain defers migration; CAF helps organize adoption readiness and outcomes.", hook: "Defer = retain", wrong: { strategy: ["Retire", "Repurchase", "Refactor"] } },
+    { id: "pilot", objective: "1.3", fields: { constraint: "Test a small migration before broad rollout", strategy: "Pilot before scale", need: "Business case and assessment", resource: "Migration Evaluator", phase: "Rollback", action: "Return to the prior path when a required check fails" }, detail: "A pilot reduces risk; Migration Evaluator supports assessment/business-case context.", hook: "Small test = pilot", wrong: { strategy: ["Blind cutover", "Retire", "Rehost"] } },
+  ],
+};
+
 const awsClfOtherServicesCompare: DrillDeck = {
   id: "aws-clf-other-services-compare",
   certification: "AWS Cloud Practitioner",
@@ -2522,7 +2549,7 @@ const awsClfSupportResources: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfOtherServicesCompare, awsClfSupportResources, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
