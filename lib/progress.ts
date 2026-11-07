@@ -8,6 +8,10 @@ export type QuizAttempt = {
   total: number;
   /** Question IDs shown in this quiz. Older saved attempts may not have this field. */
   questionIds?: string[];
+  /** Authored choice index for missed single-answer questions. */
+  wrongChoices?: Record<string, number>;
+  /** Optional future-proof history; multi-select values are retained as complete sets. */
+  selectedChoices?: Record<string, number | number[]>;
   missedIds: string[];
   at: number;
 };
@@ -87,10 +91,40 @@ function flags(value: unknown): { value: Record<string, boolean>; repaired: bool
   return { value: Object.fromEntries(entries), repaired: entries.length !== Object.keys(value).length };
 }
 
-function isAttempt(value: unknown): value is QuizAttempt {
+function isAttemptBase(value: unknown): value is QuizAttempt {
   return isRecord(value) && typeof value.topicId === "string" && Number.isFinite(value.correct) && Number.isFinite(value.total)
     && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at)
     && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")));
+}
+
+function validChoiceIndex(value: unknown): value is number {
+  return Number.isInteger(value) && (value as number) >= 0;
+}
+
+function repairedChoiceMap(value: unknown, allowSets: boolean): { value?: Record<string, number | number[]>; repaired: boolean } {
+  if (value === undefined) return { repaired: false };
+  if (!isRecord(value)) return { repaired: true };
+  const kept: Record<string, number | number[]> = {};
+  let repaired = false;
+  for (const [id, choice] of Object.entries(value)) {
+    if (validChoiceIndex(choice)) kept[id] = choice;
+    else if (allowSets && Array.isArray(choice) && choice.length > 0 && choice.every(validChoiceIndex)) kept[id] = [...choice];
+    else repaired = true;
+  }
+  return { value: Object.keys(kept).length ? kept : undefined, repaired };
+}
+
+function parseQuizAttempt(value: unknown): { attempt: QuizAttempt | null; repaired: boolean } {
+  if (!isAttemptBase(value)) return { attempt: null, repaired: false };
+  const input = value as QuizAttempt;
+  const wrong = repairedChoiceMap(input.wrongChoices, false);
+  const selected = repairedChoiceMap(input.selectedChoices, true);
+  const attempt: QuizAttempt = { ...input };
+  if (wrong.value) attempt.wrongChoices = wrong.value as Record<string, number>;
+  else delete attempt.wrongChoices;
+  if (selected.value) attempt.selectedChoices = selected.value;
+  else delete attempt.selectedChoices;
+  return { attempt, repaired: wrong.repaired || selected.repaired };
 }
 
 /**
@@ -141,13 +175,15 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   if (!isRecord(parsed)) return { progress: createEmptyProgress(), problems: ["unreadable"] };
   const known = flags(parsed.knownCards), unknown = flags(parsed.unknownCards);
   const attempts = Array.isArray(parsed.quizAttempts) ? parsed.quizAttempts : [];
-  const quizAttempts = attempts.filter(isAttempt);
+  const parsedQuizAttempts = attempts.map(parseQuizAttempt);
+  const quizAttempts = parsedQuizAttempts.flatMap(({ attempt }) => attempt ? [attempt] : []);
   const rawMockAttempts = Array.isArray(parsed.mockAttempts) ? parsed.mockAttempts : [];
   const mockAttempts = rawMockAttempts.filter(isMockAttempt);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
   const repaired = known.repaired || unknown.repaired
     || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
     || quizAttempts.length !== attempts.length
+    || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
     || (parsed.mockAttempts !== undefined && !Array.isArray(parsed.mockAttempts))
     || mockAttempts.length !== rawMockAttempts.length
     || (parsed.schedules !== undefined && !isRecord(parsed.schedules));

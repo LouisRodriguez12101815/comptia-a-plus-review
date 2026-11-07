@@ -9,13 +9,14 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuestions } from "@/lib/content";
 import { conceptVideos } from "@/lib/concept-videos";
-import { freshFirstIds, shuffleQuestionChoices } from "@/lib/exam-test.mjs";
+import { freshFirstIds, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
 import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
 import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback";
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
-import { isN10Question, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
+import { examForStudyQuestion, examForStudyQuestions, isN10Question, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
+import { wrongChoicesForQuiz } from "@/lib/quiz-answer-history";
 import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
 
@@ -33,6 +34,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   const telemetryAnswered = useRef(new Set<string>());
   const telemetryRemediation = useRef(new Set<string>());
   const telemetryCompleted = useRef(false);
+  const displayedOrders = useRef<Record<string, number[]>>({});
 
   const idKey = questionIds ? questionIds.join("|") : null;
   const pool = useMemo(() => {
@@ -79,7 +81,16 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     // Questions not seen in earlier quizzes or tests come first, then the ones seen longest ago.
     const byId = new Map(pool.map((q) => [q.id, q]));
     const order = freshFirstIds(pool.map((q) => q.id), questionHistory(getProgressSnapshot()));
-    const deck = order.slice(0, Math.min(15, order.length)).map((id) => shuffleQuestionChoices(byId.get(id)!));
+    displayedOrders.current = {};
+    const deck = order.slice(0, Math.min(15, order.length)).map((id) => {
+      const source = byId.get(id)!;
+      const choiceOrder = shuffleChoiceOrder(source);
+      displayedOrders.current[id] = choiceOrder;
+      const answer = Array.isArray(source.answer)
+        ? choiceOrder.map((authored) => (source.answer as number[]).indexOf(authored)).filter((index) => index >= 0).sort((a, b) => a - b)
+        : choiceOrder.indexOf(source.answer as number);
+      return { ...source, choices: choiceOrder.map((choice) => source.choices[choice]), answer };
+    });
     setQuiz(deck);
     setIndex(0);
     setPicked([]);
@@ -88,13 +99,13 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     telemetryAnswered.current.clear();
     telemetryRemediation.current.clear();
     telemetryCompleted.current = false;
-    const n10Questions = deck.filter(isN10Question);
-    if (n10Questions.length > 0) {
+    const exam = examForStudyQuestions(deck, focus !== "all" ? focus : undefined);
+    if (exam) {
       sendStudyEvent({
         type: "quiz_started",
-        exam: "n10-009",
+        exam,
         topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
-        questionCount: n10Questions.length,
+        questionCount: deck.length,
       });
     }
     setStarted(true);
@@ -112,13 +123,15 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   function submit() {
     if (!current || picked.length === 0) return;
     const answer = multi ? picked : picked[0];
-    if (isN10Question(current) && !telemetryAnswered.current.has(current.id)) {
+    const exam = examForStudyQuestion(current);
+    if (exam && !telemetryAnswered.current.has(current.id)) {
       telemetryAnswered.current.add(current.id);
       const correctAnswer = isCorrectPick(current, answer);
       const priorMisses = rankMissedQuestions(getProgressSnapshot(), allQuestions)
         .find((row) => row.question.id === current.id)?.misses ?? 0;
       sendStudyEvent({
         type: "question_answered",
+        exam,
         question: current,
         correct: correctAnswer,
         missCount: correctAnswer ? undefined : priorMisses + 1,
@@ -132,18 +145,18 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     const missed = quiz
       .filter((question) => !isCorrectPick(question, answers[question.id]))
       .map((question) => question.id);
-    recordQuiz({ topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed });
+    recordQuiz({ topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed, wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current) });
     if (!telemetryCompleted.current) {
       telemetryCompleted.current = true;
-      const n10Questions = quiz.filter(isN10Question);
-      if (n10Questions.length > 0) {
+      const exam = examForStudyQuestions(quiz, focus !== "all" ? focus : undefined);
+      if (exam) {
         sendStudyEvent({
           type: "quiz_completed",
-          exam: "n10-009",
+          exam,
           topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
-          questionCount: n10Questions.length,
-          correctCount: n10Questions.filter((question) => isCorrectPick(question, answers[question.id])).length,
-          missedCount: n10Questions.filter((question) => !isCorrectPick(question, answers[question.id])).length,
+          questionCount: quiz.length,
+          correctCount: quiz.filter((question) => isCorrectPick(question, answers[question.id])).length,
+          missedCount: quiz.filter((question) => !isCorrectPick(question, answers[question.id])).length,
         });
       }
     }

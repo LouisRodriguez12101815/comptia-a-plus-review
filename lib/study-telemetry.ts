@@ -1,11 +1,13 @@
 import topics from "../content/topics.json" with { type: "json" };
 import networkPlusTopics from "../content/topics-network-plus.json" with { type: "json" };
+import { isExamCode } from "@/lib/exams";
 import type { Question } from "@/lib/types";
+import type { ExamCode } from "@/lib/types";
 import type { StudyEventType, StudyResourceType } from "@/lib/learner/telemetry";
 
 export type StudyEventInput = {
   type: StudyEventType;
-  exam?: "n10-009";
+  exam?: ExamCode;
   question?: Question;
   topicId?: string;
   objectiveId?: string;
@@ -23,26 +25,46 @@ const topicExamCodes = new Map(
 );
 let submissionQueue = Promise.resolve();
 
-export function isN10Question(question: Question): boolean {
-  return question.examCodes?.includes("n10-009") ?? topicExamCodes.get(question.topicId)?.includes("n10-009") ?? false;
+export function examForStudyQuestion(question: Question, preferred?: ExamCode): ExamCode | undefined {
+  if (preferred && (question.examCodes?.includes(preferred) || topicExamCodes.get(question.topicId)?.includes(preferred))) return preferred;
+  const codes = question.examCodes?.filter(isExamCode) ?? topicExamCodes.get(question.topicId)?.filter(isExamCode) ?? [];
+  return codes.length === 1 ? codes[0] : undefined;
 }
 
-export function objectiveForStudyQuestion(question: Question): string | undefined {
-  return question.objectiveIds?.["n10-009"]?.[0];
+export function examForStudyQuestions(questions: Question[], preferred?: ExamCode): ExamCode | undefined {
+  if (!questions.length) return undefined;
+  const candidates = preferred ? [preferred] : ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03", "sy0-701", "az-900", "az-104"] as ExamCode[];
+  const valid = candidates.filter((exam) => questions.every((question) => examForStudyQuestion(question, exam) === exam));
+  return valid.length === 1 ? valid[0] : undefined;
+}
+
+export function isQuestionForExam(question: Question, exam: ExamCode): boolean {
+  return examForStudyQuestion(question, exam) === exam;
+}
+
+export function isN10Question(question: Question): boolean {
+  return isQuestionForExam(question, "n10-009");
+}
+
+export function objectiveForStudyQuestion(question: Question, exam = examForStudyQuestion(question)): string | undefined {
+  return exam ? question.objectiveIds?.[exam]?.[0] : undefined;
 }
 
 export function buildStudyEvent(input: StudyEventInput, sessionIdValue: string, at = Date.now()) {
   const question = input.question;
+  const exam = input.exam ?? (question ? examForStudyQuestion(question) : input.topicId ? topicExamCodes.get(input.topicId)?.filter(isExamCode).length === 1 ? topicExamCodes.get(input.topicId)?.find(isExamCode) : undefined : undefined);
+  if (!exam) throw new Error("ambiguous_exam");
+  if (question && !isQuestionForExam(question, exam)) throw new Error("question_exam_mismatch");
   return {
     v: 1,
     type: input.type,
     at,
-    exam: "n10-009" as const,
+    exam,
     sessionId: sessionIdValue,
     ...(question ? {
       questionId: question.id,
       topicId: question.topicId,
-      objectiveId: objectiveForStudyQuestion(question),
+      objectiveId: objectiveForStudyQuestion(question, exam),
     } : input.topicId ? { topicId: input.topicId } : {}),
     ...(input.objectiveId ? { objectiveId: input.objectiveId } : {}),
     ...(input.correct === undefined ? {} : { correct: input.correct }),
@@ -71,11 +93,7 @@ function sessionId(): string {
 /** Best effort only: telemetry failures are deliberately invisible to quiz interactions. */
 function eventBody(input: StudyEventInput): string | null {
   if (typeof window === "undefined") return null;
-  const question = input.question;
-  if (question && !isN10Question(question)) return null;
-  if (!question && input.topicId && !topicExamCodes.get(input.topicId)?.includes("n10-009")) return null;
-  if (!question && !input.topicId && input.exam !== "n10-009") return null;
-  return JSON.stringify(buildStudyEvent(input, sessionId()));
+  try { return JSON.stringify(buildStudyEvent(input, sessionId())); } catch { return null; }
 }
 
 function sendImmediately(body: string): void {

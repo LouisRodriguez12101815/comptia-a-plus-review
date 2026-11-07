@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
@@ -17,9 +17,13 @@ import {
   repeatedMisses,
   scoreTrend,
   topicPerformance,
+  remediationOutcomes,
+  resourceOutcomes,
+  telemetryForWindow,
   type PerformanceWindow,
   type QuestionPerformance,
 } from "@/lib/learner-performance";
+import type { StudyEvent } from "@/lib/learner/telemetry";
 
 const windows: PerformanceWindow[] = ["24h", "7d", "30d", "history"];
 const filters = ["all", "incorrect", "correct", "repeated", "recovered"] as const;
@@ -40,7 +44,10 @@ function QuestionRow({ row, t }: { row: QuestionPerformance; t: ReturnType<typeo
       <p>{t("lastAttempt")}: {formatDate(row.lastSeenAt)}</p>
       {row.lastMissAt && <p>{t("lastMissed")}: {formatDate(row.lastMissAt)}</p>}
       {row.selectedWrongAnswer && <p>{t("selectedWrong")}: {row.selectedWrongAnswer}</p>}
-      {row.recovered && <p className="text-teal-200">{t("recoveredLabel")}</p>}
+      {row.mostCommonWrongChoice && <p>{t("mostCommonWrong", { percent: row.mostCommonWrongChoice.percent, answer: row.question.choices[row.mostCommonWrongChoice.index] ?? "" })}</p>}
+      {row.currentlyRecovered && <p className="text-teal-200">{t("recoveredLabel")}</p>}
+      {row.everRecovered && !row.currentlyRecovered && <p className="text-slate-400">{t("previouslyRecovered")}</p>}
+      {row.history.length > 1 && <ul aria-label={t("attemptTimeline")} className="border-l border-slate-700 pl-3">{row.history.map((entry, index) => <li key={`${entry.at}-${index}`}>{formatDate(entry.at)} · {entry.correct ? t("correctEvent") : t("incorrectEvent")}</li>)}</ul>}
       <div className="flex flex-wrap gap-3 pt-1">
         <Link className="text-teal-200 underline underline-offset-4" href={`/quiz?topic=${encodeURIComponent(row.question.topicId)}`}>{t("retry")}</Link>
         <Link className="text-teal-200 underline underline-offset-4" href={`/notes/${row.question.topicId}`}>{t("notes")}</Link>
@@ -57,16 +64,28 @@ export function PerformanceDashboard() {
   const [sort, setSort] = useState<Sort>("misses");
   const [query, setQuery] = useState("");
   const [now] = useState(() => Date.now());
+  const [telemetry, setTelemetry] = useState<StudyEvent[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/learner/telemetry", { credentials: "same-origin", cache: "no-store" })
+      .then((response) => response.ok ? response.json() as Promise<{ events?: StudyEvent[] }> : { events: [] })
+      .then((body) => { if (!cancelled) setTelemetry(Array.isArray(body.events) ? body.events : []); })
+      .catch(() => { if (!cancelled) setTelemetry([]); });
+    return () => { cancelled = true; };
+  }, []);
 
   const data = useMemo(() => {
     const rows = questionPerformance(progress, questions, { window, now, topics });
     const objectiveTitles = Object.fromEntries(objectives.exams.flatMap((exam) => exam.domains.flatMap((domain) => domain.objectives.map((objective) => [`${exam.code}:${objective.id}`, objective.title]))));
     const summary = performanceSummary(progress, window, now);
+    const events = telemetryForWindow(telemetry, window, now);
+    const remediation = remediationOutcomes(events);
     const filtered = rows.filter((row) => {
       if (filter === "incorrect" && row.incorrect === 0) return false;
       if (filter === "correct" && row.correct === 0) return false;
       if (filter === "repeated" && row.incorrect < 2) return false;
-      if (filter === "recovered" && !row.recovered) return false;
+      if (filter === "recovered" && !row.currentlyRecovered) return false;
       return !query.trim() || `${row.question.prompt} ${row.questionId} ${row.topic?.title ?? ""}`.toLowerCase().includes(query.trim().toLowerCase());
     });
     const sorted = [...filtered].sort((a, b) => sort === "accuracy"
@@ -87,8 +106,10 @@ export function PerformanceDashboard() {
       trend: scoreTrend(progress, window, now),
       activity: recentActivity(progress, window, now).slice(0, 10),
       mocks: attemptsForWindow(progress, window, now).filter((attempt) => attempt.kind === "mock"),
+      remediation,
+      resourceOutcomes: resourceOutcomes(events),
     };
-  }, [filter, now, progress, query, sort, window]);
+  }, [filter, now, progress, query, sort, telemetry, window]);
 
   return <div className="space-y-8">
     <section aria-labelledby="performance-window-heading" className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5">
@@ -123,6 +144,11 @@ export function PerformanceDashboard() {
       <section className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-3"><h2 className="text-xl font-semibold text-white">{t("objectivesHeading")}</h2>{data.objectives.length === 0 ? <p className="text-slate-400">{t("noData")}</p> : <ul className="space-y-2">{data.objectives.slice(0, 6).map((item) => <li key={item.key} className="rounded-xl border border-slate-800 p-3"><div className="flex justify-between gap-3"><span className="text-slate-200">{item.exam} · {item.objectiveId}</span><span className="font-mono text-slate-400">{item.accuracy}%</span></div><p className="mt-1 text-sm text-slate-400">{item.title}</p></li>)}</ul>}</div>
         <div className="space-y-3"><h2 className="text-xl font-semibold text-white">{t("topicsHeading")}</h2>{data.topics.length === 0 ? <p className="text-slate-400">{t("noData")}</p> : <ul className="space-y-2">{data.topics.slice(0, 6).map((item) => <li key={item.topicId} className="rounded-xl border border-slate-800 p-3"><div className="flex justify-between gap-3"><span className="text-slate-200">{item.title}</span><span className="font-mono text-slate-400">{item.accuracy}%</span></div><p className="mt-1 text-sm text-slate-400">{t("missedCount", { count: item.incorrect })}</p></li>)}</ul>}</div>
+      </section>
+
+      <section aria-labelledby="performance-remediation-heading" className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-3"><h2 id="performance-remediation-heading" className="text-xl font-semibold text-white">{t("remediationActivityHeading")}</h2><p className="text-sm text-slate-400">{t("telemetryNote")}</p><div className="grid grid-cols-3 gap-2">{[["remediationOpened", data.remediation.reduce((sum, row) => sum + row.opened, 0)], ["resourcesOpened", data.remediation.reduce((sum, row) => sum + row.resources, 0)], ["retriesStarted", data.remediation.reduce((sum, row) => sum + row.retries, 0)]].map(([key, value]) => <div key={key} className="rounded-xl border border-slate-800 p-3"><p className="text-xs text-slate-400">{t(key as never)}</p><p className="text-xl font-semibold text-white">{value}</p></div>)}</div><ul className="space-y-2">{data.remediation.slice(0, 5).map((row) => <li key={row.questionId} className="rounded-xl border border-slate-800 p-3 text-sm text-slate-300">{row.questionId} · {row.laterCorrect ? t("laterCorrect") : t("stillMissed")}</li>)}</ul></div>
+        <div className="space-y-3"><h2 className="text-xl font-semibold text-white">{t("resourceOutcomesHeading")}</h2><ul className="space-y-2">{data.resourceOutcomes.map((row) => <li key={row.resourceType} className="flex justify-between rounded-xl border border-slate-800 p-3 text-sm text-slate-300"><span>{t(`resourceType${row.resourceType[0].toUpperCase()}${row.resourceType.slice(1)}` as never)}</span><span>{row.opened} · {row.laterCorrect} {t("laterCorrect")}</span></li>)}</ul></div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
