@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>From requirement to AWS AI or analytics service</title>
+<style>
+body{margin:0;background:#0b1220;color:#f1f5f9;font:15px/1.5 system-ui;padding:20px}.wrap{max-width:980px;margin:auto}.card{border:1px solid #334155;border-radius:16px;background:#111c30;padding:18px;margin-top:16px}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;margin:0 0 10px;color:#7dd3fc}p{color:#b8c5d6}table{border-collapse:collapse;width:100%}th,td{border:1px solid #334155;padding:9px;text-align:left;vertical-align:top}th{color:#67e8f9}code{color:#fde68a}.note{font-size:13px;color:#94a3b8}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.flow div{border:1px solid #155e75;border-radius:12px;padding:12px;background:#0f2436;text-align:center}@media(max-width:700px){.flow{grid-template-columns:repeat(2,1fr)}table{font-size:13px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>From requirement to AWS AI or analytics service</h1>
+<p>Read the requirement first. Pick the service whose primary job matches the verb; nearby services are distractors because they solve a different problem.</p>
+<section class="card flow" aria-label="Requirement families">
+<div>Language<br><code>Comprehend · Lex · Polly · Transcribe · Translate</code></div>
+<div>Vision / documents<br><code>Rekognition · Textract</code></div>
+<div>Data flow<br><code>Kinesis · Glue · EMR</code></div>
+<div>Query / insight<br><code>Athena · OpenSearch · Quick · Redshift</code></div>
+</section>
+<section class="card">
+<figure>
+<svg role="img" aria-label="Flow from a business requirement to AI, streaming, query, visualization, and warehouse service families" viewBox="0 0 900 150" style="display:block;width:100%;height:auto">
+<path d="M80 75H820" fill="none" stroke="#155e75" stroke-width="8" stroke-linecap="round"/>
+<g fill="#67e8f9" stroke="#0b1220" stroke-width="5"><circle cx="120" cy="75" r="27"/><circle cx="300" cy="75" r="27"/><circle cx="480" cy="75" r="27"/><circle cx="660" cy="75" r="27"/><circle cx="820" cy="75" r="27"/></g>
+<g fill="#0b1220" font-size="16" font-family="system-ui" text-anchor="middle"><text x="120" y="80">Need</text><text x="300" y="80">AI</text><text x="480" y="80">Flow</text><text x="660" y="80">Insight</text><text x="820" y="80">Store</text></g>
+</svg>
+<figcaption class="note">Requirement → service family: identify the work before recalling a product name.</figcaption>
+</figure>
+</section>
+<section class="card">
+<h2>Decision map</h2>
+<table>
+<thead><tr><th>Requirement</th><th>Choose</th><th>Do not confuse it with</th></tr></thead>
+<tbody>
+<tr><td>Sentiment, entities, or key phrases in text</td><td>Amazon Comprehend</td><td>Translate changes language</td></tr>
+<tr><td>Chatbot or intent-based conversational interface</td><td>Amazon Lex</td><td>Amazon Q is an AI assistant</td></tr>
+<tr><td>Text to speech / speech to text</td><td>Amazon Polly / Amazon Transcribe</td><td>They run in opposite directions</td></tr>
+<tr><td>Scanned form fields / objects in video</td><td>Amazon Textract / Amazon Rekognition</td><td>Documents are not the same as visual recognition</td></tr>
+<tr><td>SQL over S3 / transform and catalog</td><td>Amazon Athena / AWS Glue</td><td>Athena queries; Glue prepares</td></tr>
+<tr><td>Live stream / durable queue</td><td>Amazon Kinesis / Amazon SQS</td><td>Streaming is not queueing</td></tr>
+<tr><td>BI dashboard / data warehouse</td><td>Amazon Quick / Quick Sight / Amazon Redshift</td><td>A dashboard is not a warehouse</td></tr>
+</tbody>
+</table>
+<p class="note">CLF-C02 level: recognize the service family from a short business requirement. This visual does not imply a production architecture or implementation configuration.</p>
+</section>
+</main>
+<script type="application/json" id="visual-facts">
+{"facts":[
+{"claim":"Amazon Comprehend analyzes text for sentiment, entities, and key phrases.","objectives":["clf-c02 3.7"],"sources":["https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"]},
+{"claim":"Amazon Textract extracts text and structured information from documents and forms.","objectives":["clf-c02 3.7"],"sources":["https://docs.aws.amazon.com/textract/latest/dg/what-is.html"]},
+{"claim":"Amazon Athena provides SQL queries over data in Amazon S3 without managing database servers.","objectives":["clf-c02 3.7"],"sources":["https://docs.aws.amazon.com/athena/latest/ug/what-is.html"]},
+{"claim":"Amazon Kinesis Data Streams handles streaming records consumed by applications.","objectives":["clf-c02 3.7"],"sources":["https://docs.aws.amazon.com/streams/latest/dev/introduction.html"]},
+{"claim":"Amazon Redshift is a data warehouse service for analytics workloads.","objectives":["clf-c02 3.7"],"sources":["https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"]}
+],"simplifications":["The map intentionally uses recognition-level cues and omits implementation limits, pricing, and architecture configuration."]}
+</script>
+</body>
+</html>

@@ -5971,8 +5971,26 @@
           }
         ]
       },
-      {
-        "id": "objective-clf-c02-1-1",
+    {
+      "id": "benefits-transfer",
+      "title": "Cloud benefit transfer decisions",
+      "blocks": [
+        {"type":"table","headers":["Scenario cue","Best first concept","Do not confuse it with"],"rows":[["Unpredictable temporary demand spike","Elasticity","Agility or planned scalability"],["Planned larger workload","Scalability","Elasticity"],["Minutes instead of procurement weeks","Agility","Elasticity"],["New approved geographic market","Global reach","Automatic multi-Region redundancy"],["Continue through a component failure","Availability/resilience or fault tolerance","Durability"],["Provider purchasing power across customers","Economies of scale","Guaranteed savings"]]},
+        {"type":"paragraph","text":"Cloud benefits enable choices rather than guaranteeing outcomes. Global infrastructure does not automatically create compliance or low latency; managed services reduce selected undifferentiated work but do not remove shared responsibility."},
+        {"type":"callout","kind":"tip","text":"Read the requirement verb first: react to demand = elasticity; handle planned size = scalability; provision or experiment quickly = agility; geography = global reach; continue through failure = resilience/fault tolerance."}
+      ]
+    },
+    {
+      "id": "cloud-economics-transfer",
+      "title": "Cloud economics transfer decisions",
+      "blocks": [
+        {"type":"table","headers":["Economic cue","Best first concept","Do not confuse it with"],"rows":[["Oversized resource","Rightsizing","Autoscaling"],["Forgotten development resource","Stop/remove idle capacity","Availability"],["Server, facility and staffing comparison","Total Cost of Ownership","Monthly AWS bill"],["Capacity changes with demand","Elasticity/utilization","Guaranteed savings"],["Higher direct price but less maintenance","Managed-service tradeoff","Cheapest service"],["Physical host or portability restriction","Licensing/tenancy review","Automatic license portability"]]},
+        {"type":"paragraph","text":"Cloud economics may shift portions of spending toward variable consumption and reduce idle capacity, but cloud is not automatically cheaper. Compare hardware, facilities, power, cooling, networking, staffing, licensing, resilience, transfer and operational labor."},
+        {"type":"callout","kind":"warning","text":"Rightsizing chooses an appropriate resource size; autoscaling changes capacity over time. Cost optimization is a measured tradeoff, not simply selecting the lowest direct price."}
+      ]
+    },
+    {
+      "id": "objective-clf-c02-1-1",
         "title": "1.1 — Cloud benefits under changing demand",
         "blocks": [
           {
@@ -6411,8 +6429,8 @@
                 "Data integration and ETL"
               ],
               [
-                "Amazon QuickSight",
-                "Business intelligence dashboards"
+                "Amazon Quick / Amazon Quick Sight",
+                "Business intelligence dashboards; Amazon Quick is the current in-scope service name, while Quick Sight is its BI capability and older terminology may still appear"
               ],
               [
                 "Amazon SageMaker AI",
@@ -6531,6 +6549,78 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      },
+      {
+        "id": "domain3-transfer-decisions",
+        "title": "Domain 3 transfer decisions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement cue", "Choose or distinguish"],
+            "rows": [
+              ["Human, graphical, one-time inspection", "Management Console"],
+              ["Repeatable shell administration", "CLI and reviewed scripts"],
+              ["Application code calling AWS", "SDK/API"],
+              ["Consistent versioned provisioning", "Infrastructure as code / CloudFormation"],
+              ["One AZ failure", "Multi-AZ within a Region"],
+              ["Regional disaster recovery", "Multi-Region when permitted and justified"],
+              ["User proximity for supported edge delivery", "Edge location"],
+              ["VM control", "EC2"],
+              ["Event-driven function", "Lambda"],
+              ["Kubernetes", "EKS"],
+              ["Serverless containers", "Fargate"],
+              ["Change capacity", "Auto Scaling"],
+              ["Distribute requests", "Load balancer"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Exam traps: CLI is not an SDK; an API is not a command-line workflow; hybrid is not multi-cloud; a Region is not an AZ; an AZ is not an edge location; Multi-AZ is not automatically Multi-Region; ECS is not Kubernetes; Fargate is compute, not orchestration; Auto Scaling changes capacity while a load balancer distributes traffic."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope guard: CLF-C02 recognition does not require CLI command memorization, SDK programming, CloudFormation syntax, Kubernetes administration, EC2 model-number memorization, load-balancer configuration, or VPC implementation."
+          }
+        ]
+      },
+      {
+        "id": "data-network-storage-transfer",
+        "title": "3.4–3.6 — Data, network and storage decisions",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement cue", "Recognition choice"],
+            "rows": [
+              ["Relational SQL", "RDS / Aurora"],
+              ["Key-value or document access", "DynamoDB"],
+              ["Repeated reads and low latency", "ElastiCache"],
+              ["Move or replicate database data", "DMS"],
+              ["Convert schema or database code", "SCT"],
+              ["Logically isolated network", "VPC"],
+              ["Stateful resource traffic", "Security group"],
+              ["Stateless subnet traffic", "Network ACL"],
+              ["DNS", "Route 53"],
+              ["Encrypted internet connection", "VPN"],
+              ["Dedicated private path", "Direct Connect"],
+              ["Object storage", "S3"],
+              ["Persistent EC2 block", "EBS"],
+              ["Temporary local block", "Instance store"],
+              ["Shared file storage", "EFS / FSx"],
+              ["Hybrid storage integration", "Storage Gateway"],
+              ["Centralized backup policy", "AWS Backup"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "critical",
+            "text": "Exam traps: RDS is not DynamoDB; DynamoDB is not a cache; DMS moves data while SCT helps convert schema/code; VPC is not a subnet; security groups are stateful/resource-level while NACLs are stateless/subnet-level; VPN is not Direct Connect; Direct Connect is not an encryption guarantee; S3 is not EBS; EBS is not instance store; lifecycle is not backup."
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope guard: CLF-C02 recognition does not require SQL syntax, database-engine administration, DynamoDB key design, cache-cluster configuration, route-table or CIDR implementation, security-rule authoring, Direct Connect provisioning, lifecycle JSON, EBS tuning or file-system mount commands."
           }
         ]
       },
@@ -6712,8 +6802,35 @@
               [
                 "Reserve capacity in an Availability Zone",
                 "Capacity Reservation"
+              ],
+              [
+                "Dedicated physical host with host-level visibility or licensing needs",
+                "Dedicated Host"
+              ],
+              [
+                "Dedicated hardware tenancy without host allocation control",
+                "Dedicated Instance"
               ]
             ]
+          }
+        ]
+      },
+      {
+        "id": "pricing-factors",
+        "title": "Storage and data-transfer pricing factors",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Storage cost depends on class or tier, stored volume, requests, retrieval charges, minimum storage duration where applicable, lifecycle transitions, and data transfer—not only GB stored.",
+              "Rarely accessed data with long retrieval tolerance should lead you to compare archival-class behavior and retrieval costs rather than automatically choosing the lowest storage rate.",
+              "Inbound and outbound transfer may price differently. Inter-Region, inter-AZ, and service-to-service transfer have service-specific rules, so architecture placement affects cost."
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Pricing questions are relative decisions: identify commitment, interruption tolerance, capacity guarantee, tenancy, storage access pattern, and transfer path before comparing rates."
           }
         ]
       },
@@ -6777,13 +6894,34 @@
         ]
       },
       {
+        "id": "support-plan-current",
+        "title": "Current support-plan cues",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement cue", "Current direction"],
+            "rows": [
+              ["Account, billing, documentation, community and general resources", "Basic Support"],
+              ["Production workloads needing 24/7 technical support and AWS expert engagement", "Business Support+"],
+              ["Business-critical workloads needing strategic guidance and a Technical Account Manager", "Enterprise Support"],
+              ["Mission-critical workloads needing the highest proactive operations/resilience assistance", "Unified Operations"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Developer Support and Business Support stopped accepting new subscriptions on December 2, 2025 and are scheduled for discontinuation on January 1, 2027. Enterprise On-Ramp is also transitional. Do not present these legacy names as the current standard paid-plan lineup. Verify entitlements and response details on the current AWS Support plan page."
+          }
+        ]
+      },
+      {
         "id": "objective-clf-c02-4-1",
         "title": "4.1 — Purchase commitments, capacity and transfer",
         "blocks": [
           {
             "type": "bullets",
             "items": [
-              "On-Demand avoids a long-term commitment. Savings Plans commit an eligible hourly spend for a term; Reserved Instance discounts have scope/attribute rules. A regional RI discount does not itself reserve capacity in a selected AZ; capacity reservation is a separate requirement.",
+              "On-Demand is flexible pay-as-you-go compute without a long-term commitment. Savings Plans provide pricing savings in exchange for an eligible compute-usage commitment; Reserved Instance pricing is more closely tied to instance configuration and scope/attribute rules. Neither discount concept is the same as a Capacity Reservation in a selected AZ.",
               "Spot fits interruption-tolerant work and spare capacity; Dedicated Hosts address eligible physical-host/tenancy needs. Compare total cost and restart overhead instead of assuming any model always wins.",
               "Review RI flexibility and eligible consolidated-billing discount sharing within Organizations. Data transfer into/out of services, across AZs/Regions and to users has service-specific rules. Storage pricing includes requests, retrieval, minimum durations and transitions as well as stored GB."
             ]
@@ -6812,7 +6950,8 @@
             "items": [
               "Pricing Calculator estimates a planned design from assumptions. Cost Explorer analyzes costs/usage and supports forecasts; detailed billing exports support more granular analysis. None of these validates a bad architecture assumption automatically.",
               "Budgets can alert on actual/forecast amounts and utilization/coverage; notifications and billing data have delay. A budget is not an instantaneous spending cap. Any budget action requires separate supported configuration and permissions.",
-              "Organizations provides consolidated billing. Apply and activate eligible cost-allocation tag keys for billing analysis; merely attaching a tag does not guarantee its immediate appearance in reports. Account boundaries and allocation rules determine financial ownership."
+              "Organizations provides consolidated billing. Apply and activate eligible cost-allocation tag keys for billing analysis; merely attaching a tag does not guarantee its immediate appearance in reports. Account boundaries and allocation rules determine financial ownership.",
+              "The Cost and Usage Report provides detailed cost and usage records for granular analysis. It is a reporting dataset, not a real-time spending cap."
             ]
           },
           {
@@ -6837,14 +6976,30 @@
           {
             "type": "bullets",
             "items": [
-              "Current AWS documentation lists Basic Support and paid offerings including Business Support+, Enterprise Support and Unified Operations. Compare current technical-support scope, response targets and designated guidance rather than memorizing retired plan names or treating response targets as resolution guarantees.",
+              "Current AWS documentation lists Basic Support and enhanced offerings including Business Support+, Enterprise Support and Unified Operations. Basic is the general account/billing/documentation baseline; Business Support+ cues production technical support, Enterprise cues strategic guidance/TAM support, and Unified Operations cues the highest proactive operations and resilience assistance. Compare current entitlements rather than memorizing retired plan names or treating response targets as resolution guarantees.",
               "Use documentation, re:Post/Knowledge Center and Prescriptive Guidance for self-service knowledge. Support Center handles support cases; support entitlements determine the available channel and technical response. Trusted Advisor and AWS Health/Health API expose different recommendation and health signals.",
-              "AWS Partners include software vendors and integrators; Marketplace distributes third-party products and purchasing entitlements. Professional Services and solutions architects address different assistance needs. Report suspected AWS-resource abuse through the appropriate Trust and Safety process, rather than sending it to an unrelated billing alert."
+              "AWS Partners include software vendors and integrators; Marketplace distributes third-party products and purchasing entitlements. Professional Services and solutions architects address different assistance needs. Report suspected AWS-resource abuse through the appropriate Trust and Safety process, rather than sending it to an unrelated billing alert.",
+              "Developer Support and Business Support stopped accepting new subscriptions on December 2, 2025 and are scheduled for discontinuation on January 1, 2027; Enterprise On-Ramp is also transitional. The current study set recognizes Basic Support, Business Support+, Enterprise Support, and Unified Operations as the current plan names."
             ]
           },
           {
             "type": "paragraph",
             "text": "Worked decision: A team needs information about an AWS event affecting its account resources, rather than a general architecture recommendation. Which resource should it check? Choose AWS Health and the relevant Health API/dashboard information. AWS Health provides relevant health/event information; Trusted Advisor recommendations and cost estimation serve different purposes. Marketplace and infrastructure templates do not replace the event/health signal."
+          },
+          {
+            "type": "table",
+            "headers": ["Need", "Resource"],
+            "rows": [
+              ["Authoritative service reference", "AWS documentation or whitepapers"],
+              ["Troubleshooting knowledge", "Knowledge Center or AWS re:Post"],
+              ["Patterns and implementation guidance", "AWS Prescriptive Guidance"],
+              ["Open an eligible support case", "Support Center"],
+              ["Best-practice recommendation", "Trusted Advisor"],
+              ["Account or service health event", "AWS Health / Health API"],
+              ["Suspected abuse of an AWS resource", "Trust and Safety"],
+              ["Third-party software or service", "AWS Marketplace / AWS Partner"],
+              ["AWS-delivered project expertise", "Professional Services or solutions architect"]
+            ]
           },
           {
             "type": "callout",
@@ -12614,6 +12769,354 @@
           }
         ]
       }
+    ]
+  },
+  {
+    "id": "aws-clf-ai-analytics",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 3.7 — AI/ML and analytics selection",
+    "chapter": "CLF-C02 · Objective 3.7",
+    "summary": "Choose an AWS AI/ML or analytics service from the business requirement, with emphasis on nearby distractors.",
+    "sections": [
+      {
+        "id": "ai-decision-table",
+        "title": "AI requirement → service",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement", "Service", "Why", "Common distractor"],
+            "rows": [
+              ["Extract sentiment, entities, or key phrases from text", "Amazon Comprehend", "Prebuilt natural-language analysis", "Amazon Translate changes language; it does not provide sentiment analysis"],
+              ["Build a chatbot or conversational voice/text interface", "Amazon Lex", "Conversational interface with intents", "Amazon Q is an AI assistant; SageMaker AI is for building/training models"],
+              ["Convert text into spoken audio", "Amazon Polly", "Text-to-speech", "Amazon Transcribe converts speech to text"],
+              ["Convert a recording into a searchable transcript", "Amazon Transcribe", "Speech-to-text", "Amazon Polly produces audio from text"],
+              ["Translate text between supported languages", "Amazon Translate", "Machine translation", "Amazon Comprehend analyzes language rather than translating it"],
+              ["Recognize objects or activity in images or video", "Amazon Rekognition", "Image and video analysis", "Amazon Textract extracts text and fields from documents"],
+              ["Extract printed text and form fields from scanned documents", "Amazon Textract", "Document and form analysis", "Amazon Rekognition analyzes visual content"],
+              ["Build, train, and deploy a custom ML model", "Amazon SageMaker AI", "Managed model-development workflow", "A task-specific AI service is simpler when it already fits the requirement"],
+              ["Use an AWS AI assistant for work or information tasks", "Amazon Q", "AWS AI assistant capability", "Lex is for building a conversational interface into an application"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "analytics-decision-table",
+        "title": "Analytics requirement → service",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement", "Service", "Exam cue"],
+            "rows": [
+              ["Run ad hoc SQL directly over data in S3", "Amazon Athena", "Serverless query service; not a permanent warehouse"],
+              ["Process large datasets with managed big-data frameworks", "Amazon EMR", "Managed cluster processing; no Hadoop administration required here"],
+              ["Integrate, prepare, transform, or catalog data", "AWS Glue", "ETL and data catalog concepts"],
+              ["Ingest and process live streaming data", "Amazon Kinesis", "Streaming telemetry or events; not a durable work queue"],
+              ["Search and analyze indexed logs or documents", "Amazon OpenSearch Service", "Search/log analytics over indexed data"],
+              ["Create executive BI dashboards", "Amazon Quick / Amazon Quick Sight capability", "Current naming is Amazon Quick; Quick Sight is the BI capability"],
+              ["Run analytics against a managed data warehouse", "Amazon Redshift", "Warehouse workload; not an OLTP database"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Start with the verb: query, transform, stream, search, visualize, or warehouse. Then choose the service whose primary job matches that verb."
+          }
+        ]
+      },
+      {
+        "id": "confusion-pairs",
+        "title": "High-yield confusion pairs",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Polly speaks text; Transcribe writes down speech. Comprehend finds meaning in text; Translate changes its language.",
+              "Textract extracts fields from documents; Rekognition analyzes objects, scenes, and activity in images or video.",
+              "Lex is used to build a conversational interface; Amazon Q is an AWS AI assistant. SageMaker AI is for custom model workflows, not the default answer to every AI requirement.",
+              "Athena queries S3 data; Glue integrates and catalogs data; EMR processes large datasets with managed frameworks.",
+              "Kinesis handles streams; SQS is a queue. OpenSearch searches indexed data; CloudWatch monitors metrics, logs, and alarms.",
+              "Redshift is a data warehouse; RDS/Aurora are relational application databases. Amazon Quick / Quick Sight is for BI visualization, not ad hoc SQL over S3."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-access-management",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 2.3 — Access management decisions",
+    "chapter": "CLF-C02 · Domain 2",
+    "summary": "Choose the right identity, authentication method, permission source, credential lifetime, or secret store for a Cloud Practitioner scenario.",
+    "sections": [
+      {
+        "id": "identity-chooser",
+        "title": "Who or what needs access?",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Requirement", "Best concept", "Why", "Common distractor"],
+            "rows": [
+              ["EC2 application needs S3", "IAM role", "Workload receives temporary credentials", "Embedded access key"],
+              ["Employees use a corporate identity provider", "IAM Identity Center / federation", "Centralized workforce SSO", "Shared IAM user"],
+              ["Organize IAM users", "IAM group", "Groups collect permissions for users", "IAM role"],
+              ["A principal must be assumable", "IAM role", "Roles are assumable identities", "IAM group"],
+              ["Store an application database password", "Secrets Manager", "Stores and can rotate application secrets", "KMS key"],
+              ["Control encryption keys", "AWS KMS", "Manages encryption keys", "Secrets Manager"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Start with the actor: workforce, workload, or application secret. Then ask how it authenticates, where permissions come from, and whether credentials need to be long-lived."
+          }
+        ]
+      },
+      {
+        "id": "authentication-authorization",
+        "title": "Authentication versus authorization",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Question", "Examples"],
+            "rows": [
+              ["Authentication: who are you?", "Password, MFA, federation, temporary session credentials"],
+              ["Authorization: what may you do?", "IAM policies, role permissions, applicable resource policies, explicit denies"]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "MFA strengthens authentication; it does not grant permissions. A password policy controls IAM-user password requirements; a permissions policy defines allowed actions. An explicit deny overrides an applicable allow at recognition level."
+          }
+        ]
+      },
+      {
+        "id": "root-mfa",
+        "title": "Root protection and MFA",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Protect the account root user with strong MFA and do not use it for routine administration.",
+              "Do not create or use root access keys for ordinary work; use named workforce identities instead.",
+              "Some account tasks may still require root. Check the current AWS root-user task guidance rather than memorizing an unverified list."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "credentials",
+        "title": "Long-lived versus temporary credentials",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Access keys are programmatic credentials and should not be embedded in source code, AMIs, scripts, or repositories.",
+              "Prefer IAM roles and temporary credentials for workloads where supported.",
+              "Remove or rotate credentials that are no longer required and protect any remaining credentials as secrets.",
+              "IAM users can be appropriate when a specific long-lived identity is required; they are not categorically forbidden."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "users-groups-roles-federation",
+        "title": "Users, groups, roles, and federation",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "An IAM user is a long-lived identity; an IAM group organizes IAM users and is not itself assumable.",
+              "An IAM role is an assumable identity that commonly provides temporary credentials to a workload, person, or cross-account principal.",
+              "IAM Identity Center and federation connect workforce identities to centralized AWS access without sharing IAM-user credentials.",
+              "Choose the identity pattern from the scenario rather than treating every access request as a new IAM user."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "policies-least-privilege",
+        "title": "Policies and least privilege",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "A permissions policy defines allowed or denied actions; a user, group, or role receives permissions but is not itself the permission rule.",
+              "Managed policies are reusable; inline policies attach directly to one identity.",
+              "Least privilege grants only the actions and resources required for the task."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "secrets-keys-roles",
+        "title": "Secrets, encryption keys, and roles",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Need", "Choose", "Do not confuse it with"],
+            "rows": [
+              ["Application password or API secret", "AWS Secrets Manager", "KMS encryption key"],
+              ["Encryption key management", "AWS KMS", "IAM access key"],
+              ["Temporary workload permissions", "IAM role", "Stored application secret"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "common-traps",
+        "title": "Common exam traps",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Group is not role: a group organizes users; a role is assumable.",
+              "MFA is not authorization: it adds an authentication factor but does not define API permissions.",
+              "KMS is not Secrets Manager: KMS manages encryption keys; Secrets Manager stores application secrets.",
+              "Workload is not embedded credentials: use a role and temporary credentials instead of a hard-coded access key."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-other-service-categories",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 3.8 — Other AWS service categories",
+    "chapter": "CLF-C02 · Domain 3 · Objective 3.8",
+    "summary": "Choose a non-core AWS service from a short business requirement across application integration, business applications, customer enablement, developer tools, end-user computing, frontend/mobile, and IoT.",
+    "sections": [
+      {
+        "id": "application-integration",
+        "title": "Application integration",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Mental model","Common distractor"],"rows":[
+          ["Durable asynchronous queue between producers and consumers","Amazon SQS","queue","SNS fanout"],
+          ["Publish one message to many subscribers","Amazon SNS","publish/fanout","SQS queue"],
+          ["Route events to targets using rules","Amazon EventBridge","event routing","Step Functions"],
+          ["Coordinate multiple workflow steps","AWS Step Functions","workflow orchestration","EventBridge"]
+        ]}]
+      },
+      {
+        "id": "business-applications",
+        "title": "Business applications",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Common distractor"],"rows":[
+          ["Cloud contact center","Amazon Connect","Amazon SES"],
+          ["Send application or transactional email","Amazon SES","Amazon SNS"]
+        ]}]
+      },
+      {
+        "id": "customer-enablement",
+        "title": "Customer enablement",
+        "blocks": [{"type":"paragraph","text":"A requirement for AWS business or technical assistance points to AWS Support. Objective 3.8 recognition is intentionally brief; use the Domain 4 support material for plan and entitlement detail."}]
+      },
+      {
+        "id": "developer-tools",
+        "title": "Developer tools",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Mental model","Common distractor"],"rows":[
+          ["Compile, build, or test source code","AWS CodeBuild","build","CodePipeline"],
+          ["Orchestrate software delivery stages","AWS CodePipeline","pipeline","CodeBuild"],
+          ["Trace a request across distributed services","AWS X-Ray","distributed tracing","CloudWatch"]
+        ]}]
+      },
+      {
+        "id": "end-user-computing",
+        "title": "End-user computing",
+        "blocks": [{"type":"table","headers":["Requirement","Choose","Mental model","Common distractor"],"rows":[
+          ["Stream an application to a user","Amazon AppStream 2.0","application","WorkSpaces"],
+          ["Provide a managed virtual desktop","Amazon WorkSpaces","desktop","AppStream 2.0"],
+          ["Provide secure browser-only access to websites/apps","Amazon WorkSpaces Secure Browser","browser","WorkSpaces"]
+        ]}]
+      },
+      {
+        "id": "frontend-mobile",
+        "title": "Frontend and mobile",
+        "blocks": [{"type":"paragraph","text":"AWS Amplify is the recognition-level choice for developing and deploying frontend web or mobile applications. The cue is the frontend/mobile application requirement, not a request to build or orchestrate backend source-code delivery."}]
+      },
+      {
+        "id": "internet-of-things",
+        "title": "Internet of Things",
+        "blocks": [{"type":"paragraph","text":"Amazon IoT Core connects and manages interactions with IoT devices and supports device-to-cloud messaging at recognition level. Do not expand this review into IoT Device Defender or Greengrass; they are not required answers in this focused service set."}]
+      },
+      {
+        "id": "confusion-pairs",
+        "title": "Cross-category confusion pairs",
+        "blocks": [{"type":"bullets","items":[
+          "SQS queues; SNS fans out; EventBridge routes events; Step Functions coordinates workflow steps.",
+          "Connect is a cloud contact center; SES sends application email.",
+          "CodeBuild builds; CodePipeline orchestrates delivery; X-Ray traces distributed requests.",
+          "AppStream streams applications; WorkSpaces provides desktops; Secure Browser provides browser-only access.",
+          "Amplify targets frontend/mobile applications; IoT Core targets connected devices; AWS Support provides AWS assistance."
+        ]}]
+      },
+      {
+        "id": "objective-clf-c02-3-8",
+        "title": "3.8 transfer exercise",
+        "blocks": [{"type":"callout","kind":"tip","text":"Read the business verb first: queue, fan out, route, coordinate, contact, email, build, pipeline, trace, stream, desktop, browser, frontend, device, or support. Select the service whose primary job matches that verb, then reject the neighboring service that solves a different problem."},{"type":"paragraph","text":"Scope note: AWS describes the Objective 3.8 service list as non-exhaustive and subject to change. This review uses the current explicitly named service set and should be rechecked against the live AWS CLF-C02 Domain 3 page."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"}]
+      }
+    ]
+  },
+  {
+    "id": "aws-clf-migration-decisions",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 1.3 — Migration decisions",
+    "chapter": "CLF-C02 · Domain 1 · Objective 1.3",
+    "summary": "Choose an adoption or migration response from business constraints, readiness, discovery, migration resources, and validation needs.",
+    "sections": [
+      {"id":"why-migrate","title":"Why organizations migrate","blocks":[{"type":"table","headers":["Business outcome","What it can mean"],"rows":[["Reduce data-center ownership","Move suitable workloads to managed/cloud infrastructure"],["Increase agility or revenue opportunity","Provision and experiment faster"],["Improve operational efficiency","Reduce undifferentiated infrastructure work"],["Reduce business risk or improve ESG performance","Choose an adoption plan that addresses resilience, governance, and resource efficiency"]]}]},
+      {"id":"caf-readiness","title":"AWS CAF and organizational readiness","blocks":[{"type":"paragraph","text":"AWS Cloud Adoption Framework helps organize cloud adoption across business and technology concerns. At CLF-C02 level, recognize that readiness includes ownership, governance, people, platform, security, and operations—not only selecting an AWS compute service."},{"type":"callout","kind":"tip","text":"Technical skills without an ownership model, governance process, or operating model indicate an adoption-readiness gap. CAF helps frame the organizational change and outcomes."}]},
+      {"id":"strategy-chooser","title":"Migration strategy chooser","blocks":[{"type":"table","headers":["Constraint","Likely approach","Common mistake"],"rows":[["Move quickly with minimal code change","Rehost","Refactor before the deadline"],["Move while adopting selected managed-service improvements","Replatform","Call every change a refactor"],["Modernization and substantial redesign are acceptable","Refactor / re-architect","Assume rehost provides cloud-native benefits"],["Replace the existing application or product model","Repurchase","Migrate the old implementation by default"],["Workload is no longer needed","Retire","Spend effort moving it"],["Workload must remain where it is for now","Retain","Force a migration without a business constraint"]]}]},
+      {"id":"discovery","title":"Discovery and dependency awareness","blocks":[{"type":"bullets","items":["Before moving a workload, discover applications, servers, dependencies, utilization, data, network relationships, and business criticality.","Discovery supports migration planning and risk reduction; it does not itself choose rehost, replatform, or refactor.","Assessment should identify what can move together, what depends on it, and what must be tested before cutover."]}]},
+      {"id":"migration-resources","title":"Migration resources and services","blocks":[{"type":"table","headers":["Need","Recognition-level resource","Boundary"],"rows":[["Assess workloads, dependencies, or utilization","Application Discovery Service / Migration Evaluator","Assessment is not the migration strategy"],["Move servers or applications","AWS Application Migration Service","Supports migration; it does not prove compatibility"],["Move or replicate databases","AWS Database Migration Service","Replication does not prove schema or application compatibility"],["Transfer online data","AWS DataSync","Data transfer is not a full application migration"],["Hybrid storage scenario","AWS Storage Gateway","Hybrid storage is not the same as rehosting an application"]]}]},
+      {"id":"database-replication","title":"Database replication","blocks":[{"type":"paragraph","text":"Database replication can synchronize a source and target during a migration and help reduce downtime before cutover. It does not prove that schemas, data types, queries, transactions, or application behavior are compatible."},{"type":"callout","kind":"warning","text":"DMS is a migration/replication resource, not a migration strategy. Plan validation, cutover criteria, and rollback separately."}]},
+      {"id":"testing-cutover","title":"Testing, cutover, and rollback","blocks":[{"type":"bullets","items":["Use a pilot or test migration where appropriate. Check dependencies, application behavior, data integrity, security controls, and business acceptance.","Before cutover, define verification checks and a rollback trigger. Successful data copying alone is not proof that the migration is complete.","Cutover transitions users or traffic; rollback planning protects the business if validation fails."]}]},
+      {"id":"common-traps","title":"Common migration traps","blocks":[{"type":"bullets","items":["Rehost is not refactor: minimal change and major redesign are different constraints.","Retain is not retire: retain defers migration; retire removes an unnecessary workload.","Migration is not replacement: repurchase changes the product model.","Discovery comes before moving blindly; CAF readiness concerns organizational adoption, not just infrastructure."]}]},
+      {"id":"objective-clf-c02-1-3","title":"1.3 transfer exercise","blocks":[{"type":"callout","kind":"tip","text":"Assess the business driver and readiness, discover dependencies and utilization, choose the least-change strategy that satisfies the constraint, plan migration or replication, then validate before cutover with a rollback trigger."},{"type":"paragraph","text":"Scope note: the CLF-C02 objective explicitly covers cloud adoption strategies and migration-journey resources. The lifecycle shown here is a planning model for recognition and transfer, not a claim that the exam requires a detailed migration runbook."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"}]}
+    ]
+  },
+  {
+    "id": "aws-clf-well-architected-decisions",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Objective 1.2 — Well-Architected design decisions",
+    "chapter": "CLF-C02 · Domain 1 · Objective 1.2",
+    "summary": "Scenario practice for choosing among the six AWS Well-Architected pillars without drifting into advanced architecture design.",
+    "sections": [
+      {"id":"six-pillars","title":"The six pillars","blocks":[{"type":"table","headers":["Requirement cue","Pillar"],"rows":[["Operate and improve processes","Operational Excellence"],["Protect systems and data","Security"],["Continue through component failure","Reliability"],["Use resources efficiently for the workload","Performance Efficiency"],["Avoid unnecessary spend","Cost Optimization"],["Reduce environmental impact","Sustainability"]]}]},
+      {"id":"confusion-pairs","title":"Pillar confusion pairs","blocks":[{"type":"bullets","items":["Reliability is continued operation and recovery; Performance Efficiency is selecting and using resources effectively.","Cost Optimization is avoiding unnecessary spend; Sustainability is reducing environmental impact.","Security protects identities, data and systems; Reliability addresses failure and recovery.","Operational Excellence concerns running and improving workloads; Reliability concerns resilience outcomes."]}]},
+      {"id":"transfer","title":"Scenario transfer","blocks":[{"type":"callout","kind":"tip","text":"Name the requirement outcome first, then choose the pillar whose primary concern matches it. A single design can support several pillars, but answer the stated constraint rather than a neighboring benefit."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"}]}
+    ]
+  },
+  {
+    "id": "aws-clf-security-transfer",
+    "group": "aws",
+    "concept": "security",
+    "examCodes": ["clf-c02"],
+    "title": "CLF-C02 Domain 2 — Security transfer decisions",
+    "chapter": "CLF-C02 · Domain 2 · Objectives 2.1, 2.2 and 2.4",
+    "summary": "Requirement-driven practice for shared responsibility, governance evidence, encryption and AWS security resources.",
+    "sections": [
+      {"id":"responsibility","title":"Responsibility changes by service","blocks":[{"type":"table","headers":["Service","Customer retains","AWS manages more of"],"rows":[["EC2","Guest OS patches, applications, data, IAM and configuration","Physical infrastructure"],["RDS","Data, database users, access and supported configuration","Database platform and underlying infrastructure"],["Lambda","Code, data, IAM and function configuration","Platform and runtime infrastructure"]]}]},
+      {"id":"governance","title":"Governance evidence chooser","blocks":[{"type":"table","headers":["Need","Tool"],"rows":[["Operational metrics, logs or alarms","Amazon CloudWatch"],["AWS API/account activity","AWS CloudTrail"],["Resource configuration history and compliance rules","AWS Config"],["AWS compliance reports or agreements","AWS Artifact"]]},{"type":"paragraph","text":"Encryption in transit protects data moving across networks; encryption at rest protects stored data. AWS KMS is the recognition-level key-management service. AWS compliance does not automatically make a customer workload compliant; obligations differ by industry and geography."}]},
+      {"id":"security-resources","title":"Security service cues","blocks":[{"type":"table","headers":["Requirement","Tool"],"rows":[["Filter web requests","AWS WAF"],["DDoS protection","AWS Shield"],["Detect suspicious activity from AWS signals","Amazon GuardDuty"],["Centrally manage firewall policies","AWS Firewall Manager"],["Recommendations across supported areas","AWS Trusted Advisor"],["Third-party security product","AWS Marketplace"]]}, {"type":"bullets","items":["Inspector focuses on supported workload vulnerabilities; Security Hub aggregates security findings. Knowledge Center, Security Center and Security Blog provide AWS security information."]}]},
+      {"id":"transfer","title":"Cross-objective transfer","blocks":[{"type":"callout","kind":"tip","text":"Classify the requirement before naming a service: responsibility boundary, operational observation, API audit, configuration state, compliance evidence, request filtering, DDoS, threat detection or centralized policy."},{"type":"paragraph","text":"Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"}]}
     ]
   }
 ]

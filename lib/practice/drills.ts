@@ -2375,7 +2375,352 @@ const c2OsConcepts: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfAiAnalytics: DrillDeck = {
+  id: "aws-clf-ai-analytics-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.7",
+  topic: "AI/ML and analytics service selection",
+  modes: [
+    { id: "requirementToService", from: "requirement", to: "service" },
+    { id: "serviceToRequirement", from: "service", to: "requirement" },
+  ],
+  tables: [{ id: "service-selection", fields: ["requirement", "service"] }],
+  items: [
+    { id: "sentiment", objective: "3.7", fields: { requirement: "Sentiment and key phrases from reviews", service: "Amazon Comprehend" }, detail: "Comprehend analyzes meaning in text; Translate changes language.", hook: "Meaning in text = Comprehend", wrong: { service: ["Amazon Translate", "Amazon Lex", "Amazon Polly"] } },
+    { id: "chatbot", objective: "3.7", fields: { requirement: "Build an intent-based chatbot", service: "Amazon Lex" }, detail: "Lex builds conversational interfaces; Amazon Q is an AWS AI assistant.", hook: "Build the bot = Lex", wrong: { service: ["Amazon Q", "Amazon Comprehend", "Amazon SageMaker AI"] } },
+    { id: "speech-out", objective: "3.7", fields: { requirement: "Convert text to spoken audio", service: "Amazon Polly" }, detail: "Polly is text-to-speech; Transcribe is speech-to-text.", hook: "Polly speaks", wrong: { service: ["Amazon Transcribe", "Amazon Translate", "Amazon Lex"] } },
+    { id: "speech-in", objective: "3.7", fields: { requirement: "Convert recordings to searchable text", service: "Amazon Transcribe" }, detail: "Transcribe converts speech to text; Polly converts text to speech.", hook: "Transcribe writes", wrong: { service: ["Amazon Polly", "Amazon Comprehend", "Amazon Textract"] } },
+    { id: "translation", objective: "3.7", fields: { requirement: "Translate an article between languages", service: "Amazon Translate" }, detail: "Translate changes language; Comprehend extracts meaning from text.", hook: "Language change = Translate", wrong: { service: ["Amazon Comprehend", "Amazon Polly", "Amazon Lex"] } },
+    { id: "forms", objective: "3.7", fields: { requirement: "Extract fields from scanned forms", service: "Amazon Textract" }, detail: "Textract extracts document text and structured fields; Rekognition analyzes visual content.", hook: "Forms = Textract", wrong: { service: ["Amazon Rekognition", "Amazon Comprehend", "Amazon Athena"] } },
+    { id: "images", objective: "3.7", fields: { requirement: "Identify objects in video", service: "Amazon Rekognition" }, detail: "Rekognition analyzes images and video; Textract focuses on documents.", hook: "Visual recognition = Rekognition", wrong: { service: ["Amazon Textract", "Amazon Transcribe", "Amazon Polly"] } },
+    { id: "custom-model", objective: "3.7", fields: { requirement: "Build and train a custom ML model", service: "Amazon SageMaker AI" }, detail: "SageMaker AI is the custom model workflow; task-specific services are simpler when they fit.", hook: "Custom model = SageMaker AI", wrong: { service: ["Amazon Comprehend", "Amazon Lex", "Amazon Quick Sight"] } },
+    { id: "s3-sql", objective: "3.7", fields: { requirement: "Run SQL directly over S3 files", service: "Amazon Athena" }, detail: "Athena queries S3 data without managing database servers; it is not a warehouse.", hook: "S3 SQL = Athena", wrong: { service: ["Amazon Redshift", "AWS Glue", "Amazon EMR"] } },
+    { id: "etl", objective: "3.7", fields: { requirement: "Transform and catalog datasets", service: "AWS Glue" }, detail: "Glue integrates, transforms, and catalogs data; Athena queries it.", hook: "Prepare/catalog = Glue", wrong: { service: ["Amazon Athena", "Amazon Kinesis", "Amazon Quick Sight"] } },
+    { id: "big-data", objective: "3.7", fields: { requirement: "Managed big-data framework processing", service: "Amazon EMR" }, detail: "EMR provides managed big-data processing; this is not the ad hoc SQL cue for Athena.", hook: "Big data frameworks = EMR", wrong: { service: ["Amazon Athena", "AWS Glue", "Amazon Redshift"] } },
+    { id: "stream", objective: "3.7", fields: { requirement: "Ingest and process live telemetry", service: "Amazon Kinesis" }, detail: "Kinesis handles streams; SQS is the durable queue choice.", hook: "Live stream = Kinesis", wrong: { service: ["Amazon SQS", "Amazon Athena", "Amazon Redshift"] } },
+    { id: "search", objective: "3.7", fields: { requirement: "Search indexed application logs", service: "Amazon OpenSearch Service" }, detail: "OpenSearch searches indexed data; CloudWatch monitors metrics, logs, and alarms.", hook: "Indexed search = OpenSearch", wrong: { service: ["Amazon CloudWatch", "Amazon Athena", "AWS Glue"] } },
+    { id: "dashboard", objective: "3.7", fields: { requirement: "Build executive BI dashboards", service: "Amazon Quick Sight" }, detail: "Amazon Quick / Quick Sight provides BI visualization; Athena performs queries.", hook: "BI dashboard = Quick Sight", wrong: { service: ["Amazon Athena", "Amazon Redshift", "Amazon OpenSearch Service"] } },
+    { id: "warehouse", objective: "3.7", fields: { requirement: "Analytics data warehouse", service: "Amazon Redshift" }, detail: "Redshift is the warehouse choice; RDS/Aurora serve relational application workloads.", hook: "Warehouse = Redshift", wrong: { service: ["Amazon RDS", "Amazon Athena", "Amazon DynamoDB"] } },
+  ],
+};
+
+const awsClfAccessCompare: DrillDeck = {
+  id: "aws-clf-access-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "2.3",
+  topic: "Access management decisions",
+  modes: [
+    { id: "identityChooser", from: "requirement", to: "choice" },
+    { id: "controlChooser", from: "securityNeed", to: "choice" },
+  ],
+  tables: [
+    { id: "identity-chooser", fields: ["requirement", "choice"] },
+    { id: "control-chooser", fields: ["securityNeed", "choice"] },
+  ],
+  items: [
+    { id: "workforce", objective: "2.3", fields: { requirement: "Employees use a corporate identity provider", choice: "IAM Identity Center / federation" }, detail: "Centralized workforce access fits Identity Center and federation; do not share an IAM user.", hook: "People + corporate IdP = federation", wrong: { choice: ["Shared IAM user", "EC2 instance profile", "AWS KMS"] } },
+    { id: "workload", objective: "2.3", fields: { requirement: "EC2 application needs S3 without stored keys", choice: "IAM role + temporary credentials" }, detail: "A workload role avoids embedded long-lived keys.", hook: "Workload = role", wrong: { choice: ["Root access key", "IAM group", "Public bucket"] } },
+    { id: "organize", objective: "2.3", fields: { requirement: "Organize several IAM users", choice: "IAM group" }, detail: "Groups organize users; groups are not assumable identities.", hook: "Group = collection", wrong: { choice: ["IAM role", "Secrets Manager", "MFA"] } },
+    { id: "assume", objective: "2.3", fields: { requirement: "An identity must be assumable", choice: "IAM role" }, detail: "Roles are assumable and commonly provide temporary credentials.", hook: "Assumable = role", wrong: { choice: ["IAM group", "Password policy", "KMS key"] } },
+    { id: "secret", objective: "2.3", fields: { requirement: "Store an application database password", choice: "AWS Secrets Manager" }, detail: "Secrets Manager stores and manages application secrets; KMS manages encryption keys.", hook: "Application secret = Secrets Manager", wrong: { choice: ["AWS KMS", "IAM role", "CloudTrail"] } },
+    { id: "key", objective: "2.3", fields: { requirement: "Manage encryption keys", choice: "AWS KMS" }, detail: "KMS is the key-management service, not the application password store.", hook: "Encryption key = KMS", wrong: { choice: ["Secrets Manager", "IAM group", "IAM Identity Center"] } },
+    { id: "factor", objective: "2.3", fields: { securityNeed: "Add a second sign-in factor", choice: "MFA" }, detail: "MFA strengthens authentication; it does not define permissions.", hook: "Second factor = MFA", wrong: { choice: ["Permissions policy", "Password policy", "IAM group"] } },
+    { id: "permissions", objective: "2.3", fields: { securityNeed: "Define allowed API actions", choice: "Permissions policy" }, detail: "Policies define authorization; a role, user, or group receives permissions.", hook: "Allowed actions = policy", wrong: { choice: ["MFA", "Password policy", "Secrets Manager"] } },
+    { id: "password", objective: "2.3", fields: { securityNeed: "Require IAM-user password complexity", choice: "Account password policy" }, detail: "Password policies govern IAM-user passwords, not API permissions.", hook: "Password rules = password policy", wrong: { choice: ["Permissions policy", "MFA", "KMS"] } },
+  ],
+};
+
+const awsClfCostCompare: DrillDeck = {
+  id: "aws-clf-cost-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "4.1, 4.2",
+  topic: "Pricing models and cost tools",
+  modes: [
+    { id: "workloadToModel", from: "workload", to: "choice" },
+    { id: "costNeedToTool", from: "costNeed", to: "choice" },
+  ],
+  tables: [
+    { id: "purchase-models", fields: ["workload", "choice"] },
+    { id: "cost-tools", fields: ["costNeed", "choice"] },
+  ],
+  items: [
+    { id: "flexible", objective: "4.1", fields: { workload: "Uncertain demand with no commitment", choice: "On-Demand" }, detail: "On-Demand provides flexibility without a long-term commitment.", hook: "No commitment = On-Demand", wrong: { choice: ["Savings Plans", "Reserved Instances", "Capacity Reservation"] } },
+    { id: "interruptible", objective: "4.1", fields: { workload: "Restartable batch work using spare capacity", choice: "Spot" }, detail: "Spot is discounted spare capacity and can be interrupted.", hook: "Can stop = Spot", wrong: { choice: ["On-Demand", "Dedicated Host", "Capacity Reservation"] } },
+    { id: "steady", objective: "4.1", fields: { workload: "Steady eligible usage with a commitment discount", choice: "Savings Plan or Reserved Instance" }, detail: "Commitment models can reduce steady-use cost; they are not capacity guarantees.", hook: "Steady = commitment", wrong: { choice: ["Spot", "Capacity Reservation", "On-Demand"] } },
+    { id: "capacity", objective: "4.1", fields: { workload: "Guarantee launch capacity in a selected AZ", choice: "Capacity Reservation" }, detail: "Capacity Reservations address capacity; they are not simply discount instruments.", hook: "Capacity = reservation", wrong: { choice: ["Savings Plan", "Reserved Instance", "Cost allocation tag"] } },
+    { id: "host", objective: "4.1", fields: { workload: "Host-level licensing or physical-server visibility", choice: "Dedicated Host" }, detail: "Dedicated Host provides a dedicated physical server with host-level control.", hook: "Host control = Dedicated Host", wrong: { choice: ["Dedicated Instance", "Spot", "Savings Plan"] } },
+    { id: "estimate", objective: "4.2", fields: { costNeed: "Estimate before deployment", choice: "AWS Pricing Calculator" }, detail: "Calculator estimates planned architecture cost from assumptions.", hook: "Before = Calculator", wrong: { choice: ["Cost Explorer", "Budgets", "CUR"] } },
+    { id: "analyze", objective: "4.2", fields: { costNeed: "Analyze actual spend and trends", choice: "AWS Cost Explorer" }, detail: "Cost Explorer analyzes existing costs and usage.", hook: "Actual spend = Explorer", wrong: { choice: ["Pricing Calculator", "Budgets", "Cost allocation tags"] } },
+    { id: "alert", objective: "4.2", fields: { costNeed: "Alert when forecast or actual spend crosses a threshold", choice: "AWS Budgets" }, detail: "Budgets provides configured threshold alerts; it is not a real-time hard cap.", hook: "Threshold = Budgets", wrong: { choice: ["Cost Explorer", "CUR", "Pricing Calculator"] } },
+    { id: "detail", objective: "4.2", fields: { costNeed: "Detailed cost and usage records", choice: "Cost and Usage Report" }, detail: "CUR supplies granular billing and usage data for reporting.", hook: "Detailed records = CUR", wrong: { choice: ["Budgets", "Organizations", "AWS Health"] } },
+    { id: "attribute", objective: "4.2", fields: { costNeed: "Attribute spend to teams or projects", choice: "Cost allocation tags" }, detail: "Activate eligible tag keys for billing allocation; activation and data availability can be delayed.", hook: "Attribute = tags", wrong: { choice: ["Budgets", "Cost Explorer", "Spot"] } },
+    { id: "consolidate", objective: "4.2", fields: { costNeed: "Consolidate billing across accounts", choice: "AWS Organizations" }, detail: "Organizations provides multi-account management and consolidated billing context.", hook: "Accounts together = Organizations", wrong: { choice: ["CUR", "Trusted Advisor", "Pricing Calculator"] } },
+    { id: "savings-capacity", objective: "4.1", fields: { workload: "Discount commitment versus AZ launch assurance", choice: "Savings Plan versus Capacity Reservation" }, detail: "Savings Plans address eligible-compute pricing commitment; Capacity Reservations address EC2 launch capacity in a selected AZ.", hook: "Discount ≠ capacity", wrong: { choice: ["Spot versus On-Demand", "Host versus instance", "Tags versus budgets"] } },
+    { id: "spot-guarantee", objective: "4.1", fields: { workload: "Interruptible batch versus guaranteed availability", choice: "Spot versus Capacity Reservation" }, detail: "Spot can be interrupted; Capacity Reservation is the capacity-availability cue.", hook: "Can stop = Spot", wrong: { choice: ["Savings Plan versus RI", "Host versus instance", "Calculator versus Explorer"] } },
+    { id: "host-instance", objective: "4.1", fields: { workload: "Physical host licensing versus single-tenant hardware", choice: "Dedicated Host versus Dedicated Instance" }, detail: "Dedicated Host provides host-level visibility/control; Dedicated Instance provides dedicated tenancy without the same host allocation model.", hook: "Host control = Host", wrong: { choice: ["Spot versus On-Demand", "RI versus capacity", "Budget versus CUR"] } },
+    { id: "invoice", objective: "4.2", fields: { costNeed: "Amount owed versus spend analysis", choice: "Invoice versus Cost Explorer" }, detail: "Bills/invoices represent charges owed; Cost Explorer analyzes current or historical cost and usage.", hook: "Owed = invoice; trends = Explorer", wrong: { choice: ["Calculator versus Budgets", "CUR versus tags", "Organizations versus Health"] } },
+    { id: "tags-org", objective: "4.2", fields: { costNeed: "Attribute spend versus combine account bills", choice: "Tags versus Organizations" }, detail: "Cost allocation tags attribute spend; Organizations supports account structure and consolidated billing.", hook: "Attribute ≠ consolidate", wrong: { choice: ["Explorer versus Budgets", "CUR versus Calculator", "Health versus Advisor"] } },
+  ],
+};
+
+const awsClfMigrationCompare: DrillDeck = {
+  id: "aws-clf-migration-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "1.3",
+  topic: "Migration and adoption decisions",
+  modes: [
+    { id: "constraintToStrategy", from: "constraint", to: "strategy" },
+    { id: "needToResource", from: "need", to: "resource" },
+    { id: "phaseToAction", from: "phase", to: "action" },
+  ],
+  tables: [
+    { id: "strategy-chooser", fields: ["constraint", "strategy"] },
+    { id: "resource-chooser", fields: ["need", "resource"] },
+    { id: "lifecycle", fields: ["phase", "action"] },
+  ],
+  items: [
+    { id: "minimal", objective: "1.3", fields: { constraint: "Minimal code change", strategy: "Rehost", need: "General server migration", resource: "Application Migration Service", phase: "Discover", action: "Map dependencies and utilization" }, detail: "Rehost moves with minimal application change; discover dependencies before moving.", hook: "Minimal change = rehost", wrong: { strategy: ["Replatform", "Refactor", "Retire"] } },
+    { id: "managed", objective: "1.3", fields: { constraint: "Selected managed-service improvement", strategy: "Replatform", need: "Database movement or replication", resource: "AWS Database Migration Service", phase: "Choose strategy", action: "Match change to the business constraint" }, detail: "Replatform makes limited optimizations; DMS supports database movement but is not a strategy.", hook: "Limited optimization = replatform", wrong: { strategy: ["Rehost", "Refactor", "Retain"] } },
+    { id: "redesign", objective: "1.3", fields: { constraint: "Major cloud-native redesign", strategy: "Refactor / re-architect", need: "Online data transfer", resource: "AWS DataSync", phase: "Prepare", action: "Plan target, pilot, and rollback" }, detail: "Refactoring changes architecture substantially; DataSync transfers data but does not migrate application behavior.", hook: "Major redesign = refactor", wrong: { strategy: ["Rehost", "Repurchase", "Retire"] } },
+    { id: "replacement", objective: "1.3", fields: { constraint: "Replace the product model", strategy: "Repurchase", need: "Assess dependencies and utilization", resource: "Discovery / Migration Evaluator", phase: "Migrate", action: "Move or replicate the workload" }, detail: "Repurchase replaces the implementation; assessment informs the plan before migration.", hook: "Replace product = repurchase", wrong: { strategy: ["Rehost", "Retain", "Refactor"] } },
+    { id: "unneeded", objective: "1.3", fields: { constraint: "Workload has no remaining business use", strategy: "Retire", need: "Hybrid storage connection", resource: "AWS Storage Gateway", phase: "Validate", action: "Check data, application, security, and business outcomes" }, detail: "Retire removes an unnecessary workload; Storage Gateway supports hybrid storage scenarios.", hook: "Unneeded = retire", wrong: { strategy: ["Retain", "Rehost", "Replatform"] } },
+    { id: "defer", objective: "1.3", fields: { constraint: "Must remain on premises for now", strategy: "Retain", need: "Organizational adoption readiness", resource: "AWS Cloud Adoption Framework", phase: "Cut over", action: "Transition users or traffic after checks pass" }, detail: "Retain defers migration; CAF helps organize adoption readiness and outcomes.", hook: "Defer = retain", wrong: { strategy: ["Retire", "Repurchase", "Refactor"] } },
+    { id: "pilot", objective: "1.3", fields: { constraint: "Test a small migration before broad rollout", strategy: "Pilot before scale", need: "Business case and assessment", resource: "Migration Evaluator", phase: "Rollback", action: "Return to the prior path when a required check fails" }, detail: "A pilot reduces risk; Migration Evaluator supports assessment/business-case context.", hook: "Small test = pilot", wrong: { strategy: ["Blind cutover", "Retire", "Rehost"] } },
+  ],
+};
+
+const awsClfOtherServicesCompare: DrillDeck = {
+  id: "aws-clf-other-services-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.8",
+  topic: "Other AWS service category decisions",
+  modes: [
+    { id: "requirementToService", from: "requirement", to: "service" },
+    { id: "serviceToRequirement", from: "service", to: "requirement" },
+    { id: "confusionPair", from: "confusion", to: "service" },
+  ],
+  tables: [
+    { id: "requirement-service", fields: ["requirement", "service"] },
+    { id: "confusion-pairs", fields: ["confusion", "service"] },
+  ],
+  items: [
+    { id: "queue", objective: "3.8", fields: { requirement: "Durable asynchronous queue", service: "Amazon SQS", confusion: "Queue", }, detail: "SQS decouples producers and consumers with durable queueing.", hook: "Queue = SQS", wrong: { service: ["Amazon SNS", "Amazon EventBridge", "AWS Step Functions"] } },
+    { id: "fanout", objective: "3.8", fields: { requirement: "Publish to many subscribers", service: "Amazon SNS", confusion: "Fanout", }, detail: "SNS provides publish/subscribe fanout.", hook: "Fanout = SNS", wrong: { service: ["Amazon SQS", "Amazon EventBridge", "Amazon SES"] } },
+    { id: "routing", objective: "3.8", fields: { requirement: "Route events using rules", service: "Amazon EventBridge", confusion: "Event routing", }, detail: "EventBridge routes events from sources to targets.", hook: "Route events = EventBridge", wrong: { service: ["Amazon SNS", "Amazon SQS", "AWS Step Functions"] } },
+    { id: "workflow", objective: "3.8", fields: { requirement: "Coordinate workflow steps", service: "AWS Step Functions", confusion: "Workflow", }, detail: "Step Functions coordinates multi-step workflows.", hook: "Workflow = Step Functions", wrong: { service: ["Amazon EventBridge", "Amazon SQS", "AWS CodePipeline"] } },
+    { id: "contact", objective: "3.8", fields: { requirement: "Cloud contact center", service: "Amazon Connect", confusion: "Contact center", }, detail: "Connect is the cloud contact-center choice.", hook: "Contact center = Connect", wrong: { service: ["Amazon SES", "AWS Support", "Amazon WorkSpaces"] } },
+    { id: "email", objective: "3.8", fields: { requirement: "Application or transactional email", service: "Amazon SES", confusion: "Email", }, detail: "SES sends application email.", hook: "Application email = SES", wrong: { service: ["Amazon SNS", "Amazon Connect", "Amazon SQS"] } },
+    { id: "build", objective: "3.8", fields: { requirement: "Compile, build, and test source", service: "AWS CodeBuild", confusion: "Build", }, detail: "CodeBuild performs source build and test work.", hook: "Build = CodeBuild", wrong: { service: ["AWS CodePipeline", "AWS X-Ray", "AWS Amplify"] } },
+    { id: "pipeline", objective: "3.8", fields: { requirement: "Orchestrate delivery stages", service: "AWS CodePipeline", confusion: "Pipeline", }, detail: "CodePipeline coordinates delivery stages.", hook: "Pipeline = CodePipeline", wrong: { service: ["AWS CodeBuild", "AWS X-Ray", "Amazon EventBridge"] } },
+    { id: "trace", objective: "3.8", fields: { requirement: "Trace a distributed request", service: "AWS X-Ray", confusion: "Trace", }, detail: "X-Ray provides distributed request tracing.", hook: "Trace = X-Ray", wrong: { service: ["Amazon CloudWatch", "AWS CodePipeline", "AWS Config"] } },
+    { id: "application", objective: "3.8", fields: { requirement: "Stream an application", service: "Amazon AppStream 2.0", confusion: "Application", }, detail: "AppStream streams applications to users.", hook: "Application = AppStream", wrong: { service: ["Amazon WorkSpaces", "Amazon WorkSpaces Secure Browser", "Amazon Connect"] } },
+    { id: "desktop", objective: "3.8", fields: { requirement: "Managed virtual desktop", service: "Amazon WorkSpaces", confusion: "Desktop", }, detail: "WorkSpaces provides managed virtual desktops.", hook: "Desktop = WorkSpaces", wrong: { service: ["Amazon AppStream 2.0", "Amazon WorkSpaces Secure Browser", "Amazon Connect"] } },
+    { id: "browser", objective: "3.8", fields: { requirement: "Secure browser-only access", service: "Amazon WorkSpaces Secure Browser", confusion: "Browser", }, detail: "Secure Browser provides browser-only access to web applications.", hook: "Browser = Secure Browser", wrong: { service: ["Amazon WorkSpaces", "Amazon AppStream 2.0", "Amazon SES"] } },
+    { id: "frontend", objective: "3.8", fields: { requirement: "Frontend web or mobile application", service: "AWS Amplify", confusion: "Frontend/mobile", }, detail: "Amplify supports frontend web and mobile application development and deployment.", hook: "Frontend = Amplify", wrong: { service: ["AWS CodeBuild", "Amazon Connect", "Amazon IoT Core"] } },
+    { id: "devices", objective: "3.8", fields: { requirement: "Connect and manage IoT devices", service: "Amazon IoT Core", confusion: "Devices", }, detail: "IoT Core supports connected-device interaction and device-to-cloud messaging.", hook: "Devices = IoT Core", wrong: { service: ["Amazon EventBridge", "AWS Amplify", "Amazon WorkSpaces"] } },
+    { id: "support", objective: "3.8", fields: { requirement: "AWS business or technical assistance", service: "AWS Support", confusion: "Support", }, detail: "AWS Support is the recognition-level customer-enablement choice.", hook: "AWS assistance = Support", wrong: { service: ["AWS Marketplace", "Amazon Connect", "AWS X-Ray"] } },
+  ],
+};
+
+const awsClfSupportResources: DrillDeck = {
+  id: "aws-clf-support-resources",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "4.3",
+  topic: "AWS support and technical resources",
+  modes: [
+    { id: "needToResource", from: "supportNeed", to: "resource" },
+    { id: "signalToResource", from: "operationalSignal", to: "resource" },
+  ],
+  tables: [
+    { id: "support-resources", fields: ["supportNeed", "resource"] },
+    { id: "operational-signals", fields: ["operationalSignal", "resource"] },
+  ],
+  items: [
+    { id: "reference", objective: "4.3", fields: { supportNeed: "Authoritative service reference", resource: "AWS documentation / whitepapers" }, detail: "Official documentation and whitepapers are authoritative technical references.", hook: "Reference = docs", wrong: { resource: ["AWS re:Post", "Support Center", "AWS Marketplace"] } },
+    { id: "troubleshooting", objective: "4.3", fields: { supportNeed: "AWS troubleshooting article", resource: "Knowledge Center" }, detail: "Knowledge Center provides AWS support and troubleshooting knowledge.", hook: "Troubleshooting = Knowledge Center", wrong: { resource: ["Pricing Calculator", "AWS Health", "Marketplace"] } },
+    { id: "patterns", objective: "4.3", fields: { supportNeed: "Implementation patterns and strategies", resource: "Prescriptive Guidance" }, detail: "Prescriptive Guidance provides patterns and implementation guidance.", hook: "Patterns = Prescriptive", wrong: { resource: ["Support Center", "Budgets", "Trust and Safety"] } },
+    { id: "case", objective: "4.3", fields: { supportNeed: "Open an eligible support case", resource: "Support Center" }, detail: "Support Center handles eligible support cases according to plan entitlements.", hook: "Case = Support Center", wrong: { resource: ["Trusted Advisor", "AWS Health", "Marketplace"] } },
+    { id: "recommendation", objective: "4.3", fields: { operationalSignal: "Best-practice recommendation", resource: "Trusted Advisor" }, detail: "Trusted Advisor provides supported recommendations and checks.", hook: "Recommendation = Trusted Advisor", wrong: { resource: ["AWS Health", "Trust and Safety", "Support Center"] } },
+    { id: "health", objective: "4.3", fields: { operationalSignal: "Account or service health event", resource: "AWS Health" }, detail: "AWS Health provides relevant health information through dashboard/API.", hook: "Health event = AWS Health", wrong: { resource: ["Trusted Advisor", "AWS re:Post", "Budgets"] } },
+    { id: "abuse", objective: "4.3", fields: { operationalSignal: "Suspected AWS-resource abuse", resource: "Trust and Safety" }, detail: "Trust and Safety is the appropriate abuse-reporting path.", hook: "Abuse = Trust and Safety", wrong: { resource: ["Support Center", "Marketplace", "Cost Explorer"] } },
+    { id: "third-party", objective: "4.3", fields: { supportNeed: "Discover third-party software", resource: "AWS Marketplace / Partner Network" }, detail: "Marketplace and partners provide third-party software/services; they are not automatically AWS-native or compliant.", hook: "Third-party = Marketplace/Partner", wrong: { resource: ["Professional Services", "AWS Health", "Trusted Advisor"] } },
+    { id: "experts", objective: "4.3", fields: { supportNeed: "Transformation project and architecture guidance", resource: "Professional Services / solutions architect" }, detail: "Professional Services assists with projects; solutions architects provide architecture guidance.", hook: "Project expertise = AWS experts", wrong: { resource: ["AWS Marketplace", "Budgets", "Trust and Safety"] } },
+    { id: "basic", objective: "4.3", fields: { supportNeed: "Account, billing, documentation and general resources", resource: "Basic Support" }, detail: "Basic Support is the general baseline and should not be presented as normal enhanced technical case coverage.", hook: "Baseline = Basic", wrong: { resource: ["Business Support+", "Enterprise Support", "Unified Operations"] } },
+    { id: "production", objective: "4.3", fields: { supportNeed: "Production workload and 24/7 technical support", resource: "Business Support+" }, detail: "Business Support+ is the production technical-support and AWS expert-engagement cue.", hook: "Production = Business+", wrong: { resource: ["Basic Support", "AWS Health", "Marketplace"] } },
+    { id: "strategic", objective: "4.3", fields: { supportNeed: "Business-critical workload and strategic guidance/TAM", resource: "Enterprise Support" }, detail: "Enterprise Support cues proactive strategic guidance and Technical Account Manager support.", hook: "Strategic = Enterprise", wrong: { resource: ["Business Support+", "re:Post", "Trusted Advisor"] } },
+    { id: "mission-critical", objective: "4.3", fields: { supportNeed: "Mission-critical workload and highest proactive operations assistance", resource: "Unified Operations" }, detail: "Unified Operations is the highest current enhanced support-tier cue for proactive operations and resilience assistance.", hook: "Mission-critical = Unified", wrong: { resource: ["Basic Support", "Marketplace", "Cost Explorer"] } },
+    { id: "community", objective: "4.3", fields: { supportNeed: "Shared community expertise rather than a private case", resource: "AWS re:Post" }, detail: "re:Post provides community and knowledge exchange; it is not a guaranteed private support case.", hook: "Community = re:Post", wrong: { resource: ["Support Center", "Professional Services", "AWS Health"] } },
+  ],
+};
+
+const awsClfWellArchitectedCompare: DrillDeck = {
+  id: "aws-clf-well-architected-compare",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "1.2",
+  topic: "Well-Architected pillar decisions",
+  modes: [
+    { id: "scenarioToPillar", from: "scenario", to: "pillar" },
+    { id: "pillarToFocus", from: "pillar", to: "focus" },
+  ],
+  tables: [
+    { id: "pillar-cues", fields: ["scenario", "pillar"] },
+    { id: "pillar-focus", fields: ["pillar", "focus"] },
+  ],
+  items: [
+    { id: "operations", objective: "1.2", fields: { scenario: "Repeatable operations and continual improvement", pillar: "Operational Excellence", focus: "Run and improve", }, detail: "Operational Excellence concerns operating and improving workloads.", hook: "Operate = Operational Excellence", wrong: { pillar: ["Reliability", "Cost Optimization", "Security"] } },
+    { id: "security", objective: "1.2", fields: { scenario: "Protect identities, data and systems", pillar: "Security", focus: "Protect", }, detail: "Security protects systems, data and identities.", hook: "Protect = Security", wrong: { pillar: ["Reliability", "Sustainability", "Performance Efficiency"] } },
+    { id: "reliability", objective: "1.2", fields: { scenario: "Continue and recover after component failure", pillar: "Reliability", focus: "Resilience and recovery", }, detail: "Reliability is the resilience and recovery cue.", hook: "Recover = Reliability", wrong: { pillar: ["Performance Efficiency", "Security", "Cost Optimization"] } },
+    { id: "performance", objective: "1.2", fields: { scenario: "Use resources and technology efficiently", pillar: "Performance Efficiency", focus: "Effective resource use", }, detail: "Performance Efficiency concerns effective workload resource use.", hook: "Efficient resources = Performance", wrong: { pillar: ["Reliability", "Sustainability", "Operational Excellence"] } },
+    { id: "cost", objective: "1.2", fields: { scenario: "Avoid unnecessary cloud spend", pillar: "Cost Optimization", focus: "Value for spend", }, detail: "Cost Optimization targets unnecessary spending.", hook: "Spend = Cost", wrong: { pillar: ["Sustainability", "Security", "Reliability"] } },
+    { id: "sustainability", objective: "1.2", fields: { scenario: "Reduce environmental impact", pillar: "Sustainability", focus: "Environmental impact", }, detail: "Sustainability addresses environmental impacts.", hook: "Environment = Sustainability", wrong: { pillar: ["Cost Optimization", "Performance Efficiency", "Security"] } },
+  ],
+};
+
+const awsClfSecurityTransfer: DrillDeck = {
+  id: "aws-clf-security-transfer",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "2.1, 2.2, 2.4",
+  topic: "Security and governance transfer",
+  modes: [
+    { id: "requirementToService", from: "requirement", to: "service" },
+    { id: "workloadToOwner", from: "workload", to: "owner" },
+  ],
+  tables: [
+    { id: "security-cues", fields: ["requirement", "service"] },
+    { id: "responsibility", fields: ["workload", "owner"] },
+  ],
+  items: [
+    { id: "patch", objective: "2.1", fields: { workload: "EC2 guest OS patch", owner: "Customer", requirement: "API audit", service: "CloudTrail" }, detail: "EC2 guest OS patching is customer responsibility; CloudTrail records API activity.", hook: "EC2 OS = customer; API = CloudTrail", wrong: { owner: ["AWS", "ISP"], service: ["CloudWatch", "Config"] } },
+    { id: "physical", objective: "2.1", fields: { workload: "Physical AWS host", owner: "AWS", requirement: "Configuration history", service: "AWS Config" }, detail: "AWS manages physical infrastructure; Config tracks supported resource configuration.", hook: "Physical = AWS; config = Config", wrong: { owner: ["Customer", "Application vendor"], service: ["Artifact", "CloudWatch"] } },
+    { id: "lambda", objective: "2.1", fields: { workload: "Lambda code and IAM", owner: "Customer", requirement: "Operational alarm", service: "CloudWatch" }, detail: "Customers own Lambda code/IAM; CloudWatch provides metrics and alarms.", hook: "Lambda code = customer; alarm = Watch", wrong: { owner: ["AWS", "ISP"], service: ["CloudTrail", "Artifact"] } },
+    { id: "artifact", objective: "2.2", fields: { requirement: "Compliance documents", service: "AWS Artifact" }, detail: "Artifact supplies AWS compliance reports and agreements.", hook: "Documents = Artifact", wrong: { service: ["CloudWatch", "Config", "GuardDuty"] } },
+    { id: "waf", objective: "2.4", fields: { requirement: "Filter web requests", service: "AWS WAF" }, detail: "WAF filters web requests.", hook: "Web filter = WAF", wrong: { service: ["Shield", "GuardDuty", "Inspector"] } },
+    { id: "shield", objective: "2.4", fields: { requirement: "DDoS protection", service: "AWS Shield" }, detail: "Shield provides DDoS protection.", hook: "DDoS = Shield", wrong: { service: ["WAF", "Config", "Artifact"] } },
+    { id: "guard", objective: "2.4", fields: { requirement: "Detect suspicious activity", service: "Amazon GuardDuty" }, detail: "GuardDuty detects threats from AWS signals.", hook: "Detect = GuardDuty", wrong: { service: ["Inspector", "WAF", "Trusted Advisor"] } },
+    { id: "manager", objective: "2.4", fields: { requirement: "Central firewall policy", service: "AWS Firewall Manager" }, detail: "Firewall Manager centrally manages supported policies.", hook: "Central policy = Firewall Manager", wrong: { service: ["WAF", "Shield", "Marketplace"] } },
+  ],
+};
+
+const awsClfCloudTechCore: DrillDeck = {
+  id: "aws-clf-cloud-tech-core",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.1–3.3",
+  topic: "Cloud operating methods, infrastructure and compute",
+  modes: [
+    { id: "requirementToChoice", from: "requirement", to: "choice" },
+    { id: "confusionPair", from: "cue", to: "distinction" },
+  ],
+  tables: [
+    { id: "method-and-service", fields: ["requirement", "choice"] },
+    { id: "confusion-pairs", fields: ["cue", "distinction"] },
+  ],
+  items: [
+    { id: "console", objective: "3.1", fields: { requirement: "Human, graphical, one-time inspection", choice: "Management Console" }, detail: "The console fits interactive browser-based administration.", hook: "Human + visual = Console", wrong: { choice: ["CLI", "SDK", "CloudFormation"] } },
+    { id: "cli", objective: "3.1", fields: { requirement: "Repeatable shell administration", choice: "CLI/script" }, detail: "The CLI supports command-line interaction and scripting.", hook: "Shell repeat = CLI", wrong: { choice: ["Console", "SDK", "Edge location"] } },
+    { id: "sdk", objective: "3.1", fields: { requirement: "Application code calling AWS", choice: "SDK/API" }, detail: "An SDK or API provides programmatic application access.", hook: "Application = SDK/API", wrong: { choice: ["Console", "CLI only", "AZ"] } },
+    { id: "iac", objective: "3.1", fields: { requirement: "Consistent versioned provisioning", choice: "IaC / CloudFormation" }, detail: "IaC defines repeatable infrastructure rather than relying on remembered clicks.", hook: "Repeatable resources = IaC", wrong: { choice: ["Console only", "Support case", "Edge location"] } },
+    { id: "hybrid", objective: "3.1", fields: { requirement: "On-premises systems plus AWS resources", choice: "Hybrid" }, detail: "Hybrid combines on-premises and cloud environments; it is not multi-cloud by definition.", hook: "On-prem + cloud = Hybrid", wrong: { choice: ["Cloud-only", "On-premises only", "Multi-AZ"] } },
+    { id: "az", objective: "3.2", fields: { requirement: "Survive one AZ failure", choice: "Multi-AZ" }, detail: "Multi-AZ addresses an Availability Zone failure within a Region.", hook: "One AZ fails = Multi-AZ", wrong: { choice: ["Multi-Region", "Edge", "One subnet"] } },
+    { id: "region", objective: "3.2", fields: { requirement: "Recover from a Region outage", choice: "Multi-Region" }, detail: "Regional disaster recovery may require another permitted Region.", hook: "Region fails = another Region", wrong: { choice: ["Multi-AZ only", "Edge", "Auto Scaling"] } },
+    { id: "edge", objective: "3.2", fields: { requirement: "Lower latency for supported global content delivery", choice: "Edge location" }, detail: "Edge delivery places supported content or services closer to users.", hook: "User proximity = Edge", wrong: { choice: ["AZ", "Region database", "EC2 family"] } },
+    { id: "residency", objective: "3.2", fields: { requirement: "Keep data in an approved geography", choice: "Permitted Region selection" }, detail: "Residency constrains where processing and storage may occur.", hook: "Residency = permitted Region", wrong: { choice: ["Global replication always", "Any edge", "Load balancer"] } },
+    { id: "ec2", objective: "3.3", fields: { requirement: "Long-running workload with guest-OS control", choice: "EC2" }, detail: "EC2 provides VM-style control.", hook: "VM control = EC2", wrong: { choice: ["Lambda", "Fargate", "SQS"] } },
+    { id: "lambda", objective: "3.3", fields: { requirement: "Event-driven function", choice: "Lambda" }, detail: "Lambda runs suitable functions without customer server management.", hook: "Function = Lambda", wrong: { choice: ["EC2", "EKS", "EBS"] } },
+    { id: "kubernetes", objective: "3.3", fields: { requirement: "Explicit Kubernetes requirement", choice: "EKS" }, detail: "EKS is the managed Kubernetes cue.", hook: "Kubernetes = EKS", wrong: { choice: ["ECS", "Fargate", "Lambda"] } },
+    { id: "containers", objective: "3.3", fields: { requirement: "Containers without managing servers", choice: "Fargate" }, detail: "Fargate is serverless container compute, not an orchestrator.", hook: "Serverless containers = Fargate", wrong: { choice: ["EKS", "ECS", "Lambda"] } },
+    { id: "capacity", objective: "3.3", fields: { requirement: "Increase or decrease compute with demand", choice: "Auto Scaling" }, detail: "Auto Scaling adjusts capacity according to demand or policies.", hook: "Capacity changes = Auto Scaling", wrong: { choice: ["Load balancer", "CloudTrail", "Route 53"] } },
+    { id: "traffic", objective: "3.3", fields: { requirement: "Distribute requests across targets", choice: "Load balancer" }, detail: "A load balancer spreads incoming traffic; it does not itself add capacity.", hook: "Traffic spreads = Load balancer", wrong: { choice: ["Auto Scaling", "Lambda", "Budgets"] } },
+    { id: "cli-sdk", objective: "3.1", fields: { cue: "CLI versus SDK", distinction: "Shell command/script versus application code" }, detail: "CLI is command-line administration; SDK/API is software-to-AWS integration.", hook: "Shell ≠ application", wrong: { distinction: ["Both are physical infrastructure", "Both are billing tools"] } },
+    { id: "region-az", objective: "3.2", fields: { cue: "Region versus AZ", distinction: "Geographic area versus isolated location within it" }, detail: "Regions contain multiple AZs.", hook: "Region contains AZ", wrong: { distinction: ["They are synonyms", "AZ contains Regions"] } },
+    { id: "az-edge", objective: "3.2", fields: { cue: "AZ versus edge", distinction: "Failure domain versus user-proximity delivery point" }, detail: "AZs host regional workloads; edge locations serve selected edge services closer to users.", hook: "Failure domain ≠ edge", wrong: { distinction: ["Both are Regions", "Edge is a subnet"] } },
+    { id: "ecs-eks", objective: "3.3", fields: { cue: "ECS versus EKS", distinction: "AWS orchestration versus managed Kubernetes" }, detail: "EKS is the explicit Kubernetes cue; ECS is AWS container orchestration.", hook: "Kubernetes = EKS", wrong: { distinction: ["ECS is always Kubernetes", "They are load balancers"] } },
+    { id: "scaling-balancing", objective: "3.3", fields: { cue: "Auto Scaling versus load balancing", distinction: "Adjust capacity versus distribute traffic" }, detail: "They solve different problems and are often combined.", hook: "Capacity versus traffic", wrong: { distinction: ["Both are backups", "Both are orchestrators"] } },
+  ],
+};
+
+const awsClfDataNetworkStorage: DrillDeck = {
+  id: "aws-clf-data-network-storage",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "3.4–3.6",
+  topic: "Database, network and storage decisions",
+  modes: [
+    { id: "workloadToDatabase", from: "workload", to: "database" },
+    { id: "networkToChoice", from: "requirement", to: "choice" },
+    { id: "storageToChoice", from: "storage", to: "choice" },
+    { id: "confusionPair", from: "cue", to: "distinction" },
+  ],
+  tables: [
+    { id: "database-cues", fields: ["workload", "database"] },
+    { id: "network-cues", fields: ["requirement", "choice"] },
+    { id: "storage-cues", fields: ["storage", "choice"] },
+    { id: "confusion-pairs", fields: ["cue", "distinction"] },
+  ],
+  items: [
+    { id: "rds", objective: "3.4", fields: { workload: "Relational SQL application", database: "RDS / Aurora" }, detail: "RDS and Aurora are managed relational cues.", hook: "Relational = RDS/Aurora", wrong: { database: ["DynamoDB", "ElastiCache", "DMS"] } },
+    { id: "dynamodb", objective: "3.4", fields: { workload: "Key-value or document access", database: "DynamoDB" }, detail: "DynamoDB is managed NoSQL key-value/document storage.", hook: "Key-value = DynamoDB", wrong: { database: ["RDS", "Aurora", "ElastiCache"] } },
+    { id: "cache", objective: "3.4", fields: { workload: "Repeated reads need low latency", database: "ElastiCache" }, detail: "ElastiCache is managed in-memory caching, not automatically a primary database.", hook: "Hot repeat reads = Cache", wrong: { database: ["DynamoDB", "RDS", "SCT"] } },
+    { id: "dms", objective: "3.4", fields: { workload: "Move or replicate database data", database: "DMS" }, detail: "DMS moves or replicates data during database migration.", hook: "Move data = DMS", wrong: { database: ["SCT", "ElastiCache", "Route 53"] } },
+    { id: "sct", objective: "3.4", fields: { workload: "Convert schema or database code", database: "SCT" }, detail: "SCT helps convert schema or database code between engines.", hook: "Convert schema = SCT", wrong: { database: ["DMS", "RDS", "EBS"] } },
+    { id: "vpc", objective: "3.5", fields: { requirement: "Logically isolated AWS network", choice: "VPC" }, detail: "A VPC is the logically isolated virtual network.", hook: "Isolated network = VPC", wrong: { choice: ["Subnet", "Route 53", "NACL"] } },
+    { id: "subnet", objective: "3.5", fields: { requirement: "Network segment inside a VPC", choice: "Subnet" }, detail: "A subnet is a segment within a VPC.", hook: "Segment = Subnet", wrong: { choice: ["VPC", "VPN", "Inspector"] } },
+    { id: "sg", objective: "3.5", fields: { requirement: "Stateful resource-level traffic control", choice: "Security group" }, detail: "Security groups are stateful resource-level controls.", hook: "Stateful resource = SG", wrong: { choice: ["NACL", "Route 53", "Inspector"] } },
+    { id: "nacl", objective: "3.5", fields: { requirement: "Stateless subnet-level traffic control", choice: "Network ACL" }, detail: "Network ACLs are stateless subnet-level controls.", hook: "Stateless subnet = NACL", wrong: { choice: ["Security group", "VPN", "DMS"] } },
+    { id: "dns", objective: "3.5", fields: { requirement: "Domain-name resolution", choice: "Route 53" }, detail: "Route 53 is the DNS and domain-name routing cue.", hook: "Names = Route 53", wrong: { choice: ["Load balancer", "Direct Connect", "VPC"] } },
+    { id: "vpn", objective: "3.5", fields: { requirement: "Encrypted connection over the internet", choice: "VPN" }, detail: "VPN provides encrypted network connectivity over an internet path.", hook: "Encrypted internet = VPN", wrong: { choice: ["Direct Connect", "Route 53", "Inspector"] } },
+    { id: "direct-connect", objective: "3.5", fields: { requirement: "Dedicated private network path", choice: "Direct Connect" }, detail: "Direct Connect is the dedicated private connectivity cue, not an automatic encryption guarantee.", hook: "Dedicated private = DX", wrong: { choice: ["VPN", "Route 53", "Security group"] } },
+    { id: "inspector", objective: "3.5", fields: { requirement: "Vulnerability and unintended exposure assessment", choice: "Inspector" }, detail: "Inspector assesses supported workloads; it is not a packet filter.", hook: "Vulnerabilities = Inspector", wrong: { choice: ["NACL", "Security group", "VPN"] } },
+    { id: "s3", objective: "3.6", fields: { storage: "Objects and static assets", choice: "S3" }, detail: "S3 is object storage.", hook: "Objects = S3", wrong: { choice: ["EBS", "EFS", "Instance store"] } },
+    { id: "ebs", objective: "3.6", fields: { storage: "Persistent EC2 block device", choice: "EBS" }, detail: "EBS is persistent block storage for EC2.", hook: "Persistent EC2 disk = EBS", wrong: { choice: ["S3", "Instance store", "EFS"] } },
+    { id: "instance-store", objective: "3.6", fields: { storage: "Temporary local block", choice: "Instance store" }, detail: "Instance store is ephemeral local block storage.", hook: "Temporary local = Instance store", wrong: { choice: ["EBS", "S3", "AWS Backup"] } },
+    { id: "efs", objective: "3.6", fields: { storage: "Shared Linux file system", choice: "EFS" }, detail: "EFS provides managed shared file semantics.", hook: "Shared files = EFS", wrong: { choice: ["S3", "EBS", "DMS"] } },
+    { id: "gateway", objective: "3.6", fields: { storage: "On-premises plus AWS storage integration", choice: "Storage Gateway" }, detail: "Storage Gateway is the hybrid storage integration cue.", hook: "Hybrid storage = Gateway", wrong: { choice: ["EFS", "S3 Lifecycle", "Route 53"] } },
+    { id: "backup", objective: "3.6", fields: { storage: "Centralized backup policy", choice: "AWS Backup" }, detail: "AWS Backup manages backup policies for supported resources.", hook: "Backup policy = AWS Backup", wrong: { choice: ["S3 Lifecycle", "Replication", "Instance store"] } },
+    { id: "sg-nacl", objective: "3.5", fields: { cue: "Security group versus NACL", distinction: "Stateful resource-level versus stateless subnet-level" }, detail: "The boundary and state model distinguish these controls.", hook: "Resource/state versus subnet/stateless", wrong: { distinction: ["DNS versus backup", "Object versus block"] } },
+    { id: "dms-sct", objective: "3.4", fields: { cue: "DMS versus SCT", distinction: "Move/replicate data versus convert schema/code" }, detail: "Migration may use both tools, but their jobs differ.", hook: "Move versus convert", wrong: { distinction: ["Cache versus DNS", "Block versus file"] } },
+    { id: "s3-ebs", objective: "3.6", fields: { cue: "S3 versus EBS", distinction: "Object storage versus persistent EC2 block" }, detail: "Choose from access semantics rather than the word storage alone.", hook: "Object versus block", wrong: { distinction: ["DNS versus VPN", "Relational versus cache"] } },
+  ],
+};
+
+const awsClfBenefitsEconomics: DrillDeck = {
+  id: "aws-clf-benefits-economics",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "1.1, 1.4",
+  topic: "Cloud benefits and economics",
+  modes: [
+    { id: "cueToConcept", from: "cue", to: "choice" },
+    { id: "conceptToCue", from: "choice", to: "cue" },
+  ],
+  tables: [
+    { id: "benefit-economics", fields: ["cue", "choice"] },
+  ],
+  items: [
+    { id: "spike", objective: "1.1", fields: { cue: "Unpredictable temporary demand spike", choice: "Elasticity" }, detail: "Elasticity dynamically adjusts capacity as demand changes.", hook: "Spike = elastic response", wrong: { choice: ["Agility", "Scalability", "Global reach"] } },
+    { id: "growth", objective: "1.1", fields: { cue: "Planned larger workload next year", choice: "Scalability" }, detail: "Scalability is the ability to handle a larger workload.", hook: "Growth = scale", wrong: { choice: ["Elasticity", "Durability", "Variable expense"] } },
+    { id: "experiment", objective: "1.1", fields: { cue: "Test environment in minutes instead of procurement weeks", choice: "Agility" }, detail: "Agility is faster provisioning, deployment and experimentation.", hook: "Fast experiment = agile", wrong: { choice: ["Elasticity", "Economies of scale", "Availability"] } },
+    { id: "geography", objective: "1.1", fields: { cue: "Deploy closer to users in approved geographies", choice: "Global reach" }, detail: "Global infrastructure provides geographic choices; it does not automatically create redundancy or compliance.", hook: "Geography = reach", wrong: { choice: ["Durability", "Agility", "Economies of scale"] } },
+    { id: "failure", objective: "1.1", fields: { cue: "Continue operating through a component failure", choice: "Fault tolerance / resilience" }, detail: "Fault tolerance aims to continue through failure; resilience includes withstanding and recovering from disruption.", hook: "Failure = resilient", wrong: { choice: ["Elasticity", "TCO", "Global reach"] } },
+    { id: "scale", objective: "1.1", fields: { cue: "Provider spreads infrastructure investment across customers", choice: "Economies of scale" }, detail: "Provider scale can support economic benefits but does not guarantee every workload costs less.", hook: "Provider scale = scale economics", wrong: { choice: ["Elasticity", "Agility", "Availability"] } },
+    { id: "tco", objective: "1.4", fields: { cue: "Hardware, power, facilities, staffing and licensing comparison", choice: "Total Cost of Ownership" }, detail: "TCO includes more than purchase price or a monthly cloud bill.", hook: "All ownership costs = TCO", wrong: { choice: ["Utilization", "Availability", "Autoscaling"] } },
+    { id: "rightsize", objective: "1.4", fields: { cue: "Resource is oversized for measured workload", choice: "Rightsizing" }, detail: "Rightsizing matches capacity to measured requirements.", hook: "Oversized = rightsize", wrong: { choice: ["Autoscaling", "Global reach", "Economies of scale"] } },
+    { id: "idle", objective: "1.4", fields: { cue: "Forgotten development resources consume money", choice: "Stop or remove idle resources" }, detail: "Confirmed idle resources can be stopped, removed or scheduled when retention and availability allow.", hook: "Idle = stop/remove", wrong: { choice: ["Increase capacity", "Durability", "Dedicated tenancy"] } },
+    { id: "managed", objective: "1.4", fields: { cue: "Higher service price but less patching and maintenance", choice: "Managed-service economic tradeoff" }, detail: "Compare price with operational labor, reliability and time-to-market; managed is not automatically cheapest.", hook: "Price plus labor", wrong: { choice: ["Lowest direct price", "Elasticity only", "Cost allocation tags"] } },
+    { id: "variable", objective: "1.4", fields: { cue: "Avoid buying peak capacity before demand is known", choice: "Variable consumption and reduced upfront commitment" }, detail: "Usage-based consumption can shift portions of spending toward variable use without guaranteeing savings.", hook: "Unknown demand = avoid peak buy", wrong: { choice: ["Fixed peak capacity", "Automatic compliance", "Durability"] } },
+    { id: "license", objective: "1.4", fields: { cue: "Vendor requires a dedicated physical host", choice: "Licensing and tenancy review" }, detail: "License portability, license-included terms and host requirements affect the economic decision.", hook: "License constraint = check tenancy", wrong: { choice: ["Autoscaling only", "Global reach", "Storage class"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

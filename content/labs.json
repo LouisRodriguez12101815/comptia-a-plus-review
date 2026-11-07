@@ -2364,7 +2364,11 @@
               "Choose Pricing Calculator for the pre-deployment estimate.",
               "Define a monthly AWS Budget threshold and alert recipient.",
               "Propose tags such as Environment=Production and Project=Website.",
-              "Explain when Cost Explorer becomes useful after usage exists."
+              "Explain when Cost Explorer becomes useful after usage exists.",
+              "Choose Cost and Usage Report when finance needs detailed records, and AWS Organizations when accounts need consolidated billing.",
+              "Compare a capacity guarantee with a pricing discount: Capacity Reservation is not the same as an RI or Savings Plan.",
+              "Use Bills/invoices for the amount owed, Cost Explorer for current or historical analysis, and do not expect every presentation to refresh identically.",
+              "Choose the current support cue for each workload: Basic for general account/billing resources, Business Support+ for production technical support, Enterprise for strategic business-critical guidance, and Unified Operations for the highest proactive mission-critical operations assistance."
             ]
           }
         ]
@@ -2393,7 +2397,10 @@
             "items": [
               "1. Use a fictional account with Production=$120 and Test=$30; calculate the tagged subtotal, then estimate two instances x 730 hours x a supplied hourly rate plus storage and transfer.",
               "2. Add Environment and Project tags and explicitly activate eligible cost-allocation tags in Billing; historical data is not automatically retroactively tagged.",
-              "3. Set a budget threshold of $100 and identify the billing data delay. Budget notifications are delayed controls, not real-time spending caps."
+              "3. Set a budget threshold of $100 and identify the billing data delay. Budget notifications are delayed controls, not real-time spending caps.",
+              "4. Add request, retrieval, minimum-duration, lifecycle-transition, and data-transfer factors to the storage estimate instead of counting only GB stored.",
+              "5. Explain why an interruption-tolerant batch job could evaluate Spot, while a capacity guarantee would require a Capacity Reservation rather than another discount."
+              ,"6. For a production, business-critical, and mission-critical scenario, justify Business Support+, Enterprise Support, or Unified Operations without using response time alone as the distinction."
             ]
           },
           {
@@ -2410,7 +2417,9 @@
             "items": [
               "Technical reference: https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
               "Technical reference: https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html",
-              "Technical reference: https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html"
+              "Technical reference: https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html",
+              "Technical reference: https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html",
+              "Technical reference: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations.html"
             ]
           }
         ]
@@ -2454,8 +2463,10 @@
             "items": [
               "Protect the root user and enable MFA.",
               "Create named workforce access instead of shared credentials.",
+              "Distinguish workforce federation/Identity Center from the EC2 workload role.",
               "Use least-privilege policies.",
               "Use an IAM role for the EC2 application instead of embedding access keys.",
+              "Classify a database password as an application secret and an encryption key as a KMS responsibility.",
               "Identify CloudTrail for API auditing and Artifact for compliance reports."
             ]
           }
@@ -2474,7 +2485,8 @@
             "items": [
               "1. Draw root, named federated workforce identities, and an EC2 role as separate principals. Root has MFA and no routine workload keys.",
               "2. For an app reading prefix reports/, write an allow for s3:GetObject on arn:aws:s3:::example/reports/*; distinguish ListBucket on the bucket ARN with a prefix condition.",
-              "3. Test the policy on paper against reports/jan.csv, private/payroll.csv and s3:DeleteObject. Record allow, implicit deny and explicit deny separately."
+              "3. Test the policy on paper against reports/jan.csv, private/payroll.csv and s3:DeleteObject. Record allow, implicit deny and explicit deny separately.",
+              "4. Self-check the storage decision: Secrets Manager holds the application's database password; KMS manages an encryption key; neither replaces the EC2 role."
             ]
           },
           {
@@ -2490,7 +2502,10 @@
             "type": "bullets",
             "items": [
               "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
-              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+              "Technical reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+              "Technical reference: https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+              "Technical reference: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+              "Technical reference: https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
             ]
           }
         ]
@@ -3483,6 +3498,84 @@
           }
         ]
       }
+    ]
+  },
+  {
+    "slug": "aws-clf-migration-planning",
+    "title": "AWS CLF Lab — Migration Planning and Validation",
+    "subtitle": "Cloud Practitioner · Objective 1.3 · Guided paper exercise",
+    "summary": "Plan a paper-only migration for a three-tier application and database in a closing data center; no AWS account or billable resources are required.",
+    "skills": ["Business drivers", "CAF readiness", "Migration strategies", "Dependency discovery", "Database replication", "Validation and rollback", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-cloud-concepts", "aws-clf-migration-decisions"],
+    "sections": [
+      {"id":"scenario","title":"Scenario and business driver","blocks":[{"type":"paragraph","text":"A company must close a data center. It has a customer-facing web tier, an application tier, and a relational database. The deadline is short, some components have dependencies, and the business cannot accept unvalidated data or a failed cutover."},{"type":"bullets","items":["Write two business outcomes the move should achieve.","Identify a readiness gap that CAF perspectives could help organize.","State which constraint would make you retain a component temporarily rather than force migration."]}]},
+      {"id":"strategy","title":"Choose the strategy by component","blocks":[{"type":"table","headers":["Component","Constraint","Your strategy","Reason"],"rows":[["Web tier","Minimal code change and fast exit","Rehost / other","Explain the constraint"],["Application tier","Selected managed-service improvement","Replatform / other","Explain the change boundary"],["Database","Replication and compatibility must be validated","Replatform / other","Explain the data and cutover plan"]]},{"type":"callout","kind":"tip","text":"There is no single mandatory strategy for every component. Select from the business constraint; do not choose refactor merely because cloud-native is attractive."}]},
+      {"id":"discover","title":"Discover before moving","blocks":[{"type":"bullets","items":["List application-to-database and application-to-external-service dependencies.","Record utilization information and business criticality for each tier.","Identify data, network relationships, security controls, and owners that must participate in the plan."]}]},
+      {"id":"replication","title":"Database replication decision","blocks":[{"type":"paragraph","text":"Decide whether database replication is useful for reducing downtime before cutover. Record that replication synchronizes data but does not prove schema, query, transaction, or application compatibility."},{"type":"paragraph","text":"Choose validation checks: row counts and integrity, representative application queries, permissions, dependent services, and business acceptance."}]},
+      {"id":"cutover-rollback","title":"Cutover and rollback","blocks":[{"type":"table","headers":["Checkpoint","Pass condition","Rollback trigger"],"rows":[["Pilot","Representative workload behaves as expected","Required dependency fails"],["Data validation","Required data is present and consistent","Integrity or replication check fails"],["Application test","Users and integrations pass acceptance checks","Critical workflow fails"],["Cutover","Traffic/users can use the target","Business acceptance or security check fails"]]},{"type":"paragraph","text":"This is a guided planning exercise, not evidence of a completed cloud deployment. No AWS account or paid resource is needed."}]},
+      {"id":"references","title":"Technical references","blocks":[{"type":"bullets","items":["Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html","Technical reference: https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/welcome.html","Technical reference: https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"]}]}
+    ]
+  },
+  {
+    "slug": "aws-clf-security-responsibility",
+    "title": "AWS CLF Lab — Security Responsibility and Tool Selection",
+    "subtitle": "Cloud Practitioner · Objectives 2.1, 2.2 and 2.4 · Guided paper exercise",
+    "summary": "Assign responsibility and select governance and security resources for a mixed EC2, RDS, Lambda and web workload without creating live AWS resources.",
+    "skills": ["Shared responsibility", "CloudWatch", "CloudTrail", "Config", "Artifact", "WAF", "Shield", "GuardDuty", "Firewall Manager", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-security-compliance", "aws-clf-security-transfer"],
+    "sections": [
+      {"id":"scenario","title":"Scenario","blocks":[{"type":"paragraph","text":"A company runs an EC2 web tier, an RDS database, a Lambda function, S3 data and a public web endpoint. Complete this as a paper exercise; no AWS account or billable resource is needed."}]},
+      {"id":"responsibility","title":"Assign responsibility","blocks":[{"type":"table","headers":["Question","Your answer","Reason"],"rows":[["Who patches the EC2 guest OS?","",""],["Who operates the physical AWS hardware?","",""],["Who controls Lambda code and IAM?","",""],["Who protects application data and database-user access on RDS?","",""]]},{"type":"callout","kind":"tip","text":"AWS operates more of the platform in RDS and Lambda, but managed services do not remove customer responsibility for data, identities, permissions or supplied code."}]},
+      {"id":"tools","title":"Choose the evidence or control","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Operational metric and alarm","",""],["API/account audit history","",""],["Resource configuration history/rules","",""],["AWS compliance report","",""],["DDoS protection","",""],["Web-request filtering","",""],["Threat detection","",""],["Centralized firewall policy","",""]]}]},
+      {"id":"review","title":"Verify the distinctions","blocks":[{"type":"bullets","items":["CloudWatch is operational observation; CloudTrail is API activity; Config is configuration state; Artifact is compliance documentation.","WAF filters web requests; Shield addresses DDoS; GuardDuty detects threats; Firewall Manager centrally manages supported policies.","AWS compliance evidence does not automatically make the customer's workload compliant."]}]}
+    ]
+  },
+  {
+    "slug": "aws-clf-cloud-platform-selection",
+    "title": "AWS CLF Lab — Cloud Platform Selection",
+    "subtitle": "Cloud Practitioner · Objectives 3.1–3.3 · Guided paper exercise",
+    "summary": "Choose operating methods, infrastructure scope, compute services and scaling roles for a mixed workload without creating live AWS resources.",
+    "skills": ["Console", "CLI", "SDK/API", "CloudFormation", "Cloud/hybrid/on-premises", "Regions/AZs/edge", "EC2", "Lambda", "ECS", "EKS", "Fargate", "Auto Scaling", "Load balancing", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-technology-services", "aws-foundation-cloud-global", "aws-foundation-compute-storage"],
+    "sections": [
+      {"id":"scenario","title":"Scenario","blocks":[{"type":"paragraph","text":"A company has a manually inspected development resource, repeatable staging and production infrastructure, application code that uploads to S3, a public service that must survive one AZ failure, customers across several geographies, a Kubernetes team, an event-driven image processor and unpredictable web traffic. Complete this as a paper exercise; no AWS account or billable resource is needed."}]},
+      {"id":"operating-method","title":"Choose the access or deployment method","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Human wants to inspect one resource visually","",""],["Repeat the same shell operation across environments","",""],["Application code uploads an object","",""],["Create consistent environments from reviewed definitions","",""],["Some systems remain in a customer data center while others use AWS","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: Console; CLI/script; SDK/API; CloudFormation/IaC; hybrid. Do not confuse hybrid with multi-cloud."}]},
+      {"id":"infrastructure","title":"Choose the infrastructure scope","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Survive one AZ failure","",""],["Recover after an entire Region outage","",""],["Deliver cached content closer to global users","",""],["Keep data in an approved geography","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: Multi-AZ; Multi-Region if permitted and justified; edge delivery; permitted Region selection. A subnet belongs to one AZ, and edge locations are not general-purpose AZs."}]},
+      {"id":"compute","title":"Choose compute and scaling roles","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Long-running custom workload with guest-OS control","",""],["Event-driven image-processing function","",""],["Kubernetes orchestration","",""],["Containers without managing servers","",""],["CPU-heavy EC2 workload","",""],["Memory-heavy EC2 workload","",""],["Increase/decrease capacity with demand","",""],["Distribute requests across healthy targets","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: EC2; Lambda; EKS; Fargate; compute-optimized; memory-optimized; Auto Scaling; load balancer. ECS/EKS are orchestration choices; Fargate is container compute."}]},
+      {"id":"review","title":"Final review traps","blocks":[{"type":"bullets","items":["CLI is not an SDK; API is not CLI syntax; IaC is not CloudFormation syntax memorization.","Region is not AZ; AZ is not edge; Multi-AZ is not automatically Multi-Region.","ECS is not Kubernetes; Fargate is not an orchestrator; Lambda is not a container service.","Auto Scaling changes capacity; a load balancer distributes traffic. They can be used together."]}]},
+      {"id":"references","title":"Technical references","blocks":[{"type":"bullets","items":["Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html","Technical reference: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/","Technical reference: https://aws.amazon.com/ec2/","Technical reference: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html","Technical reference: https://aws.amazon.com/eks/","Technical reference: https://aws.amazon.com/fargate/"]}]}
+    ]
+  },
+  {
+    "slug": "aws-clf-data-platform-selection",
+    "title": "AWS CLF Lab — Data, Network and Storage Selection",
+    "subtitle": "Cloud Practitioner · Objectives 3.4–3.6 · Guided paper exercise",
+    "summary": "Choose database, network and storage services from workload requirements without creating live AWS resources.",
+    "skills": ["RDS", "Aurora", "DynamoDB", "ElastiCache", "DMS", "SCT", "VPC", "Security groups", "Network ACLs", "Route 53", "VPN", "Direct Connect", "S3", "EBS", "EFS", "Storage Gateway", "AWS Backup", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-technology-services"],
+    "sections": [
+      {"id":"scenario","title":"Scenario","blocks":[{"type":"paragraph","text":"A company has a transactional relational application, a key-value catalog, a frequently read hot dataset, a database migration, public and private application tiers, a public DNS name, an encrypted on-premises connection, a dedicated private network requirement, static assets, an EC2 disk, shared files, archive data and a central backup policy. Complete this as a paper exercise; no AWS account or billable resource is needed."}]},
+      {"id":"databases","title":"Choose database services and migration tools","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Transactional relational SQL","",""],["Managed MySQL/PostgreSQL-compatible relational option","",""],["Scalable key-value/catalog access","",""],["Frequently reused data and low latency","",""],["Move or replicate database data","",""],["Convert schema or database code between engines","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: RDS/Aurora; DynamoDB; ElastiCache; DMS; SCT. DMS moves data, while SCT helps convert schema/code; neither proves application compatibility by itself."}]},
+      {"id":"network","title":"Choose network boundaries and connectivity","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Logically isolated AWS network","",""],["Network segment inside the VPC","",""],["Stateful resource-level control","",""],["Stateless subnet-level control","",""],["Domain-name resolution","",""],["Encrypted connection over the internet","",""],["Dedicated private connection","",""],["Vulnerability/exposure assessment","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: VPC; subnet; security group; network ACL; Route 53; VPN; Direct Connect; Inspector. Direct Connect is not an automatic encryption guarantee, and Inspector is not a firewall."}]},
+      {"id":"storage","title":"Choose storage and policy tools","blocks":[{"type":"table","headers":["Requirement","Your choice","Reason"],"rows":[["Static assets and objects","",""],["Persistent EC2 block device","",""],["Temporary local scratch block","",""],["Shared file system","",""],["Hybrid on-premises storage integration","",""],["Move old objects to archive by age","",""],["Centralized backup policy","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: S3; EBS; instance store; EFS/FSx; Storage Gateway; S3 Lifecycle; AWS Backup. Lifecycle is not backup, and instance store is ephemeral."}]},
+      {"id":"review","title":"Final review traps","blocks":[{"type":"bullets","items":["RDS is not DynamoDB; DynamoDB is not ElastiCache; managed does not mean zero customer responsibility.","VPC is not a subnet; security groups are stateful/resource-level; NACLs are stateless/subnet-level.","Route 53 is DNS; VPN is an encrypted internet tunnel; Direct Connect is dedicated private connectivity.","S3 is object, EBS is block, EFS/FSx are file, instance store is ephemeral; lifecycle is not backup."]}]},
+      {"id":"references","title":"Technical references","blocks":[{"type":"bullets","items":["Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html","Technical reference: https://aws.amazon.com/rds/","Technical reference: https://aws.amazon.com/dynamodb/","Technical reference: https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html","Technical reference: https://aws.amazon.com/s3/","Technical reference: https://aws.amazon.com/backup/"]}]}
+    ]
+  },
+  {
+    "slug": "aws-clf-cloud-economics-selection",
+    "title": "AWS CLF Lab — Cloud Benefits and Economics Selection",
+    "subtitle": "Cloud Practitioner · Objectives 1.1 and 1.4 · Guided paper exercise",
+    "summary": "Compare a five-year peak-capacity server purchase with a variable-demand AWS design using benefit and total-cost reasoning without creating live resources.",
+    "skills": ["Elasticity", "Scalability", "Agility", "Global reach", "Availability", "TCO", "Rightsizing", "Utilization", "Licensing", "CLF-C02"],
+    "relatedTopicIds": ["aws-clf-cloud-concepts"],
+    "sections": [
+      {"id":"scenario","title":"Scenario","blocks":[{"type":"paragraph","text":"A company is comparing servers purchased for five years of peak capacity with a variable-demand workload on AWS. The current data center has power, cooling, facilities, maintenance staff, licensing and idle development resources. Complete this on paper; no AWS account, live pricing lookup or billable resource is required."}]},
+      {"id":"benefits","title":"Identify the cloud-benefit cues","blocks":[{"type":"table","headers":["Requirement","Your concept","Reason"],"rows":[["Traffic changes unpredictably","",""],["Test environments in minutes","",""],["Launch in an approved new geography","",""],["Continue through a component failure","",""],["Avoid buying peak capacity years early","",""]]},{"type":"callout","kind":"tip","text":"Expected cues: elasticity; agility; global reach; availability/resilience; variable consumption and reduced upfront commitment. Do not write that any benefit is automatic or guarantees a result."}]},
+      {"id":"economics","title":"Compare economic categories","blocks":[{"type":"table","headers":["Question","Your analysis","Reason"],"rows":[["Which on-premises costs are outside server purchase price?","",""],["Which resources are oversized or idle?","",""],["What should be rightsized versus autoscaled?","",""],["Which license or tenancy constraints apply?","",""],["What operational labor could a managed service reduce?","",""]]},{"type":"callout","kind":"tip","text":"Include hardware, facilities, power, cooling, networking, maintenance, staffing, licensing, refresh, transfer, resilience and operational labor. TCO is not the monthly AWS bill."}]},
+      {"id":"tradeoffs","title":"Make the tradeoffs explicit","blocks":[{"type":"paragraph","text":"Explain one reason the variable-demand design might improve utilization and one reason it might not be cheaper. Include a safeguard for stopping or scheduling idle resources, a measurement needed before rightsizing, and a requirement that would make availability or licensing more important than the lowest direct price."}]},
+      {"id":"review","title":"Final review traps","blocks":[{"type":"bullets","items":["Elasticity is dynamic demand response; scalability is handling workload size; agility is fast provisioning and experimentation.","Global reach provides geographic choices; it does not automatically create low latency, compliance or multi-Region redundancy.","Rightsizing chooses capacity; autoscaling changes capacity over time.","TCO is broader than a purchase price or monthly cloud bill; cloud is not automatically cheaper.","Managed service means less selected infrastructure work, not zero customer responsibility."]}]},
+      {"id":"references","title":"Technical references","blocks":[{"type":"bullets","items":["Technical reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html","Technical reference: https://aws.amazon.com/pricing/","Technical reference: https://aws.amazon.com/aws-cost-management/"]}]}
     ]
   }
 ]

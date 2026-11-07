@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compute and scaling decisions</title>
+<style>
+body{margin:0;background:#0b1220;color:#f1f5f9;font:15px/1.5 system-ui;padding:20px}.wrap{max-width:1050px;margin:auto}.card{border:1px solid #334155;border-radius:16px;background:#111c30;padding:18px;margin-top:16px}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;color:#7dd3fc}p,.note{color:#b8c5d6}table{border-collapse:collapse;width:100%}th,td{border:1px solid #334155;padding:9px;text-align:left;vertical-align:top}th{color:#67e8f9}.decision{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.node{border:1px solid #155e75;border-radius:12px;padding:12px;background:#0f2436}@media(max-width:700px){.decision{grid-template-columns:1fr}table{font-size:13px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Compute and scaling decisions</h1>
+<figure class="card">
+<svg role="img" aria-label="Compute decision flow from VM, function and containers to AWS choices" viewBox="0 0 900 150" style="display:block;width:100%;height:auto">
+<path d="M80 75H820" stroke="#155e75" stroke-width="8" stroke-linecap="round"/>
+<g fill="#67e8f9" stroke="#0b1220" stroke-width="4"><circle cx="120" cy="75" r="28"/><circle cx="300" cy="75" r="28"/><circle cx="480" cy="75" r="28"/><circle cx="660" cy="75" r="28"/><circle cx="820" cy="75" r="28"/></g>
+<g fill="#0b1220" font-family="system-ui" font-size="14" text-anchor="middle"><text x="120" y="80">Need</text><text x="300" y="80">VM</text><text x="480" y="80">Function</text><text x="660" y="80">Container</text><text x="820" y="80">Scale</text></g>
+</svg>
+<figcaption class="note">VM → EC2; function → Lambda; container → ECS/EKS/Fargate; capacity → Auto Scaling.</figcaption>
+</figure>
+<p>Match the workload requirement to the service role. Orchestration, compute, capacity and traffic distribution are different decisions.</p>
+<section class="card decision"><div class="node"><b>Need VM control?</b><br>→ EC2</div><div class="node"><b>Need an event-driven function?</b><br>→ Lambda</div><div class="node"><b>Need Kubernetes?</b><br>→ EKS</div><div class="node"><b>Need AWS container orchestration?</b><br>→ ECS</div><div class="node"><b>Need containers without server management?</b><br>→ Fargate</div><div class="node"><b>Need changing capacity?</b><br>→ Auto Scaling</div><div class="node"><b>Need traffic distribution?</b><br>→ Load balancer</div><div class="node"><b>Need an EC2 resource category?</b><br>CPU → compute optimized<br>Memory → memory optimized<br>Local I/O → storage optimized</div></section>
+<section class="card"><h2>Do not collapse the layers</h2><table><tr><th>Confusion pair</th><th>Distinction</th></tr><tr><td>ECS vs EKS</td><td>ECS is AWS container orchestration; EKS is managed Kubernetes.</td></tr><tr><td>ECS/EKS vs Fargate</td><td>Orchestration choice versus serverless container compute.</td></tr><tr><td>Auto Scaling vs load balancer</td><td>Adjust capacity versus distribute requests.</td></tr><tr><td>Lambda vs containers</td><td>Function execution versus container workload.</td></tr></table></section>
+<script type="application/json" id="visual-facts">{"facts":[{"claim":"EC2 provides virtual machines, Lambda runs functions, ECS/EKS orchestrate containers and Fargate provides serverless container compute.","objectives":["clf-c02 3.3"],"sources":["https://aws.amazon.com/ec2/","https://docs.aws.amazon.com/lambda/latest/dg/welcome.html","https://aws.amazon.com/ecs/","https://aws.amazon.com/eks/","https://aws.amazon.com/fargate/"]},{"claim":"Auto Scaling adjusts capacity while a load balancer distributes incoming traffic across targets.","objectives":["clf-c02 3.3"],"sources":["https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html","https://aws.amazon.com/elasticloadbalancing/"]}],"simplifications":["Instance-family selection is kept at workload-category recognition and omits current model-code memorization."]}</script>
+</main>
+</body>
+</html>

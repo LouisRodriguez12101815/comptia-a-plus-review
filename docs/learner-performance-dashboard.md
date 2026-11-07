@@ -1,0 +1,7 @@
+# Learner performance dashboard
+
+`/[locale]/performance` is a read-only view over the existing local `Progress` record plus bounded authenticated study telemetry when the learner is signed in. It derives quiz and mock-exam summaries, time-window totals, question history, topic/objective aggregates, repeated misses, recovered/improved questions, remediation activity, resource follow-up, and deterministic review suggestions from saved attempts.
+
+The dashboard does not create a second progress store or write while rendering. Attempts without question IDs remain in aggregate totals but are not attributed to individual questions. Single-answer quiz misses retain an authored choice index; multi-answer selections do not record a first-choice approximation. A question can be `everRecovered` while not `currentlyRecovered`: a later miss makes the current state unresolved again. Recovery is not a mastery claim.
+
+Telemetry is behavioral only: it records event type, canonical exam, question/topic/objective identifiers where already known, and aggregate correctness/resource metadata. It does not send answer text, phone numbers, or free-form content. The telemetry endpoint is authenticated through the existing learner-sync session; signed-out learners continue to use local progress only. Retention remains bounded to 200 events, with local quiz and mock retention unchanged at 40 and 30 attempts. Remediation follow-up is descriptive (“later correct after an action”), not a causal effectiveness or pass-probability claim.

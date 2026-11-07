@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Operating method and infrastructure scope</title>
+<style>
+body{margin:0;background:#0b1220;color:#f1f5f9;font:15px/1.5 system-ui;padding:20px}.wrap{max-width:1050px;margin:auto}.card{border:1px solid #334155;border-radius:16px;background:#111c30;padding:18px;margin-top:16px}h1{font-size:24px;margin:0 0 8px}h2{font-size:18px;color:#7dd3fc}p,.note{color:#b8c5d6}table{border-collapse:collapse;width:100%}th,td{border:1px solid #334155;padding:9px;text-align:left;vertical-align:top}th{color:#67e8f9}.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.node{border:1px solid #155e75;border-radius:12px;padding:12px;background:#0f2436;text-align:center;flex:1;min-width:120px}.arrow{color:#fde68a;font-size:22px}@media(max-width:700px){table{font-size:13px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Operating method and infrastructure scope</h1>
+<figure class="card">
+<svg role="img" aria-label="Region contains Availability Zones, with edge delivery separate" viewBox="0 0 900 130" style="display:block;width:100%;height:auto">
+<rect x="40" y="25" width="500" height="80" rx="16" fill="#0f2436" stroke="#67e8f9" stroke-width="3"/>
+<text x="290" y="50" fill="#67e8f9" text-anchor="middle" font-family="system-ui" font-size="18">Region</text>
+<circle cx="180" cy="78" r="22" fill="#155e75"/><circle cx="290" cy="78" r="22" fill="#155e75"/><circle cx="400" cy="78" r="22" fill="#155e75"/>
+<text x="180" y="83" fill="#fff" text-anchor="middle" font-family="system-ui" font-size="13">AZ</text><text x="290" y="83" fill="#fff" text-anchor="middle" font-family="system-ui" font-size="13">AZ</text><text x="400" y="83" fill="#fff" text-anchor="middle" font-family="system-ui" font-size="13">AZ</text>
+<path d="M560 65H700" stroke="#fde68a" stroke-width="5"/><path d="m690 55 18 10-18 10" fill="none" stroke="#fde68a" stroke-width="5"/>
+<rect x="720" y="38" width="140" height="54" rx="12" fill="#155e75"/><text x="790" y="70" fill="#fff" text-anchor="middle" font-family="system-ui" font-size="16">Edge</text>
+</svg>
+<figcaption class="note">Region → AZ failure domains; edge delivery is a separate user-proximity cue.</figcaption>
+</figure>
+<p>Start with the requirement. Choose an access method, then choose the failure or latency scope.</p>
+<section class="card"><h2>Access and deploy</h2><div class="flow"><div class="node">Human<br><b>Console</b></div><div class="arrow">→</div><div class="node">Shell repeatability<br><b>CLI</b></div><div class="arrow">→</div><div class="node">Application code<br><b>SDK / API</b></div><div class="arrow">→</div><div class="node">Versioned resources<br><b>IaC</b></div></div><p class="note">Console is interactive; CLI is scriptable; SDK/API is programmatic; IaC is repeatable infrastructure. Hybrid combines cloud and on-premises; it is not multi-cloud.</p></section>
+<section class="card"><h2>Infrastructure scope</h2><table><tr><th>Requirement</th><th>Recognition cue</th></tr><tr><td>Geographic AWS area</td><td>Region</td></tr><tr><td>Independent failure domain inside a Region</td><td>Availability Zone</td></tr><tr><td>Serve supported content closer to users</td><td>Edge location</td></tr><tr><td>Survive one AZ failure</td><td>Multi-AZ</td></tr><tr><td>Recover from a Region outage</td><td>Multi-Region, when permitted and justified</td></tr><tr><td>Keep processing/storage in an approved geography</td><td>Permitted Region selection</td></tr></table><p class="note">An edge location is not an Availability Zone, and a subnet belongs to one AZ.</p></section>
+<script type="application/json" id="visual-facts">{"facts":[{"claim":"A Region contains multiple Availability Zones and an Availability Zone is an isolated location within a Region.","objectives":["clf-c02 3.2"],"sources":["https://aws.amazon.com/about-aws/global-infrastructure/regions_az/"]},{"claim":"The Management Console, CLI, SDK/API and CloudFormation represent distinct recognition-level operating methods.","objectives":["clf-c02 3.1"],"sources":["https://docs.aws.amazon.com/console/","https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html","https://aws.amazon.com/developer/tools/","https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"]}],"simplifications":["This is a CLF-C02 decision aid, not implementation or deployment guidance."]}</script>
+</main>
+</body>
+</html>

@@ -9,6 +9,10 @@ export function isStudyFocus(value: unknown): value is StudyFocus {
   return examOptions.some((exam) => exam.id === value);
 }
 
+export function isExamCode(value: unknown): value is ExamCode {
+  return examOptions.some((exam) => exam.id === value && exam.id !== "all");
+}
+
 export function examMatches(codes: ExamCode[], focus: StudyFocus): boolean {
   return focus === "all" || codes.includes(focus);
 }

@@ -64,6 +64,7 @@ test("Network+ question metadata is available without instrumenting other exams"
   assert.ok(n10 && isN10Question(n10));
   assert.equal(objectiveForStudyQuestion(n10), undefined);
   assert.equal(isN10Question(other), false);
+  assert.throws(() => buildStudyEvent({ type: "question_answered", exam: "n10-009", question: other, correct: false, missCount: 1 }, "session-1234567890"), /question_exam_mismatch/);
 });
 
 test("answer and completion payloads preserve correct/incorrect and aggregate metadata", () => {
@@ -184,7 +185,7 @@ test("telemetry submission is best effort when the network fails", async () => {
   global.fetch = previousFetch;
 });
 
-test("non-Network+ activity is not submitted", async () => {
+test("supported certification activity is submitted without learner telemetry fields", async () => {
   const previousWindow = global.window;
   const previousFetch = global.fetch;
   const calls = [];
@@ -193,7 +194,8 @@ test("non-Network+ activity is not submitted", async () => {
   global.fetch = (...args) => { calls.push(args); return Promise.resolve({ ok: true }); };
   sendStudyEvent({ type: "question_answered", question: other, correct: false });
   await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(calls.length, 0);
+  assert.equal(calls.length, 1);
+  assert.match(calls[0][1].body, /220-1202/);
   global.window = previousWindow;
   global.fetch = previousFetch;
 });

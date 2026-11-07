@@ -39,11 +39,13 @@ export function WeakAreas() {
       <div className="mt-3 flex flex-wrap gap-3">
         <Link href="/test" className="inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950">{t("takeTest")}</Link>
         <Link href="/quiz" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-100">{t("openQuiz")}</Link>
+        <Link href="/performance" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-100">{t("performanceLink")}</Link>
       </div>
     </section>;
   }
 
   return <div className="space-y-6">
+    <div><Link href="/performance" className="text-sm text-teal-200 underline underline-offset-4">{t("performanceLink")}</Link></div>
     <section data-cluster-summary aria-labelledby="weak-clusters-heading" className="space-y-3">
       <h2 id="weak-clusters-heading" className="text-xl font-semibold text-white">{t("clusterHeading")}</h2>
       <ul className="grid gap-3 sm:grid-cols-2">
