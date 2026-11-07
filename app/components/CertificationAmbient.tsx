@@ -48,7 +48,7 @@ export function ambientVariantForPath(pathname: string, trackId?: string): Ambie
   if (pathname.startsWith("/methodology") || pathname.startsWith("/assessment-workflow")) return "workflow";
   if (pathname.startsWith("/search")) return "discovery";
   if (pathname.startsWith("/coverage")) return "objectives";
-  if (pathname.startsWith("/scorecard") || pathname.startsWith("/weak-areas")) return "progress";
+  if (pathname.startsWith("/scorecard") || pathname.startsWith("/weak-areas") || pathname.startsWith("/performance")) return "progress";
   if (trackId === "networking") return "network";
   if (trackId === "core1") return "hardware";
   if (trackId === "core2") return "software";

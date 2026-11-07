@@ -193,6 +193,7 @@ export function SiteHeader() {
   ]);
   const progressItems = makeItems([
     { href: "/weak-areas", label: t("weakAreas"), match: (p) => p.startsWith("/weak-areas") },
+    { href: "/performance", label: t("performance"), match: (p) => p.startsWith("/performance") },
     { href: "/scorecard", label: t("scorecard"), match: (p) => p.startsWith("/scorecard") },
     { href: "/coverage", label: t("coverage"), match: (p) => p.startsWith("/coverage") },
   ]);
