@@ -1,4 +1,6 @@
 import type { LearnerMap } from "@/lib/learner/store";
+import { isExamCode } from "@/lib/exams";
+import type { ExamCode } from "@/lib/types";
 import { randomUUID } from "node:crypto";
 
 export const STUDY_EVENT_VERSION = 1 as const;
@@ -21,7 +23,7 @@ export type StudyEvent = {
   v: typeof STUDY_EVENT_VERSION;
   type: StudyEventType;
   at: number;
-  exam: "n10-009";
+  exam: ExamCode;
   sessionId: string;
   questionId?: string;
   topicId?: string;
@@ -45,6 +47,7 @@ const fieldsByType: Record<StudyEventType, Set<string>> = {
 };
 const idPattern = /^[A-Za-z0-9._:-]{1,128}$/;
 const sessionPattern = /^[A-Za-z0-9_-]{16,80}$/;
+const objectivePattern = /^\d+\.\d+$/;
 const resources = new Set<StudyResourceType>(["flashcard", "visual", "video", "notes", "retry"]);
 
 const optionalId = (value: unknown, name: string): string | undefined => {
@@ -66,19 +69,20 @@ function parseStudyEventValue(value: unknown, enforceFreshness: boolean): StudyE
   const type = input.type as StudyEventType;
   if ([...Object.keys(input)].some((key) => !fieldsByType[type].has(key))) throw new Error("unknown_event_field");
   if (!Number.isInteger(input.at) || (enforceFreshness && Math.abs(Date.now() - (input.at as number)) > 7 * 86400_000)) throw new Error("invalid_event_time");
-  if (input.exam !== "n10-009") throw new Error("invalid_exam");
+  if (!isExamCode(input.exam)) throw new Error("invalid_exam");
   if (typeof input.sessionId !== "string" || !sessionPattern.test(input.sessionId)) throw new Error("invalid_session");
 
   const event: StudyEvent = {
     v: STUDY_EVENT_VERSION,
     type,
     at: input.at as number,
-    exam: "n10-009",
+    exam: input.exam,
     sessionId: input.sessionId,
   };
   const questionId = optionalId(input.questionId, "question");
   const topicId = optionalId(input.topicId, "topic");
   const objectiveId = optionalId(input.objectiveId, "objective");
+  if (objectiveId && !objectivePattern.test(objectiveId)) throw new Error("invalid_objective");
   if (questionId) event.questionId = questionId;
   if (topicId) event.topicId = topicId;
   if (objectiveId) event.objectiveId = objectiveId;

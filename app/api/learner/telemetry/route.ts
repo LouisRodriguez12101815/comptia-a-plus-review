@@ -1,11 +1,27 @@
 import { RoomError } from "@/lib/game/room-service";
-import { appendTelemetry, parseStudyEvent } from "@/lib/learner/telemetry";
+import { appendTelemetry, loadTelemetry, parseStudyEvent } from "@/lib/learner/telemetry";
 import { json, limits, needConfig, sameOrigin, sessionOf } from "@/lib/learner/api";
 import { twilioLearner } from "@/lib/learner/twilio";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const MAX_BYTES = 8_000;
+
+export async function GET(request: Request) {
+  const c = needConfig();
+  if ("response" in c) return c.response;
+  const session = sessionOf(request, c.config);
+  if (!session) return json({ error: "signed_out" }, 401);
+  try {
+    const t = twilioLearner(c.config);
+    await t.guard.assertActive();
+    return json({ events: await loadTelemetry(t.mapFor(session.id)) });
+  } catch (e) {
+    if (e instanceof RoomError && e.status === 423) return json({ error: "paused" }, 423);
+    console.error("learner/telemetry read failed", (e as { status?: number })?.status ?? "unknown");
+    return json({ error: "unavailable" }, 502);
+  }
+}
 
 export async function POST(request: Request) {
   const c = needConfig();
