@@ -2691,7 +2691,36 @@ const awsClfDataNetworkStorage: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const awsClfBenefitsEconomics: DrillDeck = {
+  id: "aws-clf-benefits-economics",
+  certification: "AWS Cloud Practitioner",
+  exam: "clf-c02",
+  objective: "1.1, 1.4",
+  topic: "Cloud benefits and economics",
+  modes: [
+    { id: "cueToConcept", from: "cue", to: "choice" },
+    { id: "conceptToCue", from: "choice", to: "cue" },
+  ],
+  tables: [
+    { id: "benefit-economics", fields: ["cue", "choice"] },
+  ],
+  items: [
+    { id: "spike", objective: "1.1", fields: { cue: "Unpredictable temporary demand spike", choice: "Elasticity" }, detail: "Elasticity dynamically adjusts capacity as demand changes.", hook: "Spike = elastic response", wrong: { choice: ["Agility", "Scalability", "Global reach"] } },
+    { id: "growth", objective: "1.1", fields: { cue: "Planned larger workload next year", choice: "Scalability" }, detail: "Scalability is the ability to handle a larger workload.", hook: "Growth = scale", wrong: { choice: ["Elasticity", "Durability", "Variable expense"] } },
+    { id: "experiment", objective: "1.1", fields: { cue: "Test environment in minutes instead of procurement weeks", choice: "Agility" }, detail: "Agility is faster provisioning, deployment and experimentation.", hook: "Fast experiment = agile", wrong: { choice: ["Elasticity", "Economies of scale", "Availability"] } },
+    { id: "geography", objective: "1.1", fields: { cue: "Deploy closer to users in approved geographies", choice: "Global reach" }, detail: "Global infrastructure provides geographic choices; it does not automatically create redundancy or compliance.", hook: "Geography = reach", wrong: { choice: ["Durability", "Agility", "Economies of scale"] } },
+    { id: "failure", objective: "1.1", fields: { cue: "Continue operating through a component failure", choice: "Fault tolerance / resilience" }, detail: "Fault tolerance aims to continue through failure; resilience includes withstanding and recovering from disruption.", hook: "Failure = resilient", wrong: { choice: ["Elasticity", "TCO", "Global reach"] } },
+    { id: "scale", objective: "1.1", fields: { cue: "Provider spreads infrastructure investment across customers", choice: "Economies of scale" }, detail: "Provider scale can support economic benefits but does not guarantee every workload costs less.", hook: "Provider scale = scale economics", wrong: { choice: ["Elasticity", "Agility", "Availability"] } },
+    { id: "tco", objective: "1.4", fields: { cue: "Hardware, power, facilities, staffing and licensing comparison", choice: "Total Cost of Ownership" }, detail: "TCO includes more than purchase price or a monthly cloud bill.", hook: "All ownership costs = TCO", wrong: { choice: ["Utilization", "Availability", "Autoscaling"] } },
+    { id: "rightsize", objective: "1.4", fields: { cue: "Resource is oversized for measured workload", choice: "Rightsizing" }, detail: "Rightsizing matches capacity to measured requirements.", hook: "Oversized = rightsize", wrong: { choice: ["Autoscaling", "Global reach", "Economies of scale"] } },
+    { id: "idle", objective: "1.4", fields: { cue: "Forgotten development resources consume money", choice: "Stop or remove idle resources" }, detail: "Confirmed idle resources can be stopped, removed or scheduled when retention and availability allow.", hook: "Idle = stop/remove", wrong: { choice: ["Increase capacity", "Durability", "Dedicated tenancy"] } },
+    { id: "managed", objective: "1.4", fields: { cue: "Higher service price but less patching and maintenance", choice: "Managed-service economic tradeoff" }, detail: "Compare price with operational labor, reliability and time-to-market; managed is not automatically cheapest.", hook: "Price plus labor", wrong: { choice: ["Lowest direct price", "Elasticity only", "Cost allocation tags"] } },
+    { id: "variable", objective: "1.4", fields: { cue: "Avoid buying peak capacity before demand is known", choice: "Variable consumption and reduced upfront commitment" }, detail: "Usage-based consumption can shift portions of spending toward variable use without guaranteeing savings.", hook: "Unknown demand = avoid peak buy", wrong: { choice: ["Fixed peak capacity", "Automatic compliance", "Durability"] } },
+    { id: "license", objective: "1.4", fields: { cue: "Vendor requires a dedicated physical host", choice: "Licensing and tenancy review" }, detail: "License portability, license-included terms and host requirements affect the economic decision.", hook: "License constraint = check tenancy", wrong: { choice: ["Autoscaling only", "Global reach", "Storage class"] } },
+  ],
+};
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;

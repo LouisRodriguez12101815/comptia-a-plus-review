@@ -248,6 +248,22 @@ const awsClf: TopFive = {
       drills: ["aws-clf-domain-cues", "aws-clf-migration-compare"],
     },
     {
+      id: "benefits-economics",
+      title: "Cloud benefits and economics",
+      domains: ["1"],
+      objectives: "1.1, 1.4",
+      why: "Domain 1 questions distinguish fast provisioning, demand response, geographic choices and economic tradeoffs. The cue matters more than a slogan: cloud enables choices but does not guarantee lower cost or availability.",
+      facts: [
+        "Unpredictable demand → elasticity; planned larger workload → scalability; rapid environments and experimentation → agility.",
+        "Global infrastructure provides geographic choices; it does not automatically create compliance, low latency or multi-Region redundancy.",
+        "Availability means access when needed; resilience/fault tolerance concern failure response. Durability concerns data persistence.",
+        "TCO includes hardware, facilities, power, cooling, staffing, licensing, maintenance, transfer, resilience and operational labor—not only the monthly bill.",
+        "Rightsizing selects suitable capacity; autoscaling changes capacity over time. Idle resources can be stopped, removed or scheduled when safe.",
+        "Managed services may reduce operational labor while leaving customer data, permissions and configuration duties; cloud is not automatically cheaper.",
+      ],
+      drills: ["aws-clf-benefits-economics"],
+    },
+    {
       id: "well-architected",
       title: "Well-Architected pillar decisions",
       domains: ["1"],
