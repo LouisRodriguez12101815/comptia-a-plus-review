@@ -1,7 +1,7 @@
 # CLF-C02 Domain 4 current refresh
 
-Refresh date: 2026-11-06  
-Base: `audit/aws-clf-domain3-reaudit` at `b791c6ff752433ed2122983dfa88d45ae3495686`  
+Refresh date: 2026-11-06
+Base: `audit/aws-clf-domain3-reaudit` at `b791c6ff752433ed2122983dfa88d45ae3495686`
 Scope: objectives 4.1–4.3 only.
 
 ## Source freshness

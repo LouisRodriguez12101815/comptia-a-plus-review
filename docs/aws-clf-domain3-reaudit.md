@@ -1,7 +1,7 @@
 # CLF-C02 Domain 3 re-audit
 
-Audit date: 2026-11-06  
-Base: `content/aws-clf-domain3-data-network-storage` at `b96f262`  
+Audit date: 2026-11-06
+Base: `content/aws-clf-domain3-data-network-storage` at `b96f262`
 Scope: CLF-C02 objectives 3.1–3.8, including teaching, independent assessment, practice transfer, scope, mapping, and source freshness.
 
 ## Executive result

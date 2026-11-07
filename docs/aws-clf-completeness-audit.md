@@ -1,7 +1,7 @@
 # AWS CLF-C02 completeness audit
 
-Audit date: 2026-11-06  
-Exam: AWS Certified Cloud Practitioner (CLF-C02), version 1.3  
+Audit date: 2026-11-06
+Exam: AWS Certified Cloud Practitioner (CLF-C02), version 1.3
 Branch: `audit/aws-clf-completeness`
 
 ## Executive result
@@ -99,4 +99,3 @@ The focused branch `content/aws-clf-objective-1-3` adds a targeted Objective 1.3
 ## Post-audit follow-up — grouped transfer expansion
 
 After the original audit, a focused CLF-C02 transfer expansion added independent scenario practice for Objective 1.2 Well-Architected pillar decisions and Domain 2 Objectives 2.1, 2.2 and 2.4 security, governance, responsibility and service-selection decisions. The original audit matrix and result remain historical; these additions do not promote any objective beyond partial.
-
