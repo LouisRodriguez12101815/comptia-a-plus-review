@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { DeviceIcon } from "@/app/components/icons";
-import { InteractiveLabDiagram } from "@/app/components/InteractiveLabDiagram";
 import { StatusChip } from "@/app/components/StatusChip";
 import { trackCounts, tracks } from "@/lib/tracks";
 import { NetworkEnvironment } from "@/app/components/NetworkEnvironment";
@@ -102,7 +101,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <p className="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">
         {t("libraryNote")}
       </p>
-      <div className="max-w-xl rounded-2xl border border-slate-800 bg-slate-950 p-4"><InteractiveLabDiagram /></div>
       </div>
     </div>
   );
