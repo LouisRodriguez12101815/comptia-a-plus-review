@@ -1,30 +1,33 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { DeviceIcon } from "@/app/components/icons";
-import { InteractiveLabDiagram } from "@/app/components/InteractiveLabDiagram";
 import { StatusChip } from "@/app/components/StatusChip";
 import { trackCounts, tracks } from "@/lib/tracks";
+import { NetworkEnvironment } from "@/app/components/NetworkEnvironment";
+import styles from "@/app/components/NetworkEnvironment.module.css";
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("homePage");
   return (
-    <div className="space-y-12">
-      <section className="grid items-center gap-8 rounded-3xl border border-teal-400/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.12),transparent_48%)] p-5 sm:p-8 md:grid-cols-2">
-        <div className="space-y-4">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-teal-300">{t("eyebrow")}</p>
-          <h1 className="text-5xl font-semibold tracking-[-0.04em] text-white sm:text-6xl">{t("productName")}</h1>
-          <p className="max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
-            {t("intro")}
-          </p>
-          <Link href="/methodology" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 hover:border-teal-300 hover:text-white">{t("methodologyLink")}</Link>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-[0_18px_60px_rgba(34,211,238,.08)]">
-          <InteractiveLabDiagram />
+    <div className={styles.home}>
+      <NetworkEnvironment />
+      <section className={styles.hero}>
+        <div className={styles.copy}>
+          <p className={styles.kicker}>{t("eyebrow")}</p>
+          <h1 className={styles.title}>{t("productName")}</h1>
+          <p className={styles.intent}>{t("motionIntent")}</p>
+          <p className={styles.loop}>{t("motionLoop")}</p>
+          <p className={styles.intro}>{t("intro")}</p>
+          <div className={styles.actions}>
+            <a href="#tracks-heading">{t("tracksHeading")}</a>
+            <Link href="/performance">{t("motionPerformance")}</Link>
+            <Link href="/methodology">{t("methodologyLink")}</Link>
+          </div>
         </div>
       </section>
-
+      <div className={`${styles.content} space-y-12`}>
       <section aria-labelledby="tracks-heading" className="space-y-4">
         <h2 id="tracks-heading" className="text-lg font-medium text-white">
           {t("tracksHeading")}
@@ -98,6 +101,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <p className="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">
         {t("libraryNote")}
       </p>
+      </div>
     </div>
   );
 }
