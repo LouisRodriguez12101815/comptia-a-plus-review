@@ -521,6 +521,23 @@ body {
   animation: blueprint-pulse 3.4s ease-in-out infinite;
 }
 
+.motion-b-shell { position: relative; }
+.motion-b-station { position: relative; isolation: isolate; overflow: hidden; border: 1px solid rgba(34,211,238,.24); border-radius: 1.5rem; padding: 1.25rem; background: #0b1220; }
+.motion-b-grid { position: absolute; inset: 0; z-index: -1; opacity: .35; background-image: linear-gradient(rgba(34,211,238,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,.09) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, black, transparent); animation: motion-b-grid-drift 16s linear infinite; }
+.motion-b-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem; margin-top: 1.25rem; }
+.motion-b-stat { border: 1px solid rgba(64,86,114,.8); border-radius: 1rem; padding: .8rem; background: rgba(21,34,56,.65); }
+.motion-b-stat strong { display: block; color: #67e8f9; font: 600 1.7rem var(--font-plex-mono); }
+.motion-b-stat span { color: #b8c5d6; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; }
+.motion-b-stations { display: grid; gap: .75rem; margin-top: 1.25rem; }
+.motion-b-card { border-left: 2px solid rgba(34,211,238,.5); padding: .7rem .9rem; background: linear-gradient(90deg, rgba(34,211,238,.09), transparent); opacity: 0; transform: translateX(-12px); transition: opacity 450ms ease var(--motion-delay), transform 450ms ease var(--motion-delay); }
+.motion-b-station.is-active .motion-b-card { opacity: 1; transform: translateX(0); }
+.motion-b-card-index { color: #67e8f9; font: .7rem var(--font-plex-mono); }
+.motion-b-card h3 { color: white; font-weight: 600; }
+.motion-b-card p { margin-top: .2rem; color: #b8c5d6; font-size: .82rem; line-height: 1.5; }
+@keyframes motion-b-grid-drift { to { background-position: 28px 28px; } }
+@media (min-width: 640px) { .motion-b-stats { grid-template-columns: repeat(4, 1fr); } .motion-b-stations { grid-template-columns: repeat(2, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .motion-b-grid { animation: none; } .motion-b-card { opacity: 1; transform: none; transition: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   .track-focus-dot { animation: none; }
 }
