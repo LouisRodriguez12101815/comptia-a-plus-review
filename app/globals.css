@@ -521,6 +521,26 @@ body {
   animation: blueprint-pulse 3.4s ease-in-out infinite;
 }
 
+.motion-a-shell { position: relative; isolation: isolate; }
+.motion-a-network { position: absolute; inset: -2rem -20vw auto; height: 30rem; z-index: -1; pointer-events: none; overflow: hidden; opacity: .5; }
+.motion-a-network svg { width: 100%; height: 100%; color: var(--color-teal-400); }
+.motion-a-network path { fill: none; stroke: currentColor; stroke-width: 1; stroke-dasharray: 3 13; opacity: .35; }
+.motion-a-network circle { fill: currentColor; opacity: .45; filter: drop-shadow(0 0 6px currentColor); }
+.motion-a-network .motion-a-packet { opacity: .9; }
+.motion-a-content { position: relative; }
+.motion-a-hero { position: relative; overflow: hidden; transition: transform 320ms ease, border-color 320ms ease; }
+.motion-a-hero:hover { transform: translateY(-3px); border-color: rgba(34,211,238,.42); }
+.motion-a-loop { position: relative; overflow: hidden; border: 1px solid rgba(34,211,238,.18); border-radius: 1.5rem; padding: 1.25rem; background: linear-gradient(120deg, rgba(21,34,56,.88), rgba(11,18,32,.78)); }
+.motion-a-loop-heading { position: relative; z-index: 1; max-width: 36rem; }
+.motion-a-stages { position: relative; display: grid; gap: .75rem; margin-top: 1.25rem; }
+.motion-a-stages::before { content: ""; position: absolute; left: 1.25rem; top: 1.75rem; bottom: 1.75rem; border-left: 1px dashed rgba(34,211,238,.35); }
+.motion-a-stage { position: relative; display: grid; grid-template-columns: 2.5rem 1fr; gap: .75rem; align-items: start; padding: .5rem 0; }
+.motion-a-stage-node { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 1px solid rgba(34,211,238,.42); border-radius: 999px; background: #0b1220; color: #67e8f9; font: 600 .7rem var(--font-plex-mono); }
+.motion-a-stage h3 { color: white; font-size: .95rem; font-weight: 600; }
+.motion-a-stage p { margin-top: .25rem; color: #b8c5d6; font-size: .82rem; line-height: 1.5; }
+@media (min-width: 768px) { .motion-a-stages { grid-template-columns: repeat(4, 1fr); gap: 1rem; } .motion-a-stages::before { left: 4%; right: 4%; top: 1.25rem; bottom: auto; border-left: 0; border-top: 1px dashed rgba(34,211,238,.35); } .motion-a-stage { display: block; } .motion-a-stage > div { margin-top: .7rem; } }
+@media (prefers-reduced-motion: reduce) { .motion-a-hero { transition: none; } .motion-a-network .motion-a-packet { display: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   .track-focus-dot { animation: none; }
 }

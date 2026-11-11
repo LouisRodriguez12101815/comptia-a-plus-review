@@ -4,14 +4,16 @@ import { DeviceIcon } from "@/app/components/icons";
 import { InteractiveLabDiagram } from "@/app/components/InteractiveLabDiagram";
 import { StatusChip } from "@/app/components/StatusChip";
 import { trackCounts, tracks } from "@/lib/tracks";
+import { MotionConceptA } from "@/app/components/MotionConceptA";
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("homePage");
   return (
-    <div className="space-y-12">
-      <section className="grid items-center gap-8 rounded-3xl border border-teal-400/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.12),transparent_48%)] p-5 sm:p-8 md:grid-cols-2">
+    <MotionConceptA eyebrow={t("loopEyebrow")} heading={t("loopHeading")} stages={[{ label: t("stageStudy"), detail: t("stageStudyDetail") }, { label: t("stageTest"), detail: t("stageTestDetail") }, { label: t("stageRemediate"), detail: t("stageRemediateDetail") }, { label: t("stageMeasure"), detail: t("stageMeasureDetail") }]}>
+      <div className="space-y-12">
+      <section className="motion-a-hero grid items-center gap-8 rounded-3xl border border-teal-400/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,.12),transparent_48%)] p-5 sm:p-8 md:grid-cols-2">
         <div className="space-y-4">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-teal-300">{t("eyebrow")}</p>
           <h1 className="text-5xl font-semibold tracking-[-0.04em] text-white sm:text-6xl">{t("productName")}</h1>
@@ -98,6 +100,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <p className="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">
         {t("libraryNote")}
       </p>
-    </div>
+      </div>
+    </MotionConceptA>
   );
 }
