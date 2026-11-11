@@ -521,6 +521,24 @@ body {
   animation: blueprint-pulse 3.4s ease-in-out infinite;
 }
 
+.motion-c-shell { position: relative; }
+.motion-c-journey { border: 1px solid rgba(129,140,248,.28); border-radius: 1.5rem; padding: 1.25rem; background: linear-gradient(135deg, rgba(79,70,229,.12), rgba(11,18,32,.9)); }
+.motion-c-intro { max-width: 38rem; }
+.motion-c-path { position: relative; height: 2px; margin: 2rem 1rem 1.25rem; background: rgba(129,140,248,.25); }
+.motion-c-path-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #22d3ee, #818cf8); transition: width 600ms ease; }
+.motion-c-path-pulse { position: absolute; top: 50%; width: .8rem; height: .8rem; border-radius: 999px; background: #67e8f9; box-shadow: 0 0 0 .35rem rgba(103,232,249,.12), 0 0 1rem #67e8f9; transform: translate(-50%, -50%); transition: left 600ms ease; }
+.motion-c-stages { display: grid; gap: .8rem; }
+.motion-c-stage { display: grid; grid-template-columns: 2.5rem 1fr; gap: .75rem; align-items: start; padding: .8rem; border: 1px solid rgba(64,86,114,.75); border-radius: 1rem; background: rgba(21,34,56,.58); transition: border-color 300ms ease, transform 300ms ease, background 300ms ease; }
+.motion-c-stage.is-active { border-color: rgba(103,232,249,.55); background: rgba(34,211,238,.1); transform: translateX(.25rem); }
+.motion-c-stage.is-complete { border-color: rgba(52,211,153,.32); }
+.motion-c-node { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 1px solid rgba(129,140,248,.5); border-radius: 999px; color: #c4b5fd; font: 600 .8rem var(--font-plex-mono); }
+.motion-c-stage.is-active .motion-c-node { border-color: #67e8f9; color: #67e8f9; }
+.motion-c-stage.is-complete .motion-c-node { border-color: #34d399; color: #34d399; }
+.motion-c-stage h3 { color: white; font-weight: 600; }
+.motion-c-stage p { margin-top: .25rem; color: #b8c5d6; font-size: .82rem; line-height: 1.5; }
+@media (min-width: 768px) { .motion-c-stages { grid-template-columns: repeat(4, 1fr); } .motion-c-stage { display: block; min-height: 9rem; } .motion-c-stage > div { margin-top: .7rem; } }
+@media (prefers-reduced-motion: reduce) { .motion-c-path-fill, .motion-c-path-pulse, .motion-c-stage { transition: none; } .motion-c-stage.is-active { transform: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   .track-focus-dot { animation: none; }
 }
