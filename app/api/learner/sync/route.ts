@@ -1,7 +1,6 @@
 import { RoomError } from "@/lib/game/room-service";
 import { json, limits, needConfig, sameOrigin, sessionOf } from "@/lib/learner/api";
-import { mergeProgress } from "@/lib/learner/merge";
-import { loadRemote, saveRemote } from "@/lib/learner/store";
+import { saveRemote } from "@/lib/learner/store";
 import { twilioLearner } from "@/lib/learner/twilio";
 import { parseProgress } from "@/lib/progress";
 export const runtime = "nodejs";
@@ -24,9 +23,7 @@ export async function POST(request: Request) {
     const t = twilioLearner(c.config);
     await t.guard.assertActive();
     const map = t.mapFor(session.id);
-    const remote = await loadRemote(map);
-    const merged = remote ? mergeProgress(local, remote) : local;
-    await saveRemote(map, merged);
+    const merged = await saveRemote(map, local);
     return json({ ok: true, progress: merged, savedAt: Date.now() });
   } catch (e) {
     if (e instanceof RoomError && e.status === 423) return json({ error: "paused" }, 423);
