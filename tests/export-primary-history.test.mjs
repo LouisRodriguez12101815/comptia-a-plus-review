@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { configuration, decodeProgress, exportHistory, runExport } from '../scripts/export-primary-history.mjs';
 
 const env = {
@@ -17,6 +18,23 @@ const content = {
 const sitting = { topicId: 'n10-test', total: 1, correct: 0, questionIds: ['q-test'], missedIds: ['q-test'], at: 1700000000000 };
 const progress = { quizAttempts: [sitting], mockAttempts: [], schedules: { 'fc-test': { due: '2026-01-01T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 2, privateField: 'do not export' } }, phone: 'do not export' };
 const itemsFor = p => [{ key: 'progress-0', data: { s: JSON.stringify(p) } }];
+
+test('standalone exporter loads and validates legacy records without TypeScript stripping', () => {
+  const flags = process.allowedNodeEnvironmentFlags.has('--no-experimental-strip-types') ? ['--no-experimental-strip-types'] : [];
+  const env = { ...process.env }; delete env.NODE_OPTIONS;
+  const help = spawnSync(process.execPath, [...flags, 'scripts/export-primary-history.mjs', '--help'], { encoding: 'utf8', env });
+  assert.equal(help.status, 0, help.stderr); assert.match(help.stdout, /Node 22\.6\+/);
+  const script = `
+    import assert from 'node:assert/strict';
+    import { decodeProgress } from './scripts/export-primary-history.mjs';
+    const items = value => [{ key: 'progress-0', data: { s: JSON.stringify(value) } }];
+    assert.equal(decodeProgress(items({knownCards:{card:true}})).knownCards.card, true);
+    assert.throws(() => decodeProgress(items({studyFocus:'invalid'})));
+    assert.throws(() => decodeProgress(items({schedules:{card:{due:'2026-02-30T00:00:00.000Z',stability:1,difficulty:1,elapsed_days:0,scheduled_days:1,reps:1,lapses:0,state:2}}})));
+  `;
+  const run = spawnSync(process.execPath, [...flags, '--input-type=module', '--eval', script], { encoding: 'utf8', env });
+  assert.equal(run.status, 0, run.stderr);
+});
 
 test('requires unambiguous allowlisted primary selection and uses application HMAC', () => {
   assert.match(configuration(env).mapName, /^learner-[a-f0-9]{40}$/);
