@@ -257,7 +257,9 @@ test('corrupt legacy streams fail closed before any candidate or head is written
     [['progress-0', { s: JSON.stringify({ ...empty(), studyFocus: 'invalid-focus' }) }]],
     ...[null, {}, { due: 'bad' }, { due: '2026-01-01T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 9 }].map(schedule =>
       [['progress-0', { s: JSON.stringify({ ...empty(), schedules: { card: schedule } }) }]]),
-    ...[{ due: 'bad' }, { last_review: 'bad' }, { stability: null }, { reps: 0.5 }, { learning_steps: -1 }].map(patch =>
+    ...[{ due: 'bad' }, { last_review: 'bad' }, { due: '2026-02-30T00:00:00.000Z' },
+      { last_review: '2026-02-30T00:00:00.000Z' }, { due: '2025-02-29T00:00:00.000Z' },
+      { stability: null }, { reps: 0.5 }, { learning_steps: -1 }].map(patch =>
       [['progress-0', { s: JSON.stringify({ ...empty(), schedules: { card: { ...validSchedule(), ...patch } } }) }]]),
     [['progress-0', { s: raw + ' '.repeat(12000) }]],
     Array.from({ length: 41 }, (_, i) => [`progress-${i}`, { s: i ? ' ' : raw }]),
@@ -291,6 +293,14 @@ test('valid legacy FSRS schedules survive migration', async () => {
   const schedule = validSchedule();
   const old = { ...empty(), schedules: { card: schedule } };
   await map.set('progress-0', { s: JSON.stringify(old) });
+  await saveRemote(map, withQuiz('new', 1));
+  assert.deepEqual((await loadRemote(map)).schedules.card, schedule);
+});
+
+test('valid canonical leap-day schedule dates migrate unchanged', async () => {
+  const map = fakeMap();
+  const schedule = { ...validSchedule(), due: '2024-02-29T23:59:59.999Z', last_review: '2024-02-29T00:00:00.000Z' };
+  await map.set('progress-0', { s: JSON.stringify({ ...empty(), schedules: { card: schedule } }) });
   await saveRemote(map, withQuiz('new', 1));
   assert.deepEqual((await loadRemote(map)).schedules.card, schedule);
 });

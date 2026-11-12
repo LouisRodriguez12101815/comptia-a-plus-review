@@ -16,7 +16,13 @@ function validLegacyFields(raw: string): boolean {
   return Object.values(value.schedules).every((entry: unknown) => {
     if (!entry || typeof entry !== "object" || Array.isArray(entry)) return false;
     const s = entry as Record<string, unknown>;
-    const date = (v: unknown) => typeof v === "string" && Number.isFinite(Date.parse(v));
+    // The schedule writer has always stored Date.toISOString() output. Round-trip
+    // it so impossible calendar dates cannot be accepted via Date's rollover.
+    const date = (v: unknown) => {
+      if (typeof v !== "string") return false;
+      const parsed = new Date(v);
+      return Number.isFinite(parsed.getTime()) && parsed.toISOString() === v;
+    };
     const nonnegative = (v: unknown) => typeof v === "number" && Number.isFinite(v) && v >= 0;
     const count = (v: unknown) => nonnegative(v) && Number.isInteger(v);
     return date(s.due) && (s.last_review === undefined || date(s.last_review))
