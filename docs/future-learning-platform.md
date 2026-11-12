@@ -265,8 +265,17 @@ practical. Default to minimal server-side identity, learner isolation, explicit
 browser DTO allowlists, no raw provider records or answer-key leakage, bounded
 retention, and explicit deletion/export policies. Never send credentials or phone
 numbers to models or analytics; avoid cross-learner recommendation contamination.
-Current authenticated `study_event` logs can contain validated allowlisted
-session/question IDs; do not describe them as anonymous or add copies elsewhere.
+Current authenticated `study_event` logs contain only fields permitted for each
+event type, but field allowlisting does not make every identifier canonical.
+The exam code is checked against the supported exam codes. Client-supplied
+`sessionId`, `questionId`, `topicId` and `objectiveId` are pattern-validated;
+they are not checked against a canonical session, question, topic or objective
+source by the telemetry parser. The learner identity used for authenticated
+storage is derived server-side and is distinct from the client-supplied telemetry
+`sessionId`. Treat learner-supplied telemetry identifiers as untrusted unless
+they are server-derived or validated against a canonical source. A valid pattern
+alone does not establish canonical identity or trustworthy analytics metadata.
+Do not describe these logs as anonymous or add copies elsewhere.
 Any new use or expanded collection requires its own privacy review.
 
 ## Possible proof sequence — not a commitment
