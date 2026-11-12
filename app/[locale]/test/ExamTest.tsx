@@ -8,7 +8,7 @@ import objectives from "@/content/objectives.json";
 import { reportContent } from "@/app/components/ReportIssue";
 import { getTopic, questions, topics } from "@/lib/content";
 import {
-  EXAM_FORMATS, TEST_LENGTHS, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
+  EXAM_FORMATS, TEST_LENGTHS, MIXED_PRACTICE_QUESTION_COUNT, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
   draftFocused, draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds,
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
@@ -114,10 +114,10 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
   );
 }
 
-export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {} }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]> }) {
+export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: boolean }) {
   const t = useTranslations("examTest");
-  const [exam, setExam] = useState<ExamCode>(initialExam ?? "220-1201");
-  const [lengthId, setLengthId] = useState(initialFocus.length > 0 ? "quick" : "full");
+  const [exam, setExam] = useState<ExamCode>(practiceMode ? "clf-c02" : initialExam ?? "220-1201");
+  const [lengthId, setLengthId] = useState(practiceMode ? "mixed20" : initialFocus.length > 0 ? "quick" : "full");
   const [mode, setMode] = useState<"standard" | "targeted">(initialFocus.length > 0 ? "targeted" : "standard");
   const [runInfo, setRunInfo] = useState<{ kind: RunKind; objectiveIds: string[] }>({ kind: "standard", objectiveIds: [] });
   const [sessionSeconds, setSessionSeconds] = useState(0);
@@ -155,11 +155,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const dueCount = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
-  const requested = questionsForLength(exam, lengthId);
+  const isMixedPractice = practiceMode && exam === "clf-c02";
+  const requested = isMixedPractice ? MIXED_PRACTICE_QUESTION_COUNT : questionsForLength(exam, lengthId);
   const planned = Math.min(requested, pool.totalUnique);
   const quota = useMemo(() => allocateByWeight(pool.domains, planned), [pool, planned]);
 
-  const lengthLabel = (id: string) => (id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
+  const lengthLabel = (id: string) => (id === "mixed20" ? t("mixedPractice") : id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
 
   const deadline = useRef(0);
   const completed = useRef(false);
@@ -269,7 +270,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   // Tick against a wall-clock deadline so background-tab throttling cannot add time.
   useEffect(() => {
-    if (phase !== "running") return;
+    if (phase !== "running" || isMixedPractice) return;
     const timer = window.setInterval(() => {
       const left = (deadline.current - Date.now()) / 1000;
       setRemaining(left);
@@ -280,7 +281,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       if (left <= 0) finish(responsesRef.current, picks, true);
     }, 250);
     return () => window.clearInterval(timer);
-  }, [phase, index, finish, picks, t]);
+  }, [phase, index, finish, picks, t, isMixedPractice]);
 
   const warned = remaining <= 10;
 
@@ -339,7 +340,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setPicks(draft);
     setIndex(0);
     choose([]);
-    beginQuestion(sessionDurationSeconds(exam, draft.length));
+    beginQuestion(isMixedPractice ? 0 : sessionDurationSeconds(exam, draft.length));
     responsesRef.current = {};
     visited.current = new Set(draft.slice(0, 1).map(p => p.questionId));
     setOrders(Object.fromEntries(draft.map(p => [p.questionId, shuffleChoiceOrder(questionsById[p.questionId])])));
@@ -369,7 +370,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("certification")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {examCodes.map((code) => (
+            {examCodes.filter((code) => !practiceMode || code === "clf-c02").map((code) => (
               <label key={code} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${exam === code ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
                 <span className="flex items-center gap-2">
                   <input type="radio" name="exam" value={code} checked={exam === code} onChange={() => setExam(code)} className="accent-teal-400" />
@@ -384,8 +385,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("length")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {TEST_LENGTHS.map((length) => {
-              const requestedForLength = questionsForLength(exam, length.id);
+            {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : TEST_LENGTHS).map((length) => {
+              const requestedForLength = length.id === "mixed20" ? MIXED_PRACTICE_QUESTION_COUNT : questionsForLength(exam, length.id);
               const count = Math.min(requestedForLength, pool.totalUnique);
               return (
                 <label key={length.id} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${lengthId === length.id ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
@@ -393,7 +394,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                     <input type="radio" name="length" value={length.id} checked={lengthId === length.id} onChange={() => setLengthId(length.id)} className="accent-teal-400" />
                     <span className="font-medium text-white">{lengthLabel(length.id)}</span>
                   </span>
-                  <span className="mt-1 text-sm text-slate-300">{t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
+                  <span className="mt-1 text-sm text-slate-300">{isMixedPractice ? t("mixedPracticeDetail") : t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
                 </label>
               );
             })}
@@ -476,9 +477,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         </section>
 
         <section className={card} aria-labelledby="rules-heading">
-          <h2 id="rules-heading" className="text-lg font-semibold text-white">{t("howItWorks")}</h2>
+          <h2 id="rules-heading" className="text-lg font-semibold text-white">{isMixedPractice ? t("mixedPracticeHeading") : t("howItWorks")}</h2>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
-            <li>{t("rule1", { seconds: perQuestion })}</li>
+            <li>{isMixedPractice ? t("mixedPracticeRule1") : t("rule1", { seconds: perQuestion })}</li>
             <li>{t("rule2")}</li>
             <li>{t("rule3")}</li>
             <li>{t("rule4")}</li>
@@ -509,13 +510,13 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                 ? t("questionProgressMulti", { current: index + 1, total: picks.length })
                 : t("questionProgress", { current: index + 1, total: picks.length })}
             </p>
-            <p role="timer" aria-label={t("timeLeft", { time: formatClock(remaining) })} className={`font-mono text-2xl font-semibold tabular-nums ${warned ? "text-amber-300" : "text-white"}`}>
+            {isMixedPractice ? <p className="font-mono text-sm font-semibold uppercase tracking-wide text-teal-300">{t("untimedPractice")}</p> : <p role="timer" aria-label={t("timeLeft", { time: formatClock(remaining) })} className={`font-mono text-2xl font-semibold tabular-nums ${warned ? "text-amber-300" : "text-white"}`}>
               {formatClock(remaining)}
-            </p>
+            </p>}
           </div>
-          <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
+          {!isMixedPractice && <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
             <div className={`h-full transition-[width] duration-200 ${warned ? "bg-amber-400" : "bg-teal-400"}`} style={{ width: `${100 * fraction}%` }} />
-          </div>
+          </div>}
           <div aria-hidden="true" className="h-1 overflow-hidden rounded-full bg-slate-800">
             <div className="h-full bg-slate-500" style={{ width: `${(100 * index) / picks.length}%` }} />
           </div>
@@ -723,18 +724,18 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <Link href="/weak-areas" className="mt-3 inline-flex min-h-11 items-center rounded-full border border-teal-300 px-5 py-2 text-teal-100">{t("weakAreasLink")}</Link>
       </section>
       <section className={card} aria-labelledby="score-heading">
-        <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{format.label} · {exam}</h2>
+        <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{isMixedPractice ? t("mixedPractice") : format.label} · {exam}</h2>
         <p className="mt-2 text-4xl font-semibold text-white">{result.correct}/{result.total} <span className="text-2xl text-slate-300">({result.percent}%)</span></p>
-        <p className={`mt-2 font-medium ${passed ? "text-emerald-300" : "text-amber-300"}`}>
-          {passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
+        <p className={`mt-2 font-medium ${isMixedPractice ? "text-teal-200" : passed ? "text-emerald-300" : "text-amber-300"}`}>
+          {isMixedPractice ? t("mixedPracticeResult") : passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
         </p>
-        <p className="mt-1 text-sm text-slate-400">
+        {!isMixedPractice && <p className="mt-1 text-sm text-slate-400">
           {t("scaleNote", { min: format.scaleMin, max: format.scaleMax, passing: format.passingScore })}
-        </p>
+        </p>}
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
           <div><dt className="text-xs text-slate-400">{t("timeUsed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(usedSeconds)}</dd></div>
-          <div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>
-          <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div>
+          {!isMixedPractice && <><div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>
+          <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div></>}
         </dl>
       </section>
 
@@ -847,7 +848,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={primary}>{t("retake")}</button>
+        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={primary}>{isMixedPractice ? t("practiceMore") : t("retake")}</button>
         <button type="button" onClick={() => setPhase("setup")} className={secondary}>{t("changeExam")}</button>
       </div>
     </div>

@@ -43,6 +43,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
     ...(counts.cards > 0 ? [{ label: tTrack("tools.flashcards.label"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ label: tTrack("tools.quiz.label"), href: "/quiz" }] : []),
+    ...(track.id === "aws-clf" ? [{ label: t("workspaceMixedPractice"), href: "/test?exam=clf-c02&practice=mixed20" }] : []),
     ...(counts.questions > 0 ? [{ label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` }] : []),
     ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0
       ? [{ label: t("workspaceResults"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` }]
@@ -53,7 +54,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
     { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#topics` },
     { step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` },
     ...(counts.cards > 0 ? [{ step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" }] : []),
-    ...(counts.questions > 0 ? [{ step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: `/test?exam=${track.focus}` }] : []),
+    ...(counts.questions > 0 ? [{ step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: track.id === "aws-clf" ? "/test?exam=clf-c02&practice=mixed20" : `/test?exam=${track.focus}` }] : []),
     ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0
       ? [{ step: "05", label: t("sequenceReview"), detail: t("sequenceReviewDetail"), href: `/final-15/${track.id}` }]
       : []),
