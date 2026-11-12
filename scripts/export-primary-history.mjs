@@ -6,7 +6,8 @@ import { parseEnv } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import twilio from 'twilio';
-import { decodeSnapshot, PROGRESS_HEAD, progressHead, snapshotKeys } from '../lib/learner/progress-snapshot.mjs';
+import { decodeProgress } from '../lib/learner/decode-progress.mjs';
+export { decodeProgress } from '../lib/learner/decode-progress.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const HELP = `Usage: node scripts/export-primary-history.mjs
@@ -40,38 +41,6 @@ export function configuration(env) {
   if (!selected || !allowed.includes(selected)) throw new Error('configuration');
   const id = createHmac('sha256', env.LEARNER_SESSION_SECRET).update(`learner:${selected}`).digest('hex').slice(0, 40);
   return { mapName: `learner-${id}` };
-}
-
-/** Documented legacy progress item and current application chunk format. */
-export function decodeProgress(items) {
-  if (!Array.isArray(items) || items.some(item => !isRecord(item) || typeof item.key !== 'string')
-    || new Set(items.map(item => item.key)).size !== items.length) throw new Error('history');
-  const direct = items.find(item => item.key === 'progress');
-  const committed = items.find(item => item.key === PROGRESS_HEAD);
-  const chunks = items.filter(item => /^progress-\d+$/.test(item.key)).sort((a, b) => Number(a.key.slice(9)) - Number(b.key.slice(9)));
-  // Two formats together have no documented freshness rule: refuse to choose.
-  if (!committed && direct && chunks.length) throw new Error('history');
-  let progress;
-  if (committed) {
-    const head = progressHead(committed.data);
-    const byKey = new Map(items.map(item => [item.key, item.data]));
-    progress = JSON.parse(decodeSnapshot(head, snapshotKeys(head).map(key => byKey.get(key))));
-  } else if (direct) {
-    progress = typeof direct.data?.s === 'string' ? JSON.parse(direct.data.s) : direct.data;
-  } else if (chunks.length) {
-    if (chunks.length > 40 || chunks.some((item, i) => item.key !== `progress-${i}` || typeof item.data?.s !== 'string' || item.data.s.length > 12000)) throw new Error('history');
-    progress = JSON.parse(chunks.map(item => item.data.s).join(''));
-  }
-  const historyItem = items.find(item => item.key === 'history');
-  // No history payload schema is specified in the build report. Accept only
-  // explicit per-question rows in an array or events array, never aggregate runs.
-  const events = historyItem ? (Array.isArray(historyItem.data) ? historyItem.data : historyItem.data?.events) : [];
-  if (historyItem && !Array.isArray(events)) throw new Error('unsupported-history');
-  if (progress === undefined && !historyItem) throw new Error('history');
-  if (progress !== undefined && (!isRecord(progress) || !['quizAttempts', 'mockAttempts'].every(key => progress[key] === undefined || Array.isArray(progress[key]))
-    || !['quizAttempts', 'mockAttempts'].some(key => Array.isArray(progress[key])))) throw new Error('history');
-  // Do not copy profile, history display fields, schedules-* or run:* payloads.
-  return { ...(progress ?? {}), questionEvents: events };
 }
 
 /** Allowlist output fields and bank IDs; never copy profile fields or free text. */
