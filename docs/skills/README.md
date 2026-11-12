@@ -1,5 +1,9 @@
 # Repository-local agent skills
 
+For longer-range learning architecture ideas and their non-goals, see the
+[future learning platform note](../future-learning-platform.md). It does not
+change the authority or workflow of the skills listed here.
+
 Claude uses its own copies in [`.claude/`](../../.claude/README.md); this page and `.agents/` are for other assistants.
 
 The four gameplay skills below provide focused workflows for the CompTIA Review website. `SKILL.md` contains reusable instructions; detailed findings, source evidence, specifications and regression matrices belong in `docs/`, with the target commit, environment and date. Preserve existing audit records and distinguish historical findings from current reproductions.

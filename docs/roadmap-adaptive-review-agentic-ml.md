@@ -6,6 +6,15 @@
 **Learner loop:** Study → Test → Remediate → Measure.  
 **System loop:** Ingest → Map → Assess → Drill → Remediate → Measure.
 
+**Broader direction (proposed):** The [future learning platform note](future-learning-platform.md)
+explores a domain-independent evidence/competency engine and adapters after the
+existing Network+ work is proven. An SQL Schema Lab is a possible non-certification
+proof case, with deterministic query evaluation. Interactive visualization and
+gamification could support practice and transfer; bounded agents and ML belong
+later in evaluated, privacy-reviewed experiments. None is a commitment to refactor,
+collect new telemetry, deploy a model, or rename the product. The historical
+milestones and decision record below remain intact.
+
 ## Why this belongs here
 
 The application already provides exam objectives, topic/concept-mapped materials, quizzes, weak-area and scorecard interfaces, a remediation pathway, and learner telemetry. A recent production log inspection showed multiple completed Network+ quizzes with question counts, correct counts, and missed counts. **These logs establish event receipt, not durable completeness of synced history or improved learning outcomes.**
