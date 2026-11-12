@@ -128,7 +128,13 @@
     "flashcards": "Related flashcards",
     "watchVideo": "Watch video: {title}",
     "reviewNotes": "Review notes",
-    "trySimilar": "Try a similar question"
+    "trySimilar": "Try a similar question",
+    "repeatQuestion": "Repeat question",
+    "practiceConcept": "Practice this concept",
+    "awsNoAlternative": "No different question is available for this distinction yet.",
+    "awsRepeatedEvidence": "Repeated-question evidence: {count}",
+    "awsTransferEvidence": "New-question transfer evidence: {count}",
+    "awsRecoveryEvidence": "A new question was answered correctly after a miss. This is recovery evidence, not mastery."
   },
   "flashcardDeck": {
     "chooseDeck": "Choose a flashcard deck",
@@ -3050,7 +3056,13 @@
     "drillIntro": "{count} questions you have missed at least once.",
     "performanceLink": "View performance history",
     "remediation": {
-      "clusters": { "dhcpLifecycle": "DHCP lifecycle", "timeSynchronization": "Time synchronization", "ipamDdi": "IPAM and DDI", "ipv6Controls": "IPv6 controls" },
+      "clusters": { "dhcpLifecycle": "DHCP lifecycle", "timeSynchronization": "Time synchronization", "ipamDdi": "IPAM and DDI", "ipv6Controls": "IPv6 controls",
+        "awsEc2GuestOs": "EC2 guest operating-system responsibility",
+        "awsRdsDataAccess": "RDS data and access responsibility",
+        "awsPhysicalInfrastructure": "AWS physical infrastructure responsibility",
+        "awsLambdaIam": "Lambda IAM responsibility",
+        "awsLambdaCode": "Lambda application-code responsibility"
+      },
       "examClues": { "dhcpRequestBroadcast": "A client without an address starts with a broadcast Discover.", "dhcpT1": "At T1, the client unicasts a renewal request to the original DHCP server.", "dhcpT2": "At T2, the client broadcasts to find any DHCP server that can renew the lease.", "dhcpOptions": "Options carry the gateway, DNS servers, and lease time.", "ntpPort": "NTP uses UDP 123.", "kerberosClock": "Kerberos requires synchronized clocks; excessive skew can reject authentication.", "ntpSources": "NTP stratum shows distance from the reference clock; lower is closer.", "ntpConsensus": "Multiple NTP sources let the client compare samples and reject an outlier.", "ptpPrecision": "PTP provides tighter synchronization than NTP.", "ptpPorts": "PTP commonly uses UDP 319 for event and UDP 320 for general messages.", "logTime": "Compare timestamps and time sources before trusting an event sequence.", "ipamOwnership": "IPAM centralizes address ownership, allocation, and utilization.", "ddi": "DDI combines DNS, DHCP, and IPAM.", "ipamView": "An IPAM view should show ownership, utilization, and conflicts.", "ipamSpreadsheet": "A spreadsheet is stale and collision-prone compared with authoritative IPAM data.", "raGuard": "RA Guard blocks rogue IPv6 Router Advertisements at the access edge." },
       "memoryRules": { "dora": "DORA: Discover, Offer, Request, Acknowledge.", "dhcpT1": "T1 asks the original server first.", "dhcpT2": "T2 broadcasts to any available DHCP server.", "dhcpOptions": "Address assignment is not enough; options complete the configuration.", "ntpPort": "NTP = UDP 123.", "kerberosClock": "Kerberos hates clock skew.", "ntpSources": "Lower stratum means closer to the source.", "ntpConsensus": "Several sources provide a quorum for spotting an outlier.", "ptpPrecision": "NTP is network time; PTP is precision time.", "ptpPorts": "319 = event; 320 = general.", "logTime": "No trusted time, no trusted timeline.", "ipamOwnership": "IPAM answers: who has which address, and is it in use?", "ddi": "DDI = DNS + DHCP + IPAM.", "ipamView": "One authoritative view prevents duplicate assignments.", "ipamSpreadsheet": "If it is not authoritative and current, it is not IPAM.", "raGuard": "RA Guard = stop rogue router advertisements." },
       "whyWrong": { "dhcpRequestBroadcast": "The other DHCP messages depend on first discovering an available server.", "dhcpT1": "T1 is the unicast renewal phase, not the broadcast fallback phase.", "dhcpT2": "T2 is the broadcast fallback phase; unicast renewal is earlier.", "dhcpOptions": "The options, not just the address, supply the remaining network settings.", "ntpPort": "A different port identifies another service, not standard NTP.", "kerberosClock": "Kerberos authentication can fail when clocks drift beyond the allowed skew.", "ntpSources": "Stratum is source distance, not the time zone.", "ntpConsensus": "Two clocks cannot identify which one is wrong; multiple sources support outlier rejection.", "ptpPrecision": "NTP suits ordinary synchronization but does not provide PTP precision.", "ptpPorts": "Confusing event and general PTP traffic can cause incorrect firewall rules.", "logTime": "Without synchronized timestamps, event ordering can mislead.", "ipamOwnership": "Manual records do not reliably show current allocation ownership.", "ddi": "DDI is the coordinated service set, not only one component.", "ipamView": "A partial view can hide conflicts and assigned addresses.", "ipamSpreadsheet": "Spreadsheets lack IPAM's authoritative, current state.", "raGuard": "RA Guard addresses rogue Router Advertisements, not general IPv6 routing." }

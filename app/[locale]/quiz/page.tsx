@@ -4,7 +4,7 @@ import { focusForTopic } from "@/lib/chapter";
 import { getTopic, questions as allQuestions, topics as allTopics } from "@/lib/content";
 import { getConcept } from "@/lib/concepts";
 import { getDomainQuiz } from "@/lib/domain-quiz";
-import { isStudyFocus } from "@/lib/exams";
+import { isExamCode, isStudyFocus } from "@/lib/exams";
 import { controlledQuestionIds, questionIdsFromParam } from "@/lib/controlled-question-pool";
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
@@ -42,8 +42,8 @@ export default async function QuizPage({
       {chapter && <ChapterStrip topicId={chapter.id} current="quiz" />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       {(domain || concept) && <EnsureTopicFocus codes={["n10-009"]} preferred="n10-009" />}
-      {questionIds && questionIds.length > 0 ? (
-        <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped />
+      {questionIds !== undefined ? (
+        <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped scopedExam={isExamCode(examParam) ? examParam : undefined} />
       ) : concept ? (
         <QuizRunner initialTopic="all" questionIds={concept.questionIds} scoped />
       ) : domain ? (
