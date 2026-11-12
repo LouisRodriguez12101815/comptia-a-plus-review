@@ -1,0 +1,42 @@
+.page { --a-orange: #ff9900; --a-blue: #38bdf8; --a-green: #34d399; --a-panel: rgba(15, 31, 54, .86); min-height: 70vh; color: #e2e8f0; }
+.hero { display: grid; gap: 2rem; overflow: hidden; border: 1px solid rgba(56, 189, 248, .24); border-radius: 2rem; padding: clamp(1.25rem, 4vw, 3.5rem); background: radial-gradient(circle at 80% 10%, rgba(255,153,0,.15), transparent 30%), #0b1220; }
+.heroCopy { align-self: center; max-width: 42rem; position: relative; z-index: 2; }
+.eyebrow { color: #ffb84a; font: 600 .72rem/1.3 var(--font-plex-mono), monospace; letter-spacing: .16em; text-transform: uppercase; }
+.hero h1, .results h2, .practiceGrid h2 { margin: .65rem 0; color: #f8fafc; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.02; letter-spacing: -.04em; }
+.practiceGrid h2, .results h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.lede { max-width: 38rem; color: #b8c5d6; font-size: 1.08rem; line-height: 1.65; }
+.actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; align-items: center; }
+.primaryAction, .secondaryAction, .textAction, .practiceCard, .nextStep a { min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: .7rem 1rem; font-weight: 700; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.primaryAction { background: var(--a-orange); color: #111827; box-shadow: 0 0 30px rgba(255,153,0,.25); }
+.secondaryAction { border: 1px solid rgba(56,189,248,.5); color: #bae6fd; }
+.textAction { color: #cbd5e1; text-decoration: underline; text-underline-offset: 4px; }
+.primaryAction:hover, .secondaryAction:hover, .practiceCard:hover, .nextStep a:hover { transform: translateY(-2px); }
+.loop { margin-top: 1rem; color: #94a3b8; font-size: .85rem; }
+.loop span { color: var(--a-green); animation: blink 1.6s ease-in-out infinite; }
+.networkStage { min-height: 25rem; position: relative; overflow: hidden; border: 1px solid rgba(148,163,184,.2); border-radius: 1.5rem; background: radial-gradient(circle at 50% 45%, rgba(56,189,248,.13), transparent 52%), #081322; isolation: isolate; }
+.stageGlow { position: absolute; inset: 15% 20%; border-radius: 50%; background: rgba(56,189,248,.08); filter: blur(25px); animation: breathe 5s ease-in-out infinite; }
+.cloudMark { position: absolute; left: 50%; top: 42%; z-index: 2; color: #ffb34d; font-size: 3rem; transform: translate(-50%, -50%); text-shadow: 0 0 30px rgba(255,153,0,.5); animation: float 6s ease-in-out infinite; }
+.node { position: absolute; z-index: 3; display: flex; align-items: center; gap: .5rem; border: 1px solid rgba(148,163,184,.4); border-radius: .8rem; padding: .6rem .75rem; background: rgba(15,31,54,.88); box-shadow: 0 12px 30px rgba(0,0,0,.25); font-size: .75rem; font-weight: 700; }
+.nodeSignal { width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 12px currentColor; animation: blink 1.8s ease-in-out infinite; }
+.blue { color: var(--a-blue); }.orange { color: var(--a-orange); }.green { color: var(--a-green); }.purple { color: #c4b5fd; }
+.nodeCompute { left: 7%; top: 15%; }.nodeStorage { right: 6%; top: 18%; }.nodeDatabase { right: 8%; bottom: 17%; }.nodeSecurity { left: 7%; bottom: 15%; }
+.connection { position: absolute; z-index: 1; left: 20%; top: 50%; width: 60%; height: 1px; transform-origin: left; background: linear-gradient(90deg, transparent, rgba(56,189,248,.7), transparent); }
+.connectionOne { transform: rotate(-28deg); }.connectionTwo { transform: rotate(25deg); }.connectionThree { transform: rotate(155deg); }.connectionFour { transform: rotate(205deg); }
+.packet { position: absolute; z-index: 4; left: 20%; top: 49%; width: .4rem; height: .4rem; border-radius: 50%; background: #fff; box-shadow: 0 0 12px var(--a-blue); animation: packetA 4.2s linear infinite; }
+.packetTwo { animation-delay: 1.4s; background: var(--a-orange); }.packetThree { animation-delay: 2.8s; background: var(--a-green); }
+.stageCaption { position: absolute; left: 1rem; bottom: .8rem; z-index: 5; margin: 0; color: #94a3b8; font: .68rem/1.4 var(--font-plex-mono), monospace; }
+.practiceGrid, .results { margin-top: 2rem; border: 1px solid rgba(148,163,184,.18); border-radius: 1.5rem; padding: clamp(1.2rem, 3vw, 2rem); background: var(--a-panel); }
+.sectionHeading { max-width: 42rem; }.sectionHeading h2 { margin-bottom: .6rem; }.sectionHeading p:last-child { color: #94a3b8; line-height: 1.6; }
+.practiceCards, .resultGrid { display: grid; gap: .8rem; margin-top: 1.25rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.practiceCard { min-height: 10rem; align-items: flex-start; flex-direction: column; gap: .5rem; border: 1px solid rgba(148,163,184,.2); border-radius: 1rem; padding: 1rem; background: rgba(8,19,34,.72); color: #cbd5e1; }
+.practiceCard strong { color: #f8fafc; font-size: 1.05rem; }.practiceCard span:last-child { font-size: .82rem; line-height: 1.5; color: #94a3b8; }.cardKicker { color: #ffb84a; font: .65rem var(--font-plex-mono), monospace; text-transform: uppercase; letter-spacing: .1em; }
+.resultGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }.scoreCard, .domainCard { border-radius: 1rem; padding: 1rem; background: rgba(8,19,34,.72); border: 1px solid rgba(148,163,184,.18); }.scoreCard { display: grid; gap: .35rem; }.scoreCard span, .domainCard span { color: #94a3b8; font-size: .75rem; }.scoreCard strong, .domainCard strong { color: #f8fafc; font-size: 1.6rem; }.scoreCard small { color: #ffb84a; font-size: .7rem; }.progress { height: .35rem; overflow: hidden; margin-top: .8rem; border-radius: 999px; background: #24344a; }.progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--a-blue), var(--a-orange)); }
+.nextStep { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding: 1rem; border-radius: 1rem; background: rgba(255,153,0,.08); color: #fed7aa; }.nextStep a { background: var(--a-orange); color: #111827; }
+@keyframes packetA { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(290px, -30px); opacity: 0; } }
+@keyframes breathe { 0%,100% { transform: scale(.94); opacity: .5; } 50% { transform: scale(1.08); opacity: 1; } }
+@keyframes float { 0%,100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -58%); } }
+@keyframes blink { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+@media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1fr) minmax(24rem, .9fr); align-items: center; } }
+@media (max-width: 700px) { .practiceCards, .resultGrid { grid-template-columns: 1fr 1fr; } .networkStage { min-height: 21rem; } .node { font-size: .68rem; padding: .5rem; } }
+@media (max-width: 480px) { .practiceCards, .resultGrid { grid-template-columns: 1fr; } .nodeCompute { left: 3%; }.nodeStorage { right: 3%; }.nodeDatabase { right: 3%; }.nodeSecurity { left: 3%; } }
+@media (prefers-reduced-motion: reduce) { .stageGlow, .cloudMark, .packet, .nodeSignal, .loop span { animation: none; } .packet { opacity: .8; transform: translate(120px, 0); } .primaryAction, .secondaryAction, .textAction, .practiceCard, .nextStep a { transition: none; } }
