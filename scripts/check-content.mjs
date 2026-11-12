@@ -15,6 +15,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { parseAwsSourceRegister } from "./lib/aws-source-register.mjs";
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -30,6 +31,12 @@ const strict = flag("--strict");
 const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
 const findings = [];
 const add = (level, check, where, message) => findings.push({ level, check, where, message });
+
+try {
+  parseAwsSourceRegister(fs.readFileSync(path.join(root, "content/aws-review-sources.json"), "utf8"));
+} catch (error) {
+  add("error", "aws-source-register", "content/aws-review-sources.json", error.message);
+}
 
 const topics = [...readJson("content/topics.json"), ...readJson("content/topics-network-plus.json")];
 const questions = readJson("content/questions.json");
