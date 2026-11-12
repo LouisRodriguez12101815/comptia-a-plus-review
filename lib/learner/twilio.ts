@@ -80,11 +80,20 @@ export function twilioLearner(config: LearnerConfig, client = twilio(config.keyS
         } catch (e) { if ([409, 412].includes(status(e) ?? 0)) return false; throw e; }
       },
       async list() {
+        const collection = map().syncMapItems;
+        let page: Awaited<ReturnType<typeof collection.page>>;
         try {
-          // Telemetry uses one independent item per event (up to 200); include progress items too.
-          const items = await syncCall("documents.fetch", () => map().syncMapItems.list({ limit: 1000 }), [404]);
-          return items.map((i) => ({ key: i.key, data: i.data }));
+          page = await syncCall("documents.fetch", () => collection.page({ pageSize: 100 }), [404]);
         } catch (e) { if (status(e) === 404) return []; throw e; }
+        const items = page.instances.map((i) => ({ key: i.key, data: i.data }));
+        // Orphan snapshots can outnumber retained telemetry. Read every page;
+        // only an initially absent map is empty, never an interrupted listing.
+        while (page.nextPageUrl) {
+          const next = page.nextPageUrl;
+          page = await syncCall("documents.fetch", () => collection.getPage(next));
+          items.push(...page.instances.map((i) => ({ key: i.key, data: i.data })));
+        }
+        return items;
       },
       async set(key, data) {
         try { await syncCall("documents.update", () => map().syncMapItems(key).update({ data }), [404]); }

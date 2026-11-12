@@ -2,7 +2,7 @@ import type { Progress } from "@/lib/progress";
 import { parseProgress } from "@/lib/progress";
 import { isDeepStrictEqual } from "node:util";
 import { mergeProgress } from "@/lib/learner/merge";
-import { decodeSnapshot, makeSnapshot, progressHead, PROGRESS_HEAD, snapshotKeys } from "./progress-snapshot.mjs";
+import { CHUNK, MAX_CHUNKS, decodeSnapshot, makeSnapshot, progressHead, PROGRESS_HEAD, snapshotKeys } from "./progress-snapshot.mjs";
 export { CHUNK, MAX_CHUNKS, splitChunks } from "./progress-snapshot.mjs";
 
 const MAX_ATTEMPTS = 5;
@@ -32,8 +32,17 @@ async function readSnapshot(map: ProgressMap) {
       const items = await map.list();
       if (await map.get(PROGRESS_HEAD)) continue;
       const chunks = items.filter((i) => /^progress-\d+$/.test(i.key)).sort((a, b) => Number(a.key.slice(9)) - Number(b.key.slice(9)));
-      const raw = chunks.map((c) => String((c.data as { s?: string }).s ?? "")).join("");
-      return { progress: chunks.length ? parseProgress(raw).progress : null, item: null, head: null };
+      if (!chunks.length) return { progress: null, item: null, head: null };
+      if (chunks.length > MAX_CHUNKS || chunks.some((chunk, index) => {
+        const data = chunk.data as { s?: unknown } | null;
+        return chunk.key !== `progress-${index}` || !data || typeof data !== "object" || Array.isArray(data)
+          || typeof data.s !== "string" || !data.s.length || data.s.length > CHUNK;
+      })) throw new Error("invalid_legacy_progress");
+      const parsed = parseProgress(chunks.map((chunk) => (chunk.data as { s: string }).s).join(""));
+      // Never turn unreadable/repaired legacy data into the first authoritative
+      // manifest. Leave every original byte intact for explicit recovery.
+      if (parsed.problems.length) throw new Error("invalid_legacy_progress");
+      return { progress: parsed.progress, item: null, head: null };
     }
     const head = progressHead(item.data);
     const chunks = await Promise.all(snapshotKeys(head).map((key) => map.get(key)));

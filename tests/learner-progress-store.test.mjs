@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { registerHooks } from 'node:module';
+import twilio from 'twilio';
 import { loadRemote, saveRemote } from '../lib/learner/store.ts';
+import { loadTelemetry } from '../lib/learner/telemetry.ts';
 import { mergeProgress } from '../lib/learner/merge.ts';
 import { decodeSnapshot, makeSnapshot, PROGRESS_HEAD, snapshotKeys } from '../lib/learner/progress-snapshot.mjs';
 import { learnerConfig, twilioLearner } from '../lib/learner/twilio.ts';
@@ -226,6 +228,7 @@ test('legacy multi-chunk progress migrates without rewriting legacy or other lea
   assert.deepEqual(await loadRemote(map), old);
   await saveRemote(map, withQuiz('after-migration', 10));
   for (const [key, data] of before) assert.deepEqual(map.items.get(key), data);
+  assert.deepEqual(await loadRemote(map), mergeProgress(withQuiz('after-migration', 10), old));
   assert.deepEqual(ids(await loadRemote(map)), ['after-migration']);
   assert.deepEqual(ids(decodeProgress(await map.list())), ['after-migration']);
   // The committed manifest, never a leftover legacy stream, is authoritative.
@@ -234,6 +237,122 @@ test('legacy multi-chunk progress migrates without rewriting legacy or other lea
   assert.deepEqual(ids(decodeProgress(await map.list())), ['after-migration']);
   await map.removeAll();
   assert.equal(await loadRemote(map), null, 'existing learner-map deletion includes every new item');
+});
+
+test('corrupt legacy streams fail closed before any candidate or head is written, retaining every byte', async () => {
+  const raw = JSON.stringify(withQuiz('legacy', 1)), cut = Math.floor(raw.length / 2);
+  const cases = [
+    [['progress-0', { s: '{"quizAttempts":[' }]],
+    [['progress-0', { s: raw.slice(0, cut) }], ['progress-1', { s: raw.slice(cut, -1) }]],
+    [['progress-0', { s: raw.slice(0, cut) }], ['progress-2', { s: raw.slice(cut) }]],
+    [['progress-1', { s: raw }]],
+    [['progress-00', { s: raw }]],
+    [['progress-0', {}]],
+    [['progress-0', null]],
+    [['progress-0', { s: '' }]],
+    [['progress-0', { s: '[]' }]],
+    [['progress-0', { s: JSON.stringify({ ...empty(), quizAttempts: 'malformed' }) }]],
+    [['progress-0', { s: JSON.stringify({ ...empty(), knownCards: { damaged: false } }) }]],
+    [['progress-0', { s: raw + ' '.repeat(12000) }]],
+    Array.from({ length: 41 }, (_, i) => [`progress-${i}`, { s: i ? ' ' : raw }]),
+  ];
+  for (const chunks of cases) {
+    const map = fakeMap();
+    for (const [key, data] of chunks) await map.set(key, data);
+    const before = structuredClone([...map.items]);
+    await assert.rejects(loadRemote(map), /invalid_legacy_progress/);
+    await assert.rejects(saveRemote(map, withQuiz('new', 2)), /invalid_legacy_progress/);
+    assert.equal(map.items.has(PROGRESS_HEAD), false);
+    assert.deepEqual([...map.items], before, 'failed migration must not repair or rewrite legacy bytes');
+    assert.deepEqual(map.calls, [], 'reject before creating even a candidate chunk');
+  }
+});
+
+test('valid older legacy progress missing newer optional fields still migrates', async () => {
+  const map = fakeMap(), legacy = { knownCards: { earlier: true }, quizAttempts: withQuiz('older', 1).quizAttempts };
+  const raw = JSON.stringify(legacy);
+  await map.set('progress-0', { s: raw });
+  const expected = { ...empty(), studyFocus: '220-1201', ...legacy };
+  assert.deepEqual(await loadRemote(map), expected);
+  const local = withQuiz('current', 2);
+  await saveRemote(map, local);
+  assert.deepEqual(await loadRemote(map), mergeProgress(local, expected));
+  assert.deepEqual(map.items.get('progress-0'), { s: raw });
+});
+
+test('a late legacy writer cannot change the committed manifest or mix invisible legacy progress into reads', async () => {
+  const map = fakeMap(), legacy = withQuiz('legacy-before', 1), modern = withQuiz('modern', 2);
+  await map.set('progress-0', { s: JSON.stringify(legacy) });
+  await saveRemote(map, modern);
+  const committed = structuredClone(map.items.get(PROGRESS_HEAD));
+  const expected = mergeProgress(modern, legacy);
+  // Simulate a request running old deployed code completing after migration.
+  await map.set('progress-0', { s: JSON.stringify(withQuiz('late-legacy-save', 3)) });
+  assert.deepEqual(await loadRemote(map), expected);
+  assert.deepEqual(decodeProgress(await map.list()).quizAttempts, expected.quizAttempts);
+  assert.deepEqual(map.items.get(PROGRESS_HEAD), committed);
+  const later = withQuiz('modern-after', 4);
+  await saveRemote(map, later);
+  assert.deepEqual(await loadRemote(map), mergeProgress(later, expected));
+  assert.ok(!ids(await loadRemote(map)).includes('late-legacy-save'), 'old writers must be drained, not silently merged');
+});
+
+test('real SDK pagination keeps telemetry visible beyond 1,000 mixed items with read-only learner isolation', async () => {
+  const seeded = fakeMap(), progress = withQuiz('committed', 1);
+  await saveRemote(seeded, progress);
+  await seeded.set('progress-0', { s: JSON.stringify(withQuiz('frozen', 0)) });
+  for (let i = 0; i < 1205; i++) await seeded.set(`progress-snapshot-orphan-${String(i).padStart(4, '0')}`, { s: 'uncommitted' });
+  const event = { v: 1, type: 'quiz_started', at: 1, exam: 'n10-009', sessionId: 'session-1234567890', questionCount: 1 };
+  await seeded.set('telemetry-event-visible', { e: event });
+  const other = new Map([['telemetry-event-other-learner', { e: { ...event, sessionId: 'other-session-12345678' } }]]);
+  const maps = new Map([['learner-isolated', seeded.items], ['learner-other', other]]);
+  const before = structuredClone([...maps].map(([name, items]) => [name, [...items]]));
+  const config = { accountSid: 'AC' + '0'.repeat(32), keySid: 'SK' + '1'.repeat(32), keySecret: 'synthetic',
+    syncServiceSid: 'IS' + '2'.repeat(32), verifyServiceSid: 'VA' + '3'.repeat(32), secret: 'synthetic', allowed: [] };
+  const client = twilio(config.keySid, config.keySecret, { accountSid: config.accountSid, logLevel: 'silent' });
+  const requests = [];
+  let laterPageError;
+  // Exercise the installed SDK's actual page decoder/navigation, but never use its HTTP transport.
+  client.request = async ({ method, uri, params = {} }) => {
+    assert.equal(method.toLowerCase(), 'get', 'reads must not create, update, or delete any item');
+    const url = new URL(uri), path = url.pathname.match(/\/Maps\/([^/]+)\/Items(?:\/([^/]+))?$/);
+    assert.ok(path, 'never enumerate maps or read an unrelated provider resource');
+    requests.push({ map: path[1], key: path[2], token: url.searchParams.get('PageToken') });
+    const records = maps.get(path[1]);
+    const reply = (statusCode, body) => ({ statusCode, body, headers: {} });
+    if (!records) return reply(404, { code: 20404, message: 'Synthetic missing map' });
+    if (path[2]) {
+      const key = decodeURIComponent(path[2]);
+      return records.has(key) ? reply(200, { key, data: records.get(key), revision: 'r1' })
+        : reply(404, { code: 20404, message: 'Synthetic missing item' });
+    }
+    const start = Number(url.searchParams.get('PageToken') ?? 0);
+    if (start && laterPageError) return reply(laterPageError, { code: 20404, message: 'Synthetic interrupted pagination' });
+    const size = Number(params.PageSize ?? url.searchParams.get('PageSize') ?? 100);
+    const entries = [...records].sort(([a], [b]) => a.localeCompare(b));
+    const page = entries.slice(start, start + size).map(([key, data]) => ({ key, data, revision: 'r1' }));
+    url.searchParams.set('PageToken', String(start + size));
+    url.searchParams.set('PageSize', String(size));
+    return reply(200, { items: page, meta: { key: 'items', next_page_url: start + size < entries.length ? url.href : null } });
+  };
+  const provider = twilioLearner(config, client), map = provider.mapFor('isolated');
+  const listed = await map.list();
+  assert.equal(listed.length, seeded.items.size);
+  assert.ok(listed.length > 1000);
+  assert.ok(listed.findIndex(item => item.key === 'telemetry-event-visible') > 1000);
+  assert.deepEqual(await loadTelemetry(map), [event]);
+  assert.deepEqual(await loadRemote(map), progress);
+  assert.ok(requests.some(request => Number(request.token) > 1000), 'follow later provider pages');
+  assert.ok(requests.every(request => request.map === 'learner-isolated'));
+  assert.ok(!listed.some(item => item.key === 'telemetry-event-other-learner'));
+  for (const status of [404, 503]) {
+    laterPageError = status;
+    await assert.rejects(loadTelemetry(map), undefined, 'a later-page failure must not return partial or empty telemetry');
+  }
+  laterPageError = undefined;
+  assert.deepEqual(await provider.mapFor('missing').list(), [], 'an initially absent map is still empty');
+  assert.deepEqual(await loadTelemetry(provider.mapFor('other')), [{ ...event, sessionId: 'other-session-12345678' }]);
+  assert.deepEqual([...maps].map(([name, items]) => [name, [...items]]), before, 'reading must not repair, retire, or mutate records');
 });
 
 test('bounded conflicts fail explicitly; unexpected provider errors are not treated as conflicts', async () => {
@@ -354,6 +473,15 @@ test('the actual authenticated sync route merges simultaneous saves and keeps le
     assert.deepEqual(ids(await loadRemote(maps.get(learnerId(config.allowed[0], config.secret)))), ['a', 'b']);
     assert.equal((await POST(new Request('https://example.test/api/learner/sync', { method: 'POST', headers: { origin: 'https://example.test' }, body: '{}' }))).status, 401);
     assert.equal((await POST(new Request('https://example.test/api/learner/sync', { method: 'POST', body: '{}' }))).status, 403);
+    const corrupt = maps.get(learnerId(config.allowed[1], config.secret));
+    await corrupt.removeAll();
+    await corrupt.set('progress-0', { s: '{"quizAttempts":[' });
+    const before = structuredClone([...corrupt.items]);
+    const rejected = await POST(request(withQuiz('not-acknowledged', 4), config.allowed[1]));
+    assert.equal(rejected.status, 502, 'corrupt legacy progress remains a retryable failure, never an empty successful save');
+    assert.deepEqual(await rejected.json(), { error: 'unavailable' });
+    assert.deepEqual([...corrupt.items], before);
+    assert.ok(!corrupt.items.has(PROGRESS_HEAD));
   } finally {
     hooks.deregister(); delete globalThis.__atomicProgressTestProvider;
     for (const [key, value] of Object.entries(oldEnv)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
