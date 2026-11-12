@@ -52,6 +52,14 @@ test("each video maps to a real N10-009 objective, topic and question that agree
 
 test("no orphaned files in public/videos/concepts", () => {
   const known = new Set(videos.flatMap((v) => ["mp4", "vtt", "jpg"].map((e) => `${v.slug}.${e}`)));
+  // Some self-contained AWS/SAA visuals embed their own narrated media without
+  // being entries in the N10 concept-video manifest. Those files are owned by
+  // the visual HTML and must not be registered as Network+ concept videos.
+  for (const file of readdirSync(new URL("../public/visuals/", import.meta.url))) {
+    if (!file.endsWith(".html")) continue;
+    const html = text(`public/visuals/${file}`);
+    for (const match of html.matchAll(/\/videos\/concepts\/([^"'\s]+)/g)) known.add(match[1]);
+  }
   for (const file of readdirSync(new URL("../public/videos/concepts/", import.meta.url))) {
     assert.ok(known.has(file), `${file} is not listed in content/concept-videos.json`);
   }
