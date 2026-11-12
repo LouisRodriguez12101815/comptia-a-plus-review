@@ -57,17 +57,6 @@ export const tracks: Track[] = [
     icon: "switch",
   },
   {
-    id: "ccna",
-    href: "/ccna",
-    short: "CCNA",
-    label: "Cisco CCNA",
-    code: "200-301",
-    focus: null,
-    description:
-      "Hands-on Packet Tracer labs: subnetting, static routing, DHCP relay, and break/fix troubleshooting.",
-    icon: "router",
-  },
-  {
     id: "aws-clf",
     href: "/aws-clf",
     short: "AWS CLF",
@@ -88,6 +77,17 @@ export const tracks: Track[] = [
     description:
       "Architecture decisions across security, resiliency, performance, and cost optimization on AWS.",
     icon: "cloud",
+  },
+  {
+    id: "ccna",
+    href: "/ccna",
+    short: "CCNA",
+    label: "Cisco CCNA",
+    code: "200-301",
+    focus: null,
+    description:
+      "Hands-on Packet Tracer labs: subnetting, static routing, DHCP relay, and break/fix troubleshooting.",
+    icon: "router",
   },
   {
     id: "security-plus",
