@@ -18,9 +18,10 @@ import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
 import { examForStudyQuestion, examForStudyQuestions, isN10Question, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
 import { wrongChoicesForQuiz } from "@/lib/quiz-answer-history";
 import { visualItemsForTopic } from "@/lib/visuals";
-import type { Question, StudyFocus } from "@/lib/types";
+import type { ExamCode, Question, StudyFocus } from "@/lib/types";
+import { awsClfAlternatives, awsClfConceptEvidence, awsClfPracticeAt, awsClfRemediation, AWS_RESPONSIBILITY_TOPIC, remediationQuizHref } from "@/lib/aws-clf-remediation";
 
-export function QuizRunner({ initialTopic, questionIds, scoped = false }: { initialTopic: string; questionIds?: string[]; scoped?: boolean }) {
+export function QuizRunner({ initialTopic, questionIds, scoped = false, scopedExam }: { initialTopic: string; questionIds?: string[]; scoped?: boolean; scopedExam?: ExamCode }) {
   const t = useTranslations("quizRunner");
   const remediationT = useTranslations("weakAreas.remediation");
   const addressingT = useTranslations("weakAreas.addressingRemediation");
@@ -35,6 +36,9 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   const telemetryRemediation = useRef(new Set<string>());
   const telemetryCompleted = useRef(false);
   const displayedOrders = useRef<Record<string, number[]>>({});
+  const recordedIds = useRef(new Set<string>());
+  const activeDeck = useRef<Question[] | null>(null);
+  const [runExam, setRunExam] = useState<ExamCode | undefined>(scopedExam);
 
   const idKey = questionIds ? questionIds.join("|") : null;
   const pool = useMemo(() => {
@@ -61,7 +65,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     return selectInlineRemediation(current, {
       selectedChoice: typeof pick === "number" ? pick : undefined,
       priorMisses,
-      flashcards: getFlashcards(current.topicId, resourceFocus),
+      flashcards: getFlashcards(awsClfRemediation(current) ? AWS_RESPONSIBILITY_TOPIC : current.topicId, resourceFocus),
       videos: conceptVideos,
       visualsForTopic: visualItemsForTopic,
       questions: allQuestions,
@@ -77,20 +81,17 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     setTopicId("all");
   }
 
-  function start() {
-    // Questions not seen in earlier quizzes or tests come first, then the ones seen longest ago.
-    const byId = new Map(pool.map((q) => [q.id, q]));
-    const order = freshFirstIds(pool.map((q) => q.id), questionHistory(getProgressSnapshot()));
+  function begin(sources: Question[], preferred?: ExamCode, eventTopicId = topicId) {
     displayedOrders.current = {};
-    const deck = order.slice(0, Math.min(15, order.length)).map((id) => {
-      const source = byId.get(id)!;
+    const deck = sources.map((source) => {
       const choiceOrder = shuffleChoiceOrder(source);
-      displayedOrders.current[id] = choiceOrder;
+      displayedOrders.current[source.id] = choiceOrder;
       const answer = Array.isArray(source.answer)
         ? choiceOrder.map((authored) => (source.answer as number[]).indexOf(authored)).filter((index) => index >= 0).sort((a, b) => a - b)
         : choiceOrder.indexOf(source.answer as number);
       return { ...source, choices: choiceOrder.map((choice) => source.choices[choice]), answer };
     });
+    activeDeck.current = deck;
     setQuiz(deck);
     setIndex(0);
     setPicked([]);
@@ -99,16 +100,64 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     telemetryAnswered.current.clear();
     telemetryRemediation.current.clear();
     telemetryCompleted.current = false;
-    const exam = examForStudyQuestions(deck, focus !== "all" ? focus : undefined);
+    recordedIds.current.clear();
+    const exam = examForStudyQuestions(deck, preferred);
+    setRunExam(exam);
     if (exam) {
       sendStudyEvent({
         type: "quiz_started",
         exam,
-        topicId: topicId === "all" || topicId === "weak" ? undefined : topicId,
+        topicId: eventTopicId === "all" || eventTopicId === "weak" ? undefined : eventTopicId,
         questionCount: deck.length,
       });
     }
     setStarted(true);
+  }
+
+  function start() {
+    const byId = new Map(pool.map((q) => [q.id, q]));
+    const order = freshFirstIds(pool.map((q) => q.id), questionHistory(getProgressSnapshot()));
+    begin(order.slice(0, Math.min(15, order.length)).map(id => byId.get(id)!), scopedExam ?? (focus !== "all" ? focus : undefined));
+  }
+
+  /** Commit answered items once before replacing the deck or leaving its results. */
+  function persistAnswers() {
+    if (activeDeck.current !== quiz) return;
+    const pending = quiz.filter(question => answers[question.id] !== undefined && !recordedIds.current.has(question.id));
+    if (!pending.length) return;
+    pending.forEach(question => recordedIds.current.add(question.id));
+    const missed = pending.filter(question => !isCorrectPick(question, answers[question.id])).map(question => question.id);
+    // Scoped repeats need distinct merge identities even under a fixed/low-resolution clock.
+    // Other tracks keep their existing recording timestamp behavior.
+    const at = pending.every(question => awsClfRemediation(question))
+      ? awsClfPracticeAt(getProgressSnapshot(), Date.now())
+      : undefined;
+    recordQuiz({ topicId, correct: pending.length - missed.length, total: pending.length,
+      questionIds: pending.map(question => question.id), missedIds: missed,
+      wrongChoices: wrongChoicesForQuiz(pending, answers, displayedOrders.current) }, at);
+  }
+
+  function practiceAws(questionId: string, sourceQuestion: Question) {
+    if (activeDeck.current !== quiz) return;
+    const source = allQuestions.find(question => question.id === questionId);
+    if (!source || !awsClfRemediation(source) || awsClfRemediation(source)?.id !== awsClfRemediation(sourceQuestion)?.id) return;
+    if (source.id !== sourceQuestion.id) sendStudyEvent({ type: "similar_question_started", question: sourceQuestion, exam: "clf-c02", resourceType: "retry" });
+    persistAnswers();
+    setTopicId(source.topicId);
+    begin([source], "clf-c02", source.topicId);
+  }
+
+  function awsPracticeActions(question: Question) {
+    const authored = allQuestions.find(source => source.id === question.id);
+    if (!authored || !awsClfRemediation(authored)) return null;
+    const seen = new Set([...questionHistory(getProgressSnapshot()), ...Object.keys(answers)]);
+    const alternatives = awsClfAlternatives(authored, allQuestions).sort((a, b) => Number(seen.has(a)) - Number(seen.has(b)) || a.localeCompare(b));
+    return <div className="flex flex-wrap items-center gap-3" data-aws-practice-actions>
+      <button type="button" onClick={() => practiceAws(authored.id, authored)} className="min-h-11 text-teal-200 underline underline-offset-4">{t("repeatQuestion")}</button>
+      {alternatives[0]
+        ? <button type="button" onClick={() => practiceAws(alternatives[0], authored)} className="min-h-11 text-teal-200 underline underline-offset-4">{t("practiceConcept")}</button>
+        : <p className="text-sm text-slate-400">{t("awsNoAlternative")}</p>}
+    </div>;
   }
 
   function togglePick(choiceIndex: number) {
@@ -121,11 +170,11 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
 
   /** Locks in the pick so the right answer and explanation show. Moving on is a separate step. */
   function submit() {
-    if (!current || picked.length === 0) return;
+    if (!current || picked.length === 0 || revealed || telemetryAnswered.current.has(current.id)) return;
     const answer = multi ? picked : picked[0];
-    const exam = examForStudyQuestion(current);
-    if (exam && !telemetryAnswered.current.has(current.id)) {
-      telemetryAnswered.current.add(current.id);
+    telemetryAnswered.current.add(current.id);
+    const exam = examForStudyQuestion(current, runExam);
+    if (exam) {
       const correctAnswer = isCorrectPick(current, answer);
       const priorMisses = rankMissedQuestions(getProgressSnapshot(), allQuestions)
         .find((row) => row.question.id === current.id)?.misses ?? 0;
@@ -142,13 +191,11 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
 
   /** After the last explanation: record the sitting once and show the score. */
   function finish() {
-    const missed = quiz
-      .filter((question) => !isCorrectPick(question, answers[question.id]))
-      .map((question) => question.id);
-    recordQuiz({ topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed, wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current) });
+    if (activeDeck.current !== quiz) return;
+    persistAnswers();
     if (!telemetryCompleted.current) {
       telemetryCompleted.current = true;
-      const exam = examForStudyQuestions(quiz, focus !== "all" ? focus : undefined);
+      const exam = runExam;
       if (exam) {
         sendStudyEvent({
           type: "quiz_completed",
@@ -201,6 +248,8 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   }
 
   if (done) {
+    const conceptIds = new Set<string | undefined>(quiz.map(question => awsClfRemediation(question)?.id));
+    const evidence = awsClfConceptEvidence(getProgressSnapshot(), allQuestions).filter(row => conceptIds.has(row.conceptId));
     const missed = quiz.filter(
       (question) => !isCorrectPick(question, answers[question.id]),
     );
@@ -215,6 +264,16 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
             {t("percentOnDevice", { percent: Math.round((correctCount / quiz.length) * 100) })}
           </p>
         </div>
+        {evidence.map(row => <section key={row.conceptId} data-aws-concept-evidence className="space-y-2 rounded-xl border border-slate-700 p-4" aria-label={remediationT(`clusters.${row.labelKey}` as never)}>
+          <h2 className="font-semibold text-white">{remediationT(`clusters.${row.labelKey}` as never)}</h2>
+          <p className="text-sm text-slate-300">{t("awsRepeatedEvidence", { count: row.repeatedCorrect })}</p>
+          <p className="text-sm text-slate-300">{t("awsTransferEvidence", { count: row.transferCorrect })}</p>
+          {row.currentlyRecovered && <p className="text-sm text-teal-200">{t("awsRecoveryEvidence")}</p>}
+        </section>)}
+        {quiz.filter(question => awsClfRemediation(question)).map(question => <section key={question.id} className="space-y-2">
+          <p className="text-sm text-slate-300">{question.prompt}</p>
+          {awsPracticeActions(question)}
+        </section>)}
         {missed.length > 0 && (
           <section className="space-y-4">
             <h2 className="text-lg font-medium text-white">{t("reviewMissed")}</h2>
@@ -316,9 +375,10 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
           <p className="text-slate-300">
             <ExplanationText text={current.explanation} />
           </p>
+          {awsPracticeActions(current)}
           {!correct && inlineRemediation && (
             <details data-inline-remediation onToggle={(event) => {
-              if (event.currentTarget.open && !telemetryRemediation.current.has(current.id) && isN10Question(current)) {
+              if (event.currentTarget.open && !telemetryRemediation.current.has(current.id) && (isN10Question(current) || awsClfRemediation(current))) {
                 telemetryRemediation.current.add(current.id);
                 sendStudyEvent({ type: "remediation_opened", question: current });
               }
@@ -335,13 +395,13 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                   <h3 className="font-semibold text-white">{t("flashcards")}</h3>
                   <ul className="mt-2 space-y-2">
                     {inlineRemediation.flashcards.map((card) => <li key={card.id} className="rounded-lg border border-slate-700 px-3 py-2"><details onToggle={(event) => {
-                      if (event.currentTarget.open && isN10Question(current)) sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "flashcard" });
+                      if (event.currentTarget.open && (isN10Question(current) || awsClfRemediation(current))) sendStudyEvent({ type: "remediation_resource_opened", question: current, resourceType: "flashcard" });
                     }}><summary className="cursor-pointer font-medium text-slate-100">{card.front}</summary><p className="mt-2 text-slate-400">{card.back}</p></details></li>)}
                   </ul>
                 </section>}
                 {inlineRemediation.video && <Link data-inline-video href={`/networking/videos/${inlineRemediation.video.slug}`} onClick={() => sendStudyEventOnNavigation({ type: "remediation_resource_opened", question: current, resourceType: "video" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("watchVideo", { title: inlineRemediation.video.title })}</Link>}
                 <Link data-inline-notes href={inlineRemediation.notesHref} onClick={() => sendStudyEventOnNavigation({ type: "remediation_resource_opened", question: current, resourceType: "notes" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
-                {inlineRemediation.retryQuestionIds.length > 0 && <Link data-inline-retry href={`/quiz?questions=${encodeURIComponent(inlineRemediation.retryQuestionIds.join(","))}&exam=n10-009`} onClick={() => sendStudyEventOnNavigation({ type: "similar_question_started", question: current, resourceType: "retry" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
+                {inlineRemediation.retryQuestionIds.length > 0 && !awsClfRemediation(current) && <Link data-inline-retry href={remediationQuizHref(inlineRemediation.retryQuestionIds, inlineRemediation.retryExam ?? "n10-009")} onClick={() => sendStudyEventOnNavigation({ type: "similar_question_started", question: current, resourceType: "retry" })} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("trySimilar")}</Link>}
               </div>
             </details>
           )}

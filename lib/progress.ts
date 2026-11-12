@@ -290,12 +290,12 @@ export function markCard(cardId: string, known: boolean) {
   return next;
 }
 
-export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
+export function recordQuiz(attempt: Omit<QuizAttempt, "at">, at = Date.now()) {
   const current = loadProgress();
   const next = {
     ...current,
     quizAttempts: [
-      { ...attempt, at: Date.now() },
+      { ...attempt, at },
       ...current.quizAttempts,
     ].slice(0, 40),
   };

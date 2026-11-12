@@ -1,7 +1,8 @@
 import type { Progress } from "@/lib/progress";
 import type { ConceptVideo } from "@/lib/concept-videos";
 import type { VisualItem } from "@/lib/visuals";
-import type { Question } from "@/lib/types";
+import type { ExamCode, Question } from "@/lib/types";
+import { awsClfAlternatives, awsClfRemediation, isClfOnlyQuestion, AWS_RESPONSIBILITY_NOTES, AWS_RESPONSIBILITY_TOPIC, AWS_RESPONSIBILITY_VISUAL } from "@/lib/aws-clf-remediation";
 import { n10ClusterQuestionIds, n10RemediationForQuestion } from "@/lib/n10-remediation";
 
 export type MissedQuestion = {
@@ -24,6 +25,7 @@ export type Remediation = MissedQuestion & {
   whyWrongKey?: string;
   selectedAnswer?: string;
   retryQuestionIds: string[];
+  retryExam?: ExamCode;
 };
 
 type Attempt = {
@@ -114,25 +116,30 @@ export function remediationForQuestion(
   } = {},
 ): Remediation {
   const { question } = missed;
+  const aws = awsClfRemediation(question);
+  const clf = isClfOnlyQuestion(question);
   const authored = question.examCodes?.includes("n10-009") || question.topicId.startsWith("n10-")
     ? n10RemediationForQuestion(question.id)
     : undefined;
-  const clusterId = authored?.clusterId ?? `topic:${question.topicId}`;
-  const clusterKey = authored?.clusterKey ?? `topic:${question.topicId}`;
+  const clusterId = aws?.id ?? authored?.clusterId ?? `topic:${question.topicId}`;
+  const clusterKey = aws?.labelKey ?? authored?.clusterKey ?? `topic:${question.topicId}`;
   return {
     ...missed,
     topicTitle: options.topicTitleFor?.(question.topicId) ?? question.topicId,
-    video: videoForQuestion(question, options.videos),
-    visual: visualForQuestion(question, options.visualsForTopic),
-    notesHref: `/notes/${question.topicId}`,
+    video: clf ? undefined : videoForQuestion(question, options.videos),
+    visual: aws
+      ? options.visualsForTopic?.(AWS_RESPONSIBILITY_TOPIC).find(visual => visual.file === AWS_RESPONSIBILITY_VISUAL)
+      : clf ? undefined : visualForQuestion(question, options.visualsForTopic),
+    notesHref: aws ? AWS_RESPONSIBILITY_NOTES : `/notes/${question.topicId}`,
     clusterId,
     clusterKey,
-    clusterLabel: authored ? undefined : options.topicTitleFor?.(question.topicId) ?? question.topicId,
+    clusterLabel: authored || aws ? undefined : options.topicTitleFor?.(question.topicId) ?? question.topicId,
     examClueKey: authored?.examClueKey,
     memoryRuleKey: authored?.memoryRuleKey,
     whyWrongKey: authored?.whyWrongKey,
     selectedAnswer: missed.selectedChoice === undefined ? undefined : question.choices[missed.selectedChoice],
-    retryQuestionIds: authored && options.questions
+    retryExam: aws ? "clf-c02" : authored ? "n10-009" : undefined,
+    retryQuestionIds: aws && options.questions ? awsClfAlternatives(question, options.questions) : authored && options.questions
       ? n10ClusterQuestionIds(authored.clusterId, options.questions, question.id)
       : [],
   };

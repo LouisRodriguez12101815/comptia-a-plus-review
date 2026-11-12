@@ -11,6 +11,7 @@ import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } fro
 import { visualItemsForTopic } from "@/lib/visuals";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
 import { remediationForQuestion, rankMissedClusters, rankMissedQuestions } from "@/lib/weak-areas";
+import { remediationQuizHref } from "@/lib/aws-clf-remediation";
 
 export function WeakAreas() {
   const t = useTranslations("weakAreas");
@@ -82,7 +83,7 @@ export function WeakAreas() {
             {item.visual && <Link data-remediation-visual href={`/visuals/${item.visual.file}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("exploreVisual", { title: item.visual.title })}</Link>}
             <Link data-remediation-notes href={item.notesHref} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{t("reviewNotes")}</Link>
             <Link data-remediation-retry href={item.retryQuestionIds.length > 0
-              ? `/quiz?questions=${encodeURIComponent(item.retryQuestionIds.join(","))}&exam=n10-009`
+              ? remediationQuizHref(item.retryQuestionIds, item.retryExam ?? "n10-009")
               : `/quiz?topic=${encodeURIComponent(item.question.topicId)}`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{item.retryQuestionIds.length > 0 ? t("retryConcept") : t("retryQuestion")}</Link>
           </div>
         </article>;

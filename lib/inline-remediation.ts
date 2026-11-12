@@ -1,5 +1,6 @@
 import type { ConceptVideo } from "@/lib/concept-videos";
-import type { Flashcard, Question } from "@/lib/types";
+import type { ExamCode, Flashcard, Question } from "@/lib/types";
+import { awsClfRemediation, isClfOnlyQuestion } from "@/lib/aws-clf-remediation";
 import type { VisualItem } from "@/lib/visuals";
 import { remediationForQuestion } from "@/lib/weak-areas";
 
@@ -13,6 +14,7 @@ export type InlineRemediation = {
   visual?: VisualItem;
   notesHref: string;
   retryQuestionIds: string[];
+  retryExam?: ExamCode;
 };
 
 export function selectInlineRemediation(
@@ -35,8 +37,11 @@ export function selectInlineRemediation(
       questions: options.questions,
     },
   );
+  const aws = awsClfRemediation(question);
   const flashcards = (options.flashcards ?? [])
-    .filter((card) => card.topicId === question.topicId)
+    .filter((card) => isClfOnlyQuestion(question)
+      ? aws !== undefined && card.id === aws.cardId && card.examCodes?.includes("clf-c02")
+      : card.topicId === question.topicId)
     .slice(0, priorMisses > 0 ? 3 : 1);
 
   return {
@@ -49,5 +54,6 @@ export function selectInlineRemediation(
     visual: remediation.visual,
     notesHref: remediation.notesHref,
     retryQuestionIds: remediation.retryQuestionIds,
+    retryExam: remediation.retryExam,
   };
 }

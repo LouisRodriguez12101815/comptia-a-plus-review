@@ -135,7 +135,7 @@ test("all supported locales provide the authored remediation keys", () => {
   for (const locale of ["en", "es", "fr", "pt"]) {
     const messages = JSON.parse(readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
     const remediation = messages.weakAreas.remediation;
-    assert.deepEqual(Object.keys(remediation.clusters).sort(), ["dhcpLifecycle", "ipamDdi", "ipv6Controls", "timeSynchronization"].sort());
+    assert.deepEqual(Object.keys(remediation.clusters).sort(), ["dhcpLifecycle", "ipamDdi", "ipv6Controls", "timeSynchronization", "awsEc2GuestOs", "awsRdsDataAccess", "awsPhysicalInfrastructure", "awsLambdaIam", "awsLambdaCode"].sort());
     assert.equal(Object.keys(remediation.examClues).length, 16);
     assert.equal(Object.keys(remediation.memoryRules).length, 16);
     assert.equal(Object.keys(remediation.whyWrong).length, 16);
