@@ -21,16 +21,52 @@ test('browser DTO contains only allowed aggregate fields and no private answer o
   const items = fixture();
   items.push({ key: 'profile', data: { phone: 'PRIVATE-PHONE', token: 'PRIVATE-TOKEN' } });
   const dto = browserActivityDTO(items, now);
-  assert.deepEqual(Object.keys(dto).sort(), ['limitations', 'objectives', 'topics', 'totals', 'window']);
+  assert.deepEqual(Object.keys(dto).sort(), ['ambiguity', 'limitations', 'objectives', 'topics', 'totals', 'window']);
   assert.deepEqual(Object.keys(dto.window).sort(), ['days', 'end', 'start']);
   assert.deepEqual(Object.keys(dto.totals).sort(), ['attempts', 'correct', 'incorrect', 'questions']);
   assert.equal(dto.totals.questions, 1);
   assert.equal(dto.totals.incorrect, 1);
-  for (const row of dto.topics) assert.deepEqual(Object.keys(row).sort(), ['attempts', 'correct', 'examId', 'incorrect', 'questionCount', 'topicId', 'weaknessScore']);
-  for (const row of dto.objectives) assert.deepEqual(Object.keys(row).sort(), ['attempts', 'correct', 'examId', 'incorrect', 'objectiveId', 'questionCount', 'weaknessScore']);
+  for (const row of dto.topics) assert.deepEqual(Object.keys(row).sort(), ['ambiguous', 'attempts', 'correct', 'examId', 'incorrect', 'questionCount', 'topicId', 'weaknessScore']);
+  for (const row of dto.objectives) assert.deepEqual(Object.keys(row).sort(), ['ambiguous', 'attempts', 'correct', 'examId', 'incorrect', 'objectiveId', 'questionCount', 'weaknessScore']);
   const json = JSON.stringify(dto);
   for (const secret of ['PRIVATE-PHONE', 'PRIVATE-TOKEN', 'secret-provider-data', event.sessionId, qid, 'correctAnswer', 'selectedAnswer', 'explanation', 'progress-head']) assert.ok(!json.includes(secret), secret);
   assert.equal(browserActivityDTO([], now).totals.questions, 0);
+});
+
+test('opposite same-time outcomes stay explicitly ambiguous in totals and groups', () => {
+  for (const telemetryCorrect of [true, false]) {
+    const sitting = { topicId: 'n10-ch7', at: event.at, correct: telemetryCorrect ? 0 : 1, total: 1,
+      questionIds: [qid], missedIds: telemetryCorrect ? [qid] : [] };
+    const items = [...snapshot({ ...progress, quizAttempts: [sitting] }),
+      { key: 'telemetry-event-1', data: { e: { ...event, correct: telemetryCorrect } } }];
+    const dto = browserActivityDTO(items, now);
+    assert.deepEqual(dto.totals, { questions: 1, attempts: 1, correct: 0, incorrect: 0 });
+    assert.equal(dto.ambiguity.count, 1);
+    assert.equal(dto.topics[0].ambiguous, 1);
+    for (const row of [...dto.topics, ...dto.objectives]) {
+      assert.equal(row.correct, 0); assert.equal(row.incorrect, 0); assert.equal(row.ambiguous, 1);
+    }
+    for (const secret of [qid, event.sessionId, 'selectedAnswer', 'correctAnswer']) assert.ok(!JSON.stringify(dto).includes(secret));
+  }
+});
+
+test('mixed definite and ambiguous outcomes aggregate safely by topic and objective', () => {
+  const a = 'q-n10tcp-01', b = 'q-n10tcp-02', c = 'q-n10c11-04';
+  const sitting = { topicId: 'n10-tcpip', at: event.at, correct: 1, total: 1, questionIds: [a], missedIds: [] };
+  const rows = [
+    { ...event, questionId: a, topicId: 'n10-tcpip', correct: false },
+    { ...event, questionId: b, topicId: 'n10-tcpip', correct: true },
+    { ...event, questionId: c, topicId: 'n10-ch11', correct: false },
+  ];
+  const dto = browserActivityDTO([...snapshot({ ...progress, quizAttempts: [sitting] }),
+    ...rows.map((e, i) => ({ key: `telemetry-event-${i}`, data: { e } }))], now);
+  assert.deepEqual(dto.totals, { questions: 3, attempts: 3, correct: 1, incorrect: 1 });
+  assert.equal(dto.ambiguity.count, 1);
+  const objective = dto.objectives.find(row => row.examId === 'n10-009' && row.objectiveId === '1.4');
+  assert.ok(objective); assert.equal(objective.correct, 1); assert.equal(objective.incorrect, 0); assert.equal(objective.ambiguous, 1);
+  const topic = dto.topics.find(row => row.topicId === 'n10-tcpip');
+  assert.equal(topic.correct, 1); assert.equal(topic.incorrect, 0); assert.equal(topic.ambiguous, 1);
+  for (const secret of [a, b, c, event.sessionId]) assert.ok(!JSON.stringify(dto).includes(secret));
 });
 
 test('committed snapshot wins over legacy and corruption fails closed without legacy fallback', async () => {
@@ -133,6 +169,9 @@ test('actual route requires signed allowlisted session, rejects identity overrid
     return browserActivityDTO(id === idA ? fixture() : [], now);
   };
   const hooks = registerHooks({ resolve(specifier, context, next) {
+    if (specifier === '@/lib/learner/twilio' && context.parentURL?.includes('/api/learner/activity/route.ts?protected-test')) {
+      return { shortCircuit: true, url: 'data:text/javascript,export const twilioLearner = () => ({guard:{assertActive:async()=>{}}});' };
+    }
     if (specifier === '@/lib/learner/activity.mjs' && context.parentURL?.includes('/api/learner/activity/route.ts?protected-test')) {
       return { shortCircuit: true, url: 'data:text/javascript,export const getLearnerActivity = (...args) => globalThis.__activityRouteTest(...args);' };
     }
@@ -157,7 +196,7 @@ test('actual route requires signed allowlisted session, rejects identity overrid
     assert.equal(a.status, 200); assert.equal(a.headers.get('cache-control'), 'no-store');
     const dtoA = await a.json(), dtoB = await b.json();
     assert.equal(dtoA.totals.questions, 1); assert.equal(dtoB.totals.questions, 0);
-    assert.deepEqual(Object.keys(dtoA).sort(), ['limitations', 'objectives', 'topics', 'totals', 'window']);
+    assert.deepEqual(Object.keys(dtoA).sort(), ['ambiguity', 'limitations', 'objectives', 'topics', 'totals', 'window']);
     for (const value of [idA, idB, event.sessionId, qid, 'correctAnswer', 'selectedAnswer', 'explanation']) assert.ok(!JSON.stringify(dtoA).includes(value));
     assert.deepEqual(calls, [idA, idB]);
     globalThis.__activityRouteFail = true;
@@ -171,6 +210,66 @@ test('actual route requires signed allowlisted session, rejects identity overrid
     assert.equal(unavailable.status, 503); assert.equal(unavailable.headers.get('cache-control'), 'no-store');
   } finally {
     hooks.deregister(); delete globalThis.__activityRouteTest; delete globalThis.__activityRouteFail;
+    for (const [key, value] of Object.entries(old)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
+  }
+});
+
+test('real route and reader enforce pause, learner isolation, pagination and ambiguity with a synthetic provider', async () => {
+  const values = { TWILIO_ACCOUNT_SID: 'AC' + '0'.repeat(32), TWILIO_API_KEY_SID: 'SK' + '1'.repeat(32), TWILIO_API_KEY_SECRET: 'synthetic',
+    TWILIO_SYNC_SERVICE_SID: 'IS' + '2'.repeat(32), TWILIO_VERIFY_SERVICE_SID: 'VA' + '3'.repeat(32),
+    LEARNER_SESSION_SECRET: 'synthetic-session-secret-'.repeat(2), LEARNER_ALLOWED_PHONES: '+12025550101' };
+  const old = Object.fromEntries(Object.keys(values).map(k => [k, process.env[k]]));
+  Object.assign(process.env, values);
+  const id = learnerId('+12025550101', values.LEARNER_SESSION_SECRET);
+  const sitting = { topicId: 'n10-ch7', at: event.at, correct: 1, total: 1, questionIds: [qid], missedIds: [] };
+  const entries = [...snapshot({ ...progress, quizAttempts: [sitting] }), { key: 'telemetry-event-1', data: { e: event, secret: 'PRIVATE-PROVIDER' } }];
+  for (let i = 0; i < 205; i++) entries.push({ key: `orphan-${String(i).padStart(4, '0')}`, data: {} });
+  const calls = [];
+  let paused = true;
+  const hooks = registerHooks({ resolve(specifier, context, next) {
+    if (specifier === '@/lib/learner/activity.mjs' && context.parentURL?.includes('/api/learner/activity/route.ts?real-provider-test')) {
+      return { shortCircuit: true, url: new URL('../lib/learner/activity.mjs', import.meta.url).href };
+    }
+    return next(specifier, context);
+  } });
+  const original = twilio.Twilio.prototype.request;
+  twilio.Twilio.prototype.request = async ({ method, uri, params = {} }) => {
+    const url = new URL(uri); calls.push({ method, path: url.pathname, page: url.searchParams.get('PageToken') });
+    assert.equal(method.toUpperCase(), 'GET', 'synthetic transport forbids writes');
+    const reply = (statusCode, body) => ({ statusCode, body, headers: {} });
+    if (url.pathname.includes('/Documents/')) return reply(200, { data: { MULTIPLAYER_PAUSED: paused }, revision: 'r' });
+    const match = url.pathname.match(/\/Maps\/([^/]+)\/Items(?:\/([^/]+))?$/);
+    assert.ok(match); assert.equal(match[1], `learner-${id}`);
+    if (match[2]) {
+      const entry = entries.find(item => item.key === decodeURIComponent(match[2]));
+      return entry ? reply(200, entry) : reply(404, { code: 20404, message: 'missing' });
+    }
+    const start = Number(url.searchParams.get('PageToken') ?? 0), size = Number(params.PageSize ?? url.searchParams.get('PageSize') ?? 100);
+    const page = entries.slice(start, start + size);
+    url.searchParams.set('PageToken', String(start + size)); url.searchParams.set('PageSize', String(size));
+    return reply(200, { items: page, meta: { key: 'items', next_page_url: start + size < entries.length ? url.href : null } });
+  };
+  try {
+    const { GET } = await import('../app/api/learner/activity/route.ts?real-provider-test');
+    const token = signSession({ id, last4: '0101', exp: Date.now() + 60000 }, values.LEARNER_SESSION_SECRET);
+    const req = path => new Request(`https://example.test/api/learner/activity${path}`, { headers: { cookie: `learner_session=${token}` } });
+    assert.equal((await GET(req('?mapId=other'))).status, 400);
+    assert.equal(calls.length, 0);
+    const stopped = await GET(req(''));
+    assert.equal(stopped.status, 423); assert.equal(stopped.headers.get('cache-control'), 'no-store');
+    assert.deepEqual(await stopped.json(), { error: 'paused' });
+    assert.equal(calls.length, 1); assert.ok(calls[0].path.includes('/Documents/'));
+    paused = false; calls.length = 0;
+    const response = await GET(req(''));
+    assert.equal(response.status, 200); assert.equal(response.headers.get('cache-control'), 'no-store');
+    const dto = await response.json();
+    assert.deepEqual(dto.totals, { questions: 1, attempts: 1, correct: 0, incorrect: 0 });
+    assert.equal(dto.ambiguity.count, 1);
+    assert.ok(calls.some(call => Number(call.page) >= 200));
+    for (const secret of [id, qid, event.sessionId, 'PRIVATE-PROVIDER', token, values.TWILIO_API_KEY_SECRET, 'selectedAnswer', 'correctAnswer']) assert.ok(!JSON.stringify(dto).includes(secret));
+  } finally {
+    hooks.deregister();
+    twilio.Twilio.prototype.request = original;
     for (const [key, value] of Object.entries(old)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
   }
 });

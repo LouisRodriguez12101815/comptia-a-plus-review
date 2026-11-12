@@ -1,6 +1,6 @@
-import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "@/lib/exams";
+import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "./exams.ts";
 import type { StudyFocus } from "@/lib/types";
-import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from "@/lib/study/schedule";
+import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from "./study/schedule.ts";
 
 export type QuizAttempt = {
   topicId: string;

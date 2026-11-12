@@ -14,8 +14,8 @@ const content = {
   topics: [{ id: 'n10-test', examCodes: ['n10-009'] }, { id: 'other', examCodes: ['220-1201'] }],
   objectives: { exams: [{ code: 'n10-009', domains: [{ objectives: [{ id: '1.1', topics: ['n10-test'] }] }] }] },
 };
-const sitting = { total: 1, correct: 0, questionIds: ['q-test'], missedIds: ['q-test'], at: 1700000000000 };
-const progress = { quizAttempts: [sitting], mockAttempts: [], schedules: { 'fc-test': { state: 2, privateField: 'do not export' } }, phone: 'do not export' };
+const sitting = { topicId: 'n10-test', total: 1, correct: 0, questionIds: ['q-test'], missedIds: ['q-test'], at: 1700000000000 };
+const progress = { quizAttempts: [sitting], mockAttempts: [], schedules: { 'fc-test': { due: '2026-01-01T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 2, privateField: 'do not export' } }, phone: 'do not export' };
 const itemsFor = p => [{ key: 'progress-0', data: { s: JSON.stringify(p) } }];
 
 test('requires unambiguous allowlisted primary selection and uses application HMAC', () => {
@@ -26,7 +26,8 @@ test('requires unambiguous allowlisted primary selection and uses application HM
 });
 
 test('rejects missing, discontinuous, duplicate, corrupt, and malformed chunks', () => {
-  assert.deepEqual(decodeProgress(itemsFor(progress)), { ...progress, questionEvents: [] });
+  assert.deepEqual(decodeProgress(itemsFor(progress)), { studyFocus: '220-1201', knownCards: {}, unknownCards: {},
+    quizAttempts: progress.quizAttempts, mockAttempts: progress.mockAttempts, schedules: progress.schedules, questionEvents: [] });
   for (const items of [[], [{ key: 'progress-1', data: { s: '{}' } }], [...itemsFor(progress), ...itemsFor(progress)], [{ key: 'progress-0', data: { s: '{' } }], itemsFor({ quizAttempts: {} })]) assert.throws(() => decodeProgress(items));
 });
 

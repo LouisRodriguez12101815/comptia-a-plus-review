@@ -9,6 +9,7 @@ import { decodeSnapshot, makeSnapshot, PROGRESS_HEAD, snapshotKeys } from '../li
 import { learnerConfig, twilioLearner } from '../lib/learner/twilio.ts';
 import { learnerId, signSession } from '../lib/learner/session.ts';
 import { decodeProgress } from '../scripts/export-primary-history.mjs';
+import { browserActivityDTO } from '../lib/learner/activity.mjs';
 
 const empty = () => ({ studyFocus: 'n10-009', knownCards: {}, unknownCards: {}, quizAttempts: [], mockAttempts: [], schedules: {} });
 const validSchedule = () => ({ due: '2026-01-01T00:00:00.000Z', last_review: '2025-12-31T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 2 });
@@ -286,6 +287,34 @@ test('valid older legacy progress missing newer optional fields still migrates',
   await saveRemote(map, local);
   assert.deepEqual(await loadRemote(map), mergeProgress(local, expected));
   assert.deepEqual(map.items.get('progress-0'), { s: raw });
+});
+
+test('legacy persistence, exporter and protected activity agree without writing', async () => {
+  const cases = [
+    [{ knownCards: { older: true } }, true],
+    [{ studyFocus: 'invalid' }, false],
+    [{ schedules: { card: { ...validSchedule(), state: 8 } } }, false],
+    [{ schedules: { card: { ...validSchedule(), due: '2026-02-30T00:00:00.000Z' } } }, false],
+    [{ schedules: { card: { ...validSchedule(), last_review: '2026-02-30T00:00:00.000Z' } } }, false],
+    [{ knownCards: { older: 'yes' } }, false],
+    [{ schedules: { card: validSchedule() } }, true],
+  ];
+  for (const [legacy, valid] of cases) {
+    const map = fakeMap(), raw = JSON.stringify(legacy);
+    await map.set('progress-0', { s: raw });
+    const items = await map.list(), before = structuredClone(items);
+    if (valid) {
+      const persistence = await loadRemote(map), exported = decodeProgress(items);
+      assert.deepEqual({ ...persistence, questionEvents: [] }, exported);
+      assert.equal(browserActivityDTO(items).totals.questions, 0);
+    } else {
+      await assert.rejects(loadRemote(map), /invalid_legacy_progress/);
+      assert.throws(() => decodeProgress(items));
+      assert.throws(() => browserActivityDTO(items));
+    }
+    assert.deepEqual(await map.list(), before);
+    assert.equal(map.calls.length, 0);
+  }
 });
 
 test('valid legacy FSRS schedules survive migration', async () => {

@@ -32,7 +32,9 @@ const event = (questionId = 'q0', correct = false, at = NOW - DAY, extra = {}) =
   sessionId: session, questionId, topicId: content.questions.find(q => q.id === questionId)?.topicId ?? 'net', correct, ...extra,
 });
 const events = values => values.map((e, i) => ({ key: `telemetry-event-${i}`, data: { e } }));
-const progressItems = progress => [{ key: 'progress-0', data: { s: JSON.stringify({ quizAttempts: [], mockAttempts: [], ...progress }) } }];
+// These analyzer fixtures deliberately include malformed attempts; the older
+// direct-export format permits exercising analyzer-level redaction and gaps.
+const progressItems = progress => [{ key: 'progress', data: { quizAttempts: [], mockAttempts: [], ...progress } }];
 const sitting = (q = 'q0', correct = 0, at = NOW - DAY) => ({ topicId: 'net', total: 1, correct, questionIds: [q], missedIds: correct ? [] : [q], at });
 const collect = (items, opts = {}, bank = content) => collectActivity(items, bank, { days: 7, asOf: NOW, ...opts });
 const summary = values => analyzeActivity(collect(events(values)));
