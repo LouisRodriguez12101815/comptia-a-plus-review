@@ -11,6 +11,7 @@ import { learnerId, signSession } from '../lib/learner/session.ts';
 import { decodeProgress } from '../scripts/export-primary-history.mjs';
 
 const empty = () => ({ studyFocus: 'n10-009', knownCards: {}, unknownCards: {}, quizAttempts: [], mockAttempts: [], schedules: {} });
+const validSchedule = () => ({ due: '2026-01-01T00:00:00.000Z', last_review: '2025-12-31T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 2 });
 const withQuiz = (name, at) => ({ ...empty(), quizAttempts: [{ topicId: name, correct: 1, total: 1, questionIds: [name], missedIds: [], at }] });
 const big = (prefix) => ({ ...empty(), knownCards: Object.fromEntries(Array.from({ length: 1800 }, (_, i) => [`${prefix}-${String(i).padStart(4, '0')}`, true])) });
 const ids = progress => progress.quizAttempts.map(q => q.topicId).sort();
@@ -253,6 +254,11 @@ test('corrupt legacy streams fail closed before any candidate or head is written
     [['progress-0', { s: '[]' }]],
     [['progress-0', { s: JSON.stringify({ ...empty(), quizAttempts: 'malformed' }) }]],
     [['progress-0', { s: JSON.stringify({ ...empty(), knownCards: { damaged: false } }) }]],
+    [['progress-0', { s: JSON.stringify({ ...empty(), studyFocus: 'invalid-focus' }) }]],
+    ...[null, {}, { due: 'bad' }, { due: '2026-01-01T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 9 }].map(schedule =>
+      [['progress-0', { s: JSON.stringify({ ...empty(), schedules: { card: schedule } }) }]]),
+    ...[{ due: 'bad' }, { last_review: 'bad' }, { stability: null }, { reps: 0.5 }, { learning_steps: -1 }].map(patch =>
+      [['progress-0', { s: JSON.stringify({ ...empty(), schedules: { card: { ...validSchedule(), ...patch } } }) }]]),
     [['progress-0', { s: raw + ' '.repeat(12000) }]],
     Array.from({ length: 41 }, (_, i) => [`progress-${i}`, { s: i ? ' ' : raw }]),
   ];
@@ -278,6 +284,15 @@ test('valid older legacy progress missing newer optional fields still migrates',
   await saveRemote(map, local);
   assert.deepEqual(await loadRemote(map), mergeProgress(local, expected));
   assert.deepEqual(map.items.get('progress-0'), { s: raw });
+});
+
+test('valid legacy FSRS schedules survive migration', async () => {
+  const map = fakeMap();
+  const schedule = validSchedule();
+  const old = { ...empty(), schedules: { card: schedule } };
+  await map.set('progress-0', { s: JSON.stringify(old) });
+  await saveRemote(map, withQuiz('new', 1));
+  assert.deepEqual((await loadRemote(map)).schedules.card, schedule);
 });
 
 test('a late legacy writer cannot change the committed manifest or mix invisible legacy progress into reads', async () => {

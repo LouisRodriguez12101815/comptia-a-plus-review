@@ -2,10 +2,29 @@ import type { Progress } from "@/lib/progress";
 import { parseProgress } from "@/lib/progress";
 import { isDeepStrictEqual } from "node:util";
 import { mergeProgress } from "@/lib/learner/merge";
+import { isStudyFocus } from "@/lib/exams";
 import { CHUNK, MAX_CHUNKS, decodeSnapshot, makeSnapshot, progressHead, PROGRESS_HEAD, snapshotKeys } from "./progress-snapshot.mjs";
 export { CHUNK, MAX_CHUNKS, splitChunks } from "./progress-snapshot.mjs";
 
 const MAX_ATTEMPTS = 5;
+
+function validLegacyFields(raw: string): boolean {
+  const value = JSON.parse(raw) as Record<string, unknown>;
+  if (value.studyFocus !== undefined && !isStudyFocus(value.studyFocus)) return false;
+  if (value.schedules === undefined) return true;
+  if (!value.schedules || typeof value.schedules !== "object" || Array.isArray(value.schedules)) return false;
+  return Object.values(value.schedules).every((entry: unknown) => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return false;
+    const s = entry as Record<string, unknown>;
+    const date = (v: unknown) => typeof v === "string" && Number.isFinite(Date.parse(v));
+    const nonnegative = (v: unknown) => typeof v === "number" && Number.isFinite(v) && v >= 0;
+    const count = (v: unknown) => nonnegative(v) && Number.isInteger(v);
+    return date(s.due) && (s.last_review === undefined || date(s.last_review))
+      && [s.stability, s.difficulty, s.elapsed_days, s.scheduled_days].every(nonnegative)
+      && [s.reps, s.lapses].every(count) && (s.learning_steps === undefined || count(s.learning_steps))
+      && Number.isInteger(s.state) && (s.state as number) >= 0 && (s.state as number) <= 3;
+  });
+}
 
 export interface LearnerMap {
   list(): Promise<{ key: string; data: unknown }[]>;
@@ -38,10 +57,11 @@ async function readSnapshot(map: ProgressMap) {
         return chunk.key !== `progress-${index}` || !data || typeof data !== "object" || Array.isArray(data)
           || typeof data.s !== "string" || !data.s.length || data.s.length > CHUNK;
       })) throw new Error("invalid_legacy_progress");
-      const parsed = parseProgress(chunks.map((chunk) => (chunk.data as { s: string }).s).join(""));
+      const raw = chunks.map((chunk) => (chunk.data as { s: string }).s).join("");
+      const parsed = parseProgress(raw);
       // Never turn unreadable/repaired legacy data into the first authoritative
       // manifest. Leave every original byte intact for explicit recovery.
-      if (parsed.problems.length) throw new Error("invalid_legacy_progress");
+      if (parsed.problems.length || !validLegacyFields(raw)) throw new Error("invalid_legacy_progress");
       return { progress: parsed.progress, item: null, head: null };
     }
     const head = progressHead(item.data);
