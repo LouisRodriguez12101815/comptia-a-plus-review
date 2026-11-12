@@ -206,6 +206,18 @@ test('simultaneous opposite outcomes from different sources do not invent a late
   assert.equal(q.factors.latestCorrectAfterMiss, 0);
 });
 
+test('simultaneous contradictory telemetry and completed sittings remain ambiguous', () => {
+  for (const telemetryCorrect of [true, false]) {
+    const report = collect([...events([event('q0', telemetryCorrect)]),
+      ...progressItems({ quizAttempts: [sitting('q0', telemetryCorrect ? 0 : 1)] })]);
+    const q = analyzeActivity(report).questions[0];
+    assert.equal(q.attempts, 1, 'cross-stream results do not double-count attempts');
+    assert.equal(q.mostRecentResult, 'ambiguous');
+    assert.equal(q.recentlyImproved, false);
+    assert.equal(q.recentlyMasteredCandidate, false);
+  }
+});
+
 test('a question with different valid objective contexts does not attribute every result to the latest one', () => {
   const bank = structuredClone(content); bank.questions[0].objectiveIds[N10] = ['1.1', '1.2'];
   const report = collect(events([event('q0', false, NOW - 2 * DAY, { objectiveId: '1.1' }), event('q0', false, NOW - DAY, { objectiveId: '1.2' })]), {}, bank);

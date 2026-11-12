@@ -2,22 +2,11 @@
 
 ## Handoff / branch compatibility
 
-Resumed from issue #207 with the existing uncommitted exporter intact, based on
-main `695d3db53797ce703a442c74c63ff3cb10993289`. PR #202 is still open, but
-its relevant progress, telemetry, answer-history, performance and exam-helper
-files already match this main (the telemetry work also arrived through the
-merged release PR #203). No dependency on merging the stale PR #202 is assumed.
-
-The separate atomic-persistence commit
-`9236651720d48ac4a0c83d0c8c9532abb114265e` was inspected, not merged or
-cherry-picked. Its v1 manifest keys/count/UTF-8 length/SHA-256 contract is covered
-by the exporter's compatibility fixture. Current main has no shared manifest
-decoder, so the tool uses its small pure compatibility reader plus the existing
-pure legacy/history decoder; no provider adapter or write helper is reused.
-After atomic persistence merges, retest both suites against the resulting main.
-Rebase if required before review, preserve both additions to `test:learner`, and
-prefer consolidating the pure manifest decoder then. No runtime-format migration
-or live-data validation is required to test that consolidation.
+Rebased onto main `79b1b651ccb35f929f2c5a7ec4a1bdf886f4bd75`, which includes
+atomic progress persistence. The exporter's v1 manifest compatibility reader
+validates the same keys, count, UTF-8 length and SHA-256 contract. It also uses
+the existing pure legacy/history decoder; no provider adapter or write helper is
+reused. Consolidating the two pure manifest readers is a possible later cleanup.
 
 Run locally with Git, Node 24, the existing dependencies and `.env.local`:
 
@@ -96,7 +85,7 @@ The time anchor is captured once before reading; the closed window is
 `[anchor - days*24h, anchor]`. There is no other scoring clock or random seed.
 Rows are newest first, with code-point-ordered stable secondary keys. Identical
 events/migration copies collapse; conflicting copies fail closed.
-Opposite latest outcomes tied at the same timestamp within the selected stream
+Opposite latest outcomes tied at the same timestamp across evidence streams
 are reported as ambiguous, not arbitrarily recovered. If one question's scored rows
 have different objective contexts, its question/topic score stays available but
 the combined count is not attributed to just the last objective; raw sanitized
@@ -168,6 +157,7 @@ reads their retained server union, not other learners or local browser storage.
 Current progress caps are 40 quizzes/30 mocks; telemetry normally retains 200
 events and requires signed-in submission. Offline, unsigned, unsynced, already
 pruned or previously lost records cannot be reconstructed. `--days 30` cannot
-restore deleted history. Existing cross-device persistence races remain outside
-this diagnostic branch. No provider write, deployment, app behavior change,
+restore deleted history. Atomic persistence requires draining legacy writers
+before rollout, and retained legacy chunks cannot prove historical completeness.
+No provider write, deployment, app behavior change,
 recommendation UI, readiness model, or dependency change is introduced.

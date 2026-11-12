@@ -18,7 +18,9 @@ export function analyzeActivity(report) {
   for (const [id, history] of groups) {
     history.sort((a, b) => cmp(a.timestamp, b.timestamp) || cmp(JSON.stringify(a), JSON.stringify(b)));
     const latest = history.at(-1), first = history[0];
-    const tiedLatest = history.filter(row => row.timestamp === latest.timestamp);
+    // A conflicting result in another stream at the same instant cannot be
+    // ordered, even though only one stream contributes attempt counts.
+    const tiedLatest = report.activity.filter(row => key(row) === id && row.timestamp === latest.timestamp && typeof row.isCorrect === 'boolean');
     const latestCorrect = tiedLatest.every(row => row.isCorrect);
     const latestIncorrect = tiedLatest.every(row => !row.isCorrect);
     const objectiveContexts = new Set(history.map(row => row.objectiveId));
