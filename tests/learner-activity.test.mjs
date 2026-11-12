@@ -242,10 +242,46 @@ test('follow-up uses same-concept alternatives before exact repeats and honors r
   assert.match(plan.learnerQuizPath, /^\/quiz\?exam=n10-009&questions=/);
 });
 
+test('spaced review requires the candidate itself to have prior correct evidence', () => {
+  const evidence = summary([event('q10', true)]);
+  const plan = buildFollowup(evidence, content, { quizSize: 10 });
+  const spaced = plan.plans[0].selections.filter(s => s.category === 'spaced-review');
+  assert.deepEqual(spaced.map(s => s.questionId), ['q10']);
+  assert.ok(!spaced.some(s => s.questionId === 'q11'), 'unseen related alternatives are not spaced review');
+  assert.ok(plan.shortages.some(s => s.reason === 'insufficient-relevant-unique-wording'));
+  assert.deepEqual(buildFollowup(evidence, content, { quizSize: 10 }), plan, 'shortage fallback stays deterministic');
+});
+
+test('never-correct misses remain remediation evidence, not spaced review', () => {
+  const evidence = summary([event('q10', true), event('q11', false)]);
+  const result = buildFollowup(evidence, content, { quizSize: 5 });
+  const selections = result.plans[0].selections;
+  const spaced = selections.filter(s => s.category === 'spaced-review');
+  assert.deepEqual(spaced.map(s => s.questionId), ['q10']);
+  assert.ok(!spaced.some(s => s.questionId === 'q11' || s.questionId === 'q12'));
+  assert.ok(selections.some(s => s.questionId === 'q12' && ['direct-remediation', 'related-concept-reinforcement'].includes(s.category)));
+  assert.deepEqual(buildFollowup(evidence, content, { quizSize: 5 }), result);
+});
+
+test('the target mix is preserved when enough relevant and previously-correct questions exist', () => {
+  const bank = structuredClone(content);
+  for (let i = 30; i < 45; i++) bank.questions.push({ ...bank.questions[1], id: `mix-${i}`, prompt: `Distinct remediation ${i}` });
+  const evidence = summary([event('q0', false), event('q10', true), event('q11', true)]);
+  const plan = buildFollowup(evidence, bank, { quizSize: 15 }).plans[0];
+  const count = category => plan.selections.filter(s => s.category === category).length;
+  assert.equal(count('direct-remediation'), 9);
+  assert.equal(count('related-concept-reinforcement'), 4);
+  assert.equal(count('spaced-review'), 2);
+  assert.ok(plan.selections.filter(s => s.category === 'spaced-review').every(s => ['q10', 'q11'].includes(s.questionId)));
+  assert.deepEqual(buildFollowup(evidence, bank, { quizSize: 15 }).plans[0], plan);
+});
+
 test('weak objective selection is not dominated by repeated-correct material', () => {
   const values = [event('q0', false, NOW - 2 * DAY), event(), ...['q10', 'q11', 'q12'].flatMap(id => [event(id, true, NOW - 3 * DAY), event(id, true)])];
-  const plan = buildFollowup(summary(values), content, { quizSize: 15 }).plans[0];
-  assert.equal(plan.questions.length, 15);
+  const result = buildFollowup(summary(values), content, { quizSize: 15 });
+  const plan = result.plans[0];
+  assert.equal(plan.questions.length, 13);
+  assert.ok(result.shortages.some(s => s.reason === 'insufficient-relevant-unique-wording' && s.selected === 13));
   assert.ok(plan.selections.slice(0, 9).every(s => s.category === 'direct-remediation'));
   assert.ok(plan.questions.slice(0, 9).every(q => q.objectiveIds[N10].includes('1.1')));
 });

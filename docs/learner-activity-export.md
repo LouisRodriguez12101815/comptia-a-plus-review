@@ -128,8 +128,10 @@ Network+ remediation clusters and authored concept groups. Round robin across
 weak objectives/topics prevents one repeatedly missed question monopolizing the
 plan. Prefer different wording in the same authored concept, then the objective,
 then the topic; exact original wording is last. Reinforcement favors broader
-same-objective contrasts; spaced review uses previously correct material without
-selecting known-weak questions as “spaced”. Stable ID ordering resolves ties.
+same-objective contrasts; spaced review requires scored correct evidence for the
+candidate question itself and excludes known-weak questions. If the supply is
+short, the existing relevant remediation/spaced redistribution may still underfill
+the plan; unseen alternatives are never labeled “spaced”. Stable ID ordering resolves ties.
 Normalized duplicate prompts are selected once. Exact keys/explanations are kept.
 
 The bank has no universal per-question independently-verified flag. This tool

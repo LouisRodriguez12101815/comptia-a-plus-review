@@ -121,7 +121,8 @@ export function buildFollowup(summary, content, { quizSize = 15, exam } = {}) {
         for (const sources of groups) {
           if (added >= count || selections.length >= quizSize) break;
           const candidates = pool.filter(c => !chosen.has(c.question.id) && !wording.has(sameWording(c.question.prompt))
-            && (category !== 'spaced-review' || !(evidenceById.get(c.question.id)?.weaknessScore > 0)))
+            && (category !== 'spaced-review' || (evidenceById.get(c.question.id)?.correct > 0
+              && evidenceById.get(c.question.id)?.weaknessScore === 0)))
             .map(candidate => {
               const source = [...sources].sort((a, b) => relation(candidate, a) - relation(candidate, b) || sortScore(a, b))[0];
               return { candidate, source, distance: relation(candidate, source) };
