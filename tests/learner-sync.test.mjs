@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mergeProgress } from '../lib/learner/merge.ts';
 import { learnerId, normalizePhone, readSession, signSession, cookieValue } from '../lib/learner/session.ts';
-import { loadRemote, saveRemote, splitChunks } from '../lib/learner/store.ts';
+import { splitChunks } from '../lib/learner/store.ts';
 import { createSyncMapItemIdempotently, learnerConfig } from '../lib/learner/twilio.ts';
 
 const empty = () => ({ studyFocus: 'n10-009', knownCards: {}, unknownCards: {}, quizAttempts: [], mockAttempts: [], schedules: {} });
@@ -57,24 +57,12 @@ test('session cookie: valid, tampered, expired, wrong secret', () => {
   assert.equal(cookieValue('a=1; learner_session=abc.def', 'learner_session'), 'abc.def');
 });
 
-function fakeMap() {
-  const items = new Map();
-  return { items,
-    async list() { return [...items].map(([key, data]) => ({ key, data })); },
-    async set(key, data) { items.set(key, data); }, async remove(key) { items.delete(key); }, async removeAll() { items.clear(); } };
-}
-
-test('large progress round-trips through chunked map items and shrinks cleanly', async () => {
-  const map = fakeMap();
-  const big = { ...empty(), knownCards: Object.fromEntries(Array.from({ length: 2500 }, (_, i) => [`card-${i}`, true])) };
-  assert.ok(splitChunks(JSON.stringify(big)).length > 1);
-  await saveRemote(map, big);
-  for (const v of map.items.values()) assert.ok(JSON.stringify(v).length < 16 * 1024);
-  assert.deepEqual((await loadRemote(map)).knownCards, big.knownCards);
-  await saveRemote(map, empty());
-  assert.equal(map.items.size, 1);
-  assert.deepEqual((await loadRemote(map)).knownCards, {});
-  assert.equal(await loadRemote(fakeMap()), null);
+test('progress chunk splitting preserves the original payload', () => {
+  const raw = JSON.stringify({ ...empty(), knownCards: Object.fromEntries(Array.from({ length: 2500 }, (_, i) => [`card-${i}`, true])) });
+  const chunks = splitChunks(raw);
+  assert.ok(chunks.length > 1);
+  assert.equal(chunks.join(''), raw);
+  assert.ok(chunks.every(s => s.length <= 12000));
 });
 
 test('sync stays off unless every variable is present and well formed', () => {

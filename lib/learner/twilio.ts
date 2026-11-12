@@ -1,7 +1,7 @@
 import twilio from "twilio";
 import { DailyUsageGuard, type SyncDocuments } from "@/lib/game/room-store";
 import { syncCall } from "@/lib/game/provider-errors";
-import type { LearnerMap } from "@/lib/learner/store";
+import type { ProgressMap } from "@/lib/learner/store";
 import { normalizePhone } from "@/lib/learner/session";
 
 const status = (e: unknown) => (e as { status?: number })?.status;
@@ -41,8 +41,7 @@ export function learnerConfig(env: Record<string, string | undefined> = process.
   return { ...c, allowed };
 }
 
-export function twilioLearner(config: LearnerConfig) {
-  const client = twilio(config.keySid, config.keySecret, { accountSid: config.accountSid, logLevel: "error", timeout: 5000 });
+export function twilioLearner(config: LearnerConfig, client = twilio(config.keySid, config.keySecret, { accountSid: config.accountSid, logLevel: "error", timeout: 5000 })) {
   const sync = client.sync.v1.services(config.syncServiceSid);
   const documents: SyncDocuments = {
     fetch: (name) => syncCall("documents.fetch", () => sync.documents(name).fetch(), [404]),
@@ -53,16 +52,48 @@ export function twilioLearner(config: LearnerConfig) {
   const verify = client.verify.v2.services(config.verifyServiceSid);
 
   const mapName = (id: string) => `learner-${id}`;
-  const mapFor = (id: string): LearnerMap => {
+  const mapFor = (id: string): ProgressMap => {
     const name = mapName(id);
     const map = () => sync.syncMaps(name);
     return {
-      async list() {
+      async get(key) {
         try {
-          // Telemetry uses one independent item per event (up to 200); include progress items too.
-          const items = await syncCall("documents.fetch", () => map().syncMapItems.list({ limit: 1000 }), [404]);
-          return items.map((i) => ({ key: i.key, data: i.data }));
+          const item = await syncCall("documents.fetch", () => map().syncMapItems(key).fetch(), [404]);
+          return { data: item.data, revision: item.revision };
+        } catch (e) { if (status(e) === 404) return null; throw e; }
+      },
+      async create(key, data) {
+        try {
+          await syncCall("documents.create", () => map().syncMapItems.create({ key, data }), [404, 409]);
+          return;
+        } catch (e) { if (status(e) !== 404) throw e; }
+        try { await syncCall("documents.create", () => sync.syncMaps.create({ uniqueName: name }), [409]); }
+        catch (e) { if (status(e) !== 409) throw e; }
+        // Deliberately no update-on-conflict: immutable chunks and first head
+        // publication must never overwrite the winner of a distributed race.
+        await syncCall("documents.create", () => map().syncMapItems.create({ key, data }), [409]);
+      },
+      async replace(key, data, revision) {
+        try {
+          await syncCall("documents.update", () => map().syncMapItems(key).update({ data, ifMatch: revision }), [409, 412]);
+          return true;
+        } catch (e) { if ([409, 412].includes(status(e) ?? 0)) return false; throw e; }
+      },
+      async list() {
+        const collection = map().syncMapItems;
+        let page: Awaited<ReturnType<typeof collection.page>>;
+        try {
+          page = await syncCall("documents.fetch", () => collection.page({ pageSize: 100 }), [404]);
         } catch (e) { if (status(e) === 404) return []; throw e; }
+        const items = page.instances.map((i) => ({ key: i.key, data: i.data }));
+        // Orphan snapshots can outnumber retained telemetry. Read every page;
+        // only an initially absent map is empty, never an interrupted listing.
+        while (page.nextPageUrl) {
+          const next = page.nextPageUrl;
+          page = await syncCall("documents.fetch", () => collection.getPage(next));
+          items.push(...page.instances.map((i) => ({ key: i.key, data: i.data })));
+        }
+        return items;
       },
       async set(key, data) {
         try { await syncCall("documents.update", () => map().syncMapItems(key).update({ data }), [404]); }
