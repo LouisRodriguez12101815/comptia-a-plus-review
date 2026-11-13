@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { scene, mobileScene } from "../lib/network-environment.ts";
 
@@ -24,4 +25,15 @@ test("infrastructure traffic stays connected and bounded on desktop and mobile",
   }
   assert.ok(mobileScene.nodes.length < scene.nodes.length);
   assert.ok(mobileScene.edges.length < scene.edges.length);
+});
+
+test("homepage exposes the certification catalog, study loop, and reduced-motion contract", async () => {
+  const page = await readFile(new URL("../app/[locale]/page.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../app/components/NetworkEnvironment.module.css", import.meta.url), "utf8");
+  assert.match(page, /data-testid=\"home-network-experience\"/);
+  assert.match(page, /id=\"tracks-heading\"/);
+  for (const href of ["\/notes", "\/quiz", "\/test", "\/weak-areas", "\/performance", "\/scorecard"]) {
+    assert.match(page, new RegExp(`\"${href.replace("/", "\\/")}\"`));
+  }
+  assert.match(styles, /prefers-reduced-motion/);
 });
