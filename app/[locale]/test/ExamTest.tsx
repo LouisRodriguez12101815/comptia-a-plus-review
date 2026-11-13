@@ -8,7 +8,7 @@ import objectives from "@/content/objectives.json";
 import { reportContent } from "@/app/components/ReportIssue";
 import { getTopic, questions, topics } from "@/lib/content";
 import {
-  EXAM_FORMATS, TEST_LENGTHS, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
+  EXAM_FORMATS, TEST_LENGTHS, MIXED_PRACTICE_QUESTION_COUNT, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
   draftFocused, draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds,
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
@@ -21,6 +21,7 @@ import { LookAlike } from "@/app/components/LookAlike";
 import type { Question } from "@/lib/types";
 import { conceptTitleByQuestion } from "@/lib/concepts";
 import { buildWeakReport, type WeakRow, type WeakStatus } from "@/lib/weak-report";
+import { mixedPracticeFeedback } from "@/lib/mixed-practice-feedback";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
@@ -114,10 +115,10 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
   );
 }
 
-export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {} }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]> }) {
+export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: boolean }) {
   const t = useTranslations("examTest");
-  const [exam, setExam] = useState<ExamCode>(initialExam ?? "220-1201");
-  const [lengthId, setLengthId] = useState(initialFocus.length > 0 ? "quick" : "full");
+  const [exam, setExam] = useState<ExamCode>(practiceMode ? "clf-c02" : initialExam ?? "220-1201");
+  const [lengthId, setLengthId] = useState(practiceMode ? "mixed20" : initialFocus.length > 0 ? "quick" : "full");
   const [mode, setMode] = useState<"standard" | "targeted">(initialFocus.length > 0 ? "targeted" : "standard");
   const [runInfo, setRunInfo] = useState<{ kind: RunKind; objectiveIds: string[] }>({ kind: "standard", objectiveIds: [] });
   const [sessionSeconds, setSessionSeconds] = useState(0);
@@ -127,6 +128,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const [scoredPicks, setScoredPicks] = useState<TestPick[]>([]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number[]>([]);
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [responses, setResponses] = useState<Record<string, TestResponse>>({});
   const [remaining, setRemaining] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -155,11 +157,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const dueCount = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
-  const requested = questionsForLength(exam, lengthId);
+  const isMixedPractice = practiceMode && exam === "clf-c02";
+  const requested = isMixedPractice ? MIXED_PRACTICE_QUESTION_COUNT : questionsForLength(exam, lengthId);
   const planned = Math.min(requested, pool.totalUnique);
   const quota = useMemo(() => allocateByWeight(pool.domains, planned), [pool, planned]);
 
-  const lengthLabel = (id: string) => (id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
+  const lengthLabel = (id: string) => (id === "mixed20" ? t("mixedPractice") : id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
 
   const deadline = useRef(0);
   const completed = useRef(false);
@@ -206,6 +209,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   const current = phase === "running" ? questionsById[picks[index]?.questionId] : undefined;
   const multi = current !== undefined && Array.isArray(current.answer);
+  const currentFeedback = current && feedbackVisible ? mixedPracticeFeedback(current, responses[current.id]?.answer) : undefined;
 
   const finish = useCallback((finalResponses: Record<string, TestResponse>, finalPicks: TestPick[], timedOut = false) => {
     if (completed.current) return;
@@ -255,12 +259,18 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const answer = responsesRef.current[id]?.answer;
     choose(answer === undefined ? [] : Array.isArray(answer) ? [...answer] : [answer]);
     setReviewing(false);
+    setFeedbackVisible(false);
   }, [picks, choose, setReviewing]);
 
   const lockIn = useCallback(() => {
+    if (isMixedPractice && !feedbackVisible) {
+      if (selectedRef.current.length === 0) return;
+      setFeedbackVisible(true);
+      return;
+    }
     if (index + 1 < picks.length) navigate(index + 1);
     else setReviewing(true);
-  }, [index, picks.length, navigate, setReviewing]);
+  }, [feedbackVisible, index, isMixedPractice, navigate, picks.length, setReviewing]);
 
   // Move focus to each new question so screen readers start there.
   useEffect(() => {
@@ -269,7 +279,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   // Tick against a wall-clock deadline so background-tab throttling cannot add time.
   useEffect(() => {
-    if (phase !== "running") return;
+    if (phase !== "running" || isMixedPractice) return;
     const timer = window.setInterval(() => {
       const left = (deadline.current - Date.now()) / 1000;
       setRemaining(left);
@@ -280,11 +290,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       if (left <= 0) finish(responsesRef.current, picks, true);
     }, 250);
     return () => window.clearInterval(timer);
-  }, [phase, index, finish, picks, t]);
+  }, [phase, index, finish, picks, t, isMixedPractice]);
 
   const warned = remaining <= 10;
 
   const toggle = useCallback((choice: number) => {
+    if (isMixedPractice && feedbackVisible) return;
     const prev = selectedRef.current;
     const next = !multi ? [choice] : prev.includes(choice) ? prev.filter((i) => i !== choice) : [...prev, choice];
     choose(next);
@@ -294,11 +305,11 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       responsesRef.current = updated;
       setResponses(updated);
     }
-  }, [multi, current, choose]);
+  }, [current, choose, feedbackVisible, isMixedPractice, multi]);
 
   // Number keys pick a choice; Enter submits.
   useEffect(() => {
-    if (phase !== "running" || !current || reviewing) return;
+    if (phase !== "running" || !current || reviewing || (isMixedPractice && feedbackVisible)) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const n = Number(event.key);
@@ -310,7 +321,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, current, toggle, lockIn, orders, reviewing, rate]);
+  }, [feedbackVisible, phase, current, toggle, lockIn, orders, reviewing, rate, isMixedPractice]);
 
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
@@ -339,13 +350,14 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setPicks(draft);
     setIndex(0);
     choose([]);
-    beginQuestion(sessionDurationSeconds(exam, draft.length));
+    beginQuestion(isMixedPractice ? 0 : sessionDurationSeconds(exam, draft.length));
     responsesRef.current = {};
     visited.current = new Set(draft.slice(0, 1).map(p => p.questionId));
     setOrders(Object.fromEntries(draft.map(p => [p.questionId, shuffleChoiceOrder(questionsById[p.questionId])])));
     setFlags([]);
     setReviewing(false);
     setResponses({});
+    setFeedbackVisible(false);
     setMissedOnly(true);
     setAnnounce("");
     setPhase("running");
@@ -369,7 +381,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("certification")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {examCodes.map((code) => (
+            {examCodes.filter((code) => !practiceMode || code === "clf-c02").map((code) => (
               <label key={code} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${exam === code ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
                 <span className="flex items-center gap-2">
                   <input type="radio" name="exam" value={code} checked={exam === code} onChange={() => setExam(code)} className="accent-teal-400" />
@@ -384,8 +396,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("length")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {TEST_LENGTHS.map((length) => {
-              const requestedForLength = questionsForLength(exam, length.id);
+            {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : TEST_LENGTHS).map((length) => {
+              const requestedForLength = length.id === "mixed20" ? MIXED_PRACTICE_QUESTION_COUNT : questionsForLength(exam, length.id);
               const count = Math.min(requestedForLength, pool.totalUnique);
               return (
                 <label key={length.id} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${lengthId === length.id ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
@@ -393,7 +405,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                     <input type="radio" name="length" value={length.id} checked={lengthId === length.id} onChange={() => setLengthId(length.id)} className="accent-teal-400" />
                     <span className="font-medium text-white">{lengthLabel(length.id)}</span>
                   </span>
-                  <span className="mt-1 text-sm text-slate-300">{t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
+                  <span className="mt-1 text-sm text-slate-300">{isMixedPractice ? t("mixedPracticeDetail") : t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
                 </label>
               );
             })}
@@ -476,9 +488,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         </section>
 
         <section className={card} aria-labelledby="rules-heading">
-          <h2 id="rules-heading" className="text-lg font-semibold text-white">{t("howItWorks")}</h2>
+          <h2 id="rules-heading" className="text-lg font-semibold text-white">{isMixedPractice ? t("mixedPracticeHeading") : t("howItWorks")}</h2>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
-            <li>{t("rule1", { seconds: perQuestion })}</li>
+            <li>{isMixedPractice ? t("mixedPracticeRule1") : t("rule1", { seconds: perQuestion })}</li>
             <li>{t("rule2")}</li>
             <li>{t("rule3")}</li>
             <li>{t("rule4")}</li>
@@ -509,13 +521,13 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                 ? t("questionProgressMulti", { current: index + 1, total: picks.length })
                 : t("questionProgress", { current: index + 1, total: picks.length })}
             </p>
-            <p role="timer" aria-label={t("timeLeft", { time: formatClock(remaining) })} className={`font-mono text-2xl font-semibold tabular-nums ${warned ? "text-amber-300" : "text-white"}`}>
+            {isMixedPractice ? <p className="font-mono text-sm font-semibold uppercase tracking-wide text-teal-300">{t("untimedPractice")}</p> : <p role="timer" aria-label={t("timeLeft", { time: formatClock(remaining) })} className={`font-mono text-2xl font-semibold tabular-nums ${warned ? "text-amber-300" : "text-white"}`}>
               {formatClock(remaining)}
-            </p>
+            </p>}
           </div>
-          <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
+          {!isMixedPractice && <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
             <div className={`h-full transition-[width] duration-200 ${warned ? "bg-amber-400" : "bg-teal-400"}`} style={{ width: `${100 * fraction}%` }} />
-          </div>
+          </div>}
           <div aria-hidden="true" className="h-1 overflow-hidden rounded-full bg-slate-800">
             <div className="h-full bg-slate-500" style={{ width: `${(100 * index) / picks.length}%` }} />
           </div>
@@ -538,7 +550,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             const on = selected.includes(choiceIndex);
             return (
               <li key={`${current.id}-${choiceIndex}`}>
-                <button type="button" aria-pressed={on} onClick={() => toggle(choiceIndex)}
+                <button type="button" aria-pressed={on} disabled={isMixedPractice && feedbackVisible} onClick={() => toggle(choiceIndex)}
                   className={`flex min-h-11 w-full gap-3 rounded-xl border px-4 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300 ${on ? "border-teal-400 bg-teal-950/50 text-white" : "border-slate-700 bg-slate-900 text-slate-100 hover:border-slate-500"}`}>
                   <span className="font-mono text-slate-400" aria-hidden="true">{displayIndex + 1}</span>
                   <span>{choice}</span>
@@ -547,6 +559,26 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             );
           })}
         </ul>
+        {isMixedPractice && feedbackVisible && currentFeedback && (() => {
+          const topic = getTopic(current.topicId);
+          const objective = pool.domains.find((domain) => domain.id === picks[index].domainId)?.objectives.find((item) => item.id === picks[index].objectiveId);
+          return <section aria-live="polite" aria-labelledby="mixed-feedback-heading" className={`rounded-xl border p-4 ${currentFeedback.correct ? "border-emerald-400/60 bg-emerald-950/30" : "border-amber-400/60 bg-amber-950/20"}`}>
+            <h3 id="mixed-feedback-heading" className={`font-semibold ${currentFeedback.correct ? "text-emerald-200" : "text-amber-200"}`}>
+              {currentFeedback.correct ? `✓ ${t("feedbackCorrect")}` : `! ${t("feedbackIncorrect")}`}
+            </h3>
+            <dl className="mt-3 space-y-2 text-sm">
+              <div><dt className="font-medium text-slate-300">{t("feedbackYourAnswer")}</dt><dd className="text-slate-100">{answerText(current, responses[current.id]?.answer, t("noAnswer"))}</dd></div>
+              <div><dt className="font-medium text-slate-300">{t("feedbackCorrectAnswer")}</dt><dd className="text-slate-100">{answerText(current, current.answer, t("noAnswer"))}</dd></div>
+              <div><dt className="font-medium text-slate-300">{t("feedbackExplanation")}</dt><dd className="text-slate-200"><ExplanationText text={current.explanation} /></dd></div>
+              {!currentFeedback.correct && (currentFeedback.missingIndices.length > 0 || currentFeedback.incorrectIndices.length > 0) && <div><dt className="font-medium text-slate-300">{t("feedbackSelectionDetail")}</dt><dd className="text-slate-200">{currentFeedback.missingIndices.length > 0 ? `${t("feedbackMissing")}: ${answerText(current, currentFeedback.missingIndices, t("noAnswer"))}. ` : ""}{currentFeedback.incorrectIndices.length > 0 ? `${t("feedbackIncorrectSelection")}: ${answerText(current, currentFeedback.incorrectIndices, t("noAnswer"))}.` : ""}</dd></div>}
+              {objective && <div><dt className="font-medium text-slate-300">{t("feedbackObjective")}</dt><dd className="text-slate-100"><span className="font-mono text-teal-300">{objective.id}</span> {objective.title}</dd></div>}
+              {topic && <div><dt className="font-medium text-slate-300">{t("feedbackTakeaway")}</dt><dd className="text-slate-200">{topic.summary}</dd></div>}
+            </dl>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center rounded-full border border-teal-300 px-4 py-2 text-sm text-teal-100">{t("feedbackReviewConcept")}</Link>}
+            </div>
+          </section>;
+        })()}
         <div role="group" aria-labelledby="confidence-label" className="flex flex-wrap items-center gap-2">
           <span id="confidence-label" className="text-sm text-slate-300">{t("confidenceLabel")}</span>
           {(["sure", "guess"] as const).map((level) => (
@@ -560,7 +592,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={lockIn} className={primary}>
-            {index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
+            {isMixedPractice ? feedbackVisible ? (index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")) : t("checkAnswer") : index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
           </button>
           <button type="button" className={secondary} disabled={index === 0} onClick={() => navigate(index - 1)}>{t("previousQuestion")}</button>
           <button type="button" aria-pressed={flags.includes(current.id)} onClick={() => toggleFlag(current.id)}
@@ -723,18 +755,18 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <Link href="/weak-areas" className="mt-3 inline-flex min-h-11 items-center rounded-full border border-teal-300 px-5 py-2 text-teal-100">{t("weakAreasLink")}</Link>
       </section>
       <section className={card} aria-labelledby="score-heading">
-        <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{format.label} · {exam}</h2>
+        <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{isMixedPractice ? t("mixedPractice") : format.label} · {exam}</h2>
         <p className="mt-2 text-4xl font-semibold text-white">{result.correct}/{result.total} <span className="text-2xl text-slate-300">({result.percent}%)</span></p>
-        <p className={`mt-2 font-medium ${passed ? "text-emerald-300" : "text-amber-300"}`}>
-          {passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
+        <p className={`mt-2 font-medium ${isMixedPractice ? "text-teal-200" : passed ? "text-emerald-300" : "text-amber-300"}`}>
+          {isMixedPractice ? t("mixedPracticeResult") : passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
         </p>
-        <p className="mt-1 text-sm text-slate-400">
+        {!isMixedPractice && <p className="mt-1 text-sm text-slate-400">
           {t("scaleNote", { min: format.scaleMin, max: format.scaleMax, passing: format.passingScore })}
-        </p>
+        </p>}
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
           <div><dt className="text-xs text-slate-400">{t("timeUsed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(usedSeconds)}</dd></div>
-          <div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>
-          <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div>
+          {!isMixedPractice && <><div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>
+          <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div></>}
         </dl>
       </section>
 
@@ -847,7 +879,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={primary}>{t("retake")}</button>
+        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={primary}>{isMixedPractice ? t("practiceMore") : t("retake")}</button>
         <button type="button" onClick={() => setPhase("setup")} className={secondary}>{t("changeExam")}</button>
       </div>
     </div>
