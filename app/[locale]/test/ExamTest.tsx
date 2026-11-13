@@ -21,6 +21,7 @@ import { LookAlike } from "@/app/components/LookAlike";
 import type { Question } from "@/lib/types";
 import { conceptTitleByQuestion } from "@/lib/concepts";
 import { buildWeakReport, type WeakRow, type WeakStatus } from "@/lib/weak-report";
+import { mixedPracticeFeedback } from "@/lib/mixed-practice-feedback";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
@@ -127,6 +128,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const [scoredPicks, setScoredPicks] = useState<TestPick[]>([]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number[]>([]);
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [responses, setResponses] = useState<Record<string, TestResponse>>({});
   const [remaining, setRemaining] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -207,6 +209,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   const current = phase === "running" ? questionsById[picks[index]?.questionId] : undefined;
   const multi = current !== undefined && Array.isArray(current.answer);
+  const currentFeedback = current && feedbackVisible ? mixedPracticeFeedback(current, responses[current.id]?.answer) : undefined;
 
   const finish = useCallback((finalResponses: Record<string, TestResponse>, finalPicks: TestPick[], timedOut = false) => {
     if (completed.current) return;
@@ -256,12 +259,18 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const answer = responsesRef.current[id]?.answer;
     choose(answer === undefined ? [] : Array.isArray(answer) ? [...answer] : [answer]);
     setReviewing(false);
+    setFeedbackVisible(false);
   }, [picks, choose, setReviewing]);
 
   const lockIn = useCallback(() => {
+    if (isMixedPractice && !feedbackVisible) {
+      if (selectedRef.current.length === 0) return;
+      setFeedbackVisible(true);
+      return;
+    }
     if (index + 1 < picks.length) navigate(index + 1);
     else setReviewing(true);
-  }, [index, picks.length, navigate, setReviewing]);
+  }, [feedbackVisible, index, isMixedPractice, navigate, picks.length, setReviewing]);
 
   // Move focus to each new question so screen readers start there.
   useEffect(() => {
@@ -286,6 +295,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const warned = remaining <= 10;
 
   const toggle = useCallback((choice: number) => {
+    if (isMixedPractice && feedbackVisible) return;
     const prev = selectedRef.current;
     const next = !multi ? [choice] : prev.includes(choice) ? prev.filter((i) => i !== choice) : [...prev, choice];
     choose(next);
@@ -295,11 +305,11 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       responsesRef.current = updated;
       setResponses(updated);
     }
-  }, [multi, current, choose]);
+  }, [current, choose, feedbackVisible, isMixedPractice, multi]);
 
   // Number keys pick a choice; Enter submits.
   useEffect(() => {
-    if (phase !== "running" || !current || reviewing) return;
+    if (phase !== "running" || !current || reviewing || (isMixedPractice && feedbackVisible)) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const n = Number(event.key);
@@ -311,7 +321,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, current, toggle, lockIn, orders, reviewing, rate]);
+  }, [feedbackVisible, phase, current, toggle, lockIn, orders, reviewing, rate, isMixedPractice]);
 
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
@@ -347,6 +357,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setFlags([]);
     setReviewing(false);
     setResponses({});
+    setFeedbackVisible(false);
     setMissedOnly(true);
     setAnnounce("");
     setPhase("running");
@@ -539,7 +550,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             const on = selected.includes(choiceIndex);
             return (
               <li key={`${current.id}-${choiceIndex}`}>
-                <button type="button" aria-pressed={on} onClick={() => toggle(choiceIndex)}
+                <button type="button" aria-pressed={on} disabled={isMixedPractice && feedbackVisible} onClick={() => toggle(choiceIndex)}
                   className={`flex min-h-11 w-full gap-3 rounded-xl border px-4 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300 ${on ? "border-teal-400 bg-teal-950/50 text-white" : "border-slate-700 bg-slate-900 text-slate-100 hover:border-slate-500"}`}>
                   <span className="font-mono text-slate-400" aria-hidden="true">{displayIndex + 1}</span>
                   <span>{choice}</span>
@@ -548,6 +559,26 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             );
           })}
         </ul>
+        {isMixedPractice && feedbackVisible && currentFeedback && (() => {
+          const topic = getTopic(current.topicId);
+          const objective = pool.domains.find((domain) => domain.id === picks[index].domainId)?.objectives.find((item) => item.id === picks[index].objectiveId);
+          return <section aria-live="polite" aria-labelledby="mixed-feedback-heading" className={`rounded-xl border p-4 ${currentFeedback.correct ? "border-emerald-400/60 bg-emerald-950/30" : "border-amber-400/60 bg-amber-950/20"}`}>
+            <h3 id="mixed-feedback-heading" className={`font-semibold ${currentFeedback.correct ? "text-emerald-200" : "text-amber-200"}`}>
+              {currentFeedback.correct ? `✓ ${t("feedbackCorrect")}` : `! ${t("feedbackIncorrect")}`}
+            </h3>
+            <dl className="mt-3 space-y-2 text-sm">
+              <div><dt className="font-medium text-slate-300">{t("feedbackYourAnswer")}</dt><dd className="text-slate-100">{answerText(current, responses[current.id]?.answer, t("noAnswer"))}</dd></div>
+              <div><dt className="font-medium text-slate-300">{t("feedbackCorrectAnswer")}</dt><dd className="text-slate-100">{answerText(current, current.answer, t("noAnswer"))}</dd></div>
+              <div><dt className="font-medium text-slate-300">{t("feedbackExplanation")}</dt><dd className="text-slate-200"><ExplanationText text={current.explanation} /></dd></div>
+              {!currentFeedback.correct && (currentFeedback.missingIndices.length > 0 || currentFeedback.incorrectIndices.length > 0) && <div><dt className="font-medium text-slate-300">{t("feedbackSelectionDetail")}</dt><dd className="text-slate-200">{currentFeedback.missingIndices.length > 0 ? `${t("feedbackMissing")}: ${answerText(current, currentFeedback.missingIndices, t("noAnswer"))}. ` : ""}{currentFeedback.incorrectIndices.length > 0 ? `${t("feedbackIncorrectSelection")}: ${answerText(current, currentFeedback.incorrectIndices, t("noAnswer"))}.` : ""}</dd></div>}
+              {objective && <div><dt className="font-medium text-slate-300">{t("feedbackObjective")}</dt><dd className="text-slate-100"><span className="font-mono text-teal-300">{objective.id}</span> {objective.title}</dd></div>}
+              {topic && <div><dt className="font-medium text-slate-300">{t("feedbackTakeaway")}</dt><dd className="text-slate-200">{topic.summary}</dd></div>}
+            </dl>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center rounded-full border border-teal-300 px-4 py-2 text-sm text-teal-100">{t("feedbackReviewConcept")}</Link>}
+            </div>
+          </section>;
+        })()}
         <div role="group" aria-labelledby="confidence-label" className="flex flex-wrap items-center gap-2">
           <span id="confidence-label" className="text-sm text-slate-300">{t("confidenceLabel")}</span>
           {(["sure", "guess"] as const).map((level) => (
@@ -561,7 +592,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={lockIn} className={primary}>
-            {index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
+            {isMixedPractice ? feedbackVisible ? (index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")) : t("checkAnswer") : index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
           </button>
           <button type="button" className={secondary} disabled={index === 0} onClick={() => navigate(index - 1)}>{t("previousQuestion")}</button>
           <button type="button" aria-pressed={flags.includes(current.id)} onClick={() => toggleFlag(current.id)}
