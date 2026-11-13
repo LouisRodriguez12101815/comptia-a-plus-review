@@ -29,6 +29,25 @@ test("technology-service additions are explicitly mapped to CLF-C02 objectives",
   }
 });
 
+test("hybrid deployment question keys the authored Hybrid answer", () => {
+  const question = questions.find((item) => item.id === "q-clf31-16");
+  assert.ok(question);
+  assert.equal(question.choices[question.answer], "Hybrid");
+  assert.match(question.explanation, /hybrid model combines on-premises and cloud/i);
+});
+
+test("new single-answer questions do not concentrate on one answer position", () => {
+  const byId = new Map(questions.map((question) => [question.id, question]));
+  const single = newIds.map((id) => byId.get(id)).filter((question) => question && !Array.isArray(question.answer));
+  const distribution = single.reduce((counts, question) => {
+    counts[question.answer] = (counts[question.answer] ?? 0) + 1;
+    return counts;
+  }, {});
+  assert.equal(single.length, 9);
+  assert.deepEqual(distribution, { 1: 3, 2: 3, 3: 3 });
+  assert.ok(Math.max(...Object.values(distribution)) / single.length <= 1 / 3);
+});
+
 test("CLF technology objectives have distinct, answerable questions", () => {
   const counts = Object.fromEntries(["3.1", "3.2", "3.3", "3.4", "3.5", "3.6"].map((id) => [id, 0]));
   const prompts = new Map();
