@@ -4,6 +4,7 @@ import { DeviceIcon } from "@/app/components/icons";
 import { StatusChip } from "@/app/components/StatusChip";
 import { trackCounts, tracks } from "@/lib/tracks";
 import { NetworkEnvironment } from "@/app/components/NetworkEnvironment";
+import { HomeLearningPreview } from "@/app/components/HomeLearningPreview";
 import styles from "@/app/components/NetworkEnvironment.module.css";
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
@@ -88,6 +89,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </ul>
       </section>
 
+      <HomeLearningPreview />
+
       <section aria-labelledby="methodology-bridge-heading" className={styles.methodologyBridge}>
         <div>
           <p className={styles.sectionEyebrow}>{t("methodologyBridgeEyebrow")}</p>
@@ -137,29 +140,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <section
-        aria-labelledby="game-heading"
-        className="flex flex-col gap-4 rounded-2xl border border-amber-400/40 bg-amber-400/5 p-5 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <div>
-          <h2 id="game-heading" className="text-lg font-medium text-white">
-            Outage Ops
-          </h2>
-          <p className="mt-1 max-w-xl text-sm text-slate-300">
-            {t("gameDescription")}
-          </p>
-        </div>
-        <Link
-          href="/game"
-          className="shrink-0 rounded-full bg-amber-400 px-5 py-2 text-center font-semibold text-slate-950 hover:bg-amber-300"
-        >
-          {t("playGame")}
-        </Link>
-      </section>
-
-      <p className="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">
-        {t("libraryNote")}
-      </p>
       </div>
     </div>
   );
