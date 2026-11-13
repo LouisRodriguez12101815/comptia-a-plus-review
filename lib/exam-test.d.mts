@@ -3,6 +3,7 @@ import type { CoverageMatrix } from "./objective-coverage.mjs";
 export interface ExamFormat { label: string; maxQuestions: number; minutes: number; passingScore: number; scaleMin: number; scaleMax: number }
 export const EXAM_FORMATS: Record<string, ExamFormat>;
 export const TEST_LENGTHS: { id: string; label: string }[];
+export const MIXED_PRACTICE_QUESTION_COUNT: number;
 export function questionsForLength(examCode: string, lengthId: string): number;
 export function secondsPerQuestion(examCode: string): number;
 export function approximatePassPercent(examCode: string): number | null;
