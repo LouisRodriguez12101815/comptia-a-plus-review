@@ -14,6 +14,15 @@ test('old progress parses without snapshots and new snapshots round-trip', () =>
   assert.equal(next.progress.clfAssessmentSnapshots[0].id, 'baseline-1');
 });
 
+test('legacy retest snapshots without baseline links are retained but remain non-comparable', () => {
+  const legacy = snapshot('legacy-retest', 2);
+  legacy.kind = 'retest';
+  const parsed = parseProgress(JSON.stringify({ studyFocus: 'clf-c02', knownCards: {}, unknownCards: {}, quizAttempts: [], mockAttempts: [], schedules: {}, clfAssessmentSnapshots: [legacy] }));
+  assert.deepEqual(parsed.problems, []);
+  assert.equal(parsed.progress.clfAssessmentSnapshots[0].id, 'legacy-retest');
+  assert.equal(parsed.progress.clfAssessmentSnapshots[0].baselineId, undefined);
+});
+
 test('snapshot synchronization is deduplicated and bounded', () => {
   const base = parseProgress(null).progress;
   const local = { ...base, clfAssessmentSnapshots: [snapshot('same', 2), snapshot('local', 3)] };
