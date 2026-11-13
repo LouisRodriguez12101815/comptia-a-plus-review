@@ -8,7 +8,8 @@ import { questions, topics } from "@/lib/content";
 import { buildExamPool, assessmentVersion } from "@/lib/exam-test.mjs";
 import { assessAwsClf, type ClfAssessmentState } from "@/lib/aws-clf-assessment";
 import { resourcesForAwsClfObjective } from "@/lib/aws-clf-resources";
-import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
+import { getProgressSnapshot, getServerProgressSnapshot, recordClfAssessmentSnapshot, subscribeProgress } from "@/lib/progress";
+import { compareWithBaseline, snapshotFromAssessment } from "@/lib/aws-clf-retest";
 
 const pool = buildExamPool({ objectives, questions, topics, examCode: "clf-c02" });
 const bankVersion = assessmentVersion(pool.domains.flatMap((domain) => domain.objectives.flatMap((objective) => objective.questionIds)).map((id) => questions.find((question) => question.id === id)).filter((question): question is (typeof questions)[number] => Boolean(question)));
@@ -26,6 +27,9 @@ export function AwsClfAssessment() {
   const rows = useMemo(() => assessAwsClf(progress, pool, questions, bankVersion), [progress]);
   const counts = rows.reduce((all, row) => ({ ...all, [row.state]: all[row.state] + 1 }), { "not-assessed": 0, insufficient: 0, weak: 0, developing: 0, strong: 0 } as Record<ClfAssessmentState, number>);
   const assessed = rows.filter((row) => row.state !== "not-assessed").length;
+  const baseline = (progress.clfAssessmentSnapshots ?? []).find((snapshot) => snapshot.kind === "baseline" && snapshot.bankVersion === bankVersion);
+  const comparison = baseline ? compareWithBaseline(baseline, rows) : [];
+  const saveSnapshot = (kind: "baseline" | "retest") => recordClfAssessmentSnapshot(snapshotFromAssessment(rows, kind, bankVersion, Date.now()));
 
   return <div className="space-y-6">
     <header className="space-y-2">
@@ -40,6 +44,16 @@ export function AwsClfAssessment() {
       <Summary label={t("weak")} value={`${counts.weak}`} />
       <Summary label={t("strong")} value={`${counts.strong}`} />
     </section>
+    <section className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.05] p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div><h2 className="font-semibold text-white">{t("trackingTitle")}</h2><p className="mt-1 text-sm text-slate-300">{baseline ? t("baselineSaved", { date: new Date(baseline.at).toLocaleDateString() }) : t("baselineEmpty")}</p></div>
+        <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={() => saveSnapshot("baseline")} className="inline-flex min-h-11 items-center rounded-full bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950">{t("saveBaseline")}</button>
+          {baseline && <button type="button" onClick={() => saveSnapshot("retest")} className="inline-flex min-h-11 items-center rounded-full border border-cyan-200/50 px-4 py-2 text-sm text-cyan-100">{t("saveRetest")}</button>}
+        </div>
+      </div>
+      {baseline && <p className="mt-3 text-xs text-slate-400">{t("trackingLimit")}</p>}
+    </section>
     {assessed === 0 && <section className="rounded-2xl border border-cyan-400/30 bg-cyan-400/[0.06] p-5">
       <p className="text-slate-200">{t("empty")}</p>
       <Link href="/test?exam=clf-c02" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-cyan-300 px-5 py-2 font-semibold text-slate-950">{t("startAssessment")}</Link>
@@ -53,6 +67,7 @@ export function AwsClfAssessment() {
         <p className="mt-3 text-sm text-slate-300">{row.distinctQuestions === 0 ? t("noEvidence") : t("evidence", { distinct: row.distinctQuestions, answers: row.totalAnswers, accuracy: row.accuracy ?? 0 })}</p>
         {row.evidence !== "none" && <p className="mt-1 text-xs text-amber-200">{t(`evidenceClass.${row.evidence}`)}</p>}
         {row.state === "insufficient" && <p className="mt-1 text-xs text-amber-200">{t("limitedEvidence")}</p>}
+        {baseline && comparison.find((item) => item.objectiveId === row.objectiveId)?.outcome !== "insufficient" && (() => { const item = comparison.find((entry) => entry.objectiveId === row.objectiveId)!; return <p className="mt-1 text-xs text-violet-200">{t("comparison", { baseline: item.baselineAccuracy ?? 0, retest: item.retestAccuracy ?? 0, change: item.accuracyChange ?? 0, outcome: t(`outcome.${item.outcome}`) })}</p>; })()}
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
           {resourcesForAwsClfObjective(row.objectiveId).map((resource) => <Link key={resource.href} href={resource.href} className="inline-flex min-h-10 items-center rounded-full border border-slate-600 px-3 text-teal-200 underline underline-offset-4 hover:border-teal-300">{t(`resource.${resource.type}`)}</Link>)}
         </div>

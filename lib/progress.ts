@@ -52,12 +52,28 @@ export type MockAttempt = {
   at: number;
 };
 
+export type ClfAssessmentSnapshot = {
+  id: string;
+  kind: "baseline" | "retest";
+  at: number;
+  bankVersion: string;
+  objectives: Record<string, {
+    accuracy: number | null;
+    distinctQuestions: number;
+    evidence: "none" | "limited" | "provisional";
+    state: "not-assessed" | "insufficient" | "weak" | "developing" | "strong";
+    questionEvidence: { questionId: string; correct: boolean; at: number }[];
+  }>;
+};
+
 export type Progress = {
   studyFocus: StudyFocus;
   knownCards: Record<string, boolean>;
   unknownCards: Record<string, boolean>;
   quizAttempts: QuizAttempt[];
   mockAttempts: MockAttempt[];
+  /** Bounded CLF baseline/retest snapshots; optional for backward compatibility. */
+  clfAssessmentSnapshots?: ClfAssessmentSnapshot[];
   /** FSRS schedule per flashcard id (see lib/study/schedule.ts). */
   schedules: Record<string, StoredSchedule>;
 };
@@ -165,6 +181,11 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
+function isClfSnapshot(value: unknown): value is ClfAssessmentSnapshot {
+  if (!isRecord(value) || typeof value.id !== "string" || (value.kind !== "baseline" && value.kind !== "retest") || !Number.isFinite(value.at) || typeof value.bankVersion !== "string" || !isRecord(value.objectives)) return false;
+  return Object.values(value.objectives).every((objective) => isRecord(objective) && (objective.accuracy === null || Number.isFinite(objective.accuracy)) && Number.isInteger(objective.distinctQuestions) && typeof objective.evidence === "string" && typeof objective.state === "string" && Array.isArray(objective.questionEvidence) && objective.questionEvidence.every((item) => isRecord(item) && typeof item.questionId === "string" && typeof item.correct === "boolean" && Number.isFinite(item.at)));
+}
+
 /**
  * Python Class 10 pattern: try the conversion, catch the specific failure, keep what is valid,
  * and report what happened instead of failing silently. Exported for tests.
@@ -185,6 +206,8 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   const quizAttempts = parsedQuizAttempts.flatMap(({ attempt }) => attempt ? [attempt] : []);
   const rawMockAttempts = Array.isArray(parsed.mockAttempts) ? parsed.mockAttempts : [];
   const mockAttempts = rawMockAttempts.filter(isMockAttempt);
+  const rawSnapshots = Array.isArray(parsed.clfAssessmentSnapshots) ? parsed.clfAssessmentSnapshots : [];
+  const clfAssessmentSnapshots = rawSnapshots.filter(isClfSnapshot).slice(0, 20);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
   const repaired = known.repaired || unknown.repaired
     || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
@@ -192,16 +215,19 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
     || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
     || (parsed.mockAttempts !== undefined && !Array.isArray(parsed.mockAttempts))
     || mockAttempts.length !== rawMockAttempts.length
+    || (parsed.clfAssessmentSnapshots !== undefined && (!Array.isArray(parsed.clfAssessmentSnapshots) || clfAssessmentSnapshots.length !== rawSnapshots.length))
     || (parsed.schedules !== undefined && !isRecord(parsed.schedules));
-  return {
-    progress: {
+  const progress: Progress = {
       studyFocus: isStudyFocus(parsed.studyFocus) ? parsed.studyFocus : DEFAULT_STUDY_FOCUS,
       knownCards: known.value,
       unknownCards: unknown.value,
       quizAttempts,
       mockAttempts,
       schedules,
-    },
+    };
+  if (clfAssessmentSnapshots.length > 0) progress.clfAssessmentSnapshots = clfAssessmentSnapshots;
+  return {
+    progress,
     problems: repaired ? ["repaired"] : [],
   };
 }
@@ -318,6 +344,14 @@ export function recordMock(attempt: Omit<MockAttempt, "at">) {
       ...current.mockAttempts,
     ].slice(0, 30),
   };
+  saveProgress(next);
+  return next;
+}
+
+export function recordClfAssessmentSnapshot(snapshot: ClfAssessmentSnapshot) {
+  const current = loadProgress();
+  const snapshots = [snapshot, ...(current.clfAssessmentSnapshots ?? []).filter((item) => item.id !== snapshot.id)].slice(0, 20);
+  const next = { ...current, clfAssessmentSnapshots: snapshots };
   saveProgress(next);
   return next;
 }

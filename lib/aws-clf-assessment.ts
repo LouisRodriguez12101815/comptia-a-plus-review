@@ -16,6 +16,8 @@ export type ClfAssessmentRow = {
   recentAccuracy: number | null;
   evidence: ClfEvidenceLabel;
   state: ClfAssessmentState;
+  /** Latest valid result per question, retained for baseline/retest comparisons. */
+  questionEvidence: { questionId: string; correct: boolean; at: number }[];
 };
 
 type Objective = { id: string; title: string; topics?: string[] };
@@ -88,6 +90,6 @@ export function assessAwsClf(progress: Progress, pool: Pool, questions: Question
     let state: ClfAssessmentState = "not-assessed";
     if (distinct > 0 && distinct < MIN_DISTINCT) state = "insufficient";
     else if (distinct >= MIN_DISTINCT) state = accuracy !== null && accuracy >= 85 ? "strong" : accuracy !== null && accuracy < 70 ? "weak" : "developing";
-    return { objectiveId, domainId: meta.domainId, domainTitle: meta.domainTitle, title: meta.objective.title, totalAnswers: rows.length, distinctQuestions: distinct, correctAnswers, accuracy, recentAccuracy, evidence: evidenceLabel, state };
+    return { objectiveId, domainId: meta.domainId, domainTitle: meta.domainTitle, title: meta.objective.title, totalAnswers: rows.length, distinctQuestions: distinct, correctAnswers, accuracy, recentAccuracy, evidence: evidenceLabel, state, questionEvidence: distinctRows.map(({ questionId, correct, at }) => ({ questionId, correct, at })) };
   });
 }

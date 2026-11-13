@@ -1,4 +1,4 @@
-import type { MockAttempt, Progress, QuizAttempt } from "@/lib/progress";
+import type { ClfAssessmentSnapshot, MockAttempt, Progress, QuizAttempt } from "@/lib/progress";
 import type { StoredSchedule } from "@/lib/study/schedule";
 
 const reviewedAt = (s: StoredSchedule | undefined) => {
@@ -41,5 +41,6 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     schedules,
     quizAttempts: unionAttempts<QuizAttempt>(local.quizAttempts, remote.quizAttempts, (q) => `${q.at}:${q.topicId}`, 40),
     mockAttempts: unionAttempts<MockAttempt>(local.mockAttempts, remote.mockAttempts, (m) => `${m.at}:${m.exam}`, 30),
+    ...((local.clfAssessmentSnapshots?.length || remote.clfAssessmentSnapshots?.length) ? { clfAssessmentSnapshots: unionAttempts<ClfAssessmentSnapshot>(local.clfAssessmentSnapshots ?? [], remote.clfAssessmentSnapshots ?? [], (snapshot) => snapshot.id, 20) } : {}),
   };
 }
