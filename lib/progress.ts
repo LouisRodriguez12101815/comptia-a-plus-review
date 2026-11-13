@@ -55,6 +55,8 @@ export type MockAttempt = {
 export type ClfAssessmentSnapshot = {
   id: string;
   kind: "baseline" | "retest";
+  /** Retests must identify the immutable baseline they measure. */
+  baselineId?: string;
   at: number;
   bankVersion: string;
   objectives: Record<string, {
@@ -182,7 +184,7 @@ function isMockAttempt(value: unknown): value is MockAttempt {
 }
 
 function isClfSnapshot(value: unknown): value is ClfAssessmentSnapshot {
-  if (!isRecord(value) || typeof value.id !== "string" || (value.kind !== "baseline" && value.kind !== "retest") || !Number.isFinite(value.at) || typeof value.bankVersion !== "string" || !isRecord(value.objectives)) return false;
+  if (!isRecord(value) || typeof value.id !== "string" || (value.kind !== "baseline" && value.kind !== "retest") || (value.kind === "retest" && typeof value.baselineId !== "string") || (value.kind === "baseline" && value.baselineId !== undefined) || !Number.isFinite(value.at) || typeof value.bankVersion !== "string" || !isRecord(value.objectives)) return false;
   return Object.values(value.objectives).every((objective) => isRecord(objective) && (objective.accuracy === null || Number.isFinite(objective.accuracy)) && Number.isInteger(objective.distinctQuestions) && typeof objective.evidence === "string" && typeof objective.state === "string" && Array.isArray(objective.questionEvidence) && objective.questionEvidence.every((item) => isRecord(item) && typeof item.questionId === "string" && typeof item.correct === "boolean" && Number.isFinite(item.at)));
 }
 

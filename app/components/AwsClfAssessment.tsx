@@ -9,10 +9,11 @@ import { buildExamPool, assessmentVersion } from "@/lib/exam-test.mjs";
 import { assessAwsClf, type ClfAssessmentState } from "@/lib/aws-clf-assessment";
 import { resourcesForAwsClfObjective } from "@/lib/aws-clf-resources";
 import { getProgressSnapshot, getServerProgressSnapshot, recordClfAssessmentSnapshot, subscribeProgress } from "@/lib/progress";
-import { compareWithBaseline, snapshotFromAssessment } from "@/lib/aws-clf-retest";
+import { compareSnapshots, snapshotFromAssessment } from "@/lib/aws-clf-retest";
 
 const pool = buildExamPool({ objectives, questions, topics, examCode: "clf-c02" });
 const bankVersion = assessmentVersion(pool.domains.flatMap((domain) => domain.objectives.flatMap((objective) => objective.questionIds)).map((id) => questions.find((question) => question.id === id)).filter((question): question is (typeof questions)[number] => Boolean(question)));
+const snapshotTimestamp = () => Date.now();
 const stateStyle: Record<ClfAssessmentState, string> = {
   "not-assessed": "border-slate-700 text-slate-300",
   insufficient: "border-amber-400/50 text-amber-200",
@@ -27,9 +28,15 @@ export function AwsClfAssessment() {
   const rows = useMemo(() => assessAwsClf(progress, pool, questions, bankVersion), [progress]);
   const counts = rows.reduce((all, row) => ({ ...all, [row.state]: all[row.state] + 1 }), { "not-assessed": 0, insufficient: 0, weak: 0, developing: 0, strong: 0 } as Record<ClfAssessmentState, number>);
   const assessed = rows.filter((row) => row.state !== "not-assessed").length;
-  const baseline = (progress.clfAssessmentSnapshots ?? []).find((snapshot) => snapshot.kind === "baseline" && snapshot.bankVersion === bankVersion);
-  const comparison = baseline ? compareWithBaseline(baseline, rows) : [];
-  const saveSnapshot = (kind: "baseline" | "retest") => recordClfAssessmentSnapshot(snapshotFromAssessment(rows, kind, bankVersion, Date.now()));
+  const baselines = (progress.clfAssessmentSnapshots ?? []).filter((snapshot) => snapshot.kind === "baseline" && snapshot.bankVersion === bankVersion).sort((a, b) => b.at - a.at || b.id.localeCompare(a.id));
+  const baseline = baselines[0];
+  const retests = baseline ? (progress.clfAssessmentSnapshots ?? []).filter((snapshot) => snapshot.kind === "retest" && snapshot.baselineId === baseline.id && snapshot.bankVersion === bankVersion).sort((a, b) => b.at - a.at || b.id.localeCompare(a.id)) : [];
+  const retest = retests[0];
+  const comparison = baseline && retest ? compareSnapshots(baseline, retest) : [];
+  const saveSnapshot = (kind: "baseline" | "retest") => {
+    if (kind === "baseline" && baseline && !window.confirm(t("confirmNewBaseline"))) return;
+    recordClfAssessmentSnapshot(snapshotFromAssessment(rows, kind, bankVersion, snapshotTimestamp(), kind === "retest" ? baseline?.id : undefined));
+  };
 
   return <div className="space-y-6">
     <header className="space-y-2">
@@ -48,11 +55,12 @@ export function AwsClfAssessment() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div><h2 className="font-semibold text-white">{t("trackingTitle")}</h2><p className="mt-1 text-sm text-slate-300">{baseline ? t("baselineSaved", { date: new Date(baseline.at).toLocaleDateString() }) : t("baselineEmpty")}</p></div>
         <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={() => saveSnapshot("baseline")} className="inline-flex min-h-11 items-center rounded-full bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950">{t("saveBaseline")}</button>
+          <button type="button" onClick={() => saveSnapshot("baseline")} className="inline-flex min-h-11 items-center rounded-full bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950">{baseline ? t("startNewBaseline") : t("saveBaseline")}</button>
           {baseline && <button type="button" onClick={() => saveSnapshot("retest")} className="inline-flex min-h-11 items-center rounded-full border border-cyan-200/50 px-4 py-2 text-sm text-cyan-100">{t("saveRetest")}</button>}
         </div>
       </div>
       {baseline && <p className="mt-3 text-xs text-slate-400">{t("trackingLimit")}</p>}
+      {baseline && !retest && <p className="mt-2 text-xs text-amber-200">{t("noRetest")}</p>}
     </section>
     {assessed === 0 && <section className="rounded-2xl border border-cyan-400/30 bg-cyan-400/[0.06] p-5">
       <p className="text-slate-200">{t("empty")}</p>
