@@ -99,7 +99,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         <h2 id="ai-heading" className="mt-2 text-2xl font-semibold tracking-tight text-white">{t("aiHeading")}</h2>
         <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-300">{t("aiBody")}</p>
         <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-300 md:grid-cols-3">
-          {(["authoring", "assessment", "evaluation"] as const).map((key) => <li key={key} className="rounded-xl border border-amber-400/20 bg-slate-950/50 p-4"><h3 className="font-semibold text-amber-100">{t(`ai${key[0].toUpperCase()}${key.slice(1)}Title`)}</h3><p className="mt-1 text-slate-400">{t(`ai${key[0].toUpperCase()}${key.slice(1)}Body`)}</p></li>)}
+          {([["aiAuthoringTitle", "aiAuthoringBody"], ["aiAssessmentTitle", "aiAssessmentBody"], ["aiEvaluationTitle", "aiEvaluationBody"]] as const).map(([titleKey, bodyKey]) => <li key={titleKey} className="rounded-xl border border-amber-400/20 bg-slate-950/50 p-4"><h3 className="font-semibold text-amber-100">{t(titleKey)}</h3><p className="mt-1 text-slate-400">{t(bodyKey)}</p></li>)}
         </ul>
       </section>
 
