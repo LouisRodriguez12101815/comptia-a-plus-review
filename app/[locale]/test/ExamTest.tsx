@@ -231,7 +231,15 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const multiPicks = finalPicks.filter((p) => Array.isArray(questionsById[p.questionId].answer));
     const multiCorrect = multiPicks.filter((p) => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).length;
     setScoredPicks(finalPicks);
-    recordQuiz({ topicId: `exam-test:${exam}`, correct: finalPicks.length - missed.length, total: finalPicks.length, missedIds: missed });
+    recordQuiz({
+      exam,
+      bankVersion: assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
+      topicId: `exam-test:${exam}`,
+      correct: finalPicks.length - missed.length,
+      total: finalPicks.length,
+      questionIds: finalPicks.map((pick) => pick.questionId).filter(id => visited.current.has(id)),
+      missedIds: missed,
+    });
     const next = recordMock({
       exam,
       full: finalPicks.length === EXAM_FORMATS[exam].maxQuestions,

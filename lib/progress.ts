@@ -4,6 +4,10 @@ import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from 
 
 export type QuizAttempt = {
   topicId: string;
+  /** Exam provenance for newly recorded focused quizzes; absent on legacy records. */
+  exam?: string;
+  /** Content fingerprint for the exam bank used by this quiz. */
+  bankVersion?: string;
   correct: number;
   total: number;
   /** Question IDs shown in this quiz. Older saved attempts may not have this field. */
@@ -94,6 +98,8 @@ function flags(value: unknown): { value: Record<string, boolean>; repaired: bool
 function isAttemptBase(value: unknown): value is QuizAttempt {
   return isRecord(value) && typeof value.topicId === "string" && Number.isFinite(value.correct) && Number.isFinite(value.total)
     && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at)
+    && (value.exam === undefined || typeof value.exam === "string")
+    && (value.bankVersion === undefined || typeof value.bankVersion === "string")
     && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")));
 }
 

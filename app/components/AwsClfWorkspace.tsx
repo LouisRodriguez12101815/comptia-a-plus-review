@@ -33,6 +33,7 @@ export async function AwsClfWorkspace() {
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">{t("intro")}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/test?exam=clf-c02&practice=mixed20" className="inline-flex min-h-11 items-center rounded-full bg-cyan-300 px-5 py-2 font-semibold text-slate-950 hover:bg-cyan-200">{t("mixedPractice")}</Link>
+            <Link href="/aws-clf/assessment" className="inline-flex min-h-11 items-center rounded-full border border-cyan-200/50 px-5 py-2 text-sm font-semibold text-cyan-100 hover:border-cyan-200">{t("assessment")}</Link>
             <Link href="/aws-clf/visuals" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-5 py-2 text-sm text-slate-100 hover:border-cyan-300">{t("visuals")}</Link>
           </div>
         </div>
