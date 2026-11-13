@@ -9,13 +9,13 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuestions } from "@/lib/content";
 import { conceptVideos } from "@/lib/concept-videos";
-import { freshFirstIds, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
+import { assessmentVersion, freshFirstIds, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
 import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
 import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback";
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
-import { examForStudyQuestion, examForStudyQuestions, isN10Question, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
+import { examForStudyQuestion, examForStudyQuestions, isN10Question, isQuestionForExam, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
 import { wrongChoicesForQuiz } from "@/lib/quiz-answer-history";
 import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
@@ -145,7 +145,11 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     const missed = quiz
       .filter((question) => !isCorrectPick(question, answers[question.id]))
       .map((question) => question.id);
-    recordQuiz({ topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed, wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current) });
+    const exam = examForStudyQuestions(quiz, focus !== "all" ? focus : undefined);
+    const bankVersion = exam
+      ? assessmentVersion(allQuestions.filter((question) => isQuestionForExam(question, exam)))
+      : undefined;
+    recordQuiz({ exam, bankVersion, topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed, wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current) });
     if (!telemetryCompleted.current) {
       telemetryCompleted.current = true;
       const exam = examForStudyQuestions(quiz, focus !== "all" ? focus : undefined);

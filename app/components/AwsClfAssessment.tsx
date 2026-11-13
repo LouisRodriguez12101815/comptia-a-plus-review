@@ -32,6 +32,7 @@ export function AwsClfAssessment() {
       <p className="text-sm uppercase tracking-wide text-cyan-300">{t("eyebrow")}</p>
       <h1 className="text-3xl font-semibold text-white sm:text-4xl">{t("title")}</h1>
       <p className="max-w-3xl text-slate-300">{t("intro")}</p>
+      <p className="max-w-3xl text-xs text-slate-400">{t("heuristic")}</p>
     </header>
     <section className="grid gap-3 sm:grid-cols-4" aria-label={t("summaryLabel")}>
       <Summary label={t("assessed")} value={`${assessed}/${rows.length}`} />
@@ -50,6 +51,7 @@ export function AwsClfAssessment() {
           <span className={`rounded-full border px-3 py-1 text-sm ${stateStyle[row.state]}`}>{t(`state.${row.state}`)}</span>
         </div>
         <p className="mt-3 text-sm text-slate-300">{row.distinctQuestions === 0 ? t("noEvidence") : t("evidence", { distinct: row.distinctQuestions, answers: row.totalAnswers, accuracy: row.accuracy ?? 0 })}</p>
+        {row.evidence !== "none" && <p className="mt-1 text-xs text-amber-200">{t(`evidenceClass.${row.evidence}`)}</p>}
         {row.state === "insufficient" && <p className="mt-1 text-xs text-amber-200">{t("limitedEvidence")}</p>}
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
           {resourcesForAwsClfObjective(row.objectiveId).map((resource) => <Link key={resource.href} href={resource.href} className="inline-flex min-h-10 items-center rounded-full border border-slate-600 px-3 text-teal-200 underline underline-offset-4 hover:border-teal-300">{t(`resource.${resource.type}`)}</Link>)}

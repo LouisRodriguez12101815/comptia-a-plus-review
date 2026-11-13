@@ -25,8 +25,8 @@ type Pool = { domains: { id: string; title: string; objectives: { id: string; qu
 const CLF = "clf-c02";
 const MIN_DISTINCT = 3;
 
-function objectiveForQuestion(question: Question, pool: Pool, id: string): string | undefined {
-  if (question.examCodes && !question.examCodes.includes(CLF)) return undefined;
+function objectiveForQuestion(question: Question, pool: Pool, id: string, allowShared = false): string | undefined {
+  if (question.examCodes && (!question.examCodes.includes(CLF) || (!allowShared && question.examCodes.includes("saa-c03")))) return undefined;
   const explicit = question.objectiveIds?.[CLF];
   if (explicit?.length === 1) return explicit[0];
   const matches = pool.domains.flatMap((domain) => domain.objectives)
@@ -34,7 +34,7 @@ function objectiveForQuestion(question: Question, pool: Pool, id: string): strin
   return new Set(matches).size === 1 ? matches[0] : undefined;
 }
 
-function addAnswers(target: Map<string, { at: number; questionId: string; correct: boolean }[]>, attempt: QuizAttempt | MockAttempt, questionsById: Map<string, Question>, pool: Pool, exam?: string) {
+function addAnswers(target: Map<string, { at: number; sequence: number; questionId: string; correct: boolean }[]>, attempt: QuizAttempt | MockAttempt, questionsById: Map<string, Question>, pool: Pool, exam: string | undefined, sequence: { value: number }) {
   if (exam !== undefined && exam !== CLF) return;
   const ids = attempt.questionIds ?? [];
   const missed = new Set(attempt.missedIds);
@@ -43,12 +43,12 @@ function addAnswers(target: Map<string, { at: number; questionId: string; correc
     const question = questionsById.get(questionId);
     if (!question) continue;
     const objectiveId = "objectiveByQuestion" in attempt
-      ? attempt.objectiveByQuestion?.[questionId] ?? objectiveForQuestion(question, pool, questionId)
-      : objectiveForQuestion(question, pool, questionId);
+      ? attempt.objectiveByQuestion?.[questionId] ?? objectiveForQuestion(question, pool, questionId, exam === CLF)
+      : objectiveForQuestion(question, pool, questionId, exam === CLF);
     if (!objectiveId) continue;
     const correct = correctIds ? correctIds.has(questionId) : !missed.has(questionId);
     const rows = target.get(objectiveId) ?? [];
-    rows.push({ at: attempt.at, questionId, correct });
+    rows.push({ at: attempt.at, sequence: sequence.value++, questionId, correct });
     target.set(objectiveId, rows);
   }
 }
@@ -61,19 +61,28 @@ export function assessAwsClf(progress: Progress, pool: Pool, questions: Question
     exam.set(objective.id, { domainId: domain.id, domainTitle: domain.title, objective });
   }
   const questionsById = new Map(questions.map((question) => [question.id, question]));
-  const evidence = new Map<string, { at: number; questionId: string; correct: boolean }[]>();
-  for (const attempt of progress.quizAttempts) addAnswers(evidence, attempt, questionsById, pool, attempt.topicId.startsWith("exam-test:") ? attempt.topicId.slice(10) : undefined);
+  const evidence = new Map<string, { at: number; sequence: number; questionId: string; correct: boolean }[]>();
+  const sequence = { value: 0 };
+  for (const attempt of progress.quizAttempts) {
+    // Legacy quiz records have no reliable exam or content provenance. Keep them in
+    // history, but do not let them manufacture current CLF objective evidence.
+    if (attempt.exam !== CLF || !attempt.bankVersion || attempt.bankVersion !== currentBankVersion) continue;
+    addAnswers(evidence, attempt, questionsById, pool, attempt.exam, sequence);
+  }
   for (const attempt of progress.mockAttempts) {
     if (attempt.exam !== CLF) continue;
     if (currentBankVersion && attempt.bankVersion && attempt.bankVersion !== currentBankVersion) continue;
-    addAnswers(evidence, attempt, questionsById, pool, attempt.exam);
+    addAnswers(evidence, attempt, questionsById, pool, attempt.exam, sequence);
   }
   return [...exam.entries()].map(([objectiveId, meta]) => {
-    const rows = (evidence.get(objectiveId) ?? []).sort((a, b) => a.at - b.at);
-    const distinct = new Set(rows.map((row) => row.questionId)).size;
-    const correctAnswers = rows.filter((row) => row.correct).length;
-    const accuracy = rows.length ? Math.round((100 * correctAnswers) / rows.length) : null;
-    const recent = rows.slice(-Math.min(5, rows.length));
+    const rows = (evidence.get(objectiveId) ?? []).sort((a, b) => a.at - b.at || a.sequence - b.sequence);
+    const latestByQuestion = new Map<string, (typeof rows)[number]>();
+    for (const row of rows) latestByQuestion.set(row.questionId, row);
+    const distinctRows = [...latestByQuestion.values()].sort((a, b) => a.at - b.at || a.sequence - b.sequence);
+    const distinct = distinctRows.length;
+    const correctAnswers = distinctRows.filter((row) => row.correct).length;
+    const accuracy = distinctRows.length ? Math.round((100 * correctAnswers) / distinctRows.length) : null;
+    const recent = distinctRows.slice(-Math.min(5, distinctRows.length));
     const recentAccuracy = recent.length ? Math.round((100 * recent.filter((row) => row.correct).length) / recent.length) : null;
     const evidenceLabel: ClfEvidenceLabel = distinct === 0 ? "none" : distinct < MIN_DISTINCT ? "limited" : "provisional";
     let state: ClfAssessmentState = "not-assessed";
