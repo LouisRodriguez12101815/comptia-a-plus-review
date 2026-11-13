@@ -23,8 +23,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <p className={styles.intro}>{t("intro")}</p>
           <div className={styles.actions}>
             <a href="#tracks-heading">{t("tracksHeading")}</a>
-            <Link href="/performance">{t("motionPerformance")}</Link>
-            <Link href="/weak-areas">{t("weakAreasLink")}</Link>
+            <Link href="/methodology">{t("methodologyLink")}</Link>
           </div>
         </div>
         <div className={styles.heroSignal} aria-label={t("heroSignalLabel")}>
@@ -89,6 +88,15 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </ul>
       </section>
 
+      <section aria-labelledby="methodology-bridge-heading" className={styles.methodologyBridge}>
+        <div>
+          <p className={styles.sectionEyebrow}>{t("methodologyBridgeEyebrow")}</p>
+          <h2 id="methodology-bridge-heading" className="text-xl font-semibold text-white">{t("methodologyBridgeHeading")}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">{t("methodologyBridgeText")}</p>
+        </div>
+        <Link href="/methodology" className={styles.secondaryAction}>{t("methodologyBridgeCta")}</Link>
+      </section>
+
       <section aria-labelledby="workflow-heading" className={styles.workflow}>
         <div className={styles.sectionHeading}>
           <div>
@@ -102,7 +110,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             ["01", t("workflowLearn"), t("workflowLearnText"), "/notes"],
             ["02", t("workflowPractice"), t("workflowPracticeText"), "/quiz"],
             ["03", t("workflowAssess"), t("workflowAssessText"), "/test"],
-            ["04", t("workflowRetest"), t("workflowRetestText"), "/weak-areas"],
+            ["04", t("workflowRemediate"), t("workflowRemediateText"), "/weak-areas"],
+            ["05", t("workflowRetest"), t("workflowRetestText"), "/aws-clf/assessment"],
           ].map(([step, label, detail, href]) => (
             <li key={step}>
               <Link href={href} className={styles.workflowCard}>

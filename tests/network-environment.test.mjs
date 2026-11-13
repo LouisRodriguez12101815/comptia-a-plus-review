@@ -37,3 +37,18 @@ test("homepage exposes the certification catalog, study loop, and reduced-motion
   }
   assert.match(styles, /prefers-reduced-motion/);
 });
+
+test("methodology narrative and learner loop stay localized", async () => {
+  const page = await readFile(new URL("../app/[locale]/methodology/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /philosophyHeading/);
+  assert.match(page, /intakePipeline/);
+  assert.match(page, /aiHeading/);
+  for (const locale of ["en", "es", "fr", "pt"]) {
+    const messages = JSON.parse(await readFile(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"));
+    assert.equal(messages.homePage.methodologyBridgeCta.length > 0, true, `${locale} homepage bridge`);
+    assert.equal(messages.methodologyPage.learnerLoop, messages.homePage.motionLoop, `${locale} learner loop`);
+    for (const key of ["philosophyHeading", "intakeHeading", "aiHeading", "aiEvaluationBody"]) {
+      assert.equal(typeof messages.methodologyPage[key], "string", `${locale}.${key}`);
+    }
+  }
+});

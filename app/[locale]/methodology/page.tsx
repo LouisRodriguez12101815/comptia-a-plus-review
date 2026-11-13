@@ -29,6 +29,13 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         </div>
       </header>
 
+      <section aria-labelledby="philosophy-heading" className="rounded-2xl border border-teal-400/25 bg-teal-400/5 p-5 sm:p-6">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-teal-300">{t("philosophyLabel")}</p>
+        <h2 id="philosophy-heading" className="mt-2 text-2xl font-semibold tracking-tight text-white">{t("philosophyHeading")}</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-300">{t("philosophyBody")}</p>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-400">{t("philosophyBoundary")}</p>
+      </section>
+
       <section aria-labelledby="loops-heading" className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-teal-400/30 bg-teal-400/5 p-5">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-teal-300">{t("learnerLoopLabel")}</p>
@@ -43,6 +50,14 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
       </section>
 
       <MethodologyWorkflow />
+
+      <section aria-labelledby="intake-heading" className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-indigo-300">{t("intakeLabel")}</p>
+        <h2 id="intake-heading" className="mt-2 text-2xl font-semibold tracking-tight text-white">{t("intakeHeading")}</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-300">{t("intakeBody")}</p>
+        <p className="mt-4 rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-sm leading-6 text-indigo-200">{t("intakePipeline")}</p>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-400">{t("intakeBoundary")}</p>
+      </section>
 
       <section aria-labelledby="areas-heading" className="space-y-4">
         <h2 id="areas-heading" className="text-2xl font-semibold tracking-tight text-white">{t("areasHeading")}</h2>
@@ -77,6 +92,15 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
           ))}
         </ol>
         <p className="mt-5 text-sm text-slate-400">{t("forkTelemetry")}</p>
+      </section>
+
+      <section aria-labelledby="ai-heading" className="rounded-2xl border border-amber-400/25 bg-amber-400/5 p-5 sm:p-6">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-amber-300">{t("aiLabel")}</p>
+        <h2 id="ai-heading" className="mt-2 text-2xl font-semibold tracking-tight text-white">{t("aiHeading")}</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-300">{t("aiBody")}</p>
+        <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-300 md:grid-cols-3">
+          {(["authoring", "assessment", "evaluation"] as const).map((key) => <li key={key} className="rounded-xl border border-amber-400/20 bg-slate-950/50 p-4"><h3 className="font-semibold text-amber-100">{t(`ai${key[0].toUpperCase()}${key.slice(1)}Title`)}</h3><p className="mt-1 text-slate-400">{t(`ai${key[0].toUpperCase()}${key.slice(1)}Body`)}</p></li>)}
+        </ul>
       </section>
 
       <aside className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm text-slate-300">
