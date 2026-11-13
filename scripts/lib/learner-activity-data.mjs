@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { decodeProgress } from '../export-primary-history.mjs';
+import { decodeProgress } from '../../lib/learner/decode-progress.mjs';
 import { parsePersistedStudyEvent } from '../../lib/learner/telemetry.ts';
 import { objectiveTopicMap, questionObjectiveIds } from '../../lib/question-objectives.mjs';
 

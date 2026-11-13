@@ -1,4 +1,4 @@
-import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "@/lib/exams";
+import { createEmptyProgress as createEmptyProgressValue, parseProgress as parseProgressValue } from "./progress-parser.mjs";
 import type { StudyFocus } from "@/lib/types";
 import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from "@/lib/study/schedule";
 
@@ -61,16 +61,7 @@ export type Progress = {
 const KEY = "comptia-a-plus-review-progress-v1";
 const listeners = new Set<() => void>();
 
-function createEmptyProgress(): Progress {
-  return {
-    studyFocus: DEFAULT_STUDY_FOCUS,
-    knownCards: {},
-    unknownCards: {},
-    quizAttempts: [],
-    mockAttempts: [],
-    schedules: {},
-  };
-}
+function createEmptyProgress(): Progress { return createEmptyProgressValue() as Progress; }
 
 /** Why the saved progress could not be used as-is. Shown once on the dashboard. */
 export type ProgressProblem = "storageUnavailable" | "unreadable" | "repaired";
@@ -80,52 +71,6 @@ const serverProgress = createEmptyProgress();
 let cachedRaw: string | null | undefined;
 let cachedProgress = createEmptyProgress();
 let problems: ProgressProblem[] = [];
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  !!value && typeof value === "object" && !Array.isArray(value);
-
-function flags(value: unknown): { value: Record<string, boolean>; repaired: boolean } {
-  if (value === undefined) return { value: {}, repaired: false };
-  if (!isRecord(value)) return { value: {}, repaired: true };
-  const entries = Object.entries(value).filter((entry): entry is [string, true] => entry[1] === true);
-  return { value: Object.fromEntries(entries), repaired: entries.length !== Object.keys(value).length };
-}
-
-function isAttemptBase(value: unknown): value is QuizAttempt {
-  return isRecord(value) && typeof value.topicId === "string" && Number.isFinite(value.correct) && Number.isFinite(value.total)
-    && (value.total as number) > 0 && Array.isArray(value.missedIds) && Number.isFinite(value.at)
-    && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")));
-}
-
-function validChoiceIndex(value: unknown): value is number {
-  return Number.isInteger(value) && (value as number) >= 0;
-}
-
-function repairedChoiceMap(value: unknown, allowSets: boolean): { value?: Record<string, number | number[]>; repaired: boolean } {
-  if (value === undefined) return { repaired: false };
-  if (!isRecord(value)) return { repaired: true };
-  const kept: Record<string, number | number[]> = {};
-  let repaired = false;
-  for (const [id, choice] of Object.entries(value)) {
-    if (validChoiceIndex(choice)) kept[id] = choice;
-    else if (allowSets && Array.isArray(choice) && choice.length > 0 && choice.every(validChoiceIndex)) kept[id] = [...choice];
-    else repaired = true;
-  }
-  return { value: Object.keys(kept).length ? kept : undefined, repaired };
-}
-
-function parseQuizAttempt(value: unknown): { attempt: QuizAttempt | null; repaired: boolean } {
-  if (!isAttemptBase(value)) return { attempt: null, repaired: false };
-  const input = value as QuizAttempt;
-  const wrong = repairedChoiceMap(input.wrongChoices, false);
-  const selected = repairedChoiceMap(input.selectedChoices, true);
-  const attempt: QuizAttempt = { ...input };
-  if (wrong.value) attempt.wrongChoices = wrong.value as Record<string, number>;
-  else delete attempt.wrongChoices;
-  if (selected.value) attempt.selectedChoices = selected.value;
-  else delete attempt.selectedChoices;
-  return { attempt, repaired: wrong.repaired || selected.repaired };
-}
 
 /**
  * Question IDs from saved quizzes and timed tests, oldest sitting first, so a new
@@ -140,64 +85,8 @@ export function questionHistory(progress: Progress): string[] {
     .flatMap((entry) => entry.ids);
 }
 
-function isMockDomain(value: unknown): value is MockDomainResult {
-  return isRecord(value) && typeof value.id === "string" && typeof value.title === "string"
-    && Number.isFinite(value.correct) && Number.isFinite(value.total) && (value.total as number) > 0;
-}
-
-function isMockAttempt(value: unknown): value is MockAttempt {
-  return isRecord(value) && typeof value.exam === "string" && typeof value.full === "boolean"
-    && Number.isFinite(value.correct) && Number.isFinite(value.total) && Number.isFinite(value.percent)
-    && Array.isArray(value.domains) && value.domains.every(isMockDomain)
-    && Number.isFinite(value.multiCorrect) && Number.isFinite(value.multiTotal)
-    && (value.bankVersion === undefined || typeof value.bankVersion === "string")
-    && [value.correctIds, value.multiQuestionIds].every(ids => ids === undefined || (Array.isArray(ids) && ids.every(id => typeof id === "string")))
-    && (value.questionIds === undefined || (Array.isArray(value.questionIds) && value.questionIds.every((id) => typeof id === "string")))
-    && (value.objectiveByQuestion === undefined || (isRecord(value.objectiveByQuestion) && Object.values(value.objectiveByQuestion).every((id) => typeof id === "string")))
-    && [value.sureIds, value.guessedIds].every((ids) => ids === undefined || (Array.isArray(ids) && ids.every((id) => typeof id === "string")))
-    && (value.wrongChoices === undefined || (isRecord(value.wrongChoices) && Object.values(value.wrongChoices).every((n) => Number.isInteger(n) && (n as number) >= 0)))
-    && Array.isArray(value.missedIds) && Number.isFinite(value.at);
-}
-
-/**
- * Python Class 10 pattern: try the conversion, catch the specific failure, keep what is valid,
- * and report what happened instead of failing silently. Exported for tests.
- */
 export function parseProgress(raw: string | null): { progress: Progress; problems: ProgressProblem[] } {
-  if (!raw) return { progress: createEmptyProgress(), problems: [] };
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (error) {
-    if (!(error instanceof SyntaxError)) throw error;
-    return { progress: createEmptyProgress(), problems: ["unreadable"] };
-  }
-  if (!isRecord(parsed)) return { progress: createEmptyProgress(), problems: ["unreadable"] };
-  const known = flags(parsed.knownCards), unknown = flags(parsed.unknownCards);
-  const attempts = Array.isArray(parsed.quizAttempts) ? parsed.quizAttempts : [];
-  const parsedQuizAttempts = attempts.map(parseQuizAttempt);
-  const quizAttempts = parsedQuizAttempts.flatMap(({ attempt }) => attempt ? [attempt] : []);
-  const rawMockAttempts = Array.isArray(parsed.mockAttempts) ? parsed.mockAttempts : [];
-  const mockAttempts = rawMockAttempts.filter(isMockAttempt);
-  const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
-  const repaired = known.repaired || unknown.repaired
-    || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
-    || quizAttempts.length !== attempts.length
-    || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
-    || (parsed.mockAttempts !== undefined && !Array.isArray(parsed.mockAttempts))
-    || mockAttempts.length !== rawMockAttempts.length
-    || (parsed.schedules !== undefined && !isRecord(parsed.schedules));
-  return {
-    progress: {
-      studyFocus: isStudyFocus(parsed.studyFocus) ? parsed.studyFocus : DEFAULT_STUDY_FOCUS,
-      knownCards: known.value,
-      unknownCards: unknown.value,
-      quizAttempts,
-      mockAttempts,
-      schedules,
-    },
-    problems: repaired ? ["repaired"] : [],
-  };
+  return parseProgressValue(raw) as { progress: Progress; problems: ProgressProblem[] };
 }
 
 function readStored(): { raw: string | null; unavailable: boolean } {
