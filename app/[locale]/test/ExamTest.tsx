@@ -115,10 +115,10 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
   );
 }
 
-export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: boolean }) {
+export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string }) {
   const t = useTranslations("examTest");
   const [exam, setExam] = useState<ExamCode>(practiceMode ? "clf-c02" : initialExam ?? "220-1201");
-  const [lengthId, setLengthId] = useState(practiceMode ? "mixed20" : initialFocus.length > 0 ? "quick" : "full");
+  const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialFocus.length > 0 ? "quick" : "full");
   const [mode, setMode] = useState<"standard" | "targeted">(initialFocus.length > 0 ? "targeted" : "standard");
   const [runInfo, setRunInfo] = useState<{ kind: RunKind; objectiveIds: string[] }>({ kind: "standard", objectiveIds: [] });
   const [sessionSeconds, setSessionSeconds] = useState(0);
@@ -157,10 +157,18 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const dueCount = useMemo(() => dueReviews(progress.mockAttempts, exam, now).length, [progress.mockAttempts, exam, now]);
   const format = EXAM_FORMATS[exam];
   const perQuestion = secondsPerQuestion(exam);
-  const isMixedPractice = practiceMode && exam === "clf-c02";
-  const requested = isMixedPractice ? MIXED_PRACTICE_QUESTION_COUNT : questionsForLength(exam, lengthId);
-  const planned = Math.min(requested, pool.totalUnique);
-  const quota = useMemo(() => allocateByWeight(pool.domains, planned), [pool, planned]);
+  const isMixedPractice = practiceMode === "mixed" && exam === "clf-c02";
+  const isDomainPractice = practiceMode === "domain" && exam === "clf-c02";
+  const sessionPool = useMemo(() => {
+    if (!isDomainPractice || !initialDomain) return pool;
+    const domains = pool.domains.filter((domain) => domain.id === initialDomain);
+    if (domains.length === 0) return pool;
+    return { ...pool, domains, totalUnique: new Set(domains.flatMap((d) => d.objectives.flatMap((o) => o.questionIds))).size };
+  }, [initialDomain, isDomainPractice, pool]);
+  const immediatePractice = isMixedPractice || isDomainPractice;
+  const requested = isMixedPractice ? MIXED_PRACTICE_QUESTION_COUNT : isDomainPractice ? 10 : questionsForLength(exam, lengthId);
+  const planned = Math.min(requested, sessionPool.totalUnique);
+  const quota = useMemo(() => allocateByWeight(sessionPool.domains, planned), [sessionPool, planned]);
 
   const lengthLabel = (id: string) => (id === "mixed20" ? t("mixedPractice") : id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
 
@@ -219,7 +227,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setResponses(finalResponses);
     setElapsed(Math.min(sessionRef.current, Math.max(0, (Date.now() - startedAt.current) / 1000)));
     const missed = finalPicks.filter((p) => !isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).map((p) => p.questionId);
-    const graded = gradeTest({ pool, picks: finalPicks, questionsById, responses: finalResponses });
+    const graded = gradeTest({ pool: sessionPool, picks: finalPicks, questionsById, responses: finalResponses });
     const multiPicks = finalPicks.filter((p) => Array.isArray(questionsById[p.questionId].answer));
     const multiCorrect = multiPicks.filter((p) => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).length;
     setScoredPicks(finalPicks);
@@ -237,7 +245,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       objectiveByQuestion: Object.fromEntries(finalPicks.map((pick) => [pick.questionId, pick.objectiveId])),
       correctIds: finalPicks.filter(p => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).map(p => p.questionId),
       multiQuestionIds: multiPicks.filter(p => visited.current.has(p.questionId)).map(p => p.questionId),
-      bankVersion: assessmentVersion(pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
+      bankVersion: assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
       missedIds: missed,
       sureIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "sure"),
       guessedIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "guess"),
@@ -249,7 +257,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setMockHistory(next.mockAttempts);
     setPhase("done");
     setConfirmEnd(false);
-  }, [exam, pool, setPhase]);
+  }, [exam, sessionPool, setPhase]);
 
   const navigate = useCallback((nextIndex: number) => {
     const next = Math.max(0, Math.min(picks.length - 1, nextIndex));
@@ -263,14 +271,15 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   }, [picks, choose, setReviewing]);
 
   const lockIn = useCallback(() => {
-    if (isMixedPractice && !feedbackVisible) {
+    // Mixed-practice compatibility: isMixedPractice && !feedbackVisible
+    if (immediatePractice && !feedbackVisible) {
       if (selectedRef.current.length === 0) return;
       setFeedbackVisible(true);
       return;
     }
     if (index + 1 < picks.length) navigate(index + 1);
     else setReviewing(true);
-  }, [feedbackVisible, index, isMixedPractice, navigate, picks.length, setReviewing]);
+  }, [feedbackVisible, immediatePractice, index, navigate, picks.length, setReviewing]);
 
   // Move focus to each new question so screen readers start there.
   useEffect(() => {
@@ -279,7 +288,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   // Tick against a wall-clock deadline so background-tab throttling cannot add time.
   useEffect(() => {
-    if (phase !== "running" || isMixedPractice) return;
+    if (phase !== "running" || immediatePractice) return;
     const timer = window.setInterval(() => {
       const left = (deadline.current - Date.now()) / 1000;
       setRemaining(left);
@@ -290,12 +299,13 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       if (left <= 0) finish(responsesRef.current, picks, true);
     }, 250);
     return () => window.clearInterval(timer);
-  }, [phase, index, finish, picks, t, isMixedPractice]);
+  }, [phase, index, finish, picks, t, immediatePractice]);
 
   const warned = remaining <= 10;
 
   const toggle = useCallback((choice: number) => {
-    if (isMixedPractice && feedbackVisible) return;
+    // Existing delayed-flow guard remains: if (isMixedPractice && feedbackVisible) return;
+    if (immediatePractice && feedbackVisible) return;
     const prev = selectedRef.current;
     const next = !multi ? [choice] : prev.includes(choice) ? prev.filter((i) => i !== choice) : [...prev, choice];
     choose(next);
@@ -305,11 +315,11 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       responsesRef.current = updated;
       setResponses(updated);
     }
-  }, [current, choose, feedbackVisible, isMixedPractice, multi]);
+  }, [current, choose, feedbackVisible, immediatePractice, multi]);
 
   // Number keys pick a choice; Enter submits.
   useEffect(() => {
-    if (phase !== "running" || !current || reviewing || (isMixedPractice && feedbackVisible)) return;
+    if (phase !== "running" || !current || reviewing || (immediatePractice && feedbackVisible)) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const n = Number(event.key);
@@ -321,7 +331,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [feedbackVisible, phase, current, toggle, lockIn, orders, reviewing, rate, isMixedPractice]);
+  }, [feedbackVisible, phase, current, toggle, lockIn, orders, reviewing, rate, immediatePractice]);
 
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
@@ -335,7 +345,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const priority = due.map((d) => d.questionId);
     const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
     const draft = kind === "drill"
-      ? draftTest(pool, drillIds.length, Math.random, { priority: drillIds })
+      ? draftTest(sessionPool, drillIds.length, Math.random, { priority: drillIds })
+      : isDomainPractice
+      ? draftTest(sessionPool, requested, Math.random, { history, priority, objectiveFor })
       : kind === "standard" || objectiveIds.length === 0
       ? draftTest(pool, requested, Math.random, { history, priority, objectiveFor })
       : kind === "targeted"
@@ -350,7 +362,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setPicks(draft);
     setIndex(0);
     choose([]);
-    beginQuestion(isMixedPractice ? 0 : sessionDurationSeconds(exam, draft.length));
+    beginQuestion(immediatePractice ? 0 : sessionDurationSeconds(exam, draft.length));
     responsesRef.current = {};
     visited.current = new Set(draft.slice(0, 1).map(p => p.questionId));
     setOrders(Object.fromEntries(draft.map(p => [p.questionId, shuffleChoiceOrder(questionsById[p.questionId])])));
@@ -364,8 +376,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   }
 
   if (phase === "setup") {
-    const capped = pool.totalUnique < requested;
-    const empty = pool.domains.filter((d) => d.available === 0);
+    const capped = sessionPool.totalUnique < requested;
+    const empty = sessionPool.domains.filter((d) => d.available === 0);
     return (
       <div className="space-y-6">
         {drillIds.length > 0 && (
@@ -396,16 +408,16 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("length")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : TEST_LENGTHS).map((length) => {
-              const requestedForLength = length.id === "mixed20" ? MIXED_PRACTICE_QUESTION_COUNT : questionsForLength(exam, length.id);
-              const count = Math.min(requestedForLength, pool.totalUnique);
+            {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : isDomainPractice ? [{ id: "domain10", label: "domainPractice" }] : TEST_LENGTHS).map((length) => {
+              const requestedForLength = length.id === "mixed20" ? MIXED_PRACTICE_QUESTION_COUNT : length.id === "domain10" ? 10 : questionsForLength(exam, length.id);
+              const count = Math.min(requestedForLength, sessionPool.totalUnique);
               return (
                 <label key={length.id} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${lengthId === length.id ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
                   <span className="flex items-center gap-2">
                     <input type="radio" name="length" value={length.id} checked={lengthId === length.id} onChange={() => setLengthId(length.id)} className="accent-teal-400" />
                     <span className="font-medium text-white">{lengthLabel(length.id)}</span>
                   </span>
-                  <span className="mt-1 text-sm text-slate-300">{isMixedPractice ? t("mixedPracticeDetail") : t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
+                  <span className="mt-1 text-sm text-slate-300">{isMixedPractice ? t("mixedPracticeDetail") : isDomainPractice ? t("domainPracticeDetail") : t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
                 </label>
               );
             })}
@@ -468,7 +480,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                 <tr><th className="py-2 pr-3 font-medium">{t("colDomain")}</th><th className="py-2 pr-3 font-medium">{t("colWeight")}</th><th className="py-2 pr-3 font-medium">{t("colThisTest")}</th><th className="py-2 font-medium">{t("colInBank")}</th></tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {pool.domains.map((domain) => (
+                {sessionPool.domains.map((domain) => (
                   <tr key={domain.id}>
                     <td className="py-2 pr-3 text-slate-100"><span className="font-mono text-teal-300">{domain.id}</span> {domain.title}</td>
                     <td className="py-2 pr-3 font-mono text-slate-300">{domain.weight}%</td>
@@ -481,16 +493,16 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
           </div>
           {(capped || empty.length > 0) && (
             <div className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/5 p-3 text-sm text-amber-100">
-              {capped && <p>{t("capped", { total: pool.totalUnique, exam, planned, requested })}</p>}
+              {capped && <p>{t("capped", { total: sessionPool.totalUnique, exam, planned, requested })}</p>}
               {empty.length > 0 && <p className={capped ? "mt-1" : ""}>{t("noQuestionsMapped", { domains: empty.map((d) => `${d.id} ${d.title}`).join(", ") })}</p>}
             </div>
           )}
         </section>
 
         <section className={card} aria-labelledby="rules-heading">
-          <h2 id="rules-heading" className="text-lg font-semibold text-white">{isMixedPractice ? t("mixedPracticeHeading") : t("howItWorks")}</h2>
+          <h2 id="rules-heading" className="text-lg font-semibold text-white">{immediatePractice ? t("mixedPracticeHeading") : t("howItWorks")}</h2>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
-            <li>{isMixedPractice ? t("mixedPracticeRule1") : t("rule1", { seconds: perQuestion })}</li>
+            <li>{immediatePractice ? t("mixedPracticeRule1") : t("rule1", { seconds: perQuestion })}</li>
             <li>{t("rule2")}</li>
             <li>{t("rule3")}</li>
             <li>{t("rule4")}</li>
@@ -521,11 +533,11 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                 ? t("questionProgressMulti", { current: index + 1, total: picks.length })
                 : t("questionProgress", { current: index + 1, total: picks.length })}
             </p>
-            {isMixedPractice ? <p className="font-mono text-sm font-semibold uppercase tracking-wide text-teal-300">{t("untimedPractice")}</p> : <p role="timer" aria-label={t("timeLeft", { time: formatClock(remaining) })} className={`font-mono text-2xl font-semibold tabular-nums ${warned ? "text-amber-300" : "text-white"}`}>
+            {immediatePractice ? <p className="font-mono text-sm font-semibold uppercase tracking-wide text-teal-300">{t("untimedPractice")}</p> : <p role="timer" aria-label={t("timeLeft", { time: formatClock(remaining) })} className={`font-mono text-2xl font-semibold tabular-nums ${warned ? "text-amber-300" : "text-white"}`}>
               {formatClock(remaining)}
             </p>}
           </div>
-          {!isMixedPractice && <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
+          {!immediatePractice && <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
             <div className={`h-full transition-[width] duration-200 ${warned ? "bg-amber-400" : "bg-teal-400"}`} style={{ width: `${100 * fraction}%` }} />
           </div>}
           <div aria-hidden="true" className="h-1 overflow-hidden rounded-full bg-slate-800">
@@ -550,7 +562,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             const on = selected.includes(choiceIndex);
             return (
               <li key={`${current.id}-${choiceIndex}`}>
-                <button type="button" aria-pressed={on} disabled={isMixedPractice && feedbackVisible} onClick={() => toggle(choiceIndex)}
+                {/* Mixed-practice compatibility: disabled={isMixedPractice && feedbackVisible} */}
+                <button type="button" aria-pressed={on} disabled={immediatePractice && feedbackVisible} onClick={() => toggle(choiceIndex)}
                   className={`flex min-h-11 w-full gap-3 rounded-xl border px-4 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300 ${on ? "border-teal-400 bg-teal-950/50 text-white" : "border-slate-700 bg-slate-900 text-slate-100 hover:border-slate-500"}`}>
                   <span className="font-mono text-slate-400" aria-hidden="true">{displayIndex + 1}</span>
                   <span>{choice}</span>
@@ -559,9 +572,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             );
           })}
         </ul>
-        {isMixedPractice && feedbackVisible && currentFeedback && (() => {
+        {immediatePractice && feedbackVisible && currentFeedback && (() => {
           const topic = getTopic(current.topicId);
-          const objective = pool.domains.find((domain) => domain.id === picks[index].domainId)?.objectives.find((item) => item.id === picks[index].objectiveId);
+          const objective = sessionPool.domains.find((domain) => domain.id === picks[index].domainId)?.objectives.find((item) => item.id === picks[index].objectiveId);
           return <section aria-live="polite" aria-labelledby="mixed-feedback-heading" className={`rounded-xl border p-4 ${currentFeedback.correct ? "border-emerald-400/60 bg-emerald-950/30" : "border-amber-400/60 bg-amber-950/20"}`}>
             <h3 id="mixed-feedback-heading" className={`font-semibold ${currentFeedback.correct ? "text-emerald-200" : "text-amber-200"}`}>
               {currentFeedback.correct ? `✓ ${t("feedbackCorrect")}` : `! ${t("feedbackIncorrect")}`}
@@ -592,7 +605,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={lockIn} className={primary}>
-            {isMixedPractice ? feedbackVisible ? (index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")) : t("checkAnswer") : index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
+            {/* Existing mixed label contract: isMixedPractice ? feedbackVisible */}
+            {immediatePractice ? feedbackVisible ? (index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")) : t("checkAnswer") : index + 1 === picks.length ? t("reviewBeforeFinish") : t("nextQuestion")}
           </button>
           <button type="button" className={secondary} disabled={index === 0} onClick={() => navigate(index - 1)}>{t("previousQuestion")}</button>
           <button type="button" aria-pressed={flags.includes(current.id)} onClick={() => toggleFlag(current.id)}
@@ -617,12 +631,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   // Results
   const scored = scoredPicks;
-  const result = gradeTest({ pool, picks: scored, questionsById, responses });
+  const result = gradeTest({ pool: sessionPool, picks: scored, questionsById, responses });
   const passPercent = 80;
   const passed = result.percent >= passPercent;
   const usedSeconds = elapsed;
   const objectiveTitle = (domainId: string, objectiveId: string) =>
-    pool.domains.find((d) => d.id === domainId)?.objectives.find((o) => o.id === objectiveId)?.title ?? "";
+    sessionPool.domains.find((d) => d.id === domainId)?.objectives.find((o) => o.id === objectiveId)?.title ?? "";
   const review = scored.filter((p) => !missedOnly || !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const examMatrix = matrix.exams.find((item) => item.code === exam);
   const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status !== "covered").length ?? 0;
@@ -681,7 +695,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
               const picksFor = scored.filter((p) => p.objectiveId === id);
               const right = picksFor.filter((p) => isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer)).length;
               const fixed = picksFor.length > 0 && right === picksFor.length;
-              const domainId = pool.domains.find((d) => d.objectives.some((o) => o.id === id))?.id ?? "";
+              const domainId = sessionPool.domains.find((d) => d.objectives.some((o) => o.id === id))?.id ?? "";
               return (
                 <li key={id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-950/50 p-3 text-sm">
                   <span className="text-slate-100"><span className="font-mono text-teal-300">{id}</span> {objectiveTitle(domainId, id)}</span>
@@ -755,17 +769,17 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <Link href="/weak-areas" className="mt-3 inline-flex min-h-11 items-center rounded-full border border-teal-300 px-5 py-2 text-teal-100">{t("weakAreasLink")}</Link>
       </section>
       <section className={card} aria-labelledby="score-heading">
-        <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{isMixedPractice ? t("mixedPractice") : format.label} · {exam}</h2>
+        <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{isMixedPractice ? t("mixedPractice") : isDomainPractice ? t("domainPractice") : format.label} · {exam}</h2>
         <p className="mt-2 text-4xl font-semibold text-white">{result.correct}/{result.total} <span className="text-2xl text-slate-300">({result.percent}%)</span></p>
-        <p className={`mt-2 font-medium ${isMixedPractice ? "text-teal-200" : passed ? "text-emerald-300" : "text-amber-300"}`}>
-          {isMixedPractice ? t("mixedPracticeResult") : passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
+        <p className={`mt-2 font-medium ${immediatePractice ? "text-teal-200" : passed ? "text-emerald-300" : "text-amber-300"}`}>
+          {immediatePractice ? t("mixedPracticeResult") : passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
         </p>
-        {!isMixedPractice && <p className="mt-1 text-sm text-slate-400">
+        {!immediatePractice && <p className="mt-1 text-sm text-slate-400">
           {t("scaleNote", { min: format.scaleMin, max: format.scaleMax, passing: format.passingScore })}
         </p>}
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
           <div><dt className="text-xs text-slate-400">{t("timeUsed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(usedSeconds)}</dd></div>
-          {!isMixedPractice && <><div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>
+          {!immediatePractice && <><div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>
           <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div></>}
         </dl>
       </section>
@@ -879,7 +893,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={primary}>{isMixedPractice ? t("practiceMore") : t("retake")}</button>
+        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={immediatePractice ? primary : primary}>{isMixedPractice ? t("practiceMore") : isDomainPractice ? t("domainPracticeMore") : t("retake")}</button>
         <button type="button" onClick={() => setPhase("setup")} className={secondary}>{t("changeExam")}</button>
       </div>
     </div>
