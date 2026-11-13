@@ -20,7 +20,7 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("testPage");
-  const { exam, focus, drill, pair, practice } = await searchParams;
+  const { exam, focus, drill, pair, practice, domain } = await searchParams;
   const initialExam = examCodes.includes(exam as ExamCode) ? (exam as ExamCode) : undefined;
   // ?focus=2.3,3.4 starts a test on those objectives (from the scorecard).
   const initialFocus = (typeof focus === "string" ? focus.split(",") : []).filter((id) => /^\d+\.\d+$/.test(id)).slice(0, 10);
@@ -46,7 +46,7 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
           })}
         </p>
       </header>
-      <ExamTest initialExam={initialExam} initialFocus={initialFocus} initialDrill={initialDrill} drillPair={drillPair} labsByTopic={labsByTopic} practiceMode={practice === "mixed20"} />
+      <ExamTest initialExam={initialExam} initialFocus={initialFocus} initialDrill={initialDrill} drillPair={drillPair} labsByTopic={labsByTopic} practiceMode={practice === "mixed20" ? "mixed" : practice === "domain" ? "domain" : false} initialDomain={typeof domain === "string" ? domain : undefined} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { TrackHub } from "@/app/components/TrackHub";
+import { AwsClfWorkspace } from "@/app/components/AwsClfWorkspace";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/aws-clf">): Promise<Metadata> {
   const { locale } = await params;
@@ -14,5 +14,5 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/aws-clf"
 export default async function Page({ params }: PageProps<"/[locale]/aws-clf">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <TrackHub trackId="aws-clf" />;
+  return <AwsClfWorkspace />;
 }
