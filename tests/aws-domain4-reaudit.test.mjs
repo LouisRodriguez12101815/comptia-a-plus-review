@@ -16,7 +16,7 @@ test('Domain 4 re-audit keeps all three objectives conservative and source dates
 });
 
 test('focused Domain 4 pools remain mapped, distinct, and include transfer items', () => {
-  for (const [id, count] of [['4.1', 18], ['4.2', 17], ['4.3', 20]]) {
+  for (const [id, count] of [['4.1', 19], ['4.2', 18], ['4.3', 21]]) {
     const items = focused(id);
     assert.equal(items.length, count, id);
     assert.equal(new Set(items.map((item) => item.id)).size, count, id);
@@ -25,6 +25,33 @@ test('focused Domain 4 pools remain mapped, distinct, and include transfer items
     assert.ok(items.some((item) => Array.isArray(item.answer)), `${id} needs a multiple-response item`);
     assert.ok(items.some((item) => item.prompt.includes('Which') && item.explanation.length > 80), `${id} needs scenario evidence`);
   }
+});
+
+test('new Domain 4 questions key the intended answer text', () => {
+  const byId = Object.fromEntries(questions.map((question) => [question.id, question]));
+  const checks = [
+    ['q-clf41-19', 'Check the current Free Tier eligibility, usage limits, time conditions and pricing, then monitor usage'],
+    ['q-clf42-18', 'AWS Cost and Usage Report'],
+    ['q-clf43-21', 'AWS Skill Builder'],
+  ];
+  for (const [id, expected] of checks) {
+    const question = byId[id];
+    assert.ok(question, id);
+    assert.equal(question.choices[question.answer], expected, id);
+    assert.equal(question.objectiveIds['clf-c02'].length, 1, id);
+    assert.ok(question.explanation.length > 80, id);
+  }
+});
+
+test('new Domain 4 single-answer positions are not concentrated', () => {
+  const ids = ['q-clf41-19', 'q-clf42-18', 'q-clf43-21'];
+  const byId = Object.fromEntries(questions.map((question) => [question.id, question]));
+  const distribution = ids.reduce((counts, id) => {
+    const question = byId[id];
+    counts[question.answer] = (counts[question.answer] ?? 0) + 1;
+    return counts;
+  }, {});
+  assert.deepEqual(distribution, { 1: 1, 2: 1, 3: 1 });
 });
 
 test('pricing and billing safety distinctions remain explicit', () => {

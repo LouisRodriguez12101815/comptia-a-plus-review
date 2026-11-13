@@ -167,9 +167,9 @@ test('CLF-C02 Domain 4 expansion is objective-specific, current, and remains par
   };
   const exam = objectives.exams.find(e => e.code === 'clf-c02');
   const objectiveFor = id => exam.domains.flatMap(d => d.objectives).find(o => o.id === id);
-  assert.equal(groups['4.1'].length, 18);
-  assert.equal(groups['4.2'].length, 17);
-  assert.equal(groups['4.3'].length, 20);
+  assert.equal(groups['4.1'].length, 19);
+  assert.equal(groups['4.2'].length, 18);
+  assert.equal(groups['4.3'].length, 21);
   const all = Object.values(groups).flat();
   assert.equal(new Set(all.map(q => q.id)).size, all.length);
   for (const [objectiveId, items] of Object.entries(groups)) {
