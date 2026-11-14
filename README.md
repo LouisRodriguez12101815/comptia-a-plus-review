@@ -1,12 +1,23 @@
-# CompTIA A+ Review
+# GapLift
 
-Public study site for classmates: **notes**, **flashcards**, **original practice quizzes**, and a **networking labs** showcase for A+ Core 1, A+ Core 2, and Network+. Hosted on Vercel. No login. Study focus and progress stay in the browser (`localStorage`).
+GapLift is a public toolkit of reusable code, AI-assisted authoring and assessment workflows, and learning interfaces for turning documentation into reviewed practice material. Detailed sources are a starting point; mapping them to objectives, checking understanding, and choosing the next review step require additional work.
 
-Questions are written from class notes. They are not official CompTIA items.
+Tech Certification Lab is GapLift's working IT application, begun as the creator's personal eight-certification upskilling build. The working application offers study resources, practice with feedback, saved attempts, rule-based weak-area analysis, and mapped review/retest tools where available. The repository also includes assistant instructions and offline tooling for content checks, rubric assessment, and video generation. People review the outputs; these components do not form a one-click document-to-training service.
 
-## Classmates
+## Start here
 
-Open **https://comptia-a-plus-review.vercel.app** — no login. Choose Core 1, Core 2, Network+, or All, then use Notes to read, Flashcards to drill, Quiz to test, and Labs for Packet Tracer builds. The default for new visitors is Core 1 (220-1201); the chosen focus and progress are saved only in that browser.
+- [Toolkit homepage](https://comptia-a-plus-review.vercel.app/) — the problem, workflow, evidence, and reuse.
+- [Methodology](https://comptia-a-plus-review.vercel.app/methodology) — sources, evaluation procedures, and limitations.
+- [IT certification application](https://comptia-a-plus-review.vercel.app/certifications) — the localized catalog and existing study routes.
+- [Assessment workflow](https://comptia-a-plus-review.vercel.app/assessment-workflow) — detailed assessment and pending-validation guidance.
+
+These are the intended public routes after this change is reviewed and deployed; this local implementation does not publish them. English uses unprefixed routes; Spanish, French, and Portuguese use `/es`, `/fr`, and `/pt`.
+
+Study tools work without sign-in and save local progress in the browser. Optional authenticated cross-device profiles use Twilio Verify and Sync only where configured, with owner/phone allowlist restrictions. Videos are produced by repository tooling rather than generated on demand in the browser. Current weak-area recommendations use saved attempts, accuracy thresholds, repeated misses, and mapped resources; ML-driven learner modeling remains [future work](docs/roadmap-adaptive-review-agentic-ml.md).
+
+Coverage, practice scores, and completion provide evidence with limits. They do not guarantee comprehension, mastery, exam readiness, or passing. Passing software tests does not establish educational effectiveness. Questions are original practice material, not official certification items.
+
+The public code and workflows can be inspected, forked, and adapted to other documentation-heavy learning needs. Adaptation requires suitable sources, objectives, review, and code/configuration changes; HR-document or database-schema adaptations are possibilities, not existing applications.
 
 ## Reproducible setup
 
@@ -47,7 +58,7 @@ If later `git push` does not auto-deploy, connect this GitHub repo to the Vercel
 
 ## Outage Ops MVP
 
-Open `/game` from the Practice Games catalog or the home-page button. The Guided Demo walks through five DNS troubleshooting decisions based on Lab 03, with mentor hints, score, uptime penalties, a debrief, and replay. Scores for this demo last only for the current session.
+Open `/game` from the Practice Games catalog or the certification catalog. The Guided Demo walks through five DNS troubleshooting decisions based on Lab 03, with mentor hints, score, uptime penalties, a debrief, and replay. Scores for this demo last only for the current session.
 
 Each question starts unanswered with a shuffled answer order. Select an answer to submit it and see immediate answer-specific feedback plus mentor reasoning. Incorrect answers cost 5% uptime and reveal a mentor hint. Choose **Try again** to retry the same question or **Continue** to advance. Retries keep the hint and uptime penalties; each question awards points at most once (100 without a hint, 75 with one). Replaying resets the mission and shuffles again.
 
@@ -59,7 +70,7 @@ See [Twilio setup, the $5 daily guard, and the laptop/phone acceptance test](doc
 
 Run `npm run check:content` to check quiz answer keys, cross-content consistency, author-confirmed facts, and worked examples (see [content fact-checking](docs/content-fact-check.md)).
 
-Validate with `npm run lint`, `npm run typecheck`, and `npm run build`. The typecheck command runs `next typegen` before `tsc --noEmit` so it also works before the first build. The production build downloads Geist through `next/font/google` and requires HTTPS access to `fonts.googleapis.com` and `fonts.gstatic.com`.
+Validate with `npm run lint`, `npm run typecheck`, and `npm run build`. The typecheck command runs `next typegen` before `tsc --noEmit` so it also works before the first build. The production build downloads Inter and IBM Plex Mono through `next/font/google` and requires HTTPS access to `fonts.googleapis.com` and `fonts.gstatic.com`.
 
 Outage Ops cooperative practice now includes shared findings, recoverable diagnostic decisions, round objectives/consequences, and a mistake-based reconstruction. See [the learning review](docs/outage-ops-learning-review.md) for source mapping, validation, and pending live/learner checks.
 
