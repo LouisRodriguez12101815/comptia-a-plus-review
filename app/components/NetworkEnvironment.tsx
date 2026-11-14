@@ -5,16 +5,24 @@ import { scene, mobileScene, type InfraNode } from "@/lib/network-environment";
 import styles from "./NetworkEnvironment.module.css";
 
 /** Decorative simulation only. Never reads progress, telemetry, or learner storage. */
-export function NetworkEnvironment() {
+export function NetworkEnvironment({ paused = false }: { paused?: boolean }) {
+  const elapsedRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
+    const tokens = getComputedStyle(canvas);
+    const surface = tokens.getPropertyValue("--gaplift-panel").trim() || "#0b1729";
+    const muted = tokens.getPropertyValue("--gaplift-muted").trim() || "#b9cde3";
+    const accent = tokens.getPropertyValue("--gaplift-accent").trim();
+    const secondary = tokens.getPropertyValue("--gaplift-secondary").trim();
+    const sceneColors: Record<string, string> = accent ? { "#38bdf8": accent, "#a78bfa": secondary, "#fb923c": "#efa291", "#fb7185": "#f1ab9b" } : {};
+    const recolor = (source: typeof scene) => ({ ...source, nodes: source.nodes.map((node) => ({ ...node, color: sceneColors[node.color] ?? node.color })), edges: source.edges.map((edge) => ({ ...edge, color: sceneColors[edge.color] ?? edge.color })) });
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
-    let width = 0, height = 0, frame = 0, elapsed = 0, last = 0, visible = true;
-    let current = scene;
+    let width = 0, height = 0, frame = 0, elapsed = elapsedRef.current, last = 0, visible = true;
+    let current = recolor(scene);
     let disposed = false;
     const positions = new Map<string, { x: number; y: number }>();
     const draw = (time: number) => {
@@ -97,11 +105,11 @@ export function NetworkEnvironment() {
         const beat = motion.matches ? .5 : (Math.sin(time * 2.4 + index) + 1) / 2;
         ctx.strokeStyle = node.color + "35"; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.arc(0,0,radius + 5 + beat * 8,0,Math.PI*2);ctx.stroke();
-        ctx.fillStyle = "#0b1729"; ctx.strokeStyle = node.color + "bb";ctx.lineWidth=1.4;
+        ctx.fillStyle = surface; ctx.strokeStyle = node.color + "bb";ctx.lineWidth=1.4;
         ctx.beginPath();ctx.roundRect(-radius,-radius,radius*2,radius*2,node.kind === "router" ? radius : 6);ctx.fill();ctx.stroke();
         ctx.strokeStyle = node.color;ctx.fillStyle=node.color;ctx.lineWidth=1.5;
         drawGlyph(ctx, node, radius);
-        ctx.font = "10px ui-monospace, monospace";ctx.textAlign="center";ctx.fillStyle="#b9cde3";
+        ctx.font = "10px ui-monospace, monospace";ctx.textAlign="center";ctx.fillStyle=muted;
         ctx.fillText(node.label, 0, radius+17);
         if (current.telemetry && !small && index % 4 === 0) {
           ctx.globalAlpha = motion.matches ? .65 : .4 + beat * .6;
@@ -113,32 +121,33 @@ export function NetworkEnvironment() {
     };
     const tick = (now: number) => {
       frame = 0;
-      if (disposed || !visible || document.hidden || motion.matches) return;
+      if (disposed || !visible || document.hidden || motion.matches || paused) return;
       elapsed += last ? Math.min((now-last)/1000, .05) : 0;
+      elapsedRef.current = elapsed;
       last = now; draw(elapsed); frame = requestAnimationFrame(tick);
     };
     const sync = () => {
       cancelAnimationFrame(frame); frame=0; last=0;
       draw(motion.matches ? 0 : elapsed);
-      if (visible && !document.hidden && !motion.matches && !disposed) frame=requestAnimationFrame(tick);
+      if (visible && !document.hidden && !motion.matches && !paused && !disposed) frame=requestAnimationFrame(tick);
     };
     const resize = () => {
       const box=canvas.getBoundingClientRect(); width=box.width; height=box.height;
       const dpr=Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width=Math.round(width*dpr); canvas.height=Math.round(height*dpr);
       ctx.setTransform(dpr,0,0,dpr,0,0);
-      current=width<700 ? mobileScene : scene;
+      current=recolor(width<700 ? mobileScene : scene);
       sync();
     };
     const observer = new IntersectionObserver(([entry]) => {visible=entry.isIntersecting;sync();});
-    // Observe the homepage wrapper, not the fixed canvas (which never leaves view).
+    // Suspend drawing when the containing hero leaves the viewport.
     observer.observe(canvas.parentElement!.parentElement!);
     const size = new ResizeObserver(resize);size.observe(canvas);
     motion.addEventListener("change",sync);document.addEventListener("visibilitychange",sync);
     // Reduced motion still repositions the static field on resize, not on scroll.
     resize();
     return () => {disposed=true;cancelAnimationFrame(frame);size.disconnect();observer.disconnect();motion.removeEventListener("change",sync);document.removeEventListener("visibilitychange",sync);};
-  }, []);
+  }, [paused]);
   return <div className={styles.field} aria-hidden="true"><canvas ref={canvasRef} className={styles.canvas} /><div className={styles.scrim} /></div>;
 }
 

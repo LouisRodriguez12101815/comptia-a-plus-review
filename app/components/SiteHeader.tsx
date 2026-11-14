@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/app/components/LocaleSwitcher";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
+import { isGapLiftPath } from "@/lib/gaplift-brand";
 import { tracks, trackForPath } from "@/lib/tracks";
 
 type MenuItem = { href: string; label: string; current: boolean };
@@ -161,6 +162,7 @@ export function SiteHeader() {
   const t = useTranslations("header");
   const tTracks = useTranslations("tracks");
   const pathname = usePathname();
+  const gaplift = isGapLiftPath(pathname);
   const [focus] = useStudyFocus();
   const current = trackForPath(pathname, focus);
 
@@ -198,6 +200,7 @@ export function SiteHeader() {
     { href: "/coverage", label: t("coverage"), match: (p) => p.startsWith("/coverage") },
   ]);
   const methodologyItems = makeItems([
+    { href: "/", label: "GapLift", match: (p) => p === "/" },
     { href: "/methodology", label: t("methodologyLink"), match: (p) => p.startsWith("/methodology") },
     { href: "/assessment-workflow", label: t("assessmentWorkflow"), match: (p) => p.startsWith("/assessment-workflow") },
   ]);
@@ -214,21 +217,34 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-2 sm:gap-3 sm:py-4">
         <nav className="hidden items-center gap-2 lg:flex" aria-label={t("tracksLabel")}>
-          <Link href="/methodology" aria-current={groups[5].active ? "page" : undefined} className={`${pill} ${groups[5].active ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
+          <Link href="/methodology" aria-current={pathname === "/methodology" ? "page" : undefined} className={`${pill} ${groups[5].active ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
             {t("methodology")}
           </Link>
           <HeaderMenu label={current ? tTracks(`${current.id}.short`) : t("chooseTrack")} active={groups[0].active} items={trackItems} />
         </nav>
-        <Link href="/" className="flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
-          <LabMark />
-          <span>Tech Certification Lab</span>
+        <Link href={gaplift ? "/" : "/certifications"} data-brand={gaplift ? "GapLift" : "Tech Certification Lab"} className="flex min-h-11 items-center gap-2 text-base font-semibold tracking-tight text-white sm:text-lg">
+          {gaplift ? <>
+            <svg aria-hidden="true" viewBox="0 0 32 28" className="hidden h-7 w-8 text-teal-300 sm:block">
+              <path d="M3 23h8v-7h8V8h9 M20 3l8 5-5 8" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="3" cy="23" r="2" fill="currentColor" />
+            </svg>
+            <span className="font-bold tracking-[-0.04em]">GapLift</span>
+          </> : <>
+            <LabMark />
+            <span className="hidden sm:inline">Tech Certification Lab</span><span className="sr-only sm:hidden">Tech Certification Lab</span>
+          </>}
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link href="/certifications" aria-current={pathname === "/certifications" ? "page" : undefined} className={`${pill} border-teal-400/50 text-teal-200 hover:border-teal-300 hover:text-white`}>
+            {t("catalog")}
+          </Link>
+          <div className="hidden sm:block">
           <Link href={search.href} aria-current={search.current ? "page" : undefined} aria-label={search.label} className={`${pill} px-2.5 ${search.current ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
             <span aria-hidden="true">⌕</span><span className="hidden sm:inline">{search.label}</span>
           </Link>
+          </div>
           <LocaleSwitcher />
           <MobileNavigation groups={groups} search={search} label={t("mobileMenu")} closeLabel={t("closeMenu")} />
         </div>

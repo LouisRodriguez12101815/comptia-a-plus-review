@@ -7,7 +7,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://comptia-a-plus-review.
 
 /* Static pages and notes topics, in every locale. Search result pages are
    query-driven, so they are left out on purpose. */
-const staticPaths = ["", "/networking/videos", "/glossary", "/coverage", "/study-path", "/top-5", "/final-15", "/practice-games", "/trap-answers", "/weak-areas", "/performance", "/scenario-builder"];
+const staticPaths = ["", "/certifications", "/methodology", "/assessment-workflow", "/networking/videos", "/glossary", "/coverage", "/study-path", "/top-5", "/final-15", "/practice-games", "/trap-answers", "/weak-areas", "/performance", "/scenario-builder"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const topicPaths = getTopics("all").map((topic) => `/notes/${topic.id}`);

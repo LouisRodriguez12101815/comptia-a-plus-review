@@ -19,7 +19,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
 
   return (
     <div className="mx-auto max-w-5xl space-y-10">
-      <header className="relative overflow-hidden rounded-3xl border border-indigo-400/30 bg-[radial-gradient(circle_at_top_right,rgba(129,140,248,.2),transparent_55%)] bg-slate-900 p-6 sm:p-10">
+      <header className="relative overflow-hidden rounded-3xl border border-indigo-400/30 bg-[radial-gradient(circle_at_top_right,var(--track-accent-soft),transparent_55%)] bg-slate-900 p-6 sm:p-10">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-indigo-300">{t("eyebrow")}</p>
         <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">{t("title")}</h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-300">{t("intro")}</p>
@@ -77,6 +77,12 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
           ))}
         </ol>
         <p className="mt-5 text-sm text-slate-400">{t("forkTelemetry")}</p>
+      </section>
+
+      <section aria-labelledby="validation-heading" className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+        <h2 id="validation-heading" className="text-xl font-semibold text-white">{t("validationHeading")}</h2>
+        <p className="mt-3 text-sm leading-7 text-slate-300">{t("validationBody")}</p>
+        <p className="mt-3 text-sm leading-7 text-slate-300">{t("futureBody")}</p>
       </section>
 
       <aside className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm text-slate-300">
