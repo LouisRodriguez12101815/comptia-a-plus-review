@@ -11,7 +11,7 @@ import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuest
 import { conceptVideos } from "@/lib/concept-videos";
 import { assessmentVersion, freshFirstIds, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
 import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
-import { answerLabel, correctIndices, isCorrectPick } from "@/lib/quiz-feedback";
+import { answerLabel, correctIndices, isCorrectPick, mapAuthoredAnswersToDisplayed } from "@/lib/quiz-feedback";
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
@@ -86,9 +86,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
       const source = byId.get(id)!;
       const choiceOrder = shuffleChoiceOrder(source);
       displayedOrders.current[id] = choiceOrder;
-      const answer = Array.isArray(source.answer)
-        ? choiceOrder.map((authored) => (source.answer as number[]).indexOf(authored)).filter((index) => index >= 0).sort((a, b) => a - b)
-        : choiceOrder.indexOf(source.answer as number);
+      const answer = mapAuthoredAnswersToDisplayed(choiceOrder, source.answer);
       return { ...source, choices: choiceOrder.map((choice) => source.choices[choice]), answer };
     });
     setQuiz(deck);

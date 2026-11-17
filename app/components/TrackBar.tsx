@@ -21,6 +21,7 @@ function isActive(toolId: string, pathname: string): boolean {
  */
 export function TrackBar() {
   const t = useTranslations("tracks");
+  const journey = useTranslations("navigationJourney");
   const pathname = usePathname();
   const [focus] = useStudyFocus();
 
@@ -33,8 +34,8 @@ export function TrackBar() {
     <section aria-label={t("toolsLabel", { track: track.short })} className={`track-shell track-${track.id} border-b border-slate-800 bg-slate-900/60`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:py-3">
         <p className="hidden text-sm text-slate-400 sm:block">
-          <Link href="/" className="hover:text-white">
-            {t("home")}
+          <Link href="/certifications" className="hover:text-white">
+            {journey("certifications")}
           </Link>
           <span aria-hidden="true"> / </span>
           <Link href={track.href} className="font-medium text-slate-100 hover:text-white">

@@ -8586,7 +8586,7 @@
   {"id":"fc-clf38-workspaces","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"Users need a managed virtual desktop environment","back":"Amazon WorkSpaces: desktop. AppStream streams applications; Secure Browser is browser-only access.","weak":false},
   {"id":"fc-clf38-browser","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"Users need secure browser-based access without a full desktop","back":"Amazon WorkSpaces Secure Browser: browser. It is distinct from WorkSpaces desktop and AppStream application streaming.","weak":false},
   {"id":"fc-clf38-amplify","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"Develop and deploy a frontend web or mobile application","back":"AWS Amplify: frontend/mobile application platform at recognition level. It is not CodeBuild's generic build role.","weak":false},
-  {"id":"fc-clf38-iot","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"Connect and manage interactions with IoT devices","back":"Amazon IoT Core: device connectivity and device-to-cloud interaction at recognition level.","weak":false},
+  {"id":"fc-clf38-iot","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"Connect and manage interactions with IoT devices","back":"AWS IoT Core: device connectivity and device-to-cloud interaction at recognition level.","weak":false},
   {"id":"fc-clf38-support","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"The requirement is AWS business or technical assistance","back":"AWS Support: customer enablement. Use the Domain 4 material for support-plan and entitlement details.","weak":false},
   {"id":"fc-clf38-verb-map","topicId":"aws-clf-other-service-categories","examCodes":["clf-c02"],"front":"Queue, fanout, route, coordinate, build, pipeline, trace, app, desktop, browser, frontend, device","back":"SQS, SNS, EventBridge, Step Functions, CodeBuild, CodePipeline, X-Ray, AppStream, WorkSpaces, Secure Browser, Amplify, IoT Core. Match the business verb first.","weak":false},
   {"id":"fc-clf13-driver","topicId":"aws-clf-migration-decisions","examCodes":["clf-c02"],"front":"Why might an organization migrate to AWS?","back":"Possible outcomes include reduced business risk, improved ESG performance, increased revenue opportunity, greater agility, and improved operational efficiency. Choose the stated business outcome rather than assuming migration always means lower cost.","weak":false},
@@ -8697,5 +8697,35 @@
   {"id":"fc-clf14-managed-economics","topicId":"aws-clf-cloud-concepts","examCodes":["clf-c02"],"front":"Managed-service economics","back":"Compare service price with maintenance, staffing, reliability, licensing and time-to-market. A managed service may reduce operational labor without having the lowest direct resource price.","weak":false},
   {"id":"fc-clf14-licensing","topicId":"aws-clf-cloud-concepts","examCodes":["clf-c02"],"front":"Licensing and cloud economics","back":"Check license portability, license-included terms and host or tenancy requirements. A Dedicated Host may address a physical-host constraint but is not automatically cheapest.","weak":false},
   {"id":"fc-clf14-not-cheaper","topicId":"aws-clf-cloud-concepts","examCodes":["clf-c02"],"front":"Cloud is not automatically cheaper","back":"Compare demand, utilization, storage, transfer, resilience, licensing, operations and staffing. Economies of scale can help but do not replace workload-specific analysis.","weak":false},
-  {"id":"fc-clf14-idle","topicId":"aws-clf-cloud-concepts","examCodes":["clf-c02"],"front":"Idle capacity","back":"Peak provisioning, future-growth buffers and forgotten resources can create waste. Measure demand, then stop, remove, resize or schedule resources when requirements allow.","weak":false}
+  {"id":"fc-clf14-idle","topicId":"aws-clf-cloud-concepts","examCodes":["clf-c02"],"front":"Idle capacity","back":"Peak provisioning, future-growth buffers and forgotten resources can create waste. Measure demand, then stop, remove, resize or schedule resources when requirements allow.","weak":false},
+  {
+    "id": "fc-clf-s3-decisions-immediate-archive",
+    "topicId": "aws-clf-technology-services",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "front": "Rarely accessed archive objects must open immediately.",
+    "back": "Evaluate S3 Glacier Instant Retrieval; Flexible Retrieval and Deep Archive require a restore. Include retrieval and minimum-duration costs.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf-s3-decisions-az-risk",
+    "topicId": "aws-clf-technology-services",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "front": "When is S3 One Zone-IA a reasonable risk tradeoff?",
+    "back": "For infrequently accessed objects that can be recreated or recovered elsewhere, when single-AZ loss is acceptable. It is not equivalent to multi-AZ resilience.",
+    "weak": false
+  },
+  {
+    "id": "fc-clf-s3-decisions-archive-cost",
+    "topicId": "aws-clf-technology-services",
+    "examCodes": [
+      "clf-c02"
+    ],
+    "front": "Does deleting an archive early end all storage charges?",
+    "back": "Not necessarily. Minimum storage-duration charges can apply; include retrieval, request and transition costs in the comparison.",
+    "weak": false
+  }
 ]

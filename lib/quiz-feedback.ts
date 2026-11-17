@@ -4,6 +4,19 @@ export function correctIndices(question: Question): number[] {
   return Array.isArray(question.answer) ? question.answer : [question.answer];
 }
 
+/** Convert authored choice indexes to their positions after choices are shuffled. */
+export function mapAuthoredAnswersToDisplayed(
+  choiceOrder: number[],
+  answer: number | number[],
+): number | number[] {
+  if (!Array.isArray(answer)) return choiceOrder.indexOf(answer);
+  return choiceOrder
+    .flatMap((authoredIndex, displayedIndex) =>
+      answer.includes(authoredIndex) ? [displayedIndex] : [],
+    )
+    .sort((a, b) => a - b);
+}
+
 export function sameSet(a: number[], b: number[]): boolean {
   if (a.length !== b.length) return false;
   const sortedA = [...a].sort((x, y) => x - y);

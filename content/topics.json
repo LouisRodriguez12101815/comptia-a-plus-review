@@ -6762,6 +6762,71 @@
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html"
           }
         ]
+      },
+      {
+        "id": "s3-class-decisions",
+        "title": "S3 storage classes: access time, resilience and cost",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Choose an access model first, then compare retrieval delay, failure tolerance and total cost. Archive does not always mean delayed access: Glacier Instant Retrieval supports immediate reads, unlike restore-based archival classes."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Class",
+              "Decision boundary"
+            ],
+            "rows": [
+              [
+                "S3 Standard",
+                "Frequent reads; multiple AZs."
+              ],
+              [
+                "S3 Standard-IA",
+                "Infrequent reads with immediate access and multi-AZ resilience; retrieval charges apply."
+              ],
+              [
+                "S3 One Zone-IA",
+                "Infrequent, recreatable objects; one AZ, so physical loss of that AZ can lose data."
+              ],
+              [
+                "S3 Intelligent-Tiering",
+                "Uncertain or changing access; automated tier selection, with eligible monitoring fees. Optional archive tiers introduce restore delays."
+              ],
+              [
+                "S3 Glacier Instant Retrieval",
+                "Rare reads needing millisecond access; retrieval charges and minimum storage duration matter."
+              ],
+              [
+                "S3 Glacier Flexible Retrieval",
+                "Archive with a restore step; available retrieval options take minutes to hours."
+              ],
+              [
+                "S3 Glacier Deep Archive",
+                "Long-retained archives that tolerate hours of restore delay; Bulk retrieval can take up to 48 hours."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Durability is protection against data loss; availability is ability to access data when needed. A single-AZ class is a different risk choice from a multi-AZ class. Minimum storage-duration charges can apply even when an object is deleted sooner. Verify current regional pricing rather than memorizing a dollar rate."
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: A records team has seven-year retention, infrequent access, and a required four-hour response to a records request. Deep Archive is unsuitable if its restore time cannot meet that deadline. Compare an immediate-access class or a supported Flexible Retrieval option against both the deadline and retrieval cost. Retention length alone does not select a class; lifecycle movement must preserve the required access behavior."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Before changing a storage class, write down the maximum acceptable retrieval delay, whether data can be recreated, expected object size and retention, and the cost of requests, retrieval and transitions. A lifecycle rule manages eligible transitions or expiration; it does not prove a restore works."
+          },
+          {
+            "type": "paragraph",
+            "text": "Sources checked 2026-11-17: Amazon S3 User Guide, Understanding and managing Amazon S3 storage classes; Understanding archive retrieval options. Textbook structure: Chapter 8, printed pages 139–142 (PDF pages 177–180). Current AWS documentation controls service behavior."
+          }
+        ]
       }
     ]
   },
@@ -6926,7 +6991,7 @@
           {
             "type": "bullets",
             "items": [
-              "On-Demand is flexible pay-as-you-go compute without a long-term commitment. Savings Plans provide pricing savings in exchange for an eligible compute-usage commitment; Reserved Instance pricing is more closely tied to instance configuration and scope/attribute rules. Neither discount concept is the same as a Capacity Reservation in a selected AZ.",
+              "On-Demand is flexible pay-as-you-go compute without a long-term commitment. Savings Plans provide pricing savings in exchange for an eligible compute-usage commitment; Reserved Instance pricing is more closely tied to instance configuration and scope/attribute rules. A regional RI does not reserve capacity; a zonal RI does reserve matching capacity in its selected AZ. Savings Plans provide discounts without capacity reservation. An On-Demand Capacity Reservation is a separate capacity option.",
               "Spot fits interruption-tolerant work and spare capacity; Dedicated Hosts address eligible physical-host/tenancy needs. Compare total cost and restart overhead instead of assuming any model always wins.",
               "Review RI flexibility and eligible consolidated-billing discount sharing within Organizations. Data transfer into/out of services, across AZs/Regions and to users has service-specific rules. Storage pricing includes requests, retrieval, minimum durations and transitions as well as stored GB."
             ]
@@ -13055,7 +13120,7 @@
       {
         "id": "internet-of-things",
         "title": "Internet of Things",
-        "blocks": [{"type":"paragraph","text":"Amazon IoT Core connects and manages interactions with IoT devices and supports device-to-cloud messaging at recognition level. Do not expand this review into IoT Device Defender or Greengrass; they are not required answers in this focused service set."}]
+        "blocks": [{"type":"paragraph","text":"AWS IoT Core connects and manages interactions with IoT devices and supports device-to-cloud messaging at recognition level. Do not expand this review into IoT Device Defender or Greengrass; they are not required answers in this focused service set."}]
       },
       {
         "id": "confusion-pairs",

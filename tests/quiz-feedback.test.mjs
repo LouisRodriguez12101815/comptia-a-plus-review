@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { answerLabel, isCorrectPick } from "../lib/quiz-feedback.ts";
+import { answerLabel, isCorrectPick, mapAuthoredAnswersToDisplayed } from "../lib/quiz-feedback.ts";
 
 const single = {
   id: "single",
@@ -35,6 +35,36 @@ test("incomplete multi-answer set is incorrect", () => {
 
 test("multi-answer set with an incorrect extra choice is incorrect", () => {
   assert.equal(isCorrectPick(multi, [0, 1, 2]), false);
+});
+
+test("shuffled multiple-answer keys map authored choices to displayed positions", () => {
+  const choiceOrder = [3, 0, 4, 1, 2];
+  const displayedAnswer = mapAuthoredAnswersToDisplayed(choiceOrder, [1, 3]);
+  assert.deepEqual(displayedAnswer, [0, 3]);
+  const shuffled = { ...multi, choices: choiceOrder.map(index => multi.choices[index]), answer: displayedAnswer };
+  assert.equal(isCorrectPick(shuffled, [0, 3]), true);
+});
+
+test("shuffled multiple-answer grading rejects partial, wrong, and extra selections", () => {
+  const choiceOrder = [3, 0, 4, 1, 2];
+  const shuffled = {
+    ...multi,
+    choices: choiceOrder.map(index => multi.choices[index]),
+    answer: mapAuthoredAnswersToDisplayed(choiceOrder, [0, 1]),
+  };
+  assert.deepEqual(shuffled.answer, [1, 3]);
+  assert.equal(isCorrectPick(shuffled, [1]), false);
+  assert.equal(isCorrectPick(shuffled, [0, 3]), false);
+  assert.equal(isCorrectPick(shuffled, [1, 3, 4]), false);
+});
+
+test("shuffled single-answer key remains the displayed position", () => {
+  const choiceOrder = [3, 0, 4, 1, 2];
+  const answer = mapAuthoredAnswersToDisplayed(choiceOrder, 1);
+  assert.equal(answer, 3);
+  const shuffled = { ...single, choices: choiceOrder.map(index => single.choices[index]), answer };
+  assert.equal(isCorrectPick(shuffled, 3), true);
+  assert.equal(isCorrectPick(shuffled, 1), false);
 });
 
 test("answer labels preserve selected and correct answer text", () => {

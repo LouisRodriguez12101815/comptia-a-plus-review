@@ -7,7 +7,7 @@ const read = name => JSON.parse(readFileSync(new URL(`../content/${name}.json`, 
 const questions = read('questions'), topics = read('topics'), objectives = read('objectives'), flashcards = read('flashcards'), visuals = read('track-visuals');
 const expectedClfStatuses = {
   '1.1': 'partial', '1.2': 'covered', '1.3': 'covered', '1.4': 'partial',
-  '2.1': 'covered', '2.2': 'covered', '2.3': 'covered', '2.4': 'covered',
+  '2.1': 'covered', '2.2': 'covered', '2.3': 'partial', '2.4': 'covered',
   '3.1': 'partial', '3.2': 'partial', '3.3': 'partial', '3.4': 'partial',
   '3.5': 'partial', '3.6': 'partial', '3.7': 'covered', '3.8': 'covered',
   '4.1': 'partial', '4.2': 'partial', '4.3': 'partial',
