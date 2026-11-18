@@ -1,3 +1,199 @@
+# Domain 4 assessment quality pass — 2026-11-18
+
+This pass inspected every unique mapped question for CLF-C02 objectives 4.1,
+4.2, and 4.3, together with their mapped flashcards, drill items, the
+`aws-clf-cost-estimate` lab, and the related decision-guide mappings. Existing
+question IDs and their historical meaning were preserved.
+
+## Findings and focused additions
+
+- **4.1:** The 28-question mapped pool repeated On-Demand, Spot, Dedicated Host,
+  and RI/capacity cues. Cards and drills mainly rehearse one-to-one cue matching.
+  Added `q-clf-assess-41-mixed-purchase-01` to test separate choices for a
+  predictable compute baseline, a restartable queue, and a selected-AZ capacity
+  requirement.
+- **4.2:** The 29-question pool repeated budget threshold/not-cap, tag
+  activation/history, and tool-matching decisions. The cost lab is guided paper
+  practice, not independent scored evidence. Added
+  `q-clf-assess-42-budget-action-01` to test supported budget actions, required
+  permissions, and the limits of alerts/actions.
+- **4.3:** The 25-question pool repeated Support Center, Marketplace, and
+  Health/Trusted Advisor recognition. Cards and support drills mostly rehearse
+  individual resource cues. Added `q-clf-assess-43-health-case-01` to test the
+  sequence from Health event/affected-resource investigation to an
+  entitlement-dependent technical support case.
+
+All three new items use original scenarios, plausible alternatives, explanations
+for every option, and unique IDs. Existing practice-resource IDs, scoring,
+saved history, and learner progress were left alone. Exact reviewed question IDs,
+repetition findings, current-source references, and bullet-level associations
+are in `docs/aws-clf-evidence-map.json` under `assessmentQualityReview` and the
+associated bullet rows.
+
+## Current-source verification
+
+Official AWS material was retrieved on 2026-11-18. Current EC2 purchasing
+documentation distinguishes usage commitments, RI scope/configuration, Spot
+interruption tolerance, and selected-AZ capacity. Current AWS Budgets guidance
+requires supported action configuration and permissions; alerts/actions are not
+a universal instantaneous spend cap. AWS billing documentation says the invoice
+is the final amount owed when it differs from Cost Explorer. Current tag
+documentation retains activation and historical-tag-presence qualifications.
+AWS Partner funding is eligibility- and program-dependent. Marketplace buyer
+permissions control subscriptions, and only eligible license types use the
+specified License Manager sharing workflow. Current Support documentation lists
+Basic, Business Support+, Enterprise Support, and Unified Operations, while
+Developer/Business classic and Enterprise On-Ramp plans are in transition.
+AWS Health provides event details and affected-resource information; technical
+case access depends on support entitlements. URLs and retrieval dates are in the
+evidence map. No price or response guarantee was introduced.
+
+## Status and limitations
+
+Objectives **4.1, 4.2, and 4.3 remain `partial`**. The new scenarios improve
+variety, but their presence does not establish independent learner performance.
+Legacy duplicate questions and some weak category/answer-length distractor cues
+remain because rewriting an existing ID would change the meaning of saved
+history. The cost lab has no independent score record, and the repository has no
+learner-performance evidence or explicit numerical status rubric. Question
+counts alone are not a coverage criterion. No additional lesson, card, drill,
+or lab content was warranted by this assessment pass.
+
+# CLF follow-up reconciliation — 2026-11-18
+
+This pass preserves all existing instructional content and objective statuses.
+The [current CLF-C02 Domain 3 guide](https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html)
+was retrieved on 2026-11-18. Task 3.5 Skills in bullet 2 says: “Understanding
+security in a VPC (for example, network ACLs, security groups, Amazon
+Inspector).” Current [Amazon Inspector documentation](https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html)
+describes scanning supported workloads for vulnerabilities and unintended
+network exposure and producing findings. AWS's [VPC security comparison](https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html)
+documents security groups and network ACLs as traffic controls.
+
+The prior partial `3.5-S2` classification was too narrow. Actual repository
+teaching already explains SG stateful resource-level control and NACL stateless
+subnet-level filtering in `aws-foundation-network-database#network-security`;
+`aws-clf-security-compliance#objective-clf-c02-2-4` describes Inspector's
+vulnerability findings and uses it in a worked service-selection decision.
+`fc-clf35-inspector`, `q-clf35-10`, and `q-clf35-13` further distinguish
+Inspector's findings from packet filtering. The bullet is now classified as
+direct teaching. No lesson, question, card, ID, status, or learner data changed.
+The old gap statement that Inspector teaching needed to be linked or added is
+superseded. Domain 3.5's objective status remains `partial`.
+
+After this correction the map has **135 direct / 0 partial / 0 mention / 0
+missing / 0 unresolved** bullet classifications. This is a finding about mapped
+teaching, not objective completion or learner performance.
+
+## Domain 4 status reconciliation
+
+Objectives `4.1`, `4.2`, and `4.3` remain `partial` before and after this pass.
+I read every mapped Knowledge and Skills row, the corresponding lesson sections,
+question pools, drills/lab associations, and the objective notes. All 7 bullets
+for 4.1, all 8 for 4.2, and all 13 for 4.3 currently classify as direct
+teaching. Their mapped questions include original scenario checks such as
+`q-clf-gap-transfer-costs-01` and `q-clf-gap-bill-source-01`; their practice
+associations include domain drills and `aws-clf-cost-estimate` lab activities.
+
+That evidence does not justify promoting the objective statuses. The objective
+notes explicitly retain partial pending independent unseen assessment and
+objective-level breadth/current-source verification; the evidence map records
+repeated decision patterns in the larger pools (including repeated Spot and
+host-licensing decisions in 4.1, alert/tag patterns in 4.2, and Marketplace
+procurement decisions in 4.3). Drill and lab associations do not prove that a
+learner independently performed them, and no performance results or explicit
+numerical status rubric are stored in the repository. The 134/135-style direct
+bullet count is therefore insufficient to establish the remaining objective
+criteria. No new teaching was indicated by this review.
+
+The complete per-bullet references and resource associations are recorded in
+`docs/aws-clf-evidence-map.json` under `objectiveStatusReconciliation`. The
+previously reported SAA-C03 in-scope service-list discrepancy remains
+explicitly unresolved; this pass obtained no current authoritative evidence
+that reconciles it.
+
+# Gap batch 1 update — 2026-11-18
+
+## Evidence and current-source refresh — 2026-11-18
+
+This section supersedes earlier statements below that the CLF-C02 in-scope list
+and cost-allocation-tag backfill source were inaccessible. The current canonical
+[CLF-C02 in-scope services page](https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-in-scope-services.html)
+was retrieved through AWS's documentation web index on 2026-11-18. The earlier
+failed request used `clf-c02-in-scope-services.html`; AWS's current canonical
+slug is `clf-02-in-scope-services.html`. AWS states: “This list is non-exhaustive
+and is subject to change.” Its current labels include Amazon Q, Amazon Quick,
+and Amazon SageMaker AI. This list is a freshness reference only; inclusion or
+omission does not establish how fully this repository teaches a service. No
+lesson, status, price, or entitlement was inferred from the 2023 study guide.
+
+The official [Domain 4 page](https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html),
+[cost-allocation-tag overview](https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html),
+[user-defined tag activation](https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html),
+and [tag backfill procedure](https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html)
+were checked on 2026-11-18. AWS says the two tag types must be activated
+separately. Management-account users can backfill activation state for up to
+12 months, but values are available only for months when the resource tag was
+historically present; requests are limited to once per 24 hours and updated
+cost datasets refresh asynchronously. The previous `3.5-S2` tag gap is therefore
+resolved in teaching at `aws-clf-billing-support#commitment-sharing-and-cost-tags`.
+This does not imply tags exist for untaggable services or that retroactive
+resource tagging changes past usage.
+
+Two remaining Domain 4 teaching gaps were verified against current AWS sources
+and addressed without changing objective statuses:
+
+- `4.1-S4`, “Understanding incoming data transfer costs and outgoing data
+  transfer costs (for example, from one Region to another Region, within the
+  same Region)”: `aws-clf-billing-support#objective-clf-c02-4-1` now explains
+  the qualified general inbound/same-Region rule, service exceptions and a
+  worked transfer decision. `q-clf-gap-transfer-costs-01` checks that choice.
+  AWS's [pricing principles](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/key-principles.html)
+  say most cases have no inbound or same-Region service-to-service data-transfer
+  charge; [S3 replication documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html)
+  confirms same-Region replication has no transfer charge. No fixed rates or
+  universal “free transfer” claim is taught.
+- `4.2-K1`, “Billing support and information”: `aws-clf-billing-support#objective-clf-c02-4-2`
+  now distinguishes issued invoice/Bills data, current-period estimates, Cost
+  Explorer analysis and Cost and Usage Report detail. `q-clf-gap-bill-source-01`
+  asks which source determines the final amount owed. AWS says, “Your invoice
+  represents the amount that you owe to AWS,” and documents reasons Cost
+  Explorer can differ in its [billing-data comparison](https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html).
+
+The current inspected teaching classifications are **134 direct / 1 partial /
+0 mention / 0 missing / 0 unresolved**. The one remaining CLF partial row is
+`3.5-S2` (network-security service distinctions), whose exact unsupported scope
+remains in the evidence map. Objectives 4.1, 4.2 and 4.3 remain `partial`; no
+objective status was changed in this source-refresh pass. Per-bullet direct
+teaching labels do not establish the broader objective-level status threshold
+or independent assessment quality.
+
+AWS's current [Support Plans documentation](https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html)
+and [plan comparison](https://aws.amazon.com/premiumsupport/plans/) were also
+checked on 2026-11-18. They list Basic, Business Support+, Enterprise Support,
+and Unified Operations; AWS says legacy Developer Support and Business Support
+are scheduled to end January 1, 2027. The existing lesson uses only recognition
+cues and directs learners to recheck entitlements. No numeric price or exhaustive
+entitlement claim was added. CLF study content remains English-only under the
+repository's shared-content convention; the four localized UI catalogs were
+not changed.
+
+This update supersedes the 2026-11-17 “current result” statements below for the selected CLF findings and Objective 2.3. Work is isolated on branch `content/aws-clf-saa-gap-batch-1`, based on `c4c10061f2c3a4869097e2b6a4ff06dcac027ab6`. The existing `review/saa-clf-navigation-quiz-fix` worktree was preserved. These are repository findings; no deployment was made.
+
+## Verified teaching and objective changes
+
+The supplied *AWS Certified Cloud Practitioner Study Guide eBook.pdf* was available at `/workspace/attachments/f98e4c7f-d784-4bbe-be96-f67a3e84e81a/AWS Certified Cloud Practitioner Study Guide eBook.pdf`. It is the Second Edition for CLF-C02, 323 PDF pages, SHA-256 `4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6`. It was used as a conceptual cross-check, not as a current service authority and not as a source of copied passages or questions. Supporting/context pages reviewed include printed pp. 66 (root-user security), 73 (IAM credential report), 146–147 (Storage Gateway), 23–24 (cost allocation tags), 34 (AWS Partner Network) and 121–122 (Marketplace procurement). The book does not supply current Parameter Store, centralized-root, RI flexibility/sharing, billing-tag activation/backfill, or Marketplace entitlement rules; current AWS documentation governs those details. For relevant limits and distinctions, see `studyGuideReferences` on the selected rows in the evidence map.
+
+The current official CLF-C02 domain pages were checked on 2026-11-18. The exact selected wording and page URLs are stored alongside bullet IDs in `docs/aws-clf-evidence-map.json`. Key technical sources include IAM [root-user tasks](https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html), [centralized root access](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html), and [credential reports](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html); [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-a-parameter.html); [S3 File Gateway](https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html); EC2 [RI scope](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html) and AWS Billing [discount sharing](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html); [cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) and [activation](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html); current [Partner funding](https://aws.amazon.com/partners/funding/); and Marketplace [buyer controls](https://docs.aws.amazon.com/marketplace/latest/buyerguide/buyer-iam-users-groups-policies.html) and [license sharing](https://docs.aws.amazon.com/marketplace/latest/buyerguide/sharing-licenses.html).
+
+Verified gaps received original teaching and scenario practice: 2.3-S1 (credential storage and Parameter Store), 2.3-S3 (policy ownership), 2.3-S4 (root-only tasks with standalone and centralized-root qualifications), 2.2-S5 (credential-report interpretation), 3.6-S5 (local File Gateway cache versus S3 objects), 4.1-S2/S3 (RI flexibility and organization discount sharing), 4.2-S4 (AWS-generated versus user-defined cost tags, activation and historical-attribution limits), and 4.3-S7/S8 (conditional partner benefits and Marketplace governance/entitlements). Every new practice question explains each option and links to current AWS sources. The evidence map now classifies 132 of 135 bullets as direct teaching, 3 partial, 0 mention, 0 missing and 0 unresolved. This measures reviewed teaching evidence, not independent readiness.
+
+Objective 2.3 returns to `covered`: all ten mapped bullets now have direct teaching; its previous three reported gaps have focused original scenario practice, on top of its existing question pool. The evidence map and regression assertions support the change. CLF status is now **8 covered / 11 partial / 0 missing**. Objectives 4.1, 4.2 and 4.3 remain partial because transfer pricing, invoice/report distinctions and other task breadth remain incomplete; the batch does not claim complete exam coverage. The official source wording “AWS Organizations” is distinguished from current billing preferences, and no claim is made that every RI discount is automatically shared.
+
+The existing content model stores one English lesson/question version, shared across the localized English, Spanish, French, and Portuguese application UI. These additions follow that convention; no locale-specific UI strings were needed and all four UI catalogs remain unchanged.
+
+Two specific textbook limits affect evidence: pp. 108–109 discuss reservation reports but do not substantiate current RI flexibility or sharing rules; pp. 23–24 distinguish cost-allocation tags but do not document present-day billing activation/backfill. Likewise, the book's Partner Network and Marketplace context does not establish current program eligibility or entitlement mechanics. Those claims rely on the current AWS sources above.
+
 # CLF-C02 maintained status
 
 Updated: 2026-11-17. This report supersedes historical CLF completeness conclusions for the findings explicitly reviewed here. The machine-readable companion is [aws-clf-evidence-map.json](aws-clf-evidence-map.json).
@@ -25,11 +221,11 @@ The book was created in 2023 and is not a current service catalog. Its storage t
 
 The separate [in-scope service list](https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-c02-in-scope-services.html) returned an access error through the available web tool. Domain/task/bullet verification succeeded; a complete current service-list comparison remains blocked. This does not justify substituting the textbook's list.
 
-## Reconciled objective status
+## Reconciled objective status at the 2026-11-17 audit (historical)
 
 Historical first-pass findings of 0 covered / 19 partial are stale. The actual starting `content/objectives.json` had **8 covered / 11 partial / 0 missing** after several completed expansions. Domain 3's old report also contains an internally inconsistent headline; its detailed task rows, actual lessons and the current objective file take precedence.
 
-The current result is **7 covered / 12 partial / 0 missing**. Only **2.3 changed, covered → partial**. The official root-only-task skill has a lookup instruction but no taught current example (`aws-clf-access-management#root-mfa`). A “covered” label requires no material subskill omission; generic root protection and MFA do not satisfy this particular skill. Existing practice remains useful. No objective was promoted by adding artifacts or by resolving a source-access limitation.
+The result at the close of the 2026-11-17 audit was **7 covered / 12 partial / 0 missing**. Objective **2.3 changed, covered → partial** at that time; the 2026-11-18 addendum above records its evidence-backed restoration to covered. The official root-only-task skill has a lookup instruction but no taught current example (`aws-clf-access-management#root-mfa`). A “covered” label requires no material subskill omission; generic root protection and MFA do not satisfy this particular skill. Existing practice remains useful. No objective was promoted by adding artifacts or by resolving a source-access limitation.
 
 | Domain | Objectives and current statuses | Change |
 | --- | --- | --- |

@@ -6309,6 +6309,20 @@
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
           }
         ]
+      },
+      {
+        "id": "credential-report-interpretation",
+        "title": "Interpret an IAM credential report",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "An IAM credential report is an account-level inventory of IAM users and selected IAM-managed credential status, including passwords, the first two access keys per user, MFA devices, and X.509 signing certificates. Use it to spot stale or unprotected IAM credentials during an audit. It does not show service-specific credentials or additional access keys beyond the first two; follow up with the relevant APIs or service tools when the question asks for complete visibility."
+          },
+          {
+            "type": "paragraph",
+            "text": "Example: a report shows an IAM user with an active access key and no MFA. That is evidence about the listed IAM credential, not proof that the user has no other credentials or that a workload uses no service-specific secret. Investigate the specific credential type and apply least privilege."
+          }
+        ]
       }
     ]
   },
@@ -6827,6 +6841,20 @@
             "text": "Sources checked 2026-11-17: Amazon S3 User Guide, Understanding and managing Amazon S3 storage classes; Understanding archive retrieval options. Textbook structure: Chapter 8, printed pages 139–142 (PDF pages 177–180). Current AWS documentation controls service behavior."
           }
         ]
+      },
+      {
+        "id": "file-gateway-cache-decisions",
+        "title": "S3 File Gateway: local cache and cloud-backed objects",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Amazon S3 File Gateway presents file interfaces such as NFS or SMB while storing file data as objects in an S3 bucket. A local cache keeps recently accessed data available with lower latency; it is a performance cache, not the authoritative durable copy. Cache capacity affects how much recently used data can stay local. When a client accesses data that is not cached, the gateway retrieves it from S3. If applications write directly to the bucket outside the gateway, use cache refresh behavior so the gateway can discover changed objects."
+          },
+          {
+            "type": "paragraph",
+            "text": "Example: a branch office uses NFS for a shared dataset backed by S3 and repeatedly reads a small hot subset. File Gateway provides the familiar file protocol and local cache for that subset; S3 remains the cloud-backed store. Choose a different design if the requirement is block storage or a POSIX file system shared directly by cloud instances."
+          }
+        ]
       }
     ]
   },
@@ -6984,7 +7012,7 @@
           }
         ]
       },
-      {
+            {
         "id": "objective-clf-c02-4-1",
         "title": "4.1 — Purchase commitments, capacity and transfer",
         "blocks": [
@@ -7008,10 +7036,14 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+          },
+          {
+            "type": "paragraph",
+            "text": "Transfer example: Uploading data into AWS is generally not charged for inbound transfer, while sending data out to the internet or between Regions may incur transfer charges; the exact path and service matter. AWS states that most inbound and same-Region service-to-service transfer is not charged, but exceptions apply. For example, same-Region S3 downloads within AWS can avoid data-transfer charges, while GET request charges still apply. Compare the current pricing rules for each service and direction; do not treat “inbound is free” or “same Region is free” as universal."
           }
         ]
       },
-      {
+            {
         "id": "objective-clf-c02-4-2",
         "title": "4.2 — Estimate, observe, allocate and alert",
         "blocks": [
@@ -7036,6 +7068,36 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Billing source"
+            ],
+            "rows": [
+              [
+                "Determine the amount owed for a closed billing period",
+                "Issued invoice / Bills page; the invoice is the final amount owed."
+              ],
+              [
+                "See the current month before close",
+                "Bills page shows an estimate based on metered usage to date."
+              ],
+              [
+                "Analyze trends, forecasts, or finer dimensions",
+                "Cost Explorer; its analytical presentation can differ from invoice/billing data."
+              ],
+              [
+                "Inspect detailed usage and cost records",
+                "Cost and Usage Report; use it for granular analysis, not as the payable invoice."
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "If Cost Explorer and an invoice differ, use the invoice to identify the amount owed for a closed period. The datasets can differ in timing, grouping, granularity, rounding, and presentation of discounts, credits, refunds, or taxes. Use Cost Explorer to analyze patterns and investigate the difference."
           }
         ]
       },
@@ -7079,6 +7141,46 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "commitment-sharing-and-cost-tags",
+        "title": "Commitment scope, discount sharing and billing tags",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "EC2 Reserved Instance flexibility is conditional on its attributes and scope. A regional RI can provide eligible instance-size flexibility for supported Linux/Unix shared-tenancy usage within the same family and Region; it does not reserve a particular Availability Zone’s capacity. A zonal RI is tied to an Availability Zone and can provide capacity reservation for matching usage, but does not provide regional size flexibility. Check current eligibility rules before treating an RI as interchangeable."
+          },
+          {
+            "type": "paragraph",
+            "text": "In AWS Organizations consolidated billing, eligible RI and Savings Plans discounts can be shared with linked accounts when discount sharing is enabled and the applicable ownership and billing settings permit it. The management account can control sharing preferences; a commitment is not a guaranteed discount for every account or workload. Review the payer and owner settings and actual eligible usage."
+          },
+          {
+            "type": "paragraph",
+            "text": "Billing tags have two sources: AWS-generated tags and user-defined tags. AWS or an AWS Marketplace seller creates and applies AWS-generated tags; customers define and apply user-defined tags. Both types must be activated separately for cost reporting. For historical correction, management-account users can request a backfill of the current activation status for up to 12 months, but cost data has tag values only for months when the resource tag was already present. A request cannot overlap another backfill and can be submitted only once every 24 hours; Cost Explorer, Data Exports, and the Cost and Usage Report refresh on their own cadence, so updated data is not immediate. A newly applied tag does not rewrite earlier resource history."
+          },
+          {
+            "type": "paragraph",
+            "text": "Example: a finance team wants to allocate next month’s EC2 costs by project. Apply a consistent user-defined Project tag, activate that cost allocation key, and allow time for it to appear in billing data. Separately check RI sharing configuration and eligible usage; neither tags nor consolidated billing alone guarantee that a particular account receives a commitment discount."
+          }
+        ]
+      },
+      {
+        "id": "partner-benefits-and-marketplace-controls",
+        "title": "Partner benefits and Marketplace purchase controls",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The AWS Partner Network serves organizations that build, sell, or deliver services around AWS. Depending on program, tier, eligibility, geography, and current terms, partner resources can include training and certification enablement, technical or go-to-market support, funding, and co-selling opportunities. Benefits are conditional; partner membership does not guarantee a particular discount, funding award, customer lead, or support entitlement."
+          },
+          {
+            "type": "paragraph",
+            "text": "AWS Marketplace is a catalog and procurement channel for third-party software, data, and services. Before purchase, an organization can govern who may discover, subscribe to, and deploy products through IAM permissions, procurement workflows, private offers, and organization-level controls. After purchase, an entitlement or license represents the rights granted for that product and contract; it is distinct from permission to administer AWS Marketplace itself. Eligible licenses can be shared across accounts using AWS License Manager, subject to product and subscription rules."
+          },
+          {
+            "type": "paragraph",
+            "text": "Example: a team needs a vendor security product for several AWS accounts. A buyer administrator reviews the offer and terms, restricts subscription rights to approved procurement roles, then uses the product’s supported license-sharing method. A Marketplace subscription is not an AWS Support plan, and an entitlement does not automatically grant every user permission to deploy the product."
           }
         ]
       }
@@ -8080,6 +8182,42 @@
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
           }
         ]
+      },
+      {
+        "id": "container-migration-decisions",
+        "title": "Migrate an application into containers",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Inventory the application, runtime, operating-system dependencies, ports, configuration, secrets, persistent state, and external services before packaging it. A container image packages the application and its runtime dependencies; it does not automatically migrate the database or make a stateful application stateless.",
+              "Build and test an image, publish it to a registry such as Amazon ECR, then define deployment, networking, identity, storage, health checks, scaling, and rollout behavior in a container platform such as ECS or EKS. Fargate removes the need to manage worker-node instances for supported tasks; it does not perform application discovery or migration by itself.",
+              "Plan data migration and cutover separately: move or retain persistent data in an appropriate managed store, validate compatibility and backups, test health and traffic shifting, then retire the old deployment only after verification. AWS App2Container can help analyze supported existing applications and generate container/deployment artifacts; it does not eliminate application testing or architecture decisions."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: a Java web application runs on a virtual machine, stores sessions on local disk, and uses an external database. Before moving it to ECS, identify and externalize session state, validate runtime dependencies, build and test an image, publish it to ECR, and configure task roles, network access, health checks, and database connectivity. Fargate may remove server management, but simply copying the VM filesystem into an image would preserve the local-session failure mode."
+          }
+        ]
+      },
+      {
+        "id": "immutable-infrastructure-decisions",
+        "title": "Immutable infrastructure and safe replacement",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "With immutable infrastructure, deploy a new resource set or image for a change and replace the old running resources instead of patching or reconfiguring them in place. This makes desired state reproducible and limits configuration drift.",
+              "Keep infrastructure and image definitions versioned and repeatable. Validate the new version, health checks, capacity, permissions, and data compatibility before shifting traffic; use a controlled rollout and retain a rollback path.",
+              "Immutable does not mean data is disposable or that every workload can replace stateful resources without planning. Keep persistent data separately managed and use backups, replication, and migration steps appropriate to the workload."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: a fleet has drifted after manual hotfixes. Build a reviewed image with the patch, deploy a parallel replacement fleet from versioned infrastructure, verify health, then shift traffic and retire the old fleet. If the new fleet fails its checks, route traffic back while the prior fleet remains available. Patching each live server individually would retain drift and produce mixed configurations."
+          }
+        ]
       }
     ]
   },
@@ -8531,6 +8669,24 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+          }
+        ]
+      },
+      {
+        "id": "storage-autoscaling-decisions",
+        "title": "Decide when storage autoscaling is needed",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              "Consider storage autoscaling when supported managed database storage grows unpredictably or rapidly enough that manual capacity changes risk exhausting free space. Monitor free storage and growth trends; select a maximum threshold and retain alarms because autoscaling has service-specific limits and may not prevent a storage-full event during a large load.",
+              "Autoscaling addresses storage capacity, not database compute, IOPS, latency, or query efficiency. Diagnose the constrained resource first; choose storage performance settings or query/instance changes when those are the bottleneck.",
+              "Amazon RDS storage autoscaling can increase allocated storage when enabled and when service conditions are met. The initial allocation still needs to suit normal workload needs, and an upper maximum must be configured. Confirm current engine, storage, and modification constraints in the RDS guide."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Worked decision: a seasonal workload’s RDS data volume grows unevenly, and operations cannot reliably forecast monthly storage. Enable RDS storage autoscaling with a suitable maximum and alarms on free space and threshold events. For a predictable one-time import, estimate and provision adequate capacity first; autoscaling has limits and is not a substitute for monitoring or capacity planning. If queries are slow while free space is ample, storage autoscaling does not address the stated bottleneck."
           }
         ]
       }
@@ -13057,6 +13213,55 @@
           {
             "type": "paragraph",
             "text": "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain2.html"
+          }
+        ]
+      },
+      {
+        "id": "root-only-tasks-and-policy-ownership",
+        "title": "Root-only tasks, credential storage and policy ownership",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Root-only tasks depend on account configuration. In a standalone account, the root user can restore permissions if its only IAM administrator locks itself out; closing the account also requires root credentials. With centralized root access enabled for an AWS Organizations member account, an authorized management account or delegated administrator can perform some privileged root tasks. That does not make every root task centrally available. Keep root protected and check the current task list for the exact account arrangement."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Need",
+              "Choose or distinguish",
+              "Decision cue"
+            ],
+            "rows": [
+              [
+                "An application secret such as a database password",
+                "AWS Secrets Manager",
+                "Purpose-built secret lifecycle and rotation needs"
+              ],
+              [
+                "A parameter or configuration value, optionally encrypted",
+                "AWS Systems Manager Parameter Store",
+                "Hierarchical parameter storage and application configuration"
+              ],
+              [
+                "A reusable policy maintained by AWS",
+                "AWS managed policy",
+                "AWS owns updates; review its permissions before attaching"
+              ],
+              [
+                "A reusable policy maintained by the customer",
+                "Customer-managed policy",
+                "Customer controls policy contents and updates; reusable across identities"
+              ],
+              [
+                "A policy embedded in one identity",
+                "Inline policy",
+                "One-to-one attachment; not a reusable managed policy"
+              ]
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Example: if an application needs a rotatable database credential, use Secrets Manager; if an operations team needs hierarchical configuration parameters, Parameter Store may fit. For permissions, select a customer-managed policy when your team must control a reusable permission set. An AWS-managed policy is convenient but its owner controls future changes."
           }
         ]
       }

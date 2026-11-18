@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "examCode": "clf-c02",
-  "updatedOn": "2026-11-17",
+  "updatedOn": "2026-11-18",
   "scopeVersion": {
     "version": "1.3",
     "publishedOn": "2026-10-29",
@@ -167,7 +167,7 @@
       "id": "2.3",
       "title": "Identify AWS access management capabilities",
       "existingStatus": "covered",
-      "proposedStatus": "partial",
+      "proposedStatus": "covered",
       "bulletIds": [
         "2.3-K1",
         "2.3-K2",
@@ -180,7 +180,8 @@
         "2.3-S5",
         "2.3-S6"
       ],
-      "statusChangeReason": "Official skill 2.3-S4 has only a lookup instruction; no concrete current root-only task is taught. Existing covered criteria require no material subskill gap."
+      "statusChangeReason": "All ten official task bullets now have direct lesson evidence, including the previously missing root-only task, Parameters Store/Secrets Manager and policy ownership distinctions. The task has a large preexisting assessment pool plus focused original scenarios with option-level explanations; status is content coverage, not readiness.",
+      "evidenceReviewedOn": "2026-11-18"
     },
     {
       "id": "2.4",
@@ -3965,22 +3966,38 @@
         "bulletOrdinal": 5,
         "retrievedTextLine": 53,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Recognizing services that aid in governance and compliance (for example, monitoring with Amazon CloudWatch; auditing with AWS CloudTrail and AWS Config; reporting with access reports)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            73
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Credential report overview; current AWS documentation supplies its precise scope and exclusions."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-security-compliance#objective-clf-c02-2-2"
+          "aws-clf-security-compliance#credential-report-interpretation"
         ],
-        "rationale": "The service distinctions and logging are taught; access-report interpretation is not explained."
+        "rationale": "The report’s IAM-managed scope and exclusions are interpreted in an audit scenario."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-08",
           "q-aws-found-09",
+          "q-aws-review-clf-c02-2-2",
           "q-clf-11",
           "q-clf-18",
-          "q-aws-review-clf-c02-2-2",
+          "q-clf-gap-credential-report-01",
           "q-clf22-01",
           "q-clf22-02",
           "q-clf22-03",
@@ -4004,28 +4021,32 @@
           "fc-clf22-compliance"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-credential-report-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-security-compliance#objective-clf-c02-2-2",
+        "lessonHref": "/notes/aws-clf-security-compliance#credential-report-interpretation",
         "quizHref": "/quiz?topic=aws-clf-security-compliance",
         "flashcardHref": "/flashcards?topic=aws-clf-security-compliance",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "The service distinctions and logging are taught; access-report interpretation is not explained.",
-      "nextAction": "Add a small access-report comparison after live IAM verification.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-08",
           "q-aws-found-09",
+          "q-aws-review-clf-c02-2-2",
           "q-clf-11",
           "q-clf-18",
-          "q-aws-review-clf-c02-2-2",
+          "q-clf-gap-credential-report-01",
           "q-clf22-01",
           "q-clf22-02",
           "q-clf22-03",
@@ -4727,25 +4748,44 @@
         "bulletOrdinal": 1,
         "retrievedTextLine": 70,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Understanding access keys, password policies, and credential storage (for example, AWS Secrets Manager, AWS Systems Manager)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+          "https://docs.aws.amazon.com/systems-manager/latest/userguide/secure-string-parameter-kms-encryption.html",
+          "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+          "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-a-parameter.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            66,
+            73
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "The book covers IAM credentials, root and credential reports, but not Systems Manager Parameter Store. Pages are contextual only; current AWS documentation supports the new Parameter Store distinction."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-access-management#authentication-authorization",
-          "aws-clf-access-management#credentials",
-          "aws-clf-access-management#secrets-keys-roles"
+          "aws-clf-access-management#root-only-tasks-and-policy-ownership"
         ],
-        "rationale": "Password policy and Secrets Manager are taught in separate sections; Systems Manager credential/parameter storage is not explained."
+        "rationale": "Password policies, Secrets Manager, and Systems Manager Parameter Store are distinguished; the use case separates configuration values from rotatable secrets."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-07",
           "q-aws-found-11",
+          "q-aws-review-clf-c02-2-3",
           "q-clf-16",
           "q-clf-17",
           "q-clf-19",
-          "q-aws-review-clf-c02-2-3",
+          "q-clf-gap-parameter-store-01",
+          "q-clf-gap-root-01",
           "q-clf23-01",
           "q-clf23-02",
           "q-clf23-03",
@@ -4762,45 +4802,52 @@
           "q-clf23-14"
         ],
         "associatedTaskFlashcardIds": [
-          "fc-clf23-workforce",
-          "fc-clf23-ec2-role",
-          "fc-clf23-user-group-role",
-          "fc-clf23-authz",
-          "fc-clf23-mfa-policy",
-          "fc-clf23-password-policy",
-          "fc-clf23-root",
+          "fc-clf-gap-parameter-store",
           "fc-clf23-access-keys",
-          "fc-clf23-temporary",
+          "fc-clf23-authz",
+          "fc-clf23-ec2-role",
+          "fc-clf23-explicit-deny",
           "fc-clf23-least-privilege",
           "fc-clf23-managed-inline",
-          "fc-clf23-secrets-kms",
+          "fc-clf23-mfa-policy",
+          "fc-clf23-password-policy",
           "fc-clf23-role-secret",
-          "fc-clf23-explicit-deny"
+          "fc-clf23-root",
+          "fc-clf23-secrets-kms",
+          "fc-clf23-temporary",
+          "fc-clf23-user-group-role",
+          "fc-clf23-workforce"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New original scenario checks Systems Manager credential/configuration storage; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-root-01",
+          "q-clf-gap-parameter-store-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-access-management#authentication-authorization",
+        "lessonHref": "/notes/aws-clf-access-management#root-only-tasks-and-policy-ownership",
         "quizHref": "/quiz?topic=aws-clf-access-management",
         "flashcardHref": "/flashcards?topic=aws-clf-access-management",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "Password policy and Secrets Manager are taught in separate sections; Systems Manager credential/parameter storage is not explained.",
-      "nextAction": "Verify current Parameter Store boundaries and add a comparison if useful.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-07",
           "q-aws-found-11",
+          "q-aws-review-clf-c02-2-3",
           "q-clf-16",
           "q-clf-17",
           "q-clf-19",
-          "q-aws-review-clf-c02-2-3",
+          "q-clf-gap-parameter-store-01",
+          "q-clf-gap-root-01",
           "q-clf23-01",
           "q-clf23-02",
           "q-clf23-03",
@@ -4817,20 +4864,21 @@
           "q-clf23-14"
         ],
         "flashcardIds": [
-          "fc-clf23-workforce",
-          "fc-clf23-ec2-role",
-          "fc-clf23-user-group-role",
-          "fc-clf23-authz",
-          "fc-clf23-mfa-policy",
-          "fc-clf23-password-policy",
-          "fc-clf23-root",
+          "fc-clf-gap-parameter-store",
           "fc-clf23-access-keys",
-          "fc-clf23-temporary",
+          "fc-clf23-authz",
+          "fc-clf23-ec2-role",
+          "fc-clf23-explicit-deny",
           "fc-clf23-least-privilege",
           "fc-clf23-managed-inline",
-          "fc-clf23-secrets-kms",
+          "fc-clf23-mfa-policy",
+          "fc-clf23-password-policy",
           "fc-clf23-role-secret",
-          "fc-clf23-explicit-deny"
+          "fc-clf23-root",
+          "fc-clf23-secrets-kms",
+          "fc-clf23-temporary",
+          "fc-clf23-user-group-role",
+          "fc-clf23-workforce"
         ],
         "drillItemIds": [
           "aws-clf-domain-cues/root",
@@ -4999,23 +5047,43 @@
         "bulletOrdinal": 3,
         "retrievedTextLine": 73,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Defining groups, users, custom policies, and managed policies in compliance with the principle of least privilege",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html",
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/security-iam-awsmanpol.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            66,
+            70,
+            71
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "IAM identity and permission context; use only as conceptual background. It does not establish current AWS-managed policy update behavior."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-access-management#policies-least-privilege"
+          "aws-clf-access-management#root-only-tasks-and-policy-ownership"
         ],
-        "rationale": "Groups, users, roles and managed/inline policies are distinguished, but customer-managed versus AWS-managed policy ownership is thin."
+        "rationale": "AWS-managed, customer-managed, and inline policy ownership and reuse are explicitly contrasted."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-07",
           "q-aws-found-11",
+          "q-aws-review-clf-c02-2-3",
           "q-clf-16",
           "q-clf-17",
           "q-clf-19",
-          "q-aws-review-clf-c02-2-3",
+          "q-clf-gap-policy-ownership-01",
+          "q-clf-gap-root-01",
           "q-clf23-01",
           "q-clf23-02",
           "q-clf23-03",
@@ -5032,45 +5100,52 @@
           "q-clf23-14"
         ],
         "associatedTaskFlashcardIds": [
-          "fc-clf23-workforce",
-          "fc-clf23-ec2-role",
-          "fc-clf23-user-group-role",
-          "fc-clf23-authz",
-          "fc-clf23-mfa-policy",
-          "fc-clf23-password-policy",
-          "fc-clf23-root",
+          "fc-clf-gap-policy-ownership",
           "fc-clf23-access-keys",
-          "fc-clf23-temporary",
+          "fc-clf23-authz",
+          "fc-clf23-ec2-role",
+          "fc-clf23-explicit-deny",
           "fc-clf23-least-privilege",
           "fc-clf23-managed-inline",
-          "fc-clf23-secrets-kms",
+          "fc-clf23-mfa-policy",
+          "fc-clf23-password-policy",
           "fc-clf23-role-secret",
-          "fc-clf23-explicit-deny"
+          "fc-clf23-root",
+          "fc-clf23-secrets-kms",
+          "fc-clf23-temporary",
+          "fc-clf23-user-group-role",
+          "fc-clf23-workforce"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New original scenario checks managed policy ownership; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-root-01",
+          "q-clf-gap-policy-ownership-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-access-management#policies-least-privilege",
+        "lessonHref": "/notes/aws-clf-access-management#root-only-tasks-and-policy-ownership",
         "quizHref": "/quiz?topic=aws-clf-access-management",
         "flashcardHref": "/flashcards?topic=aws-clf-access-management",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "Groups, users, roles and managed/inline policies are distinguished, but customer-managed versus AWS-managed policy ownership is thin.",
-      "nextAction": "Add policy-ownership example, not implementation syntax.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-07",
           "q-aws-found-11",
+          "q-aws-review-clf-c02-2-3",
           "q-clf-16",
           "q-clf-17",
           "q-clf-19",
-          "q-aws-review-clf-c02-2-3",
+          "q-clf-gap-policy-ownership-01",
+          "q-clf-gap-root-01",
           "q-clf23-01",
           "q-clf23-02",
           "q-clf23-03",
@@ -5087,20 +5162,21 @@
           "q-clf23-14"
         ],
         "flashcardIds": [
-          "fc-clf23-workforce",
-          "fc-clf23-ec2-role",
-          "fc-clf23-user-group-role",
-          "fc-clf23-authz",
-          "fc-clf23-mfa-policy",
-          "fc-clf23-password-policy",
-          "fc-clf23-root",
+          "fc-clf-gap-policy-ownership",
           "fc-clf23-access-keys",
-          "fc-clf23-temporary",
+          "fc-clf23-authz",
+          "fc-clf23-ec2-role",
+          "fc-clf23-explicit-deny",
           "fc-clf23-least-privilege",
           "fc-clf23-managed-inline",
-          "fc-clf23-secrets-kms",
+          "fc-clf23-mfa-policy",
+          "fc-clf23-password-policy",
           "fc-clf23-role-secret",
-          "fc-clf23-explicit-deny"
+          "fc-clf23-root",
+          "fc-clf23-secrets-kms",
+          "fc-clf23-temporary",
+          "fc-clf23-user-group-role",
+          "fc-clf23-workforce"
         ],
         "drillItemIds": [
           "aws-clf-domain-cues/root",
@@ -5134,23 +5210,42 @@
         "bulletOrdinal": 4,
         "retrievedTextLine": 75,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Identifying tasks that only the account root user can perform",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html",
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html",
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            66
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Root-user protection and minimal root use; the book does not cover current centralized-root task delegation."
+        }
       },
       "teaching": {
-        "classification": "mention",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-access-management#root-mfa"
+          "aws-clf-access-management#root-only-tasks-and-policy-ownership"
         ],
-        "rationale": "The lesson tells the learner to consult the root task list; it teaches no concrete current root-only task."
+        "rationale": "Concrete standalone-account root-only examples are taught and qualified against centralized root access for Organizations member accounts."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-07",
           "q-aws-found-11",
+          "q-aws-review-clf-c02-2-3",
           "q-clf-16",
           "q-clf-17",
           "q-clf-19",
-          "q-aws-review-clf-c02-2-3",
+          "q-clf-gap-root-01",
+          "q-clf-gap-root-standalone-01",
           "q-clf23-01",
           "q-clf23-02",
           "q-clf23-03",
@@ -5167,45 +5262,52 @@
           "q-clf23-14"
         ],
         "associatedTaskFlashcardIds": [
-          "fc-clf23-workforce",
-          "fc-clf23-ec2-role",
-          "fc-clf23-user-group-role",
-          "fc-clf23-authz",
-          "fc-clf23-mfa-policy",
-          "fc-clf23-password-policy",
-          "fc-clf23-root",
+          "fc-clf-gap-root-centralized",
           "fc-clf23-access-keys",
-          "fc-clf23-temporary",
+          "fc-clf23-authz",
+          "fc-clf23-ec2-role",
+          "fc-clf23-explicit-deny",
           "fc-clf23-least-privilege",
           "fc-clf23-managed-inline",
-          "fc-clf23-secrets-kms",
+          "fc-clf23-mfa-policy",
+          "fc-clf23-password-policy",
           "fc-clf23-role-secret",
-          "fc-clf23-explicit-deny"
+          "fc-clf23-root",
+          "fc-clf23-secrets-kms",
+          "fc-clf23-temporary",
+          "fc-clf23-user-group-role",
+          "fc-clf23-workforce"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New original scenario checks standalone root task; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-root-01",
+          "q-clf-gap-root-standalone-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-access-management#root-mfa",
+        "lessonHref": "/notes/aws-clf-access-management#root-only-tasks-and-policy-ownership",
         "quizHref": "/quiz?topic=aws-clf-access-management",
         "flashcardHref": "/flashcards?topic=aws-clf-access-management",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "The lesson tells the learner to consult the root task list; it teaches no concrete current root-only task.",
-      "nextAction": "Verify current root/centralized-root exceptions and teach one valid example.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-07",
           "q-aws-found-11",
+          "q-aws-review-clf-c02-2-3",
           "q-clf-16",
           "q-clf-17",
           "q-clf-19",
-          "q-aws-review-clf-c02-2-3",
+          "q-clf-gap-root-01",
+          "q-clf-gap-root-standalone-01",
           "q-clf23-01",
           "q-clf23-02",
           "q-clf23-03",
@@ -5222,20 +5324,21 @@
           "q-clf23-14"
         ],
         "flashcardIds": [
-          "fc-clf23-workforce",
-          "fc-clf23-ec2-role",
-          "fc-clf23-user-group-role",
-          "fc-clf23-authz",
-          "fc-clf23-mfa-policy",
-          "fc-clf23-password-policy",
-          "fc-clf23-root",
+          "fc-clf-gap-root-centralized",
           "fc-clf23-access-keys",
-          "fc-clf23-temporary",
+          "fc-clf23-authz",
+          "fc-clf23-ec2-role",
+          "fc-clf23-explicit-deny",
           "fc-clf23-least-privilege",
           "fc-clf23-managed-inline",
-          "fc-clf23-secrets-kms",
+          "fc-clf23-mfa-policy",
+          "fc-clf23-password-policy",
           "fc-clf23-role-secret",
-          "fc-clf23-explicit-deny"
+          "fc-clf23-root",
+          "fc-clf23-secrets-kms",
+          "fc-clf23-temporary",
+          "fc-clf23-user-group-role",
+          "fc-clf23-workforce"
         ],
         "drillItemIds": [
           "aws-clf-domain-cues/root",
@@ -9879,16 +9982,17 @@
         "group": "Skills in",
         "bulletOrdinal": 2,
         "retrievedTextLine": 103,
-        "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "retrievedOn": "2026-11-18",
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "officialWording": "Understanding security in a VPC (for example, network ACLs, security groups, Amazon Inspector)"
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
           "aws-foundation-network-database#network-security",
           "aws-clf-security-compliance#objective-clf-c02-2-4"
         ],
-        "rationale": "SG/NACL behavior is explicit; Inspector is taught elsewhere as vulnerability detection rather than a network traffic filter."
+        "rationale": "Current lesson evidence covers SG stateful resource-level traffic control and NACL stateless subnet-level filtering at aws-foundation-network-database#network-security. The linked CLF security lesson says Inspector reports supported-workload vulnerabilities and includes a worked Firewall Manager/Inspector decision; the dedicated Inspector flashcard and q-clf35-10 and q-clf35-13 distinguish exposure/vulnerability findings from packet filtering. This matches the official example without calling Inspector a firewall."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
@@ -9926,12 +10030,12 @@
           "fc-clf35-traps"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
+        "quality": "Inspected q-clf35-10 (supported workload vulnerability and exposure scenario) and q-clf35-13 (Inspector versus traffic-control comparison); both have accurate explanations. Other associated IDs are not treated as bullet evidence solely by association.",
         "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
       },
       "freshness": {
         "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "technical": "Verified 2026-11-18 against current Amazon Inspector and Amazon VPC documentation."
       },
       "navigation": {
         "lessonHref": "/notes/aws-foundation-network-database#network-security",
@@ -9939,8 +10043,8 @@
         "flashcardHref": "/flashcards?topic=aws-foundation-network-database",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "SG/NACL behavior is explicit; Inspector is taught elsewhere as vulnerability detection rather than a network traffic filter.",
-      "nextAction": "Link the existing Inspector explanation at this teaching location; do not relabel it as filtering.",
+      "remainingGap": null,
+      "nextAction": "No instructional addition is indicated. Retain separate teaching roles for Inspector findings and SG/NACL traffic controls.",
       "resources": {
         "questionIds": [
           "q-aws-found-19",
@@ -10929,22 +11033,40 @@
         "bulletOrdinal": 5,
         "retrievedTextLine": 124,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Identifying cached file systems (for example, AWS Storage Gateway)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html",
+          "https://docs.aws.amazon.com/filegateway/latest/files3/refresh-cache.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            146,
+            147
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Storage Gateway and File Gateway overview; current AWS documentation supplies local-cache behavior and refresh semantics."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-technology-services#hybrid"
+          "aws-clf-technology-services#file-gateway-cache-decisions"
         ],
-        "rationale": "Gateway hybrid integration is taught; the local cache and cloud-backed authoritative data distinction is absent."
+        "rationale": "The lesson explains local caching, S3-backed objects, uncached reads, and cache refresh when buckets change outside the gateway."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-14",
           "q-aws-found-15",
           "q-aws-found-16",
-          "q-clf-30",
           "q-aws-review-clf-c02-3-6",
+          "q-clf-30",
+          "q-clf-gap-gateway-cache-01",
           "q-clf36-01",
           "q-clf36-02",
           "q-clf36-03",
@@ -10963,41 +11085,46 @@
           "q-clf36-16"
         ],
         "associatedTaskFlashcardIds": [
-          "fc-clf36-s3",
+          "fc-clf-gap-gateway-cache",
+          "fc-clf36-backup",
           "fc-clf36-classes",
-          "fc-clf36-lifecycle",
           "fc-clf36-ebs",
-          "fc-clf36-instance-store",
           "fc-clf36-efs",
           "fc-clf36-fsx",
           "fc-clf36-gateway",
-          "fc-clf36-backup",
+          "fc-clf36-instance-store",
+          "fc-clf36-lifecycle",
+          "fc-clf36-s3",
           "fc-clf36-storage-models",
           "fc-clf36-traps"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-gateway-cache-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-technology-services#hybrid",
+        "lessonHref": "/notes/aws-clf-technology-services#file-gateway-cache-decisions",
         "quizHref": "/quiz?topic=aws-clf-technology-services",
         "flashcardHref": "/flashcards?topic=aws-clf-technology-services",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "Gateway hybrid integration is taught; the local cache and cloud-backed authoritative data distinction is absent.",
-      "nextAction": "Add a concise cached-file example after verifying current Storage Gateway documentation.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-14",
           "q-aws-found-15",
           "q-aws-found-16",
-          "q-clf-30",
           "q-aws-review-clf-c02-3-6",
+          "q-clf-30",
+          "q-clf-gap-gateway-cache-01",
           "q-clf36-01",
           "q-clf36-02",
           "q-clf36-03",
@@ -11016,15 +11143,16 @@
           "q-clf36-16"
         ],
         "flashcardIds": [
-          "fc-clf36-s3",
+          "fc-clf-gap-gateway-cache",
+          "fc-clf36-backup",
           "fc-clf36-classes",
-          "fc-clf36-lifecycle",
           "fc-clf36-ebs",
-          "fc-clf36-instance-store",
           "fc-clf36-efs",
           "fc-clf36-fsx",
           "fc-clf36-gateway",
-          "fc-clf36-backup",
+          "fc-clf36-instance-store",
+          "fc-clf36-lifecycle",
+          "fc-clf36-s3",
           "fc-clf36-storage-models",
           "fc-clf36-traps"
         ],
@@ -14035,7 +14163,8 @@
           "q-clf41-16",
           "q-clf41-17",
           "q-clf41-18",
-          "q-clf41-19"
+          "q-clf41-19",
+          "q-clf-assess-41-mixed-purchase-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf41-ondemand-cue",
@@ -14052,8 +14181,11 @@
           "fc-clf41-spot-guarantee"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "Inspected mapped questions; new integrated scenario tests an additional constraint/sequence with all-option explanations and current official sources. Existing repeated patterns remain documented in assessmentQualityReview.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-assess-41-mixed-purchase-01"
+        ]
       },
       "freshness": {
         "scope": "Current official domain retrieved",
@@ -14093,7 +14225,8 @@
           "q-clf41-16",
           "q-clf41-17",
           "q-clf41-18",
-          "q-clf41-19"
+          "q-clf41-19",
+          "q-clf-assess-41-mixed-purchase-01"
         ],
         "flashcardIds": [
           "fc-clf41-ondemand-cue",
@@ -14317,7 +14450,8 @@
           "q-clf41-16",
           "q-clf41-17",
           "q-clf41-18",
-          "q-clf41-19"
+          "q-clf41-19",
+          "q-clf-assess-41-mixed-purchase-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf41-ondemand-cue",
@@ -14334,8 +14468,11 @@
           "fc-clf41-spot-guarantee"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "Inspected mapped questions; new integrated scenario tests an additional constraint/sequence with all-option explanations and current official sources. Existing repeated patterns remain documented in assessmentQualityReview.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-assess-41-mixed-purchase-01"
+        ]
       },
       "freshness": {
         "scope": "Current official domain retrieved",
@@ -14375,7 +14512,8 @@
           "q-clf41-16",
           "q-clf41-17",
           "q-clf41-18",
-          "q-clf41-19"
+          "q-clf41-19",
+          "q-clf-assess-41-mixed-purchase-01"
         ],
         "flashcardIds": [
           "fc-clf41-ondemand-cue",
@@ -14423,23 +14561,41 @@
         "bulletOrdinal": 2,
         "retrievedTextLine": 28,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Describing Reserved Instance flexibility",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html",
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            108,
+            109
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Reservation utilization/coverage reporting context only; no current RI flexibility rules are taught in this book."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-billing-support#objective-clf-c02-4-1"
+          "aws-clf-billing-support#commitment-sharing-and-cost-tags"
         ],
-        "rationale": "Existing notes say flexibility depends on attributes without explaining regional versus zonal capacity and supported size flexibility."
+        "rationale": "Regional size flexibility is distinguished from zonal capacity reservation with eligibility limits."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-30",
+          "q-aws-review-clf-c02-4-1",
           "q-clf-34",
           "q-clf-35",
           "q-clf-39",
           "q-clf-40",
-          "q-aws-review-clf-c02-4-1",
+          "q-clf-gap-ri-flex-01",
           "q-clf41-01",
           "q-clf41-02",
           "q-clf41-03",
@@ -14475,29 +14631,33 @@
           "fc-clf41-spot-guarantee"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-ri-flex-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "RI regional/zonal capacity behavior verified 2026-11-17; eligible size flexibility still needs focused verification."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-billing-support#objective-clf-c02-4-1",
+        "lessonHref": "/notes/aws-clf-billing-support#commitment-sharing-and-cost-tags",
         "quizHref": "/quiz?topic=aws-clf-billing-support",
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "Existing notes say flexibility depends on attributes without explaining regional versus zonal capacity and supported size flexibility.",
-      "nextAction": "Clarify scope/capacity now; verify and teach eligible size-flexibility conditions in next batch.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-30",
+          "q-aws-review-clf-c02-4-1",
           "q-clf-34",
           "q-clf-35",
           "q-clf-39",
           "q-clf-40",
-          "q-aws-review-clf-c02-4-1",
+          "q-clf-gap-ri-flex-01",
           "q-clf41-01",
           "q-clf41-02",
           "q-clf41-03",
@@ -14564,23 +14724,41 @@
         "bulletOrdinal": 3,
         "retrievedTextLine": 30,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Describing Reserved Instance behavior in AWS Organizations",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            24,
+            108,
+            109
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "General Organizations/consolidated billing and reservation report context only; no current discount-sharing settings are established."
+        }
       },
       "teaching": {
-        "classification": "mention",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-billing-support#objective-clf-c02-4-1"
+          "aws-clf-billing-support#commitment-sharing-and-cost-tags"
         ],
-        "rationale": "A direction to review eligible discount sharing does not explain payer/member allocation or sharing settings."
+        "rationale": "Organization discount sharing is qualified by sharing preferences, owner settings, and eligible use."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-30",
+          "q-aws-review-clf-c02-4-1",
           "q-clf-34",
           "q-clf-35",
           "q-clf-39",
           "q-clf-40",
-          "q-aws-review-clf-c02-4-1",
+          "q-clf-gap-ri-share-01",
           "q-clf41-01",
           "q-clf41-02",
           "q-clf41-03",
@@ -14616,29 +14794,33 @@
           "fc-clf41-spot-guarantee"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-ri-share-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-billing-support#objective-clf-c02-4-1",
+        "lessonHref": "/notes/aws-clf-billing-support#commitment-sharing-and-cost-tags",
         "quizHref": "/quiz?topic=aws-clf-billing-support",
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "A direction to review eligible discount sharing does not explain payer/member allocation or sharing settings.",
-      "nextAction": "Verify current consolidated-billing sharing behavior; teach one account example.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
           "q-aws-found-30",
+          "q-aws-review-clf-c02-4-1",
           "q-clf-34",
           "q-clf-35",
           "q-clf-39",
           "q-clf-40",
-          "q-aws-review-clf-c02-4-1",
+          "q-clf-gap-ri-share-01",
           "q-clf41-01",
           "q-clf41-02",
           "q-clf41-03",
@@ -14705,14 +14887,22 @@
         "bulletOrdinal": 4,
         "retrievedTextLine": 31,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Understanding incoming data transfer costs and outgoing data transfer costs (for example, from one Region to another Region, within the same Region)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/key-principles.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html",
+          "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/download-objects.html"
+        ]
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
           "aws-clf-billing-support#pricing-factors"
         ],
-        "rationale": "Transfer paths and service-specific rules are named, but incoming/outgoing and same-Region exceptions have no worked comparison."
+        "rationale": "The lesson distinguishes general inbound and same-Region behavior from potentially chargeable outgoing/inter-Region paths and service-specific exceptions. A worked scenario and focused question test the decision; no current dollar rates are asserted."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
@@ -14740,7 +14930,8 @@
           "q-clf41-16",
           "q-clf41-17",
           "q-clf41-18",
-          "q-clf41-19"
+          "q-clf41-19",
+          "q-clf-gap-transfer-costs-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf41-ondemand-cue",
@@ -14757,21 +14948,24 @@
           "fc-clf41-spot-guarantee"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New focused scenario checked against current cited AWS documentation; all answer options are explained. Existing task-pool association is not evidence of independent learner performance.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-transfer-costs-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 Domain 4 page retrieved 2026-11-18",
+        "technical": "Current AWS pricing/billing documentation checked 2026-11-18; no fixed or current dollar rates are claimed."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-billing-support#pricing-factors",
+        "lessonHref": "/notes/aws-clf-billing-support#objective-clf-c02-4-1",
         "quizHref": "/quiz?topic=aws-clf-billing-support",
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "Transfer paths and service-specific rules are named, but incoming/outgoing and same-Region exceptions have no worked comparison.",
-      "nextAction": "Verify selected service paths and teach a small qualified example without fixed prices.",
+      "remainingGap": "No material gap remains for this scoped recognition decision after the qualified transfer example and scenario question; service-specific pricing still requires checking current service pricing.",
+      "nextAction": "Retain status partial pending broader task-level coverage and fresh assessment review.",
       "resources": {
         "questionIds": [
           "q-aws-found-30",
@@ -14798,7 +14992,8 @@
           "q-clf41-16",
           "q-clf41-17",
           "q-clf41-18",
-          "q-clf41-19"
+          "q-clf41-19",
+          "q-clf-gap-transfer-costs-01"
         ],
         "flashcardIds": [
           "fc-clf41-ondemand-cue",
@@ -14987,14 +15182,21 @@
         "bulletOrdinal": 1,
         "retrievedTextLine": 38,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Billing support and information",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html",
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html",
+          "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+        ]
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
           "aws-clf-billing-support#objective-clf-c02-4-2"
         ],
-        "rationale": "The chapter covers analysis and estimates; authoritative invoice versus analytical datasets is clearer in questions than in teaching."
+        "rationale": "The lesson distinguishes issued invoice/Bills data, current-period estimates, analytical Cost Explorer data, and granular Cost and Usage Report records; a scenario asks which source determines the amount owed."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
@@ -15024,7 +15226,8 @@
           "q-clf42-15",
           "q-clf42-16",
           "q-clf42-17",
-          "q-clf42-18"
+          "q-clf42-18",
+          "q-clf-gap-bill-source-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf42-calculator",
@@ -15039,12 +15242,15 @@
           "fc-clf42-tags-org"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New focused scenario checked against current cited AWS documentation; all answer options are explained. Existing task-pool association is not evidence of independent learner performance.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-bill-source-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 Domain 4 page retrieved 2026-11-18",
+        "technical": "Current AWS pricing/billing documentation checked 2026-11-18; no fixed or current dollar rates are claimed."
       },
       "navigation": {
         "lessonHref": "/notes/aws-clf-billing-support#objective-clf-c02-4-2",
@@ -15052,8 +15258,8 @@
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "The chapter covers analysis and estimates; authoritative invoice versus analytical datasets is clearer in questions than in teaching.",
-      "nextAction": "Add a billing-information comparison using the existing question distinction.",
+      "remainingGap": "No material gap remains for the reviewed invoice-versus-analytics decision. The broad objective remains partial pending full objective-level coverage and assessment criteria.",
+      "nextAction": "Retain status partial pending broader task-level coverage and fresh assessment review.",
       "resources": {
         "questionIds": [
           "q-aws-found-28",
@@ -15082,7 +15288,8 @@
           "q-clf42-15",
           "q-clf42-16",
           "q-clf42-17",
-          "q-clf42-18"
+          "q-clf42-18",
+          "q-clf-gap-bill-source-01"
         ],
         "flashcardIds": [
           "fc-clf42-calculator",
@@ -15600,7 +15807,8 @@
           "q-clf42-15",
           "q-clf42-16",
           "q-clf42-17",
-          "q-clf42-18"
+          "q-clf42-18",
+          "q-clf-assess-42-budget-action-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf42-calculator",
@@ -15615,8 +15823,11 @@
           "fc-clf42-tags-org"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "Inspected mapped questions; new integrated scenario tests an additional constraint/sequence with all-option explanations and current official sources. Existing repeated patterns remain documented in assessmentQualityReview.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-assess-42-budget-action-01"
+        ]
       },
       "freshness": {
         "scope": "Current official domain retrieved",
@@ -15658,7 +15869,8 @@
           "q-clf42-15",
           "q-clf42-16",
           "q-clf42-17",
-          "q-clf42-18"
+          "q-clf42-18",
+          "q-clf-assess-42-budget-action-01"
         ],
         "flashcardIds": [
           "fc-clf42-calculator",
@@ -15995,26 +16207,46 @@
         "bulletOrdinal": 4,
         "retrievedTextLine": 53,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Understanding various types of cost allocation tags and their relation to billing reports (for example, AWS Cost and Usage Report)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html",
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html",
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/custom-tags.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            23,
+            24
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Distinguishes AWS-generated and user-defined cost-allocation tags; does not establish current activation/backfill timing."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-billing-support#objective-clf-c02-4-2"
+          "aws-clf-billing-support#commitment-sharing-and-cost-tags"
         ],
-        "rationale": "User tag activation and CUR are taught; AWS-generated versus user-defined tags are not compared. Historical backfill behavior needs current verification."
+        "rationale": "Actual lesson explains AWS-generated versus user-defined tags, separate activation, management-account activation-state backfill for up to 12 months only when resource tags existed historically, and non-immediate report refresh."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
           "q-aws-found-28",
           "q-aws-found-29",
+          "q-aws-review-clf-c02-4-2",
           "q-clf-31",
           "q-clf-32",
           "q-clf-33",
           "q-clf-36",
           "q-clf-37",
+          "q-clf-gap-tags-01",
           "q-clf-multi-04",
-          "q-aws-review-clf-c02-4-2",
           "q-clf42-01",
           "q-clf42-02",
           "q-clf42-03",
@@ -16035,44 +16267,49 @@
           "q-clf42-18"
         ],
         "associatedTaskFlashcardIds": [
-          "fc-clf42-calculator",
-          "fc-clf42-explorer",
+          "fc-clf-gap-billing-tags",
           "fc-clf42-budgets",
+          "fc-clf42-calculator",
           "fc-clf42-cur",
-          "fc-clf42-tags",
-          "fc-clf42-organizations",
           "fc-clf42-delay",
-          "fc-clf42-pair",
+          "fc-clf42-explorer",
           "fc-clf42-invoice",
+          "fc-clf42-organizations",
+          "fc-clf42-pair",
+          "fc-clf42-tags",
           "fc-clf42-tags-org"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-tags-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 Domain 4 page and AWS cost-allocation-tag documentation retrieved 2026-11-18",
+        "technical": "AWS Billing documentation confirms separate activation, up-to-12-month activation-state backfill limited to months where resource tags historically existed, management-account access, request limits and delayed report refresh."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-billing-support#objective-clf-c02-4-2",
+        "lessonHref": "/notes/aws-clf-billing-support#commitment-sharing-and-cost-tags",
         "quizHref": "/quiz?topic=aws-clf-billing-support",
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "User tag activation and CUR are taught; AWS-generated versus user-defined tags are not compared. Historical backfill behavior needs current verification.",
-      "nextAction": "Verify tag types and backfill before revising absolute historical-attribution statements.",
+      "remainingGap": null,
+      "nextAction": "Recheck when AWS changes the tag backfill workflow; no unsupported service-wide tag guarantee is taught.",
       "resources": {
         "questionIds": [
           "q-aws-found-28",
           "q-aws-found-29",
+          "q-aws-review-clf-c02-4-2",
           "q-clf-31",
           "q-clf-32",
           "q-clf-33",
           "q-clf-36",
           "q-clf-37",
+          "q-clf-gap-tags-01",
           "q-clf-multi-04",
-          "q-aws-review-clf-c02-4-2",
           "q-clf42-01",
           "q-clf42-02",
           "q-clf42-03",
@@ -16093,15 +16330,16 @@
           "q-clf42-18"
         ],
         "flashcardIds": [
-          "fc-clf42-calculator",
-          "fc-clf42-explorer",
+          "fc-clf-gap-billing-tags",
           "fc-clf42-budgets",
+          "fc-clf42-calculator",
           "fc-clf42-cur",
-          "fc-clf42-tags",
-          "fc-clf42-organizations",
           "fc-clf42-delay",
-          "fc-clf42-pair",
+          "fc-clf42-explorer",
           "fc-clf42-invoice",
+          "fc-clf42-organizations",
+          "fc-clf42-pair",
+          "fc-clf42-tags",
           "fc-clf42-tags-org"
         ],
         "drillItemIds": [
@@ -16288,14 +16526,19 @@
         "bulletOrdinal": 2,
         "retrievedTextLine": 60,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html",
+          "https://aws.amazon.com/premiumsupport/plans/"
+        ]
       },
       "teaching": {
         "classification": "direct teaching",
         "lessonEvidenceIds": [
           "aws-clf-billing-support#support-plan-current"
         ],
-        "rationale": "The cited explanation or comparison addresses this scoped decision. This is a teaching judgment, not inferred from artifact counts."
+        "rationale": "The lesson and recognition table use current plan names and high-level fit cues, explicitly direct learners to verify entitlements, and avoid response/resolution guarantees or current pricing claims."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
@@ -16345,8 +16588,8 @@
         "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Current support-plan names and broad positioning verified 2026-11-17. Numeric SLA, response and pricing claims were not added or freshly audited."
+        "scope": "Current official CLF-C02 Domain 4 page retrieved 2026-11-18",
+        "technical": "Current AWS Support Plans documentation checked 2026-11-18 for current tier names and legacy-plan transition notice; no exhaustive entitlement or price comparison is claimed."
       },
       "navigation": {
         "lessonHref": "/notes/aws-clf-billing-support#support-plan-current",
@@ -16619,7 +16862,8 @@
           "q-clf43-18",
           "q-clf43-19",
           "q-clf43-20",
-          "q-clf43-21"
+          "q-clf43-21",
+          "q-clf-assess-43-health-case-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf43-docs",
@@ -16639,8 +16883,11 @@
           "fc-clf43-experts"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "Inspected mapped questions; new integrated scenario tests an additional constraint/sequence with all-option explanations and current official sources. Existing repeated patterns remain documented in assessmentQualityReview.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-assess-43-health-case-01"
+        ]
       },
       "freshness": {
         "scope": "Current official domain retrieved",
@@ -16678,7 +16925,8 @@
           "q-clf43-18",
           "q-clf43-19",
           "q-clf43-20",
-          "q-clf43-21"
+          "q-clf43-21",
+          "q-clf-assess-43-health-case-01"
         ],
         "flashcardIds": [
           "fc-clf43-docs",
@@ -17033,14 +17281,19 @@
         "bulletOrdinal": 3,
         "retrievedTextLine": 71,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html",
+          "https://aws.amazon.com/premiumsupport/plans/"
+        ]
       },
       "teaching": {
         "classification": "direct teaching",
         "lessonEvidenceIds": [
           "aws-clf-billing-support#support-plan-current"
         ],
-        "rationale": "The cited explanation or comparison addresses this scoped decision. This is a teaching judgment, not inferred from artifact counts."
+        "rationale": "The lesson and recognition table use current plan names and high-level fit cues, explicitly direct learners to verify entitlements, and avoid response/resolution guarantees or current pricing claims."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
@@ -17090,8 +17343,8 @@
         "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Current support-plan names and broad positioning verified 2026-11-17. Numeric SLA, response and pricing claims were not added or freshly audited."
+        "scope": "Current official CLF-C02 Domain 4 page retrieved 2026-11-18",
+        "technical": "Current AWS Support Plans documentation checked 2026-11-18 for current tier names and legacy-plan transition notice; no exhaustive entitlement or price comparison is claimed."
       },
       "navigation": {
         "lessonHref": "/notes/aws-clf-billing-support#support-plan-current",
@@ -17215,7 +17468,8 @@
           "q-clf43-18",
           "q-clf43-19",
           "q-clf43-20",
-          "q-clf43-21"
+          "q-clf43-21",
+          "q-clf-assess-43-health-case-01"
         ],
         "associatedTaskFlashcardIds": [
           "fc-clf43-docs",
@@ -17235,8 +17489,11 @@
           "fc-clf43-experts"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "Inspected mapped questions; new integrated scenario tests an additional constraint/sequence with all-option explanations and current official sources. Existing repeated patterns remain documented in assessmentQualityReview.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-assess-43-health-case-01"
+        ]
       },
       "freshness": {
         "scope": "Current official domain retrieved",
@@ -17274,7 +17531,8 @@
           "q-clf43-18",
           "q-clf43-19",
           "q-clf43-20",
-          "q-clf43-21"
+          "q-clf43-21",
+          "q-clf-assess-43-health-case-01"
         ],
         "flashcardIds": [
           "fc-clf43-docs",
@@ -17629,19 +17887,37 @@
         "bulletOrdinal": 7,
         "retrievedTextLine": 78,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Identifying the benefits of being an AWS Partner (for example, partner training and certification, partner events, partner volume discounts)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://aws.amazon.com/partners/funding/",
+          "https://docs.aws.amazon.com/partner-central/latest/getting-started/partner-funding.html",
+          "https://aws.amazon.com/partners/programs/solution-provider/"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            34
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Describes partner training/certification programs and events at a high level; current eligibility and benefits rely on AWS partner documentation."
+        }
       },
       "teaching": {
-        "classification": "missing support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-billing-support#support"
+          "aws-clf-billing-support#partner-benefits-and-marketplace-controls"
         ],
-        "rationale": "The chapter mentions partner roles but does not teach training, events or commercial benefits of partner participation."
+        "rationale": "Partner enablement and commercial benefits are taught as program-dependent and not guaranteed."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
-          "q-clf-38",
           "q-aws-review-clf-c02-4-3",
+          "q-clf-38",
+          "q-clf-gap-partner-benefits-01",
           "q-clf43-01",
           "q-clf43-02",
           "q-clf43-03",
@@ -17682,25 +17958,29 @@
           "fc-clf43-experts"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-partner-benefits-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-billing-support#support",
+        "lessonHref": "/notes/aws-clf-billing-support#partner-benefits-and-marketplace-controls",
         "quizHref": "/quiz?topic=aws-clf-billing-support",
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "The chapter mentions partner roles but does not teach training, events or commercial benefits of partner participation.",
-      "nextAction": "Use current AWS Partner benefits documentation; avoid promising universal discounts.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
-          "q-clf-38",
           "q-aws-review-clf-c02-4-3",
+          "q-clf-38",
+          "q-clf-gap-partner-benefits-01",
           "q-clf43-01",
           "q-clf43-02",
           "q-clf43-03",
@@ -17778,19 +18058,39 @@
         "bulletOrdinal": 8,
         "retrievedTextLine": 80,
         "retrievedOn": "2026-11-17",
-        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording."
+        "identityRule": "Task + group + ordinal is the exact source identity; scopeLabel is an original short label, not replacement official wording.",
+        "exactOfficialWording": "Identifying the key services that AWS Marketplace offers (for example, cost management, governance and entitlement)",
+        "checkedAgainstCurrentOfficialPageOn": "2026-11-18",
+        "technicalSourceUrls": [
+          "https://docs.aws.amazon.com/marketplace/latest/buyerguide/buyer-iam-users-groups-policies.html",
+          "https://docs.aws.amazon.com/marketplace/latest/buyerguide/sharing-licenses.html",
+          "https://docs.aws.amazon.com/license-manager/latest/userguide/granted-licenses.html",
+          "https://docs.aws.amazon.com/marketplace/latest/buyerguide/what-is-marketplace.html"
+        ],
+        "studyGuideReferences": {
+          "filename": "AWS Certified Cloud Practitioner Study Guide eBook.pdf",
+          "edition": "Second Edition, CLF-C02",
+          "sha256": "4b48505f625d908be19be7b41d092d1d470d64433ed7103488f50356845479e6",
+          "pages": [
+            121,
+            122
+          ],
+          "use": "Conceptual cross-check only; current AWS documentation governs time-sensitive claims. No proprietary passage or question copied.",
+          "support": "Marketplace procurement overview; does not establish modern governance or License Manager entitlement sharing."
+        }
       },
       "teaching": {
-        "classification": "partial support",
+        "classification": "direct teaching",
         "lessonEvidenceIds": [
-          "aws-clf-billing-support#objective-clf-c02-4-3"
+          "aws-clf-billing-support#partner-benefits-and-marketplace-controls"
         ],
-        "rationale": "Marketplace procurement/entitlement is named but cost-management and governance capabilities are not explained."
+        "rationale": "Marketplace procurement governance is distinguished from product entitlements and eligible license sharing."
       },
       "assessment": {
         "associatedTaskQuestionIds": [
-          "q-clf-38",
           "q-aws-review-clf-c02-4-3",
+          "q-clf-38",
+          "q-clf-gap-marketplace-governance-01",
           "q-clf43-01",
           "q-clf43-02",
           "q-clf43-03",
@@ -17831,25 +18131,29 @@
           "fc-clf43-experts"
         ],
         "associationIsBulletCoverage": false,
-        "quality": "Existing task pools include recognition and scenarios; source labels do not establish answer correctness. No exhaustive item-by-item quality claim is made for this row. See reviewed decisions and first-batch item reviews.",
-        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion."
+        "quality": "New scenario checked against its cited official service documentation; all options are explained. Existing task-pool quality is not inferred from association.",
+        "independence": "Repeated patterns and lesson-derived worked decisions are not independent evidence; no learner-readiness conclusion.",
+        "reviewedNewQuestionIds": [
+          "q-clf-gap-marketplace-governance-01"
+        ]
       },
       "freshness": {
-        "scope": "Current official domain retrieved",
-        "technical": "Not individually reverified against current service documentation; see source register and verified batch exceptions."
+        "scope": "Current official CLF-C02 domain page retrieved",
+        "technical": "The referenced current AWS service documentation was reviewed on 2026-11-18; detailed limits remain subject to source updates."
       },
       "navigation": {
-        "lessonHref": "/notes/aws-clf-billing-support#objective-clf-c02-4-3",
+        "lessonHref": "/notes/aws-clf-billing-support#partner-benefits-and-marketplace-controls",
         "quizHref": "/quiz?topic=aws-clf-billing-support",
         "flashcardHref": "/flashcards?topic=aws-clf-billing-support",
         "verification": "Source route/anchor inspected; rendered batch checks recorded separately."
       },
-      "remainingGap": "Marketplace procurement/entitlement is named but cost-management and governance capabilities are not explained.",
-      "nextAction": "Teach procurement governance and entitlements from current Marketplace docs.",
+      "remainingGap": "Task status remains unchanged; other bullets, assessment independence, and objective-level breadth still require review.",
+      "nextAction": "Retain existing objective status; review remaining task subskills and assessment evidence before any status change.",
       "resources": {
         "questionIds": [
-          "q-clf-38",
           "q-aws-review-clf-c02-4-3",
+          "q-clf-38",
+          "q-clf-gap-marketplace-governance-01",
           "q-clf43-01",
           "q-clf43-02",
           "q-clf43-03",
@@ -18900,7 +19204,8 @@
         "Reserve capacity in an Availability Zone | Capacity Reservation",
         "Dedicated physical host with host-level visibility or licensing needs | Dedicated Host",
         "Dedicated hardware tenancy without host allocation control | Dedicated Instance"
-      ]
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-billing-support#pricing-factors": {
       "kind": "lesson",
@@ -18915,6 +19220,13 @@
         "Inbound and outbound transfer may price differently. Inter-Region, inter-AZ, and service-to-service transfer have service-specific rules, so architecture placement affects cost.",
         "Free Tier benefits have service, usage, account, and time eligibility conditions. Check the current Free Tier terms and monitor usage; never treat a Free Tier label as an unlimited or permanent waiver.",
         "Pricing questions are relative decisions: identify commitment, interruption tolerance, capacity guarantee, tenancy, storage access pattern, and transfer path before comparing rates."
+      ],
+      "reviewedOn": "2026-11-18",
+      "technicalSources": [
+        "https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/key-principles.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/download-objects.html"
       ]
     },
     "aws-clf-billing-support#objective-clf-c02-4-1": {
@@ -18930,8 +19242,10 @@
         "Review RI flexibility and eligible consolidated-billing discount sharing within Organizations. Data transfer into/out of services, across AZs/Regions and to users has service-specific rules. Storage pricing includes requests, retrieval, minimum durations and transitions as well as stored GB.",
         "Worked decision: A team buys a regional RI discount and then assumes a particular AZ is guaranteed to have capacity at launch time. What is the problem? Choose A regional discount and an AZ capacity reservation are different commitments. Discount eligibility does not guarantee zonal capacity. Review the particular RI scope and a suitable capacity-reservation design when launch availability matters. Savings Plans do not reserve unlimited capacity, and Spot remains interruptible.",
         "Transfer exercise: Compare a commitment discount, a capacity reservation and dedicated tenancy for the same workload. Add transfer and archive-retrieval costs to show why hourly compute price is not the whole estimate.",
-        "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
-      ]
+        "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "Transfer example: Uploading data into AWS is generally not charged for inbound transfer, while sending data out to the internet or between Regions may incur transfer charges; the exact path and service matter. AWS states that most inbound and same-Region service-to-service transfer is not charged, but exceptions apply. For example, same-Region S3 downloads within AWS can avoid data-transfer charges, while GET request charges still apply. Compare the current pricing rules for each service and direction; do not treat “inbound is free” or “same Region is free” as universal."
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-billing-support#objective-clf-c02-4-2": {
       "kind": "lesson",
@@ -18947,7 +19261,18 @@
         "The Cost and Usage Report provides detailed cost and usage records for granular analysis. It is a reporting dataset, not a real-time spending cap.",
         "Worked decision: Resources are tagged Project=Website, but finance cannot group their costs by that key. What should be checked first? Choose Whether the user-defined tag key is activated for cost allocation and billing data has become available. User-defined cost allocation tags need activation and time to appear in billing data. Network rules, CloudTrail and larger instances do not activate billing dimensions.",
         "Transfer exercise: Build a paper estimate, define actual/forecast budget alerts and describe the notification test. Activate a cost tag in a permitted training account or explain the workflow without creating paid resources.",
-        "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+        "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "Determine the amount owed for a closed billing period | Issued invoice / Bills page; the invoice is the final amount owed.",
+        "See the current month before close | Bills page shows an estimate based on metered usage to date.",
+        "Analyze trends, forecasts, or finer dimensions | Cost Explorer; its analytical presentation can differ from invoice/billing data.",
+        "Inspect detailed usage and cost records | Cost and Usage Report; use it for granular analysis, not as the payable invoice.",
+        "If Cost Explorer and an invoice differ, use the invoice to identify the amount owed for a closed period. The datasets can differ in timing, grouping, granularity, rounding, and presentation of discounts, credits, refunds, or taxes. Use Cost Explorer to analyze patterns and investigate the difference."
+      ],
+      "reviewedOn": "2026-11-18",
+      "technicalSources": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html",
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
       ]
     },
     "aws-clf-billing-support#cost-tools": {
@@ -18963,7 +19288,8 @@
         "Set a threshold and alert | AWS Budgets",
         "Detailed billing and usage data | AWS Cost and Usage Report",
         "Allocate spend by project/team | Cost allocation tags"
-      ]
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-billing-support#organizations": {
       "kind": "lesson",
@@ -18974,7 +19300,8 @@
       "href": "/notes/aws-clf-billing-support#organizations",
       "excerpts": [
         "AWS Organizations can centralize account management and consolidated billing. Cost allocation and account structure help separate ownership while centralizing financial visibility."
-      ]
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-billing-support#support": {
       "kind": "lesson",
@@ -18987,7 +19314,8 @@
         "Use official AWS documentation, whitepapers, Prescriptive Guidance, Knowledge Center, re:Post, and support resources based on the need.",
         "Support-plan questions test which level of guidance and response is appropriate; avoid memorizing old plan details without checking the current AWS Support page.",
         "AWS Partner Network includes partners that provide software and professional services around AWS."
-      ]
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-billing-support#support-plan-current": {
       "kind": "lesson",
@@ -19002,7 +19330,8 @@
         "Business-critical workloads needing strategic guidance and a Technical Account Manager | Enterprise Support",
         "Mission-critical workloads needing the highest proactive operations/resilience assistance | Unified Operations",
         "Developer Support and Business Support stopped accepting new subscriptions on December 2, 2025 and are scheduled for discontinuation on January 1, 2027. Enterprise On-Ramp is also transitional. Do not present these legacy names as the current standard paid-plan lineup. Verify entitlements and response details on the current AWS Support plan page."
-      ]
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-billing-support#objective-clf-c02-4-3": {
       "kind": "lesson",
@@ -19028,7 +19357,8 @@
         "AWS-delivered project expertise | Professional Services or solutions architect",
         "Transfer exercise: Compare current support offerings using the official plan table, record the checked date, and distinguish first-response targets from guaranteed resolution. Identify the right channel for a bill question, an outage and suspected abuse.",
         "Scope reference: https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
-      ]
+      ],
+      "reviewedOn": "2026-11-18"
     },
     "aws-clf-technology-services#s3-class-decisions": {
       "kind": "lesson",
@@ -19051,24 +19381,90 @@
         "Before changing a storage class, write down the maximum acceptable retrieval delay, whether data can be recreated, expected object size and retention, and the cost of requests, retrieval and transitions. A lifecycle rule manages eligible transitions or expiration; it does not prove a restore works.",
         "Sources checked 2026-11-17: Amazon S3 User Guide, Understanding and managing Amazon S3 storage classes; Understanding archive retrieval options. Textbook structure: Chapter 8, printed pages 139–142 (PDF pages 177–180). Current AWS documentation controls service behavior."
       ]
+    },
+    "aws-clf-access-management#root-only-tasks-and-policy-ownership": {
+      "topicId": "aws-clf-access-management",
+      "sectionId": "root-only-tasks-and-policy-ownership",
+      "heading": "Root-only tasks, credential storage and policy ownership",
+      "href": "/notes/aws-clf-access-management#root-only-tasks-and-policy-ownership",
+      "excerpts": [
+        "Root-only tasks depend on account configuration. In a standalone account, the root user can restore permissions if its only IAM administrator locks itself out; closing the account also requires root credentials. With centralized root access enabled for an AWS Organizations member account, an authorized management account or delegated administrator can perform some privileged root tasks. That does not make every root task centrally available. Keep root protected and check the current task list for the exact account arrangement.",
+        "An application secret such as a database password | AWS Secrets Manager | Purpose-built secret lifecycle and rotation needs",
+        "A parameter or configuration value, optionally encrypted | AWS Systems Manager Parameter Store | Hierarchical parameter storage and application configuration",
+        "A reusable policy maintained by AWS | AWS managed policy | AWS owns updates; review its permissions before attaching",
+        "A reusable policy maintained by the customer | Customer-managed policy | Customer controls policy contents and updates; reusable across identities",
+        "A policy embedded in one identity | Inline policy | One-to-one attachment; not a reusable managed policy",
+        "Example: if an application needs a rotatable database credential, use Secrets Manager; if an operations team needs hierarchical configuration parameters, Parameter Store may fit. For permissions, select a customer-managed policy when your team must control a reusable permission set. An AWS-managed policy is convenient but its owner controls future changes."
+      ]
+    },
+    "aws-clf-security-compliance#credential-report-interpretation": {
+      "topicId": "aws-clf-security-compliance",
+      "sectionId": "credential-report-interpretation",
+      "heading": "Interpret an IAM credential report",
+      "href": "/notes/aws-clf-security-compliance#credential-report-interpretation",
+      "excerpts": [
+        "An IAM credential report is an account-level inventory of IAM users and selected IAM-managed credential status, including passwords, the first two access keys per user, MFA devices, and X.509 signing certificates. Use it to spot stale or unprotected IAM credentials during an audit. It does not show service-specific credentials or additional access keys beyond the first two; follow up with the relevant APIs or service tools when the question asks for complete visibility.",
+        "Example: a report shows an IAM user with an active access key and no MFA. That is evidence about the listed IAM credential, not proof that the user has no other credentials or that a workload uses no service-specific secret. Investigate the specific credential type and apply least privilege."
+      ]
+    },
+    "aws-clf-technology-services#file-gateway-cache-decisions": {
+      "topicId": "aws-clf-technology-services",
+      "sectionId": "file-gateway-cache-decisions",
+      "heading": "S3 File Gateway: local cache and cloud-backed objects",
+      "href": "/notes/aws-clf-technology-services#file-gateway-cache-decisions",
+      "excerpts": [
+        "Amazon S3 File Gateway presents file interfaces such as NFS or SMB while storing file data as objects in an S3 bucket. A local cache keeps recently accessed data available with lower latency; it is a performance cache, not the authoritative durable copy. Cache capacity affects how much recently used data can stay local. When a client accesses data that is not cached, the gateway retrieves it from S3. If applications write directly to the bucket outside the gateway, use cache refresh behavior so the gateway can discover changed objects.",
+        "Example: a branch office uses NFS for a shared dataset backed by S3 and repeatedly reads a small hot subset. File Gateway provides the familiar file protocol and local cache for that subset; S3 remains the cloud-backed store. Choose a different design if the requirement is block storage or a POSIX file system shared directly by cloud instances."
+      ]
+    },
+    "aws-clf-billing-support#commitment-sharing-and-cost-tags": {
+      "topicId": "aws-clf-billing-support",
+      "sectionId": "commitment-sharing-and-cost-tags",
+      "heading": "Commitment scope, discount sharing and billing tags",
+      "href": "/notes/aws-clf-billing-support#commitment-sharing-and-cost-tags",
+      "excerpts": [
+        "EC2 Reserved Instance flexibility is conditional on its attributes and scope. A regional RI can provide eligible instance-size flexibility for supported Linux/Unix shared-tenancy usage within the same family and Region; it does not reserve a particular Availability Zone’s capacity. A zonal RI is tied to an Availability Zone and can provide capacity reservation for matching usage, but does not provide regional size flexibility. Check current eligibility rules before treating an RI as interchangeable.",
+        "In AWS Organizations consolidated billing, eligible RI and Savings Plans discounts can be shared with linked accounts when discount sharing is enabled and the applicable ownership and billing settings permit it. The management account can control sharing preferences; a commitment is not a guaranteed discount for every account or workload. Review the payer and owner settings and actual eligible usage.",
+        "Billing tags have two sources: AWS-generated tags and user-defined tags. AWS or an AWS Marketplace seller creates and applies AWS-generated tags; customers define and apply user-defined tags. Both types must be activated separately for cost reporting. For historical correction, management-account users can request a backfill of the current activation status for up to 12 months, but cost data has tag values only for months when the resource tag was already present. A request cannot overlap another backfill and can be submitted only once every 24 hours; Cost Explorer, Data Exports, and the Cost and Usage Report refresh on their own cadence, so updated data is not immediate. A newly applied tag does not rewrite earlier resource history.",
+        "Example: a finance team wants to allocate next month’s EC2 costs by project. Apply a consistent user-defined Project tag, activate that cost allocation key, and allow time for it to appear in billing data. Separately check RI sharing configuration and eligible usage; neither tags nor consolidated billing alone guarantee that a particular account receives a commitment discount."
+      ],
+      "reviewedOn": "2026-11-18",
+      "technicalSources": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html",
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html"
+      ]
+    },
+    "aws-clf-billing-support#partner-benefits-and-marketplace-controls": {
+      "topicId": "aws-clf-billing-support",
+      "sectionId": "partner-benefits-and-marketplace-controls",
+      "heading": "Partner benefits and Marketplace purchase controls",
+      "href": "/notes/aws-clf-billing-support#partner-benefits-and-marketplace-controls",
+      "excerpts": [
+        "The AWS Partner Network serves organizations that build, sell, or deliver services around AWS. Depending on program, tier, eligibility, geography, and current terms, partner resources can include training and certification enablement, technical or go-to-market support, funding, and co-selling opportunities. Benefits are conditional; partner membership does not guarantee a particular discount, funding award, customer lead, or support entitlement.",
+        "AWS Marketplace is a catalog and procurement channel for third-party software, data, and services. Before purchase, an organization can govern who may discover, subscribe to, and deploy products through IAM permissions, procurement workflows, private offers, and organization-level controls. After purchase, an entitlement or license represents the rights granted for that product and contract; it is distinct from permission to administer AWS Marketplace itself. Eligible licenses can be shared across accounts using AWS License Manager, subject to product and subscription rules.",
+        "Example: a team needs a vendor security product for several AWS accounts. A buyer administrator reviews the offer and terms, restricts subscription rights to approved procurement roles, then uses the product’s supported license-sharing method. A Marketplace subscription is not an AWS Support plan, and an entitlement does not automatically grant every user permission to deploy the product."
+      ],
+      "reviewedOn": "2026-11-18"
     }
   },
   "coverageSummary": {
     "baseline": {
-      "direct teaching": 121,
-      "partial support": 11,
-      "mention": 2,
-      "missing support": 1
-    },
-    "afterBatch": {
       "direct teaching": 122,
       "partial support": 10,
       "mention": 2,
       "missing support": 1
     },
+    "afterBatch": {
+      "direct teaching": 135,
+      "partial support": 0,
+      "mention": 0,
+      "missing support": 0,
+      "unresolved": 0
+    },
     "taskStatusesAfterBatch": {
-      "covered": 7,
-      "partial": 12,
+      "covered": 8,
+      "partial": 11,
       "missing": 0
     }
   },
@@ -19083,6 +19479,17 @@
       ],
       "readiness": "Objective 2.3 downgraded from covered to partial for the missing taught root-only-task skill. No promotions, scaled-score conversion or learner-readiness assertion.",
       "nextBatch": "Current root-only tasks, policy ownership and credential-store distinctions for objective 2.3, with verified original assessment."
+    },
+    {
+      "id": "2026-11-18-gap-batch-1",
+      "changes": [
+        "Original CLF lessons and practice for root-only tasks, credential-report interpretation, File Gateway cache, RI flexibility/sharing, cost-tag distinctions, partner benefits, and Marketplace governance/entitlements.",
+        "Original SAA lessons and scenario questions for container migration, immutable infrastructure, and storage autoscaling decisions.",
+        "Objective 2.3 returned to covered after all its mapped bullet-level teaching gaps were addressed and assessed; other partial objectives were retained."
+      ],
+      "readiness": "Objective statuses intentionally unchanged. Newly taught bullet evidence does not establish full task coverage or independent learner readiness.",
+      "sources": "Current AWS documentation and exam-guide domain pages retrieved 2026-11-18; supplied CLF study guide pages are recorded separately. Cost-tag backfill behavior was verified against the current AWS Billing user guide on 2026-11-18; historical values require the tag to have existed on the resource.",
+      "nextBatch": "Reassess remaining task-level gaps and technical freshness before any objective-status decision."
     }
   ],
   "sourceRegister": [
@@ -19157,6 +19564,132 @@
       "retrievedOn": "2026-11-17",
       "result": "retrieved",
       "purpose": "Current support offering names and broad positioning"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-in-scope-services.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved via current AWS documentation web index; earlier failed entry used the noncanonical clf-c02 slug",
+      "purpose": "Current CLF-C02 service list says “This list is non-exhaustive and is subject to change.” Current labels include Amazon Q, Amazon Quick and Amazon SageMaker AI. Not evidence every listed service is fully taught."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "Current official 4.1–4.3 wording and subskills; Domain 4 is 12% of scored exam content."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "AWS states generated and user-defined tag types must be activated separately to appear in Cost Explorer or allocation reports."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "User-defined keys require activation; discovery and activation can each take up to 24 hours."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "Management-account users can backfill current activation state up to 12 months; cost data has tag values only for months when the resource carried the tag; requests are rate-limited and reports refresh asynchronously."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "Issued invoices represent final closed-period amounts owed; current-period Bills data is an estimate."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "When invoice and Cost Explorer data differ, the invoice is final amount owed; timing, granularity/rounding, and presentation differ."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/key-principles.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "AWS states most cases have no inbound or same-Region service-to-service transfer charge; exceptions remain service-specific."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved; checked 2026-11-18",
+      "purpose": "AWS states Same-Region Replication has no data-transfer charge; request charges remain a separate dimension."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current plan names and legacy transition notice. AWS lists Basic, AWS Business Support+, AWS Enterprise Support and AWS Unified Operations; it says Developer Support and Business Support will be discontinued January 1, 2027. No detailed price or entitlement is inferred here."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/download-objects.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved from current AWS documentation index",
+      "purpose": "AWS states same-Region data transfer within the AWS network is free of data-transfer charges, while GET requests can still be charged."
+    },
+    {
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current Inspector role, scanning scope, and vulnerability/unintended network exposure findings"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Official comparison of VPC security groups and network ACL characteristics"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current EC2 purchase options and capacity/price distinctions"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/ec2-purchasing-options-aws-how-to-choose.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current EC2 purchasing tradeoffs and workload fit"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current budget action configuration and permission requirements"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current budget action setup and IAM role requirements"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/health/latest/ug/aws-health-account-views.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current AWS Health event and affected-resource views"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awssupport/latest/user/case-management.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current Support Center case management and entitlement-dependent technical support"
+    },
+    {
+      "url": "https://aws.amazon.com/partners/terms-and-conditions/",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current AWS Partner program benefits and eligibility terms"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/awssupport/latest/user/support-plans-eos.html",
+      "retrievedOn": "2026-11-18",
+      "result": "retrieved",
+      "purpose": "Current support-plan transition/end-of-support details"
     }
   ],
   "resourceEvidenceCatalog": {
@@ -31765,6 +32298,362 @@
         ]
       },
       "review": "Existing supporting visual; not counted as independent assessment. A metadata fact block is not fresh factual verification."
+    },
+    "q-clf-gap-root-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-access-management",
+      "prompt": "An organization manages an AWS member account with centralized root access enabled. Its account operator must perform a privileged root task but should not create or use the member account root password. What is the best first step?",
+      "choices": [
+        "Disable Organizations and use root for routine administration",
+        "Use the management account for eligible root tasks",
+        "Attach AdministratorAccess and treat it as root",
+        "Create a shared IAM user called root"
+      ],
+      "answer": 1,
+      "explanation": "Disable Organizations and use root for routine administration: This is not the recommended workflow and root should not be used for routine administration. Use the management account for eligible root tasks: Correct for some tasks when centralized root is enabled and the task supports delegated privileged access; verify the exact operation. Attach AdministratorAccess and treat it as root: AdministratorAccess is an IAM permission policy and is not equivalent to root credentials or all root-only operations. Create a shared IAM user called root: An IAM user with that name remains an IAM principal and is not the AWS account root user.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html",
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-credential-report-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-access-management",
+      "prompt": "An auditor downloads an IAM credential report and sees only two access-key rows for a user. What conclusion is valid?",
+      "choices": [
+        "Every credential category is shown, including more than two keys",
+        "All service-specific keys used by workloads appear in this report",
+        "API access permissions can be read directly from the credential list",
+        "The report omits extra access keys and service-specific credentials"
+      ],
+      "answer": 3,
+      "explanation": "Every credential category is shown, including more than two keys: The report covers selected IAM-managed credentials, not every credential category. All service-specific keys used by workloads appear in this report: Service-specific credentials are explicitly outside the report scope. API access permissions can be read directly from the credential list: Credential status does not list the user’s effective API permissions. The report omits extra access keys and service-specific credentials: Correct: the report includes only the first two IAM access keys and excludes additional keys and service-specific credentials.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-gateway-cache-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-technology-services",
+      "prompt": "A branch office accesses files through Amazon S3 File Gateway. Which statement describes the local cache correctly?",
+      "choices": [
+        "It retains recently accessed data for lower-latency access while the S3 bucket stores the cloud-backed objects",
+        "It is the only durable copy of every file, while S3 is only a metadata index",
+        "It converts the gateway into an EBS block volume for EC2",
+        "It guarantees that changes made directly in S3 appear immediately without cache refresh behavior"
+      ],
+      "answer": 0,
+      "explanation": "It retains recently accessed data for lower-latency access while the S3 bucket stores the cloud-backed objects: File Gateway retains recently accessed data locally for performance while using S3 for cloud-backed object data. It is the only durable copy of every file, while S3 is only a metadata index: the cache is not the only durable copy; the S3 bucket stores the file data as objects. It converts the gateway into an EBS block volume for EC2: File Gateway is a file interface, not an EBS block volume. It guarantees that changes made directly in S3 appear immediately without cache refresh behavior: direct S3 changes can require cache refresh behavior before the gateway’s cached view reflects them.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html",
+        "https://docs.aws.amazon.com/filegateway/latest/files3/refresh-cache.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-ri-flex-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A team wants an EC2 Reserved Instance discount to apply across matching instance sizes in one Region and does not need guaranteed capacity in a particular Availability Zone. Which scope is the closest fit?",
+      "choices": [
+        "A regional Reserved Instance, subject to supported platform, tenancy, and family flexibility rules",
+        "A zonal Reserved Instance because it has the broadest size flexibility",
+        "An On-Demand Capacity Reservation because it creates a discount across Regions",
+        "A Spot Instance because it guarantees uninterrupted capacity"
+      ],
+      "answer": 0,
+      "explanation": "A regional Reserved Instance, subject to supported platform, tenancy, and family flexibility rules: a regional RI can provide eligible size flexibility within a family and Region, subject to attributes such as platform and tenancy; it does not reserve one AZ. A zonal Reserved Instance because it has the broadest size flexibility: zonal RIs are scoped to an AZ and are associated with matching capacity reservation, not the broadest regional size flexibility. An On-Demand Capacity Reservation because it creates a discount across Regions: an On-Demand Capacity Reservation reserves matching capacity but does not create a cross-Region RI discount. A Spot Instance because it guarantees uninterrupted capacity: Spot capacity can be interrupted and is not a guarantee of uninterrupted capacity.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-ri-share-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A linked account has eligible EC2 usage, but a Reserved Instance discount owned by another organization account is not being applied. What should the billing administrator check first?",
+      "choices": [
+        "Whether discount sharing is enabled for the relevant owner and linked accounts and whether the usage is eligible",
+        "Whether the linked account has activated a cost allocation tag",
+        "Whether the RI is an IAM managed policy",
+        "Whether the EC2 instance has a public IPv4 address"
+      ],
+      "answer": 0,
+      "explanation": "Whether discount sharing is enabled for the relevant owner and linked accounts and whether the usage is eligible: the organization’s sharing settings, owner/account activation, and usage eligibility determine whether the discount can be applied. Whether the linked account has activated a cost allocation tag: cost allocation tags help analyze cost and do not enable RI sharing. Whether the RI is an IAM managed policy: IAM managed policies control permissions and are unrelated to RI ownership or billing preferences. Whether the EC2 instance has a public IPv4 address: a public IPv4 address does not affect RI discount sharing eligibility.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-tags-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A finance analyst applied a user-defined Project tag today and needs it in billing reports. What additional step is required?",
+      "choices": [
+        "Activate the user-defined cost allocation tag key in Billing and Cost Management and allow processing time",
+        "Change the tag to an AWS-generated key with the same name",
+        "Add the tag only to the payer account",
+        "Assume activation will rewrite usage from before the tag was applied"
+      ],
+      "answer": 0,
+      "explanation": "Activate the user-defined cost allocation tag key in Billing and Cost Management and allow processing time: Correct: both AWS-generated and user-defined cost allocation tag keys must be activated separately and processing can take up to 24 hours. Change the tag to an AWS-generated key with the same name: Incorrect: customer-defined tags remain user-defined; renaming does not make AWS the tag creator. Add the tag only to the payer account: Incorrect: the tag must be applied to the resource whose usage is being attributed; tagging only a payer account does not label member resources. Assume activation will rewrite usage from before the tag was applied: Incorrect: AWS permits eligible management-account users to backfill activation status for up to 12 months when the tag historically existed on the resource, but it cannot populate months before the tag was present.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html",
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-partner-benefits-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A small consultancy joins the AWS Partner Network and asks which benefit it can safely assume it will receive automatically. Which answer is accurate?",
+      "choices": [
+        "No specific funding, discount, lead, or support entitlement is guaranteed; available benefits depend on program eligibility and current terms",
+        "Every partner receives a fixed AWS service discount",
+        "Every partner receives a guaranteed customer referral",
+        "Every partner receives the same unrestricted technical support plan"
+      ],
+      "answer": 0,
+      "explanation": "No specific funding, discount, lead, or support entitlement is guaranteed; available benefits depend on program eligibility and current terms: Correct: the exam guide names partner training/certification, events and volume discounts, but actual programs and eligibility determine which benefits apply; no specific benefit is guaranteed by membership alone. Every partner receives a fixed AWS service discount: Incorrect: AWS describes eligible training discounts or credits, not a universal service discount for every partner. Every partner receives a guaranteed customer referral: Incorrect: partner co-sell or lead opportunities are not guaranteed referrals for every member. Every partner receives the same unrestricted technical support plan: Incorrect: AWS Partner Network participation does not itself confer a specific AWS Support plan.",
+      "sourceUrls": [
+        "https://aws.amazon.com/partners/funding/",
+        "https://docs.aws.amazon.com/partner-central/latest/getting-started/partner-funding.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-marketplace-governance-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A company wants only an approved procurement role to subscribe to third-party software and then share eligible licenses with selected accounts. Which approach best matches AWS Marketplace controls?",
+      "choices": [
+        "Restrict buyer subscription permissions through IAM/procurement governance, then use the product-supported License Manager sharing workflow when eligible",
+        "Give every employee Marketplace administrator permissions and assume entitlements restrict subscriptions",
+        "Use AWS Support Center to issue Marketplace licenses",
+        "Assume a Marketplace entitlement automatically grants deployment permission to every user"
+      ],
+      "answer": 0,
+      "explanation": "Restrict buyer subscription permissions through IAM/procurement governance, then use the product-supported License Manager sharing workflow when eligible: govern subscription rights with buyer permissions and procurement controls; share eligible licenses through the product-supported License Manager workflow. Give every employee Marketplace administrator permissions and assume entitlements restrict subscriptions: broad administrator access weakens governance, and an entitlement does not independently restrict who can subscribe. Use AWS Support Center to issue Marketplace licenses: Support Center handles support cases, not third-party software licensing. Assume a Marketplace entitlement automatically grants deployment permission to every user: entitlement rights and IAM permission to deploy/manage a product are distinct controls.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/marketplace/latest/buyerguide/buyer-iam-users-groups-policies.html",
+        "https://docs.aws.amazon.com/marketplace/latest/buyerguide/sharing-licenses.html",
+        "https://docs.aws.amazon.com/license-manager/latest/userguide/granted-licenses.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "fc-clf-gap-root-centralized": {
+      "kind": "flashcard",
+      "file": "content/flashcards.json",
+      "topicId": "aws-clf-access-management",
+      "excerpts": [
+        "Centralized root access in Organizations",
+        "Authorized management or delegated administrators can perform some privileged root tasks; verify the exact task because not all root operations are centrally available."
+      ]
+    },
+    "fc-clf-gap-gateway-cache": {
+      "kind": "flashcard",
+      "file": "content/flashcards.json",
+      "topicId": "aws-clf-technology-services",
+      "excerpts": [
+        "S3 File Gateway local cache",
+        "A performance cache for recently accessed S3-backed files; S3 holds the cloud object data. Direct bucket changes may require cache refresh."
+      ]
+    },
+    "fc-clf-gap-billing-tags": {
+      "kind": "flashcard",
+      "file": "content/flashcards.json",
+      "topicId": "aws-clf-billing-support",
+      "excerpts": [
+        "User-defined cost allocation tags",
+        "Apply the tag, activate its key for billing, and allow processing time. Do not assume new tags rewrite prior usage."
+      ]
+    },
+    "q-clf-gap-root-standalone-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-access-management",
+      "prompt": "A standalone AWS account has no working IAM administrator because the only administrator revoked its own permissions. Which identity can restore the IAM permissions?",
+      "choices": [
+        "Any IAM group with no administrator attached",
+        "A Marketplace entitlement from the buyer account",
+        "The account root user",
+        "An EC2 instance profile without recovery permissions"
+      ],
+      "answer": 2,
+      "explanation": "Any IAM group with no administrator attached: IAM groups organize IAM users and do not inherently grant administrator permissions. A Marketplace entitlement from the buyer account: Marketplace entitlements govern product use, not recovery of IAM permissions. The account root user: Correct: in a standalone account, root can restore permissions after the only IAM administrator revokes its own access. An EC2 instance profile without recovery permissions: An instance profile is a workload identity and does not automatically restore account administrator access.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html",
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-parameter-store-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-access-management",
+      "prompt": "An operations team needs to store hierarchical application configuration values, including a value that should be encrypted, and retrieve them from AWS workloads. Which service is the closest fit for this configuration use case?",
+      "choices": [
+        "IAM Identity Center manages workforce access rather than parameters",
+        "A security group stores network rules rather than configuration",
+        "Systems Manager Parameter Store with an encrypted SecureString",
+        "Cost Explorer analyzes costs rather than workload configuration"
+      ],
+      "answer": 2,
+      "explanation": "IAM Identity Center manages workforce access rather than parameters: IAM Identity Center handles workforce access, not application configuration values. A security group stores network rules rather than configuration: Security groups define network access rules and do not store configuration. Systems Manager Parameter Store with an encrypted SecureString: Correct: Parameter Store supports hierarchical configuration and encrypted SecureString values. Cost Explorer analyzes costs rather than workload configuration: Cost Explorer analyzes cost data and does not store workload configuration.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-a-parameter.html",
+        "https://docs.aws.amazon.com/systems-manager/latest/userguide/secure-string-parameter-kms-encryption.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "q-clf-gap-policy-ownership-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-access-management",
+      "prompt": "A team wants one reusable IAM policy whose permissions it can review and control across several roles. Which policy type best fits?",
+      "choices": [
+        "An inline policy embedded in only one role",
+        "An AWS-managed policy updated by AWS",
+        "A customer-managed policy",
+        "A security group controlling network traffic"
+      ],
+      "answer": 2,
+      "explanation": "An inline policy embedded in only one role: Inline policies attach to one identity and are not reusable managed policies. An AWS-managed policy updated by AWS: AWS controls updates to AWS-managed policy documents. A customer-managed policy: Correct: customers control the contents of reusable customer-managed policies. A security group controlling network traffic: Security groups govern network traffic rather than IAM permissions.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html",
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/security-iam-awsmanpol.html"
+      ],
+      "review": "New original scenario; every option is addressed in the explanation."
+    },
+    "fc-clf-gap-parameter-store": {
+      "kind": "flashcard",
+      "file": "content/flashcards.json",
+      "topicId": "aws-clf-access-management",
+      "excerpts": [
+        "Systems Manager Parameter Store",
+        "Hierarchical configuration parameters; SecureString values use KMS encryption. Compare Secrets Manager when the workload needs secret lifecycle and rotation features."
+      ]
+    },
+    "fc-clf-gap-policy-ownership": {
+      "kind": "flashcard",
+      "file": "content/flashcards.json",
+      "topicId": "aws-clf-access-management",
+      "excerpts": [
+        "AWS-managed versus customer-managed IAM policy",
+        "AWS manages updates to AWS-managed policies; a customer controls a customer-managed policy and can reuse it across identities. Inline policies attach to one identity."
+      ]
+    },
+    "q-clf-gap-transfer-costs-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A team uploads data to a service, transfers some data to another Region, and later serves data to internet users. Which pricing review is most accurate?",
+      "choices": [
+        "Treat inbound transfer as generally uncharged, then check the service-specific outbound and inter-Region rules and any request charges",
+        "Assume every byte entering AWS is charged and all outbound transfer is free",
+        "Assume all same-Region and cross-Region transfers are free if both endpoints use AWS",
+        "Compare only stored gigabytes because transfer and request charges are included in storage"
+      ],
+      "answer": 0,
+      "explanation": "Treat inbound transfer as generally uncharged, then check the service-specific outbound and inter-Region rules and any request charges: Correct. AWS states that most inbound transfer and same-Region service-to-service transfer is not charged, while outbound/inter-Region paths and service rules can differ; requests can still be billable. Assume every byte entering AWS is charged and all outbound transfer is free: Incorrect. This reverses the general inbound/outbound pattern and ignores service-specific rules. Assume all same-Region and cross-Region transfers are free if both endpoints use AWS: Incorrect. Same-Region and cross-Region behavior is not interchangeable, and exceptions apply. Compare only stored gigabytes because transfer and request charges are included in storage: Incorrect. Storage, requests, retrieval, and data transfer can be separate cost dimensions.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/key-principles.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html"
+      ],
+      "review": "New focused scenario reviewed against current AWS documentation on 2026-11-18; every option explained."
+    },
+    "q-clf-gap-bill-source-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A finance analyst needs the final amount owed for a closed AWS billing period. Cost Explorer shows a different analytical total. Which source should establish the amount owed?",
+      "choices": [
+        "The issued AWS invoice; use Cost Explorer to analyze trends and investigate the presentation difference",
+        "A Cost Explorer forecast, because forecasts supersede closed-period billing",
+        "The Pricing Calculator, because it estimates the deployed architecture",
+        "A cost allocation tag report, because tags determine the invoice total"
+      ],
+      "answer": 0,
+      "explanation": "The issued AWS invoice; use Cost Explorer to analyze trends and investigate the presentation difference: Correct. AWS describes the invoice as the final amount owed; analytical data can differ in timing, grouping, granularity, rounding, and treatment of discounts, credits, refunds, or taxes. A Cost Explorer forecast, because forecasts supersede closed-period billing: Incorrect. A forecast estimates a period and is not the payable invoice. The Pricing Calculator, because it estimates the deployed architecture: Incorrect. The calculator estimates planned use from assumptions; it does not determine charges already invoiced. A cost allocation tag report, because tags determine the invoice total: Incorrect. Cost allocation tags organize cost views; they do not replace the invoice as the amount owed.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html",
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html"
+      ],
+      "review": "New focused scenario reviewed against current AWS documentation on 2026-11-18; every option explained."
+    },
+    "q-clf-assess-41-mixed-purchase-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A service has a predictable EC2 baseline that may justify a usage commitment, a restartable nightly queue, and a release tier that must be launchable in one chosen Availability Zone. Which plan separates the three constraints?",
+      "choices": [
+        "Evaluate a Savings Plan for eligible baseline use, Spot for restartable queue work, and an On-Demand Capacity Reservation for the selected-AZ launch requirement",
+        "Use On-Demand for the predictable baseline, Spot for queue and release capacity, and rely on instance selection to hold launch capacity in the chosen AZ",
+        "Use a regional RI for the predictable baseline, Spot for the restartable queue, and assume regional size flexibility reserves launch capacity in the release AZ",
+        "Use Savings Plans for baseline and queue, then rely on the compute-usage commitment to reserve launch capacity in the selected AZ when the release arrives"
+      ],
+      "answer": 0,
+      "explanation": "Evaluate a Savings Plan for eligible baseline use, Spot for restartable queue work, and an On-Demand Capacity Reservation for the selected-AZ launch requirement: Correct. A usage commitment can discount eligible baseline usage, Spot can fit interruptible queue work, and a separate Capacity Reservation addresses the selected-AZ capacity requirement. Use On-Demand for the predictable baseline, Spot for queue and release capacity, and rely on instance selection to hold launch capacity in the chosen AZ: Incorrect. Spot can be interrupted, and changing a bid does not turn Spot into guaranteed capacity. Use a regional RI for the predictable baseline, Spot for the restartable queue, and assume regional size flexibility reserves launch capacity in the release AZ: Incorrect. A regional RI discount does not reserve capacity in a chosen AZ, and an RI does not make an interruptible queue interruption-proof. Use Savings Plans for baseline and queue, then rely on the compute-usage commitment to reserve launch capacity in the selected AZ when the release arrives: Incorrect. Savings Plans are pricing commitments for eligible usage, not capacity reservations; they do not make Spot usage uninterrupted.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+        "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/ec2-purchasing-options-aws-how-to-choose.html"
+      ],
+      "review": "Original integrated decision scenario checked against current official AWS sources on 2026-11-18; every option explained."
+    },
+    "q-clf-assess-42-budget-action-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "A finance team receives a budget alert after charges have accrued and asks AWS Budgets to stop every service exactly when spend reaches its threshold. Which response is most accurate?",
+      "choices": [
+        "Treat the alert as monitoring; configure only supported budget actions with the required permissions, and do not treat them as a universal instantaneous spending cap",
+        "Increase the evaluation frequency, confirm notification delivery, and rely on Budgets to stop every AWS service at the threshold before another charge accrues",
+        "Switch to a forecasted budget and choose an account-wide action, assuming the forecast automatically blocks launches across all services at its threshold",
+        "Activate every cost-allocation tag, attach the budget to those tags, and expect AWS to throttle tagged resources automatically when the limit is reached"
+      ],
+      "answer": 0,
+      "explanation": "Treat the alert as monitoring; configure only supported budget actions with the required permissions, and do not treat them as a universal instantaneous spending cap: Correct. AWS documents supported budget actions and required permissions; billing data and notifications can be delayed, and the actions are not a universal hard cap across every service. Increase the evaluation frequency, confirm notification delivery, and rely on Budgets to stop every AWS service at the threshold before another charge accrues: Incorrect. More frequent evaluation does not create an all-service stop guarantee or remove data delay. Switch to a forecasted budget and choose an account-wide action, assuming the forecast automatically blocks launches across all services at its threshold: Incorrect. A forecast is a monitoring signal, not an enforcement policy. Activate every cost-allocation tag, attach the budget to those tags, and expect AWS to throttle tagged resources automatically when the limit is reached: Incorrect. Tags organize eligible cost data after activation; they neither stop resource usage nor enforce a budget.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html",
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html",
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/bcm-lite-use-budget.html"
+      ],
+      "review": "Original integrated decision scenario checked against current official AWS sources on 2026-11-18; every option explained."
+    },
+    "q-clf-assess-43-health-case-01": {
+      "kind": "question",
+      "file": "content/questions.json",
+      "topicId": "aws-clf-billing-support",
+      "prompt": "An EC2 event appears in AWS Health with affected resource IDs. The application team needs both to confirm the AWS event's scope and to request technical troubleshooting. Which sequence matches the two needs?",
+      "choices": [
+        "Review the event and affected resources in AWS Health, then open a technical case in Support Center if the account's plan permits it",
+        "Use Trusted Advisor to verify the account-specific outage and affected EC2 resources, then use Cost Explorer to create a technical support case for the service team",
+        "Open Support Center alone to retrieve the Health event and affected resource list; technical case access is available even on Basic Support",
+        "Subscribe to Marketplace diagnostics, then post the event details and resource IDs on re:Post to create a private technical support case"
+      ],
+      "answer": 0,
+      "explanation": "Review the event and affected resources in AWS Health, then open a technical case in Support Center if the account's plan permits it: Correct. AWS Health presents event details and affected-resource information; Support Center is the case-management path when the account has the required technical-support entitlement. Use Trusted Advisor to verify the account-specific outage and affected EC2 resources, then use Cost Explorer to create a technical support case for the service team: Incorrect. Trusted Advisor provides supported recommendations/checks, while Cost Explorer analyzes costs; neither performs both stated tasks. Open Support Center alone to retrieve the Health event and affected resource list; technical case access is available even on Basic Support: Incorrect. Health is the event and affected-resource source, and technical cases depend on the account's support entitlement. Subscribe to Marketplace diagnostics, then post the event details and resource IDs on re:Post to create a private technical support case: Incorrect. Marketplace is for third-party products and re:Post is a community resource, not the private Support Center case channel.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+        "https://docs.aws.amazon.com/health/latest/ug/aws-health-account-views.html",
+        "https://docs.aws.amazon.com/awssupport/latest/user/case-management.html",
+        "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html"
+      ],
+      "review": "Original integrated decision scenario checked against current official AWS sources on 2026-11-18; every option explained."
     }
   },
   "assessmentReviewFindings": [
@@ -31868,5 +32757,430 @@
       "result": "passed"
     },
     "unresolved": "Preexisting multiple-response topic-runner grading defect reproduced; code preserved. Separate current service-list and tag-backfill sources inaccessible."
+  },
+  "currentSourceVerification": {
+    "checkedOn": "2026-11-18",
+    "clfInScope": {
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-in-scope-services.html",
+      "status": "retrieved",
+      "exactStatement": "This list is non-exhaustive and is subject to change.",
+      "observation": "Current service labels include Amazon Q, Amazon Quick and Amazon SageMaker AI. Service-list presence or omission does not prove repository teaching coverage."
+    },
+    "costAllocationTags": {
+      "status": "retrieved",
+      "sources": [
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html",
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html"
+      ],
+      "officialStatements": [
+        "You must activate both types of tags separately before they can appear in Cost Explorer or on a cost allocation report.",
+        "Management account users can request a backfill of cost allocation tags for up to twelve months.",
+        "The resource tag must be historically assigned to the AWS Resource for the backfilled cost data to be available."
+      ],
+      "repositoryTeaching": "aws-clf-billing-support#commitment-sharing-and-cost-tags explains separate activation, up-to-12-month activation-state backfill, historical tag-presence condition, request limits and delayed refresh. Current teaching is not derived from the 2023 textbook."
+    },
+    "clfBillingData": {
+      "sources": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html",
+        "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html"
+      ],
+      "officialStatement": "Your invoice represents the amount that you owe to AWS.",
+      "repositoryTeaching": "aws-clf-billing-support#objective-clf-c02-4-2 distinguishes invoice/Bills, estimates, Cost Explorer analysis and Cost and Usage Report detail."
+    },
+    "scopeInferenceLimit": "Service lists are non-exhaustive and change over time; objective status is not inferred from service-list inclusion or omission.",
+    "supportOptions": {
+      "url": "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html",
+      "exactStatements": [
+        "AWS offers the following AWS Support Plans for you to choose from based on your business needs.",
+        "Developer Support will be discontinued January 1, 2027."
+      ],
+      "currentNames": [
+        "Basic",
+        "AWS Business Support+",
+        "AWS Enterprise Support",
+        "AWS Unified Operations"
+      ],
+      "repositoryTeaching": "The actual lesson section aws-clf-billing-support#support-plan-current presents only high-level requirement cues for these four names and instructs learners to verify entitlements; associated questions q-clf43-11 through q-clf43-14 test recognition cues, and q-clf43-20 identifies transitional legacy names. It contains no fixed prices or guarantee of resolution time.",
+      "limit": "Current entitlements, contract eligibility, geography and exact response details are not exhaustively taught; consult current plan documentation for a real account."
+    },
+    "clf35NetworkSecurity": {
+      "checkedOn": "2026-11-18",
+      "examGuideUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
+      "exactExamGuideWording": "Understanding security in a VPC (for example, network ACLs, security groups, Amazon Inspector)",
+      "technicalSources": [
+        {
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html",
+          "statement": "Amazon Inspector continually scans supported workloads for software vulnerabilities and unintended network exposure; detected issues create findings."
+        },
+        {
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html",
+          "statement": "AWS documents security group and network ACL behavior as distinct VPC network security controls."
+        }
+      ],
+      "repositoryEvidence": [
+        {
+          "id": "aws-foundation-network-database#network-security",
+          "file": "content/topics.json",
+          "excerpt": "Security groups are stateful controls associated with supported resources; network ACLs are stateless subnet-level controls with ordered allow/deny rules."
+        },
+        {
+          "id": "aws-clf-security-compliance#objective-clf-c02-2-4",
+          "file": "content/topics.json",
+          "excerpt": "Inspector reports supported workload vulnerabilities; the worked scenario pairs Inspector findings with Firewall Manager policy management."
+        },
+        {
+          "id": "fc-clf35-inspector",
+          "file": "content/flashcards.json",
+          "excerpt": "Amazon Inspector identifies supported vulnerabilities and unintended exposure; it is not a firewall."
+        },
+        {
+          "id": "q-clf35-10",
+          "file": "content/questions.json",
+          "excerpt": "A security team wants to identify software vulnerabilities and unintended network exposure on supported workloads."
+        },
+        {
+          "id": "q-clf35-13",
+          "file": "content/questions.json",
+          "excerpt": "Which security-and-network comparison is correct? Inspector assesses supported workload vulnerabilities; security groups and NACLs control traffic."
+        }
+      ],
+      "conclusion": "The previous partial classification is stale. Existing cross-linked instruction and varied assessment teach the listed example; no new instructional content is needed. Task/objective status remains partial pending objective-level coverage/assessment criteria."
+    }
+  },
+  "objectiveStatusReconciliation": {
+    "checkedOn": "2026-11-18",
+    "method": "Read all source-bullet rows, mapped lesson sections, question evidence, independent-practice associations, and the objective notes; did not infer status from totals.",
+    "objectives": [
+      {
+        "objectiveId": "4.1",
+        "beforeStatus": "partial",
+        "afterStatus": "partial",
+        "completeBulletIds": [
+          "4.1-K1",
+          "4.1-K2",
+          "4.1-S1",
+          "4.1-S2",
+          "4.1-S3",
+          "4.1-S4",
+          "4.1-S5"
+        ],
+        "teachingClassificationCounts": {
+          "direct teaching": 7,
+          "partial support": 0
+        },
+        "lessonSection": "aws-clf-billing-support#objective-clf-c02-4-1",
+        "mappedQuestionIds": [
+          "q-aws-found-30",
+          "q-aws-review-clf-c02-4-1",
+          "q-clf-34",
+          "q-clf-35",
+          "q-clf-39",
+          "q-clf-40",
+          "q-clf-gap-ri-flex-01",
+          "q-clf-gap-ri-share-01",
+          "q-clf-gap-transfer-costs-01",
+          "q-clf41-01",
+          "q-clf41-02",
+          "q-clf41-03",
+          "q-clf41-04",
+          "q-clf41-05",
+          "q-clf41-06",
+          "q-clf41-07",
+          "q-clf41-08",
+          "q-clf41-09",
+          "q-clf41-10",
+          "q-clf41-11",
+          "q-clf41-12",
+          "q-clf41-13",
+          "q-clf41-14",
+          "q-clf41-15",
+          "q-clf41-16",
+          "q-clf41-17",
+          "q-clf41-18",
+          "q-clf41-19",
+          "q-clf-assess-41-mixed-purchase-01"
+        ],
+        "mappedIndependentPracticeIds": {
+          "drillItemIds": [
+            "aws-clf-cost-compare/capacity",
+            "aws-clf-cost-compare/flexible",
+            "aws-clf-cost-compare/host",
+            "aws-clf-cost-compare/host-instance",
+            "aws-clf-cost-compare/interruptible",
+            "aws-clf-cost-compare/savings-capacity",
+            "aws-clf-cost-compare/spot-guarantee",
+            "aws-clf-cost-compare/steady"
+          ],
+          "labIds": [
+            "aws-clf-cost-estimate"
+          ]
+        },
+        "decision": "Keep partial. Teaching is directly mapped across every source bullet and a new varied scenario supplements the existing question pool. The audit found repeated reasoning patterns in legacy items; flashcards and drills mostly reinforce cue matching, and the cost lab is guided paper practice rather than an independently scored assessment. There are no learner-performance results or defined numerical status rubric, so resource presence and question counts do not establish independent performance or full objective criteria."
+      },
+      {
+        "objectiveId": "4.2",
+        "beforeStatus": "partial",
+        "afterStatus": "partial",
+        "completeBulletIds": [
+          "4.2-K1",
+          "4.2-K2",
+          "4.2-K3",
+          "4.2-K4",
+          "4.2-S1",
+          "4.2-S2",
+          "4.2-S3",
+          "4.2-S4"
+        ],
+        "teachingClassificationCounts": {
+          "direct teaching": 8,
+          "partial support": 0
+        },
+        "lessonSection": "aws-clf-billing-support#objective-clf-c02-4-2",
+        "mappedQuestionIds": [
+          "q-aws-found-28",
+          "q-aws-found-29",
+          "q-aws-review-clf-c02-4-2",
+          "q-clf-31",
+          "q-clf-32",
+          "q-clf-33",
+          "q-clf-36",
+          "q-clf-37",
+          "q-clf-gap-bill-source-01",
+          "q-clf-gap-tags-01",
+          "q-clf-multi-04",
+          "q-clf42-01",
+          "q-clf42-02",
+          "q-clf42-03",
+          "q-clf42-04",
+          "q-clf42-05",
+          "q-clf42-06",
+          "q-clf42-07",
+          "q-clf42-08",
+          "q-clf42-09",
+          "q-clf42-10",
+          "q-clf42-11",
+          "q-clf42-12",
+          "q-clf42-13",
+          "q-clf42-14",
+          "q-clf42-15",
+          "q-clf42-16",
+          "q-clf42-17",
+          "q-clf42-18",
+          "q-clf-assess-42-budget-action-01"
+        ],
+        "mappedIndependentPracticeIds": {
+          "drillItemIds": [
+            "aws-clf-cost-compare/alert",
+            "aws-clf-cost-compare/analyze",
+            "aws-clf-cost-compare/attribute",
+            "aws-clf-cost-compare/consolidate",
+            "aws-clf-cost-compare/detail",
+            "aws-clf-cost-compare/estimate",
+            "aws-clf-cost-compare/invoice",
+            "aws-clf-cost-compare/tags-org",
+            "aws-clf-domain-cues/alert",
+            "aws-clf-domain-cues/analyze",
+            "aws-clf-domain-cues/estimate"
+          ],
+          "labIds": [
+            "aws-clf-cost-estimate"
+          ]
+        },
+        "decision": "Keep partial. Teaching is directly mapped across every source bullet and a new varied scenario supplements the existing question pool. The audit found repeated reasoning patterns in legacy items; flashcards and drills mostly reinforce cue matching, and the cost lab is guided paper practice rather than an independently scored assessment. There are no learner-performance results or defined numerical status rubric, so resource presence and question counts do not establish independent performance or full objective criteria."
+      },
+      {
+        "objectiveId": "4.3",
+        "beforeStatus": "partial",
+        "afterStatus": "partial",
+        "completeBulletIds": [
+          "4.3-K1",
+          "4.3-K2",
+          "4.3-K3",
+          "4.3-K4",
+          "4.3-S1",
+          "4.3-S2",
+          "4.3-S3",
+          "4.3-S4",
+          "4.3-S5",
+          "4.3-S6",
+          "4.3-S7",
+          "4.3-S8",
+          "4.3-S9"
+        ],
+        "teachingClassificationCounts": {
+          "direct teaching": 13,
+          "partial support": 0
+        },
+        "lessonSection": "aws-clf-billing-support#objective-clf-c02-4-3",
+        "mappedQuestionIds": [
+          "q-aws-review-clf-c02-4-3",
+          "q-clf-38",
+          "q-clf-gap-marketplace-governance-01",
+          "q-clf-gap-partner-benefits-01",
+          "q-clf43-01",
+          "q-clf43-02",
+          "q-clf43-03",
+          "q-clf43-04",
+          "q-clf43-05",
+          "q-clf43-06",
+          "q-clf43-07",
+          "q-clf43-08",
+          "q-clf43-09",
+          "q-clf43-10",
+          "q-clf43-11",
+          "q-clf43-12",
+          "q-clf43-13",
+          "q-clf43-14",
+          "q-clf43-15",
+          "q-clf43-16",
+          "q-clf43-17",
+          "q-clf43-18",
+          "q-clf43-19",
+          "q-clf43-20",
+          "q-clf43-21",
+          "q-clf-assess-43-health-case-01"
+        ],
+        "mappedIndependentPracticeIds": {
+          "drillItemIds": [
+            "aws-clf-support-resources/abuse",
+            "aws-clf-support-resources/basic",
+            "aws-clf-support-resources/case",
+            "aws-clf-support-resources/community",
+            "aws-clf-support-resources/experts",
+            "aws-clf-support-resources/health",
+            "aws-clf-support-resources/mission-critical",
+            "aws-clf-support-resources/patterns",
+            "aws-clf-support-resources/production",
+            "aws-clf-support-resources/recommendation",
+            "aws-clf-support-resources/reference",
+            "aws-clf-support-resources/strategic",
+            "aws-clf-support-resources/third-party",
+            "aws-clf-support-resources/troubleshooting"
+          ],
+          "labIds": [
+            "aws-clf-cost-estimate"
+          ]
+        },
+        "decision": "Keep partial. Teaching is directly mapped across every source bullet and a new varied scenario supplements the existing question pool. The audit found repeated reasoning patterns in legacy items; flashcards and drills mostly reinforce cue matching, and the cost lab is guided paper practice rather than an independently scored assessment. There are no learner-performance results or defined numerical status rubric, so resource presence and question counts do not establish independent performance or full objective criteria."
+      }
+    ]
+  },
+  "assessmentQualityReview": {
+    "checkedOn": "2026-11-18",
+    "scope": "Every unique question associated with 4.1, 4.2, and 4.3 in the evidence map, plus mapped flashcards, drills, and aws-clf-cost-estimate lab.",
+    "questionPoolCounts": {
+      "beforeAdditions": {
+        "4.1": 28,
+        "4.2": 29,
+        "4.3": 25
+      },
+      "afterAdditions": {
+        "4.1": 29,
+        "4.2": 30,
+        "4.3": 26
+      },
+      "newDistinctScenariosAdded": 3
+    },
+    "findings": {
+      "4.1": [
+        "Repeated basic cues: On-Demand (q-clf41-01/q-clf41-18 and earlier q-clf-35), Spot (q-aws-found-30/q-clf-34/q-clf41-02/q-clf41-13), Dedicated Host (q-clf-39/q-clf41-05/q-clf41-14), and RI/capacity (q-clf41-04/q-clf41-12/q-clf41-16).",
+        "Most associated cards/drills are short cue matches. q-clf-assess-41-mixed-purchase-01 adds one scenario requiring separate choices for eligible baseline commitment, interruptible queue work, and AZ launch capacity."
+      ],
+      "4.2": [
+        "Repeated tool and threshold cues: Budgets alert/not-cap (q-clf42-03/q-clf42-07/q-clf42-13), tag activation/history (q-clf42-05/q-clf42-09/q-clf42-15 and q-clf-gap-tags-01), and multi-tool matching (q-clf42-08/q-clf42-12/q-clf42-14).",
+        "The mapped drill is mostly direct need-to-tool matching. The guided cost-estimate lab has paper calculations and a self-check but no independent scoring. q-clf-assess-42-budget-action-01 adds the distinct operational decision of supported budget actions, permissions, and the limit of threshold alerts."
+      ],
+      "4.3": [
+        "Repeated direct lookups: Support Center (q-clf43-04/q-clf43-15), Marketplace (q-clf43-09/q-clf43-19), and Health/Trusted Advisor distinctions repeated across q-aws-review-clf-c02-4-3 and q-clf43-05/q-clf43-07/q-clf43-17.",
+        "The 15 mapped cards and 14 support drill items primarily rehearse one-to-one resource cues. q-clf-assess-43-health-case-01 adds a sequential scenario using Health for event/affected-resource scope and Support Center for a case when entitled."
+      ],
+      "crossCutting": [
+        "Several legacy distractors are implausible service-category mismatches, and some correct choices are longer/more qualified than distractors, creating answer-length or category-elimination cues. Existing IDs and question histories were retained; those historical records were not rewritten.",
+        "No key/explanation mismatch was found in the three new items. Mapped question association alone is not treated as evidence that every question tests each associated bullet."
+      ]
+    },
+    "timeSensitiveSourceVerification": [
+      {
+        "topic": "RI flexibility and EC2 purchase tradeoffs",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html",
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html",
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html",
+          "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/ec2-purchasing-options-aws-how-to-choose.html"
+        ],
+        "conclusion": "Current guide distinguishes usage commitments, RI configuration/scope, Spot interruption tolerance, dedicated tenancy, and AZ capacity reservation. Keep service/attribute eligibility qualified; do not treat a pricing commitment as universal capacity assurance."
+      },
+      {
+        "topic": "Budget actions and notifications",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html",
+          "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html",
+          "https://docs.aws.amazon.com/cost-management/latest/userguide/bcm-lite-use-budget.html"
+        ],
+        "conclusion": "Supported actions require correct configuration and permissions; alerting/action data and service support do not imply a universal instantaneous all-service spend cap."
+      },
+      {
+        "topic": "Invoice versus Cost Explorer",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html"
+        ],
+        "conclusion": "AWS says invoice amount is the final amount owed when datasets differ; billing and Cost Explorer refresh cadence, granularity, grouping, and treatment can differ."
+      },
+      {
+        "topic": "Cost allocation tags",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/activating-tags.html",
+          "https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html"
+        ],
+        "conclusion": "Existing questions qualify activation and historical tag presence; activation is separate by tag type and does not invent prior resource tags."
+      },
+      {
+        "topic": "AWS Partner benefits",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://aws.amazon.com/partners/funding/",
+          "https://aws.amazon.com/partners/terms-and-conditions/"
+        ],
+        "conclusion": "Funding eligibility varies with partner journey and program participation; no universal funding, discount, referral, or support entitlement is claimed."
+      },
+      {
+        "topic": "AWS Marketplace procurement and license sharing",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/marketplace/latest/buyerguide/buyer-iam-users-groups-policies.html",
+          "https://docs.aws.amazon.com/marketplace/latest/buyerguide/sharing-licenses.html"
+        ],
+        "conclusion": "Buyer IAM permissions govern access; only eligible product licenses can be shared through the documented License Manager workflow. Entitlement/access level does not itself grant every user subscription or deployment permissions."
+      },
+      {
+        "topic": "Support plan names and transition",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html",
+          "https://docs.aws.amazon.com/awssupport/latest/user/support-plans-eos.html",
+          "https://aws.amazon.com/premiumsupport/faqs/"
+        ],
+        "conclusion": "Current comparison lists Basic, Business Support+, Enterprise Support, and Unified Operations. Developer/Business classic support and Enterprise On-Ramp are transitional through 2026/January 1, 2027, with GovCloud exception noted. No prices or response-time guarantees were added."
+      },
+      {
+        "topic": "AWS Health events and support cases",
+        "retrievedOn": "2026-11-18",
+        "urls": [
+          "https://docs.aws.amazon.com/health/latest/ug/aws-health-account-views.html",
+          "https://docs.aws.amazon.com/awssupport/latest/user/case-management.html"
+        ],
+        "conclusion": "AWS Health exposes event detail and affected resources; technical case access depends on support entitlements."
+      }
+    ],
+    "limitations": [
+      "Question-bank edits add broader scenarios but do not produce learner-performance data or prove independent mastery.",
+      "Existing repeated questions and answer-length/category-elimination cues remain because their IDs and historical meaning were preserved.",
+      "The objective statuses remain partial pending broader independent assessment evidence and a defined status rubric."
+    ]
   }
 }

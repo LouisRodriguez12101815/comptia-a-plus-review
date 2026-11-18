@@ -34345,5 +34345,431 @@
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
     ]
+  },
+  {"id":"q-clf-gap-root-01","topicId":"aws-clf-access-management","examCodes":["clf-c02"],"prompt":"An organization manages an AWS member account with centralized root access enabled. Its account operator must perform a privileged root task but should not create or use the member account root password. What is the best first step?","choices":["Disable Organizations and use root for routine administration","Use the management account for eligible root tasks","Attach AdministratorAccess and treat it as root","Create a shared IAM user called root"],"answer":1,"explanation":"Disable Organizations and use root for routine administration: This is not the recommended workflow and root should not be used for routine administration. Use the management account for eligible root tasks: Correct for some tasks when centralized root is enabled and the task supports delegated privileged access; verify the exact operation. Attach AdministratorAccess and treat it as root: AdministratorAccess is an IAM permission policy and is not equivalent to root credentials or all root-only operations. Create a shared IAM user called root: An IAM user with that name remains an IAM principal and is not the AWS account root user.","weak":false,"objectiveIds":{"clf-c02":["2.3"]},"sourceUrls":["https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html","https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"]},
+  {"id":"q-clf-gap-credential-report-01","topicId":"aws-clf-access-management","examCodes":["clf-c02"],"prompt":"An auditor downloads an IAM credential report and sees only two access-key rows for a user. What conclusion is valid?","choices":["Every credential category is shown, including more than two keys","All service-specific keys used by workloads appear in this report","API access permissions can be read directly from the credential list","The report omits extra access keys and service-specific credentials"],"answer":3,"explanation":"Every credential category is shown, including more than two keys: The report covers selected IAM-managed credentials, not every credential category. All service-specific keys used by workloads appear in this report: Service-specific credentials are explicitly outside the report scope. API access permissions can be read directly from the credential list: Credential status does not list the user’s effective API permissions. The report omits extra access keys and service-specific credentials: Correct: the report includes only the first two IAM access keys and excludes additional keys and service-specific credentials.","weak":false,"objectiveIds":{"clf-c02":["2.3"]},"sourceUrls":["https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html"]},
+  {"id":"q-clf-gap-gateway-cache-01","topicId":"aws-clf-technology-services","examCodes":["clf-c02"],"prompt":"A branch office accesses files through Amazon S3 File Gateway. Which statement describes the local cache correctly?","choices":["It retains recently accessed data for lower-latency access while the S3 bucket stores the cloud-backed objects","It is the only durable copy of every file, while S3 is only a metadata index","It converts the gateway into an EBS block volume for EC2","It guarantees that changes made directly in S3 appear immediately without cache refresh behavior"],"answer":0,"explanation":"It retains recently accessed data for lower-latency access while the S3 bucket stores the cloud-backed objects: File Gateway retains recently accessed data locally for performance while using S3 for cloud-backed object data. It is the only durable copy of every file, while S3 is only a metadata index: the cache is not the only durable copy; the S3 bucket stores the file data as objects. It converts the gateway into an EBS block volume for EC2: File Gateway is a file interface, not an EBS block volume. It guarantees that changes made directly in S3 appear immediately without cache refresh behavior: direct S3 changes can require cache refresh behavior before the gateway’s cached view reflects them.","weak":false,"objectiveIds":{"clf-c02":["3.6"]},"sourceUrls":["https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html","https://docs.aws.amazon.com/filegateway/latest/files3/refresh-cache.html"]},
+  {"id":"q-clf-gap-ri-flex-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A team wants an EC2 Reserved Instance discount to apply across matching instance sizes in one Region and does not need guaranteed capacity in a particular Availability Zone. Which scope is the closest fit?","choices":["A regional Reserved Instance, subject to supported platform, tenancy, and family flexibility rules","A zonal Reserved Instance because it has the broadest size flexibility","An On-Demand Capacity Reservation because it creates a discount across Regions","A Spot Instance because it guarantees uninterrupted capacity"],"answer":0,"explanation":"A regional Reserved Instance, subject to supported platform, tenancy, and family flexibility rules: a regional RI can provide eligible size flexibility within a family and Region, subject to attributes such as platform and tenancy; it does not reserve one AZ. A zonal Reserved Instance because it has the broadest size flexibility: zonal RIs are scoped to an AZ and are associated with matching capacity reservation, not the broadest regional size flexibility. An On-Demand Capacity Reservation because it creates a discount across Regions: an On-Demand Capacity Reservation reserves matching capacity but does not create a cross-Region RI discount. A Spot Instance because it guarantees uninterrupted capacity: Spot capacity can be interrupted and is not a guarantee of uninterrupted capacity.","weak":false,"objectiveIds":{"clf-c02":["4.1"]},"sourceUrls":["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html","https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html"]},
+  {"id":"q-clf-gap-ri-share-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A linked account has eligible EC2 usage, but a Reserved Instance discount owned by another organization account is not being applied. What should the billing administrator check first?","choices":["Whether discount sharing is enabled for the relevant owner and linked accounts and whether the usage is eligible","Whether the linked account has activated a cost allocation tag","Whether the RI is an IAM managed policy","Whether the EC2 instance has a public IPv4 address"],"answer":0,"explanation":"Whether discount sharing is enabled for the relevant owner and linked accounts and whether the usage is eligible: the organization’s sharing settings, owner/account activation, and usage eligibility determine whether the discount can be applied. Whether the linked account has activated a cost allocation tag: cost allocation tags help analyze cost and do not enable RI sharing. Whether the RI is an IAM managed policy: IAM managed policies control permissions and are unrelated to RI ownership or billing preferences. Whether the EC2 instance has a public IPv4 address: a public IPv4 address does not affect RI discount sharing eligibility.","weak":false,"objectiveIds":{"clf-c02":["4.1"]},"sourceUrls":["https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html"]},
+  {"id":"q-clf-gap-tags-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A finance analyst applied a user-defined Project tag today and needs it in billing reports. What additional step is required?","choices":["Activate the user-defined cost allocation tag key in Billing and Cost Management and allow processing time","Change the tag to an AWS-generated key with the same name","Add the tag only to the payer account","Assume activation will rewrite usage from before the tag was applied"],"answer":0,"explanation":"Activate the user-defined cost allocation tag key in Billing and Cost Management and allow processing time: Correct: both AWS-generated and user-defined cost allocation tag keys must be activated separately and processing can take up to 24 hours. Change the tag to an AWS-generated key with the same name: Incorrect: customer-defined tags remain user-defined; renaming does not make AWS the tag creator. Add the tag only to the payer account: Incorrect: the tag must be applied to the resource whose usage is being attributed; tagging only a payer account does not label member resources. Assume activation will rewrite usage from before the tag was applied: Incorrect: AWS permits eligible management-account users to backfill activation status for up to 12 months when the tag historically existed on the resource, but it cannot populate months before the tag was present.","weak":false,"objectiveIds":{"clf-c02":["4.2"]},"sourceUrls":["https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html","https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"]},
+  {"id":"q-clf-gap-partner-benefits-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A small consultancy joins the AWS Partner Network and asks which benefit it can safely assume it will receive automatically. Which answer is accurate?","choices":["No specific funding, discount, lead, or support entitlement is guaranteed; available benefits depend on program eligibility and current terms","Every partner receives a fixed AWS service discount","Every partner receives a guaranteed customer referral","Every partner receives the same unrestricted technical support plan"],"answer":0,"explanation":"No specific funding, discount, lead, or support entitlement is guaranteed; available benefits depend on program eligibility and current terms: Correct: the exam guide names partner training/certification, events and volume discounts, but actual programs and eligibility determine which benefits apply; no specific benefit is guaranteed by membership alone. Every partner receives a fixed AWS service discount: Incorrect: AWS describes eligible training discounts or credits, not a universal service discount for every partner. Every partner receives a guaranteed customer referral: Incorrect: partner co-sell or lead opportunities are not guaranteed referrals for every member. Every partner receives the same unrestricted technical support plan: Incorrect: AWS Partner Network participation does not itself confer a specific AWS Support plan.","weak":false,"objectiveIds":{"clf-c02":["4.3"]},"sourceUrls":["https://aws.amazon.com/partners/funding/","https://docs.aws.amazon.com/partner-central/latest/getting-started/partner-funding.html"]},
+  {"id":"q-clf-gap-marketplace-governance-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A company wants only an approved procurement role to subscribe to third-party software and then share eligible licenses with selected accounts. Which approach best matches AWS Marketplace controls?","choices":["Restrict buyer subscription permissions through IAM/procurement governance, then use the product-supported License Manager sharing workflow when eligible","Give every employee Marketplace administrator permissions and assume entitlements restrict subscriptions","Use AWS Support Center to issue Marketplace licenses","Assume a Marketplace entitlement automatically grants deployment permission to every user"],"answer":0,"explanation":"Restrict buyer subscription permissions through IAM/procurement governance, then use the product-supported License Manager sharing workflow when eligible: govern subscription rights with buyer permissions and procurement controls; share eligible licenses through the product-supported License Manager workflow. Give every employee Marketplace administrator permissions and assume entitlements restrict subscriptions: broad administrator access weakens governance, and an entitlement does not independently restrict who can subscribe. Use AWS Support Center to issue Marketplace licenses: Support Center handles support cases, not third-party software licensing. Assume a Marketplace entitlement automatically grants deployment permission to every user: entitlement rights and IAM permission to deploy/manage a product are distinct controls.","weak":false,"objectiveIds":{"clf-c02":["4.3"]},"sourceUrls":["https://docs.aws.amazon.com/marketplace/latest/buyerguide/buyer-iam-users-groups-policies.html","https://docs.aws.amazon.com/marketplace/latest/buyerguide/sharing-licenses.html","https://docs.aws.amazon.com/license-manager/latest/userguide/granted-licenses.html"]},
+  {
+    "id": "q-saa-gap-containers-01",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A Java service is moved from a virtual machine to Amazon ECS, but it stores session state on the VM’s local disk. What should the team do before a reliable container cutover?",
+    "choices": [
+      "Inventory dependencies and move session state to an appropriate shared or managed store, then test the image and rollout",
+      "Copy the full VM disk into an image and rely on Fargate to migrate sessions automatically",
+      "Choose EKS because Kubernetes automatically makes local state durable",
+      "Publish the image to ECR and immediately delete the source VM"
+    ],
+    "answer": 0,
+    "explanation": "Inventory dependencies and move session state to an appropriate shared or managed store, then test the image and rollout: local session state must be redesigned or externalized, and the image, dependencies, health behavior, and rollout must be tested before cutover. Copy the full VM disk into an image and rely on Fargate to migrate sessions automatically: a VM disk image does not make local sessions durable or migrate them into shared state; Fargate does not perform that work automatically. Choose EKS because Kubernetes automatically makes local state durable: EKS does not make application-local state durable by choosing Kubernetes. Publish the image to ECR and immediately delete the source VM: publishing an image does not validate it or provide a safe cutover; deleting the source first removes the rollback path.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/app2container/latest/UserGuide/what-is-a2c.html",
+      "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+    ]
+  },
+  {
+    "id": "q-saa-gap-immutable-01",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A team must patch a production fleet while avoiding configuration drift and retaining a rollback path. Which release approach best fits immutable infrastructure?",
+    "choices": [
+      "Build a versioned patched image, deploy replacement instances in parallel, verify health, shift traffic, and retain the old fleet until validation",
+      "SSH to each live instance and patch it independently",
+      "Edit each server manually until monitoring is green",
+      "Delete the existing fleet before building its replacement"
+    ],
+    "answer": 0,
+    "explanation": "Build a versioned patched image, deploy replacement instances in parallel, verify health, shift traffic, and retain the old fleet until validation: a versioned replacement fleet with health validation and retained prior capacity follows immutable deployment and permits rollback. SSH to each live instance and patch it independently: patching live instances in place keeps the mutable state the design is intended to avoid. Edit each server manually until monitoring is green: manual changes increase configuration drift and are hard to reproduce. Delete the existing fleet before building its replacement: deleting the old fleet before the replacement is verified removes a practical rollback path.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel08-bp04.html"
+    ]
+  },
+  {
+    "id": "q-saa-gap-storage-autoscaling-01",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An RDS database has unpredictable storage growth, while current free space trends toward exhaustion. Which response best addresses the storage-capacity risk?",
+    "choices": [
+      "Enable storage autoscaling with a suitable maximum and alarms, while continuing to monitor growth and service limits",
+      "Increase the EC2 Auto Scaling group desired count",
+      "Enable database read replicas because they automatically expand the primary database storage",
+      "Use S3 lifecycle rules to increase the RDS allocated storage"
+    ],
+    "answer": 0,
+    "explanation": "Enable storage autoscaling with a suitable maximum and alarms, while continuing to monitor growth and service limits: enabled RDS storage autoscaling with a configured maximum and alarms addresses variable storage-capacity growth while preserving monitoring. Increase the EC2 Auto Scaling group desired count: EC2 Auto Scaling adjusts compute fleet capacity, not RDS allocated storage. Enable database read replicas because they automatically expand the primary database storage: read replicas can scale reads but do not automatically expand the primary instance’s storage. Use S3 lifecycle rules to increase the RDS allocated storage: S3 lifecycle policies manage S3 objects and do not modify RDS allocated storage.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html"
+    ]
+  },
+  {"id":"q-clf-gap-root-standalone-01","topicId":"aws-clf-access-management","examCodes":["clf-c02"],"prompt":"A standalone AWS account has no working IAM administrator because the only administrator revoked its own permissions. Which identity can restore the IAM permissions?","choices":["Any IAM group with no administrator attached","A Marketplace entitlement from the buyer account","The account root user","An EC2 instance profile without recovery permissions"],"answer":2,"explanation":"Any IAM group with no administrator attached: IAM groups organize IAM users and do not inherently grant administrator permissions. A Marketplace entitlement from the buyer account: Marketplace entitlements govern product use, not recovery of IAM permissions. The account root user: Correct: in a standalone account, root can restore permissions after the only IAM administrator revokes its own access. An EC2 instance profile without recovery permissions: An instance profile is a workload identity and does not automatically restore account administrator access.","weak":false,"objectiveIds":{"clf-c02":["2.3"]},"sourceUrls":["https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html","https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html"]},
+  {"id":"q-clf-gap-parameter-store-01","topicId":"aws-clf-access-management","examCodes":["clf-c02"],"prompt":"An operations team needs to store hierarchical application configuration values, including a value that should be encrypted, and retrieve them from AWS workloads. Which service is the closest fit for this configuration use case?","choices":["IAM Identity Center manages workforce access rather than parameters","A security group stores network rules rather than configuration","Systems Manager Parameter Store with an encrypted SecureString","Cost Explorer analyzes costs rather than workload configuration"],"answer":2,"explanation":"IAM Identity Center manages workforce access rather than parameters: IAM Identity Center handles workforce access, not application configuration values. A security group stores network rules rather than configuration: Security groups define network access rules and do not store configuration. Systems Manager Parameter Store with an encrypted SecureString: Correct: Parameter Store supports hierarchical configuration and encrypted SecureString values. Cost Explorer analyzes costs rather than workload configuration: Cost Explorer analyzes cost data and does not store workload configuration.","weak":false,"objectiveIds":{"clf-c02":["2.3"]},"sourceUrls":["https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-a-parameter.html","https://docs.aws.amazon.com/systems-manager/latest/userguide/secure-string-parameter-kms-encryption.html"]},
+  {"id":"q-clf-gap-policy-ownership-01","topicId":"aws-clf-access-management","examCodes":["clf-c02"],"prompt":"A team wants one reusable IAM policy whose permissions it can review and control across several roles. Which policy type best fits?","choices":["An inline policy embedded in only one role","An AWS-managed policy updated by AWS","A customer-managed policy","A security group controlling network traffic"],"answer":2,"explanation":"An inline policy embedded in only one role: Inline policies attach to one identity and are not reusable managed policies. An AWS-managed policy updated by AWS: AWS controls updates to AWS-managed policy documents. A customer-managed policy: Correct: customers control the contents of reusable customer-managed policies. A security group controlling network traffic: Security groups govern network traffic rather than IAM permissions.","weak":false,"objectiveIds":{"clf-c02":["2.3"]},"sourceUrls":["https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html","https://docs.aws.amazon.com/IAM/latest/UserGuide/security-iam-awsmanpol.html"]},
+  {"id":"q-clf-gap-transfer-costs-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A team uploads data to a service, transfers some data to another Region, and later serves data to internet users. Which pricing review is most accurate?","choices":["Treat inbound transfer as generally uncharged, then check the service-specific outbound and inter-Region rules and any request charges","Assume every byte entering AWS is charged and all outbound transfer is free","Assume all same-Region and cross-Region transfers are free if both endpoints use AWS","Compare only stored gigabytes because transfer and request charges are included in storage"],"answer":0,"explanation":"Treat inbound transfer as generally uncharged, then check the service-specific outbound and inter-Region rules and any request charges: Correct. AWS states that most inbound transfer and same-Region service-to-service transfer is not charged, while outbound/inter-Region paths and service rules can differ; requests can still be billable. Assume every byte entering AWS is charged and all outbound transfer is free: Incorrect. This reverses the general inbound/outbound pattern and ignores service-specific rules. Assume all same-Region and cross-Region transfers are free if both endpoints use AWS: Incorrect. Same-Region and cross-Region behavior is not interchangeable, and exceptions apply. Compare only stored gigabytes because transfer and request charges are included in storage: Incorrect. Storage, requests, retrieval, and data transfer can be separate cost dimensions.","weak":false,"objectiveIds":{"clf-c02":["4.1"]},"sourceUrls":["https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html","https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/key-principles.html","https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-requirements.html"]},
+  {"id":"q-clf-gap-bill-source-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A finance analyst needs the final amount owed for a closed AWS billing period. Cost Explorer shows a different analytical total. Which source should establish the amount owed?","choices":["The issued AWS invoice; use Cost Explorer to analyze trends and investigate the presentation difference","A Cost Explorer forecast, because forecasts supersede closed-period billing","The Pricing Calculator, because it estimates the deployed architecture","A cost allocation tag report, because tags determine the invoice total"],"answer":0,"explanation":"The issued AWS invoice; use Cost Explorer to analyze trends and investigate the presentation difference: Correct. AWS describes the invoice as the final amount owed; analytical data can differ in timing, grouping, granularity, rounding, and treatment of discounts, credits, refunds, or taxes. A Cost Explorer forecast, because forecasts supersede closed-period billing: Incorrect. A forecast estimates a period and is not the payable invoice. The Pricing Calculator, because it estimates the deployed architecture: Incorrect. The calculator estimates planned use from assumptions; it does not determine charges already invoiced. A cost allocation tag report, because tags determine the invoice total: Incorrect. Cost allocation tags organize cost views; they do not replace the invoice as the amount owed.","weak":false,"objectiveIds":{"clf-c02":["4.2"]},"sourceUrls":["https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/getting-viewing-bill.html","https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/differences-billing-data-cost-explorer-data.html"]},
+  {"id":"q-clf-assess-41-mixed-purchase-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A service has a predictable EC2 baseline that may justify a usage commitment, a restartable nightly queue, and a release tier that must be launchable in one chosen Availability Zone. Which plan separates the three constraints?","choices":["Evaluate a Savings Plan for eligible baseline use, Spot for restartable queue work, and an On-Demand Capacity Reservation for the selected-AZ launch requirement","Use On-Demand for the predictable baseline, Spot for queue and release capacity, and rely on instance selection to hold launch capacity in the chosen AZ","Use a regional RI for the predictable baseline, Spot for the restartable queue, and assume regional size flexibility reserves launch capacity in the release AZ","Use Savings Plans for baseline and queue, then rely on the compute-usage commitment to reserve launch capacity in the selected AZ when the release arrives"],"answer":0,"explanation":"Evaluate a Savings Plan for eligible baseline use, Spot for restartable queue work, and an On-Demand Capacity Reservation for the selected-AZ launch requirement: Correct. A usage commitment can discount eligible baseline usage, Spot can fit interruptible queue work, and a separate Capacity Reservation addresses the selected-AZ capacity requirement. Use On-Demand for the predictable baseline, Spot for queue and release capacity, and rely on instance selection to hold launch capacity in the chosen AZ: Incorrect. Spot can be interrupted, and changing a bid does not turn Spot into guaranteed capacity. Use a regional RI for the predictable baseline, Spot for the restartable queue, and assume regional size flexibility reserves launch capacity in the release AZ: Incorrect. A regional RI discount does not reserve capacity in a chosen AZ, and an RI does not make an interruptible queue interruption-proof. Use Savings Plans for baseline and queue, then rely on the compute-usage commitment to reserve launch capacity in the selected AZ when the release arrives: Incorrect. Savings Plans are pricing commitments for eligible usage, not capacity reservations; they do not make Spot usage uninterrupted.","weak":false,"objectiveIds":{"clf-c02":["4.1"]},"sourceUrls":["https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html","https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html","https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html","https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html","https://docs.aws.amazon.com/decision-guides/latest/decision-guides/ec2-purchasing-options-aws-how-to-choose.html"]},
+  {"id":"q-clf-assess-42-budget-action-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"A finance team receives a budget alert after charges have accrued and asks AWS Budgets to stop every service exactly when spend reaches its threshold. Which response is most accurate?","choices":["Treat the alert as monitoring; configure only supported budget actions with the required permissions, and do not treat them as a universal instantaneous spending cap","Increase the evaluation frequency, confirm notification delivery, and rely on Budgets to stop every AWS service at the threshold before another charge accrues","Switch to a forecasted budget and choose an account-wide action, assuming the forecast automatically blocks launches across all services at its threshold","Activate every cost-allocation tag, attach the budget to those tags, and expect AWS to throttle tagged resources automatically when the limit is reached"],"answer":0,"explanation":"Treat the alert as monitoring; configure only supported budget actions with the required permissions, and do not treat them as a universal instantaneous spending cap: Correct. AWS documents supported budget actions and required permissions; billing data and notifications can be delayed, and the actions are not a universal hard cap across every service. Increase the evaluation frequency, confirm notification delivery, and rely on Budgets to stop every AWS service at the threshold before another charge accrues: Incorrect. More frequent evaluation does not create an all-service stop guarantee or remove data delay. Switch to a forecasted budget and choose an account-wide action, assuming the forecast automatically blocks launches across all services at its threshold: Incorrect. A forecast is a monitoring signal, not an enforcement policy. Activate every cost-allocation tag, attach the budget to those tags, and expect AWS to throttle tagged resources automatically when the limit is reached: Incorrect. Tags organize eligible cost data after activation; they neither stop resource usage nor enforce a budget.","weak":false,"objectiveIds":{"clf-c02":["4.2"]},"sourceUrls":["https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html","https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html","https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-action-configure.html","https://docs.aws.amazon.com/cost-management/latest/userguide/bcm-lite-use-budget.html"]},
+  {"id":"q-clf-assess-43-health-case-01","topicId":"aws-clf-billing-support","examCodes":["clf-c02"],"prompt":"An EC2 event appears in AWS Health with affected resource IDs. The application team needs both to confirm the AWS event's scope and to request technical troubleshooting. Which sequence matches the two needs?","choices":["Review the event and affected resources in AWS Health, then open a technical case in Support Center if the account's plan permits it","Use Trusted Advisor to verify the account-specific outage and affected EC2 resources, then use Cost Explorer to create a technical support case for the service team","Open Support Center alone to retrieve the Health event and affected resource list; technical case access is available even on Basic Support","Subscribe to Marketplace diagnostics, then post the event details and resource IDs on re:Post to create a private technical support case"],"answer":0,"explanation":"Review the event and affected resources in AWS Health, then open a technical case in Support Center if the account's plan permits it: Correct. AWS Health presents event details and affected-resource information; Support Center is the case-management path when the account has the required technical-support entitlement. Use Trusted Advisor to verify the account-specific outage and affected EC2 resources, then use Cost Explorer to create a technical support case for the service team: Incorrect. Trusted Advisor provides supported recommendations/checks, while Cost Explorer analyzes costs; neither performs both stated tasks. Open Support Center alone to retrieve the Health event and affected resource list; technical case access is available even on Basic Support: Incorrect. Health is the event and affected-resource source, and technical cases depend on the account's support entitlement. Subscribe to Marketplace diagnostics, then post the event details and resource IDs on re:Post to create a private technical support case: Incorrect. Marketplace is for third-party products and re:Post is a community resource, not the private Support Center case channel.","weak":false,"objectiveIds":{"clf-c02":["4.3"]},"sourceUrls":["https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html","https://docs.aws.amazon.com/health/latest/ug/aws-health-account-views.html","https://docs.aws.amazon.com/awssupport/latest/user/case-management.html","https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html"]},
+  {
+    "id": "q-saa-auditbatch-01",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "A new standalone AWS account will be used by a small operations team. Which TWO actions best reduce the risk of root-credential misuse?",
+    "choices": [
+      "Enable a phishing-resistant MFA method for the root user",
+      "Delete any root-user access keys and keep root for tasks that require it",
+      "Store root access keys in an encrypted S3 bucket for emergencies",
+      "Add the root user to an IAM administrator group",
+      "Apply an IAM permissions boundary to restrict the root user"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Enable a phishing-resistant MFA method for the root user — Correct. MFA adds a second sign-in factor; AWS supports security keys and passkeys for root-user MFA.\nDelete any root-user access keys and keep root for tasks that require it — Correct. AWS recommends not creating root access keys because root has full account access; routine administration should use a separate workforce identity.\nStore root access keys in an encrypted S3 bucket for emergencies — Incorrect. Encryption at rest does not make persistent root keys an appropriate credential; remove the keys.\nAdd the root user to an IAM administrator group — Incorrect. The root user is not an IAM user and cannot be constrained or granted permissions through an IAM group.\nApply an IAM permissions boundary to restrict the root user — Incorrect. An IAM permissions boundary does not limit the account root user. A boundary can constrain an IAM principal when supported and attached to that principal.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/enable-mfa-for-root.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-02",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "A load balancer uses a third-party TLS certificate imported into AWS Certificate Manager. The certificate owner will renew it outside AWS. What should the operations plan include?",
+    "choices": [
+      "Track the external certificate expiry, renew it with its issuer, and reimport the renewed certificate before expiration",
+      "Assume ACM will renew the imported certificate automatically because it is attached to a load balancer",
+      "Rotate the KMS key used by the load balancer; that renews the TLS certificate",
+      "Create an ACM renewal alarm and take no action on the imported certificate"
+    ],
+    "answer": 0,
+    "explanation": "Track the external certificate expiry, renew it with its issuer, and reimport the renewed certificate before expiration — Correct. ACM does not provide managed renewal for imported certificates, so the owner must renew and reimport them.\nAssume ACM will renew the imported certificate automatically because it is attached to a load balancer — Incorrect. Attachment to a supported service does not make an imported certificate eligible for ACM managed renewal.\nRotate the KMS key used by the load balancer; that renews the TLS certificate — Incorrect. KMS key rotation and TLS certificate renewal are separate lifecycles.\nCreate an ACM renewal alarm and take no action on the imported certificate — Incorrect. Monitoring can help detect expiry but does not renew or replace an imported certificate.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html",
+      "https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-03",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "A regulated team needs daily, restorable snapshots of several Amazon RDS databases for two years. Which design best meets the retention period?",
+    "choices": [
+      "Create an AWS Backup plan for the RDS resources with daily snapshot backups and a two-year retention period, then test restores",
+      "Set each RDS automated-backup retention period to two years",
+      "Copy database transaction logs to CloudWatch Logs and expire them after two years",
+      "Use an RDS read replica as the two-year backup history"
+    ],
+    "answer": 0,
+    "explanation": "Create an AWS Backup plan for the RDS resources with daily snapshot backups and a two-year retention period, then test restores — Correct. AWS Backup snapshot retention can be configured for long-term retention; a restore test checks that the recovery process works.\nSet each RDS automated-backup retention period to two years — Incorrect. Native RDS automated-backup retention is limited to 35 days; it does not provide a two-year daily snapshot schedule.\nCopy database transaction logs to CloudWatch Logs and expire them after two years — Incorrect. Logs are not a managed, restorable database backup set.\nUse an RDS read replica as the two-year backup history — Incorrect. A read replica serves read workloads and is not a retained point-in-time backup history.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-backup/latest/devguide/plan-options-and-configuration.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/AutomatedBackups.AWSBackup.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-04",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "A reporting pipeline must run two independent AWS Glue jobs in parallel, then start a publishing job only after both finish. Operators need retry rules and a visible execution state. Which design fits?",
+    "choices": [
+      "Use an AWS Step Functions Standard workflow with parallel branches, Glue job integrations that wait for completion, and retry/catch handling",
+      "Create one EventBridge rule per job and assume the rules will wait for both jobs before publishing",
+      "Send job-start messages to an SNS topic and use delivery order as the dependency control",
+      "Use an SQS queue as the workflow state store and have every worker infer when both jobs are finished"
+    ],
+    "answer": 0,
+    "explanation": "Use an AWS Step Functions Standard workflow with parallel branches, Glue job integrations that wait for completion, and retry/catch handling — Correct. A state machine models branches and sequencing, can wait for integrated job completion, and provides workflow-level error handling and execution history.\nCreate one EventBridge rule per job and assume the rules will wait for both jobs before publishing — Incorrect. EventBridge routes matching events; separate rules do not by themselves implement a joined workflow that waits for both job results.\nSend job-start messages to an SNS topic and use delivery order as the dependency control — Incorrect. SNS fan-out does not provide this workflow’s completion barrier or state handling.\nUse an SQS queue as the workflow state store and have every worker infer when both jobs are finished — Incorrect. A queue buffers work, but custom coordination would still be required for completion, dependency, and retry state.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html",
+      "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html",
+      "https://docs.aws.amazon.com/step-functions/latest/dg/state-parallel.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-05",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "A company runs SMB and NFS shares on Amazon FSx for NetApp ONTAP in one Region. It needs a continuously replicated copy in a second Region that can be presented with the same file protocols during recovery. Which approach is the closest fit?",
+    "choices": [
+      "Create an FSx for ONTAP destination in the recovery Region and configure NetApp SnapMirror replication",
+      "Copy the share contents into an S3 bucket and use S3 replication as the failover file system",
+      "Create an EFS file system in the recovery Region; it provides both SMB and NFS automatically",
+      "Use Route 53 health checks to replicate the file data between Regions"
+    ],
+    "answer": 0,
+    "explanation": "Create an FSx for ONTAP destination in the recovery Region and configure NetApp SnapMirror replication — Correct. FSx for ONTAP supports SnapMirror relationships between ONTAP systems, including FSx file systems; the recovery system retains the ONTAP file protocol capabilities.\nCopy the share contents into an S3 bucket and use S3 replication as the failover file system — Incorrect. S3 is object storage and does not itself present the same SMB/NFS file-system endpoints.\nCreate an EFS file system in the recovery Region; it provides both SMB and NFS automatically — Incorrect. EFS is an NFS file system; it does not provide SMB shares.\nUse Route 53 health checks to replicate the file data between Regions — Incorrect. Route 53 can route clients based on health but does not copy or synchronize file-system data.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/scheduled-replication.html",
+      "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-06",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "A company is moving departmental Windows shares to Amazon FSx for Windows File Server. The existing share permissions must continue to control access after migration. Which transfer plan should it validate?",
+    "choices": [
+      "Use AWS DataSync from the SMB source to FSx for Windows File Server and configure the task identity and options to preserve the required NTFS ACLs",
+      "Copy the files to S3 with the AWS CLI and assume the original Windows ACLs will be reconstructed from object names",
+      "Use an EBS snapshot because it preserves permissions when restored to any file system",
+      "Use Route 53 Resolver rules to transfer file ownership and ACL metadata"
+    ],
+    "answer": 0,
+    "explanation": "Use AWS DataSync from the SMB source to FSx for Windows File Server and configure the task identity and options to preserve the required NTFS ACLs — Correct. DataSync can transfer metadata and NTFS DACLs for supported SMB-to-FSx transfers; the SMB identity and its domain permissions must be configured correctly and validated.\nCopy the files to S3 with the AWS CLI and assume the original Windows ACLs will be reconstructed from object names — Incorrect. Object names do not encode Windows ACLs, and a basic copy is not an ACL-preservation plan.\nUse an EBS snapshot because it preserves permissions when restored to any file system — Incorrect. EBS snapshots capture block volumes; they are not a cross-file-system migration mechanism for these shares.\nUse Route 53 Resolver rules to transfer file ownership and ACL metadata — Incorrect. Resolver rules handle DNS queries, not file data or access-control metadata.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/migrate-files-to-fsx-datasync.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/create-fsx-location.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-07",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "A DynamoDB item includes a variable document that can exceed 400 KB. The application must still look up the item by its normal partition key and retrieve the full document when needed. What is an appropriate design?",
+    "choices": [
+      "Store the large document as an S3 object and keep its object identifier and related metadata in the DynamoDB item",
+      "Increase the DynamoDB table’s provisioned capacity until the item-size limit rises",
+      "Store the document in a DynamoDB sort key because sort-key values are excluded from item size",
+      "Split the document across arbitrary items and assume one GetItem operation will return them all"
+    ],
+    "answer": 0,
+    "explanation": "Store the large document as an S3 object and keep its object identifier and related metadata in the DynamoDB item — Correct. DynamoDB items are limited to 400 KB; AWS documents storing larger attribute values in S3 and keeping a reference in the item. The application must coordinate object and item lifecycle.\nIncrease the DynamoDB table’s provisioned capacity until the item-size limit rises — Incorrect. Capacity changes throughput, not the maximum item size.\nStore the document in a DynamoDB sort key because sort-key values are excluded from item size — Incorrect. Key and attribute bytes contribute to item size; moving the value into a key does not bypass the limit.\nSplit the document across arbitrary items and assume one GetItem operation will return them all — Incorrect. Separate items require a deliberate key and retrieval design; GetItem reads one item and does not join an arbitrary item collection.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Constraints.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-use-s3-too.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-08",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "A team has 16 KB S3 objects and expects a lifecycle rule to transition every object to an archive class after one year. The bucket uses the current default lifecycle minimum-size behavior. What should the team verify or change?",
+    "choices": [
+      "Explicitly configure the rule’s object-size filter to allow the 16 KB objects, then validate transition and retrieval economics",
+      "Leave the rule unchanged because an age-based transition applies to every object size by default",
+      "Add an S3 tag to each object; tags override lifecycle minimum-size behavior automatically",
+      "Increase the expiration age because objects smaller than 128 KB transition only after one year"
+    ],
+    "answer": 0,
+    "explanation": "Explicitly configure the rule’s object-size filter to allow the 16 KB objects, then validate transition and retrieval economics — Correct. Current S3 Lifecycle defaults do not transition objects smaller than 128 KB unless the rule explicitly allows a smaller size. Small-object archive overhead and access patterns still affect the design.\nLeave the rule unchanged because an age-based transition applies to every object size by default — Incorrect. The current default behavior excludes objects below 128 KB from transitions.\nAdd an S3 tag to each object; tags override lifecycle minimum-size behavior automatically — Incorrect. Tags can select objects for a rule but do not automatically override the minimum object-size behavior.\nIncrease the expiration age because objects smaller than 128 KB transition only after one year — Incorrect. Waiting longer does not remove the size restriction.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intro-lifecycle-rules.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-09",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "A research team receives tabular sensor exports as CSV files in Amazon S3. Analysts need a repeatable transformation into Parquet files in a separate S3 prefix, with minimal server administration. Which service is the best starting point?",
+    "choices": [
+      "Create an AWS Glue ETL job to read the source data, transform the format, and write the Parquet output",
+      "Launch an EC2 instance and manually convert each file on a local disk every day",
+      "Use AWS Batch only to define a schedule; a job definition does not need transformation logic",
+      "Use Amazon Route 53 to convert CSV records into Parquet files"
+    ],
+    "answer": 0,
+    "explanation": "Create an AWS Glue ETL job to read the source data, transform the format, and write the Parquet output — Correct. Glue provides managed ETL jobs and supports writing Parquet to S3; a crawler or explicit schema can supply source metadata as appropriate.\nLaunch an EC2 instance and manually convert each file on a local disk every day — Incorrect. This adds server and operational work and does not provide the repeatable managed ETL requested.\nUse AWS Batch only to define a schedule; a job definition does not need transformation logic — Incorrect. Batch schedules and runs containerized batch work, but a transformation program and execution configuration still need to be supplied.\nUse Amazon Route 53 to convert CSV records into Parquet files — Incorrect. Route 53 provides DNS services, not ETL or file-format conversion.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/three-aws-glue-etl-job-types-for-converting-data-to-apache-parquet.html",
+      "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format-parquet-home.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-10",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "A regional health team may query only records for patients in its own region from a shared S3 data lake using Athena. Which control best enforces that row-level restriction?",
+    "choices": [
+      "Define a Lake Formation data filter for the table and grant the team filtered SELECT access, with required Athena IAM permissions",
+      "Give the team broad S3 bucket access and ask analysts to add a WHERE clause to each query",
+      "Encrypt the whole bucket with one KMS key; the key automatically filters rows by region",
+      "Enable CloudTrail data events so queries outside the region are rejected"
+    ],
+    "answer": 0,
+    "explanation": "Define a Lake Formation data filter for the table and grant the team filtered SELECT access, with required Athena IAM permissions — Correct. Lake Formation data filters can enforce row-level access on supported Athena queries by applying a row expression to table permissions. The analyst also needs required IAM permissions to use Athena.\nGive the team broad S3 bucket access and ask analysts to add a WHERE clause to each query — Incorrect. A query convention is not an authorization boundary and can be omitted or changed.\nEncrypt the whole bucket with one KMS key; the key automatically filters rows by region — Incorrect. Encryption and key access protect data at rest; they do not implement row-level query filtering.\nEnable CloudTrail data events so queries outside the region are rejected — Incorrect. CloudTrail records activity for investigation; it does not enforce query access.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/lake-formation/latest/dg/lf-permissions-overview.html",
+      "https://docs.aws.amazon.com/athena/latest/ug/security-athena-lake-formation.html",
+      "https://docs.aws.amazon.com/athena/latest/ug/lf-athena-user-permissions.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-11",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "A research lab must keep a Hadoop and Spark workload beside its on-premises datasets for local processing. The lab can install AWS Outposts and maintain its service-link connection. Which design is the closest fit?",
+    "choices": [
+      "Run an Amazon EMR cluster on AWS Outposts using supported instance types and capacity",
+      "Run the EMR cluster only in a distant AWS Region and assume it processes the dataset on premises without transferring data",
+      "Use AWS DataSync as the Hadoop and Spark execution engine on the local servers",
+      "Use Amazon S3 Lifecycle rules to run the Hadoop and Spark jobs beside the source data"
+    ],
+    "answer": 0,
+    "explanation": "Run an Amazon EMR cluster on AWS Outposts using supported instance types and capacity — Correct. EMR on Outposts is designed for workloads that need to run close to on-premises data; the lab must meet the documented Outposts, capacity, instance-type, and Region connectivity prerequisites.\nRun the EMR cluster only in a distant AWS Region and assume it processes the dataset on premises without transferring data — Incorrect. A Regional cluster processes in the Region; it does not execute beside the local dataset.\nUse AWS DataSync as the Hadoop and Spark execution engine on the local servers — Incorrect. DataSync transfers data; it does not run Hadoop or Spark applications.\nUse Amazon S3 Lifecycle rules to run the Hadoop and Spark jobs beside the source data — Incorrect. S3 Lifecycle manages object transitions and expiration; it does not provide a compute runtime.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-outposts.html",
+      "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
+  },
+  {
+    "id": "q-saa-auditbatch-12",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "A 90 TB on-premises file dataset must move to Amazon S3 over a private Direct Connect path. Applications will continue writing to the source during most of the transfer, but can pause writes briefly for cutover. Which plan best limits the final inconsistency window?",
+    "choices": [
+      "Run an initial AWS DataSync transfer, run a final incremental transfer after pausing source writes, verify the destination, and then switch consumers",
+      "Make one DataSync pass and immediately delete the source, even if files changed during the run",
+      "Copy a point-in-time backup to a Snowball device and switch consumers while the source remains writable",
+      "Use an S3 Lifecycle rule to discover changed source files and synchronize them over Direct Connect"
+    ],
+    "answer": 0,
+    "explanation": "Run an initial AWS DataSync transfer, run a final incremental transfer after pausing source writes, verify the destination, and then switch consumers — Correct. DataSync supports initial and subsequent changed-data transfers; a controlled write pause and destination verification provide a cutover point for changes made during the first pass. Direct Connect can carry the network path when configured for DataSync.\nMake one DataSync pass and immediately delete the source, even if files changed during the run — Incorrect. A single pass can miss changes made during migration, and deleting the source before verification removes recovery options.\nCopy a point-in-time backup to a Snowball device and switch consumers while the source remains writable — Incorrect. A static copy does not capture later writes unless a synchronization/cutover process accounts for them.\nUse an S3 Lifecycle rule to discover changed source files and synchronize them over Direct Connect — Incorrect. Lifecycle acts on objects already in S3; it does not scan or synchronize the on-premises source.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/direct-connect-architecture.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/configure-metadata.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+    ]
   }
 ]

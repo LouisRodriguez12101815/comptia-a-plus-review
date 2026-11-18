@@ -1,3 +1,96 @@
+# SAA-C03 gap batch 1 update — 2026-11-18
+
+## Current-source and partial-evidence refresh — 2026-11-18
+
+The current AWS [revision-history page](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-revisions.html)
+was indexed today and its opened view reported a five-day-old crawl. It lists
+version 1.1 (October 29, 2026) and states that AWS removed AWS DeepComposer,
+Amazon DevOps Guru, Amazon Elastic Inference, Amazon Managed Blockchain, and
+Amazon Sumerian from the out-of-scope list. The [in-scope list](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-in-scope-services.html)
+snapshot was about two weeks old; the [out-of-scope list](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-out-of-scope-services.html)
+snapshot was about three weeks old. The latter still contains all five names;
+the former omits all five. Both service lists say, “This list is non-exhaustive
+and is subject to change.”
+
+This source conflict remains **unresolved**. The revision-history snapshot is
+newer than the two conflicting service-list snapshots, and omission from a
+non-exhaustive in-scope list does not prove inclusion. Direct shell access to
+`docs.aws.amazon.com` was blocked by the environment proxy with HTTP 403, so the
+older cached list snapshots could not be refreshed from the origin. Resolving
+this requires an uncached current-origin copy of the in-scope and out-of-scope
+pages, or written confirmation from AWS Certification. No service was relabeled
+or taught as in-scope based on omission.
+
+## Q&A-SAA-C03 candidate-question audit and first batch — 2026-11-18
+
+The uploaded `Q&A-SAA-C03.pdf` was verified at 589 pages with SHA-256
+`61f0caeca9c81cdd99d24b807250cf39336a992782120c2588ca9a874e163dd1`. Its PDF
+metadata does not establish an author, version, provenance, or redistribution
+permission. On the extracted text, counting case-insensitive `QUESTION <integer>`
+only at the start of a line yields **1,213** headings. Counting that pattern
+anywhere in the extracted text yields **1,259**: six 200-question sections and
+a final 59-question section. The difference is **46 headings that were not at
+line starts** in the extraction. The source was used only to identify concepts.
+
+Current objective scope comes from the official SAA-C03 guide version 1.1,
+published October 29, 2026, and the current four domain pages. The older supplied
+17-page guide remains a historical evidence baseline. The Q&A document does not
+define scope.
+
+Twelve original questions now assess selected gaps across Objectives 1.1, 1.3,
+2.1, 2.2, 3.3, 3.5, and 4.1. They cover root credential protections, imported
+certificate renewal, long-term RDS backups, Step Functions job orchestration,
+FSx for ONTAP recovery, DataSync ACL preservation and migration cutover, large
+DynamoDB attributes, S3 lifecycle size behavior, Glue Parquet transformation,
+Lake Formation row filtering, and EMR on Outposts. Each question has an
+option-by-option explanation and current official AWS source URLs. The details
+and mappings are kept in `docs/saa-c03-question-pdf-audit.json`; question IDs are
+also linked in the existing task-resource associations in
+`docs/saa-c03-evidence-map.json`.
+
+The audit rejected a repeated CSV-to-Parquet item whose Exam B explanation is
+about unrelated S3 encryption, and corrected an S3 lifecycle candidate that
+omitted the current default exclusion of objects under 128 KB. Exam G's SQL
+Server explanation was rejected because current RDS documentation supports
+Always On Availability Groups for supported versions and editions; FSx shared
+storage is a different Failover Cluster Instance design. A Secrets Manager
+candidate was not added because the existing bank already tests that concept.
+
+The existing `Question.explanation` field and `QuizRunner` already show
+`ExplanationText` after submission for single- and multiple-response questions,
+and in missed-question review. The new root-control question is multiple
+response; focused tests verify shuffled scoring and all option explanations.
+No quiz UI, scoring, saved progress, or question-ID behavior changed. All SAA
+objective statuses remain partial; the new assessments do not establish full
+objective coverage. Existing SAA partial-support gaps, the service-list
+discrepancy above, and any remaining unassessed skills remain open.
+
+I rechecked the repository evidence behind all **69 partial-support SAA bullets**
+against their cited actual lesson/resource excerpts. The evidence pointers still
+resolve and preserve the exact excerpted source text; the stated unsupported
+breadth or procedure remains. The map retains **114 direct / 69 partial / 6
+mention / 0 missing / 0 unresolved**. All 14 objective statuses remain partial;
+no status or SAA instructional text changed in this source-refresh pass. This is
+an evidence-pointer check, not an exhaustive AWS technical freshness audit of
+every existing service claim. The highest-priority remaining gap groups and
+their exact bullet IDs remain in the prioritized-gap table and JSON map.
+
+This update is isolated on `content/aws-clf-saa-gap-batch-1`, based on `c4c10061f2c3a4869097e2b6a4ff06dcac027ab6`. The existing review branch and worktree were preserved. The supplied 17-page Version 1.0 SAA-C03 exam guide remains the PDF baseline; its verified hash and every source bullet mapping are unchanged. The attachment is an exam guide, not an instructional study guide. No SAA textbook was supplied, so no SAA textbook page is cited.
+
+The three previously missing evidence bullets now have direct repository teaching, an existing topic section, and a new scenario question with explanations for every option:
+
+| PDF bullet | Exact supplied-guide wording | Repository destination and question | Current official technical source |
+| --- | --- | --- | --- |
+| 2.1-K08, p. 4, Domain 2, Task 2.1, Knowledge of | How to migrate applications into containers | `aws-saa-resilient-architectures#container-migration-decisions`; `q-saa-gap-containers-01` | [AWS App2Container](https://docs.aws.amazon.com/app2container/latest/UserGuide/what-is-a2c.html), [Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) |
+| 2.2-K07, p. 5, Domain 2, Task 2.2, Knowledge of | Immutable infrastructure | `aws-saa-resilient-architectures#immutable-infrastructure-decisions`; `q-saa-gap-immutable-01` | [AWS Well-Architected REL08-BP04](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel08-bp04.html) |
+| 4.1-S04, p. 8, Domain 4, Task 4.1, Skills in | Determining when storage auto scaling is required | `aws-saa-cost-optimized#storage-autoscaling-decisions`; `q-saa-gap-storage-autoscaling-01` | [RDS storage autoscaling](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html), [RDS best practices](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html) |
+
+These explanations teach container dependency and state assessment, immutable replacement with health validation and rollback, and when capacity autoscaling is useful versus inadequate. The RDS example names service-specific limits and monitoring; it does not imply that EC2 Auto Scaling scales storage.
+
+The PDF alignment map still contains all 189 bullets. After this batch, repository-teaching classification totals are 114 direct, 69 partial, 6 mention, 0 missing, and 0 unresolved. These are per-bullet teaching judgments, not an exam-coverage score.
+
+All three PDFs bullets remain separate from lesson prose in `docs/saa-c03-evidence-map.json`. The map adds technical source URLs, verified page/bullet identity, exact anchors and question IDs. SAA objective statuses remain unchanged: Objectives 2.1, 2.2 and 4.1 are partial. Their other mapped subskills remain partial or mention-only, so three fixed bullets do not meet the broader task promotion threshold.
+
 # GapLift navigation and SAA curriculum implementation
 
 The existing pages now connect GapLift’s introduction, methodology, technical
@@ -140,23 +233,22 @@ its underlying knowledge and skill bullets.
 
 ## Prioritized curriculum gaps for separate future work
 
-No gaps were filled. These priorities describe candidate instructional work for a
-separate authorization; the JSON contains the exact row-level gaps and excerpts.
+This batch resolves only the three rows above. The following priorities remain candidate instructional work; the JSON retains exact bullet-level evidence and classifications.
 
 | Priority | Specific gap | Source bullet IDs |
 | --- | --- | --- |
-| 1 | Container migration is absent: image/packaging, state/dependency migration and cutover are not taught by ECS/EKS/Fargate service recognition. | 2.1-K08, page 4 |
-| 1 | Immutable infrastructure is absent: repeatable IaC and launch templates do not explain replacement-versus-mutation, immutable releases or rollback. | 2.2-K07, page 5 |
+| Resolved | Container migration now has dependency/state assessment, image publication and cutover teaching with a new scenario item. | 2.1-K08, page 4 |
+| Resolved | Immutable replacement, validation and rollback now have direct teaching with a new scenario item. | 2.2-K07, page 5 |
 | 1 | Security implementation remains partial: IAM/root MFA enforcement, directory federation, multi-account guardrail design, integrated application security, TLS setup and backup/restore configuration. | 1.1-S01/S04/S06; 1.2-S03/S04; 1.3-S01/S02/S03/S04/S05 |
 | 1 | Key rotation and certificate renewal are named without lifecycle/validation instruction. | 1.3-S07, page 4 |
 | 1 | Data pipeline design lacks quantitative ingestion sizing, secured lake/catalog examples, complete stream configuration, BI implementation and CSV-to-Parquet transformation/validation. | 3.5-K05/K06; 3.5-S01–S07 |
-| 2 | Storage autoscaling decisions are absent: growth thresholds, supported-service behavior and expansion limits are not explained. | 4.1-S04, page 8 |
+| Resolved | RDS storage autoscaling decision cues, maximum thresholds, monitoring and limits are taught with a new scenario item. | 4.1-S04, page 8 |
 | 2 | Orchestration and API depth is thin: REST/API management and Step Functions are mentions; container scheduling/deployment and broader serverless patterns remain partial. | 2.1-K01/K12/K14/K16; 3.2-K05/K06 |
 | 2 | Recovery/operations need deeper automation, standby quotas, tracing and a worked reliability retrofit for unmodifiable legacy applications. | 2.2-K10/K12; 2.2-S01/S05/S07 |
 | 2 | Database sizing and engine selection lack quantitative capacity examples, MySQL/PostgreSQL suitability comparisons, replica provisioning and full migration/retention configuration. | 3.3-K04/K06/K08; 3.3-S01/S02/S03; 4.3-K05/K07; 4.3-S01/S02/S03/S05 |
 | 2 | Cost design lacks batch-upload comparisons, capacity/transfer-cost calculations, AWS HDD/SSD volume choices, NAT-instance comparisons, hibernation decisions and bandwidth/throttling selection. | 4.1-K06/K08/S01/S02/S03/S10; 4.2-K05/K06/K09/S02/S06; 4.3-S04; 4.4-K04/S02/S06/S07 |
 
-The six mention-only rows are 1.3-S07, 2.1-K01, 2.1-K16, 3.5-K06, 4.3-S04 and
+The three previously missing rows above are now direct teaching. The six other mention-only rows are 1.3-S07, 2.1-K01, 2.1-K16, 3.5-K06, 4.3-S04 and
 4.4-S07. The 69 partial-support rows each state the unsupported breadth or
 procedure in the JSON; they are not silently treated as complete.
 
