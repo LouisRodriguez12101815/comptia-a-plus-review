@@ -1,7 +1,7 @@
 import core2LearningMap from "@/content/core2-learning-map.json";
 import { getFlashcards, getQuestions, getTopic } from "@/lib/content";
 import { visualChapters } from "@/lib/visuals";
-import { getTrack } from "@/lib/tracks";
+import { getTrack, trackForFocus } from "@/lib/tracks";
 import type { TrackId } from "@/lib/tracks";
 import type { StudyFocus, Topic } from "@/lib/types";
 
@@ -33,7 +33,9 @@ export function chapterTools(topicId: string): ChapterTool[] {
   const topic = getTopic(topicId);
   if (!topic) return [];
   const focus = focusForTopic(topic);
-  const trackId = trackByGroup[topic.group];
+  // AWS chapters share a group; resolve their visual workspace from the existing
+  // preferred exam without changing the saved-focus rules for shared chapters.
+  const trackId = trackByGroup[topic.group] ?? (topic.group === "aws" ? trackForFocus(focus)?.id : undefined);
   const visuals =
     visualChapters(focus).find((chapter) => chapter.id === topicId)?.visuals ?? [];
   const cards = getFlashcards(topicId, focus).length;

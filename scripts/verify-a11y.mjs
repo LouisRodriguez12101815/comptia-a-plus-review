@@ -20,6 +20,10 @@ const browserPath = option('--browser', undefined);
 
 const pages = [
   '/',
+  '/methodology',
+  '/assessment-workflow',
+  '/certifications',
+  '/aws-saa',
   '/core1',
   '/networking',
   '/network-plus/ch9',

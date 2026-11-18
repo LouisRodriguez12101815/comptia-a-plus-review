@@ -5,6 +5,7 @@ import { LearnerSync } from "@/app/components/LearnerSync";
 import { NetworkPlusConcepts } from "@/app/components/NetworkPlusConcepts";
 import { NetworkPlusDomainQuiz } from "@/app/components/NetworkPlusDomainQuiz";
 import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
+import { SaaCurriculumIndex } from "@/app/components/SaaCurriculumIndex";
 import { NetworkWorkspaceNav } from "@/app/components/NetworkWorkspaceNav";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
@@ -22,6 +23,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const t = await getTranslations("trackHub");
   const tTrack = await getTranslations("tracks");
   const tChapter = await getTranslations("networkChapters");
+  const journey = await getTranslations("navigationJourney");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
   const counts = trackCounts(track);
@@ -38,6 +40,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
   const workspaceLinks = track.focus ? [
     { label: t("workspaceOverview"), href: track.href },
+    ...(track.id === "aws-saa" ? [{ label: journey("curriculum"), href: "/aws-saa#curriculum" }] : []),
     ...(track.id === "core2" ? [{ label: t("core2ReviewTools"), href: "/core2/review-tools" }] : []),
     { label: t("workspaceTopics"), href: `${track.href}#${track.id === "networking" ? "objectives" : "topics"}` },
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
@@ -45,16 +48,21 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
     ...(counts.questions > 0 ? [{ label: tTrack("tools.quiz.label"), href: "/quiz" }] : []),
     ...(track.id === "aws-clf" ? [{ label: t("workspaceMixedPractice"), href: "/test?exam=clf-c02&practice=mixed20" }] : []),
     ...(counts.questions > 0 ? [{ label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` }] : []),
+    ...(track.id === "aws-saa" ? [
+      { label: journey("sharedReview"), href: "/weak-areas" },
+      { label: journey("sharedPerformance"), href: "/performance" },
+    ] : []),
     ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0
       ? [{ label: t("workspaceResults"), href: `/final-15/${track.id === "networking" ? "networking" : track.id}` }]
       : []),
   ] : [];
 
   const sequence = track.focus ? [
-    { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#topics` },
+    { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#${track.id === "aws-saa" ? "curriculum" : "topics"}` },
     { step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` },
     ...(counts.cards > 0 ? [{ step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: track.id === "aws-clf" ? "/test?exam=clf-c02&practice=mixed20" : `/test?exam=${track.focus}` }] : []),
+    ...(track.id === "aws-saa" ? [{ step: "05", label: t("sequenceReview"), detail: journey("sharedReviewDetail"), href: "/weak-areas" }] : []),
     ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0
       ? [{ step: "05", label: t("sequenceReview"), detail: t("sequenceReviewDetail"), href: `/final-15/${track.id}` }]
       : []),
@@ -90,8 +98,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
       <header id="overview" className="track-workspace-hero scroll-mt-24 rounded-3xl p-6 sm:p-8">
         <p className="text-sm text-slate-400">
-          <Link href="/" className="hover:text-white">
-            {tTrack("home")}
+          <Link href="/certifications" className="hover:text-white">
+            {journey("certifications")}
           </Link>
           <span aria-hidden="true"> / </span>
           <span className="text-slate-100">{tTrack(`${track.id}.short`)}</span>
@@ -159,6 +167,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </section>
       ) : null}
 
+      {track.id === "aws-saa" ? <SaaCurriculumIndex /> : null}
+
       <section id={track.id === "networking" ? "study" : undefined} aria-labelledby="tools-heading" className="scroll-mt-24 space-y-4">
         <h2 id="tools-heading" className="text-lg font-medium text-white">
           {t("studyTools")}
@@ -175,7 +185,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                 </div>
                 <div>
                   <p className="text-lg font-medium text-white">{tTrack(`tools.${tool.id}.label`)}</p>
-                  <p className="mt-1 text-sm text-slate-400">{tool.id === "game" && drillCount > 0 ? tTrack("tools.game.drillsBlurb") : tTrack(`tools.${tool.id}.blurb`)}</p>
+                  <p className="mt-1 text-sm text-slate-400">{tool.id === "labs" && track.id === "aws-saa" ? journey("labsBlurb") : tool.id === "game" && drillCount > 0 ? tTrack("tools.game.drillsBlurb") : tTrack(`tools.${tool.id}.blurb`)}</p>
                 </div>
               </>
             );
@@ -310,7 +320,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           )}
 
           {shared.length > 0 ? (
-            <section aria-labelledby="shared-heading" className="space-y-4">
+            <section id={track.id === "aws-saa" ? "shared-resources" : undefined} aria-labelledby="shared-heading" className="space-y-4">
               <div>
                 <h2 id="shared-heading" className="text-lg font-medium text-white">
                   {t("sharedTitle")}

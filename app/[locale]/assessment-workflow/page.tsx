@@ -18,12 +18,17 @@ export default async function AssessmentWorkflowPage({ params }: PageProps<"/[lo
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "assessmentWorkflowPage" });
 
+  const journey = await getTranslations("navigationJourney");
   return <GuideBody
     guide={guide as GuideContent}
     locale={locale}
     eyebrow={t("eyebrow")}
     title={t("title")}
     englishNotice={locale === "en" ? undefined : t("englishNotice")}
-    navigation={<Link href="/coverage"><span aria-hidden="true">← </span>{t("backToCoverage")}</Link>}
+    navigation={<nav aria-label={journey("walkthroughNavigation")} className="flex flex-wrap gap-x-6 gap-y-2">
+      <Link href="/methodology" className="inline-flex min-h-11 items-center">{journey("methodology")}</Link>
+      <Link href="/certifications" className="inline-flex min-h-11 items-center">{journey("example")}</Link>
+      <Link href="/coverage" className="inline-flex min-h-11 items-center">{t("backToCoverage")}</Link>
+    </nav>}
   />;
 }

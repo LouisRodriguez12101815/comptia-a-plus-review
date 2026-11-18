@@ -97,7 +97,7 @@ test('CLF-C02 objective 3.7 expansion is original, mapped, and remains partial',
   for (const service of newServices) assert.ok(expanded.some(q => q.prompt.includes(service) || q.choices.some(choice => choice.includes(service)) || q.explanation.includes(service)), service);
 });
 
-test('CLF-C02 objective 2.3 access-management expansion is mapped and stays partial', () => {
+test('CLF-C02 objective 2.3 access-management expansion is mapped and restored to covered', () => {
   const expanded = questions.filter(q => q.id.startsWith('q-clf23-'));
   const exam = objectives.exams.find(e => e.code === 'clf-c02');
   const objective = exam.domains.flatMap(d => d.objectives).find(o => o.id === '2.3');
