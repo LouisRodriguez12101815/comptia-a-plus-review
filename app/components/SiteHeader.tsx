@@ -194,6 +194,7 @@ export function SiteHeader() {
     { href: "/subnet-sources", label: t("subnetPractice"), match: (p) => p.startsWith("/subnet-sources") },
   ]);
   const progressItems = makeItems([
+    { href: "/insights", label: t("insights"), match: (p) => p.startsWith("/insights") },
     { href: "/weak-areas", label: t("weakAreas"), match: (p) => p.startsWith("/weak-areas") },
     { href: "/performance", label: t("performance"), match: (p) => p.startsWith("/performance") },
     { href: "/scorecard", label: t("scorecard"), match: (p) => p.startsWith("/scorecard") },
@@ -221,6 +222,9 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-2 lg:flex" aria-label={t("tracksLabel")}>
           <Link href="/methodology" aria-current={pathname === "/methodology" ? "page" : undefined} className={`${pill} ${groups[5].active ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
             {t("methodology")}
+          </Link>
+          <Link href="/insights" aria-current={pathname.startsWith("/insights") ? "page" : undefined} className={`${pill} ${pathname.startsWith("/insights") ? "border-teal-400 bg-teal-400/10 font-medium text-teal-100" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
+            {t("insights")}
           </Link>
           <HeaderMenu label={current ? tTracks(`${current.id}.short`) : t("chooseTrack")} active={groups[0].active} items={trackItems} />
         </nav>

@@ -34,7 +34,8 @@
     "test:saa-curriculum": "node --import ./tests/register.mjs --test tests/saa-curriculum.test.mjs tests/saa-pdf-question-batch.test.mjs",
     "test:e2e:navigation": "node scripts/verify-navigation-saa.mjs",
     "report:objectives": "node scripts/objective-coverage.mjs",
-    "test:objectives": "node --test tests/objectives.test.mjs",
+    "test:insights-parity": "node --test tests/insights-parity.test.mjs",
+    "test:objectives": "node --test tests/objectives.test.mjs && npm run test:insights-parity",
     "test:exam": "node --test tests/exam-test.test.mjs tests/aws-review.test.mjs tests/aws-domain4-reaudit.test.mjs tests/aws-domain1-benefits-economics.test.mjs tests/aws-mixed-practice.test.mjs",
     "test:aws-domain4-reaudit": "node --test tests/aws-domain4-reaudit.test.mjs",
     "test:aws-domain1-benefits-economics": "node --test tests/aws-domain1-benefits-economics.test.mjs",
@@ -55,7 +56,8 @@
     "test:inline-remediation": "node --import ./tests/register.mjs --test tests/inline-remediation.test.mjs",
     "test:telemetry": "node --import ./tests/register.mjs --test tests/study-telemetry.test.mjs",
     "test:performance": "node --import ./tests/register.mjs --test tests/learner-performance.test.mjs tests/question-telemetry-v2.test.mjs",
-    "test:e2e:quiz-feedback": "node scripts/verify-quiz-feedback.mjs"
+    "test:e2e:quiz-feedback": "node scripts/verify-quiz-feedback.mjs",
+    "test:e2e:insights": "node scripts/verify-insights.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
