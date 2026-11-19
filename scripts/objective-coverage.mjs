@@ -10,7 +10,7 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 
-import { buildCoverageFromContent, examCoverage, rankGaps } from '../lib/objective-coverage.mjs';
+import { buildCoverageFromContent, examCoverage, rankGaps, renderInsightsJson } from '../lib/objective-coverage.mjs';
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'));
 const list = (data, key) => (Array.isArray(data) ? data : data[key] ?? []);
@@ -23,7 +23,7 @@ export function buildCoverage() {
   const labs = list(read('content/labs.json'), 'labs');
   const visuals = read('content/track-visuals.json');
 
-  return buildCoverageFromContent({ objectives, topics, cards, questions, labs, visuals });
+  return { ...buildCoverageFromContent({ objectives, topics, cards, questions, labs, visuals }), topics, cards, questions, labs };
 }
 
 export function renderReport({ objectives, rows }) {
@@ -49,12 +49,17 @@ export function renderReport({ objectives, rows }) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const report = renderReport(buildCoverage());
-  const outAt = process.argv.indexOf('--out');
-  if (outAt > -1 && process.argv[outAt + 1]) {
-    writeFileSync(process.argv[outAt + 1], report);
-    console.log(`Wrote ${process.argv[outAt + 1]}`);
+  const coverage = buildCoverage();
+  if (process.argv.includes('--json')) {
+    console.log(renderInsightsJson(coverage));
   } else {
-    console.log(report);
+    const report = renderReport(coverage);
+    const outAt = process.argv.indexOf('--out');
+    if (outAt > -1 && process.argv[outAt + 1]) {
+      writeFileSync(process.argv[outAt + 1], report);
+      console.log(`Wrote ${process.argv[outAt + 1]}`);
+    } else {
+      console.log(report);
+    }
   }
 }
