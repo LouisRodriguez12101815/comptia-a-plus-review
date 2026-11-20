@@ -41,7 +41,7 @@
     "closeMenu": "Close navigation",
     "catalog": "Study",
     "capstone": "About this project"
-},
+  },
   "footer": {
     "disputeNotice": "See something wrong? Every page can be disputed. Reports are filed as GitHub issues and checked against the current CompTIA exam objectives."
   },
@@ -313,7 +313,7 @@
     "currentMethodLinks": "Calculation and coverage links",
     "currentMethodInsights": "Open Insights",
     "currentMethodCoverage": "Inspect objective coverage"
-},
+  },
   "quizPage": {
     "metaTitle": "Practice quiz | Certification Review",
     "title": "Practice quiz",
@@ -517,7 +517,10 @@
     "drillStart": "Start the drill: {count, plural, one {# question} other {# questions}}",
     "lookAlikeAnswer": "Right answer",
     "lookAlikePicked": "You picked",
-    "fixPicked": "You picked: {answer}"
+    "fixPicked": "You picked: {answer}",
+    "count10": "10 questions",
+    "count20": "20 questions",
+    "count40": "40 questions"
   },
   "labsPage": {
     "metadataTitle": "Networking labs | CompTIA A+ Review",
@@ -2590,101 +2593,298 @@
       "intro": "Match a business requirement to the AWS AI, data, or analytics service that fits it.",
       "cardBody": "Practice requirement-versus-distractor decisions for CLF-C02 Objective 3.7.",
       "modes": {
-        "requirementToService": { "label": "Requirement → Service", "ask": "Which AWS service fits this requirement?" },
-        "serviceToRequirement": { "label": "Service → Requirement", "ask": "Which requirement does this service fit?" }
+        "requirementToService": {
+          "label": "Requirement → Service",
+          "ask": "Which AWS service fits this requirement?"
+        },
+        "serviceToRequirement": {
+          "label": "Service → Requirement",
+          "ask": "Which requirement does this service fit?"
+        }
       },
-      "fields": { "requirement": "Requirement", "service": "Service" },
-      "tables": { "service-selection": "Service selection" }
+      "fields": {
+        "requirement": "Requirement",
+        "service": "Service"
+      },
+      "tables": {
+        "service-selection": "Service selection"
+      }
     },
     "aws-clf-access-compare": {
       "title": "CLF-C02 Access Management Drill",
       "topic": "Access management decisions",
       "intro": "Match the actor or security requirement to the AWS access capability that fits it.",
       "cardBody": "Practice workforce, workload, credential, secret, key, policy, and MFA distinctions for Objective 2.3.",
-      "modes": { "identityChooser": { "label": "Requirement → Identity", "ask": "Which identity or access method fits?" }, "controlChooser": { "label": "Need → Control", "ask": "Which control fits this security need?" } },
-      "fields": { "requirement": "Requirement", "choice": "Choice", "securityNeed": "Security need" },
-      "tables": { "identity-chooser": "Identity chooser", "control-chooser": "Control chooser" }
+      "modes": {
+        "identityChooser": {
+          "label": "Requirement → Identity",
+          "ask": "Which identity or access method fits?"
+        },
+        "controlChooser": {
+          "label": "Need → Control",
+          "ask": "Which control fits this security need?"
+        }
+      },
+      "fields": {
+        "requirement": "Requirement",
+        "choice": "Choice",
+        "securityNeed": "Security need"
+      },
+      "tables": {
+        "identity-chooser": "Identity chooser",
+        "control-chooser": "Control chooser"
+      }
     },
     "aws-clf-cost-compare": {
       "title": "CLF-C02 Pricing and Cost Tools Drill",
       "topic": "Pricing models and cost tools",
       "intro": "Match a workload or cost question to the AWS pricing model or cost-management tool.",
       "cardBody": "Practice capacity versus discount, commitment, interruption, estimation, analysis, alerts, reporting, tags, and consolidated billing.",
-      "modes": { "workloadToModel": { "label": "Workload → Model", "ask": "Which pricing model fits?" }, "costNeedToTool": { "label": "Cost need → Tool", "ask": "Which cost tool fits?" } },
-      "fields": { "workload": "Workload", "choice": "Choice", "costNeed": "Cost need" },
-      "tables": { "purchase-models": "Purchase models", "cost-tools": "Cost tools" }
+      "modes": {
+        "workloadToModel": {
+          "label": "Workload → Model",
+          "ask": "Which pricing model fits?"
+        },
+        "costNeedToTool": {
+          "label": "Cost need → Tool",
+          "ask": "Which cost tool fits?"
+        }
+      },
+      "fields": {
+        "workload": "Workload",
+        "choice": "Choice",
+        "costNeed": "Cost need"
+      },
+      "tables": {
+        "purchase-models": "Purchase models",
+        "cost-tools": "Cost tools"
+      }
     },
     "aws-clf-benefits-economics": {
       "title": "CLF-C02 Cloud Benefits and Economics Drill",
       "topic": "Cloud benefits and economics",
       "intro": "Match a scenario cue to the cloud benefit or economic concept that fits it.",
       "cardBody": "Practice elasticity, scalability, agility, global reach, resilience, TCO, rightsizing, utilization, licensing and managed-service tradeoffs for Objectives 1.1 and 1.4.",
-      "modes": { "cueToConcept": { "label": "Cue → Concept", "ask": "Which concept fits this cue?" }, "conceptToCue": { "label": "Concept → Cue", "ask": "Which scenario cue fits this concept?" } },
-      "fields": { "cue": "Scenario cue", "choice": "Concept" },
-      "tables": { "benefit-economics": "Benefits and economics" }
+      "modes": {
+        "cueToConcept": {
+          "label": "Cue → Concept",
+          "ask": "Which concept fits this cue?"
+        },
+        "conceptToCue": {
+          "label": "Concept → Cue",
+          "ask": "Which scenario cue fits this concept?"
+        }
+      },
+      "fields": {
+        "cue": "Scenario cue",
+        "choice": "Concept"
+      },
+      "tables": {
+        "benefit-economics": "Benefits and economics"
+      }
     },
     "aws-clf-support-resources": {
       "title": "CLF-C02 Support Resources Drill",
       "topic": "AWS support and technical resources",
       "intro": "Match a support need or operational signal to the AWS resource that fits it.",
       "cardBody": "Distinguish documentation, guidance, cases, recommendations, health events, abuse reporting, partners, and expert assistance.",
-      "modes": { "needToResource": { "label": "Need → Resource", "ask": "Which AWS resource fits?" }, "signalToResource": { "label": "Signal → Resource", "ask": "Which resource handles this signal?" } },
-      "fields": { "supportNeed": "Support need", "resource": "Resource", "operationalSignal": "Operational signal" },
-      "tables": { "support-resources": "Support resources", "operational-signals": "Operational signals" }
+      "modes": {
+        "needToResource": {
+          "label": "Need → Resource",
+          "ask": "Which AWS resource fits?"
+        },
+        "signalToResource": {
+          "label": "Signal → Resource",
+          "ask": "Which resource handles this signal?"
+        }
+      },
+      "fields": {
+        "supportNeed": "Support need",
+        "resource": "Resource",
+        "operationalSignal": "Operational signal"
+      },
+      "tables": {
+        "support-resources": "Support resources",
+        "operational-signals": "Operational signals"
+      }
     },
     "aws-clf-other-services-compare": {
       "title": "CLF-C02 Other AWS Services Drill",
       "topic": "Other AWS service category decisions",
       "intro": "Match a business requirement to the AWS service whose primary job fits it.",
       "cardBody": "Practice queue, fanout, event routing, workflow, developer, end-user, frontend, IoT, and support distinctions for Objective 3.8.",
-      "modes": { "requirementToService": { "label": "Requirement → Service", "ask": "Which AWS service fits this requirement?" }, "serviceToRequirement": { "label": "Service → Requirement", "ask": "Which requirement does this service fit?" }, "confusionPair": { "label": "Confusion pair → Service", "ask": "Which service matches this cue?" } },
-      "fields": { "requirement": "Requirement", "service": "Service", "confusion": "Cue" },
-      "tables": { "requirement-service": "Requirement to service", "confusion-pairs": "Confusion pairs" }
+      "modes": {
+        "requirementToService": {
+          "label": "Requirement → Service",
+          "ask": "Which AWS service fits this requirement?"
+        },
+        "serviceToRequirement": {
+          "label": "Service → Requirement",
+          "ask": "Which requirement does this service fit?"
+        },
+        "confusionPair": {
+          "label": "Confusion pair → Service",
+          "ask": "Which service matches this cue?"
+        }
+      },
+      "fields": {
+        "requirement": "Requirement",
+        "service": "Service",
+        "confusion": "Cue"
+      },
+      "tables": {
+        "requirement-service": "Requirement to service",
+        "confusion-pairs": "Confusion pairs"
+      }
     },
     "aws-clf-migration-compare": {
       "title": "CLF-C02 Migration Decisions Drill",
       "topic": "Migration and adoption decisions",
       "intro": "Match a business constraint, migration need, or lifecycle phase to the decision that fits.",
       "cardBody": "Practice rehost, replatform, refactor, repurchase, retire, retain, discovery, migration resources, validation, and rollback for Objective 1.3.",
-      "modes": { "constraintToStrategy": { "label": "Constraint → Strategy", "ask": "Which migration response fits?" }, "needToResource": { "label": "Need → Resource", "ask": "Which migration resource fits?" }, "phaseToAction": { "label": "Phase → Action", "ask": "What action belongs in this phase?" } },
-      "fields": { "constraint": "Constraint", "strategy": "Strategy", "need": "Need", "resource": "Resource", "phase": "Phase", "action": "Action" },
-      "tables": { "strategy-chooser": "Strategy chooser", "resource-chooser": "Migration resources", "lifecycle": "Migration lifecycle" }
+      "modes": {
+        "constraintToStrategy": {
+          "label": "Constraint → Strategy",
+          "ask": "Which migration response fits?"
+        },
+        "needToResource": {
+          "label": "Need → Resource",
+          "ask": "Which migration resource fits?"
+        },
+        "phaseToAction": {
+          "label": "Phase → Action",
+          "ask": "What action belongs in this phase?"
+        }
+      },
+      "fields": {
+        "constraint": "Constraint",
+        "strategy": "Strategy",
+        "need": "Need",
+        "resource": "Resource",
+        "phase": "Phase",
+        "action": "Action"
+      },
+      "tables": {
+        "strategy-chooser": "Strategy chooser",
+        "resource-chooser": "Migration resources",
+        "lifecycle": "Migration lifecycle"
+      }
     },
     "aws-clf-well-architected-compare": {
       "title": "CLF-C02 Well-Architected Drill",
       "topic": "Well-Architected pillar decisions",
       "intro": "Match a design scenario to the Well-Architected pillar that best fits.",
       "cardBody": "Practice the six pillars and their common confusion pairs for Objective 1.2.",
-      "modes": { "scenarioToPillar": { "label": "Scenario → Pillar", "ask": "Which pillar fits?" }, "pillarToFocus": { "label": "Pillar → Focus", "ask": "What does this pillar focus on?" } },
-      "fields": { "scenario": "Scenario", "pillar": "Pillar", "focus": "Focus" },
-      "tables": { "pillar-cues": "Pillar cues", "pillar-focus": "Pillar focus" }
+      "modes": {
+        "scenarioToPillar": {
+          "label": "Scenario → Pillar",
+          "ask": "Which pillar fits?"
+        },
+        "pillarToFocus": {
+          "label": "Pillar → Focus",
+          "ask": "What does this pillar focus on?"
+        }
+      },
+      "fields": {
+        "scenario": "Scenario",
+        "pillar": "Pillar",
+        "focus": "Focus"
+      },
+      "tables": {
+        "pillar-cues": "Pillar cues",
+        "pillar-focus": "Pillar focus"
+      }
     },
     "aws-clf-security-transfer": {
       "title": "CLF-C02 Security Transfer Drill",
       "topic": "Security and governance transfer",
       "intro": "Match a responsibility or security requirement to the AWS owner or service that fits.",
       "cardBody": "Practice responsibility boundaries, governance evidence, encryption and security-service distinctions.",
-      "modes": { "requirementToService": { "label": "Requirement → Service", "ask": "Which service fits?" }, "workloadToOwner": { "label": "Workload → Owner", "ask": "Who owns this responsibility?" } },
-      "fields": { "requirement": "Requirement", "service": "Service", "workload": "Workload", "owner": "Owner" },
-      "tables": { "security-cues": "Security cues", "responsibility": "Responsibility" }
+      "modes": {
+        "requirementToService": {
+          "label": "Requirement → Service",
+          "ask": "Which service fits?"
+        },
+        "workloadToOwner": {
+          "label": "Workload → Owner",
+          "ask": "Who owns this responsibility?"
+        }
+      },
+      "fields": {
+        "requirement": "Requirement",
+        "service": "Service",
+        "workload": "Workload",
+        "owner": "Owner"
+      },
+      "tables": {
+        "security-cues": "Security cues",
+        "responsibility": "Responsibility"
+      }
     },
     "aws-clf-cloud-tech-core": {
       "title": "CLF-C02 Cloud Technology Core Drill",
       "topic": "Operating methods, infrastructure and compute",
       "intro": "Match the requirement to the AWS operating method, infrastructure scope, compute service or scaling role.",
       "cardBody": "Practice Console, CLI, SDK/API, IaC, Regions, AZs, edge, EC2, Lambda, ECS, EKS, Fargate, Auto Scaling and load balancing for Objectives 3.1–3.3.",
-      "modes": { "requirementToChoice": { "label": "Requirement → Choice", "ask": "Which choice fits this requirement?" }, "confusionPair": { "label": "Confusion pair → Distinction", "ask": "What distinction resolves this pair?" } },
-      "fields": { "requirement": "Requirement", "choice": "Choice", "cue": "Confusion pair", "distinction": "Distinction" },
-      "tables": { "method-and-service": "Requirement choices", "confusion-pairs": "Confusion pairs" }
+      "modes": {
+        "requirementToChoice": {
+          "label": "Requirement → Choice",
+          "ask": "Which choice fits this requirement?"
+        },
+        "confusionPair": {
+          "label": "Confusion pair → Distinction",
+          "ask": "What distinction resolves this pair?"
+        }
+      },
+      "fields": {
+        "requirement": "Requirement",
+        "choice": "Choice",
+        "cue": "Confusion pair",
+        "distinction": "Distinction"
+      },
+      "tables": {
+        "method-and-service": "Requirement choices",
+        "confusion-pairs": "Confusion pairs"
+      }
     },
     "aws-clf-data-network-storage": {
       "title": "CLF-C02 Data, Network and Storage Drill",
       "topic": "Database, network and storage decisions",
       "intro": "Match workload, network and storage requirements to the AWS service or control that fits.",
       "cardBody": "Practice RDS/Aurora, DynamoDB, ElastiCache, DMS/SCT, VPC controls, DNS, VPN, Direct Connect, S3, EBS, EFS, Gateway and Backup for Objectives 3.4–3.6.",
-      "modes": { "workloadToDatabase": { "label": "Workload → Database", "ask": "Which database choice fits?" }, "networkToChoice": { "label": "Network requirement → Choice", "ask": "Which network service or control fits?" }, "storageToChoice": { "label": "Storage requirement → Choice", "ask": "Which storage choice fits?" }, "confusionPair": { "label": "Confusion pair → Distinction", "ask": "What distinction resolves this pair?" } },
-      "fields": { "workload": "Workload", "database": "Database", "requirement": "Requirement", "choice": "Choice", "storage": "Storage need", "cue": "Confusion pair", "distinction": "Distinction" },
-      "tables": { "database-cues": "Database cues", "network-cues": "Network cues", "storage-cues": "Storage cues", "confusion-pairs": "Confusion pairs" }
+      "modes": {
+        "workloadToDatabase": {
+          "label": "Workload → Database",
+          "ask": "Which database choice fits?"
+        },
+        "networkToChoice": {
+          "label": "Network requirement → Choice",
+          "ask": "Which network service or control fits?"
+        },
+        "storageToChoice": {
+          "label": "Storage requirement → Choice",
+          "ask": "Which storage choice fits?"
+        },
+        "confusionPair": {
+          "label": "Confusion pair → Distinction",
+          "ask": "What distinction resolves this pair?"
+        }
+      },
+      "fields": {
+        "workload": "Workload",
+        "database": "Database",
+        "requirement": "Requirement",
+        "choice": "Choice",
+        "storage": "Storage need",
+        "cue": "Confusion pair",
+        "distinction": "Distinction"
+      },
+      "tables": {
+        "database-cues": "Database cues",
+        "network-cues": "Network cues",
+        "storage-cues": "Storage cues",
+        "confusion-pairs": "Confusion pairs"
+      }
     },
     "aws-saa-secure-cues": {
       "title": "SAA Secure Architecture Drill",
@@ -3126,16 +3326,106 @@
     "drillIntro": "{count} questions you have missed at least once.",
     "performanceLink": "View performance history",
     "remediation": {
-      "clusters": { "dhcpLifecycle": "DHCP lifecycle", "timeSynchronization": "Time synchronization", "ipamDdi": "IPAM and DDI", "ipv6Controls": "IPv6 controls" },
-      "examClues": { "dhcpRequestBroadcast": "A client without an address starts with a broadcast Discover.", "dhcpT1": "At T1, the client unicasts a renewal request to the original DHCP server.", "dhcpT2": "At T2, the client broadcasts to find any DHCP server that can renew the lease.", "dhcpOptions": "Options carry the gateway, DNS servers, and lease time.", "ntpPort": "NTP uses UDP 123.", "kerberosClock": "Kerberos requires synchronized clocks; excessive skew can reject authentication.", "ntpSources": "NTP stratum shows distance from the reference clock; lower is closer.", "ntpConsensus": "Multiple NTP sources let the client compare samples and reject an outlier.", "ptpPrecision": "PTP provides tighter synchronization than NTP.", "ptpPorts": "PTP commonly uses UDP 319 for event and UDP 320 for general messages.", "logTime": "Compare timestamps and time sources before trusting an event sequence.", "ipamOwnership": "IPAM centralizes address ownership, allocation, and utilization.", "ddi": "DDI combines DNS, DHCP, and IPAM.", "ipamView": "An IPAM view should show ownership, utilization, and conflicts.", "ipamSpreadsheet": "A spreadsheet is stale and collision-prone compared with authoritative IPAM data.", "raGuard": "RA Guard blocks rogue IPv6 Router Advertisements at the access edge." },
-      "memoryRules": { "dora": "DORA: Discover, Offer, Request, Acknowledge.", "dhcpT1": "T1 asks the original server first.", "dhcpT2": "T2 broadcasts to any available DHCP server.", "dhcpOptions": "Address assignment is not enough; options complete the configuration.", "ntpPort": "NTP = UDP 123.", "kerberosClock": "Kerberos hates clock skew.", "ntpSources": "Lower stratum means closer to the source.", "ntpConsensus": "Several sources provide a quorum for spotting an outlier.", "ptpPrecision": "NTP is network time; PTP is precision time.", "ptpPorts": "319 = event; 320 = general.", "logTime": "No trusted time, no trusted timeline.", "ipamOwnership": "IPAM answers: who has which address, and is it in use?", "ddi": "DDI = DNS + DHCP + IPAM.", "ipamView": "One authoritative view prevents duplicate assignments.", "ipamSpreadsheet": "If it is not authoritative and current, it is not IPAM.", "raGuard": "RA Guard = stop rogue router advertisements." },
-      "whyWrong": { "dhcpRequestBroadcast": "The other DHCP messages depend on first discovering an available server.", "dhcpT1": "T1 is the unicast renewal phase, not the broadcast fallback phase.", "dhcpT2": "T2 is the broadcast fallback phase; unicast renewal is earlier.", "dhcpOptions": "The options, not just the address, supply the remaining network settings.", "ntpPort": "A different port identifies another service, not standard NTP.", "kerberosClock": "Kerberos authentication can fail when clocks drift beyond the allowed skew.", "ntpSources": "Stratum is source distance, not the time zone.", "ntpConsensus": "Two clocks cannot identify which one is wrong; multiple sources support outlier rejection.", "ptpPrecision": "NTP suits ordinary synchronization but does not provide PTP precision.", "ptpPorts": "Confusing event and general PTP traffic can cause incorrect firewall rules.", "logTime": "Without synchronized timestamps, event ordering can mislead.", "ipamOwnership": "Manual records do not reliably show current allocation ownership.", "ddi": "DDI is the coordinated service set, not only one component.", "ipamView": "A partial view can hide conflicts and assigned addresses.", "ipamSpreadsheet": "Spreadsheets lack IPAM's authoritative, current state.", "raGuard": "RA Guard addresses rogue Router Advertisements, not general IPv6 routing." }
+      "clusters": {
+        "dhcpLifecycle": "DHCP lifecycle",
+        "timeSynchronization": "Time synchronization",
+        "ipamDdi": "IPAM and DDI",
+        "ipv6Controls": "IPv6 controls"
+      },
+      "examClues": {
+        "dhcpRequestBroadcast": "A client without an address starts with a broadcast Discover.",
+        "dhcpT1": "At T1, the client unicasts a renewal request to the original DHCP server.",
+        "dhcpT2": "At T2, the client broadcasts to find any DHCP server that can renew the lease.",
+        "dhcpOptions": "Options carry the gateway, DNS servers, and lease time.",
+        "ntpPort": "NTP uses UDP 123.",
+        "kerberosClock": "Kerberos requires synchronized clocks; excessive skew can reject authentication.",
+        "ntpSources": "NTP stratum shows distance from the reference clock; lower is closer.",
+        "ntpConsensus": "Multiple NTP sources let the client compare samples and reject an outlier.",
+        "ptpPrecision": "PTP provides tighter synchronization than NTP.",
+        "ptpPorts": "PTP commonly uses UDP 319 for event and UDP 320 for general messages.",
+        "logTime": "Compare timestamps and time sources before trusting an event sequence.",
+        "ipamOwnership": "IPAM centralizes address ownership, allocation, and utilization.",
+        "ddi": "DDI combines DNS, DHCP, and IPAM.",
+        "ipamView": "An IPAM view should show ownership, utilization, and conflicts.",
+        "ipamSpreadsheet": "A spreadsheet is stale and collision-prone compared with authoritative IPAM data.",
+        "raGuard": "RA Guard blocks rogue IPv6 Router Advertisements at the access edge."
+      },
+      "memoryRules": {
+        "dora": "DORA: Discover, Offer, Request, Acknowledge.",
+        "dhcpT1": "T1 asks the original server first.",
+        "dhcpT2": "T2 broadcasts to any available DHCP server.",
+        "dhcpOptions": "Address assignment is not enough; options complete the configuration.",
+        "ntpPort": "NTP = UDP 123.",
+        "kerberosClock": "Kerberos hates clock skew.",
+        "ntpSources": "Lower stratum means closer to the source.",
+        "ntpConsensus": "Several sources provide a quorum for spotting an outlier.",
+        "ptpPrecision": "NTP is network time; PTP is precision time.",
+        "ptpPorts": "319 = event; 320 = general.",
+        "logTime": "No trusted time, no trusted timeline.",
+        "ipamOwnership": "IPAM answers: who has which address, and is it in use?",
+        "ddi": "DDI = DNS + DHCP + IPAM.",
+        "ipamView": "One authoritative view prevents duplicate assignments.",
+        "ipamSpreadsheet": "If it is not authoritative and current, it is not IPAM.",
+        "raGuard": "RA Guard = stop rogue router advertisements."
+      },
+      "whyWrong": {
+        "dhcpRequestBroadcast": "The other DHCP messages depend on first discovering an available server.",
+        "dhcpT1": "T1 is the unicast renewal phase, not the broadcast fallback phase.",
+        "dhcpT2": "T2 is the broadcast fallback phase; unicast renewal is earlier.",
+        "dhcpOptions": "The options, not just the address, supply the remaining network settings.",
+        "ntpPort": "A different port identifies another service, not standard NTP.",
+        "kerberosClock": "Kerberos authentication can fail when clocks drift beyond the allowed skew.",
+        "ntpSources": "Stratum is source distance, not the time zone.",
+        "ntpConsensus": "Two clocks cannot identify which one is wrong; multiple sources support outlier rejection.",
+        "ptpPrecision": "NTP suits ordinary synchronization but does not provide PTP precision.",
+        "ptpPorts": "Confusing event and general PTP traffic can cause incorrect firewall rules.",
+        "logTime": "Without synchronized timestamps, event ordering can mislead.",
+        "ipamOwnership": "Manual records do not reliably show current allocation ownership.",
+        "ddi": "DDI is the coordinated service set, not only one component.",
+        "ipamView": "A partial view can hide conflicts and assigned addresses.",
+        "ipamSpreadsheet": "Spreadsheets lack IPAM's authoritative, current state.",
+        "raGuard": "RA Guard addresses rogue Router Advertisements, not general IPv6 routing."
+      }
     },
     "addressingRemediation": {
-      "clusters": { "ipv4PrivateLinkLocal": "IPv4 private and link-local addressing", "ipv6Eui64": "IPv6 and EUI-64", "layer2Delivery": "Layer 2 addressing and delivery types" },
-      "examClues": { "rfc1918Ranges": "RFC 1918 private IPv4 is exactly 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.", "apipaVsPrivate": "169.254.0.0/16 is IPv4 link-local/APIPA, not an RFC 1918 private range.", "rfc1918Boundary": "For 172/12, only 172.16 through 172.31 is private; 172.32 is outside it.", "apipaPrefix": "APIPA is 169.254.0.0/16 with mask 255.255.0.0, not /24.", "privateRouting": "Private addresses route inside an organization but are not routed across the public Internet.", "eui64BitFlip": "EUI-64 inserts FF:FE, then flips the U/L bit: 00 becomes 02, producing 021A:2BFF:FE3C:4D5E.", "ipv4Ipv6Representation": "IPv4 is 32 bits in dotted decimal; IPv6 is 128 bits in hexadecimal.", "unicastMulticastBroadcast": "Unicast is one destination, multicast is a selected group, and broadcast is all hosts in the local broadcast domain.", "ipBroadcastVsMacBroadcast": "Layer 2 broadcast is the destination MAC FF:FF:FF:FF:FF:FF; 255.255.255.255 is the IPv4 broadcast address." },
-      "memoryRules": { "rfc1918Ranges": "Private = 10/8, 172.16/12, 192.168/16.", "apipaVsPrivate": "169.254 = APIPA; it is not private RFC 1918 space.", "rfc1918Boundary": "172 private stops at 172.31; 172.32 is public space.", "apipaPrefix": "APIPA = 169.254.0.0/16 = 255.255.0.0.", "privateRouting": "Private inside; not Internet-routed.", "eui64BitFlip": "Insert FF:FE, flip U/L, then group the 64-bit result.", "ipv4Ipv6Representation": "IPv4: 32/dotted decimal. IPv6: 128/hex.", "unicastMulticastBroadcast": "One, group, all-local: unicast, multicast, broadcast.", "ipBroadcastVsMacBroadcast": "All-F MAC means Layer 2 broadcast; all-255 IP means IPv4 broadcast." },
-      "whyWrong": { "rfc1918Ranges": "A familiar-looking address is not enough; compare it with one of the three exact RFC 1918 ranges.", "apipaVsPrivate": "APIPA signals missing DHCP and link-local behavior; it is not a reusable private range.", "rfc1918Boundary": "The entire 172.0.0.0/8 block is not private; the RFC 1918 slice begins at .16 and ends at .31.", "apipaPrefix": "The APIPA prefix is /16, so 255.255.255.0 (/24) is too narrow.", "privateRouting": "Private does not mean unroutable everywhere; it means not routed on the public Internet.", "eui64BitFlip": "Inserting FF:FE alone leaves 00 unchanged and misses the required U/L-bit inversion.", "ipv4Ipv6Representation": "Do not swap the families: IPv4 uses 32-bit decimal notation and IPv6 uses 128-bit hexadecimal notation.", "unicastMulticastBroadcast": "Delivery to several selected interfaces is multicast, not unicast; all local hosts is broadcast.", "ipBroadcastVsMacBroadcast": "An IPv4 broadcast address and an Ethernet broadcast MAC are different Layer 3 and Layer 2 identifiers." }
+      "clusters": {
+        "ipv4PrivateLinkLocal": "IPv4 private and link-local addressing",
+        "ipv6Eui64": "IPv6 and EUI-64",
+        "layer2Delivery": "Layer 2 addressing and delivery types"
+      },
+      "examClues": {
+        "rfc1918Ranges": "RFC 1918 private IPv4 is exactly 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.",
+        "apipaVsPrivate": "169.254.0.0/16 is IPv4 link-local/APIPA, not an RFC 1918 private range.",
+        "rfc1918Boundary": "For 172/12, only 172.16 through 172.31 is private; 172.32 is outside it.",
+        "apipaPrefix": "APIPA is 169.254.0.0/16 with mask 255.255.0.0, not /24.",
+        "privateRouting": "Private addresses route inside an organization but are not routed across the public Internet.",
+        "eui64BitFlip": "EUI-64 inserts FF:FE, then flips the U/L bit: 00 becomes 02, producing 021A:2BFF:FE3C:4D5E.",
+        "ipv4Ipv6Representation": "IPv4 is 32 bits in dotted decimal; IPv6 is 128 bits in hexadecimal.",
+        "unicastMulticastBroadcast": "Unicast is one destination, multicast is a selected group, and broadcast is all hosts in the local broadcast domain.",
+        "ipBroadcastVsMacBroadcast": "Layer 2 broadcast is the destination MAC FF:FF:FF:FF:FF:FF; 255.255.255.255 is the IPv4 broadcast address."
+      },
+      "memoryRules": {
+        "rfc1918Ranges": "Private = 10/8, 172.16/12, 192.168/16.",
+        "apipaVsPrivate": "169.254 = APIPA; it is not private RFC 1918 space.",
+        "rfc1918Boundary": "172 private stops at 172.31; 172.32 is public space.",
+        "apipaPrefix": "APIPA = 169.254.0.0/16 = 255.255.0.0.",
+        "privateRouting": "Private inside; not Internet-routed.",
+        "eui64BitFlip": "Insert FF:FE, flip U/L, then group the 64-bit result.",
+        "ipv4Ipv6Representation": "IPv4: 32/dotted decimal. IPv6: 128/hex.",
+        "unicastMulticastBroadcast": "One, group, all-local: unicast, multicast, broadcast.",
+        "ipBroadcastVsMacBroadcast": "All-F MAC means Layer 2 broadcast; all-255 IP means IPv4 broadcast."
+      },
+      "whyWrong": {
+        "rfc1918Ranges": "A familiar-looking address is not enough; compare it with one of the three exact RFC 1918 ranges.",
+        "apipaVsPrivate": "APIPA signals missing DHCP and link-local behavior; it is not a reusable private range.",
+        "rfc1918Boundary": "The entire 172.0.0.0/8 block is not private; the RFC 1918 slice begins at .16 and ends at .31.",
+        "apipaPrefix": "The APIPA prefix is /16, so 255.255.255.0 (/24) is too narrow.",
+        "privateRouting": "Private does not mean unroutable everywhere; it means not routed on the public Internet.",
+        "eui64BitFlip": "Inserting FF:FE alone leaves 00 unchanged and misses the required U/L-bit inversion.",
+        "ipv4Ipv6Representation": "Do not swap the families: IPv4 uses 32-bit decimal notation and IPv6 uses 128-bit hexadecimal notation.",
+        "unicastMulticastBroadcast": "Delivery to several selected interfaces is multicast, not unicast; all local hosts is broadcast.",
+        "ipBroadcastVsMacBroadcast": "An IPv4 broadcast address and an Ethernet broadcast MAC are different Layer 3 and Layer 2 identifiers."
+      }
     }
   },
   "scenarioBuilder": {
@@ -3224,15 +3514,91 @@
     "lookAlikeDrill": "Drill this pair: {count, plural, one {# question} other {# questions}}"
   },
   "performance": {
-    "metaTitle": "Learner performance | Certification Review", "eyebrow": "Study record", "title": "Your performance", "intro": "Review saved quiz and mock-exam results from this device. This page is read-only and does not change your progress.",
-    "windowLabel": "Time window", "windowDescription": "Counts use the actual completion time saved with each attempt.", "window24h": "Last 24 hours", "window7d": "Last 7 days", "window30d": "Last 30 days", "windowHistory": "All history",
-    "summaryHeading": "Summary", "quizzes": "Quizzes", "mockExams": "Mock exams", "questions": "Questions", "accuracy": "Accuracy", "needsReview": "Needs review", "noAttempts": "No saved attempts fall inside this time window.", "takeQuiz": "Take a quiz",
-    "trendHeading": "Score trend", "trendDescription": "Each point is one saved quiz or mock-exam result.", "trendChartLabel": "Saved score trend by attempt", "objectivesHeading": "Weakest objectives", "topicsHeading": "Topic performance", "noData": "Not enough identifiable question history yet.", "missedCount": "{count} missed",
-    "repeatedHeading": "Repeated misses", "noRepeated": "No question has been missed twice in this window.", "recoveredHeading": "Recovered / improved", "recoveredIntro": "Questions missed earlier and answered correctly later are counted here once.", "noRecovered": "No recovery pattern is visible in this window yet.",
-    "historyHeading": "Question history", "historyDescription": "Older attempts without question IDs are included in totals but cannot be attributed to a question.", "searchLabel": "Search questions", "searchPlaceholder": "Search prompt, topic, or ID", "filterLabel": "Filter", "filterAll": "All", "filterIncorrect": "Missed", "filterCorrect": "Correct", "filterRepeated": "Repeated misses", "filterRecovered": "Recovered", "sortLabel": "Sort", "sortMisses": "Most missed", "sortAccuracy": "Lowest accuracy", "sortRecent": "Most recent", "sortAttempted": "Most attempted",
-    "attempts": "{count, plural, one {# attempt} other {# attempts}}", "correctCount": "{correct} correct · {incorrect} incorrect", "lastAttempt": "Last attempt", "lastMissed": "Last missed", "selectedWrong": "Selected wrong answer", "mostCommonWrong": "Most common wrong choice: {answer} ({percent}%)", "recoveredLabel": "Recovered / improved", "previouslyRecovered": "Recovered earlier, but currently unresolved", "attemptTimeline": "Attempt timeline", "correctEvent": "Correct", "incorrectEvent": "Incorrect", "retry": "Retry topic", "notes": "Review notes", "weakAreas": "Open weak areas", "noQuestionHistory": "No identifiable question results match these filters.",
-    "remediationActivityHeading": "Remediation activity", "remediationOpened": "Remediation opened", "resourcesOpened": "Resources opened", "retriesStarted": "Retries started", "laterCorrect": "later correct", "stillMissed": "still missed", "resourceOutcomesHeading": "Study resource outcomes", "telemetryNote": "Authenticated study activity is shown from bounded retained telemetry; these counts do not prove causation.", "resourceTypeNotes": "Notes", "resourceTypeFlashcard": "Flashcards", "resourceTypeVisual": "Visuals", "resourceTypeVideo": "Videos", "resourceTypeRetry": "Retry",
-    "mockHeading": "Mock-exam sessions", "noMocks": "No mock exams in this window.", "full": "Full exam", "partial": "Focused session", "activityHeading": "Recent activity", "activityQuiz": "Quiz · {label}", "activityMock": "Mock exam · {label}", "quiz": "quiz", "mock": "mock exam", "recommendedHeading": "Recommended next step", "recommendedIntro": "Use the existing weak-area loop for deterministic review based on your saved misses.", "reviewWeakAreas": "Review weak areas"
+    "metaTitle": "Learner performance | Certification Review",
+    "eyebrow": "Study record",
+    "title": "Your performance",
+    "intro": "Review saved quiz and mock-exam results from this device. This page is read-only and does not change your progress.",
+    "windowLabel": "Time window",
+    "windowDescription": "Counts use the actual completion time saved with each attempt.",
+    "window24h": "Last 24 hours",
+    "window7d": "Last 7 days",
+    "window30d": "Last 30 days",
+    "windowHistory": "All history",
+    "summaryHeading": "Summary",
+    "quizzes": "Quizzes",
+    "mockExams": "Mock exams",
+    "questions": "Questions",
+    "accuracy": "Accuracy",
+    "needsReview": "Needs review",
+    "noAttempts": "No saved attempts fall inside this time window.",
+    "takeQuiz": "Take a quiz",
+    "trendHeading": "Score trend",
+    "trendDescription": "Each point is one saved quiz or mock-exam result.",
+    "trendChartLabel": "Saved score trend by attempt",
+    "objectivesHeading": "Weakest objectives",
+    "topicsHeading": "Topic performance",
+    "noData": "Not enough identifiable question history yet.",
+    "missedCount": "{count} missed",
+    "repeatedHeading": "Repeated misses",
+    "noRepeated": "No question has been missed twice in this window.",
+    "recoveredHeading": "Recovered / improved",
+    "recoveredIntro": "Questions missed earlier and answered correctly later are counted here once.",
+    "noRecovered": "No recovery pattern is visible in this window yet.",
+    "historyHeading": "Question history",
+    "historyDescription": "Older attempts without question IDs are included in totals but cannot be attributed to a question.",
+    "searchLabel": "Search questions",
+    "searchPlaceholder": "Search prompt, topic, or ID",
+    "filterLabel": "Filter",
+    "filterAll": "All",
+    "filterIncorrect": "Missed",
+    "filterCorrect": "Correct",
+    "filterRepeated": "Repeated misses",
+    "filterRecovered": "Recovered",
+    "sortLabel": "Sort",
+    "sortMisses": "Most missed",
+    "sortAccuracy": "Lowest accuracy",
+    "sortRecent": "Most recent",
+    "sortAttempted": "Most attempted",
+    "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+    "correctCount": "{correct} correct · {incorrect} incorrect",
+    "lastAttempt": "Last attempt",
+    "lastMissed": "Last missed",
+    "selectedWrong": "Selected wrong answer",
+    "mostCommonWrong": "Most common wrong choice: {answer} ({percent}%)",
+    "recoveredLabel": "Recovered / improved",
+    "previouslyRecovered": "Recovered earlier, but currently unresolved",
+    "attemptTimeline": "Attempt timeline",
+    "correctEvent": "Correct",
+    "incorrectEvent": "Incorrect",
+    "retry": "Retry topic",
+    "notes": "Review notes",
+    "weakAreas": "Open weak areas",
+    "noQuestionHistory": "No identifiable question results match these filters.",
+    "remediationActivityHeading": "Remediation activity",
+    "remediationOpened": "Remediation opened",
+    "resourcesOpened": "Resources opened",
+    "retriesStarted": "Retries started",
+    "laterCorrect": "later correct",
+    "stillMissed": "still missed",
+    "resourceOutcomesHeading": "Study resource outcomes",
+    "telemetryNote": "Authenticated study activity is shown from bounded retained telemetry; these counts do not prove causation.",
+    "resourceTypeNotes": "Notes",
+    "resourceTypeFlashcard": "Flashcards",
+    "resourceTypeVisual": "Visuals",
+    "resourceTypeVideo": "Videos",
+    "resourceTypeRetry": "Retry",
+    "mockHeading": "Mock-exam sessions",
+    "noMocks": "No mock exams in this window.",
+    "full": "Full exam",
+    "partial": "Focused session",
+    "activityHeading": "Recent activity",
+    "activityQuiz": "Quiz · {label}",
+    "activityMock": "Mock exam · {label}",
+    "quiz": "quiz",
+    "mock": "mock exam",
+    "recommendedHeading": "Recommended next step",
+    "recommendedIntro": "Use the existing weak-area loop for deterministic review based on your saved misses.",
+    "reviewWeakAreas": "Review weak areas"
   },
   "learnerSync": {
     "title": "Save your progress across devices",
@@ -3275,7 +3641,15 @@
   },
   "networkWorkspace": {
     "quickNavLabel": "Network+ workspace sections",
-    "quick": { "overview": "Overview", "study": "Study", "test": "Test", "visuals": "Visuals", "practice": "Practice", "progress": "Progress", "objectives": "Objectives" }
+    "quick": {
+      "overview": "Overview",
+      "study": "Study",
+      "test": "Test",
+      "visuals": "Visuals",
+      "practice": "Practice",
+      "progress": "Progress",
+      "objectives": "Objectives"
+    }
   },
   "networkPlusDomains": {
     "title": "Study by exam domain",
@@ -3363,10 +3737,40 @@
     "noEvidence": "No eligible CLF-C02 question evidence is recorded.",
     "evidence": "{distinct} distinct questions · {answers} recorded answers · {accuracy}% accuracy",
     "limitedEvidence": "Two or fewer distinct questions is not enough for a provisional classification.",
-    "evidenceClass": { "limited": "Limited evidence", "provisional": "Provisional evidence; not verified mastery" },
-    "trackingTitle": "Baseline and retest tracking", "baselineEmpty": "Save the current objective snapshot before remediation.", "baselineSaved": "Baseline saved {date}.", "saveBaseline": "Save baseline", "startNewBaseline": "Start a new baseline", "confirmNewBaseline": "Start a new baseline? The previous baseline and its retests will remain saved, but comparisons will use the new baseline.", "saveRetest": "Record retest", "noRetest": "No saved retest is available for this baseline yet.", "trackingLimit": "Improvement uses only new distinct questions after the baseline. Repeated questions are practice, not independent improvement.", "comparison": "Baseline {baseline}% → new-question retest {retest}% ({change} points): {outcome}", "outcome": { "improved": "improved", "unchanged": "unchanged", "regressed": "regressed", "insufficient": "insufficient evidence" },
-    "state": { "not-assessed": "Not assessed", "insufficient": "Insufficient evidence", "weak": "Demonstrated weakness", "developing": "Developing", "strong": "Stronger performance" },
-    "resource": { "notes": "Review notes", "flashcards": "Flashcards", "visual": "Visual", "lab": "Lab", "practice": "Focused practice" }
+    "evidenceClass": {
+      "limited": "Limited evidence",
+      "provisional": "Provisional evidence; not verified mastery"
+    },
+    "trackingTitle": "Baseline and retest tracking",
+    "baselineEmpty": "Save the current objective snapshot before remediation.",
+    "baselineSaved": "Baseline saved {date}.",
+    "saveBaseline": "Save baseline",
+    "startNewBaseline": "Start a new baseline",
+    "confirmNewBaseline": "Start a new baseline? The previous baseline and its retests will remain saved, but comparisons will use the new baseline.",
+    "saveRetest": "Record retest",
+    "noRetest": "No saved retest is available for this baseline yet.",
+    "trackingLimit": "Improvement uses only new distinct questions after the baseline. Repeated questions are practice, not independent improvement.",
+    "comparison": "Baseline {baseline}% → new-question retest {retest}% ({change} points): {outcome}",
+    "outcome": {
+      "improved": "improved",
+      "unchanged": "unchanged",
+      "regressed": "regressed",
+      "insufficient": "insufficient evidence"
+    },
+    "state": {
+      "not-assessed": "Not assessed",
+      "insufficient": "Insufficient evidence",
+      "weak": "Demonstrated weakness",
+      "developing": "Developing",
+      "strong": "Stronger performance"
+    },
+    "resource": {
+      "notes": "Review notes",
+      "flashcards": "Flashcards",
+      "visual": "Visual",
+      "lab": "Lab",
+      "practice": "Focused practice"
+    }
   },
   "toolkitHome": {
     "descriptor": "Documentation-to-learning toolkit",
@@ -3493,7 +3897,7 @@
     "graderStudy": "Study",
     "graderPractice": "Practice",
     "graderReview": "Review tools"
-},
+  },
   "navigationJourney": {
     "example": "Explore the IT certification build",
     "methodology": "Back to methodology",
@@ -3514,7 +3918,9 @@
     "sharedReview": "Weak areas · all certifications",
     "sharedPerformance": "Performance · all certifications",
     "sharedReviewDetail": "Review saved misses across certifications, then return to the relevant study material.",
-    "labsBlurb": "Guided AWS design exercises and a shared lab collection."
+    "labsBlurb": "Guided AWS design exercises and a shared lab collection.",
+    "saaPracticeTest": "SAA practice test",
+    "saaPracticeTestDetail": "Open a domain-weighted SAA-C03 sitting. Choose 10, 20, 40, half, or full length. Unseen questions rotate first."
   },
   "insightsPage": {
     "metadataTitle": "Project insights | GapLift",
@@ -3562,7 +3968,6 @@
     "noCandidates": "No partial objectives are listed.",
     "candidateSource": "Source: content/objectives.json and rankGaps in lib/objective-coverage.mjs."
   },
-
   "coverageSnapshot": {
     "caption": "Current curriculum and resource inventory",
     "track": "Track",
@@ -3577,7 +3982,6 @@
     "noMatrixTrack": "{track} ({code}) has no objective matrix: {questions} questions, {cards} flashcards, and {labs} shared labs in the current track configuration.",
     "trackNotes": "Track notes"
   },
-
   "capstonePage": {
     "metadataTitle": "About the GapLift capstone",
     "metadataDescription": "Problem, dataset, analysis, findings and limitations for the GapLift capstone project.",
