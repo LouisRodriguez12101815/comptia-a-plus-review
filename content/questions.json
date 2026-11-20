@@ -13597,7 +13597,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A batch-processing fleet can tolerate interruptions and jobs checkpoint regularly. Which EC2 purchase option should be preferred for lowest cost?",
+    "prompt": "A batch-processing fleet can tolerate interruptions and jobs checkpoint regularly. Which EC2 purchase option can provide a discounted price when spare capacity is available?",
     "choices": [
       "On-Demand only",
       "Spot Instances",
@@ -13605,7 +13605,7 @@
       "Dedicated Hosts"
     ],
     "answer": 1,
-    "explanation": "Spot is appropriate for interruption-tolerant workloads and offers deep discounts.",
+    "explanation": "Option: On-Demand only — Incorrect: On-Demand can run the fleet without a long-term commitment, but it does not provide the discounted Spot price described in the scenario. It can fit workloads that need predictable availability without a commitment.\nOption: Spot Instances — Correct: Spot can provide a discounted EC2 price when spare capacity is available and fits interruption-tolerant, checkpointed work. Capacity and continued availability are not guaranteed, and this does not establish the lowest total workload cost; evaluate retry, checkpoint, and completion-time requirements.\nOption: Capacity Reservations only — Incorrect: A Capacity Reservation reserves capacity for eligible instances but is not itself a discounted purchase option; charges are based on the applicable On-Demand rate unless another pricing benefit applies. It fits capacity assurance requirements.\nOption: Dedicated Hosts — Incorrect: Dedicated Hosts provide host-level tenancy and can support licensing or compliance requirements, but they do not match this scenario’s spare-capacity discount objective. They may fit workloads that require host-level control.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13613,7 +13613,8 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
     ]
   },
   {
@@ -34771,5 +34772,701 @@
       "https://docs.aws.amazon.com/datasync/latest/userguide/configure-metadata.html",
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
     ]
+  },
+  {
+    "id": "q-saa-bank-001",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company uses one workforce directory for staff who need different roles in several AWS accounts. Administrators want central group assignment and short-lived console and CLI sessions, with no permanent IAM users in each account. Which design best fits?",
+    "choices": [
+      "Create an IAM user in every account and distribute access keys to the directory groups.",
+      "Use IAM Identity Center with the directory, assign groups to accounts through permission sets, and let users obtain temporary sessions.",
+      "Create one root user per employee and require MFA for each account.",
+      "Store staff passwords in Secrets Manager and have employees assume one shared administrator role."
+    ],
+    "answer": 1,
+    "explanation": "Option: Create an IAM user in every account and distribute access keys to the directory groups. — Incorrect: Per-account IAM users duplicate identities and access keys are long-lived credentials; this does not meet centralized federation.\nOption: Use IAM Identity Center with the directory, assign groups to accounts through permission sets, and let users obtain temporary sessions. — Correct: IAM Identity Center assigns workforce users or groups to AWS accounts through permission sets and provides federated, temporary sessions, matching the multi-account requirement.\nOption: Create one root user per employee and require MFA for each account. — Incorrect: Root users are account recovery and ownership identities, not workforce roles; MFA does not turn them into centralized least-privilege access.\nOption: Store staff passwords in Secrets Manager and have employees assume one shared administrator role. — Incorrect: Secrets Manager stores application secrets; it is not a workforce federation or account assignment service, and a shared administrator role violates individual least privilege.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-workforce-access.html",
+      "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-002",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An application in private subnets already has IAM permission to read one S3 bucket. It must access that bucket only through a designated VPC gateway endpoint; the endpoint should expose no other buckets to the application, and direct requests to the bucket from outside that endpoint must be denied. Which TWO controls meet both requirements?",
+    "choices": [
+      "Restrict the S3 gateway endpoint policy to the required bucket and actions.",
+      "Add a bucket policy that denies requests unless they use the designated VPC endpoint.",
+      "Add a NAT gateway and allow the application role to call any S3 bucket.",
+      "Use a security group rule to restrict the bucket to the VPC endpoint ID.",
+      "Enable S3 default encryption and rely on encryption to block requests from other networks."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Option: Restrict the S3 gateway endpoint policy to the required bucket and actions. — Correct: The endpoint policy limits which S3 resources and actions are reachable through this endpoint. The application role already has the required IAM permission; the endpoint policy does not grant that permission and does not by itself block access through other paths.\nOption: Add a bucket policy that denies requests unless they use the designated VPC endpoint. — Correct: The bucket policy can deny requests that do not arrive through the required endpoint, enforcing the path requirement for this bucket. Used together, the two policies constrain both endpoint scope and bucket entry path.\nOption: Add a NAT gateway and allow the application role to call any S3 bucket. — Incorrect: A NAT gateway provides an egress path and the broad role permission does not enforce endpoint-only access or limit the endpoint to this bucket.\nOption: Use a security group rule to restrict the bucket to the VPC endpoint ID. — Incorrect: Security groups filter IP and protocol traffic for supported network interfaces; they do not attach to or identify S3 gateway endpoints by endpoint ID.\nOption: Enable S3 default encryption and rely on encryption to block requests from other networks. — Incorrect: Encryption protects data confidentiality at rest; it does not control which network path or bucket a request can use.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+    ],
+    "format": "multiple"
+  },
+  {
+    "id": "q-saa-bank-003",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A production service connects to a database using a password that must rotate automatically. The application should not keep a static copy in its deployment configuration. Which approach best meets the requirement?",
+    "choices": [
+      "Put the password in an environment variable and rotate it manually during deployments.",
+      "Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime.",
+      "Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it.",
+      "Use an IAM permissions boundary because it encrypts database credentials."
+    ],
+    "answer": 1,
+    "explanation": "Option: Put the password in an environment variable and rotate it manually during deployments. — Incorrect: Environment variables remain deployment configuration and manual rotation is explicitly excluded; stale copies can remain after a change.\nOption: Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime. — Correct: Secrets Manager is designed to store and retrieve secrets and supports configured rotation. A workload role avoids embedding long-lived credentials, while the application must handle refreshed credentials according to its connection behavior.\nOption: Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it. — Incorrect: SecureString encrypts a parameter value and IAM can control retrieval, but Parameter Store does not provide the managed secret rotation required here. An external automation could be built, but it is not the simplest fit.\nOption: Use an IAM permissions boundary because it encrypts database credentials. — Incorrect: A permissions boundary limits the maximum permissions an IAM principal can receive; it does not encrypt or store database passwords.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+      "https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html",
+      "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-004",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A data center needs encrypted connectivity to a new VPC this week. Traffic is moderate and variable, and the company does not require a dedicated circuit or predictable high bandwidth. Which connection should be deployed first?",
+    "choices": [
+      "AWS Site-to-Site VPN, with both provided IPsec tunnels configured for redundancy.",
+      "A dedicated AWS Direct Connect connection as the only path; it can be established immediately without a provider or cross-connect.",
+      "VPC peering over the public internet, with TLS enabled on application requests.",
+      "An internet gateway attached to the VPC, with inbound security group rules for the data center."
+    ],
+    "answer": 0,
+    "explanation": "Option: AWS Site-to-Site VPN, with both provided IPsec tunnels configured for redundancy. — Correct: A Site-to-Site VPN creates IPsec tunnels over an existing internet connection; the connection provides two tunnels, which can be configured for redundancy and is appropriate when rapid deployment and moderate variable traffic matter more than dedicated capacity.\nOption: A dedicated AWS Direct Connect connection as the only path; it can be established immediately without a provider or cross-connect. — Incorrect: Direct Connect is a dedicated connectivity option with provider and circuit provisioning considerations. It can be appropriate for consistent bandwidth or private connectivity requirements, but the scenario does not need it as the first path or sole dependency.\nOption: VPC peering over the public internet, with TLS enabled on application requests. — Incorrect: VPC peering connects VPCs, not an on-premises data center, and TLS alone does not supply the requested network connection.\nOption: An internet gateway attached to the VPC, with inbound security group rules for the data center. — Incorrect: An internet gateway does not create an encrypted private connection to the data center, and opening inbound access violates the stated boundary.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/vpn/latest/s2svpn/WhatIsVPN.html",
+      "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html",
+      "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-005",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A partner account needs to download objects from an S3 bucket encrypted with SSE-KMS. The bucket owner wants to keep key administration in its own account. Which configuration is required for the partner role to read an object?",
+    "choices": [
+      "Grant s3:GetObject in the bucket policy; S3 object permission alone is sufficient to decrypt SSE-KMS data cross-account.",
+      "Permit the partner account or role to use the customer-managed KMS key in the key policy, and grant the partner role the required KMS permission as well as S3 read access.",
+      "Share the AWS-managed aws/s3 key with the partner account by adding a key policy statement.",
+      "Make the bucket public and rely on the KMS key to identify the intended partner."
+    ],
+    "answer": 1,
+    "explanation": "Option: Grant s3:GetObject in the bucket policy; S3 object permission alone is sufficient to decrypt SSE-KMS data cross-account. — Incorrect: S3 authorization is necessary, but an SSE-KMS object also requires authorization to use the KMS key; S3 permission alone does not decrypt it.\nOption: Permit the partner account or role to use the customer-managed KMS key in the key policy, and grant the partner role the required KMS permission as well as S3 read access. — Correct: Cross-account KMS use requires authorization from the key-owning account’s key policy and an IAM permission for the caller in the external account, in addition to S3 object access. A customer-managed key supports this control.\nOption: Share the AWS-managed aws/s3 key with the partner account by adding a key policy statement. — Incorrect: AWS-managed KMS keys cannot have their key policies edited to grant cross-account use; cross-account S3 access should use a customer-managed key.\nOption: Make the bucket public and rely on the KMS key to identify the intended partner. — Incorrect: A public bucket policy would expose object access too broadly and does not grant KMS decrypt permission to the specific partner.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-management.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-006",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An ECS service processes SQS messages. During bursts, CPU remains low while the visible queue grows and the time to clear the backlog exceeds the business target. Which scaling signal is most directly tied to the work waiting per task?",
+    "choices": [
+      "Scale only on average CPU utilization.",
+      "Scale on visible messages per running task, using queue depth divided by the number of active tasks.",
+      "Scale on the number of messages already in flight, without considering visible backlog.",
+      "Increase the task memory limit whenever the queue depth rises."
+    ],
+    "answer": 1,
+    "explanation": "Option: Scale only on average CPU utilization. — Incorrect: CPU can remain low while workers wait on I/O or downstream calls, so it may not represent queued work or the drain-time objective.\nOption: Scale on visible messages per running task, using queue depth divided by the number of active tasks. — Correct: Queue backlog per task expresses waiting work relative to active processing capacity and is a direct signal for scaling consumers to meet a backlog target. The metric should be tuned and monitored with processing time and downstream limits.\nOption: Scale on the number of messages already in flight, without considering visible backlog. — Incorrect: In-flight messages are already being processed; ignoring visible work misses the backlog that needs additional consumers.\nOption: Increase the task memory limit whenever the queue depth rises. — Incorrect: Memory does not add task count or processing capacity when CPU is low and queue backlog is the bottleneck.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html",
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-007",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A public REST API receives bursts of repeated reads. Catalog responses are identical for all customers for several minutes, while account-specific routes must always return current private data. Which design reduces repeated backend work without serving one customer’s data to another?",
+    "choices": [
+      "Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached.",
+      "Cache all API responses under a single cache key so every route has the highest hit rate.",
+      "Increase the database writer size and cache no responses, even for identical public catalog reads.",
+      "Move the entire API to an SQS queue so each client polls until its read response is available."
+    ],
+    "answer": 0,
+    "explanation": "Option: Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached. — Correct: API Gateway caching can reduce backend calls for cacheable responses. Limiting it to shared catalog routes and using a bounded TTL respects the distinct freshness and privacy requirement; cache-key and invalidation behavior still need design.\nOption: Cache all API responses under a single cache key so every route has the highest hit rate. — Incorrect: A shared key across personalized routes can return one customer’s data to another and violates isolation.\nOption: Increase the database writer size and cache no responses, even for identical public catalog reads. — Incorrect: Vertical database scaling may add capacity but does not eliminate repeat work and ignores the stated cacheable pattern.\nOption: Move the entire API to an SQS queue so each client polls until its read response is available. — Incorrect: SQS is useful for asynchronous work, not a synchronous read API whose clients require an immediate catalog response.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+      "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-008",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company uses warm standby in a second Region. The recovery plan assumes it can scale the standby fleet to production size, but the Region’s EC2 quotas have never been checked and failover has not been exercised. What should the architect do before relying on the stated recovery time?",
+    "choices": [
+      "Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure.",
+      "Assume quotas are global because the application uses the same AWS account in both Regions.",
+      "Remove the standby and rely on backups; that makes the current recovery-time target automatic.",
+      "Reduce the primary Region’s quotas so the standby Region receives capacity."
+    ],
+    "answer": 0,
+    "explanation": "Option: Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure. — Correct: Quotas and available service capacity can constrain recovery scale-up. Confirming required quotas ahead of time and exercising the runbook tests whether warm standby can meet its recovery objectives.\nOption: Assume quotas are global because the application uses the same AWS account in both Regions. — Incorrect: Many service quotas are Region-specific; using one account does not guarantee equal capacity or quota values in another Region.\nOption: Remove the standby and rely on backups; that makes the current recovery-time target automatic. — Incorrect: Backups support recovery but do not automatically meet a warm-standby recovery-time target.\nOption: Reduce the primary Region’s quotas so the standby Region receives capacity. — Incorrect: Reducing a primary Region quota does not reserve or increase capacity in the recovery Region.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html",
+      "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency.html",
+      "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel01-bp02.html",
+      "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel13-bp03.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-009",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A legacy application opens many short-lived connections to a Multi-AZ RDS database and cannot be changed in code this quarter, though its database endpoint can be changed through deployment configuration. Failover causes clients to reconnect slowly because of connection churn and DNS caching. Which addition most directly improves connection handling during failover while retaining the database’s Multi-AZ design?",
+    "choices": [
+      "Place RDS Proxy between the application and database and validate the application’s driver and transaction behavior.",
+      "Add an RDS read replica and send all write transactions to it during failover.",
+      "Put an S3 gateway endpoint between the application and database.",
+      "Replace the database with an EC2 instance in one Availability Zone."
+    ],
+    "answer": 0,
+    "explanation": "Option: Place RDS Proxy between the application and database and validate the application’s driver and transaction behavior. — Correct: RDS Proxy pools database connections and can help applications recover from Multi-AZ failovers by routing through the proxy; it is suited to applications that create many connections or cannot implement pooling themselves. Validate supported engine and client behavior.\nOption: Add an RDS read replica and send all write transactions to it during failover. — Incorrect: A read replica is for read scaling and is not a writable automatic replacement for the Multi-AZ primary in this scenario.\nOption: Put an S3 gateway endpoint between the application and database. — Incorrect: An S3 gateway endpoint only provides a route to S3; it has no role in database connection recovery.\nOption: Replace the database with an EC2 instance in one Availability Zone. — Incorrect: A single-AZ self-managed database removes the existing managed Multi-AZ failover protection and adds operational work.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-010",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A clustered Linux database uses a filesystem designed for coordinated access by multiple EC2 instances to the same block device. The workload needs very low storage latency and can use a cluster-aware filesystem. Which storage choice should the architect evaluate?",
+    "choices": [
+      "An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements.",
+      "A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination.",
+      "An S3 bucket mounted as a POSIX block device with simultaneous write locking.",
+      "An EFS file system, because it exposes the same shared block device to each instance."
+    ],
+    "answer": 0,
+    "explanation": "Option: An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements. — Correct: EBS Multi-Attach for supported io1/io2 volumes can attach one volume to multiple Nitro instances in the same Availability Zone. A cluster-aware filesystem or application must coordinate writes; verify the current Multi-Attach limitations before deployment.\nOption: A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination. — Incorrect: Ordinary EBS volumes are attached as block devices and do not provide safe shared-write coordination just because multiple mounts are attempted.\nOption: An S3 bucket mounted as a POSIX block device with simultaneous write locking. — Incorrect: S3 is object storage, not a shared block device with filesystem write locking.\nOption: An EFS file system, because it exposes the same shared block device to each instance. — Incorrect: EFS is a shared file system, not a shared block device. It may fit a file-sharing workload but not software that requires coordinated shared block storage.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+      "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-011",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A short-lived Lambda image-processing function is CPU-bound. Its input and algorithm are unchanged, and the team wants to find a faster configuration through controlled benchmarking. Which setting should it test first?",
+    "choices": [
+      "Increase the function’s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory.",
+      "Increase the function timeout; this allocates more CPU to each invocation.",
+      "Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation.",
+      "Increase reserved concurrency; this raises the CPU allocation of each individual invocation."
+    ],
+    "answer": 0,
+    "explanation": "Option: Increase the function’s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory. — Correct: Lambda memory configuration controls the memory and proportional CPU allocated to the function. Benchmark representative inputs and compare duration and billed cost rather than assuming that more memory is always cheaper.\nOption: Increase the function timeout; this allocates more CPU to each invocation. — Incorrect: Timeout sets the maximum allowed execution duration, not CPU capacity.\nOption: Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation. — Incorrect: EBS is not the per-invocation CPU setting for Lambda.\nOption: Increase reserved concurrency; this raises the CPU allocation of each individual invocation. — Incorrect: Reserved concurrency limits or reserves concurrent invocation capacity; it does not change the CPU allocation of each invocation.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+      "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-012",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB table is keyed by customer ID. A new screen must fetch orders for a given status and time range across many customers. Expected traffic is modest and comfortably within the projected GSI partition throughput, and results may be eventually consistent. Which design avoids repeatedly scanning the whole table?",
+    "choices": [
+      "Create a global secondary index with status as its partition key and time as its sort key, then query that index.",
+      "Run a strongly consistent Scan on the base table and discard records that do not match.",
+      "Create a local secondary index whose partition key is different from the table partition key.",
+      "Add a read replica to the DynamoDB table."
+    ],
+    "answer": 0,
+    "explanation": "Option: Create a global secondary index with status as its partition key and time as its sort key, then query that index. — Correct: A GSI can use a partition and sort key different from the base table, enabling a Query for the access pattern. GSI reads are eventually consistent, matching the scenario; account for index write and storage capacity, and reassess key cardinality and hot-partition risk if traffic grows.\nOption: Run a strongly consistent Scan on the base table and discard records that do not match. — Incorrect: A Scan reads the table’s items and filters afterward, doing unnecessary work as the table grows. Strong consistency does not make the access pattern efficient.\nOption: Create a local secondary index whose partition key is different from the table partition key. — Incorrect: An LSI must use the same partition key as its table, so it cannot key this query by status across customers.\nOption: Add a read replica to the DynamoDB table. — Incorrect: DynamoDB does not use relational read replicas for this pattern; a secondary index is the purpose-built access path.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-013",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company retains completed reports for years. After 60 days, retrieval is uncommon, can take several hours, and the team accepts retrieval charges in exchange for lower storage cost. Which lifecycle transition should it evaluate for eligible objects?",
+    "choices": [
+      "S3 Glacier Flexible Retrieval, while accounting for the class’s minimum storage duration and retrieval charges.",
+      "S3 Standard, because it has the lowest storage price for data that is rarely accessed.",
+      "S3 Express One Zone, because it is designed for long-term archival with hours-long retrieval.",
+      "Delete the reports after 60 days, because lifecycle rules cannot retain objects in archival classes."
+    ],
+    "answer": 0,
+    "explanation": "Option: S3 Glacier Flexible Retrieval, while accounting for the class’s minimum storage duration and retrieval charges. — Correct: Glacier Flexible Retrieval is an archival tier with retrieval options measured in minutes to hours. It matches the stated access pattern, provided the team accounts for minimum storage duration, retrieval charges, and restore workflow.\nOption: S3 Standard, because it has the lowest storage price for data that is rarely accessed. — Incorrect: S3 Standard is designed for frequent access and generally has higher storage cost than archival tiers; it is not selected for the stated long-term cold data pattern.\nOption: S3 Express One Zone, because it is designed for long-term archival with hours-long retrieval. — Incorrect: S3 Express One Zone is a high-performance single-AZ storage class, not an archival class.\nOption: Delete the reports after 60 days, because lifecycle rules cannot retain objects in archival classes. — Incorrect: S3 lifecycle transitions can move eligible objects to archival storage; expiration is a separate lifecycle action.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-014",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company expects steady compute use but plans to move workloads between EC2 instance families and Regions, with a possible migration to Fargate during the next year. It can commit to consistent hourly spend. Which purchasing option best preserves that flexibility?",
+    "choices": [
+      "A Compute Savings Plan, after validating that the committed hourly amount fits the organization’s steady usage.",
+      "An EC2 Instance Savings Plan tied to one instance family and Region.",
+      "Spot Instances for all customer-facing baseline capacity, without an interruption strategy.",
+      "On-Demand Capacity Reservations, because they automatically provide a billing discount."
+    ],
+    "answer": 0,
+    "explanation": "Option: A Compute Savings Plan, after validating that the committed hourly amount fits the organization’s steady usage. — Correct: Compute Savings Plans apply across EC2 instance families and Regions and can also apply to Fargate and Lambda. They suit planned compute-platform changes, but the commitment should be sized against stable usage to avoid unused commitment.\nOption: An EC2 Instance Savings Plan tied to one instance family and Region. — Incorrect: An EC2 Instance Savings Plan provides a narrower commitment tied to a chosen instance family and Region, which conflicts with the planned flexibility.\nOption: Spot Instances for all customer-facing baseline capacity, without an interruption strategy. — Incorrect: Spot can reduce costs for interruptible workloads, but the scenario describes steady customer-facing baseline use and no interruption strategy.\nOption: On-Demand Capacity Reservations, because they automatically provide a billing discount. — Incorrect: Capacity Reservations reserve capacity and do not themselves provide a billing discount.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+      "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-015",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A product database spends most of its read capacity returning the same catalog records. The records change infrequently, the application can tolerate a short bounded staleness window, and the team has measured a high repeat-read rate. Which change should it evaluate to reduce database read demand?",
+    "choices": [
+      "Add a cache such as ElastiCache for the repeated catalog reads, with an explicit TTL or invalidation strategy and a cost/ hit-rate review.",
+      "Add a database read replica but send every request to both the primary and replica.",
+      "Disable database backups so fewer reads are billed.",
+      "Move the catalog to a larger database instance before measuring whether repeated reads can be served from a cache."
+    ],
+    "answer": 0,
+    "explanation": "Option: Add a cache such as ElastiCache for the repeated catalog reads, with an explicit TTL or invalidation strategy and a cost/ hit-rate review. — Correct: A cache can serve repeated hot reads and reduce database request load when the hit rate and freshness requirements justify the cache cost. The TTL or invalidation policy must respect the bounded staleness requirement.\nOption: Add a database read replica but send every request to both the primary and replica. — Incorrect: A read replica can add read capacity, but sending every request to both databases doubles work and does not reuse repeated results.\nOption: Disable database backups so fewer reads are billed. — Incorrect: Backups are a recovery control and are not a direct way to reduce query-read demand; removing them creates a data-protection gap.\nOption: Move the catalog to a larger database instance before measuring whether repeated reads can be served from a cache. — Incorrect: A larger instance may be needed if measured capacity remains insufficient, but it does not address repeated identical reads as directly and should be compared after measuring the cache opportunity.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+      "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/caching-database-query-results.html",
+      "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/perf_data_access_patterns_caching.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-bank-016",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A private application spans two Availability Zones and must keep operating if either zone fails. The networking standard requires individually managed zonal NAT gateways and local routes, with no egress dependency on another zone. Cross-zone transfer is also a concern. Which design meets these requirements?",
+    "choices": [
+      "Deploy a NAT gateway in each Availability Zone and route each zone’s private subnets to its local gateway, accepting the additional gateway-hour cost.",
+      "Keep one NAT gateway in one Availability Zone and route both zones through it because this always has the lowest total cost and no availability tradeoff.",
+      "Replace NAT gateways with an internet gateway and assign public IPv4 addresses to all application instances.",
+      "Route all traffic through a Transit Gateway; it removes NAT processing charges and guarantees lower cost."
+    ],
+    "answer": 0,
+    "explanation": "Option: Deploy a NAT gateway in each Availability Zone and route each zone’s private subnets to its local gateway, accepting the additional gateway-hour cost. — Correct: A per-AZ NAT design removes the other zone’s dependency for internet egress and avoids routing the second AZ’s egress through the first AZ’s NAT. It adds per-gateway hourly charges, so compare actual traffic and resilience requirements.\nOption: Keep one NAT gateway in one Availability Zone and route both zones through it because this always has the lowest total cost and no availability tradeoff. — Incorrect: One shared NAT may reduce fixed gateway count but creates an AZ dependency and can add cross-AZ data transfer for other-AZ workloads; it is not always the lowest total cost.\nOption: Replace NAT gateways with an internet gateway and assign public IPv4 addresses to all application instances. — Incorrect: Public addresses and an internet gateway change the exposure model and do not meet the private-instance design; internet egress controls still need to be designed.\nOption: Route all traffic through a Transit Gateway; it removes NAT processing charges and guarantees lower cost. — Incorrect: Transit Gateway does not replace NAT translation by itself or guarantee lower network cost; it introduces its own attachment and data-processing considerations.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html",
+      "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_implement_services.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-001",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A media archive has objects whose access frequency changes unpredictably. When an object is read, users require millisecond access; the team cannot reliably predict a lifecycle date for moving it to an archive tier. Which storage choice best reduces the need to guess a fixed access pattern?",
+    "choices": [
+      "Use S3 Intelligent-Tiering and include its per-object monitoring and automation charge in the cost model.",
+      "Transition every object to S3 Glacier Flexible Retrieval after 30 days, regardless of access.",
+      "Keep all objects in S3 Standard because changing access patterns make tiering impossible.",
+      "Move the objects to S3 One Zone-IA and accept retrieval latency and single-AZ storage risk."
+    ],
+    "answer": 0,
+    "explanation": "Option: Use S3 Intelligent-Tiering and include its per-object monitoring and automation charge in the cost model. — Correct: It monitors access and moves eligible objects between access tiers; the scenario values automatic adaptation and millisecond access. The monitoring and automation charge must be included, and optional archive tiers have different retrieval behavior.\nOption: Transition every object to S3 Glacier Flexible Retrieval after 30 days, regardless of access. — Incorrect: A fixed transition ignores the unpredictable pattern, and Glacier Flexible Retrieval requires restore time rather than millisecond access. This fits when delayed retrieval is acceptable and access timing is understood.\nOption: Keep all objects in S3 Standard because changing access patterns make tiering impossible. — Incorrect: S3 Intelligent-Tiering exists for changing or unknown access patterns. Standard can fit consistently frequent access, but does not adapt storage cost.\nOption: Move the objects to S3 One Zone-IA and accept retrieval latency and single-AZ storage risk. — Incorrect: One Zone-IA has a single-AZ storage design and is intended for data that can be recreated or stored elsewhere; it does not solve unknown access with multi-AZ resilience. It may fit reproducible secondary data with infrequent access.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-002",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A research group hosts a large public-to-members dataset in S3. Download volume varies, storage must remain under the group’s account, and the group wants authenticated consumers to pay the S3 request and download transfer charges. Which feature best matches that billing requirement?",
+    "choices": [
+      "Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing.",
+      "Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA.",
+      "Enable S3 Transfer Acceleration and leave all request charges with the bucket owner.",
+      "Use S3 Storage Lens to assign each consumer’s data transfer charges to their account."
+    ],
+    "answer": 0,
+    "explanation": "Option: Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing. — Correct: Requester Pays assigns request and data-transfer charges to the requester, while the bucket owner continues to pay storage. Requests must be authenticated and identify the requester as payer.\nOption: Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA. — Incorrect: A lifecycle transition changes storage class and cost characteristics; it does not transfer request or download charges to consumers. It can fit data with suitable infrequent access and retention economics.\nOption: Enable S3 Transfer Acceleration and leave all request charges with the bucket owner. — Incorrect: Acceleration can improve transfer performance for some distant clients, but it does not reassign request and transfer charges.\nOption: Use S3 Storage Lens to assign each consumer’s data transfer charges to their account. — Incorrect: Storage Lens provides usage and activity visibility; it does not change who is billed. Use it to analyze usage, not to implement Requester Pays.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-003",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A development environment runs on an EC2 Auto Scaling group only during a predictable weekday work window. Outside that window no jobs or interactive users need it, and the team accepts startup delay before work begins. Which change most directly reduces idle compute capacity while retaining automatic capacity management?",
+    "choices": [
+      "Create scheduled scaling actions to raise capacity before the work window and reduce the group’s minimum and desired capacity after it.",
+      "Keep the group at its current size and purchase a one-year Compute Savings Plan.",
+      "Replace the group with a larger instance so tasks finish sooner during the same operating hours.",
+      "Add a target-tracking policy that scales out when CPU is low."
+    ],
+    "answer": 0,
+    "explanation": "Option: Create scheduled scaling actions to raise capacity before the work window and reduce the group’s minimum and desired capacity after it. — Correct: A known recurring schedule can adjust Auto Scaling capacity ahead of demand and remove unneeded instances outside the window. Confirm shutdown does not interrupt required jobs and account for attached storage or other resources that continue to incur charges.\nOption: Keep the group at its current size and purchase a one-year Compute Savings Plan. — Incorrect: A commitment can lower eligible compute rates but does not remove idle instances or their utilization. It can fit stable baseline usage after measuring it.\nOption: Replace the group with a larger instance so tasks finish sooner during the same operating hours. — Incorrect: Vertical resizing does not eliminate predictable overnight idle capacity and could increase hourly cost. It fits when a workload needs more per-instance capacity.\nOption: Add a target-tracking policy that scales out when CPU is low. — Incorrect: Low CPU is not a demand signal to scale out, and reactive tracking alone does not express the known operating schedule. Target tracking is useful for demand that follows a metric.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/scheduled-scaling-create-scheduled-action.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-004",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A compute-optimized Linux service has high, steady CPU utilization. Compute Optimizer recommends testing a Graviton-based instance with a favorable projected price-performance result, but the service includes native libraries and deployment images built for x86-64. What should the architect do before changing the production fleet?",
+    "choices": [
+      "Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance.",
+      "Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost.",
+      "Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64.",
+      "Move the service to Spot Instances because CPU utilization is steady and high."
+    ],
+    "answer": 0,
+    "explanation": "Option: Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance. — Correct: The recommendation is a candidate for evaluation, not a compatibility guarantee. Architecture-specific dependencies and measured application performance determine whether migration meets the service requirements and total-cost goal.\nOption: Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost. — Incorrect: Recommendations do not guarantee application compatibility or realized savings for every workload. A validated, measured rollout is needed.\nOption: Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64. — Incorrect: A pricing commitment does not test an architecture migration. It may reduce cost for stable usage but leaves the application on x86.\nOption: Move the service to Spot Instances because CPU utilization is steady and high. — Incorrect: High steady utilization alone does not show the workload tolerates interruption or replacement. Spot can fit fault-tolerant, flexible workloads with interruption handling, not as an architecture compatibility test.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/compute-optimizer/latest/ug/graviton-recommendations.html",
+      "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-005",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB workload has a measured, predictable baseline of reads and writes, with occasional peaks that can be forecast. The team wants to avoid paying the on-demand rate for a steady workload but still adjust capacity as demand changes. Which capacity approach should it evaluate first?",
+    "choices": [
+      "Provisioned capacity with Application Auto Scaling policies, validated against observed peaks and required headroom.",
+      "On-demand capacity permanently, because it is always less expensive when usage is predictable.",
+      "A global secondary index for every attribute so DynamoDB can allocate capacity automatically.",
+      "Replace DynamoDB with an RDS read replica, preserving the same key-value access pattern."
+    ],
+    "answer": 0,
+    "explanation": "Option: Provisioned capacity with Application Auto Scaling policies, validated against observed peaks and required headroom. — Correct: Provisioned capacity can suit predictable throughput, and autoscaling can adjust provisioned units as measured utilization changes. The team must model peak behavior, scaling response, and throttling risk rather than assume a universal price winner.\nOption: On-demand capacity permanently, because it is always less expensive when usage is predictable. — Incorrect: On-demand automatically accommodates variable request rates, but it is not universally cheaper for stable predictable usage. It can be preferable when demand is difficult to forecast or operational simplicity dominates.\nOption: A global secondary index for every attribute so DynamoDB can allocate capacity automatically. — Incorrect: Indexes create additional storage and write-capacity implications and do not replace choosing a table capacity mode. Add indexes only for required access patterns.\nOption: Replace DynamoDB with an RDS read replica, preserving the same key-value access pattern. — Incorrect: A relational read replica is not a drop-in capacity mode for DynamoDB’s key-value workload. A relational database can fit when relational queries and transactions drive the requirements.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-006",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A DynamoDB table retains years of records for audit lookup. Current billing analysis shows storage is the dominant cost; older items are read rarely but must stay queryable in DynamoDB, and the expected request volume is low. Which cost action should the team model?",
+    "choices": [
+      "Test the DynamoDB Standard-IA table class and compare lower storage charges against its higher request charges for this workload.",
+      "Move all items to DynamoDB Standard because that table class always has the lowest storage price.",
+      "Switch from provisioned to on-demand capacity; capacity mode automatically reduces table storage charges.",
+      "Export the records to S3 Glacier Deep Archive and continue querying them with DynamoDB Query at the same latency."
+    ],
+    "answer": 0,
+    "explanation": "Option: Test the DynamoDB Standard-IA table class and compare lower storage charges against its higher request charges for this workload. — Correct: Standard-IA is intended for tables where storage cost is a larger share of total cost; request costs are higher, so the observed low access rate makes a full-cost comparison appropriate.\nOption: Move all items to DynamoDB Standard because that table class always has the lowest storage price. — Incorrect: Standard-IA is the storage-optimized class; Standard can be more suitable when request activity is high relative to storage. Compare the entire bill, not only one line item.\nOption: Switch from provisioned to on-demand capacity; capacity mode automatically reduces table storage charges. — Incorrect: Capacity mode affects read/write throughput billing, not the table-class storage rate. Evaluate capacity mode and table class as separate decisions.\nOption: Export the records to S3 Glacier Deep Archive and continue querying them with DynamoDB Query at the same latency. — Incorrect: Exporting to archival object storage changes the access path and does not leave the data queryable through DynamoDB at the same latency. It can fit data that can leave the live database and tolerate restore or separate query workflows.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableClass.html"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-007",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A company has four VPCs in one Region. Each VPC needs direct private connectivity to only one other VPC, traffic is modest, no transitive routing is required, and the team can manage a small number of point-to-point connections. Which option should it compare first for low fixed network cost?",
+    "choices": [
+      "VPC peering between the required pairs, while including applicable data-transfer charges in the estimate.",
+      "A Transit Gateway with every VPC attached, because it has no hourly or data-processing charges.",
+      "A public NAT gateway in each VPC for private VPC-to-VPC traffic.",
+      "AWS Direct Connect between the VPCs, because it removes all inter-VPC transfer charges."
+    ],
+    "answer": 0,
+    "explanation": "Option: VPC peering between the required pairs, while including applicable data-transfer charges in the estimate. — Correct: Peering provides direct private connectivity and has no charge simply to create a peering connection; data transfer remains chargeable. It fits a small nontransitive topology when the team accepts managing the individual connections.\nOption: A Transit Gateway with every VPC attached, because it has no hourly or data-processing charges. — Incorrect: Transit Gateway can simplify hub-and-spoke and transitive routing, but attachments and data processing can incur charges. It may be preferable as the number of networks or centralized routing needs grow.\nOption: A public NAT gateway in each VPC for private VPC-to-VPC traffic. — Incorrect: NAT gateways provide outbound translation for private resources, not direct private routing between VPC CIDRs.\nOption: AWS Direct Connect between the VPCs, because it removes all inter-VPC transfer charges. — Incorrect: Direct Connect is for dedicated connectivity between a customer network and AWS; it does not create this VPC-to-VPC topology or remove all data-transfer charges.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+      "https://aws.amazon.com/transit-gateway/pricing/"
+    ],
+    "format": "single"
+  },
+  {
+    "id": "q-saa-costbatch-008",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A private application runs in two Availability Zones. It frequently accesses S3 and DynamoDB and also needs outbound access to public software repositories. A measured traffic model shows cross-AZ NAT data charges exceed the hourly cost of a second NAT gateway. Which TWO changes reduce avoidable network transfer cost while retaining zonal egress paths?",
+    "choices": [
+      "Add S3 and DynamoDB gateway endpoints and route their service traffic through the endpoints.",
+      "Place a NAT gateway in each AZ and route each private subnet through the NAT gateway in its own AZ.",
+      "Route both AZs through one NAT gateway in the first AZ to avoid paying for a second gateway.",
+      "Send S3 and DynamoDB requests through the public internet and a NAT gateway because gateway endpoints add a per-hour charge.",
+      "Replace all private subnet routes with a single cross-Region Transit Gateway attachment."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explanation": "Option: Add S3 and DynamoDB gateway endpoints and route their service traffic through the endpoints. — Correct: Gateway endpoints provide private routing to these services without sending those requests through NAT; they have no additional endpoint charge. This reduces NAT processing and related transfer on those paths.\nOption: Place a NAT gateway in each AZ and route each private subnet through the NAT gateway in its own AZ. — Correct: AZ-local routing avoids cross-AZ NAT paths and retains an egress path if one AZ is impaired. The second gateway adds hourly cost, which the scenario’s measured model says is outweighed by avoided cross-AZ charges.\nOption: Route both AZs through one NAT gateway in the first AZ to avoid paying for a second gateway. — Incorrect: It saves the second gateway’s hourly charge but creates cross-AZ data paths and a dependency on one AZ; the scenario says those transfer charges exceed the second gateway cost.\nOption: Send S3 and DynamoDB requests through the public internet and a NAT gateway because gateway endpoints add a per-hour charge. — Incorrect: S3 and DynamoDB gateway endpoints do not add an endpoint charge and keep service traffic on the AWS network path.\nOption: Replace all private subnet routes with a single cross-Region Transit Gateway attachment. — Incorrect: This adds unnecessary topology and does not provide the specified direct gateway endpoint paths or AZ-local public egress.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-ddb.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+    ],
+    "format": "multiple"
   }
 ]
