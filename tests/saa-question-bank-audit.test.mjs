@@ -9,11 +9,15 @@ const questions = read("content/questions.json");
 const audit = read("docs/saa-c03-question-bank-audit.json");
 const saa = questions.filter((question) => question.examCodes?.includes("saa-c03"));
 const newQuestions = saa.filter((question) => question.id.startsWith("q-saa-bank-") || question.id.startsWith("q-saa-costbatch-"));
+const auditedIds = new Set(audit.questionMappings.map((row) => row.questionId));
+const auditedSaa = saa.filter((question) => auditedIds.has(question.id));
 
 test("SAA audit maps each existing and new question to one current task and skill", () => {
-  assert.equal(audit.questionMappings.length, saa.length);
-  assert.equal(new Set(audit.questionMappings.map((row) => row.questionId)).size, saa.length);
-  for (const question of saa) {
+  // Mappings freeze the audited inventory; later practice/guide rounds may add unmapped live items.
+  assert.equal(audit.questionMappings.length, auditedSaa.length);
+  assert.equal(new Set(audit.questionMappings.map((row) => row.questionId)).size, auditedSaa.length);
+  assert.ok(saa.length >= auditedSaa.length);
+  for (const question of auditedSaa) {
     const mapping = audit.questionMappings.find((row) => row.questionId === question.id);
     assert.ok(mapping, question.id);
     assert.ok(question.objectiveIds["saa-c03"].includes(mapping.taskId), question.id);
@@ -65,10 +69,20 @@ test("the 24 added SAA questions have unique IDs, supported formats, and a ratio
 
 test("SAA inventory stages are counted from the specified base and both explicit addition batches", () => {
   const baseCommit = "1f7bed30009be12ecbc5bd4dca97c51d207aff6e";
-  const baseQuestions = JSON.parse(execFileSync("git", ["show", `${baseCommit}:content/questions.json`], {
-    encoding: "utf8",
-    maxBuffer: 16 * 1024 * 1024,
-  }));
+  let baseQuestions;
+  try {
+    baseQuestions = JSON.parse(execFileSync("git", ["show", `${baseCommit}:content/questions.json`], {
+      encoding: "utf8",
+      maxBuffer: 16 * 1024 * 1024,
+    }));
+  } catch (error) {
+    // Shallow clones may not contain the freeze commit; fetch just that blob when possible.
+    execFileSync("git", ["fetch", "--depth=1", "origin", baseCommit], { stdio: "ignore" });
+    baseQuestions = JSON.parse(execFileSync("git", ["show", `${baseCommit}:content/questions.json`], {
+      encoding: "utf8",
+      maxBuffer: 16 * 1024 * 1024,
+    }));
+  }
   const count = (records) => {
     const selected = records.filter((question) => question.examCodes?.includes("saa-c03"));
     const byDomain = { "1.0": 0, "2.0": 0, "3.0": 0, "4.0": 0 };
@@ -100,7 +114,15 @@ test("SAA inventory stages are counted from the specified base and both explicit
   assert.ok(costStage.addedIds.every((id) => id.startsWith("q-saa-costbatch-")));
   assert.deepEqual(bankStage.byDomain, { "1.0": 41, "2.0": 31, "3.0": 66, "4.0": 27 });
   assert.deepEqual(costStage.byDomain, { "1.0": 41, "2.0": 31, "3.0": 66, "4.0": 35 });
-  assert.deepEqual(costStage, { ...costStage, ...count(questions) });
+  // costStage freezes inventory after the cost batch. Later practice/guide rounds may grow the live bank.
+  const costOnly = questions.filter((question) => {
+    const id = question.id ?? "";
+    return question.examCodes?.includes("saa-c03") && !id.startsWith("q-saa-practice-") && !id.startsWith("q-saa-guide-");
+  });
+  assert.deepEqual(costStage, { ...costStage, ...count(costOnly) });
+  const live = count(questions);
+  assert.ok(live.saaQuestionCount >= costStage.saaQuestionCount, live.saaQuestionCount);
+  assert.equal(live.uniqueIdCount, live.saaQuestionCount);
   assert.equal(audit.baseline.commit, baseCommit);
 });
 
