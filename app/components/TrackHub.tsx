@@ -5,6 +5,7 @@ import { LearnerSync } from "@/app/components/LearnerSync";
 import { NetworkPlusConcepts } from "@/app/components/NetworkPlusConcepts";
 import { NetworkPlusDomainQuiz } from "@/app/components/NetworkPlusDomainQuiz";
 import { NetworkPlusDomains } from "@/app/components/NetworkPlusDomains";
+import { SaaChapterPath } from "@/app/components/SaaChapterPath";
 import { SaaCurriculumIndex } from "@/app/components/SaaCurriculumIndex";
 import { NetworkWorkspaceNav } from "@/app/components/NetworkWorkspaceNav";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
@@ -40,7 +41,10 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
   const workspaceLinks = track.focus ? [
     { label: t("workspaceOverview"), href: track.href },
-    ...(track.id === "aws-saa" ? [{ label: journey("curriculum"), href: "/aws-saa#curriculum" }] : []),
+    ...(track.id === "aws-saa" ? [
+      { label: journey("chapterPath"), href: "/aws-saa#chapter-path" },
+      { label: journey("curriculum"), href: "/aws-saa#curriculum" },
+    ] : []),
     ...(track.id === "core2" ? [{ label: t("core2ReviewTools"), href: "/core2/review-tools" }] : []),
     { label: t("workspaceTopics"), href: `${track.href}#${track.id === "networking" ? "objectives" : "topics"}` },
     { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
@@ -58,7 +62,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   ] : [];
 
   const sequence = track.focus ? [
-    { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#${track.id === "aws-saa" ? "curriculum" : "topics"}` },
+    { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#${track.id === "aws-saa" ? "chapter-path" : "topics"}` },
     { step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` },
     ...(counts.cards > 0 ? [{ step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: track.id === "aws-clf" ? "/test?exam=clf-c02&practice=mixed20" : `/test?exam=${track.focus}` }] : []),
@@ -167,7 +171,12 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </section>
       ) : null}
 
-      {track.id === "aws-saa" ? <SaaCurriculumIndex /> : null}
+      {track.id === "aws-saa" ? (
+        <>
+          <SaaChapterPath />
+          <SaaCurriculumIndex />
+        </>
+      ) : null}
 
       <section id={track.id === "networking" ? "study" : undefined} aria-labelledby="tools-heading" className="scroll-mt-24 space-y-4">
         <h2 id="tools-heading" className="text-lg font-medium text-white">

@@ -21,6 +21,7 @@ export async function SaaCurriculumIndex() {
         <p className="mt-2"><Link href="/test?exam=saa-c03" className={resourceLink}>{t("saaPracticeTest")}</Link></p>
         <nav aria-label={t("curriculum")} className="mt-3 flex flex-wrap gap-x-5">
           {domains.map((domain) => <a key={domain.id} href={`#saa-domain-${domain.id}`} className={resourceLink}>{domain.title}</a>)}
+          <a href="#chapter-path" className={resourceLink}>{t("chapterPath")}</a>
           <a href="#topics" className={resourceLink}>{t("chapterBrowsing")}</a>
           <a href="#shared-resources" className={resourceLink}>{t("sharedResources")}</a>
           <Link href="/test?exam=saa-c03" className={resourceLink}>{t("saaPracticeTest")}</Link>
