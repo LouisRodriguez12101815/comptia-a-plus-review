@@ -49770,7 +49770,7 @@
       "Copy the MySQL files onto an EC2 instance store and treat that disk as the new system of record."
     ],
     "answer": 0,
-    "explanation": "Use AWS DMS to replicate from the MySQL source to RDS for MySQL and cut over after the target has caught up. — Correct. DMS can migrate between the same engine when one endpoint is in AWS, which fits a short cutover after the target catches up.\nStop the application for the whole copy and change the engine to PostgreSQL during that outage. — Incorrect. An engine change during a long outage is a different migration and misses the short cutover.\nCreate an RDS read replica directly from the on-premises host with no migration task. — Incorrect. An RDS read replica is created from an RDS source, not by pointing RDS at an on-premises server with no migration task.\nCopy the MySQL files onto an EC2 instance store and treat that disk as the new system of record. — Incorrect. Instance store is ephemeral and is not a managed RDS database.",
+    "explanation": "Use AWS DMS to replicate from the MySQL source to RDS for MySQL and cut over after the target has caught up. — Correct. A full-load plus CDC task migrates existing data and then applies source changes. DMS can do this between the same engine when one endpoint is in AWS. CDC is not real-time: latency can be several minutes or longer, so the cutover waits after the target has caught up.\nStop the application for the whole copy and change the engine to PostgreSQL during that outage. — Incorrect. An engine change during a long outage is a different migration and misses the short cutover.\nCreate an RDS read replica directly from the on-premises host with no migration task. — Incorrect. An RDS read replica is created from an RDS source, not by pointing RDS at an on-premises server with no migration task.\nCopy the MySQL files onto an EC2 instance store and treat that disk as the new system of record. — Incorrect. Instance store is ephemeral and is not a managed RDS database.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -49779,7 +49779,8 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html"
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html"
     ],
     "format": "single",
     "services": [
