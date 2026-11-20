@@ -28,9 +28,9 @@ Official guide is authority. Piper/Clinton *Study Guide* 4e chapter order is a *
 
 | Ch | Title | Focus | Objectives | Practice IDs | Lab / drills |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Intro to Cloud + AWS | Global infra, shared responsibility, account foundations | 1.1, 4.2 | `q-saa-chapter-01`, `02` | drill `aws-saa-service-compare` |
-| 2 | EC2 + EBS | Families, placement, block storage, launch templates, ASG basics | 3.2, 2.2, 4.2 | `03`, `04` | lab `aws-saa-alb-autoscaling`; drills performance/cost cues |
-| 3 | VPC | Subnets, routing, NAT, SG/NACL, endpoints, hybrid | 1.2, 3.4, 4.4 | `05`, `06` | lab `aws-saa-vpc-public-private` |
+| 1 | Intro to Cloud + AWS | Global infra, shared responsibility, account foundations | 1.1, 4.2 | `q-saa-chapter-01`, `02`, `27`, `28` | drill `aws-saa-service-compare` |
+| 2 | EC2 + EBS | Families, placement, block storage, launch templates, ASG basics | 3.2, 2.2, 4.2 | `03`, `04`, `29`, `30` | lab `aws-saa-alb-autoscaling`; drills performance/cost cues |
+| 3 | VPC | Subnets, routing, NAT, SG/NACL, endpoints, hybrid | 1.2, 3.4, 4.4 | `05`, `06`, `31`, `32` | lab `aws-saa-vpc-public-private` |
 
 **Exit check:** root/MFA/IAM Identity Center baseline; multi-AZ + ELB; private subnet + NAT; S3 gateway endpoint vs NAT cost.
 
@@ -102,7 +102,7 @@ Avoid treating Domain 3’s higher raw question count as “done.”
 
 | Asset | Location / IDs |
 | --- | --- |
-| Chapter practice (26) | `q-saa-chapter-01` … `26` · answer key `docs/saa-chapter-practice-answer-key.md` |
+| Chapter practice (32) | `q-saa-chapter-01` … `26` plus Phase A `27`…`32` · answer key `docs/saa-chapter-practice-answer-key.md` |
 | Guide-topic augment | `q-saa-guide-*` · `content/saa-practice-set.json` → `guideAugmentIds` |
 | Broader practice set | `q-saa-practice-*` + labeled set `saa-c03-practice-round` |
 | Cost / bank gap batches | `q-saa-costbatch-*`, `q-saa-bank-*`, `q-saa-gap-*` |

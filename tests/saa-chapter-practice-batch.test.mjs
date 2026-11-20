@@ -11,14 +11,18 @@ const batch = questions.filter((q) => q.id.startsWith('q-saa-chapter-'));
 const exam = objectives.exams.find((e) => e.code === 'saa-c03');
 const known = new Set(exam.domains.flatMap((d) => d.objectives.map((o) => o.id)));
 
-test('chapter-mapped practice batch has 26 items covering all textbook chapters', () => {
-  assert.equal(batch.length, 26);
-  assert.equal(practice.chapterPracticeIds.length, 26);
+test('chapter-mapped practice batch covers all textbook chapters with linked items', () => {
+  assert.ok(batch.length >= 26);
+  assert.equal(practice.chapterPracticeIds.length, batch.length);
   assert.deepEqual(practice.chapterPracticeIds, batch.map((q) => q.id));
   const chapters = new Set(batch.map((q) => q.chapterId));
   assert.equal(chapters.size, 13);
   for (const chapter of map.chapters) {
-    assert.equal(chapter.practiceQuestionIds.length, 2, chapter.id);
+    assert.ok(chapter.practiceQuestionIds.length >= 2, chapter.id);
+    // Phase A foundations (ch01–ch03) carry expanded practice sets.
+    if (['ch01', 'ch02', 'ch03'].includes(chapter.id)) {
+      assert.ok(chapter.practiceQuestionIds.length >= 4, chapter.id);
+    }
     for (const id of chapter.practiceQuestionIds) {
       const q = batch.find((item) => item.id === id);
       assert.ok(q, id);

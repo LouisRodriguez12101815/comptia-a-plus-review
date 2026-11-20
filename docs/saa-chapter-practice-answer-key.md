@@ -441,3 +441,106 @@ Release unused Elastic IPs and delete idle load balancers after confirmation the
 Allocate more unused Elastic IPs for unknown future projects immediately — Incorrect. Creating more unused resources increases waste.
 Attach idle Elastic IPs to random stopped instances without need — Incorrect. Random attachments are not intentional design.
 
+# Phase A expanded set (q-saa-chapter-27..32)
+
+## q-saa-chapter-27 (ch01 · objective 1.1)
+
+**Prompt:** A growing company wants one workforce identity plane across many AWS accounts, with temporary credentials and centralized permission assignment. Which baseline fits best?
+
+- A. Create unique long-term IAM user access keys in every account and email them to staff
+- B. Share a single IAM user password across accounts for simplicity
+- C. Use AWS IAM Identity Center (successor to AWS SSO) with permission sets mapped to accounts and groups **← correct**
+- D. Disable MFA organization-wide to reduce login friction
+
+**Explanation:**
+
+Create unique long-term IAM user access keys in every account and email them to staff — Incorrect. Long-term keys per account do not scale and are hard to rotate and audit.
+Share a single IAM user password across accounts for simplicity — Incorrect. Shared passwords violate least privilege and accountability.
+Use AWS IAM Identity Center (successor to AWS SSO) with permission sets mapped to accounts and groups — Correct. Identity Center centralizes workforce access with temporary sessions via permission sets.
+Disable MFA organization-wide to reduce login friction — Incorrect. MFA strengthens access control and should not be disabled for convenience.
+
+
+## q-saa-chapter-28 (ch01 · objective 4.2)
+
+**Prompt:** Finance needs ongoing visibility into which teams drive EC2 spend after launch, not only a pre-build estimate. Which combination best supports chargeback conversations?
+
+- A. Skip resource tags and wait for the monthly consolidated invoice alone
+- B. Apply a consistent cost allocation tagging standard, activate cost allocation tags, and analyze spend in Cost Explorer **← correct**
+- C. Delete CloudWatch metrics to lower the bill before reviewing cost drivers
+- D. Turn off AWS Budgets so alerts never interrupt engineering
+
+**Explanation:**
+
+Skip resource tags and wait for the monthly consolidated invoice alone — Incorrect. Untagged resources block team-level chargeback and trend analysis.
+Apply a consistent cost allocation tagging standard, activate cost allocation tags, and analyze spend in Cost Explorer — Correct. Tags plus Cost Explorer support measured, ongoing cost attribution after launch.
+Delete CloudWatch metrics to lower the bill before reviewing cost drivers — Incorrect. Removing metrics harms operations and does not create team cost visibility.
+Turn off AWS Budgets so alerts never interrupt engineering — Incorrect. Budgets and alerts help catch overruns early rather than hiding them.
+
+
+## q-saa-chapter-29 (ch02 · objective 3.2)
+
+**Prompt:** A new EC2 application needs durable block storage with predictable baseline SSD performance and the ability to tune throughput independently of size. The workload is not a latency-sensitive database that needs extreme IOPS. Which EBS choice fits?
+
+- A. Instance store only, with no EBS volume, for the only copy of application data
+- B. Magnetic cold HDD as the boot and data volume for a latency-sensitive API
+- C. A single local USB drive attached to one laptop as the shared data plane
+- D. General Purpose SSD (gp3) volumes sized for capacity, with IOPS/throughput set to the measured need **← correct**
+
+**Explanation:**
+
+Instance store only, with no EBS volume, for the only copy of application data — Incorrect. Instance store is ephemeral and tied to the host lifetime.
+Magnetic cold HDD as the boot and data volume for a latency-sensitive API — Incorrect. Cold HDD is for infrequent throughput-oriented workloads, not general low-latency APIs.
+A single local USB drive attached to one laptop as the shared data plane — Incorrect. Local laptop storage is not durable cloud block storage.
+General Purpose SSD (gp3) volumes sized for capacity, with IOPS/throughput set to the measured need — Correct. gp3 provides durable SSD performance with independently configurable IOPS and throughput for many general workloads.
+
+
+## q-saa-chapter-30 (ch02 · objective 4.2)
+
+**Prompt:** A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers. Which approach fits?
+
+- A. Purchase Dedicated Hosts for every burst worker regardless of utilization
+- B. Disable Auto Scaling and run one oversized On-Demand instance continuously
+- C. Use EC2 Spot capacity for the interruption-tolerant workers, with On-Demand or diversified capacity as a fallback path **← correct**
+- D. Bake root user access keys into the AMI so workers start faster
+
+**Explanation:**
+
+Purchase Dedicated Hosts for every burst worker regardless of utilization — Incorrect. Dedicated Hosts target compliance/licensing isolation, not generic burst savings.
+Disable Auto Scaling and run one oversized On-Demand instance continuously — Incorrect. A single always-on instance wastes money and removes elasticity.
+Use EC2 Spot capacity for the interruption-tolerant workers, with On-Demand or diversified capacity as a fallback path — Correct. Spot can discount spare capacity for fault-tolerant fleets when interruption handling exists.
+Bake root user access keys into the AMI so workers start faster — Incorrect. Root keys must not be embedded; this is a security failure, not a cost design.
+
+
+## q-saa-chapter-31 (ch03 · objective 1.2)
+
+**Prompt:** Web instances must accept HTTPS only from an Application Load Balancer security group, not from the public internet. Which control is the standard least-privilege pattern?
+
+- A. Open instance security group TCP 443 to 0.0.0.0/0 and rely on obscurity
+- B. Allow inbound TCP 443 on the instance security group only from the ALB security group **← correct**
+- C. Disable all security groups and use only a wide-open network ACL allow-all rule
+- D. Publish each instance with a public Elastic IP and no load balancer
+
+**Explanation:**
+
+Open instance security group TCP 443 to 0.0.0.0/0 and rely on obscurity — Incorrect. Public 443 on instances bypasses the ALB as the controlled entry point.
+Allow inbound TCP 443 on the instance security group only from the ALB security group — Correct. Referencing the ALB security group limits app-tier ingress to the load balancer path.
+Disable all security groups and use only a wide-open network ACL allow-all rule — Incorrect. NACLs are stateless subnet guards; they do not replace instance-level least privilege.
+Publish each instance with a public Elastic IP and no load balancer — Incorrect. Public instance EIPs expand attack surface and drop centralized TLS entry.
+
+
+## q-saa-chapter-32 (ch03 · objective 3.4)
+
+**Prompt:** A three-tier application needs separate public ingress and private application subnets and must survive an Availability Zone impairment. Which VPC layout meets the requirement?
+
+- A. One public subnet in a single AZ holding every tier, including databases
+- B. Private subnets only, with no path for a load balancer or controlled ingress
+- C. Public and private subnets in at least two AZs, with the load balancer spanning the public subnets and app tiers in private subnets **← correct**
+- D. A single private subnet in one AZ with an internet gateway attached directly to every private instance
+
+**Explanation:**
+
+One public subnet in a single AZ holding every tier, including databases — Incorrect. One AZ is a single point of failure and co-locating data tiers publicly is poor isolation.
+Private subnets only, with no path for a load balancer or controlled ingress — Incorrect. Public-facing apps still need a designed ingress path such as public subnets for the load balancer.
+Public and private subnets in at least two AZs, with the load balancer spanning the public subnets and app tiers in private subnets — Correct. Multi-AZ public/private tiering is the standard HA VPC pattern.
+A single private subnet in one AZ with an internet gateway attached directly to every private instance — Incorrect. IGW routes on private-only hosts and single-AZ design break isolation and resilience.
+
