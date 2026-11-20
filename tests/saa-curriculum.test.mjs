@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolveSaaLesson, saaCurriculumDomains } from '../lib/saa-curriculum.ts';
+import { questionsFileWithoutStudyTags } from '../lib/saa-tags.ts';
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url)));
 const matrix = read('content/objectives.json');
@@ -144,7 +145,9 @@ test('evidence catalog excerpts and existing resource pointers resolve to unchan
   const file = (path) => readFileSync(new URL(`../${path}`, import.meta.url));
   const drillSource = file('lib/practice/drills.ts').toString();
   for (const [id, item] of Object.entries(evidence.evidenceCatalog)) {
-    assert.equal(createHash('sha256').update(file(item.file)).digest('hex'), item.sourceSha256, id);
+    const bytes = file(item.file);
+    const hashed = item.file === 'content/questions.json' ? questionsFileWithoutStudyTags(bytes.toString('utf8')) : bytes;
+    assert.equal(createHash('sha256').update(hashed).digest('hex'), item.sourceSha256, id);
     assert.ok(item.excerpts.length > 0, id);
     let original;
     if (item.kind === 'lesson') {

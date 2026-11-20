@@ -149,3 +149,44 @@ This map uses the provided **Capstone Requirements: Source-Only Evidence Pack**,
 The Capstone Guide says no one has to present; it asks for the notebook link and evidence to be posted in the class Slack channel (CG p.11). I did not post or change sharing permissions. The checklist records that the stated Class 15 post window was Nov. 5, 2026; late acceptance is unknown.
 
 The provided source pack reports no published scoring rubric, points, or passing threshold. It also says ML Class 13 date/format and program-project submission details are not specified. Those remain instructor questions; this package does not claim to satisfy every program deliverable.
+
+## SAA attempt flow (`saa_flow.ipynb`)
+
+This notebook is a separate course flow for synthetic SAA practice attempts. It does not replace `analysis_walkthrough.ipynb`.
+
+### How to run
+
+Open the notebook from the branch in Google Colab and run all cells from the top:
+
+https://colab.research.google.com/github/LouisRodriguez12101815/comptia-a-plus-review/blob/feat/saa-c03-tags-capstone/capstone/saa_flow.ipynb
+
+The first code cell installs only `langgraph==1.2.24` and leaves Colab's pandas in place. It prints the pandas and langgraph versions that ran. The notebook writes `fixtures/saa_attempts.csv` next to itself when that folder exists, or `saa_attempts.csv` in the Colab working directory. No other file from this repository has to be uploaded.
+
+Locally, from a Python 3.13 environment with those packages and a Jupyter kernel:
+
+```bash
+cd capstone
+jupyter nbconvert --to notebook --execute --inplace saa_flow.ipynb
+```
+
+### Expected outputs
+
+Step 7 prints four lines and then `all tests passed`:
+
+- `ok real numbers` — 15 seeded rows, 2 dropped, domain percents D1 50, D2 100, D3 50, D4 75. Domains under 80 are D1, D3, and D4.
+- `ok missing file` — a missing path raises `FileNotFoundError` inside the loader and `analyze_saa` falls back to a one-row mock. The mock is not described as data from the missing file.
+- `ok missing column` — a CSV without `seconds` raises `ValueError`.
+- `ok huge threshold flags nothing` — this flow flags a domain only when its percent is strictly below the cutoff, so a cutoff of 0 matches nothing.
+
+Step 8 prints:
+
+```text
+waiting at: ('human_review',)
+final decision: approved by reviewer
+```
+
+The graph is `load → clean → analyze → human_review`, with `MemorySaver` and `interrupt_before=["human_review"]`. Resume uses `update_state` with the decision, then a second `invoke`. Saved cell outputs in the notebook are the execution record.
+
+### Limitations
+
+The CSV is synthetic. It is not a learner export. 80% is this site's practice readiness target. It is not an official conversion of the AWS scaled score of 720. The fixed decision in Step 8 is there so the notebook can finish; it is not approval to change the question bank or contact a learner. The flow never writes to the question bank and never sends a message. Two broken rows are dropped, so the domain percents are from the rows that survived cleaning, and a handful of rows is not evidence of skill.

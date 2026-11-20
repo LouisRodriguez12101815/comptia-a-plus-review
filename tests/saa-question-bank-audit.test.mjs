@@ -3,21 +3,18 @@ import { createHash as sha256 } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { SAA_TAG_FIELDS, withoutSaaTagFields } from "../lib/saa-tags.ts";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 const questions = read("content/questions.json");
 const audit = read("docs/saa-c03-question-bank-audit.json");
 const saa = questions.filter((question) => question.examCodes?.includes("saa-c03"));
 const newQuestions = saa.filter((question) => question.id.startsWith("q-saa-bank-") || question.id.startsWith("q-saa-costbatch-"));
-const auditedIds = new Set(audit.questionMappings.map((row) => row.questionId));
-const auditedSaa = saa.filter((question) => auditedIds.has(question.id));
 
 test("SAA audit maps each existing and new question to one current task and skill", () => {
-  // Mappings freeze the audited inventory; later practice/guide rounds may add unmapped live items.
-  assert.equal(audit.questionMappings.length, auditedSaa.length);
-  assert.equal(new Set(audit.questionMappings.map((row) => row.questionId)).size, auditedSaa.length);
-  assert.ok(saa.length >= auditedSaa.length);
-  for (const question of auditedSaa) {
+  assert.equal(audit.questionMappings.length, saa.length);
+  assert.equal(new Set(audit.questionMappings.map((row) => row.questionId)).size, saa.length);
+  for (const question of saa) {
     const mapping = audit.questionMappings.find((row) => row.questionId === question.id);
     assert.ok(mapping, question.id);
     assert.ok(question.objectiveIds["saa-c03"].includes(mapping.taskId), question.id);
@@ -114,17 +111,33 @@ test("SAA inventory stages are counted from the specified base and both explicit
   assert.ok(costStage.addedIds.every((id) => id.startsWith("q-saa-costbatch-")));
   assert.deepEqual(bankStage.byDomain, { "1.0": 41, "2.0": 31, "3.0": 66, "4.0": 27 });
   assert.deepEqual(costStage.byDomain, { "1.0": 41, "2.0": 31, "3.0": 66, "4.0": 35 });
-  // costStage freezes inventory after the cost batch. Later practice/guide rounds may grow the live bank.
-  const costOnly = questions.filter((question) => {
-    const id = question.id ?? "";
-    return question.examCodes?.includes("saa-c03") && !id.startsWith("q-saa-practice-") && !id.startsWith("q-saa-guide-") && !id.startsWith("q-saa-chapter-");
-  });
-  assert.deepEqual(costStage, { ...costStage, ...count(costOnly) });
-  const live = count(questions);
-  assert.ok(live.saaQuestionCount >= costStage.saaQuestionCount, live.saaQuestionCount);
-  assert.equal(live.uniqueIdCount, live.saaQuestionCount);
+  const later = [
+    ["after-practice-guide-batch", "2b10f65dd88c043f7bfd1f840128c71f2249034f", 282, 109],
+    ["after-chapter-batch", "6755293c5e86860340b2f44a0a2b8c978b9991b1", 308, 26],
+    ["after-chapter-phase-a", "fe7179d4f2cf25aef02782a06785d2a906017d91", 314, 6],
+  ];
+  for (const [stageName, commit, expectedCount, addedCount] of later) {
+    const stage = audit.countStages.find((item) => item.stage === stageName);
+    assert.ok(stage, stageName);
+    assert.equal(stage.commit, commit, stageName);
+    assert.equal(stage.saaQuestionCount, expectedCount, stageName);
+    assert.equal(stage.addedIds.length, addedCount, stageName);
+    const snapshot = JSON.parse(execFileSync("git", ["show", `${commit}:content/questions.json`], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 }));
+    assert.deepEqual(count(snapshot), { saaQuestionCount: stage.saaQuestionCount, uniqueIdCount: stage.uniqueIdCount, byDomain: stage.byDomain, byTask: stage.byTask });
+    assert.deepEqual(stage.formats, countFormats(snapshot));
+  }
+  const liveStage = audit.countStages.at(-1);
+  assert.deepEqual(count(questions), { saaQuestionCount: 314, uniqueIdCount: 314, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
   assert.equal(audit.baseline.commit, baseCommit);
 });
+
+function countFormats(records) {
+  const selected = records.filter((question) => question.examCodes?.includes("saa-c03"));
+  return {
+    singleAnswer: selected.filter((question) => !Array.isArray(question.answer)).length,
+    multipleResponse: selected.filter((question) => Array.isArray(question.answer)).length,
+  };
+}
 
 test("new and corrected question source checks include every option and retain the unresolved scope issue", () => {
   const verifications = [
@@ -152,6 +165,20 @@ test("new and corrected question source checks include every option and retain t
 });
 
 test("pre-existing SAA questions are unchanged from the audit baseline", () => {
+  const tagStage = audit.hashStages.find((stage) => stage.id === "exclude-study-tags");
+  assert.ok(tagStage, "missing exclude-study-tags hash stage");
+  assert.deepEqual(tagStage.excludedFields, [...SAA_TAG_FIELDS]);
+  assert.equal(tagStage.rewritesBaseline, false);
+  const liveHashStage = audit.hashStages.find((stage) => stage.id === "live-314-exclude-study-tags");
+  assert.equal(liveHashStage.questionCount, 314);
+  assert.equal(liveHashStage.rewritesBaseline, false);
+  assert.deepEqual(liveHashStage.excludedFields, [...SAA_TAG_FIELDS]);
+  assert.equal(liveHashStage.questions.length, saa.length);
+  const liveHashes = new Map(liveHashStage.questions.map((row) => [row.id, row.sha256]));
+  for (const question of saa) {
+    const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(question))).digest("hex");
+    assert.equal(digest, liveHashes.get(question.id), `${question.id}: live preservation hash`);
+  }
   const currentById = new Map(saa.map((question) => [question.id, question]));
   assert.equal(audit.preservationBaseline.questionCount, 149);
   assert.equal(audit.preservationBaseline.questions.length, 149);
@@ -159,7 +186,7 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   for (const baseline of audit.preservationBaseline.questions) {
     const current = currentById.get(baseline.id);
     assert.ok(current, `missing existing question ${baseline.id}`);
-    const digest = sha256("sha256").update(JSON.stringify(current)).digest("hex");
+    const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(current))).digest("hex");
     const correction = corrections.get(baseline.id);
     if (correction) {
       assert.equal(correction.beforeSha256, baseline.sha256, `${baseline.id}: correction does not cite baseline`);
