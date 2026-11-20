@@ -46586,5 +46586,1436 @@
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
     ]
+  },
+  {
+    "id": "q-saa-guide-01",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "Production account baseline for the root user?",
+    "choices": [
+      "Enable root MFA, lock root credentials, use Identity Center/roles daily",
+      "Share root password in chat",
+      "Put root access keys in CI",
+      "Disable CloudTrail for root"
+    ],
+    "answer": 0,
+    "explanation": "Enable root MFA, lock root credentials, use Identity Center/roles daily — Correct. Root is break-glass; MFA and roles are baseline.\nShare root password in chat — Incorrect. Never share root.\nPut root access keys in CI — Incorrect. Avoid root keys.\nDisable CloudTrail for root — Incorrect. Keep CloudTrail on.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+      "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+    ],
+    "studyGuideChapter": "ch1"
+  },
+  {
+    "id": "q-saa-guide-02",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "EC2 calling DynamoDB without static keys?",
+    "choices": [
+      "Access keys in the AMI",
+      "Instance profile IAM role with least privilege",
+      "Root keys on disk",
+      "Public table no auth"
+    ],
+    "answer": 1,
+    "explanation": "Access keys in the AMI — Incorrect. AMI keys leak.\nInstance profile IAM role with least privilege — Correct. Instance roles mint temporary creds.\nRoot keys on disk — Incorrect. No root keys for apps.\nPublic table no auth — Incorrect. Public tables are unsafe.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.html"
+    ],
+    "studyGuideChapter": "ch5"
+  },
+  {
+    "id": "q-saa-guide-03",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "Org-wide deny leave-org / disable security services except break-glass?",
+    "choices": [
+      "One security group",
+      "S3 Object Lock randomly",
+      "AWS Organizations SCPs",
+      "Close billing console"
+    ],
+    "answer": 2,
+    "explanation": "One security group — Incorrect. SGs are network only.\nS3 Object Lock randomly — Incorrect. Object Lock is retention.\nAWS Organizations SCPs — Correct. SCPs guardrail member accounts.\nClose billing console — Incorrect. Billing UI is unrelated.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
+    ],
+    "studyGuideChapter": "ch1"
+  },
+  {
+    "id": "q-saa-guide-04",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "Mobile end-user identity + temporary AWS creds?",
+    "choices": [
+      "IAM user per phone with long-lived keys",
+      "Root login in the app",
+      "Public S3 for all user data",
+      "Amazon Cognito"
+    ],
+    "answer": 3,
+    "explanation": "IAM user per phone with long-lived keys — Incorrect. IAM users do not scale to consumers.\nRoot login in the app — Incorrect. Root is not app identity.\nPublic S3 for all user data — Incorrect. Public data exposes users.\nAmazon Cognito — Correct. Cognito is for app users and temp creds.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html"
+    ],
+    "studyGuideChapter": "ch5"
+  },
+  {
+    "id": "q-saa-guide-05",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "Private subnet outbound patches, no inbound internet?",
+    "choices": [
+      "NAT gateway + private route to NAT",
+      "IGW default route on private-only hosts",
+      "Public IPs + SSH 0.0.0.0/0",
+      "Deny all egress forever"
+    ],
+    "answer": 0,
+    "explanation": "NAT gateway + private route to NAT — Correct. NAT is the standard private outbound pattern.\nIGW default route on private-only hosts — Incorrect. Private hosts should not use IGW default.\nPublic IPs + SSH 0.0.0.0/0 — Incorrect. Public SSH defeats private tier.\nDeny all egress forever — Incorrect. No egress blocks patching.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-06",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "S3 access from VPC without public internet?",
+    "choices": [
+      "Public website bucket",
+      "S3 gateway VPC endpoint (or interface where needed)",
+      "Disable bucket policies",
+      "SG open all ports to world"
+    ],
+    "answer": 1,
+    "explanation": "Public website bucket — Incorrect. Public websites expose objects.\nS3 gateway VPC endpoint (or interface where needed) — Correct. Endpoints keep S3 traffic private on AWS network.\nDisable bucket policies — Incorrect. Policies are access control.\nSG open all ports to world — Incorrect. Open SGs are not private access.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-07",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "Capture accepted/rejected VPC traffic metadata?",
+    "choices": [
+      "WAF only",
+      "S3 Inventory only",
+      "VPC Flow Logs",
+      "Budgets"
+    ],
+    "answer": 2,
+    "explanation": "WAF only — Incorrect. WAF is L7 web.\nS3 Inventory only — Incorrect. Inventory lists objects.\nVPC Flow Logs — Correct. Flow Logs record ENI traffic metadata.\nBudgets — Incorrect. Budgets are cost.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-08",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "Private partner access to your VPC service without peering?",
+    "choices": [
+      "Public NLB no auth",
+      "Email CSVs only",
+      "RDP 0.0.0.0/0",
+      "AWS PrivateLink (interface endpoint)"
+    ],
+    "answer": 3,
+    "explanation": "Public NLB no auth — Incorrect. Public NLB increases attack surface.\nEmail CSVs only — Incorrect. Email is not private API.\nRDP 0.0.0.0/0 — Incorrect. Open RDP is unsafe.\nAWS PrivateLink (interface endpoint) — Correct. PrivateLink is purpose-built private service exposure.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-09",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "Restrict instance ENI ingress to on-prem CIDRs?",
+    "choices": [
+      "Security group allow rules for those CIDRs/SGs",
+      "Disable all SGs and NACLs",
+      "Public IP with world SSH",
+      "WAF on non-HTTP internal NLB"
+    ],
+    "answer": 0,
+    "explanation": "Security group allow rules for those CIDRs/SGs — Correct. SGs are stateful ENI allow lists.\nDisable all SGs and NACLs — Incorrect. You need controls, not none.\nPublic IP with world SSH — Incorrect. World SSH is unsafe.\nWAF on non-HTTP internal NLB — Incorrect. WAF is for supported web entry points.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-10",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "Rotate DB secrets; keep out of git?",
+    "choices": [
+      "Passwords in git",
+      "Secrets Manager or SSM SecureString + IAM",
+      "Passwords in public docs",
+      "Hard-coded in AMIs"
+    ],
+    "answer": 1,
+    "explanation": "Passwords in git — Incorrect. Git leaks secrets.\nSecrets Manager or SSM SecureString + IAM — Correct. Managed secret stores support rotation/retrieval patterns.\nPasswords in public docs — Incorrect. Public docs must not hold passwords.\nHard-coded in AMIs — Incorrect. AMI hard-coding freezes secrets.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+      "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    ],
+    "studyGuideChapter": "ch5"
+  },
+  {
+    "id": "q-saa-guide-11",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "Encrypt all new EBS volumes by default in a Region?",
+    "choices": [
+      "Security group rules",
+      "Route 53 health checks",
+      "EBS encryption by default + KMS policy",
+      "CloudFront price class"
+    ],
+    "answer": 2,
+    "explanation": "Security group rules — Incorrect. SGs do not encrypt disks.\nRoute 53 health checks — Incorrect. Health checks are availability probes.\nEBS encryption by default + KMS policy — Correct. Default encryption is a Regional EBS setting.\nCloudFront price class — Incorrect. Price class is CDN geography.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html",
+      "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-12",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "Managed public TLS on ALB with renewal?",
+    "choices": [
+      "Weekly self-signed via FTP",
+      "Disable HTTPS",
+      "Private keys in public S3",
+      "ACM public certificate on the ALB"
+    ],
+    "answer": 3,
+    "explanation": "Weekly self-signed via FTP — Incorrect. Self-signed ops are brittle.\nDisable HTTPS — Incorrect. HTTPS is required.\nPrivate keys in public S3 — Incorrect. Public private keys fail security.\nACM public certificate on the ALB — Correct. ACM integrates with ALB and renews eligible certs.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+    ],
+    "studyGuideChapter": "ch8"
+  },
+  {
+    "id": "q-saa-guide-13",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "Threat detection on CloudTrail/DNS/VPC flows?",
+    "choices": [
+      "Amazon GuardDuty",
+      "Amazon SQS",
+      "AWS Artifact alone",
+      "Macie only for VPC flows"
+    ],
+    "answer": 0,
+    "explanation": "Amazon GuardDuty — Correct. GuardDuty analyzes those telemetry sources.\nAmazon SQS — Incorrect. SQS is messaging.\nAWS Artifact alone — Incorrect. Artifact is compliance reports.\nMacie only for VPC flows — Incorrect. Macie is S3 sensitive-data discovery.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html",
+      "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    ],
+    "studyGuideChapter": "ch12"
+  },
+  {
+    "id": "q-saa-guide-14",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "Web tier survives AZ failure with replacement?",
+    "choices": [
+      "One terminated-protected instance",
+      "Multi-AZ ASG behind ELB",
+      "Yearly manual AMI copy only",
+      "Disable ELB health checks"
+    ],
+    "answer": 1,
+    "explanation": "One terminated-protected instance — Incorrect. Single instance is SPOF.\nMulti-AZ ASG behind ELB — Correct. Multi-AZ ASG+ELB is standard HA.\nYearly manual AMI copy only — Incorrect. Yearly copy is not auto HA.\nDisable ELB health checks — Incorrect. Health checks drive replacement.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    ],
+    "studyGuideChapter": "ch10"
+  },
+  {
+    "id": "q-saa-guide-15",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "RDS synchronous in-Region standby failover?",
+    "choices": [
+      "Cross-Region replica only",
+      "Single-AZ no backups",
+      "RDS Multi-AZ",
+      "DynamoDB global tables as SQL drop-in"
+    ],
+    "answer": 2,
+    "explanation": "Cross-Region replica only — Incorrect. CRR-style replicas are async DR.\nSingle-AZ no backups — Incorrect. No backups + single AZ is fragile.\nRDS Multi-AZ — Correct. Multi-AZ synchronous standby.\nDynamoDB global tables as SQL drop-in — Incorrect. Global tables are DynamoDB not arbitrary SQL.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "studyGuideChapter": "ch4"
+  },
+  {
+    "id": "q-saa-guide-16",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "DNS active-passive on health failure?",
+    "choices": [
+      "Simple routing no health check",
+      "Weighted equal no health",
+      "Geoproximity only no health",
+      "Route 53 failover routing"
+    ],
+    "answer": 3,
+    "explanation": "Simple routing no health check — Incorrect. Simple does not fail over.\nWeighted equal no health — Incorrect. Weighted without health still hits bad targets.\nGeoproximity only no health — Incorrect. Geoproximity alone is not failover.\nRoute 53 failover routing — Correct. Failover routing is active-passive with checks.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    ],
+    "studyGuideChapter": "ch7"
+  },
+  {
+    "id": "q-saa-guide-17",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "Auto cross-Region S3 object copies?",
+    "choices": [
+      "S3 CRR",
+      "Lifecycle expiration only",
+      "Delete versioning",
+      "CloudFront without origin DR copy"
+    ],
+    "answer": 0,
+    "explanation": "S3 CRR — Correct. CRR replicates across Regions.\nLifecycle expiration only — Incorrect. Expiration deletes.\nDelete versioning — Incorrect. Versioning helps recovery.\nCloudFront without origin DR copy — Incorrect. CDN is not DR origin of record.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "studyGuideChapter": "ch6"
+  },
+  {
+    "id": "q-saa-guide-18",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "Repeatable ASG launch images?",
+    "choices": [
+      "Random community AMIs",
+      "Versioned controlled AMIs",
+      "Manual OS install each time",
+      "Browser-cached OS disks"
+    ],
+    "answer": 1,
+    "explanation": "Random community AMIs — Incorrect. Unknown AMIs risk drift/security.\nVersioned controlled AMIs — Correct. Controlled AMIs are repeatable.\nManual OS install each time — Incorrect. Manual installs do not scale.\nBrowser-cached OS disks — Incorrect. Browser cache is not imaging.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-19",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Absorb slow fulfillment while API stays up?",
+    "choices": [
+      "Tight sync coupling no queue",
+      "Jobs only in instance RAM",
+      "Amazon SQS between tiers",
+      "Public S3 listing as queue"
+    ],
+    "answer": 2,
+    "explanation": "Tight sync coupling no queue — Incorrect. Tight coupling propagates failure.\nJobs only in instance RAM — Incorrect. RAM queues die with host.\nAmazon SQS between tiers — Correct. SQS decouples and buffers.\nPublic S3 listing as queue — Incorrect. Public listing is not a queue.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+      "https://docs.aws.amazon.com/sns/latest/dg/welcome.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-20",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Fan-out event to Lambda/SQS/HTTPS?",
+    "choices": [
+      "AWS WAF",
+      "Amazon EFS",
+      "AWS Budgets",
+      "Amazon SNS"
+    ],
+    "answer": 3,
+    "explanation": "AWS WAF — Incorrect. WAF filters web.\nAmazon EFS — Incorrect. EFS is files.\nAWS Budgets — Incorrect. Budgets is cost.\nAmazon SNS — Correct. SNS fans out to subscribers.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+      "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-21",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Externalize web session state for ASG?",
+    "choices": [
+      "ElastiCache or DynamoDB",
+      "Only /tmp local",
+      "SG tags",
+      "CloudTrail digests"
+    ],
+    "answer": 0,
+    "explanation": "ElastiCache or DynamoDB — Correct. External stores survive replace.\nOnly /tmp local — Incorrect. /tmp dies with instance.\nSG tags — Incorrect. SG tags are not sessions.\nCloudTrail digests — Incorrect. CloudTrail is audit.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.html"
+    ],
+    "studyGuideChapter": "ch10"
+  },
+  {
+    "id": "q-saa-guide-22",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Limit bad-deploy blast radius?",
+    "choices": [
+      "All-at-once health checks off",
+      "Rolling/blue-green with health checks",
+      "Single AZ only",
+      "Always mute alarms"
+    ],
+    "answer": 1,
+    "explanation": "All-at-once health checks off — Incorrect. Big bang risks total outage.\nRolling/blue-green with health checks — Correct. Incremental deploys limit blast radius.\nSingle AZ only — Incorrect. Single AZ ignores multi-AZ.\nAlways mute alarms — Incorrect. Alarms detect bad releases.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    ],
+    "studyGuideChapter": "ch10"
+  },
+  {
+    "id": "q-saa-guide-23",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Stateful multi-step workflow with retries?",
+    "choices": [
+      "One SSH script no state",
+      "Spreadsheet only",
+      "AWS Step Functions",
+      "Disable all DLQs"
+    ],
+    "answer": 2,
+    "explanation": "One SSH script no state — Incorrect. Scripts lack durable state.\nSpreadsheet only — Incorrect. Spreadsheets are not runtime.\nAWS Step Functions — Correct. Step Functions orchestrates state/retries.\nDisable all DLQs — Incorrect. DLQs surface poison messages.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+      "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-24",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Content-filtered event routing to many targets?",
+    "choices": [
+      "EBS snapshots only",
+      "WAF IP sets only",
+      "S3 static hosting only",
+      "Amazon EventBridge"
+    ],
+    "answer": 3,
+    "explanation": "EBS snapshots only — Incorrect. Snapshots are backups.\nWAF IP sets only — Incorrect. WAF IP sets are web controls.\nS3 static hosting only — Incorrect. Static hosting is not an event bus.\nAmazon EventBridge — Correct. EventBridge routes with rules/filters.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html",
+      "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-25",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "Global static content low latency?",
+    "choices": [
+      "S3 + CloudFront",
+      "One t3.nano instance store origin",
+      "Desktop FTP",
+      "Public RDS for files"
+    ],
+    "answer": 0,
+    "explanation": "S3 + CloudFront — Correct. S3+CloudFront is standard.\nOne t3.nano instance store origin — Incorrect. Tiny single origin does not scale globally.\nDesktop FTP — Incorrect. FTP is not CDN.\nPublic RDS for files — Incorrect. RDS is not object CDN.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+    ],
+    "studyGuideChapter": "ch8"
+  },
+  {
+    "id": "q-saa-guide-26",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "Shared Linux NFS for many EC2 clients?",
+    "choices": [
+      "Single EBS multi-client hack without HA",
+      "Amazon EFS",
+      "Instance store only",
+      "SQS as filesystem"
+    ],
+    "answer": 1,
+    "explanation": "Single EBS multi-client hack without HA — Incorrect. Single EBS is not multi-client HA NFS.\nAmazon EFS — Correct. EFS is managed NFS.\nInstance store only — Incorrect. Instance store is ephemeral.\nSQS as filesystem — Incorrect. SQS is a queue.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-27",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "On-prem file share backed by S3?",
+    "choices": [
+      "Amazon MQ only",
+      "AWS WAF",
+      "Storage Gateway file gateway",
+      "Inspector only"
+    ],
+    "answer": 2,
+    "explanation": "Amazon MQ only — Incorrect. MQ is messaging.\nAWS WAF — Incorrect. WAF is web ACL.\nStorage Gateway file gateway — Correct. File gateway presents NFS/SMB to S3.\nInspector only — Incorrect. Inspector is vuln assessment.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "studyGuideChapter": "ch6"
+  },
+  {
+    "id": "q-saa-guide-28",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "S3 hot prefix request bottleneck fix?",
+    "choices": [
+      "One tiny prefix forever",
+      "Disable GETs",
+      "HTTP only no TLS",
+      "High-cardinality key prefixes"
+    ],
+    "answer": 3,
+    "explanation": "One tiny prefix forever — Incorrect. Hot prefix concentrates load.\nDisable GETs — Incorrect. No GETs breaks app.\nHTTP only no TLS — Incorrect. No TLS does not fix partitions.\nHigh-cardinality key prefixes — Correct. Key spread avoids hot partitions.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "studyGuideChapter": "ch6"
+  },
+  {
+    "id": "q-saa-guide-29",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "L7 path-based HTTP + WAF?",
+    "choices": [
+      "Application Load Balancer",
+      "NLB for path rules",
+      "CLB only modern choice",
+      "DataSync"
+    ],
+    "answer": 0,
+    "explanation": "Application Load Balancer — Correct. ALB is L7 path/host + WAF.\nNLB for path rules — Incorrect. NLB is L4.\nCLB only modern choice — Incorrect. CLB is legacy.\nDataSync — Incorrect. DataSync moves data.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html",
+      "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-30",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "Spiky tasks, pay near zero when idle?",
+    "choices": [
+      "Peak EC2 24/7 no ASG",
+      "AWS Lambda",
+      "One bare metal always on",
+      "Browsers as backend"
+    ],
+    "answer": 1,
+    "explanation": "Peak EC2 24/7 no ASG — Incorrect. Static peak wastes money.\nAWS Lambda — Correct. Lambda scales toward zero.\nOne bare metal always on — Incorrect. Bare metal costly for spikes.\nBrowsers as backend — Incorrect. Browsers are not backends.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+      "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-31",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "ASG launch parameter versioning?",
+    "choices": [
+      "Unique hand-edited user data each host",
+      "AMI only no launch params",
+      "Launch templates",
+      "SG description as code"
+    ],
+    "answer": 2,
+    "explanation": "Unique hand-edited user data each host — Incorrect. Hand edits drift.\nAMI only no launch params — Incorrect. AMI alone omits launch params.\nLaunch templates — Correct. Launch templates version launch settings.\nSG description as code — Incorrect. SG descriptions are not launch specs.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-32",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "Extra private IPs / appliance NICs on EC2?",
+    "choices": [
+      "S3 bucket policies",
+      "CloudFront cookies only",
+      "Budgets notifications",
+      "Elastic Network Interfaces"
+    ],
+    "answer": 3,
+    "explanation": "S3 bucket policies — Incorrect. Bucket policies are S3 authZ.\nCloudFront cookies only — Incorrect. CF cookies protect content.\nBudgets notifications — Incorrect. Budgets are cost alerts.\nElastic Network Interfaces — Correct. ENIs add interfaces/IPs.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-33",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "Massive scale key-value single-digit ms?",
+    "choices": [
+      "Amazon DynamoDB",
+      "One RDS micro globally",
+      "CloudWatch Logs as DB",
+      "Laptop CSV"
+    ],
+    "answer": 0,
+    "explanation": "Amazon DynamoDB — Correct. DynamoDB is built for this pattern.\nOne RDS micro globally — Incorrect. Tiny RDS bottlenecks.\nCloudWatch Logs as DB — Incorrect. Logs are not OLTP.\nLaptop CSV — Incorrect. Laptop CSV is not multi-user durable DB.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "studyGuideChapter": "ch4"
+  },
+  {
+    "id": "q-saa-guide-34",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "Offload Aurora reads from writer?",
+    "choices": [
+      "Drop secondary indexes",
+      "Aurora Replicas / reader endpoint",
+      "Disable buffer cache",
+      "Peak ETL on writer"
+    ],
+    "answer": 1,
+    "explanation": "Drop secondary indexes — Incorrect. Dropping indexes hurts reads.\nAurora Replicas / reader endpoint — Correct. Readers offload SELECTs.\nDisable buffer cache — Incorrect. Buffer cache is needed.\nPeak ETL on writer — Incorrect. ETL on writer contends with OLTP.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "studyGuideChapter": "ch4"
+  },
+  {
+    "id": "q-saa-guide-35",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "In-memory cache in front of RDS?",
+    "choices": [
+      "CloudTrail as cache",
+      "VPC IPAM",
+      "Amazon ElastiCache",
+      "AWS Artifact"
+    ],
+    "answer": 2,
+    "explanation": "CloudTrail as cache — Incorrect. CloudTrail is audit.\nVPC IPAM — Incorrect. IPAM is CIDRs.\nAmazon ElastiCache — Correct. ElastiCache is the managed cache.\nAWS Artifact — Incorrect. Artifact is compliance docs.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "studyGuideChapter": "ch4"
+  },
+  {
+    "id": "q-saa-guide-36",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "prompt": "Containers without managing servers?",
+    "choices": [
+      "Unmanaged EC2 no orchestrator",
+      "FTP to one VM",
+      "Chrome extensions as services",
+      "ECS/EKS on Fargate"
+    ],
+    "answer": 3,
+    "explanation": "Unmanaged EC2 no orchestrator — Incorrect. Unmanaged EC2 is all on you.\nFTP to one VM — Incorrect. FTP VM is not orchestration.\nChrome extensions as services — Incorrect. Extensions are not backends.\nECS/EKS on Fargate — Correct. Fargate is serverless containers.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+      "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-37",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "prompt": "Near-real-time stream ingest?",
+    "choices": [
+      "Kinesis Data Streams",
+      "Glacier Deep Archive as hot stream",
+      "Budgets stream mode",
+      "ACM stream"
+    ],
+    "answer": 0,
+    "explanation": "Kinesis Data Streams — Correct. Kinesis is streaming ingest.\nGlacier Deep Archive as hot stream — Incorrect. Glacier is cold archive.\nBudgets stream mode — Incorrect. Budgets is cost.\nACM stream — Incorrect. ACM is certs.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/streams/latest/dev/introduction.html",
+      "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+    ],
+    "studyGuideChapter": "ch9"
+  },
+  {
+    "id": "q-saa-guide-38",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "Anycast multi-Region entry on AWS backbone?",
+    "choices": [
+      "Amazon Macie",
+      "AWS Global Accelerator",
+      "Detective only",
+      "Snowball Edge as CDN"
+    ],
+    "answer": 1,
+    "explanation": "Amazon Macie — Incorrect. Macie is S3 sensitive data.\nAWS Global Accelerator — Correct. GA provides anycast + healthy Regional endpoints.\nDetective only — Incorrect. Detective investigates findings.\nSnowball Edge as CDN — Incorrect. Snowball is offline transfer.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+    ],
+    "studyGuideChapter": "ch8"
+  },
+  {
+    "id": "q-saa-guide-39",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "Managed Windows file system?",
+    "choices": [
+      "SQS",
+      "SNS",
+      "FSx for Windows File Server",
+      "WAF"
+    ],
+    "answer": 2,
+    "explanation": "SQS — Incorrect. SQS messages.\nSNS — Incorrect. SNS pub/sub.\nFSx for Windows File Server — Correct. FSx Windows is managed Windows shares.\nWAF — Incorrect. WAF web ACL.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
+      "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-40",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "Low-latency tightly coupled HPC placement?",
+    "choices": [
+      "Random multi-AZ with no strategy when ultra-low latency required",
+      "Only t2.micro for HPC",
+      "Disable enhanced networking always",
+      "Cluster placement group"
+    ],
+    "answer": 3,
+    "explanation": "Random multi-AZ with no strategy when ultra-low latency required — Incorrect. Random spread adds latency.\nOnly t2.micro for HPC — Incorrect. t2.micro wrong for HPC.\nDisable enhanced networking always — Incorrect. Enhanced networking usually wanted.\nCluster placement group — Correct. Cluster PG packs for low latency.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-41",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "24/7 baseline cheaper than On-Demand?",
+    "choices": [
+      "Savings Plans or RIs",
+      "Spot-only uncheckpointed primary DB",
+      "Largest metal always",
+      "Never rightsize"
+    ],
+    "answer": 0,
+    "explanation": "Savings Plans or RIs — Correct. SP/RI discount steady compute.\nSpot-only uncheckpointed primary DB — Incorrect. Spot-only primary DB is risky.\nLargest metal always — Incorrect. Oversizing wastes money.\nNever rightsize — Incorrect. Rightsizing is continuous.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+    ],
+    "studyGuideChapter": "ch13"
+  },
+  {
+    "id": "q-saa-guide-42",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "Interruptible resumable batch workers cheapest?",
+    "choices": [
+      "On-Demand only no Spot",
+      "Spot Instances",
+      "Dedicated Hosts for every pixel",
+      "Laptop farm"
+    ],
+    "answer": 1,
+    "explanation": "On-Demand only no Spot — Incorrect. On-Demand costs more when Spot fits.\nSpot Instances — Correct. Spot fits interruptible flexible work.\nDedicated Hosts for every pixel — Incorrect. Dedicated Hosts are special-case.\nLaptop farm — Incorrect. Laptops do not scale.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    ],
+    "studyGuideChapter": "ch13"
+  },
+  {
+    "id": "q-saa-guide-43",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "Dev/test only business hours?",
+    "choices": [
+      "Run 24/7 prod-sized",
+      "Expensive RIs on idle sandboxes",
+      "Stop/schedule outside hours",
+      "Disable billing alerts"
+    ],
+    "answer": 2,
+    "explanation": "Run 24/7 prod-sized — Incorrect. 24/7 idle burns money.\nExpensive RIs on idle sandboxes — Incorrect. RIs on idle waste commitment.\nStop/schedule outside hours — Correct. Stopped instances save compute.\nDisable billing alerts — Incorrect. Alerts catch waste.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html",
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    ],
+    "studyGuideChapter": "ch13"
+  },
+  {
+    "id": "q-saa-guide-44",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "prompt": "Prod RDS OLTP purchase posture?",
+    "choices": [
+      "Spot only no Multi-AZ/backups",
+      "Disable automated backups for savings",
+      "Always db.t3.micro",
+      "On-Demand/reserved style—not sole Spot"
+    ],
+    "answer": 3,
+    "explanation": "Spot only no Multi-AZ/backups — Incorrect. Spot-only primary is unsafe without design.\nDisable automated backups for savings — Incorrect. Backups are required for prod OLTP.\nAlways db.t3.micro — Incorrect. Undersizing causes outages.\nOn-Demand/reserved style—not sole Spot — Correct. OLTP needs interruption-resistant capacity.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+    ],
+    "studyGuideChapter": "ch4"
+  },
+  {
+    "id": "q-saa-guide-45",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "Cold S3 objects after 90 days?",
+    "choices": [
+      "Lifecycle to IA/Glacier classes",
+      "All Standard forever",
+      "Delete backups no policy",
+      "Laptop archives only"
+    ],
+    "answer": 0,
+    "explanation": "Lifecycle to IA/Glacier classes — Correct. Lifecycle lowers cold storage cost.\nAll Standard forever — Incorrect. All Standard overpays.\nDelete backups no policy — Incorrect. Blind delete risks recovery.\nLaptop archives only — Incorrect. Laptops are not durable archives.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "studyGuideChapter": "ch6"
+  },
+  {
+    "id": "q-saa-guide-46",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "Over-provisioned EBS IOPS after review?",
+    "choices": [
+      "Max io2 everywhere",
+      "Rightsize to gp3",
+      "Hourly snapshots forever no expiry",
+      "Disable required encryption"
+    ],
+    "answer": 1,
+    "explanation": "Max io2 everywhere — Incorrect. Max io2 overspends.\nRightsize to gp3 — Correct. gp3 often cheaper for moderate needs.\nHourly snapshots forever no expiry — Incorrect. Unbounded snapshots cost.\nDisable required encryption — Incorrect. Encryption is not optional on regulated data.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html",
+      "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+    ],
+    "studyGuideChapter": "ch2"
+  },
+  {
+    "id": "q-saa-guide-47",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "PB migration limited WAN?",
+    "choices": [
+      "Consumer Wi-Fi VPN only",
+      "Email drives no custody",
+      "Snow Family (Snowball)",
+      "Open unencrypted FTP nightly"
+    ],
+    "answer": 2,
+    "explanation": "Consumer Wi-Fi VPN only — Incorrect. Consumer VPN lacks bulk capacity.\nEmail drives no custody — Incorrect. Ad-hoc drives need custody.\nSnow Family (Snowball) — Correct. Snow moves bulk offline/securely.\nOpen unencrypted FTP nightly — Incorrect. Open FTP is unsafe.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatissnow.html",
+      "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+    ],
+    "studyGuideChapter": "ch6"
+  },
+  {
+    "id": "q-saa-guide-48",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "prompt": "Heavy hybrid without NAT hairpin?",
+    "choices": [
+      "NAT hairpin all bulk hybrid",
+      "Cleartext public internet everything",
+      "Many consumer Wi-Fi tunnels",
+      "AWS Direct Connect"
+    ],
+    "answer": 3,
+    "explanation": "NAT hairpin all bulk hybrid — Incorrect. NAT hairpin is costly/complex for bulk.\nCleartext public internet everything — Incorrect. Cleartext public is poor design.\nMany consumer Wi-Fi tunnels — Incorrect. Consumer Wi-Fi is unreliable.\nAWS Direct Connect — Correct. DX is dedicated private high-volume path.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-49",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "prompt": "Many VPCs shared services without mesh sprawl?",
+    "choices": [
+      "Transit Gateway",
+      "Unlimited full-mesh peering",
+      "Public east-west for private apps",
+      "One open /8 SG all accounts"
+    ],
+    "answer": 0,
+    "explanation": "Transit Gateway — Correct. TGW is hub-and-spoke.\nUnlimited full-mesh peering — Incorrect. Full mesh does not scale ops.\nPublic east-west for private apps — Incorrect. Public east-west is risky.\nOne open /8 SG all accounts — Incorrect. Flat open SG destroys isolation.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "studyGuideChapter": "ch3"
+  },
+  {
+    "id": "q-saa-guide-50",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "prompt": "Why CloudFront can cut origin transfer cost?",
+    "choices": [
+      "Caching permanently off by default",
+      "Edge cache hits avoid repeat origin fetches",
+      "Deletes lifecycle rules",
+      "Must disable TLS to save"
+    ],
+    "answer": 1,
+    "explanation": "Caching permanently off by default — Incorrect. Caching is a primary benefit.\nEdge cache hits avoid repeat origin fetches — Correct. Cache hits reduce origin data transfer.\nDeletes lifecycle rules — Incorrect. CF does not delete lifecycle for savings.\nMust disable TLS to save — Incorrect. TLS stays standard.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "studyGuideChapter": "ch8"
+  },
+  {
+    "id": "q-saa-guide-51",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "Per-team cost allocation + overspend alerts?",
+    "choices": [
+      "No tags annual PDF only",
+      "Remove FinOps access",
+      "Tags + CUR/Explorer + Budgets/anomaly detection",
+      "Measure every few years only"
+    ],
+    "answer": 2,
+    "explanation": "No tags annual PDF only — Incorrect. Untagged spend is unowned.\nRemove FinOps access — Incorrect. FinOps needs access.\nTags + CUR/Explorer + Budgets/anomaly detection — Correct. Tags+CUR+budgets enable allocation/alerts.\nMeasure every few years only — Incorrect. Sparse measurement misses waste.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html",
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    ],
+    "studyGuideChapter": "ch13"
+  },
+  {
+    "id": "q-saa-guide-52",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "Compute Optimizer: oversized idle instance?",
+    "choices": [
+      "Double size now",
+      "Ignore forever",
+      "Larger Dedicated Host no analysis",
+      "Rightsize or schedule/stop after validation"
+    ],
+    "answer": 3,
+    "explanation": "Double size now — Incorrect. Upsizing costs more.\nIgnore forever — Incorrect. Ignoring waste is expensive.\nLarger Dedicated Host no analysis — Incorrect. Larger hosts need justification.\nRightsize or schedule/stop after validation — Correct. Rightsizing removes paid idle.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html"
+    ],
+    "studyGuideChapter": "ch13"
+  },
+  {
+    "id": "q-saa-guide-53",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "Unattached EIPs and idle LBs found?",
+    "choices": [
+      "Release EIPs and remove idle LBs after confirm",
+      "Assume always free",
+      "Allocate more unused EIPs",
+      "Attach EIPs randomly to stopped instances"
+    ],
+    "answer": 0,
+    "explanation": "Release EIPs and remove idle LBs after confirm — Correct. Idle/unattached networking resources cost money.\nAssume always free — Incorrect. They are not free.\nAllocate more unused EIPs — Incorrect. More unused adds waste.\nAttach EIPs randomly to stopped instances — Incorrect. Random attach is not design.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "studyGuideChapter": "ch13"
   }
 ]
