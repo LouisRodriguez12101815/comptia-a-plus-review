@@ -3,6 +3,8 @@
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { getFlashcards, getQuestions, getTopics } from "@/lib/content";
+import { progressExamFocus } from "@/lib/tracks";
+import type { StudyFocus } from "@/lib/types";
 import {
   getProgressProblems,
   getProgressSnapshot,
@@ -14,10 +16,11 @@ import {
 const noProblems: ProgressProblem[] = [];
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 
-export function ProgressDashboard() {
+export function ProgressDashboard({ examFocus = null }: { examFocus?: StudyFocus | null }) {
   const t = useTranslations("progressDashboard");
   const tExams = useTranslations("exams");
-  const [focus] = useStudyFocus();
+  const [savedFocus] = useStudyFocus();
+  const focus = progressExamFocus(savedFocus, examFocus);
   const progress = useSyncExternalStore(
     subscribeProgress,
     getProgressSnapshot,

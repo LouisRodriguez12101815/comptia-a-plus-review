@@ -58,6 +58,7 @@ const SERVICE_PATTERNS: [string, RegExp][] = [
   ["Amazon DocumentDB", /\bDocumentDB\b/gi],
   ["Amazon Neptune", /\bNeptune\b/gi],
   ["Amazon Keyspaces", /\bKeyspaces\b/gi],
+  ["Amazon Timestream", /\bTimestream\b/gi],
   ["Amazon Redshift", /\bRedshift\b/gi],
   ["Amazon OpenSearch Service", /OpenSearch/gi],
   ["Amazon VPC", /\bAmazon VPC\b|\bVPC\b|NAT gateway|security group|network ACL|\bNACL\b|VPC endpoint|PrivateLink/gi],

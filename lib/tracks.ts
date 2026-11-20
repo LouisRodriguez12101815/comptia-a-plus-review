@@ -221,6 +221,11 @@ export function trackForPath(pathname: string, focus: StudyFocus): Track | undef
   return undefined;
 }
 
+/** On a track page the saved focus can still be another exam. Counts follow the track. */
+export function progressExamFocus(savedFocus: StudyFocus, trackFocus: StudyFocus | null): StudyFocus {
+  return trackFocus ?? savedFocus;
+}
+
 export function trackCounts(track: Track) {
   const focus = track.focus;
   const topicIds = new Set(focus ? getTopics(focus).map((topic) => topic.id) : []);

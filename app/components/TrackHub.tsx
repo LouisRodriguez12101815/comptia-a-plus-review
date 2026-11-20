@@ -129,7 +129,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         <>
           <LearnerSync compact />
           <NetworkWorkspaceNav />
-          <section id="progress" className="scroll-mt-24" aria-label={t("workspaceResults")}><ProgressDashboard /></section>
+          <section id="progress" className="scroll-mt-24" aria-label={t("workspaceResults")}><ProgressDashboard examFocus={track.focus} /></section>
         </>
       ) : null}
 
@@ -278,7 +278,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
       {track.focus ? (
         <>
-          {track.id !== "networking" ? <><ProgressDashboard /><LearnerSync /></> : null}
+          {track.id !== "networking" ? <><ProgressDashboard examFocus={track.focus} /><LearnerSync /></> : null}
 
           {track.id === "networking" ? (
             <>
