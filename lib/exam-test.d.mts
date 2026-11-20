@@ -4,6 +4,7 @@ export interface ExamFormat { label: string; maxQuestions: number; minutes: numb
 export const EXAM_FORMATS: Record<string, ExamFormat>;
 export const TEST_LENGTHS: { id: string; label: string }[];
 export const MIXED_PRACTICE_QUESTION_COUNT: number;
+export const PRACTICE_COUNT_LENGTHS: Record<string, number>;
 export function questionsForLength(examCode: string, lengthId: string): number;
 export function secondsPerQuestion(examCode: string): number;
 export function approximatePassPercent(examCode: string): number | null;

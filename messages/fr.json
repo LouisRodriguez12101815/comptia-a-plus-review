@@ -41,7 +41,7 @@
     "closeMenu": "Fermer la navigation",
     "catalog": "Étudier",
     "capstone": "À propos du projet"
-},
+  },
   "footer": {
     "disputeNotice": "Vous repérez une erreur ? Chaque page peut être contestée. Les signalements sont déposés sous forme de tickets GitHub et vérifiés par rapport aux objectifs d'examen CompTIA en vigueur."
   },
@@ -313,7 +313,7 @@
     "currentMethodLinks": "Liens vers le calcul et la couverture",
     "currentMethodInsights": "Ouvrir Insights",
     "currentMethodCoverage": "Examiner la couverture des objectifs"
-},
+  },
   "quizPage": {
     "metaTitle": "Quiz d'entraînement | Certification Review",
     "title": "Quiz d'entraînement",
@@ -517,7 +517,10 @@
     "drillStart": "Start the drill: {count, plural, one {# question} other {# questions}}",
     "lookAlikeAnswer": "Right answer",
     "lookAlikePicked": "You picked",
-    "fixPicked": "You picked: {answer}"
+    "fixPicked": "You picked: {answer}",
+    "count10": "10 questions",
+    "count20": "20 questions",
+    "count40": "40 questions"
   },
   "labsPage": {
     "metadataTitle": "Labs réseau | CompTIA A+ Review",
@@ -2590,95 +2593,298 @@
       "intro": "Associez un besoin métier au service AWS d’IA, de données ou d’analytique adapté.",
       "cardBody": "Entraînez-vous à distinguer le besoin du distracteur pour l’objectif 3.7 du CLF-C02.",
       "modes": {
-        "requirementToService": { "label": "Besoin → Service", "ask": "Quel service AWS correspond à ce besoin ?" },
-        "serviceToRequirement": { "label": "Service → Besoin", "ask": "À quel besoin ce service correspond-il ?" }
+        "requirementToService": {
+          "label": "Besoin → Service",
+          "ask": "Quel service AWS correspond à ce besoin ?"
+        },
+        "serviceToRequirement": {
+          "label": "Service → Besoin",
+          "ask": "À quel besoin ce service correspond-il ?"
+        }
       },
-      "fields": { "requirement": "Besoin", "service": "Service" },
-      "tables": { "service-selection": "Choix du service" }
+      "fields": {
+        "requirement": "Besoin",
+        "service": "Service"
+      },
+      "tables": {
+        "service-selection": "Choix du service"
+      }
     },
     "aws-clf-access-compare": {
       "title": "Exercice de gestion des accès CLF-C02",
       "topic": "Décisions de gestion des accès",
       "intro": "Associez l’acteur ou le besoin de sécurité à la capacité d’accès AWS appropriée.",
       "cardBody": "Entraînez-vous à distinguer personnel, charges de travail, identifiants, secrets, clés, stratégies et MFA pour l’objectif 2.3.",
-      "modes": { "identityChooser": { "label": "Besoin → Identité", "ask": "Quelle identité ou méthode d’accès convient ?" }, "controlChooser": { "label": "Besoin → Contrôle", "ask": "Quel contrôle convient à ce besoin de sécurité ?" } },
-      "fields": { "requirement": "Besoin", "choice": "Choix", "securityNeed": "Besoin de sécurité" },
-      "tables": { "identity-chooser": "Choix d’identité", "control-chooser": "Choix du contrôle" }
+      "modes": {
+        "identityChooser": {
+          "label": "Besoin → Identité",
+          "ask": "Quelle identité ou méthode d’accès convient ?"
+        },
+        "controlChooser": {
+          "label": "Besoin → Contrôle",
+          "ask": "Quel contrôle convient à ce besoin de sécurité ?"
+        }
+      },
+      "fields": {
+        "requirement": "Besoin",
+        "choice": "Choix",
+        "securityNeed": "Besoin de sécurité"
+      },
+      "tables": {
+        "identity-chooser": "Choix d’identité",
+        "control-chooser": "Choix du contrôle"
+      }
     },
     "aws-clf-cost-compare": {
       "title": "Exercice prix et coûts CLF-C02",
       "topic": "Modèles de prix et outils de coûts",
       "intro": "Associez une charge de travail ou un besoin de coût au modèle ou à l’outil AWS adapté.",
       "cardBody": "Entraînez-vous à distinguer capacité et remise, engagement, interruption, estimation, analyse, alertes, rapports, balises et facturation consolidée.",
-      "modes": { "workloadToModel": { "label": "Charge → Modèle", "ask": "Quel modèle de prix convient ?" }, "costNeedToTool": { "label": "Besoin → Outil", "ask": "Quel outil de coûts convient ?" } },
-      "fields": { "workload": "Charge de travail", "choice": "Choix", "costNeed": "Besoin de coût" },
-      "tables": { "purchase-models": "Modèles d’achat", "cost-tools": "Outils de coûts" }
+      "modes": {
+        "workloadToModel": {
+          "label": "Charge → Modèle",
+          "ask": "Quel modèle de prix convient ?"
+        },
+        "costNeedToTool": {
+          "label": "Besoin → Outil",
+          "ask": "Quel outil de coûts convient ?"
+        }
+      },
+      "fields": {
+        "workload": "Charge de travail",
+        "choice": "Choix",
+        "costNeed": "Besoin de coût"
+      },
+      "tables": {
+        "purchase-models": "Modèles d’achat",
+        "cost-tools": "Outils de coûts"
+      }
     },
     "aws-clf-benefits-economics": {
       "title": "Exercice CLF-C02 : bénéfices et économie du cloud",
       "topic": "Bénéfices et économie du cloud",
       "intro": "Associez un indice de scénario au bénéfice ou au concept économique approprié.",
       "cardBody": "Entraînez-vous sur l’élasticité, la scalabilité, l’agilité, la portée mondiale, la résilience, le TCO, le dimensionnement, l’utilisation, les licences et les compromis des services gérés pour les objectifs 1.1 et 1.4.",
-      "modes": { "cueToConcept": { "label": "Indice → Concept", "ask": "Quel concept correspond à cet indice ?" }, "conceptToCue": { "label": "Concept → Indice", "ask": "Quel indice de scénario correspond à ce concept ?" } },
-      "fields": { "cue": "Indice de scénario", "choice": "Concept" },
-      "tables": { "benefit-economics": "Bénéfices et économie" }
+      "modes": {
+        "cueToConcept": {
+          "label": "Indice → Concept",
+          "ask": "Quel concept correspond à cet indice ?"
+        },
+        "conceptToCue": {
+          "label": "Concept → Indice",
+          "ask": "Quel indice de scénario correspond à ce concept ?"
+        }
+      },
+      "fields": {
+        "cue": "Indice de scénario",
+        "choice": "Concept"
+      },
+      "tables": {
+        "benefit-economics": "Bénéfices et économie"
+      }
     },
     "aws-clf-support-resources": {
       "title": "Exercice ressources de support CLF-C02",
       "topic": "Support et ressources techniques AWS",
       "intro": "Associez un besoin de support ou un signal opérationnel à la ressource AWS adaptée.",
       "cardBody": "Distinguez documentation, conseils, dossiers, recommandations, événements de santé, abus, partenaires et expertise.",
-      "modes": { "needToResource": { "label": "Besoin → Ressource", "ask": "Quelle ressource AWS convient ?" }, "signalToResource": { "label": "Signal → Ressource", "ask": "Quelle ressource traite ce signal ?" } },
-      "fields": { "supportNeed": "Besoin de support", "resource": "Ressource", "operationalSignal": "Signal opérationnel" },
-      "tables": { "support-resources": "Ressources de support", "operational-signals": "Signaux opérationnels" }
+      "modes": {
+        "needToResource": {
+          "label": "Besoin → Ressource",
+          "ask": "Quelle ressource AWS convient ?"
+        },
+        "signalToResource": {
+          "label": "Signal → Ressource",
+          "ask": "Quelle ressource traite ce signal ?"
+        }
+      },
+      "fields": {
+        "supportNeed": "Besoin de support",
+        "resource": "Ressource",
+        "operationalSignal": "Signal opérationnel"
+      },
+      "tables": {
+        "support-resources": "Ressources de support",
+        "operational-signals": "Signaux opérationnels"
+      }
     },
     "aws-clf-other-services-compare": {
       "title": "Exercice CLF-C02 : autres services AWS",
       "topic": "Choix entre catégories de services AWS",
       "intro": "Associez un besoin métier au service AWS dont la fonction principale correspond.",
       "cardBody": "Entraînez les distinctions entre file, diffusion, routage d’événements, workflow, outils développeur, poste utilisateur, frontend, IoT et support pour l’objectif 3.8.",
-      "modes": { "requirementToService": { "label": "Besoin → Service", "ask": "Quel service AWS convient ?" }, "serviceToRequirement": { "label": "Service → Besoin", "ask": "À quel besoin ce service répond-il ?" }, "confusionPair": { "label": "Paire confuse → Service", "ask": "Quel service correspond à cet indice ?" } },
-      "fields": { "requirement": "Besoin", "service": "Service", "confusion": "Indice" },
-      "tables": { "requirement-service": "Besoin vers service", "confusion-pairs": "Paires confuses" }
+      "modes": {
+        "requirementToService": {
+          "label": "Besoin → Service",
+          "ask": "Quel service AWS convient ?"
+        },
+        "serviceToRequirement": {
+          "label": "Service → Besoin",
+          "ask": "À quel besoin ce service répond-il ?"
+        },
+        "confusionPair": {
+          "label": "Paire confuse → Service",
+          "ask": "Quel service correspond à cet indice ?"
+        }
+      },
+      "fields": {
+        "requirement": "Besoin",
+        "service": "Service",
+        "confusion": "Indice"
+      },
+      "tables": {
+        "requirement-service": "Besoin vers service",
+        "confusion-pairs": "Paires confuses"
+      }
     },
     "aws-clf-migration-compare": {
       "title": "Exercice CLF-C02 : décisions de migration",
       "topic": "Décisions de migration et d’adoption",
       "intro": "Associez une contrainte métier, un besoin de migration ou une phase à la décision adaptée.",
       "cardBody": "Entraînez rehost, replatform, refactor, repurchase, retire, retain, la découverte, les ressources de migration, la validation et le retour arrière pour l’objectif 1.3.",
-      "modes": { "constraintToStrategy": { "label": "Contrainte → Stratégie", "ask": "Quelle réponse de migration convient ?" }, "needToResource": { "label": "Besoin → Ressource", "ask": "Quelle ressource de migration convient ?" }, "phaseToAction": { "label": "Phase → Action", "ask": "Quelle action correspond à cette phase ?" } },
-      "fields": { "constraint": "Contrainte", "strategy": "Stratégie", "need": "Besoin", "resource": "Ressource", "phase": "Phase", "action": "Action" },
-      "tables": { "strategy-chooser": "Choix de stratégie", "resource-chooser": "Ressources de migration", "lifecycle": "Cycle de migration" }
+      "modes": {
+        "constraintToStrategy": {
+          "label": "Contrainte → Stratégie",
+          "ask": "Quelle réponse de migration convient ?"
+        },
+        "needToResource": {
+          "label": "Besoin → Ressource",
+          "ask": "Quelle ressource de migration convient ?"
+        },
+        "phaseToAction": {
+          "label": "Phase → Action",
+          "ask": "Quelle action correspond à cette phase ?"
+        }
+      },
+      "fields": {
+        "constraint": "Contrainte",
+        "strategy": "Stratégie",
+        "need": "Besoin",
+        "resource": "Ressource",
+        "phase": "Phase",
+        "action": "Action"
+      },
+      "tables": {
+        "strategy-chooser": "Choix de stratégie",
+        "resource-chooser": "Ressources de migration",
+        "lifecycle": "Cycle de migration"
+      }
     },
     "aws-clf-well-architected-compare": {
-      "title": "Exercice CLF-C02 Well-Architected", "topic": "Décisions entre piliers Well-Architected", "intro": "Associez un scénario de conception au pilier correspondant.", "cardBody": "Entraînez-vous sur les six piliers et leurs confusions courantes pour l’objectif 1.2.",
-      "modes": { "scenarioToPillar": { "label": "Scénario → Pilier", "ask": "Quel pilier correspond ?" }, "pillarToFocus": { "label": "Pilier → Axe", "ask": "Quel est l’axe de ce pilier ?" } },
-      "fields": { "scenario": "Scénario", "pillar": "Pilier", "focus": "Axe" },
-      "tables": { "pillar-cues": "Repères des piliers", "pillar-focus": "Axe du pilier" }
+      "title": "Exercice CLF-C02 Well-Architected",
+      "topic": "Décisions entre piliers Well-Architected",
+      "intro": "Associez un scénario de conception au pilier correspondant.",
+      "cardBody": "Entraînez-vous sur les six piliers et leurs confusions courantes pour l’objectif 1.2.",
+      "modes": {
+        "scenarioToPillar": {
+          "label": "Scénario → Pilier",
+          "ask": "Quel pilier correspond ?"
+        },
+        "pillarToFocus": {
+          "label": "Pilier → Axe",
+          "ask": "Quel est l’axe de ce pilier ?"
+        }
+      },
+      "fields": {
+        "scenario": "Scénario",
+        "pillar": "Pilier",
+        "focus": "Axe"
+      },
+      "tables": {
+        "pillar-cues": "Repères des piliers",
+        "pillar-focus": "Axe du pilier"
+      }
     },
     "aws-clf-security-transfer": {
-      "title": "Exercice CLF-C02 de transfert de sécurité", "topic": "Transfert de sécurité et de gouvernance", "intro": "Associez une responsabilité ou exigence de sécurité au propriétaire ou service AWS correspondant.", "cardBody": "Entraînez-vous sur les limites de responsabilité, les preuves de gouvernance, le chiffrement et les différences entre services.",
-      "modes": { "requirementToService": { "label": "Exigence → Service", "ask": "Quel service correspond ?" }, "workloadToOwner": { "label": "Charge → Propriétaire", "ask": "Qui porte cette responsabilité ?" } },
-      "fields": { "requirement": "Exigence", "service": "Service", "workload": "Charge", "owner": "Propriétaire" },
-      "tables": { "security-cues": "Repères de sécurité", "responsibility": "Responsabilité" }
+      "title": "Exercice CLF-C02 de transfert de sécurité",
+      "topic": "Transfert de sécurité et de gouvernance",
+      "intro": "Associez une responsabilité ou exigence de sécurité au propriétaire ou service AWS correspondant.",
+      "cardBody": "Entraînez-vous sur les limites de responsabilité, les preuves de gouvernance, le chiffrement et les différences entre services.",
+      "modes": {
+        "requirementToService": {
+          "label": "Exigence → Service",
+          "ask": "Quel service correspond ?"
+        },
+        "workloadToOwner": {
+          "label": "Charge → Propriétaire",
+          "ask": "Qui porte cette responsabilité ?"
+        }
+      },
+      "fields": {
+        "requirement": "Exigence",
+        "service": "Service",
+        "workload": "Charge",
+        "owner": "Propriétaire"
+      },
+      "tables": {
+        "security-cues": "Repères de sécurité",
+        "responsibility": "Responsabilité"
+      }
     },
     "aws-clf-cloud-tech-core": {
       "title": "Exercice CLF-C02 : technologie cloud",
       "topic": "Méthodes d'exploitation, infrastructure et calcul",
       "intro": "Associez l'exigence à la méthode d'exploitation AWS, à l'étendue de l'infrastructure, au service de calcul ou au rôle de mise à l'échelle.",
       "cardBody": "Pratiquez Console, CLI, SDK/API, IaC, régions, AZ, edge, EC2, Lambda, ECS, EKS, Fargate, Auto Scaling et équilibrage pour les objectifs 3.1–3.3.",
-      "modes": { "requirementToChoice": { "label": "Exigence → Choix", "ask": "Quel choix correspond à cette exigence ?" }, "confusionPair": { "label": "Paire confuse → Distinction", "ask": "Quelle distinction résout cette paire ?" } },
-      "fields": { "requirement": "Exigence", "choice": "Choix", "cue": "Paire confuse", "distinction": "Distinction" },
-      "tables": { "method-and-service": "Choix par exigence", "confusion-pairs": "Paires confuses" }
+      "modes": {
+        "requirementToChoice": {
+          "label": "Exigence → Choix",
+          "ask": "Quel choix correspond à cette exigence ?"
+        },
+        "confusionPair": {
+          "label": "Paire confuse → Distinction",
+          "ask": "Quelle distinction résout cette paire ?"
+        }
+      },
+      "fields": {
+        "requirement": "Exigence",
+        "choice": "Choix",
+        "cue": "Paire confuse",
+        "distinction": "Distinction"
+      },
+      "tables": {
+        "method-and-service": "Choix par exigence",
+        "confusion-pairs": "Paires confuses"
+      }
     },
     "aws-clf-data-network-storage": {
       "title": "Exercice CLF-C02 : données, réseau et stockage",
       "topic": "Décisions de bases de données, réseau et stockage",
       "intro": "Associez les exigences de charge, de réseau et de stockage au service ou au contrôle AWS approprié.",
       "cardBody": "Pratiquez RDS/Aurora, DynamoDB, ElastiCache, DMS/SCT, contrôles VPC, DNS, VPN, Direct Connect, S3, EBS, EFS, Gateway et Backup pour les objectifs 3.4–3.6.",
-      "modes": { "workloadToDatabase": { "label": "Charge → Base de données", "ask": "Quelle base de données correspond ?" }, "networkToChoice": { "label": "Exigence réseau → Choix", "ask": "Quel service ou contrôle réseau correspond ?" }, "storageToChoice": { "label": "Besoin de stockage → Choix", "ask": "Quel choix de stockage correspond ?" }, "confusionPair": { "label": "Paire confuse → Distinction", "ask": "Quelle distinction résout cette paire ?" } },
-      "fields": { "workload": "Charge", "database": "Base de données", "requirement": "Exigence", "choice": "Choix", "storage": "Besoin de stockage", "cue": "Paire confuse", "distinction": "Distinction" },
-      "tables": { "database-cues": "Repères de bases de données", "network-cues": "Repères réseau", "storage-cues": "Repères de stockage", "confusion-pairs": "Paires confuses" }
+      "modes": {
+        "workloadToDatabase": {
+          "label": "Charge → Base de données",
+          "ask": "Quelle base de données correspond ?"
+        },
+        "networkToChoice": {
+          "label": "Exigence réseau → Choix",
+          "ask": "Quel service ou contrôle réseau correspond ?"
+        },
+        "storageToChoice": {
+          "label": "Besoin de stockage → Choix",
+          "ask": "Quel choix de stockage correspond ?"
+        },
+        "confusionPair": {
+          "label": "Paire confuse → Distinction",
+          "ask": "Quelle distinction résout cette paire ?"
+        }
+      },
+      "fields": {
+        "workload": "Charge",
+        "database": "Base de données",
+        "requirement": "Exigence",
+        "choice": "Choix",
+        "storage": "Besoin de stockage",
+        "cue": "Paire confuse",
+        "distinction": "Distinction"
+      },
+      "tables": {
+        "database-cues": "Repères de bases de données",
+        "network-cues": "Repères réseau",
+        "storage-cues": "Repères de stockage",
+        "confusion-pairs": "Paires confuses"
+      }
     },
     "aws-saa-secure-cues": {
       "title": "Exercice d'architecture sécurisée SAA",
@@ -3120,16 +3326,106 @@
     "drillIntro": "{count} questions manquées au moins une fois.",
     "performanceLink": "Voir l’historique des performances",
     "remediation": {
-      "clusters": { "dhcpLifecycle": "Cycle de vie DHCP", "timeSynchronization": "Synchronisation de l’heure", "ipamDdi": "IPAM et DDI", "ipv6Controls": "Contrôles IPv6" },
-      "examClues": { "dhcpRequestBroadcast": "Un client sans adresse commence par un Discover en diffusion.", "dhcpT1": "À T1, le client demande le renouvellement en unicast au serveur DHCP d’origine.", "dhcpT2": "À T2, le client diffuse la demande pour trouver tout serveur DHCP capable de renouveler le bail.", "dhcpOptions": "Les options fournissent la passerelle, les serveurs DNS et la durée du bail.", "ntpPort": "NTP utilise UDP 123.", "kerberosClock": "Kerberos exige des horloges synchronisées; un écart trop grand peut refuser l’authentification.", "ntpSources": "Le stratum NTP indique la distance à l’horloge de référence; un nombre bas est plus proche.", "ntpConsensus": "Plusieurs sources NTP permettent de comparer les échantillons et de rejeter une valeur aberrante.", "ptpPrecision": "PTP synchronise avec davantage de précision que NTP.", "ptpPorts": "PTP utilise généralement UDP 319 pour les événements et UDP 320 pour les messages généraux.", "logTime": "Comparez les horodatages et leurs sources avant de faire confiance à une séquence d’événements.", "ipamOwnership": "IPAM centralise la propriété, l’allocation et l’utilisation des adresses.", "ddi": "DDI combine les services DNS, DHCP et IPAM.", "ipamView": "Une vue IPAM doit montrer la propriété, l’utilisation et les conflits.", "ipamSpreadsheet": "Un tableur est périmé et sujet aux collisions par rapport aux données IPAM faisant autorité.", "raGuard": "RA Guard bloque les Router Advertisements IPv6 indésirables au bord d’accès." },
-      "memoryRules": { "dora": "DORA : Discover, Offer, Request, Acknowledge.", "dhcpT1": "T1 demande d’abord au serveur d’origine.", "dhcpT2": "T2 diffuse vers tout serveur DHCP disponible.", "dhcpOptions": "L’adresse seule ne suffit pas; les options complètent la configuration.", "ntpPort": "NTP = UDP 123.", "kerberosClock": "Kerberos supporte mal le décalage d’horloge.", "ntpSources": "Un stratum plus bas est plus proche de la source.", "ntpConsensus": "Plusieurs sources forment un consensus pour repérer une valeur aberrante.", "ptpPrecision": "NTP est le temps réseau; PTP est le temps de précision.", "ptpPorts": "319 = événement; 320 = général.", "logTime": "Sans heure fiable, pas de chronologie fiable.", "ipamOwnership": "IPAM répond : qui possède chaque adresse et est-elle utilisée ?", "ddi": "DDI = DNS + DHCP + IPAM.", "ipamView": "Une vue faisant autorité évite les doublons.", "ipamSpreadsheet": "Sans autorité ni actualisation, ce n’est pas IPAM.", "raGuard": "RA Guard = bloquer les annonces de routeur indésirables." },
-      "whyWrong": { "dhcpRequestBroadcast": "Les autres messages DHCP supposent que le client a d’abord découvert un serveur disponible.", "dhcpT1": "T1 est le renouvellement unicast, pas la phase de secours en diffusion.", "dhcpT2": "T2 est la phase de secours en diffusion; le renouvellement unicast vient avant.", "dhcpOptions": "Les options, et pas seulement l’adresse, fournissent le reste des réglages réseau.", "ntpPort": "Un autre port indique un autre service, pas le NTP standard.", "kerberosClock": "L’authentification Kerberos peut échouer si les horloges dépassent l’écart permis.", "ntpSources": "Le stratum indique la distance à la source, pas le fuseau horaire.", "ntpConsensus": "Deux horloges ne permettent pas de savoir laquelle est fausse; plusieurs sources permettent de rejeter les valeurs aberrantes.", "ptpPrecision": "NTP convient à la synchronisation courante, mais n’offre pas la précision de PTP.", "ptpPorts": "Confondre les messages PTP d’événement et généraux peut créer de mauvaises règles.", "logTime": "Sans horodatages synchronisés, l’ordre des événements peut être trompeur.", "ipamOwnership": "Les relevés manuels ne montrent pas de façon fiable la propriété actuelle.", "ddi": "DDI est l’ensemble coordonné, pas un seul de ses composants.", "ipamView": "Une vue partielle peut masquer des conflits et des adresses déjà attribuées.", "ipamSpreadsheet": "Les tableurs ne garantissent pas l’état actuel et faisant autorité d’IPAM.", "raGuard": "RA Guard traite les Router Advertisements indésirables, pas le routage IPv6 général." }
+      "clusters": {
+        "dhcpLifecycle": "Cycle de vie DHCP",
+        "timeSynchronization": "Synchronisation de l’heure",
+        "ipamDdi": "IPAM et DDI",
+        "ipv6Controls": "Contrôles IPv6"
+      },
+      "examClues": {
+        "dhcpRequestBroadcast": "Un client sans adresse commence par un Discover en diffusion.",
+        "dhcpT1": "À T1, le client demande le renouvellement en unicast au serveur DHCP d’origine.",
+        "dhcpT2": "À T2, le client diffuse la demande pour trouver tout serveur DHCP capable de renouveler le bail.",
+        "dhcpOptions": "Les options fournissent la passerelle, les serveurs DNS et la durée du bail.",
+        "ntpPort": "NTP utilise UDP 123.",
+        "kerberosClock": "Kerberos exige des horloges synchronisées; un écart trop grand peut refuser l’authentification.",
+        "ntpSources": "Le stratum NTP indique la distance à l’horloge de référence; un nombre bas est plus proche.",
+        "ntpConsensus": "Plusieurs sources NTP permettent de comparer les échantillons et de rejeter une valeur aberrante.",
+        "ptpPrecision": "PTP synchronise avec davantage de précision que NTP.",
+        "ptpPorts": "PTP utilise généralement UDP 319 pour les événements et UDP 320 pour les messages généraux.",
+        "logTime": "Comparez les horodatages et leurs sources avant de faire confiance à une séquence d’événements.",
+        "ipamOwnership": "IPAM centralise la propriété, l’allocation et l’utilisation des adresses.",
+        "ddi": "DDI combine les services DNS, DHCP et IPAM.",
+        "ipamView": "Une vue IPAM doit montrer la propriété, l’utilisation et les conflits.",
+        "ipamSpreadsheet": "Un tableur est périmé et sujet aux collisions par rapport aux données IPAM faisant autorité.",
+        "raGuard": "RA Guard bloque les Router Advertisements IPv6 indésirables au bord d’accès."
+      },
+      "memoryRules": {
+        "dora": "DORA : Discover, Offer, Request, Acknowledge.",
+        "dhcpT1": "T1 demande d’abord au serveur d’origine.",
+        "dhcpT2": "T2 diffuse vers tout serveur DHCP disponible.",
+        "dhcpOptions": "L’adresse seule ne suffit pas; les options complètent la configuration.",
+        "ntpPort": "NTP = UDP 123.",
+        "kerberosClock": "Kerberos supporte mal le décalage d’horloge.",
+        "ntpSources": "Un stratum plus bas est plus proche de la source.",
+        "ntpConsensus": "Plusieurs sources forment un consensus pour repérer une valeur aberrante.",
+        "ptpPrecision": "NTP est le temps réseau; PTP est le temps de précision.",
+        "ptpPorts": "319 = événement; 320 = général.",
+        "logTime": "Sans heure fiable, pas de chronologie fiable.",
+        "ipamOwnership": "IPAM répond : qui possède chaque adresse et est-elle utilisée ?",
+        "ddi": "DDI = DNS + DHCP + IPAM.",
+        "ipamView": "Une vue faisant autorité évite les doublons.",
+        "ipamSpreadsheet": "Sans autorité ni actualisation, ce n’est pas IPAM.",
+        "raGuard": "RA Guard = bloquer les annonces de routeur indésirables."
+      },
+      "whyWrong": {
+        "dhcpRequestBroadcast": "Les autres messages DHCP supposent que le client a d’abord découvert un serveur disponible.",
+        "dhcpT1": "T1 est le renouvellement unicast, pas la phase de secours en diffusion.",
+        "dhcpT2": "T2 est la phase de secours en diffusion; le renouvellement unicast vient avant.",
+        "dhcpOptions": "Les options, et pas seulement l’adresse, fournissent le reste des réglages réseau.",
+        "ntpPort": "Un autre port indique un autre service, pas le NTP standard.",
+        "kerberosClock": "L’authentification Kerberos peut échouer si les horloges dépassent l’écart permis.",
+        "ntpSources": "Le stratum indique la distance à la source, pas le fuseau horaire.",
+        "ntpConsensus": "Deux horloges ne permettent pas de savoir laquelle est fausse; plusieurs sources permettent de rejeter les valeurs aberrantes.",
+        "ptpPrecision": "NTP convient à la synchronisation courante, mais n’offre pas la précision de PTP.",
+        "ptpPorts": "Confondre les messages PTP d’événement et généraux peut créer de mauvaises règles.",
+        "logTime": "Sans horodatages synchronisés, l’ordre des événements peut être trompeur.",
+        "ipamOwnership": "Les relevés manuels ne montrent pas de façon fiable la propriété actuelle.",
+        "ddi": "DDI est l’ensemble coordonné, pas un seul de ses composants.",
+        "ipamView": "Une vue partielle peut masquer des conflits et des adresses déjà attribuées.",
+        "ipamSpreadsheet": "Les tableurs ne garantissent pas l’état actuel et faisant autorité d’IPAM.",
+        "raGuard": "RA Guard traite les Router Advertisements indésirables, pas le routage IPv6 général."
+      }
     },
     "addressingRemediation": {
-      "clusters": { "ipv4PrivateLinkLocal": "Adressage IPv4 privé et lien local", "ipv6Eui64": "IPv6 et EUI-64", "layer2Delivery": "Adressage de couche 2 et types de livraison" },
-      "examClues": { "rfc1918Ranges": "L’espace IPv4 privé RFC 1918 est exactement 10.0.0.0/8, 172.16.0.0/12 ou 192.168.0.0/16.", "apipaVsPrivate": "169.254.0.0/16 est IPv4 lien local/APIPA, pas une plage privée RFC 1918.", "rfc1918Boundary": "Dans 172/12, seul 172.16 à 172.31 est privé; 172.32 est hors plage.", "apipaPrefix": "APIPA est 169.254.0.0/16 avec le masque 255.255.0.0, pas /24.", "privateRouting": "Les adresses privées sont routables dans l’organisation, mais pas sur l’Internet public.", "eui64BitFlip": "EUI-64 insère FF:FE puis inverse le bit U/L: 00 devient 02, donnant 021A:2BFF:FE3C:4D5E.", "ipv4Ipv6Representation": "IPv4 fait 32 bits en décimal pointé; IPv6 fait 128 bits en hexadécimal.", "unicastMulticastBroadcast": "Unicast = une destination, multicast = un groupe choisi, broadcast = tous les hôtes du domaine local.", "ipBroadcastVsMacBroadcast": "Le broadcast couche 2 utilise la MAC FF:FF:FF:FF:FF:FF; 255.255.255.255 est le broadcast IPv4." },
-      "memoryRules": { "rfc1918Ranges": "Privé = 10/8, 172.16/12, 192.168/16.", "apipaVsPrivate": "169.254 = APIPA; ce n’est pas un espace privé RFC 1918.", "rfc1918Boundary": "Le privé en 172 s’arrête à 172.31; 172.32 est hors plage.", "apipaPrefix": "APIPA = 169.254.0.0/16 = 255.255.0.0.", "privateRouting": "Privé à l’intérieur; pas routé sur Internet.", "eui64BitFlip": "Insérer FF:FE, inverser U/L, puis regrouper les 64 bits.", "ipv4Ipv6Representation": "IPv4: 32/décimal pointé. IPv6: 128/hexadécimal.", "unicastMulticastBroadcast": "Un, groupe, tous-local: unicast, multicast, broadcast.", "ipBroadcastVsMacBroadcast": "MAC tout en F = broadcast couche 2; IP tout en 255 = broadcast IPv4." },
-      "whyWrong": { "rfc1918Ranges": "Une adresse familière ne suffit pas; comparez-la aux trois plages RFC 1918 exactes.", "apipaVsPrivate": "APIPA signale l’absence de DHCP et le lien local; ce n’est pas une plage privée réutilisable.", "rfc1918Boundary": "Tout le bloc 172.0.0.0/8 n’est pas privé; la tranche RFC 1918 va de .16 à .31.", "apipaPrefix": "Le préfixe APIPA est /16; 255.255.255.0 (/24) est donc trop étroit.", "privateRouting": "Privé ne signifie pas non routable partout; cela signifie non routé sur l’Internet public.", "eui64BitFlip": "Insérer FF:FE sans modifier 00 oublie l’inversion obligatoire du bit U/L.", "ipv4Ipv6Representation": "Ne permutez pas les familles: IPv4 utilise 32 bits décimaux et IPv6 128 bits hexadécimaux.", "unicastMulticastBroadcast": "Plusieurs interfaces choisies est multicast, pas unicast; tous les hôtes locaux est broadcast.", "ipBroadcastVsMacBroadcast": "L’adresse broadcast IPv4 et la MAC broadcast Ethernet sont des identifiants distincts des couches 3 et 2." }
+      "clusters": {
+        "ipv4PrivateLinkLocal": "Adressage IPv4 privé et lien local",
+        "ipv6Eui64": "IPv6 et EUI-64",
+        "layer2Delivery": "Adressage de couche 2 et types de livraison"
+      },
+      "examClues": {
+        "rfc1918Ranges": "L’espace IPv4 privé RFC 1918 est exactement 10.0.0.0/8, 172.16.0.0/12 ou 192.168.0.0/16.",
+        "apipaVsPrivate": "169.254.0.0/16 est IPv4 lien local/APIPA, pas une plage privée RFC 1918.",
+        "rfc1918Boundary": "Dans 172/12, seul 172.16 à 172.31 est privé; 172.32 est hors plage.",
+        "apipaPrefix": "APIPA est 169.254.0.0/16 avec le masque 255.255.0.0, pas /24.",
+        "privateRouting": "Les adresses privées sont routables dans l’organisation, mais pas sur l’Internet public.",
+        "eui64BitFlip": "EUI-64 insère FF:FE puis inverse le bit U/L: 00 devient 02, donnant 021A:2BFF:FE3C:4D5E.",
+        "ipv4Ipv6Representation": "IPv4 fait 32 bits en décimal pointé; IPv6 fait 128 bits en hexadécimal.",
+        "unicastMulticastBroadcast": "Unicast = une destination, multicast = un groupe choisi, broadcast = tous les hôtes du domaine local.",
+        "ipBroadcastVsMacBroadcast": "Le broadcast couche 2 utilise la MAC FF:FF:FF:FF:FF:FF; 255.255.255.255 est le broadcast IPv4."
+      },
+      "memoryRules": {
+        "rfc1918Ranges": "Privé = 10/8, 172.16/12, 192.168/16.",
+        "apipaVsPrivate": "169.254 = APIPA; ce n’est pas un espace privé RFC 1918.",
+        "rfc1918Boundary": "Le privé en 172 s’arrête à 172.31; 172.32 est hors plage.",
+        "apipaPrefix": "APIPA = 169.254.0.0/16 = 255.255.0.0.",
+        "privateRouting": "Privé à l’intérieur; pas routé sur Internet.",
+        "eui64BitFlip": "Insérer FF:FE, inverser U/L, puis regrouper les 64 bits.",
+        "ipv4Ipv6Representation": "IPv4: 32/décimal pointé. IPv6: 128/hexadécimal.",
+        "unicastMulticastBroadcast": "Un, groupe, tous-local: unicast, multicast, broadcast.",
+        "ipBroadcastVsMacBroadcast": "MAC tout en F = broadcast couche 2; IP tout en 255 = broadcast IPv4."
+      },
+      "whyWrong": {
+        "rfc1918Ranges": "Une adresse familière ne suffit pas; comparez-la aux trois plages RFC 1918 exactes.",
+        "apipaVsPrivate": "APIPA signale l’absence de DHCP et le lien local; ce n’est pas une plage privée réutilisable.",
+        "rfc1918Boundary": "Tout le bloc 172.0.0.0/8 n’est pas privé; la tranche RFC 1918 va de .16 à .31.",
+        "apipaPrefix": "Le préfixe APIPA est /16; 255.255.255.0 (/24) est donc trop étroit.",
+        "privateRouting": "Privé ne signifie pas non routable partout; cela signifie non routé sur l’Internet public.",
+        "eui64BitFlip": "Insérer FF:FE sans modifier 00 oublie l’inversion obligatoire du bit U/L.",
+        "ipv4Ipv6Representation": "Ne permutez pas les familles: IPv4 utilise 32 bits décimaux et IPv6 128 bits hexadécimaux.",
+        "unicastMulticastBroadcast": "Plusieurs interfaces choisies est multicast, pas unicast; tous les hôtes locaux est broadcast.",
+        "ipBroadcastVsMacBroadcast": "L’adresse broadcast IPv4 et la MAC broadcast Ethernet sont des identifiants distincts des couches 3 et 2."
+      }
     }
   },
   "scenarioBuilder": {
@@ -3218,15 +3514,91 @@
     "lookAlikeDrill": "Drill this pair: {count, plural, one {# question} other {# questions}}"
   },
   "performance": {
-    "metaTitle": "Performance de l’apprenant | Certification Review", "eyebrow": "Historique d’étude", "title": "Votre performance", "intro": "Consultez les résultats enregistrés des quiz et examens blancs sur cet appareil. Cette page est en lecture seule et ne modifie pas votre progression.",
-    "windowLabel": "Période", "windowDescription": "Les totaux utilisent l’heure réelle de fin enregistrée pour chaque tentative.", "window24h": "Dernières 24 heures", "window7d": "7 derniers jours", "window30d": "30 derniers jours", "windowHistory": "Tout l’historique",
-    "summaryHeading": "Résumé", "quizzes": "Quiz", "mockExams": "Examens blancs", "questions": "Questions", "accuracy": "Précision", "needsReview": "À revoir", "noAttempts": "Aucune tentative enregistrée dans cette période.", "takeQuiz": "Faire un quiz",
-    "trendHeading": "Évolution des scores", "trendDescription": "Chaque point représente un résultat enregistré.", "trendChartLabel": "Évolution des scores enregistrés", "objectivesHeading": "Objectifs les plus faibles", "topicsHeading": "Performance par sujet", "noData": "Il n’y a pas encore assez d’historique identifiable.", "missedCount": "{count} ratées",
-    "repeatedHeading": "Erreurs répétées", "noRepeated": "Aucune question n’a été ratée deux fois dans cette période.", "recoveredHeading": "Récupérées / améliorées", "recoveredIntro": "Les questions ratées puis réussies sont comptées ici une seule fois.", "noRecovered": "Aucun progrès de récupération visible dans cette période.",
-    "historyHeading": "Historique des questions", "historyDescription": "Les anciennes tentatives sans ID comptent dans les totaux, mais ne peuvent pas être attribuées à une question.", "searchLabel": "Rechercher des questions", "searchPlaceholder": "Rechercher un texte, un sujet ou un ID", "filterLabel": "Filtre", "filterAll": "Toutes", "filterIncorrect": "Ratées", "filterCorrect": "Réussies", "filterRepeated": "Erreurs répétées", "filterRecovered": "Récupérées", "sortLabel": "Trier", "sortMisses": "Plus ratées", "sortAccuracy": "Précision la plus basse", "sortRecent": "Plus récentes", "sortAttempted": "Plus tentées",
-    "attempts": "{count, plural, one {# tentative} other {# tentatives}}", "correctCount": "{correct} réussies · {incorrect} ratées", "lastAttempt": "Dernière tentative", "lastMissed": "Dernier échec", "selectedWrong": "Mauvaise réponse choisie", "mostCommonWrong": "Mauvaise option la plus fréquente : {answer} ({percent} %)", "recoveredLabel": "Récupérée / améliorée", "previouslyRecovered": "Récupérée auparavant, mais non résolue actuellement", "attemptTimeline": "Chronologie des tentatives", "correctEvent": "Correcte", "incorrectEvent": "Incorrecte", "retry": "Refaire le sujet", "notes": "Revoir les notes", "weakAreas": "Ouvrir les points faibles", "noQuestionHistory": "Aucun résultat identifiable ne correspond à ces filtres.",
-    "remediationActivityHeading": "Activité de remédiation", "remediationOpened": "Remédiation ouverte", "resourcesOpened": "Ressources ouvertes", "retriesStarted": "Reprises démarrées", "laterCorrect": "correcte ensuite", "stillMissed": "encore manquée", "resourceOutcomesHeading": "Résultats des ressources d’étude", "telemetryNote": "L’activité authentifiée provient d’une télémétrie conservée de façon limitée ; ces comptes ne prouvent pas la causalité.", "resourceTypeNotes": "Notes", "resourceTypeFlashcard": "Cartes mémoire", "resourceTypeVisual": "Visuels", "resourceTypeVideo": "Vidéos", "resourceTypeRetry": "Reprise",
-    "mockHeading": "Sessions d’examen blanc", "noMocks": "Aucun examen blanc dans cette période.", "full": "Examen complet", "partial": "Session ciblée", "activityHeading": "Activité récente", "activityQuiz": "Quiz · {label}", "activityMock": "Examen blanc · {label}", "quiz": "quiz", "mock": "examen blanc", "recommendedHeading": "Prochaine étape recommandée", "recommendedIntro": "Utilisez le parcours des points faibles pour revoir vos erreurs enregistrées de façon déterministe.", "reviewWeakAreas": "Revoir les points faibles"
+    "metaTitle": "Performance de l’apprenant | Certification Review",
+    "eyebrow": "Historique d’étude",
+    "title": "Votre performance",
+    "intro": "Consultez les résultats enregistrés des quiz et examens blancs sur cet appareil. Cette page est en lecture seule et ne modifie pas votre progression.",
+    "windowLabel": "Période",
+    "windowDescription": "Les totaux utilisent l’heure réelle de fin enregistrée pour chaque tentative.",
+    "window24h": "Dernières 24 heures",
+    "window7d": "7 derniers jours",
+    "window30d": "30 derniers jours",
+    "windowHistory": "Tout l’historique",
+    "summaryHeading": "Résumé",
+    "quizzes": "Quiz",
+    "mockExams": "Examens blancs",
+    "questions": "Questions",
+    "accuracy": "Précision",
+    "needsReview": "À revoir",
+    "noAttempts": "Aucune tentative enregistrée dans cette période.",
+    "takeQuiz": "Faire un quiz",
+    "trendHeading": "Évolution des scores",
+    "trendDescription": "Chaque point représente un résultat enregistré.",
+    "trendChartLabel": "Évolution des scores enregistrés",
+    "objectivesHeading": "Objectifs les plus faibles",
+    "topicsHeading": "Performance par sujet",
+    "noData": "Il n’y a pas encore assez d’historique identifiable.",
+    "missedCount": "{count} ratées",
+    "repeatedHeading": "Erreurs répétées",
+    "noRepeated": "Aucune question n’a été ratée deux fois dans cette période.",
+    "recoveredHeading": "Récupérées / améliorées",
+    "recoveredIntro": "Les questions ratées puis réussies sont comptées ici une seule fois.",
+    "noRecovered": "Aucun progrès de récupération visible dans cette période.",
+    "historyHeading": "Historique des questions",
+    "historyDescription": "Les anciennes tentatives sans ID comptent dans les totaux, mais ne peuvent pas être attribuées à une question.",
+    "searchLabel": "Rechercher des questions",
+    "searchPlaceholder": "Rechercher un texte, un sujet ou un ID",
+    "filterLabel": "Filtre",
+    "filterAll": "Toutes",
+    "filterIncorrect": "Ratées",
+    "filterCorrect": "Réussies",
+    "filterRepeated": "Erreurs répétées",
+    "filterRecovered": "Récupérées",
+    "sortLabel": "Trier",
+    "sortMisses": "Plus ratées",
+    "sortAccuracy": "Précision la plus basse",
+    "sortRecent": "Plus récentes",
+    "sortAttempted": "Plus tentées",
+    "attempts": "{count, plural, one {# tentative} other {# tentatives}}",
+    "correctCount": "{correct} réussies · {incorrect} ratées",
+    "lastAttempt": "Dernière tentative",
+    "lastMissed": "Dernier échec",
+    "selectedWrong": "Mauvaise réponse choisie",
+    "mostCommonWrong": "Mauvaise option la plus fréquente : {answer} ({percent} %)",
+    "recoveredLabel": "Récupérée / améliorée",
+    "previouslyRecovered": "Récupérée auparavant, mais non résolue actuellement",
+    "attemptTimeline": "Chronologie des tentatives",
+    "correctEvent": "Correcte",
+    "incorrectEvent": "Incorrecte",
+    "retry": "Refaire le sujet",
+    "notes": "Revoir les notes",
+    "weakAreas": "Ouvrir les points faibles",
+    "noQuestionHistory": "Aucun résultat identifiable ne correspond à ces filtres.",
+    "remediationActivityHeading": "Activité de remédiation",
+    "remediationOpened": "Remédiation ouverte",
+    "resourcesOpened": "Ressources ouvertes",
+    "retriesStarted": "Reprises démarrées",
+    "laterCorrect": "correcte ensuite",
+    "stillMissed": "encore manquée",
+    "resourceOutcomesHeading": "Résultats des ressources d’étude",
+    "telemetryNote": "L’activité authentifiée provient d’une télémétrie conservée de façon limitée ; ces comptes ne prouvent pas la causalité.",
+    "resourceTypeNotes": "Notes",
+    "resourceTypeFlashcard": "Cartes mémoire",
+    "resourceTypeVisual": "Visuels",
+    "resourceTypeVideo": "Vidéos",
+    "resourceTypeRetry": "Reprise",
+    "mockHeading": "Sessions d’examen blanc",
+    "noMocks": "Aucun examen blanc dans cette période.",
+    "full": "Examen complet",
+    "partial": "Session ciblée",
+    "activityHeading": "Activité récente",
+    "activityQuiz": "Quiz · {label}",
+    "activityMock": "Examen blanc · {label}",
+    "quiz": "quiz",
+    "mock": "examen blanc",
+    "recommendedHeading": "Prochaine étape recommandée",
+    "recommendedIntro": "Utilisez le parcours des points faibles pour revoir vos erreurs enregistrées de façon déterministe.",
+    "reviewWeakAreas": "Revoir les points faibles"
   },
   "learnerSync": {
     "title": "Enregistrez votre progression sur tous vos appareils",
@@ -3269,7 +3641,15 @@
   },
   "networkWorkspace": {
     "quickNavLabel": "Sections de l’espace Network+",
-    "quick": { "overview": "Vue d’ensemble", "study": "Étude", "test": "Test", "visuals": "Visuels", "practice": "Pratique", "progress": "Progression", "objectives": "Objectifs" }
+    "quick": {
+      "overview": "Vue d’ensemble",
+      "study": "Étude",
+      "test": "Test",
+      "visuals": "Visuels",
+      "practice": "Pratique",
+      "progress": "Progression",
+      "objectives": "Objectifs"
+    }
   },
   "networkPlusDomains": {
     "title": "Étudier par domaine de l'examen",
@@ -3347,11 +3727,50 @@
     "title": "Évaluation des lacunes CLF-C02",
     "intro": "Utilisez votre historique pour trouver les objectifs à renforcer et ouvrir les notes, cartes, visuels, laboratoires ou exercices ciblés.",
     "heuristic": "Ce sont des heuristiques de l’application, pas des seuils de réussite AWS ni des affirmations de maîtrise. Trois questions distinctes donnent seulement une preuve provisoire.",
-    "summaryLabel": "Résumé de l’évaluation", "assessed": "Objectifs évalués", "insufficient": "Preuves insuffisantes", "weak": "Faiblesse démontrée", "strong": "Performance plus solide",
-    "empty": "Aucune réponse CLF-C02 associée n’est encore enregistrée. Faites une évaluation pour établir des preuves.", "startAssessment": "Commencer l’évaluation CLF-C02", "noEvidence": "Aucune preuve admissible de question CLF-C02.", "evidence": "{distinct} questions distinctes · {answers} réponses · précision de {accuracy}%", "limitedEvidence": "Deux questions distinctes ou moins ne suffisent pas pour une classification provisoire.", "evidenceClass": { "limited": "Preuves limitées", "provisional": "Preuve provisoire ; maîtrise non vérifiée" },
-    "trackingTitle": "Suivi de référence et de retest", "baselineEmpty": "Enregistrez l’état actuel avant la remédiation.", "baselineSaved": "Référence enregistrée le {date}.", "saveBaseline": "Enregistrer la référence", "startNewBaseline": "Commencer une nouvelle référence", "confirmNewBaseline": "Commencer une nouvelle référence ? L’ancienne et ses retests resteront enregistrés, mais les comparaisons utiliseront la nouvelle.", "saveRetest": "Enregistrer le retest", "noRetest": "Aucun retest enregistré pour cette référence.", "trackingLimit": "L’amélioration utilise seulement les nouvelles questions distinctes après la référence. Les répétitions sont de la pratique, pas une amélioration indépendante.", "comparison": "Référence {baseline}% → retest de nouvelles questions {retest}% ({change} points) : {outcome}", "outcome": { "improved": "amélioration", "unchanged": "sans changement", "regressed": "régression", "insufficient": "preuves insuffisantes" },
-    "state": { "not-assessed": "Non évalué", "insufficient": "Preuves insuffisantes", "weak": "Faiblesse démontrée", "developing": "En développement", "strong": "Performance plus solide" },
-    "resource": { "notes": "Lire les notes", "flashcards": "Cartes mémoire", "visual": "Visuel", "lab": "Laboratoire", "practice": "Exercice ciblé" }
+    "summaryLabel": "Résumé de l’évaluation",
+    "assessed": "Objectifs évalués",
+    "insufficient": "Preuves insuffisantes",
+    "weak": "Faiblesse démontrée",
+    "strong": "Performance plus solide",
+    "empty": "Aucune réponse CLF-C02 associée n’est encore enregistrée. Faites une évaluation pour établir des preuves.",
+    "startAssessment": "Commencer l’évaluation CLF-C02",
+    "noEvidence": "Aucune preuve admissible de question CLF-C02.",
+    "evidence": "{distinct} questions distinctes · {answers} réponses · précision de {accuracy}%",
+    "limitedEvidence": "Deux questions distinctes ou moins ne suffisent pas pour une classification provisoire.",
+    "evidenceClass": {
+      "limited": "Preuves limitées",
+      "provisional": "Preuve provisoire ; maîtrise non vérifiée"
+    },
+    "trackingTitle": "Suivi de référence et de retest",
+    "baselineEmpty": "Enregistrez l’état actuel avant la remédiation.",
+    "baselineSaved": "Référence enregistrée le {date}.",
+    "saveBaseline": "Enregistrer la référence",
+    "startNewBaseline": "Commencer une nouvelle référence",
+    "confirmNewBaseline": "Commencer une nouvelle référence ? L’ancienne et ses retests resteront enregistrés, mais les comparaisons utiliseront la nouvelle.",
+    "saveRetest": "Enregistrer le retest",
+    "noRetest": "Aucun retest enregistré pour cette référence.",
+    "trackingLimit": "L’amélioration utilise seulement les nouvelles questions distinctes après la référence. Les répétitions sont de la pratique, pas une amélioration indépendante.",
+    "comparison": "Référence {baseline}% → retest de nouvelles questions {retest}% ({change} points) : {outcome}",
+    "outcome": {
+      "improved": "amélioration",
+      "unchanged": "sans changement",
+      "regressed": "régression",
+      "insufficient": "preuves insuffisantes"
+    },
+    "state": {
+      "not-assessed": "Non évalué",
+      "insufficient": "Preuves insuffisantes",
+      "weak": "Faiblesse démontrée",
+      "developing": "En développement",
+      "strong": "Performance plus solide"
+    },
+    "resource": {
+      "notes": "Lire les notes",
+      "flashcards": "Cartes mémoire",
+      "visual": "Visuel",
+      "lab": "Laboratoire",
+      "practice": "Exercice ciblé"
+    }
   },
   "toolkitHome": {
     "descriptor": "Outils pour passer des documents à l’apprentissage",
@@ -3478,7 +3897,7 @@
     "graderStudy": "Étudier",
     "graderPractice": "S’entraîner",
     "graderReview": "Outils de révision"
-},
+  },
   "navigationJourney": {
     "example": "Explorer l’application de préparation aux certifications IT",
     "methodology": "Revenir à la méthodologie",
@@ -3499,7 +3918,9 @@
     "sharedReview": "Points faibles · toutes les certifications",
     "sharedPerformance": "Performances · toutes les certifications",
     "sharedReviewDetail": "Consultez les erreurs enregistrées pour toutes les certifications, puis revenez aux ressources concernées.",
-    "labsBlurb": "Exercices guidés de conception AWS et collection partagée d’ateliers."
+    "labsBlurb": "Exercices guidés de conception AWS et collection partagée d’ateliers.",
+    "saaPracticeTest": "Test pratique SAA",
+    "saaPracticeTestDetail": "Ouvrez une session SAA-C03 pondérée par domaine. Choisissez 10, 20, 40, demi ou complet. Les questions non vues passent d’abord."
   },
   "insightsPage": {
     "metadataTitle": "Indicateurs du projet | GapLift",
@@ -3547,7 +3968,6 @@
     "noCandidates": "Aucun objectif partiel n’est répertorié.",
     "candidateSource": "Source : content/objectives.json et rankGaps dans lib/objective-coverage.mjs."
   },
-
   "coverageSnapshot": {
     "caption": "Inventaire actuel du programme et des ressources",
     "track": "Parcours",
@@ -3562,7 +3982,6 @@
     "noMatrixTrack": "{track} ({code}) n’a pas de matrice d’objectifs : {questions} questions, {cards} fiches et {labs} ateliers partagés dans la configuration actuelle.",
     "trackNotes": "Notes des parcours"
   },
-
   "capstonePage": {
     "metadataTitle": "À propos du projet GapLift",
     "metadataDescription": "Problème, données, analyse, résultats et limites du projet GapLift.",
