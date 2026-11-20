@@ -48017,5 +48017,707 @@
       "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
     ],
     "studyGuideChapter": "ch13"
+  },
+  {
+    "id": "q-saa-chapter-01",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "A new AWS organization must keep daily administration off the root user while still allowing break-glass recovery. Which baseline is most appropriate?",
+    "choices": [
+      "Enable root MFA, store root credentials offline, and use IAM Identity Center or IAM roles for daily work",
+      "Share root credentials among platform engineers for speed",
+      "Create long-lived root access keys for CI/CD",
+      "Disable CloudTrail to reduce noise from root logins"
+    ],
+    "answer": 0,
+    "explanation": "Enable root MFA, store root credentials offline, and use IAM Identity Center or IAM roles for daily work — Correct. Root is break-glass only; MFA plus federation/roles is the standard baseline.\nShare root credentials among platform engineers for speed — Incorrect. Root credentials must never be shared.\nCreate long-lived root access keys for CI/CD — Incorrect. Root access keys are strongly discouraged.\nDisable CloudTrail to reduce noise from root logins — Incorrect. CloudTrail should record account activity, including sensitive root use.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html",
+      "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+    ],
+    "chapterId": "ch01"
+  },
+  {
+    "id": "q-saa-chapter-02",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "Leadership wants a first-pass cost model before any production EC2 is launched. Which approach best supports early architecture decisions?",
+    "choices": [
+      "Buy the largest Reserved Instance footprint immediately without measurements",
+      "Estimate usage with the Pricing Calculator, then revisit after tagging and Cost Explorer baselines exist",
+      "Ignore data transfer until the first invoice arrives",
+      "Turn off all billing alerts until go-live"
+    ],
+    "answer": 1,
+    "explanation": "Buy the largest Reserved Instance footprint immediately without measurements — Incorrect. Blind long-term commitments before measurement often lock in waste.\nEstimate usage with the Pricing Calculator, then revisit after tagging and Cost Explorer baselines exist — Correct. Early estimates plus later measured baselines support iterative cost design.\nIgnore data transfer until the first invoice arrives — Incorrect. Data transfer can dominate hybrid and multi-AZ designs.\nTurn off all billing alerts until go-live — Incorrect. Alerts help catch surprises early, not only after launch.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/pricing-calculator.html",
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+    ],
+    "chapterId": "ch01"
+  },
+  {
+    "id": "q-saa-chapter-03",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "An API tier needs horizontal scale based on CPU and must replace unhealthy instances automatically. Which combination fits?",
+    "choices": [
+      "One oversized instance with termination protection and no load balancer",
+      "Manual AMI copies once a quarter only",
+      "An Auto Scaling group with ELB health checks and a launch template",
+      "Disable health checks so failed instances stay in service"
+    ],
+    "answer": 2,
+    "explanation": "One oversized instance with termination protection and no load balancer — Incorrect. A single protected instance is a bottleneck and SPOF.\nManual AMI copies once a quarter only — Incorrect. Quarterly AMI copy is not automated scaling.\nAn Auto Scaling group with ELB health checks and a launch template — Correct. ASG + health checks + launch template provides elastic, replaceable capacity.\nDisable health checks so failed instances stay in service — Incorrect. Health checks are required for automatic replacement.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html"
+    ],
+    "chapterId": "ch02"
+  },
+  {
+    "id": "q-saa-chapter-04",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "A stateful web tier must remain available if an Availability Zone fails. Which design meets this?",
+    "choices": [
+      "Run a single large instance in one AZ",
+      "Use only instance store without snapshots in one AZ",
+      "Disable health checks to keep failing targets in service",
+      "Deploy instances across at least two AZs behind an Elastic Load Balancer"
+    ],
+    "answer": 3,
+    "explanation": "Run a single large instance in one AZ — Incorrect. One instance in one AZ fails when that AZ or host fails.\nUse only instance store without snapshots in one AZ — Incorrect. Instance store in one AZ is neither durable nor multi-AZ.\nDisable health checks to keep failing targets in service — Incorrect. Health checks must remove bad targets; disabling them harms availability.\nDeploy instances across at least two AZs behind an Elastic Load Balancer — Correct. Multi-AZ with load balancing removes a single AZ as a single point of failure.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-benefits.html"
+    ],
+    "chapterId": "ch02"
+  },
+  {
+    "id": "q-saa-chapter-05",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "App instances in private subnets must pull patches from the internet without accepting inbound internet connections. Which pattern is standard?",
+    "choices": [
+      "NAT gateway in a public subnet with a default route from private subnets to the NAT",
+      "Attach an internet gateway as the default route for private-only instances",
+      "Assign public IPs and open SSH from 0.0.0.0/0 to each private instance",
+      "Deny all egress in the network ACL permanently"
+    ],
+    "answer": 0,
+    "explanation": "NAT gateway in a public subnet with a default route from private subnets to the NAT — Correct. NAT provides outbound-initiated access while instances stay private.\nAttach an internet gateway as the default route for private-only instances — Incorrect. Private-only hosts should not use IGW default routes.\nAssign public IPs and open SSH from 0.0.0.0/0 to each private instance — Incorrect. Public IPs plus open SSH defeat private tier design.\nDeny all egress in the network ACL permanently — Incorrect. Blocking all egress breaks patching and updates.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    ],
+    "chapterId": "ch03"
+  },
+  {
+    "id": "q-saa-chapter-06",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "Heavy S3 API traffic from private subnets currently hairpins through a NAT gateway. Which change often reduces data-processing charges while keeping traffic private?",
+    "choices": [
+      "Make the bucket a public website endpoint",
+      "Add a gateway VPC endpoint for S3 and update routes so S3 traffic uses the endpoint",
+      "Disable all bucket policies",
+      "Open security groups to 0.0.0.0/0 on all ports"
+    ],
+    "answer": 1,
+    "explanation": "Make the bucket a public website endpoint — Incorrect. Public websites expose objects.\nAdd a gateway VPC endpoint for S3 and update routes so S3 traffic uses the endpoint — Correct. S3 gateway endpoints keep traffic on the AWS network and avoid NAT data processing for that path.\nDisable all bucket policies — Incorrect. Bucket policies remain part of access control.\nOpen security groups to 0.0.0.0/0 on all ports — Incorrect. Open security groups are not a private connectivity design.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/privatelink-interface-endpoints.html"
+    ],
+    "chapterId": "ch03"
+  },
+  {
+    "id": "q-saa-chapter-07",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.3"
+      ]
+    },
+    "prompt": "A read-heavy relational workload on Aurora must offload SELECTs without moving writes off the primary. What should you use?",
+    "choices": [
+      "Delete secondary indexes to force table scans on the writer",
+      "Disable the buffer cache",
+      "Aurora Replicas with the reader endpoint",
+      "Run peak ETL full scans on the writer during business hours"
+    ],
+    "answer": 2,
+    "explanation": "Delete secondary indexes to force table scans on the writer — Incorrect. Dropping indexes harms read performance.\nDisable the buffer cache — Incorrect. Buffer cache is essential for performance.\nAurora Replicas with the reader endpoint — Correct. Reader endpoints distribute reads to replicas while writes stay on the writer.\nRun peak ETL full scans on the writer during business hours — Incorrect. Heavy ETL on the writer contends with OLTP.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+    ],
+    "chapterId": "ch04"
+  },
+  {
+    "id": "q-saa-chapter-08",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "RDS needs automatic failover to a standby in another Availability Zone with minimal operational reinstall. Which feature provides this?",
+    "choices": [
+      "A single-AZ instance with backups disabled",
+      "Only increasing instance size in one AZ",
+      "Storing the only copy on a developer laptop",
+      "RDS Multi-AZ deployment"
+    ],
+    "answer": 3,
+    "explanation": "A single-AZ instance with backups disabled — Incorrect. Single-AZ without backups is fragile.\nOnly increasing instance size in one AZ — Incorrect. Larger size improves capacity, not AZ failure tolerance.\nStoring the only copy on a developer laptop — Incorrect. Laptops are not resilient cloud databases.\nRDS Multi-AZ deployment — Correct. Multi-AZ maintains a synchronous standby and fails over on primary failure.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "chapterId": "ch04"
+  },
+  {
+    "id": "q-saa-chapter-09",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "EC2 workers must read one DynamoDB table without embedding static access keys. What is the correct credential pattern?",
+    "choices": [
+      "An instance profile role with least-privilege DynamoDB permissions",
+      "IAM user access keys baked into the AMI",
+      "Account root keys in environment files on disk",
+      "A publicly writable DynamoDB table with no authentication"
+    ],
+    "answer": 0,
+    "explanation": "An instance profile role with least-privilege DynamoDB permissions — Correct. Instance profiles provide temporary role credentials.\nIAM user access keys baked into the AMI — Incorrect. Static keys in AMIs leak and rotate poorly.\nAccount root keys in environment files on disk — Incorrect. Root keys are not for applications.\nA publicly writable DynamoDB table with no authentication — Incorrect. Public unauthenticated tables fail security requirements.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/access-control-overview.html"
+    ],
+    "chapterId": "ch05"
+  },
+  {
+    "id": "q-saa-chapter-10",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "Application database passwords must rotate and must not live in git. Where should they be stored?",
+    "choices": [
+      "Plain-text passwords committed to the application repository",
+      "AWS Secrets Manager or SSM Parameter Store SecureString with IAM-controlled retrieval",
+      "Passwords posted in a public wiki page",
+      "Hard-coded strings inside AMI user data baked permanently"
+    ],
+    "answer": 1,
+    "explanation": "Plain-text passwords committed to the application repository — Incorrect. Secrets in git leak through history and clones.\nAWS Secrets Manager or SSM Parameter Store SecureString with IAM-controlled retrieval — Correct. Managed secret stores support controlled retrieval and rotation patterns.\nPasswords posted in a public wiki page — Incorrect. Public docs are not secret storage.\nHard-coded strings inside AMI user data baked permanently — Incorrect. Baked AMI secrets freeze credentials.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+      "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    ],
+    "chapterId": "ch05"
+  },
+  {
+    "id": "q-saa-chapter-11",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "A media archive needs high durability, HTTP access, and lifecycle movement from frequent to rare access. Which primary store fits?",
+    "choices": [
+      "A single EBS volume attached to one instance as the only copy",
+      "Instance store on one host",
+      "Amazon S3 with lifecycle rules to colder classes as objects age",
+      "Local laptop disks as the system of record"
+    ],
+    "answer": 2,
+    "explanation": "A single EBS volume attached to one instance as the only copy — Incorrect. Single EBS volumes are AZ-scoped and not multi-client object stores.\nInstance store on one host — Incorrect. Instance store is ephemeral.\nAmazon S3 with lifecycle rules to colder classes as objects age — Correct. S3 provides durable object storage with lifecycle tiering.\nLocal laptop disks as the system of record — Incorrect. Laptops are not durable enterprise archives.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+    ],
+    "chapterId": "ch06"
+  },
+  {
+    "id": "q-saa-chapter-12",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.3"
+      ]
+    },
+    "prompt": "Regulated objects in S3 must be encrypted at rest with customer-managed keys and auditable key use. Which control fits?",
+    "choices": [
+      "Disable encryption to improve performance",
+      "Client-side XOR with a passphrase committed to source control",
+      "Versioning only, without encryption",
+      "SSE-KMS using a customer managed KMS key and key policies"
+    ],
+    "answer": 3,
+    "explanation": "Disable encryption to improve performance — Incorrect. Turning encryption off fails the requirement.\nClient-side XOR with a passphrase committed to source control — Incorrect. Homegrown crypto with secrets in git is unsafe.\nVersioning only, without encryption — Incorrect. Versioning is not encryption.\nSSE-KMS using a customer managed KMS key and key policies — Correct. SSE-KMS CMKs provide controllable key policy and CloudTrail-visible use.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+      "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+    ],
+    "chapterId": "ch06"
+  },
+  {
+    "id": "q-saa-chapter-13",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Route 53 should shift users from a primary regional endpoint to a secondary when health checks fail. Which routing policy supports active-passive failover?",
+    "choices": [
+      "Failover routing with health checks",
+      "Simple routing with one record and no health check",
+      "Weighted routing with equal weights and no health checks",
+      "Geoproximity only with no health evaluation"
+    ],
+    "answer": 0,
+    "explanation": "Failover routing with health checks — Correct. Failover routing is active-passive and uses health checks.\nSimple routing with one record and no health check — Incorrect. Simple routing does not fail over on health.\nWeighted routing with equal weights and no health checks — Incorrect. Weighted without health still sends traffic to unhealthy targets.\nGeoproximity only with no health evaluation — Incorrect. Geoproximity alone is not failover.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html",
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html"
+    ],
+    "chapterId": "ch07"
+  },
+  {
+    "id": "q-saa-chapter-14",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "prompt": "A global audience needs latency-based DNS answers to the nearest healthy regional API. Which Route 53 approach fits?",
+    "choices": [
+      "A single A record to one instance in one AZ with no health check",
+      "Latency-based routing with health checks on regional endpoints",
+      "Turning off DNS entirely and hard-coding IPs in mobile apps",
+      "Using only TXT records for API routing"
+    ],
+    "answer": 1,
+    "explanation": "A single A record to one instance in one AZ with no health check — Incorrect. One instance in one AZ is neither global nor highly available.\nLatency-based routing with health checks on regional endpoints — Correct. Latency routing steers users to lower-latency healthy regions.\nTurning off DNS entirely and hard-coding IPs in mobile apps — Incorrect. Hard-coded IPs defeat DNS-based traffic management.\nUsing only TXT records for API routing — Incorrect. TXT records are not for API endpoint routing.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+    ],
+    "chapterId": "ch07"
+  },
+  {
+    "id": "q-saa-chapter-15",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.4"
+      ]
+    },
+    "prompt": "Static marketing assets must be cached at the edge with TLS while the origin remains an S3 bucket. Which design is appropriate?",
+    "choices": [
+      "A single t3.nano in one Region serving files from instance store",
+      "Public RDS endpoints used as a static file origin",
+      "Amazon CloudFront distribution with an S3 origin and ACM certificate on the distribution",
+      "FTP from a corporate desktop to each user"
+    ],
+    "answer": 2,
+    "explanation": "A single t3.nano in one Region serving files from instance store — Incorrect. Tiny single-instance origins do not scale globally.\nPublic RDS endpoints used as a static file origin — Incorrect. RDS is a database, not a static CDN origin.\nAmazon CloudFront distribution with an S3 origin and ACM certificate on the distribution — Correct. CloudFront + S3 is the standard global static content pattern.\nFTP from a corporate desktop to each user — Incorrect. Desktop FTP is not a content delivery architecture.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/website-hosting-cloudfront-walkthrough.html"
+    ],
+    "chapterId": "ch08"
+  },
+  {
+    "id": "q-saa-chapter-16",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "prompt": "Popular downloadable objects cause repeated origin GETs and rising data transfer. How does CloudFront help performance and often cost?",
+    "choices": [
+      "CloudFront always disables caching permanently by default",
+      "CloudFront deletes S3 lifecycle rules automatically",
+      "TLS must be disabled to save money",
+      "Edge caches satisfy repeat viewers without refetching the origin every time"
+    ],
+    "answer": 3,
+    "explanation": "CloudFront always disables caching permanently by default — Incorrect. Caching is a primary benefit, not permanently disabled.\nCloudFront deletes S3 lifecycle rules automatically — Incorrect. CloudFront does not remove lifecycle configuration as a cost feature.\nTLS must be disabled to save money — Incorrect. TLS remains standard for public HTTPS distributions.\nEdge caches satisfy repeat viewers without refetching the origin every time — Correct. Cache hits reduce origin load and repeated data transfer.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html"
+    ],
+    "chapterId": "ch08"
+  },
+  {
+    "id": "q-saa-chapter-17",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which decoupling service fits between API and workers?",
+    "choices": [
+      "Amazon SQS",
+      "Tight synchronous calls with no queue and no retries",
+      "Jobs stored only in one instance's memory",
+      "Public unauthenticated S3 listings as a work queue"
+    ],
+    "answer": 0,
+    "explanation": "Amazon SQS — Correct. SQS buffers work so producers and consumers scale independently.\nTight synchronous calls with no queue and no retries — Incorrect. Tight coupling propagates backpressure and failures.\nJobs stored only in one instance's memory — Incorrect. In-memory queues die with the instance.\nPublic unauthenticated S3 listings as a work queue — Incorrect. Public S3 listings are not a proper work queue.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html"
+    ],
+    "chapterId": "ch09"
+  },
+  {
+    "id": "q-saa-chapter-18",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "A multi-step workflow needs retries, branching, and visible state across Lambda tasks. Which service is purpose-built?",
+    "choices": [
+      "A single SSH script with no durable state",
+      "AWS Step Functions",
+      "Manual spreadsheet tracking only",
+      "Disabling all dead-letter queues everywhere"
+    ],
+    "answer": 1,
+    "explanation": "A single SSH script with no durable state — Incorrect. Ad-hoc scripts lack durable orchestration state.\nAWS Step Functions — Correct. Step Functions orchestrates steps with state, retries, and branches.\nManual spreadsheet tracking only — Incorrect. Spreadsheets are not runtime orchestration.\nDisabling all dead-letter queues everywhere — Incorrect. DLQs help surface poison messages; removing them hides failures.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+      "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    ],
+    "chapterId": "ch09"
+  },
+  {
+    "id": "q-saa-chapter-19",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.1"
+      ]
+    },
+    "prompt": "A notification must fan out the same event to Lambda, SQS, and an HTTPS subscriber. Which service fits?",
+    "choices": [
+      "AWS WAF",
+      "Amazon EFS",
+      "Amazon SNS",
+      "AWS Budgets"
+    ],
+    "answer": 2,
+    "explanation": "AWS WAF — Incorrect. WAF filters web requests.\nAmazon EFS — Incorrect. EFS is a filesystem.\nAmazon SNS — Correct. SNS pub/sub fans out messages to multiple subscribers.\nAWS Budgets — Incorrect. Budgets alert on cost.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+      "https://docs.aws.amazon.com/sns/latest/dg/sns-fork-pipeline-asynchronous-messaging.html"
+    ],
+    "chapterId": "ch10"
+  },
+  {
+    "id": "q-saa-chapter-20",
+    "topicId": "aws-saa-resilient-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "2.2"
+      ]
+    },
+    "prompt": "Disaster recovery for critical S3 datasets requires automatic copies in another Region. Which feature applies?",
+    "choices": [
+      "Lifecycle expiration only",
+      "Deleting versioning to simplify operations",
+      "Relying only on CloudFront cache as the DR copy",
+      "S3 Cross-Region Replication"
+    ],
+    "answer": 3,
+    "explanation": "Lifecycle expiration only — Incorrect. Expiration deletes objects; it does not create a DR copy.\nDeleting versioning to simplify operations — Incorrect. Versioning supports recoverability.\nRelying only on CloudFront cache as the DR copy — Incorrect. A CDN cache is not the durable system of record for DR.\nS3 Cross-Region Replication — Correct. CRR replicates objects asynchronously to another Region.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html"
+    ],
+    "chapterId": "ch10"
+  },
+  {
+    "id": "q-saa-chapter-21",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.2"
+      ]
+    },
+    "prompt": "A TCP service needs ultra-low latency load balancing and preservation of client source IP at very high connection rates. Which load balancer type is designed for this?",
+    "choices": [
+      "Network Load Balancer",
+      "Application Load Balancer used only for layer-4 TCP without HTTP features",
+      "AWS WAF without any load balancer",
+      "Amazon SES"
+    ],
+    "answer": 0,
+    "explanation": "Network Load Balancer — Correct. NLB operates at layer 4 for high-performance TCP/UDP workloads and can preserve source IP.\nApplication Load Balancer used only for layer-4 TCP without HTTP features — Incorrect. ALB is layer 7 for HTTP features; NLB is the L4 high-performance choice.\nAWS WAF without any load balancer — Incorrect. WAF needs an association target and is not an L4 load balancer.\nAmazon SES — Incorrect. SES sends email.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+    ],
+    "chapterId": "ch11"
+  },
+  {
+    "id": "q-saa-chapter-22",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "3.5"
+      ]
+    },
+    "prompt": "Near-real-time clickstream events must be ingested continuously before analytics consumers process them. Which service is a common fit?",
+    "choices": [
+      "S3 Glacier Deep Archive as the hot stream",
+      "Amazon Kinesis Data Streams",
+      "AWS Budgets stream mode",
+      "AWS Certificate Manager stream"
+    ],
+    "answer": 1,
+    "explanation": "S3 Glacier Deep Archive as the hot stream — Incorrect. Glacier is cold archive, not hot streaming ingest.\nAmazon Kinesis Data Streams — Correct. Kinesis streams continuous high-throughput event data.\nAWS Budgets stream mode — Incorrect. Budgets track cost.\nAWS Certificate Manager stream — Incorrect. ACM manages certificates.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/streams/latest/dev/introduction.html",
+      "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
+    ],
+    "chapterId": "ch11"
+  },
+  {
+    "id": "q-saa-chapter-23",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.2"
+      ]
+    },
+    "prompt": "A public web application must mitigate common HTTP exploits such as injection attacks at layer 7. Which service is purpose-built?",
+    "choices": [
+      "AWS Shield alone without application rules",
+      "Amazon Macie only",
+      "AWS WAF associated with CloudFront or an Application Load Balancer",
+      "AWS Backup"
+    ],
+    "answer": 2,
+    "explanation": "AWS Shield alone without application rules — Incorrect. Shield focuses on DDoS; it is not a replacement for L7 application rules.\nAmazon Macie only — Incorrect. Macie discovers sensitive data in S3, not HTTP exploits.\nAWS WAF associated with CloudFront or an Application Load Balancer — Correct. WAF evaluates web requests against rules for exploits and bots.\nAWS Backup — Incorrect. Backup protects recovery points, not runtime HTTP filtering.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html",
+      "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl.html"
+    ],
+    "chapterId": "ch12"
+  },
+  {
+    "id": "q-saa-chapter-24",
+    "topicId": "aws-saa-secure-architectures",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "1.1"
+      ]
+    },
+    "prompt": "Member accounts must be blocked from leaving the organization or disabling critical security services except a break-glass security account. Which control enforces this centrally?",
+    "choices": [
+      "A single security group rule in one VPC",
+      "S3 Object Lock on unrelated application buckets",
+      "Closing the billing console UI",
+      "Service control policies (SCPs) in AWS Organizations"
+    ],
+    "answer": 3,
+    "explanation": "A single security group rule in one VPC — Incorrect. Security groups filter network traffic only.\nS3 Object Lock on unrelated application buckets — Incorrect. Object Lock is for object retention.\nClosing the billing console UI — Incorrect. Billing UI access is unrelated to service API guardrails.\nService control policies (SCPs) in AWS Organizations — Correct. SCPs set permission guardrails across member accounts.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
+    ],
+    "chapterId": "ch12"
+  },
+  {
+    "id": "q-saa-chapter-25",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.2"
+      ]
+    },
+    "prompt": "Compute Optimizer reports an EC2 instance is consistently over-provisioned on CPU and memory. What is the cost-aware next step?",
+    "choices": [
+      "Rightsize or stop/schedule the instance after validating performance needs",
+      "Immediately double the instance size",
+      "Ignore the recommendation permanently without review",
+      "Move the workload to a larger Dedicated Host without analysis"
+    ],
+    "answer": 0,
+    "explanation": "Rightsize or stop/schedule the instance after validating performance needs — Correct. Rightsizing or scheduling removes paid idle capacity while preserving required performance.\nImmediately double the instance size — Incorrect. Upsizing increases cost without evidence of need.\nIgnore the recommendation permanently without review — Incorrect. Ignoring sustained waste leaves money on the table.\nMove the workload to a larger Dedicated Host without analysis — Incorrect. Larger hosts need justification.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+    ],
+    "chapterId": "ch13"
+  },
+  {
+    "id": "q-saa-chapter-26",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "objectiveIds": {
+      "saa-c03": [
+        "4.4"
+      ]
+    },
+    "prompt": "A cost review finds unattached Elastic IPs and idle load balancers in a non-production account. What should operators do?",
+    "choices": [
+      "Assume idle networking resources never incur charges",
+      "Release unused Elastic IPs and delete idle load balancers after confirmation they are not required",
+      "Allocate more unused Elastic IPs for unknown future projects immediately",
+      "Attach idle Elastic IPs to random stopped instances without need"
+    ],
+    "answer": 1,
+    "explanation": "Assume idle networking resources never incur charges — Incorrect. They are not free when idle or unattached.\nRelease unused Elastic IPs and delete idle load balancers after confirmation they are not required — Correct. Unattached EIPs and idle load balancers incur charges; reclaim them.\nAllocate more unused Elastic IPs for unknown future projects immediately — Incorrect. Creating more unused resources increases waste.\nAttach idle Elastic IPs to random stopped instances without need — Incorrect. Random attachments are not intentional design.",
+    "weak": false,
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    ],
+    "chapterId": "ch13"
   }
 ]

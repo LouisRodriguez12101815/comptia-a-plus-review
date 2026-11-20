@@ -117,7 +117,7 @@ test("SAA inventory stages are counted from the specified base and both explicit
   // costStage freezes inventory after the cost batch. Later practice/guide rounds may grow the live bank.
   const costOnly = questions.filter((question) => {
     const id = question.id ?? "";
-    return question.examCodes?.includes("saa-c03") && !id.startsWith("q-saa-practice-") && !id.startsWith("q-saa-guide-");
+    return question.examCodes?.includes("saa-c03") && !id.startsWith("q-saa-practice-") && !id.startsWith("q-saa-guide-") && !id.startsWith("q-saa-chapter-");
   });
   assert.deepEqual(costStage, { ...costStage, ...count(costOnly) });
   const live = count(questions);
