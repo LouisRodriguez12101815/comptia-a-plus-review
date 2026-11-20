@@ -230,3 +230,19 @@ test('due review questions are taken first, and the rest of the test is still a 
   const focused = draftFocused(p, 15, mulberry32(4), { objectiveIds: ['2.3'], priority: due });
   for (const id of due) assert.equal(focused.some((x) => x.questionId === id), true);
 });
+
+test('task summary separates unanswered from attempted and grades multiple response exactly', async () => {
+  const { summarizeTestTasks } = await import('../lib/exam-test.mjs');
+  const picks = [
+    { questionId: 'a', domainId: '1', objectiveId: '1.1' },
+    { questionId: 'b', domainId: '1', objectiveId: '1.1' },
+    { questionId: 'c', domainId: '2', objectiveId: '2.1' },
+    { questionId: 'd', domainId: '2', objectiveId: '2.1' },
+  ];
+  const questionsById = { a: { answer: 1 }, b: { answer: [0, 2] }, c: { answer: [0, 2] }, d: { answer: 0 } };
+  const responses = { a: { answer: 1 }, b: { answer: [2, 0] }, c: { answer: [0] }, d: { answer: undefined } };
+  assert.deepEqual(summarizeTestTasks({ picks, questionsById, responses }), [
+    { domainId: '1', objectiveId: '1.1', correct: 2, attempted: 2, unanswered: 0 },
+    { domainId: '2', objectiveId: '2.1', correct: 0, attempted: 1, unanswered: 1 },
+  ]);
+});
