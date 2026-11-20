@@ -5285,6 +5285,19 @@
     "use": "Concept discovery only. No source question wording, answer options, or explanation is reproduced or closely paraphrased."
   },
   "selectionAndOriginality": "The 16 questions target current-guide tasks/skills and vary the bank’s repeated recognition patterns. The uploaded Q&A PDF was used only as a concept-finding reference. Original scenario stems, choices, answer keys, and explanations were written after independent checks against current AWS documentation; no PDF wording or keys were copied.",
+  "hashStages": [
+    {
+      "id": "full-record",
+      "description": "Historical sha256 of each preserved question, stored on preservationBaseline and on the q-saa-arch-31 correction. Those digests are not rewritten.",
+      "excludedFields": []
+    },
+    {
+      "id": "exclude-study-tags",
+      "description": "Comparison stage used after study tags were added. services, difficulty, and a derived domain are removed before hashing a question record, and the same two stored lines are removed before hashing content/questions.json, so tag-only edits still match the historical digests.",
+      "excludedFields": ["services", "difficulty", "domain"],
+      "rewritesBaseline": false
+    }
+  ],
   "preservationBaseline": {
     "sourceCommit": "f99270696a314e645c47f9fb3a031090bed73b35",
     "questionCount": 149,

@@ -4,6 +4,7 @@ import networkPlusTopicsJson from "@/content/topics-network-plus.json";
 import questionsJson from "@/content/questions.json";
 import topicsJson from "@/content/topics.json";
 import { examMatches } from "@/lib/exams";
+import { withDerivedSaaDomain } from "@/lib/saa-tags";
 import type {
   ExamCode,
   Flashcard,
@@ -19,7 +20,7 @@ export const topics = [
   ...(networkPlusTopicsJson as Topic[]),
 ];
 export const flashcards = flashcardsJson as Flashcard[];
-export const questions = questionsJson as Question[];
+export const questions = (questionsJson as Question[]).map(withDerivedSaaDomain);
 export const labs = labsJson as Lab[];
 
 export const conceptOrder: Concept[] = [

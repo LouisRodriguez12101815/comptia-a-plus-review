@@ -67,6 +67,15 @@ export type Question = {
   answer: number | number[];
   explanation: string;
   weak?: boolean;
+  /**
+   * Derived from the first objectiveIds["saa-c03"] task at load (1.x→D1 … 4.x→D4).
+   * Not a stored field. A stored value that disagrees with the task is rejected.
+   */
+  domain?: "D1" | "D2" | "D3" | "D4";
+  /** Service names found in the item text. This is an index, not the answer key. */
+  services?: string[];
+  /** Study-navigation label from item shape. Not an AWS difficulty rating. */
+  difficulty?: "easy" | "medium" | "hard";
 };
 
 export type Lab = {

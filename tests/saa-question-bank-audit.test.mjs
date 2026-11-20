@@ -3,6 +3,7 @@ import { createHash as sha256 } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { SAA_TAG_FIELDS, withoutSaaTagFields } from "../lib/saa-tags.ts";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 const questions = read("content/questions.json");
@@ -130,6 +131,10 @@ test("new and corrected question source checks include every option and retain t
 });
 
 test("pre-existing SAA questions are unchanged from the audit baseline", () => {
+  const tagStage = audit.hashStages.find((stage) => stage.id === "exclude-study-tags");
+  assert.ok(tagStage, "missing exclude-study-tags hash stage");
+  assert.deepEqual(tagStage.excludedFields, [...SAA_TAG_FIELDS]);
+  assert.equal(tagStage.rewritesBaseline, false);
   const currentById = new Map(saa.map((question) => [question.id, question]));
   assert.equal(audit.preservationBaseline.questionCount, 149);
   assert.equal(audit.preservationBaseline.questions.length, 149);
@@ -137,7 +142,7 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   for (const baseline of audit.preservationBaseline.questions) {
     const current = currentById.get(baseline.id);
     assert.ok(current, `missing existing question ${baseline.id}`);
-    const digest = sha256("sha256").update(JSON.stringify(current)).digest("hex");
+    const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(current))).digest("hex");
     const correction = corrections.get(baseline.id);
     if (correction) {
       assert.equal(correction.beforeSha256, baseline.sha256, `${baseline.id}: correction does not cite baseline`);
