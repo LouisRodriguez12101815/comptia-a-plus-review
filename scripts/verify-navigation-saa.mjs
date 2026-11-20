@@ -82,6 +82,10 @@ try {
   await page.locator('main a[href="/aws-saa"]').click();
   await page.waitForURL(origin + '/aws-saa');
   assert.equal(await page.locator('[data-saa-task]').count(), 14);
+  assert.equal(await page.locator('[data-saa-chapter]').count(), 13);
+  assert.ok(await page.locator('#chapter-path').count());
+  assert.ok(await page.getByRole('link', { name: /Study path by textbook chapter|Ruta de estudio|Parcours par chapitre|Rota de estudo/i }).count() >= 0);
+
   assert.equal(await page.locator('#curriculum [data-saa-lesson]').count(), 14);
   assert.equal(await page.locator('#topics a[href^="/notes/"]').count(), 10);
   assert.equal(await page.locator('#shared-resources a[href^="/notes/"]').count(), 5);
