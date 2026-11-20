@@ -9,6 +9,7 @@ import { SaaChapterPath } from "@/app/components/SaaChapterPath";
 import { SaaCurriculumIndex } from "@/app/components/SaaCurriculumIndex";
 import { NetworkWorkspaceNav } from "@/app/components/NetworkWorkspaceNav";
 import { ProgressDashboard } from "@/app/components/ProgressDashboard";
+import { SaaStudyLoop } from "@/app/components/SaaStudyLoop";
 import { SetTrackFocus } from "@/app/components/SetTrackFocus";
 import { StatusChip } from "@/app/components/StatusChip";
 import { TrackLink } from "@/app/components/TrackLink";
@@ -278,7 +279,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
 
       {track.focus ? (
         <>
-          {track.id !== "networking" ? <><ProgressDashboard examFocus={track.focus} /><LearnerSync /></> : null}
+          {track.id !== "networking" ? <><ProgressDashboard examFocus={track.focus} />{track.id === "aws-saa" ? <SaaStudyLoop /> : null}<LearnerSync /></> : null}
 
           {track.id === "networking" ? (
             <>

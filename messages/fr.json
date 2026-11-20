@@ -319,7 +319,7 @@
     "title": "Quiz d'entraînement",
     "intro": "Questions originales rédigées à partir des notes de cours, et non des annales CompTIA. Choisissez un focus d'examen, vérifiez chaque réponse et révisez chaque erreur.",
     "domainTitle": "Domaine {id} : {title}",
-    "domainIntro": "Quiz d'entraînement sur ce domaine uniquement, qui compte pour {weight} % de l'examen N10-009. La réponse et l'explication s'affichent après chaque question.",
+    "domainIntro": "Quiz d'entraînement sur ce domaine uniquement, qui compte pour {weight} % de l'examen {exam}. La réponse et l'explication s'affichent après chaque question.",
     "conceptTitle": "Exercice par concept : {title}",
     "conceptIntro": "Entraînement limité à un concept de l'objectif {objective}. La réponse et l'explication s'affichent après chaque question."
   },
@@ -430,6 +430,7 @@
     "passedLine": "Objectif d’étude atteint : {percent}% de bonnes réponses. Ce résultat ne prédit pas la réussite à l’examen.",
     "failedLine": "Objectif d’étude : {percent}% de bonnes réponses. Révisez les concepts manqués et entraînez-vous sur de nouveaux scénarios.",
     "scaleNote": "Seuil officiel : {passing} sur une échelle de {min} à {max}. Le pourcentage de pratique ne peut pas être converti en cette note.",
+    "saaScoredNote": "L’entraînement note les 65 questions de cette session. L’examen en note 50 et n’indique pas lesquelles des 15 ne comptent pas.",
     "timeUsed": "Temps utilisé",
     "timeAllowed": "Temps alloué",
     "timedOut": "Délai dépassé",
@@ -4035,5 +4036,54 @@
     "insightsLink": "Explorer Insights",
     "coverageLink": "Examiner la couverture",
     "studyLink": "Ouvrir le catalogue de certifications"
+  },
+  "saaStudyLoop": {
+    "heading": "Quoi pratiquer ensuite",
+    "targetNote": "Un domaine sous 80 % est signalé à partir des questions SAA auxquelles vous avez répondu. 80 % est l’objectif de pratique de ce site. Ce n’est pas la note de réussite AWS.",
+    "empty": "Aucune question SAA n’a encore de réponse. Terminez un quiz ou un examen blanc pour voir le résumé par domaine.",
+    "domainLine": "{correct}/{answered} répondues · {percent} % · {sittings, plural, one {# session} other {# sessions}}",
+    "weak": "Sous l’objectif de pratique de 80 %",
+    "domainQuiz": "Pratiquer ce domaine",
+    "nextHeading": "Questions suivantes",
+    "nextEmpty": "Aucun domaine n’est sous 80 %, donc il n’y a pas de série suivante.",
+    "nextLink": "Commencer ces {count} questions",
+    "missHeading": "Ratées dans les quiz non chronométrés",
+    "missEmpty": "Aucune question ratée dans les quiz SAA non chronométrés.",
+    "missCount": "{count, plural, one {# erreur} other {# erreurs}}",
+    "patternsHeading": "Schémas d’architecture",
+    "docsLink": "Documentation AWS",
+    "patternQuiz": "Questions d’entraînement",
+    "patterns": {
+      "multiAz": {
+        "title": "Multi-AZ ou multi-Region",
+        "diagram": "Une région avec deux zones de disponibilité derrière un répartiteur, face à deux régions qui gardent chacune une copie et un choix de routage devant.",
+        "when": "Utilisez le multi-AZ quand une région peut basculer. Utilisez plusieurs régions quand la charge doit survivre à la perte d’une région ou être servie depuis plus d’une région.",
+        "docs": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
+      },
+      "decouple": {
+        "title": "Découpler avec une file, un sujet ou un bus d’événements",
+        "diagram": "Un producteur remet le travail à une file ou à un bus. Les consommateurs le prennent quand ils sont prêts, au lieu de s’appeler et d’attendre.",
+        "when": "Utilisez une file quand le travail doit attendre. Utilisez un sujet quand plusieurs abonnés ont besoin du même message. Utilisez un bus quand les services réagissent à des événements sans appel direct.",
+        "docs": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+      },
+      "cache": {
+        "title": "Cache en périphérie ou devant les données",
+        "diagram": "Les lectures répétées s’arrêtent dans un cache près de l’utilisateur ou de la base. L’origine ou le primaire sert quand le cache n’a pas l’élément.",
+        "when": "Utilisez CloudFront pour le contenu HTTP en périphérie. Utilisez ElastiCache comme cache d’application. Utilisez DAX quand le cache est devant DynamoDB.",
+        "docs": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+      },
+      "storage": {
+        "title": "Choisir le type de stockage",
+        "diagram": "Les objets, les volumes de blocs et les fichiers partagés sont des services différents. La fréquence de lecture choisit la classe S3. Le mode d’attachement choisit EBS, EFS ou FSx.",
+        "when": "Utilisez les classes S3 pour les objets. Utilisez EBS pour un volume sur une instance. Utilisez EFS ou FSx quand les instances ont besoin d’un système de fichiers partagé.",
+        "docs": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      "cost": {
+        "title": "Leviers de coût",
+        "diagram": "Un usage régulier peut prendre un engagement. La capacité disponible qui peut s’interrompre peut prendre Spot. La taille vient de la mesure, pas de la plus grande instance.",
+        "when": "Utilisez les Savings Plans pour un usage régulier. Utilisez Spot seulement si l’interruption est acceptable. Dimensionnez selon le processeur, la mémoire et le trafic mesurés.",
+        "docs": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+      }
+    }
   }
 }

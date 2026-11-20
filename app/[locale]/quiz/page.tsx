@@ -5,6 +5,7 @@ import { getTopic, questions as allQuestions, topics as allTopics } from "@/lib/
 import { getConcept } from "@/lib/concepts";
 import { getDomainQuiz } from "@/lib/domain-quiz";
 import { isStudyFocus } from "@/lib/exams";
+import type { ExamCode } from "@/lib/types";
 import { controlledQuestionIds, questionIdsFromParam } from "@/lib/controlled-question-pool";
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
@@ -24,7 +25,8 @@ export default async function QuizPage({
   const t = await getTranslations("quizPage");
   const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string | string[]; exam?: string };
   const concept = getConcept(conceptParam);
-  const domain = getDomainQuiz(domainParam);
+  const domainExam: ExamCode | undefined = examParam === "saa-c03" ? "saa-c03" : examParam === "n10-009" || examParam === undefined ? "n10-009" : undefined;
+  const domain = domainExam ? getDomainQuiz(domainParam, domainExam) : undefined;
   const questionIds = questionIdsParam
     ? controlledQuestionIds(questionIdsFromParam(questionIdsParam), allQuestions, allTopics, isStudyFocus(examParam) ? examParam : "all")
     : undefined;
@@ -36,12 +38,13 @@ export default async function QuizPage({
           {concept ? t("conceptTitle", { title: concept.title }) : domain ? t("domainTitle", { id: domain.id, title: domain.title }) : t("title")}
         </h1>
         <p className="mt-2 text-slate-400">
-          {concept ? (concept.rule ?? t("conceptIntro", { objective: concept.objective })) : domain ? t("domainIntro", { weight: domain.weight }) : t("intro")}
+          {concept ? (concept.rule ?? t("conceptIntro", { objective: concept.objective })) : domain ? t("domainIntro", { weight: domain.weight, exam: domainExam === "saa-c03" ? "SAA-C03" : "N10-009" }) : t("intro")}
         </p>
       </div>
       {chapter && <ChapterStrip topicId={chapter.id} current="quiz" />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
-      {(domain || concept) && <EnsureTopicFocus codes={["n10-009"]} preferred="n10-009" />}
+      {domain && domainExam ? <EnsureTopicFocus codes={[domainExam]} preferred={domainExam} /> : null}
+      {concept ? <EnsureTopicFocus codes={["n10-009"]} preferred="n10-009" /> : null}
       {questionIds && questionIds.length > 0 ? (
         <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped />
       ) : concept ? (

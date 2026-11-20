@@ -793,6 +793,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         {!immediatePractice && <p className="mt-1 text-sm text-slate-400">
           {t("scaleNote", { min: format.scaleMin, max: format.scaleMax, passing: format.passingScore })}
         </p>}
+        {exam === "saa-c03" && !immediatePractice && <p className="mt-1 text-sm text-slate-400">{t("saaScoredNote")}</p>}
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
           <div><dt className="text-xs text-slate-400">{t("timeUsed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(usedSeconds)}</dd></div>
           {!immediatePractice && <><div><dt className="text-xs text-slate-400">{t("timeAllowed")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{formatClock(sessionSeconds)}</dd></div>

@@ -10375,15 +10375,15 @@
       "clf-c02",
       "saa-c03"
     ],
-    "prompt": "Which service is primarily positioned for DDoS protection?",
+    "prompt": "Which service is primarily positioned for network- and transport-layer DDoS protection?",
     "choices": [
       "AWS Shield",
       "Amazon Inspector",
-      "AWS Budgets",
-      "AWS Config"
+      "Amazon GuardDuty",
+      "A security group"
     ],
     "answer": 0,
-    "explanation": "AWS Shield — Correct. Shield is the AWS service positioned for DDoS protection.\nAmazon Inspector — Incorrect. Inspector looks for vulnerabilities in workloads. It does not absorb a DDoS attack.\nAWS Budgets — Incorrect. Budgets tracks spend. It does not filter attack traffic.\nAWS Config — Incorrect. Config records resource configuration. It is not a DDoS control.",
+    "explanation": "AWS Shield — Correct. Shield is the AWS service positioned for network- and transport-layer DDoS protection.\nAmazon Inspector — Incorrect. Inspector looks for vulnerabilities in workloads. It does not absorb a DDoS attack.\nAmazon GuardDuty — Incorrect. GuardDuty detects threats in logs and findings. It does not absorb a DDoS attack.\nA security group — Incorrect. A security group filters traffic for a resource. It is not a DDoS protection service.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10400,8 +10400,8 @@
     "services": [
       "AWS Shield",
       "Amazon Inspector",
-      "AWS Budgets",
-      "AWS Config"
+      "Amazon GuardDuty",
+      "Amazon VPC"
     ],
     "difficulty": "easy"
   },
@@ -10580,12 +10580,12 @@
     "prompt": "A workload needs Kubernetes orchestration with an AWS-managed control plane. Which service is appropriate?",
     "choices": [
       "Amazon EKS",
-      "Amazon RDS",
-      "Amazon S3",
-      "AWS Config"
+      "Amazon ECS with AWS Fargate",
+      "Amazon EC2 Auto Scaling",
+      "AWS Elastic Beanstalk"
     ],
     "answer": 0,
-    "explanation": "Amazon EKS — Correct. EKS runs Kubernetes and AWS manages the Kubernetes control plane.\nAmazon RDS — Incorrect. RDS is a relational database, not a Kubernetes control plane.\nAmazon S3 — Incorrect. S3 is object storage, not an orchestrator.\nAWS Config — Incorrect. Config records configuration. It does not run Kubernetes.",
+    "explanation": "Amazon EKS — Correct. EKS runs Kubernetes and AWS manages the Kubernetes control plane.\nAmazon ECS with AWS Fargate — Incorrect. ECS with Fargate runs containers without managing servers. It is not a Kubernetes control plane.\nAmazon EC2 Auto Scaling — Incorrect. EC2 Auto Scaling changes the number of instances. It does not run Kubernetes.\nAWS Elastic Beanstalk — Incorrect. Elastic Beanstalk deploys applications. It is not managed Kubernetes.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10601,9 +10601,12 @@
     ],
     "services": [
       "Amazon EKS",
-      "Amazon RDS",
-      "Amazon S3",
-      "AWS Config"
+      "Amazon ECS",
+      "AWS Fargate",
+      "Amazon EC2",
+      "AWS Auto Scaling",
+      "AWS Elastic Beanstalk",
+      "Amazon EC2 Auto Scaling"
     ],
     "difficulty": "easy"
   },
@@ -12471,13 +12474,13 @@
     ],
     "prompt": "A company needs a dedicated private circuit from its data center to AWS. Which service should it use?",
     "choices": [
-      "CloudFront",
+      "AWS Client VPN for each user",
       "Site-to-Site VPN only",
       "AWS Direct Connect",
-      "Route 53 Resolver"
+      "A Transit Gateway attachment with no on-premises connection"
     ],
     "answer": 2,
-    "explanation": "CloudFront — Incorrect. CloudFront caches content at the edge. It is not a private circuit from a data center.\nSite-to-Site VPN only — Incorrect. A Site-to-Site VPN is encrypted over the internet. It is not a dedicated private circuit.\nAWS Direct Connect — Correct. Direct Connect provides a dedicated private network connection from the data center to AWS.\nRoute 53 Resolver — Incorrect. Route 53 Resolver answers DNS queries. It does not carry the private circuit.",
+    "explanation": "AWS Client VPN for each user — Incorrect. Client VPN gives each user a VPN. It is not a dedicated private circuit from the data center.\nSite-to-Site VPN only — Incorrect. A Site-to-Site VPN is encrypted over the internet. It is not a dedicated private circuit.\nAWS Direct Connect — Correct. Direct Connect provides a dedicated private network connection from the data center to AWS.\nA Transit Gateway attachment with no on-premises connection — Incorrect. A Transit Gateway attachment without an on-premises connection does not create that private circuit.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -12488,10 +12491,9 @@
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
     ],
     "services": [
-      "Amazon CloudFront",
       "AWS Site-to-Site VPN",
       "AWS Direct Connect",
-      "Amazon Route 53"
+      "AWS Transit Gateway"
     ],
     "difficulty": "easy"
   },
@@ -13308,12 +13310,12 @@
     "prompt": "A database password must be stored securely and rotated automatically. Which service should hold the value?",
     "choices": [
       "AWS KMS only",
-      "CloudTrail",
+      "Store the password in Parameter Store as a String and expect it to change because the KMS key rotates",
       "AWS Secrets Manager",
-      "S3 Glacier"
+      "Write the password into the application config and redeploy it by hand"
     ],
     "answer": 2,
-    "explanation": "AWS KMS only — Incorrect. KMS protects keys used for encryption. It does not store or rotate the database password.\nCloudTrail — Incorrect. CloudTrail records API activity. It does not hold or rotate a secret.\nAWS Secrets Manager — Correct. Secrets Manager can store the password and rotate it on a schedule.\nS3 Glacier — Incorrect. S3 Glacier is an archive storage class, not a secret store.",
+    "explanation": "AWS KMS only — Incorrect. KMS protects keys used for encryption. It does not store or rotate the database password.\nStore the password in Parameter Store as a String and expect it to change because the KMS key rotates — Incorrect. A String parameter is not encrypted with a KMS key, and key rotation does not rotate the password.\nAWS Secrets Manager — Correct. Secrets Manager can store the password and rotate it on a schedule.\nWrite the password into the application config and redeploy it by hand — Incorrect. A password in application config is not stored as a secret and is not rotated automatically.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13325,9 +13327,8 @@
     ],
     "services": [
       "AWS Key Management Service",
-      "AWS CloudTrail",
-      "AWS Secrets Manager",
-      "Amazon S3 Glacier"
+      "AWS Systems Manager",
+      "AWS Secrets Manager"
     ],
     "difficulty": "easy"
   },
@@ -13420,13 +13421,13 @@
     ],
     "prompt": "A cross-account application needs temporary access to a resource in another AWS account. Which pattern best fits?",
     "choices": [
-      "Create a public bucket",
-      "Share root credentials",
+      "Create an IAM user in the other account and store its access key in the app",
+      "Add an identity policy in the calling account that names the other account's resource, with no role that account trusts",
       "Assume an IAM role with STS",
       "Embed a permanent access key in source code"
     ],
     "answer": 2,
-    "explanation": "Create a public bucket — Incorrect. A public bucket removes the account boundary the application is supposed to cross.\nShare root credentials — Incorrect. Root credentials are permanent, shared, and not a cross-account application identity.\nAssume an IAM role with STS — Correct. The application assumes a role in the other account and receives temporary STS credentials.\nEmbed a permanent access key in source code — Incorrect. A permanent access key in source code is a long-lived secret and is not limited to one session.",
+    "explanation": "Create an IAM user in the other account and store its access key in the app — Incorrect. An access key stored in the app is a long-lived credential, not temporary cross-account access.\nAdd an identity policy in the calling account that names the other account's resource, with no role that account trusts — Incorrect. An identity policy in the calling account does not grant access unless the other account trusts a role.\nAssume an IAM role with STS — Correct. The application assumes a role in the other account and receives temporary STS credentials.\nEmbed a permanent access key in source code — Incorrect. A permanent access key in source code is a long-lived secret and is not limited to one session.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13612,13 +13613,13 @@
     ],
     "prompt": "The business requires service restored within 30 minutes of a disaster. Which metric is being specified?",
     "choices": [
-      "MTU",
-      "IOPS",
+      "Backup retention period",
+      "The durability target of the backup store",
       "RTO",
       "RPO"
     ],
     "answer": 2,
-    "explanation": "MTU — Incorrect. MTU is a network packet size, not a recovery-time target.\nIOPS — Incorrect. IOPS measures storage operations, not how fast the service must return.\nRTO — Correct. RTO is the maximum acceptable time to restore the service, here 30 minutes.\nRPO — Incorrect. RPO is how much data loss is acceptable, not the restore-time target.",
+    "explanation": "Backup retention period — Incorrect. Retention is how long a backup is kept, not how fast the service must return.\nThe durability target of the backup store — Incorrect. Durability is how unlikely it is to lose the stored backup, not the restore-time target.\nRTO — Correct. RTO is the maximum acceptable time to restore the service, here 30 minutes.\nRPO — Incorrect. RPO is how much data loss is acceptable, not the restore-time target.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13666,13 +13667,13 @@
     ],
     "prompt": "A service occasionally returns throttling errors during traffic bursts. Which client behavior improves resilience?",
     "choices": [
-      "Disable monitoring",
-      "Immediately create root credentials",
+      "Raise the request rate until throttling stops",
+      "Open a support case and send no retry",
       "Retry with exponential backoff and jitter where appropriate",
       "Retry continuously with no delay"
     ],
     "answer": 2,
-    "explanation": "Disable monitoring — Incorrect. Turning off monitoring hides the throttling. It does not change the client's retry behavior.\nImmediately create root credentials — Incorrect. Root credentials do not slow down or spread out retries.\nRetry with exponential backoff and jitter where appropriate — Correct. Backoff with jitter spaces retries so a burst does not keep hammering a throttled API.\nRetry continuously with no delay — Incorrect. Immediate retries with no delay repeat the same burst and can extend the throttling.",
+    "explanation": "Raise the request rate until throttling stops — Incorrect. Sending more requests during throttling makes the burst worse.\nOpen a support case and send no retry — Incorrect. A support case does not retry the throttled request.\nRetry with exponential backoff and jitter where appropriate — Correct. Backoff with jitter spaces retries so a burst does not keep hammering a throttled API.\nRetry continuously with no delay — Incorrect. Immediate retries with no delay repeat the same burst and can extend the throttling.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13946,13 +13947,13 @@
     ],
     "prompt": "A web API is CPU-bound and runs continuously on EC2. Which first step is most appropriate for performance architecture?",
     "choices": [
-      "Move all data to Glacier",
+      "Move the API to a burstable instance and leave the CPU credit balance at zero",
       "Disable load balancing",
       "Choose an instance family/size matched to CPU needs and use scaling as required",
-      "Add more IAM users"
+      "Choose a memory-optimized instance family and scale out when memory utilization is high"
     ],
     "answer": 2,
-    "explanation": "Move all data to Glacier — Incorrect. Glacier is archive storage and does not give a CPU-bound API more compute.\nDisable load balancing — Incorrect. Removing the load balancer does not match the instance to the CPU demand.\nChoose an instance family/size matched to CPU needs and use scaling as required — Correct. Start by matching the instance family and size to the CPU profile, and scale when measured load requires it.\nAdd more IAM users — Incorrect. More IAM users do not add CPU capacity.",
+    "explanation": "Move the API to a burstable instance and leave the CPU credit balance at zero — Incorrect. A burstable instance with no CPU credits left is slower, not a match for a continuously CPU-bound API.\nDisable load balancing — Incorrect. Removing the load balancer does not match the instance to the CPU demand.\nChoose an instance family/size matched to CPU needs and use scaling as required — Correct. Start by matching the instance family and size to the CPU profile, and scale when measured load requires it.\nChoose a memory-optimized instance family and scale out when memory utilization is high — Incorrect. A memory-optimized family and a memory metric do not match a workload that is CPU-bound.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13964,8 +13965,6 @@
     ],
     "services": [
       "Amazon EC2",
-      "Amazon S3 Glacier",
-      "AWS Identity and Access Management",
       "Elastic Load Balancing"
     ],
     "difficulty": "easy"
@@ -13978,13 +13977,13 @@
     ],
     "prompt": "Analysts need ad hoc SQL queries over large datasets already stored in S3. Which service avoids moving the data into a database server first?",
     "choices": [
-      "AWS Shield",
+      "Copy the data into RDS first",
       "Amazon Athena",
-      "Amazon RDS Proxy",
-      "EBS Multi-Attach"
+      "Load the data into Redshift before running SQL",
+      "Index every object in OpenSearch first"
     ],
     "answer": 1,
-    "explanation": "AWS Shield — Incorrect. Shield is DDoS protection and does not query data in S3.\nAmazon Athena — Correct. Athena runs SQL directly against data in S3, so the data does not have to be loaded into a database server first.\nAmazon RDS Proxy — Incorrect. RDS Proxy pools database connections. It does not query files in S3.\nEBS Multi-Attach — Incorrect. EBS Multi-Attach shares a volume with instances. It is not a query engine for S3.",
+    "explanation": "Copy the data into RDS first — Incorrect. Copying into RDS moves the data into a database server, which the question asks to avoid.\nAmazon Athena — Correct. Athena runs SQL directly against data in S3, so the data does not have to be loaded into a database server first.\nLoad the data into Redshift before running SQL — Incorrect. Loading into Redshift moves the data into a data warehouse before the query.\nIndex every object in OpenSearch first — Incorrect. Indexing in OpenSearch copies the data into a search cluster before it can be queried.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13996,10 +13995,10 @@
     ],
     "services": [
       "Amazon S3",
-      "AWS Shield",
-      "Amazon Athena",
       "Amazon RDS",
-      "Amazon EBS"
+      "Amazon Athena",
+      "Amazon Redshift",
+      "Amazon OpenSearch Service"
     ],
     "difficulty": "medium"
   },
@@ -14259,13 +14258,13 @@
     ],
     "prompt": "A cost question offers two architectures with the same compute price, but one sends large cross-AZ data volumes continuously. What hidden factor must be evaluated?",
     "choices": [
-      "Route 53 domain registration only",
-      "IAM user count only",
+      "A Savings Plan price that is the same in both architectures",
+      "A CloudWatch alarm count that does not change with the cross-AZ volume",
       "Data-transfer charges",
-      "S3 object key length"
+      "An S3 request price for data that never leaves the instance"
     ],
     "answer": 2,
-    "explanation": "Route 53 domain registration only — Incorrect. Domain registration is a small fixed fee and does not explain continuous cross-AZ traffic.\nIAM user count only — Incorrect. The number of IAM users is not the data-transfer bill.\nData-transfer charges — Correct. Cross-AZ traffic can be billed even when the compute price of the two designs is the same.\nS3 object key length — Incorrect. Object key length is not a data-transfer charge.",
+    "explanation": "A Savings Plan price that is the same in both architectures — Incorrect. A price that is the same in both designs does not explain the cost of continuous cross-AZ traffic.\nA CloudWatch alarm count that does not change with the cross-AZ volume — Incorrect. An alarm count that does not change with the traffic is not the data-transfer bill.\nData-transfer charges — Correct. Cross-AZ traffic can be billed even when the compute price of the two designs is the same.\nAn S3 request price for data that never leaves the instance — Incorrect. Request charges for data that stays on the instance do not measure cross-AZ volume transfer.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -14276,8 +14275,8 @@
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
     ],
     "services": [
-      "Amazon Route 53",
-      "AWS Identity and Access Management",
+      "Savings Plans",
+      "Amazon CloudWatch",
       "Amazon S3"
     ],
     "difficulty": "medium"

@@ -319,7 +319,7 @@
     "title": "Cuestionario de práctica",
     "intro": "Preguntas originales escritas a partir de los apuntes de clase, no volcados de exámenes de CompTIA. Elige un enfoque del examen, comprueba cada respuesta y repasa cada fallo.",
     "domainTitle": "Dominio {id}: {title}",
-    "domainIntro": "Cuestionario de práctica solo de este dominio, que vale el {weight} % del examen N10-009. La respuesta y la explicación aparecen después de cada pregunta.",
+    "domainIntro": "Cuestionario de práctica solo de este dominio, que vale el {weight} % del examen {exam}. La respuesta y la explicación aparecen después de cada pregunta.",
     "conceptTitle": "Práctica por concepto: {title}",
     "conceptIntro": "Práctica limitada a un concepto del objetivo {objective}. La respuesta y la explicación aparecen después de cada pregunta."
   },
@@ -430,6 +430,7 @@
     "passedLine": "Objetivo de estudio alcanzado: {percent}% de aciertos. No predice aprobar el examen.",
     "failedLine": "Objetivo de estudio: {percent}% de aciertos. Revisa los conceptos fallados y practica escenarios nuevos.",
     "scaleNote": "Puntuación oficial para aprobar: {passing} en una escala de {min}–{max}. El porcentaje de práctica no se puede convertir a esa puntuación.",
+    "saaScoredNote": "La práctica puntúa las 65 preguntas de esta sesión. El examen puntúa 50 y no indica cuáles 15 no cuentan.",
     "timeUsed": "Tiempo usado",
     "timeAllowed": "Tiempo permitido",
     "timedOut": "Tiempo agotado",
@@ -4035,5 +4036,54 @@
     "insightsLink": "Explorar Insights",
     "coverageLink": "Revisar cobertura",
     "studyLink": "Abrir catálogo de certificaciones"
+  },
+  "saaStudyLoop": {
+    "heading": "Dónde practicar ahora",
+    "targetNote": "Un dominio por debajo del 80% se marca con las preguntas SAA respondidas. El 80% es la meta de práctica de este sitio. No es la nota de aprobación de AWS.",
+    "empty": "Todavía no hay preguntas SAA respondidas. Termina un cuestionario o un simulacro para ver el resumen por dominio.",
+    "domainLine": "{correct}/{answered} respondidas · {percent}% · {sittings, plural, one {# sesión} other {# sesiones}}",
+    "weak": "Por debajo de la meta de práctica del 80%",
+    "domainQuiz": "Practicar este dominio",
+    "nextHeading": "Siguientes preguntas",
+    "nextEmpty": "Ningún dominio está por debajo del 80%, así que no hay un siguiente grupo.",
+    "nextLink": "Empezar estas {count} preguntas",
+    "missHeading": "Falladas en cuestionarios sin tiempo",
+    "missEmpty": "Todavía no hay fallos en cuestionarios SAA sin tiempo.",
+    "missCount": "{count, plural, one {# fallo} other {# fallos}}",
+    "patternsHeading": "Patrones de arquitectura",
+    "docsLink": "Documentación de AWS",
+    "patternQuiz": "Preguntas de práctica",
+    "patterns": {
+      "multiAz": {
+        "title": "Multi-AZ o multi-Region",
+        "diagram": "Una región con dos zonas de disponibilidad detrás de un balanceador, frente a dos regiones que conservan una copia y una decisión de enrutamiento delante.",
+        "when": "Usa Multi-AZ cuando una región puede hacer la conmutación. Usa más de una región cuando la carga debe sobrevivir a la caída de una región o atenderse desde más de una región.",
+        "docs": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
+      },
+      "decouple": {
+        "title": "Desacoplar con una cola, un tema o un bus de eventos",
+        "diagram": "Un productor entrega el trabajo a una cola o a un bus. Los consumidores lo toman cuando pueden, en lugar de llamarse y esperar.",
+        "when": "Usa una cola cuando el trabajo debe esperar. Usa un tema cuando varios suscriptores necesitan el mismo mensaje. Usa un bus cuando los servicios reaccionan a eventos sin una llamada directa.",
+        "docs": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+      },
+      "cache": {
+        "title": "Caché en el borde o delante de los datos",
+        "diagram": "Las lecturas repetidas se detienen en una caché cerca del usuario o de la base de datos. El origen o el primario se usa cuando la caché no tiene el elemento.",
+        "when": "Usa CloudFront para contenido HTTP en el borde. Usa ElastiCache como caché de la aplicación. Usa DAX cuando la caché está delante de DynamoDB.",
+        "docs": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+      },
+      "storage": {
+        "title": "Elegir el tipo de almacenamiento",
+        "diagram": "Los objetos, los volúmenes de bloque y los archivos compartidos son servicios distintos. La frecuencia de lectura decide la clase de S3. El modo de conexión decide EBS, EFS o FSx.",
+        "when": "Usa clases de S3 para objetos. Usa EBS para un volumen en una instancia. Usa EFS o FSx cuando las instancias necesitan un sistema de archivos compartido.",
+        "docs": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      "cost": {
+        "title": "Palancas de costo",
+        "diagram": "El uso constante puede llevar un compromiso. La capacidad sobrante que puede interrumpirse puede usar Spot. El tamaño sale de lo medido, no de la instancia más grande.",
+        "when": "Usa Savings Plans para un uso constante. Usa Spot solo si la interrupción es aceptable. Ajusta el tamaño con el CPU, la memoria y el tráfico medidos.",
+        "docs": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+      }
+    }
   }
 }

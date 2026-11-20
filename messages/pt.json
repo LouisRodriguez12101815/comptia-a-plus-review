@@ -319,7 +319,7 @@
     "title": "Quiz de prática",
     "intro": "Questões originais escritas a partir das anotações de aula, não são provas vazadas da CompTIA. Escolha um foco da prova, confira cada resposta e revise cada erro.",
     "domainTitle": "Domínio {id}: {title}",
-    "domainIntro": "Quiz de prática só deste domínio, que vale {weight}% da prova N10-009. A resposta e a explicação aparecem após cada pergunta.",
+    "domainIntro": "Quiz de prática só deste domínio, que vale {weight}% da prova {exam}. A resposta e a explicação aparecem após cada pergunta.",
     "conceptTitle": "Treino por conceito: {title}",
     "conceptIntro": "Prática limitada a um conceito do objetivo {objective}. A resposta e a explicação aparecem depois de cada pergunta."
   },
@@ -430,6 +430,7 @@
     "passedLine": "Meta de estudo atingida: {percent}% de acertos. Isso não prevê aprovação no exame.",
     "failedLine": "Meta de estudo: {percent}% de acertos. Revise os conceitos errados e pratique cenários novos.",
     "scaleNote": "Pontuação oficial de aprovação: {passing} em uma escala de {min} a {max}. O percentual de prática não pode ser convertido nessa pontuação.",
+    "saaScoredNote": "A prática pontua as 65 questões desta sessão. O exame pontua 50 e não indica quais 15 não contam.",
     "timeUsed": "Tempo usado",
     "timeAllowed": "Tempo permitido",
     "timedOut": "Tempo esgotado",
@@ -4035,5 +4036,54 @@
     "insightsLink": "Explorar Insights",
     "coverageLink": "Ver cobertura dos objetivos",
     "studyLink": "Abrir catálogo de certificações"
+  },
+  "saaStudyLoop": {
+    "heading": "O que praticar agora",
+    "targetNote": "Um domínio abaixo de 80% é marcado a partir das questões SAA respondidas. 80% é a meta de prática deste site. Não é a nota de aprovação da AWS.",
+    "empty": "Ainda não há questões SAA respondidas. Termine um questionário ou um simulado para ver o resumo por domínio.",
+    "domainLine": "{correct}/{answered} respondidas · {percent}% · {sittings, plural, one {# sessão} other {# sessões}}",
+    "weak": "Abaixo da meta de prática de 80%",
+    "domainQuiz": "Praticar este domínio",
+    "nextHeading": "Próximas questões",
+    "nextEmpty": "Nenhum domínio está abaixo de 80%, então não há um próximo conjunto.",
+    "nextLink": "Começar estas {count} questões",
+    "missHeading": "Erradas em questionários sem tempo",
+    "missEmpty": "Ainda não há erros em questionários SAA sem tempo.",
+    "missCount": "{count, plural, one {# erro} other {# erros}}",
+    "patternsHeading": "Padrões de arquitetura",
+    "docsLink": "Documentação da AWS",
+    "patternQuiz": "Questões de prática",
+    "patterns": {
+      "multiAz": {
+        "title": "Multi-AZ ou multi-Region",
+        "diagram": "Uma região com duas zonas de disponibilidade atrás de um balanceador, contra duas regiões que guardam uma cópia e uma escolha de roteamento na frente.",
+        "when": "Use Multi-AZ quando uma região pode fazer o failover. Use mais de uma região quando a carga precisa sobreviver à queda de uma região ou ser atendida em mais de uma região.",
+        "docs": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
+      },
+      "decouple": {
+        "title": "Desacoplar com uma fila, um tópico ou um barramento de eventos",
+        "diagram": "Um produtor entrega o trabalho a uma fila ou a um barramento. Os consumidores pegam quando podem, em vez de se chamar e esperar.",
+        "when": "Use uma fila quando o trabalho precisa esperar. Use um tópico quando vários assinantes precisam da mesma mensagem. Use um barramento quando os serviços reagem a eventos sem uma chamada direta.",
+        "docs": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+      },
+      "cache": {
+        "title": "Cache na borda ou na frente dos dados",
+        "diagram": "Leituras repetidas param em um cache perto do usuário ou do banco. A origem ou o primário é usado quando o cache não tem o item.",
+        "when": "Use CloudFront para conteúdo HTTP na borda. Use ElastiCache como cache da aplicação. Use DAX quando o cache fica na frente do DynamoDB.",
+        "docs": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+      },
+      "storage": {
+        "title": "Escolher o tipo de armazenamento",
+        "diagram": "Objetos, volumes de bloco e arquivos compartilhados são serviços diferentes. A frequência de leitura decide a classe do S3. O modo de conexão decide EBS, EFS ou FSx.",
+        "when": "Use classes do S3 para objetos. Use EBS para um volume em uma instância. Use EFS ou FSx quando as instâncias precisam de um sistema de arquivos compartilhado.",
+        "docs": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      "cost": {
+        "title": "Alavancas de custo",
+        "diagram": "O uso constante pode ter um compromisso. A capacidade ociosa que pode parar pode usar Spot. O tamanho vem da medição, não da maior instância.",
+        "when": "Use Savings Plans para uso constante. Use Spot só quando a interrupção for aceitável. Ajuste o tamanho com CPU, memória e tráfego medidos.",
+        "docs": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+      }
+    }
   }
 }
