@@ -74,13 +74,13 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
             return <article key={item.code} className="rounded-xl border border-slate-700 bg-slate-900/60 p-4" data-testid={`summary-${item.code}`}>
               <h3 className="font-medium text-white">{item.name}</h3>
               <p className="mt-1 font-mono text-sm text-teal-300">{item.code}</p>
-              <p className="mt-3 text-2xl font-semibold">{t.rich("weightedCoverage", {
+              <p className="mt-3 text-2xl font-semibold">{stats.total === 0 ? t("noObjectiveEstimate") : t.rich("weightedCoverage", {
                 percent: stats.weighted,
                 muted: (chunks) => <span className="text-sm font-normal text-slate-300">{chunks}</span>,
               })}</p>
               <p className="mt-2 text-sm text-slate-300">{t("summaryCounts", { covered: stats.covered, partial: stats.partial, missing: stats.missing })}</p>
               <p className="mt-1 text-xs text-slate-400">{t("summaryTotal", { total: stats.total })}</p>
-              <Link href={`/test?exam=${item.code}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("takeTest")}</Link>
+              {stats.total === 0 ? <p className="mt-2 text-sm text-slate-300">{t("emptyMatrixDetails")} <Link href="/insights" className="text-teal-300 underline underline-offset-4">{t("insightsLink")}</Link></p> : <Link href={`/test?exam=${item.code}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("takeTest")}</Link>}
             </article>;
           })}
         </div>

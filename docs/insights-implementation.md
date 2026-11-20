@@ -1,5 +1,7 @@
 # GapLift project insights milestone
 
+> Historical milestone record: the figures and checkout descriptions below describe the November 19, 2026 Insights snapshot at `f992706`. They are not current inventory. PR #230 later added 24 SAA questions; use `npm run report:objectives` or the live Insights page for figures calculated from the present checkout.
+
 **Reconciled branch/base:** `feat/insights` at `f99270696a314e645c47f9fb3a031090bed73b35` (`origin/main`). The prior Insights base was `c4c10061f2c3a4869097e2b6a4ff06dcac027ab6`; the original branch is preserved locally as `feat/insights-pre-main`.
 
 **Recalculated:** 2026-11-19

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import objectives from "@/content/objectives.json";
-import { flashcards, labs, questions, topics } from "@/lib/content";
-import { buildCoverageFromContent, buildInsightsFromCoverage } from "@/lib/objective-coverage.mjs";
+import { getProjectInsights } from "@/lib/project-insights";
+import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/insights">): Promise<Metadata> {
@@ -14,8 +14,7 @@ export default async function InsightsPage({ params }: PageProps<"/[locale]/insi
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "insightsPage" });
-  const coverage = buildCoverageFromContent({ objectives, topics, cards: flashcards, questions, labs, visuals: {} });
-  const insights = buildInsightsFromCoverage({ ...coverage, topics, cards: flashcards, questions, labs });
+  const { insights } = getProjectInsights();
   const number = new Intl.NumberFormat(locale);
   const percent = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 });
 
@@ -44,7 +43,7 @@ export default async function InsightsPage({ params }: PageProps<"/[locale]/insi
         {insights.exams.map((exam) => <li key={exam.code} className="space-y-2">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <h3 className="font-medium text-slate-100">{exam.name} <span className="font-mono text-xs text-teal-300">{exam.code}</span></h3>
-            <p className="text-sm text-slate-300">{t("weighted", { percent: percent.format(exam.weighted / 100) })}</p>
+            <p className="text-sm text-slate-300">{exam.total === 0 ? t("noObjectiveEstimate") : t("weighted", { percent: percent.format(exam.weighted / 100) })}</p>
           </div>
           <div className="flex h-3 overflow-hidden rounded bg-slate-800" aria-hidden="true">
             <span className="bg-emerald-400" style={{ width: `${exam.total ? 100 * exam.covered / exam.total : 0}%` }} />
@@ -74,12 +73,16 @@ export default async function InsightsPage({ params }: PageProps<"/[locale]/insi
         <table className="w-full min-w-[38rem] border-collapse text-left text-sm">
           <caption className="sr-only">{t("resourcesTableCaption")}</caption>
           <thead><tr className="border-b border-slate-700 text-slate-300"><th scope="col" className="py-2 pr-4">{t("track")}</th><th scope="col" className="py-2 px-2">{t("questions")}</th><th scope="col" className="py-2 px-2">{t("flashcards")}</th><th scope="col" className="py-2 px-2">{t("labs")}</th><th scope="col" className="py-2 px-2">{t("weightedCoverage")}</th></tr></thead>
-          <tbody>{insights.resourceTracks.map((track) => <tr key={track.code} className="border-b border-slate-800 text-slate-200"><th scope="row" className="py-2 pr-4 font-medium">{track.name} <span className="font-mono text-xs text-teal-300">{track.code}</span></th><td className="py-2 px-2">{number.format(track.questions)}</td><td className="py-2 px-2">{number.format(track.flashcards)}</td><td className="py-2 px-2">{number.format(track.labs)}</td><td className="py-2 px-2">{track.weighted === null ? t("noMatrix") : percent.format(track.weighted / 100)}</td></tr>)}</tbody>
+          <tbody>{insights.resourceTracks.map((track) => {
+            const exam = insights.exams.find((item) => item.code === track.code);
+            const estimate = !exam ? t("noMatrix") : exam.total === 0 ? t("noObjectiveEstimate") : percent.format(track.weighted! / 100);
+            return <tr key={track.code} className="border-b border-slate-800 text-slate-200"><th scope="row" className="py-2 pr-4 font-medium">{track.name} <span className="font-mono text-xs text-teal-300">{track.code}</span></th><td className="py-2 px-2">{number.format(track.questions)}</td><td className="py-2 px-2">{number.format(track.flashcards)}</td><td className="py-2 px-2">{number.format(track.labs)}</td><td className="py-2 px-2">{estimate}</td></tr>;
+          })}</tbody>
           <tbody>{insights.exams.flatMap((exam) => exam.domains.map((domain) => <tr key={`${exam.code}:${domain.id}`} className="border-b border-slate-800 text-slate-300"><th scope="row" className="py-2 pr-4 font-normal">{exam.code} · {domain.id}</th><td className="py-2 px-2">{number.format(domain.questions)}</td><td className="py-2 px-2">{number.format(domain.flashcards)}</td><td className="py-2 px-2">{number.format(domain.labs)}</td><td className="py-2 px-2">—</td></tr>))}</tbody>
         </table>
       </div>
       {insights.exams.filter((exam) => exam.total === 0).map((exam) => <p key={exam.code} className="text-sm text-slate-300">{t("emptyTrack", { track: exam.name, questions: number.format(exam.questions), flashcards: number.format(exam.flashcards), labs: number.format(exam.labs) })}</p>)}
-      {insights.resourceTracks.filter((track) => track.weighted === null).map((track) => <p key={track.code} className="text-sm text-slate-300">{t("noMatrixTrack", { track: track.name, code: track.code, labs: number.format(track.labs) })}</p>)}
+      {insights.resourceTracks.filter((track) => track.weighted === null).map((track) => <p key={track.code} className="text-sm text-slate-300">{t("noMatrixTrack", { track: track.name, code: track.code, questions: number.format(track.questions), flashcards: number.format(track.flashcards), labs: number.format(track.labs) })}</p>)}
     </figure>
 
     <section className="space-y-4 rounded-2xl border border-slate-700 bg-slate-900/60 p-5" aria-labelledby="candidates-title">
@@ -90,5 +93,12 @@ export default async function InsightsPage({ params }: PageProps<"/[locale]/insi
       {insights.partialCandidates.length ? <ol className="list-decimal space-y-3 pl-6">{insights.partialCandidates.map((item) => <li key={`${item.exam}:${item.id}`} className="text-slate-200"><span className="font-mono text-sm text-teal-300">{item.exam} · {item.id}</span> — {item.title} <span className="text-sm text-slate-400">({item.domainTitle}, {percent.format(item.weight / 100)})</span></li>)}</ol> : <p className="text-slate-300">{t("noCandidates")}</p>}
       <p className="text-xs text-slate-500">{t("candidateSource")}</p>
     </section>
+
+    <nav aria-label={t("exploreTitle")} className="flex flex-wrap gap-3">
+      <Link href="/certifications" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-200">{t("catalogLink")}</Link>
+      <Link href="/aws-clf" className="inline-flex min-h-11 items-center rounded-full border border-teal-400 px-4 py-2 text-sm text-teal-100">{t("studyExampleLink")}</Link>
+      <Link href="/aws-clf/assessment" className="inline-flex min-h-11 items-center rounded-full border border-indigo-400 px-4 py-2 text-sm text-indigo-100">{t("practiceLink")}</Link>
+      <Link href="/weak-areas" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-200">{t("reviewLink")}</Link>
+    </nav>
   </article>;
 }

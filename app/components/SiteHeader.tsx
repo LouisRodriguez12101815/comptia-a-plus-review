@@ -202,6 +202,7 @@ export function SiteHeader() {
   ]);
   const methodologyItems = makeItems([
     { href: "/", label: "GapLift", match: (p) => p === "/" },
+    { href: "/capstone", label: t("capstone"), match: (p) => p.startsWith("/capstone") },
     { href: "/methodology", label: t("methodologyLink"), match: (p) => p.startsWith("/methodology") },
     { href: "/assessment-workflow", label: t("assessmentWorkflow"), match: (p) => p.startsWith("/assessment-workflow") },
   ]);
@@ -220,6 +221,9 @@ export function SiteHeader() {
     <header className="relative z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-2 sm:gap-3 sm:py-4">
         <nav className="hidden items-center gap-2 lg:flex" aria-label={t("tracksLabel")}>
+          <Link href="/capstone" aria-current={pathname.startsWith("/capstone") ? "page" : undefined} className={`${pill} ${pathname.startsWith("/capstone") ? "border-teal-400 bg-teal-400/10 font-medium text-teal-100" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
+            {t("capstone")}
+          </Link>
           <Link href="/methodology" aria-current={pathname === "/methodology" ? "page" : undefined} className={`${pill} ${groups[5].active ? "border-teal-400 bg-teal-400 font-medium text-slate-950" : "border-slate-700 text-slate-200 hover:border-teal-400 hover:text-white"}`}>
             {t("methodology")}
           </Link>

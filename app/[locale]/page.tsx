@@ -31,6 +31,14 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <Link id="game-heading" href="/game" className={styles.compatibility}>Outage Ops <span aria-hidden="true">→</span></Link>
         </div>
       </HomeStory>
+      <nav aria-label={t("graderPath")} className="mx-auto mt-5 flex max-w-5xl flex-wrap items-center justify-center gap-2 px-4 text-sm">
+        <span className="w-full text-center text-xs font-semibold uppercase tracking-wide text-slate-400">{t("graderPath")}</span>
+        <Link href="/insights" className="inline-flex min-h-11 items-center rounded-full border border-indigo-400/60 px-4 py-2 text-indigo-100">{t("graderInsights")}</Link>
+        <Link href="/certifications" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-200">{t("graderExample")}</Link>
+        <Link href="/aws-clf" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-200">{t("graderStudy")}</Link>
+        <Link href="/aws-clf/assessment" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-200">{t("graderPractice")}</Link>
+        <Link href="/weak-areas" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-200">{t("graderReview")}</Link>
+      </nav>
     </div>
   );
 }
