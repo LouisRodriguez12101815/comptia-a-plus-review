@@ -117,8 +117,8 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
 
 export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string }) {
   const t = useTranslations("examTest");
-  const [exam, setExam] = useState<ExamCode>(practiceMode ? "clf-c02" : initialExam ?? "220-1201");
-  const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialFocus.length > 0 ? "quick" : "full");
+  const [exam, setExam] = useState<ExamCode>(practiceMode ? (initialExam === "saa-c03" ? "saa-c03" : "clf-c02") : initialExam ?? "220-1201");
+  const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialFocus.length > 0 ? "quick" : initialExam === "saa-c03" ? "count20" : "full");
   const [mode, setMode] = useState<"standard" | "targeted">(initialFocus.length > 0 ? "targeted" : "standard");
   const [runInfo, setRunInfo] = useState<{ kind: RunKind; objectiveIds: string[] }>({ kind: "standard", objectiveIds: [] });
   const [sessionSeconds, setSessionSeconds] = useState(0);
@@ -170,7 +170,15 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const planned = Math.min(requested, sessionPool.totalUnique);
   const quota = useMemo(() => allocateByWeight(sessionPool.domains, planned), [sessionPool, planned]);
 
-  const lengthLabel = (id: string) => (id === "mixed20" ? t("mixedPractice") : id === "half" ? t("halfExam") : id === "quick" ? t("quickCheck") : t("fullExam"));
+  const lengthLabel = (id: string) => {
+    if (id === "mixed20") return t("mixedPractice");
+    if (id === "count10") return t("count10");
+    if (id === "count20") return t("count20");
+    if (id === "count40") return t("count40");
+    if (id === "half") return t("halfExam");
+    if (id === "quick") return t("quickCheck");
+    return t("fullExam");
+  };
 
   const deadline = useRef(0);
   const completed = useRef(false);
@@ -401,7 +409,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("certification")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {examCodes.filter((code) => !practiceMode || code === "clf-c02").map((code) => (
+            {examCodes.filter((code) => !practiceMode || code === "clf-c02" || code === "saa-c03").map((code) => (
               <label key={code} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${exam === code ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
                 <span className="flex items-center gap-2">
                   <input type="radio" name="exam" value={code} checked={exam === code} onChange={() => setExam(code)} className="accent-teal-400" />

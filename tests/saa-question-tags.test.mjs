@@ -17,7 +17,7 @@ const base = {
 };
 
 test("every SAA question has one legal task and study tags that match the item text", () => {
-  assert.equal(saa.length, 173);
+  assert.equal(saa.length, 314);
   for (const question of saa) assertSaaQuestionTags(question);
   for (const question of questions) {
     if (question.examCodes?.includes("saa-c03")) continue;

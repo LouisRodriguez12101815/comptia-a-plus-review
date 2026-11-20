@@ -29,6 +29,9 @@ test('formats match the objective matrix and use the published exam pacing', () 
   assert.equal(questionsForLength('saa-c03', 'full'), 65);
   assert.equal(questionsForLength('clf-c02', 'half'), 33);
   assert.equal(questionsForLength('saa-c03', 'half'), 33);
+  assert.equal(questionsForLength('saa-c03', 'count10'), 10);
+  assert.equal(questionsForLength('saa-c03', 'count20'), 20);
+  assert.equal(questionsForLength('saa-c03', 'count40'), 40);
   assert.equal(approximatePassPercent('220-1201'), 72);
 });
 

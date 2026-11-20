@@ -17,10 +17,14 @@ export async function SaaCurriculumIndex() {
       <div>
         <h2 id="saa-curriculum-heading" className="text-2xl font-semibold text-white">{t("curriculum")}</h2>
         <p className="mt-2 text-sm leading-6 text-slate-300">{t("curriculumIntro")}</p>
+        <p className="mt-2 text-sm leading-6 text-slate-300">{t("saaPracticeTestDetail")}</p>
+        <p className="mt-2"><Link href="/test?exam=saa-c03" className={resourceLink}>{t("saaPracticeTest")}</Link></p>
         <nav aria-label={t("curriculum")} className="mt-3 flex flex-wrap gap-x-5">
           {domains.map((domain) => <a key={domain.id} href={`#saa-domain-${domain.id}`} className={resourceLink}>{domain.title}</a>)}
+          <a href="#chapter-path" className={resourceLink}>{t("chapterPath")}</a>
           <a href="#topics" className={resourceLink}>{t("chapterBrowsing")}</a>
           <a href="#shared-resources" className={resourceLink}>{t("sharedResources")}</a>
+          <Link href="/test?exam=saa-c03" className={resourceLink}>{t("saaPracticeTest")}</Link>
         </nav>
       </div>
       {domains.map((domain) => (
@@ -52,6 +56,7 @@ export async function SaaCurriculumIndex() {
       <nav aria-label={t("sharedReview")} className="flex flex-wrap gap-x-6 rounded-xl border border-slate-700 p-4">
         <Link href="/weak-areas" className={resourceLink}>{t("sharedReview")}</Link>
         <Link href="/performance" className={resourceLink}>{t("sharedPerformance")}</Link>
+        <Link href="/test?exam=saa-c03" className={resourceLink}>{t("saaPracticeTest")}</Link>
       </nav>
     </section>
   );
