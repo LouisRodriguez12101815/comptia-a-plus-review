@@ -15,6 +15,8 @@ import { answerLabel, correctIndices, isCorrectPick, mapAuthoredAnswersToDisplay
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
+import { saaTaskId } from "@/lib/saa-tags";
+import { cardsForTask } from "@/lib/study/memory";
 import { examForStudyQuestion, examForStudyQuestions, isN10Question, isQuestionForExam, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
 import { wrongChoicesForQuiz } from "@/lib/quiz-answer-history";
 import { visualItemsForTopic } from "@/lib/visuals";
@@ -233,6 +235,18 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                   {t("correctAnswer", { answer: answerLabel(question, question.answer) })}
                 </p>
                 <p className="mt-2 text-sm text-slate-400"><ExplanationText text={question.explanation} /></p>
+                {(() => {
+                  const task = saaTaskId(question);
+                  if (!task || cardsForTask(task).length === 0) return null;
+                  return (
+                    <Link
+                      href={`/flashcards?exam=saa-c03&task=${task}&mode=flip`}
+                      className="mt-3 inline-flex min-h-11 items-center text-sm text-teal-200 underline"
+                    >
+                      {t("reviewCards")}
+                    </Link>
+                  );
+                })()}
               </article>
             ))}
           </section>
