@@ -20,7 +20,33 @@ const browserPath = option('--browser', undefined);
 
 const pages = [
   '/',
+  '/es/',
+  '/fr/',
+  '/pt/',
+  '/capstone',
+  '/es/capstone',
+  '/fr/capstone',
+  '/pt/capstone',
   '/methodology',
+  '/es/methodology',
+  '/fr/methodology',
+  '/pt/methodology',
+  '/certifications',
+  '/es/certifications',
+  '/fr/certifications',
+  '/pt/certifications',
+  '/aws-clf',
+  '/es/aws-clf',
+  '/fr/aws-clf',
+  '/pt/aws-clf',
+  '/aws-clf/assessment',
+  '/es/aws-clf/assessment',
+  '/fr/aws-clf/assessment',
+  '/pt/aws-clf/assessment',
+  '/weak-areas',
+  '/es/weak-areas',
+  '/fr/weak-areas',
+  '/pt/weak-areas',
   '/assessment-workflow',
   '/certifications',
   '/aws-saa',
@@ -54,7 +80,7 @@ try {
     for (const width of [390, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       const page = await context.newPage();
-      const response = await page.goto(origin + path, { waitUntil: 'networkidle' });
+      const response = await page.goto(origin + path, { waitUntil: 'domcontentloaded' });
       if (!response || !response.ok()) {
         console.log(`✗ ${path} (${width}px): HTTP ${response?.status() ?? 'no response'}`);
         blocking += 1;

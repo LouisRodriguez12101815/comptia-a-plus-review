@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MethodologyWorkflow } from "@/app/components/MethodologyWorkflow";
+import { getProjectInsights } from "@/lib/project-insights";
+import { CoverageSnapshot } from "@/app/components/CoverageSnapshot";
 
 const workflowAreas = ["ingest", "map", "assess", "drill", "remediate", "measure"] as const;
 const forkSteps = ["rubric", "sources", "map", "coverage", "gaps", "assets", "validate", "deploy"] as const;
@@ -17,6 +19,9 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
   setRequestLocale(locale);
   const t = await getTranslations("methodologyPage");
   const journey = await getTranslations("navigationJourney");
+  const { insights } = getProjectInsights();
+  const totals = insights.exams.reduce((sum, exam) => ({ total: sum.total + exam.total, covered: sum.covered + exam.covered, partial: sum.partial + exam.partial, missing: sum.missing + exam.missing }), { total: 0, covered: 0, partial: 0, missing: 0 });
+  const number = new Intl.NumberFormat(locale);
 
   return (
     <div className="mx-auto max-w-5xl space-y-10">
@@ -45,6 +50,26 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
       </section>
 
       <MethodologyWorkflow />
+
+      <section aria-labelledby="current-method-heading" className="space-y-4 rounded-2xl border border-teal-400/30 bg-teal-400/5 p-5 sm:p-6">
+        <h2 id="current-method-heading" className="text-2xl font-semibold text-white">{t("currentMethodHeading")}</h2>
+        <p className="text-sm leading-6 text-slate-300">{t("currentMethodBody", { total: number.format(totals.total), covered: number.format(totals.covered), partial: number.format(totals.partial), missing: number.format(totals.missing) })}</p>
+        <p className="text-sm leading-6 text-slate-300">{t("currentMethodRules")}</p>
+        <p className="text-sm leading-6 text-slate-300">{t("currentMethodWeak")}</p>
+        <p className="text-sm leading-6 text-slate-400">{t("currentMethodTools")}</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-700">
+          <table className="w-full border-collapse text-left text-sm">
+            <caption className="p-3 text-left text-slate-300">{t("currentMethodWeights")}</caption>
+            <thead><tr className="border-y border-slate-700 text-slate-300"><th scope="col" className="p-3">{t("weightDomain")}</th><th scope="col" className="p-3">{t("weightValue")}</th></tr></thead>
+            <tbody>{insights.exams.flatMap((exam) => exam.domains.map((domain) => <tr key={`${exam.code}:${domain.id}`} className="border-b border-slate-800 text-slate-200"><th scope="row" className="p-3 font-medium">{exam.name} · {domain.id} {domain.title}</th><td className="p-3">{new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(domain.weight / 100)}</td></tr>))}</tbody>
+          </table>
+        </div>
+        <CoverageSnapshot summary={insights} locale={locale} />
+        <nav aria-label={t("currentMethodLinks")} className="flex flex-wrap gap-3 text-sm">
+          <Link href="/insights" className="inline-flex min-h-11 items-center rounded-full bg-teal-300 px-4 py-2 font-semibold text-slate-950">{t("currentMethodInsights")}</Link>
+          <Link href="/coverage" className="inline-flex min-h-11 items-center rounded-full border border-teal-300 px-4 py-2 font-semibold text-teal-100">{t("currentMethodCoverage")}</Link>
+        </nav>
+      </section>
 
       <section aria-labelledby="areas-heading" className="space-y-4">
         <h2 id="areas-heading" className="text-2xl font-semibold tracking-tight text-white">{t("areasHeading")}</h2>

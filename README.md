@@ -8,6 +8,9 @@ Tech Certification Lab is GapLift's working IT application, begun as the creator
 
 - [Toolkit homepage](https://comptia-a-plus-review.vercel.app/) — the problem, workflow, evidence, and reuse.
 - [Methodology](https://comptia-a-plus-review.vercel.app/methodology) — sources, evaluation procedures, and limitations.
+- [Capstone overview](https://comptia-a-plus-review.vercel.app/capstone) — project problem, repository dataset, analysis, findings, and limits.
+- [Insights](https://comptia-a-plus-review.vercel.app/insights) — repository-derived objective and resource summaries.
+- [Objective coverage](https://comptia-a-plus-review.vercel.app/coverage) — browse the mapped objective matrix and study resources.
 - [IT certification application](https://comptia-a-plus-review.vercel.app/certifications) — the localized catalog and existing study routes.
 - [Assessment workflow](https://comptia-a-plus-review.vercel.app/assessment-workflow) — detailed assessment and pending-validation guidance.
 
@@ -39,9 +42,13 @@ Open [http://localhost:3000](http://localhost:3000).
 | `content/source.md` | Original study guide |
 | `lib/exams.ts` | Exam names, descriptions, and default priority |
 | `content/topics.json` | Chapter notes with exam mappings |
+| `content/topics-network-plus.json` | Network+ notes and exam mappings |
 | `content/flashcards.json` | Flashcards with optional per-card exam mappings |
 | `content/questions.json` | Original MCQs with optional per-question exam mappings |
 | `content/labs.json` | Networking lab write-ups |
+| `content/objectives.json` | First-pass certification objective and domain-weight map |
+| `content/track-visuals.json` | Track visual inventory metadata |
+| `content/concept-videos.json` | Concept-video inventory and mappings |
 | `public/labs/` | Packet Tracer files and topology screenshots |
 | `TODO.md` | Project checklist |
 
