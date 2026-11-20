@@ -2,7 +2,7 @@
 
 ## Purpose and limits
 
-This package adapts the requested course sequence to synthetic GapLift-style practice records. The CSV contains `record_id`, `domain`, and `practice_score`; these are teaching examples, not real learner records, certification scores, or evidence of learning outcomes. The flow does not train a predictive model and makes no claim about exam performance or predictive validity.
+This package adapts the requested course sequence to synthetic GapLift-style practice records. The CSV contains `record_id`, `domain`, and `practice_score`; these are teaching examples, not real learner records, certification scores, or evidence of learning outcomes. The GapLift flow groups those scores for human review. The predictive check is separate: [`saa_readiness_model.ipynb`](saa_readiness_model.ipynb) and [`ml_evaluation_report.md`](ml_evaluation_report.md) fit a linear model on synthetic study rows and compare it with a dummy on held-out rows. A score from that notebook suggests study focus. It never accepts or rejects a learner, and it makes no claim about exam performance.
 
 A below-cutoff score is a **review signal**. Recommendations require human review before any external action or change. The example LangGraph has no action node: both approval and rejection end with `external_action: none`.
 
@@ -104,7 +104,7 @@ For Colab-specific evidence, open the notebook there, rerun the cells, and captu
 2. **Valid run (60 seconds):** show the 8→6+2 cleaning counts, audit rows, domain means, and the `<70` flags.
 3. **Failure handling (45 seconds):** show the explicit fallback metadata, missing-column error, and empty/all-invalid distinction.
 4. **Human review (35 seconds):** show the checkpoint pause, inspect the packet, and demonstrate approve/reject resume in the labeled demo. Point out that no external action exists.
-5. **Improvements/limits (10 seconds):** discuss a real dataset, rubric alignment, and held-out evaluation as future/instructor-confirmed work.
+5. **Improvements/limits (10 seconds):** the synthetic readiness notebook already has a dummy baseline and a held-out score. A real dataset, SQL, Power BI, and the stakeholder presentation remain instructor-confirmed work.
 
 ## Questions for the instructor
 
@@ -117,12 +117,12 @@ For Colab-specific evidence, open the notebook there, rerun the cells, and captu
 
 No published scoring rubric, points, or pass threshold was available in the supplied materials. Do not infer that this round completes every program requirement. These items remain pending verification with the instructor:
 
-- Predictive ML model with a baseline and held-out evaluation.
+- Predictive ML model with a baseline and held-out evaluation: [`saa_readiness_model.ipynb`](saa_readiness_model.ipynb) and [`ml_evaluation_report.md`](ml_evaluation_report.md). On the saved synthetic run, linear regression beat the training-mean dummy (MAE 4.07 vs 12.63). The score suggests study focus and never accepts or rejects a learner.
 - SQL project.
 - Power BI dashboard using a real dataset.
 - Stakeholder presentation.
 
-No ML model, SQL package, Power BI dashboard, real-learner dataset, or new website feature was added. Whether any pending item blocks capstone submission is unknown until the official rubric/checklist is supplied.
+The readiness notebook and `ml_evaluation_report.md` are the predictive model and the held-out dummy comparison. SQL, a Power BI dashboard, a real-learner dataset, and a new website feature remain pending. Whether any pending item blocks capstone submission is unknown until the official rubric/checklist is supplied.
 
 ## Requirement-to-evidence map
 
@@ -143,8 +143,8 @@ This map uses the provided **Capstone Requirements: Source-Only Evidence Pack**,
 | Top sentence and Step 7/8 screenshots/share link (CG pp.11–12) | Sentence in first cell; local screenshots in `evidence/` | Sentence, Step 7, and combined Step 8 local evidence exist. A Colab copy/share link and screenshots from the submission copy remain Louis's actions. Ask whether late posting is accepted. |
 | Safety statement and evidence-backed output (PY15 pp.17, 22) | Notebook opening, graph review packet, output from computed CSV results | Present; no external writes/actions exist in the graph |
 | 3-minute demo (PY15 p.23) | Demo outline in this README | Present as a script; no live presentation has been made |
-| ML final app/model evaluation (MLS pp.6–7, 11; ML3 p.19) | No ML model or API added | Pending separate scope; exact Class 13 date/format and rubric remain unspecified |
-| Program deliverables: SQL, Python, real-data Power BI, predictive ML, stakeholder presentation (PO p.3) | Python flow implemented here; other project artifacts not added in this round | SQL, Power BI, ML, presentation/submission status must be verified; could exist outside this repository |
+| ML final app/model evaluation (MLS pp.6–7, 11; ML3 p.19) | `saa_readiness_model.ipynb` and `ml_evaluation_report.md`: synthetic rows, a training-mean dummy, and held-out linear regression | Present for this synthetic check. Scores suggest study focus and never accept or reject a learner. Class 13 date/format and the rubric remain unspecified. This check adds no website API. |
+| Program deliverables: SQL, Python, real-data Power BI, predictive ML, stakeholder presentation (PO p.3) | Python flow and the synthetic readiness model are in this package | SQL, Power BI, and the stakeholder presentation remain pending and must be verified; they could exist outside this repository |
 
 The Capstone Guide says no one has to present; it asks for the notebook link and evidence to be posted in the class Slack channel (CG p.11). I did not post or change sharing permissions. The checklist records that the stated Class 15 post window was Nov. 5, 2026; late acceptance is unknown.
 
@@ -190,3 +190,20 @@ The graph is `load → clean → analyze → human_review`, with `MemorySaver` a
 ### Limitations
 
 The CSV is synthetic. It is not a learner export. 80% is this site's practice readiness target. It is not an official conversion of the AWS scaled score of 720. The fixed decision in Step 8 is there so the notebook can finish; it is not approval to change the question bank or contact a learner. The flow never writes to the question bank and never sends a message. Two broken rows are dropped, so the domain percents are from the rows that survived cleaning, and a handful of rows is not evidence of skill.
+
+## SAA readiness model (`saa_readiness_model.ipynb`)
+
+[`saa_readiness_model.ipynb`](saa_readiness_model.ipynb) and [`ml_evaluation_report.md`](ml_evaluation_report.md) are the predictive model and the held-out dummy comparison. The notebook builds 80 synthetic study rows, drops two non-numeric rows, and fits a linear model against a training-mean dummy. On the saved run, linear regression beat the dummy (MAE 4.07 vs 12.63). The score suggests study focus. It never accepts or rejects a learner.
+
+The rows are generated in the notebook. They are teaching examples. The notebook does not read `fixtures/saa_attempts.csv`.
+
+Open the notebook in Colab and run all cells from the top. The first code cell installs scikit-learn only when it is missing, and leaves pandas, sqlite3, and matplotlib as the environment already provides them.
+
+Locally, from a Python 3.13 environment with scikit-learn and a Jupyter kernel:
+
+```bash
+cd capstone
+jupyter nbconvert --to notebook --execute --inplace saa_readiness_model.ipynb
+```
+
+That writes `fixtures/saa_readiness_synthetic.csv`, `outputs/predicted_vs_actual.png`, `outputs/residuals.png`, and `ml_evaluation_report.md`.
