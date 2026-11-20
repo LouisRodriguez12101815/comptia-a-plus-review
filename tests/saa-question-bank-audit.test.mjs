@@ -9,7 +9,8 @@ const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta
 const questions = read("content/questions.json");
 const audit = read("docs/saa-c03-question-bank-audit.json");
 const saa = questions.filter((question) => question.examCodes?.includes("saa-c03"));
-const newQuestions = saa.filter((question) => question.id.startsWith("q-saa-bank-") || question.id.startsWith("q-saa-costbatch-"));
+const reviewedNewIds = new Set(audit.after.newQuestionIds);
+const newQuestions = saa.filter((question) => reviewedNewIds.has(question.id));
 
 test("SAA audit maps each existing and new question to one current task and skill", () => {
   assert.equal(audit.questionMappings.length, saa.length);
@@ -29,9 +30,14 @@ test("SAA audit maps each existing and new question to one current task and skil
 
 test("the 24 added SAA questions have unique IDs, supported formats, and a rationale for each displayed choice", () => {
   assert.equal(newQuestions.length, 24);
+  assert.equal(audit.after.newQuestionIds.length, 24);
   assert.equal(new Set(questions.map((question) => question.id)).size, questions.length);
-  const expectedIds = new Set(audit.after.newQuestionIds);
-  assert.deepEqual(new Set(newQuestions.map((question) => question.id)), expectedIds);
+  const addedIds = new Set(audit.countStages.find((stage) => stage.stage === "after-explanation-rewrite").addedIds);
+  const bankOrCost = saa.filter((question) => question.id.startsWith("q-saa-bank-") || question.id.startsWith("q-saa-costbatch-"));
+  assert.equal(bankOrCost.length, reviewedNewIds.size + addedIds.size);
+  for (const question of bankOrCost) {
+    assert.ok(reviewedNewIds.has(question.id) || addedIds.has(question.id), question.id);
+  }
   assert.equal(newQuestions.filter((question) => Array.isArray(question.answer)).length, 2);
   assert.equal(newQuestions.filter((question) => !Array.isArray(question.answer)).length, 22);
 
@@ -126,8 +132,11 @@ test("SAA inventory stages are counted from the specified base and both explicit
     assert.deepEqual(count(snapshot), { saaQuestionCount: stage.saaQuestionCount, uniqueIdCount: stage.uniqueIdCount, byDomain: stage.byDomain, byTask: stage.byTask });
     assert.deepEqual(stage.formats, countFormats(snapshot));
   }
-  const liveStage = audit.countStages.at(-1);
-  assert.deepEqual(count(questions), { saaQuestionCount: 314, uniqueIdCount: 314, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
+  const liveStage = audit.countStages.find((stage) => stage.stage === "after-explanation-rewrite");
+  assert.equal(liveStage.commit, null);
+  assert.deepEqual(count(questions), { saaQuestionCount: 319, uniqueIdCount: 319, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
+  assert.equal(liveStage.byTask["4.3"], 12);
+  assert.equal(liveStage.byTask["4.4"], 21);
   assert.equal(audit.baseline.commit, baseCommit);
 });
 
@@ -173,11 +182,24 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   assert.equal(liveHashStage.questionCount, 314);
   assert.equal(liveHashStage.rewritesBaseline, false);
   assert.deepEqual(liveHashStage.excludedFields, [...SAA_TAG_FIELDS]);
-  assert.equal(liveHashStage.questions.length, saa.length);
+  assert.equal(liveHashStage.questions.length, 314);
   const liveHashes = new Map(liveHashStage.questions.map((row) => [row.id, row.sha256]));
+  const changeStage = audit.changeStages.find((stage) => stage.id === "explanation-rewrite");
+  assert.ok(changeStage, "missing explanation-rewrite change stage");
+  assert.deepEqual(changeStage.excludedFields, [...SAA_TAG_FIELDS]);
+  const changes = new Map(changeStage.items.map((row) => [row.id, row]));
+  assert.equal(changes.size, changeStage.items.length);
+  assert.equal(changes.size, 56);
   for (const question of saa) {
     const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(question))).digest("hex");
-    assert.equal(digest, liveHashes.get(question.id), `${question.id}: live preservation hash`);
+    const change = changes.get(question.id);
+    if (change) {
+      assert.equal(digest, change.newHash, `${question.id}: change-stage hash`);
+      if (change.oldHash === null) assert.equal(liveHashes.has(question.id), false, `${question.id}: new id already in the 314 stage`);
+      else assert.equal(change.oldHash, liveHashes.get(question.id), `${question.id}: old hash is not the 314 stage`);
+    } else {
+      assert.equal(digest, liveHashes.get(question.id), `${question.id}: live preservation hash`);
+    }
   }
   const currentById = new Map(saa.map((question) => [question.id, question]));
   assert.equal(audit.preservationBaseline.questionCount, 149);
@@ -188,9 +210,13 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
     assert.ok(current, `missing existing question ${baseline.id}`);
     const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(current))).digest("hex");
     const correction = corrections.get(baseline.id);
+    const change = changes.get(baseline.id);
     if (correction) {
       assert.equal(correction.beforeSha256, baseline.sha256, `${baseline.id}: correction does not cite baseline`);
       assert.equal(digest, correction.afterSha256, `${baseline.id}: corrected record differs from reviewed record`);
+    } else if (change) {
+      assert.equal(change.oldHash, baseline.sha256, `${baseline.id}: rewrite does not cite the 149 baseline`);
+      assert.equal(digest, change.newHash, `${baseline.id}: rewritten record differs from the change stage`);
     } else {
       assert.equal(digest, baseline.sha256, `modified existing question ${baseline.id}`);
     }
@@ -213,6 +239,71 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   const gsi = currentById.get("q-saa-bank-012");
   assert.match(gsi.prompt, /modest and comfortably within the projected GSI partition throughput/);
   assert.match(gsi.explanation, /hot-partition risk if traffic grows/);
+});
+
+test("five original task 4.3 questions are new ids with one line per choice", () => {
+  const stage = audit.countStages.find((item) => item.stage === "after-explanation-rewrite");
+  assert.deepEqual(stage.addedIds, [
+    "q-saa-costbatch-009",
+    "q-saa-costbatch-010",
+    "q-saa-costbatch-011",
+    "q-saa-costbatch-012",
+    "q-saa-costbatch-013",
+  ]);
+  for (const id of stage.addedIds) {
+    const question = saa.find((item) => item.id === id);
+    assert.ok(question, id);
+    assert.equal(question.format, "single", id);
+    assert.deepEqual(question.objectiveIds["saa-c03"], ["4.3"], id);
+    assert.equal(audit.newQuestionReview.find((row) => row.id === id), undefined, id);
+    const lines = question.explanation.split("\n");
+    assert.equal(lines.length, question.choices.length, id);
+    question.choices.forEach((choice, index) => {
+      const correct = question.answer === index;
+      assert.match(lines[index], new RegExp(`^${escapeRegExp(choice)} — ${correct ? "Correct" : "Incorrect"}\\. .{20,}$`), id);
+    });
+  }
+});
+
+test("network-cost items move from task 4.3 to task 4.4 and shared CLF answers stay put", () => {
+  const changeStage = audit.changeStages.find((stage) => stage.id === "explanation-rewrite");
+  const changes = new Map(changeStage.items.map((row) => [row.id, row]));
+  const retags = [
+    ["q-saa-practice-50", "4.4-S02"],
+    ["q-saa-guide-48", "4.4-S02"],
+    ["q-saa-practice-51", "4.4-S05"],
+    ["q-saa-guide-49", "4.4-S05"],
+    ["q-saa-practice-52", "4.4-S04"],
+    ["q-saa-guide-50", "4.4-S04"],
+  ];
+  for (const [id, skillId] of retags) {
+    const row = changes.get(id);
+    assert.equal(row.oldTask, "4.3", id);
+    assert.equal(row.newTask, "4.4", id);
+    assert.equal(row.skillId, skillId, id);
+    assert.deepEqual(questions.find((question) => question.id === id).objectiveIds["saa-c03"], ["4.4"], id);
+  }
+  const parent = JSON.parse(execFileSync("git", ["show", "91a68b6:content/questions.json"], {
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  }));
+  const parentById = new Map(parent.map((question) => [question.id, question]));
+  for (const row of changeStage.items) {
+    if (!row.reason.includes("CLF objective tags are unchanged")) continue;
+    const current = questions.find((question) => question.id === row.id);
+    const previous = parentById.get(row.id);
+    assert.deepEqual(current.answer, previous.answer, row.id);
+    assert.deepEqual(current.choices, previous.choices, row.id);
+    assert.deepEqual(current.examCodes, previous.examCodes, row.id);
+    assert.deepEqual(current.objectiveIds["clf-c02"] ?? null, previous.objectiveIds["clf-c02"] ?? null, row.id);
+  }
+  const shared = questions.filter((question) => question.id.startsWith("q-aws-found-") && question.examCodes?.includes("saa-c03"));
+  assert.ok(shared.length > 0);
+  for (const current of shared) {
+    const previous = parentById.get(current.id);
+    assert.deepEqual(current.answer, previous.answer, current.id);
+    assert.deepEqual(current.objectiveIds["clf-c02"], previous.objectiveIds["clf-c02"], current.id);
+  }
 });
 
 function escapeRegExp(value) {
