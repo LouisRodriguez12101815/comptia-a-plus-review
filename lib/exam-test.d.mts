@@ -32,6 +32,7 @@ export function draftTest(pool: ExamPool, requested: number, rng?: () => number,
 /** Leans a draft on chosen objectives: `share` of questions from them (0.6 by default, 1 for a retest). */
 export function draftFocused(pool: ExamPool, requested: number, rng?: () => number, options?: { history?: readonly string[]; objectiveIds?: readonly string[]; share?: number; priority?: readonly string[]; objectiveFor?: Record<string, string> }): TestPick[];
 export function isCorrect(question: { answer: number | number[] }, pick: Pick): boolean;
+export function summarizeTestTasks(input: { picks: TestPick[]; questionsById: Record<string, { answer: number | number[] }>; responses: Record<string, TestResponse> }): { domainId: string; objectiveId: string; correct: number; attempted: number; unanswered: number }[];
 export function gradeTest(input: {
   pool: ExamPool;
   picks: TestPick[];

@@ -1,0 +1,1553 @@
+{
+  "reviewedAtUtc": "2026-11-20",
+  "method": "Prior option-by-option source review in docs/saa-c03-question-bank-audit.json; all 66 distinct listed official URLs reopened in this pass. Some sources have older search-reader crawl dates.",
+  "records": [
+    {
+      "id": "q-saa-bank-001",
+      "task": "1.1",
+      "recordSha256": "814b369056577d37cb64eafbb9fe64aa66e9c9703f2871de735fca3d4a4ea6ea",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "IAM Identity Center centralizes workforce users/groups and account access via permission sets with temporary sessions; root credentials are reserved for rare root-only tasks, and IAM users have long-term credentials.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-workforce-access.html",
+          "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html",
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html",
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Create an IAM user in every account and distribute access keys to the directory groups.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-workforce-access.html",
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Use IAM Identity Center with the directory, assign groups to accounts through permission sets, and let users obtain temporary sessions.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-workforce-access.html",
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Create one root user per employee and require MFA for each account.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-workforce-access.html",
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Store staff passwords in Secrets Manager and have employees assume one shared administrator role.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-workforce-access.html",
+              "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-002",
+      "task": "1.2",
+      "recordSha256": "5d7df038e17db06b92afec3f5117814ad5ace11886360c4f1ed9ee1fdc87a043",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "A VPC endpoint policy narrows requests through the endpoint but does not replace identity/resource policies; an S3 bucket policy can enforce a specific endpoint path; gateway endpoints use route tables and S3 prefix-list network rules.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+          "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Restrict the S3 gateway endpoint policy to the required bucket and actions.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Add a bucket policy that denies requests unless they use the designated VPC endpoint.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Add a NAT gateway and allow the application role to call any S3 bucket.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Use a security group rule to restrict the bucket to the VPC endpoint ID.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+            ]
+          },
+          {
+            "optionIndex": 4,
+            "choice": "Enable S3 default encryption and rely on encryption to block requests from other networks.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-003",
+      "task": "1.2",
+      "recordSha256": "56d37510821eeae451ef9c82e7060c9e435f8f7325932929091e44e783c89a76",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Secrets Manager supports runtime secret retrieval and automatic rotation; roles provide temporary credentials; Parameter Store is a separate parameter store choice and does not supply Secrets Manager rotation semantics by itself.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+          "https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html",
+          "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html",
+          "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+          "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Put the password in an environment variable and rotate it manually during deployments.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html",
+              "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html",
+              "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html",
+              "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Use an IAM permissions boundary because it encrypts database credentials.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html",
+              "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html",
+              "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html",
+              "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-004",
+      "task": "1.2",
+      "recordSha256": "4ab8263c32e6818e0bfd4c5fa860e02f3fa2738e5f43af481bf1a1a4d123a694",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Site-to-Site VPN uses IPsec tunnels over internet connectivity and provides two tunnels; Direct Connect is a dedicated network connection and is unnecessary when rapid, moderate variable traffic is the stated constraint.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/vpn/latest/s2svpn/WhatIsVPN.html",
+          "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html",
+          "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "AWS Site-to-Site VPN, with both provided IPsec tunnels configured for redundancy.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/WhatIsVPN.html",
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html",
+              "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "A dedicated AWS Direct Connect connection as the only path; it can be established immediately without a provider or cross-connect.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/WhatIsVPN.html",
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html",
+              "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "VPC peering over the public internet, with TLS enabled on application requests.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/WhatIsVPN.html",
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html",
+              "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "An internet gateway attached to the VPC, with inbound security group rules for the data center.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/WhatIsVPN.html",
+              "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html",
+              "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-005",
+      "task": "1.3",
+      "recordSha256": "73ec1610e9005581b726fbaac0284ee8d8be708d5d5053c37ac15be21f42002a",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Cross-account SSE-KMS reads require both S3 authorization and KMS key authorization, including an appropriate key policy and caller permissions.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-management.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Grant s3:GetObject in the bucket policy; S3 object permission alone is sufficient to decrypt SSE-KMS data cross-account.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-management.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Permit the partner account or role to use the customer-managed KMS key in the key policy, and grant the partner role the required KMS permission as well as S3 read access.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-management.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Share the AWS-managed aws/s3 key with the partner account by adding a key policy statement.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-management.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Make the bucket public and rely on the KMS key to identify the intended partner.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-management.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-006",
+      "task": "2.1",
+      "recordSha256": "e85946acee4e387c191acf0adaab5824d36b196654a7fd1a5f6163d919062f1b",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "ECS target tracking can use SQS backlog per task; queue depth metrics reflect waiting work, while CPU alone can miss a backlog when tasks are I/O bound.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html",
+          "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Scale only on average CPU utilization.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html",
+              "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Scale on visible messages per running task, using queue depth divided by the number of active tasks.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html",
+              "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Scale on the number of messages already in flight, without considering visible backlog.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html",
+              "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Increase the task memory limit whenever the queue depth rises.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-queue.html",
+              "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-007",
+      "task": "2.1",
+      "recordSha256": "e15ea5faf286bdb794826f7996f477439209d307729fb929f9b5329501ff4233",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "API Gateway REST API stage/method cache settings can cache configured responses; scope cache use to shared responses and protect private/customer-specific variants with suitable cache-key behavior or no cache.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+          "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Cache all API responses under a single cache key so every route has the highest hit rate.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Increase the database writer size and cache no responses, even for identical public catalog reads.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Move the entire API to an SQS queue so each client polls until its read response is available.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html",
+              "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-008",
+      "task": "2.2",
+      "recordSha256": "311fb67ec33e52735f8eaa221b96da06d8199c54c0c452f60dfd348573a91f81",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "AWS service quotas constrain capacity; AWS reliability guidance recommends managing quotas across accounts/Regions and testing disaster-recovery procedures.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html",
+          "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency.html",
+          "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel01-bp02.html",
+          "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel13-bp03.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel01-bp02.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel13-bp03.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Assume quotas are global because the application uses the same AWS account in both Regions.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel01-bp02.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel13-bp03.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Remove the standby and rely on backups; that makes the current recovery-time target automatic.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel01-bp02.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel13-bp03.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Reduce the primary Region’s quotas so the standby Region receives capacity.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel01-bp02.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/rel13-bp03.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-009",
+      "task": "2.2",
+      "recordSha256": "11e95ae0e1cac3494bf07876e8ad6a712b54821e68267024f6998226ebc5ccbe",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "RDS Proxy pools/manages client database connections and can improve failover behavior; compatibility and transaction behavior still require application validation.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+          "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html",
+          "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Place RDS Proxy between the application and database and validate the application’s driver and transaction behavior.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Add an RDS read replica and send all write transactions to it during failover.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Put an S3 gateway endpoint between the application and database.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Replace the database with an EC2 instance in one Availability Zone.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html",
+              "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-010",
+      "task": "3.1",
+      "recordSha256": "01264a14c1146f2878949a8a3e576e262483ffbc1d927048b9c9eec551f3f910",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "EBS Multi-Attach supports specified io1/io2 configurations and instance/zone constraints; a cluster-aware filesystem is needed for coordinated shared block access.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+          "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "An S3 bucket mounted as a POSIX block device with simultaneous write locking.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "An EFS file system, because it exposes the same shared block device to each instance.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html",
+              "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-011",
+      "task": "3.2",
+      "recordSha256": "ca4e292a2c0df9139976d638d98fc5b034eee736da2f0fe6ea2e82174e147c71",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Lambda CPU allocation increases in proportion to configured memory; benchmark representative duration and cost for a CPU-bound function.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+          "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Increase the function’s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+              "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Increase the function timeout; this allocates more CPU to each invocation.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+              "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+              "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Increase reserved concurrency; this raises the CPU allocation of each individual invocation.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+              "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-012",
+      "task": "3.3",
+      "recordSha256": "ed4ee17a6c4a0e5fff3c93264d772791ad84f1f82f12f0d1a14cee4b14daabce",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "A GSI can provide an alternate partition/sort key access pattern and GSI reads are eventually consistent; projected throughput/cardinality constraints matter.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html",
+          "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Create a global secondary index with status as its partition key and time as its sort key, then query that index.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Run a strongly consistent Scan on the base table and discard records that do not match.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Create a local secondary index whose partition key is different from the table partition key.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Add a read replica to the DynamoDB table.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-013",
+      "task": "4.1",
+      "recordSha256": "5768eeb5c99d7dc85b61c96e3c3b478596f965b239c0175cb0775012acf28fbe",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "S3 storage classes and lifecycle rules support archival transitions; Glacier Flexible Retrieval restore times and charges/minimum duration must be considered for infrequent, delayed access.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "S3 Glacier Flexible Retrieval, while accounting for the class’s minimum storage duration and retrieval charges.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "S3 Standard, because it has the lowest storage price for data that is rarely accessed.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "S3 Express One Zone, because it is designed for long-term archival with hours-long retrieval.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Delete the reports after 60 days, because lifecycle rules cannot retain objects in archival classes.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-014",
+      "task": "4.2",
+      "recordSha256": "27104cb433c6d9d942d407bcb68460d08e574b930a3b87b1fd1e73a6660d4c7b",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Compute Savings Plans apply across EC2 instance families and Regions and also Fargate/Lambda; Capacity Reservations solve capacity reservation rather than the stated broad compute-spend flexibility.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+          "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "A Compute Savings Plan, after validating that the committed hourly amount fits the organization’s steady usage.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "An EC2 Instance Savings Plan tied to one instance family and Region.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Spot Instances for all customer-facing baseline capacity, without an interruption strategy.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "On-Demand Capacity Reservations, because they automatically provide a billing discount.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+              "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-015",
+      "task": "4.3",
+      "recordSha256": "4145a3c3ea55846792804d165e39eecb3acc688242b0221d69b0844a863e15c1",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "ElastiCache can cache repeated database query results; TTL/invalidation and hit-rate/freshness/cost tradeoffs determine fit.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+          "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/caching-database-query-results.html",
+          "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/perf_data_access_patterns_caching.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Add a cache such as ElastiCache for the repeated catalog reads, with an explicit TTL or invalidation strategy and a cost/ hit-rate review.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/caching-database-query-results.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/perf_data_access_patterns_caching.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Add a database read replica but send every request to both the primary and replica.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/caching-database-query-results.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/perf_data_access_patterns_caching.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Disable database backups so fewer reads are billed.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/caching-database-query-results.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/perf_data_access_patterns_caching.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Move the catalog to a larger database instance before measuring whether repeated reads can be served from a cache.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+              "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/caching-database-query-results.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/perf_data_access_patterns_caching.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-bank-016",
+      "task": "4.4",
+      "recordSha256": "03f68cf5706d00607350cad3d86a4f4adb89856b2321bfb40b201d4772fbe898",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "NAT gateways are zonal and charged by gateway-hour/data processed; per-AZ local routing removes an egress dependency on another AZ, with cross-AZ transfer costs included in the design tradeoff.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+          "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html",
+          "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_implement_services.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Deploy a NAT gateway in each Availability Zone and route each zone’s private subnets to its local gateway, accepting the additional gateway-hour cost.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_implement_services.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Keep one NAT gateway in one Availability Zone and route both zones through it because this always has the lowest total cost and no availability tradeoff.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_implement_services.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Replace NAT gateways with an internet gateway and assign public IPv4 addresses to all application instances.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_implement_services.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Route all traffic through a Transit Gateway; it removes NAT processing charges and guarantees lower cost.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html",
+              "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_implement_services.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-001",
+      "task": "4.1",
+      "recordSha256": "26705295213de474117ba3f6d8b520cd22f4877bbdeb226bc7330828ed29caec",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "S3 Intelligent-Tiering is intended for unknown/changing access patterns, has a monitoring/automation charge, and automatic tiers preserve millisecond access; asynchronous archive tiers require restore.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Use S3 Intelligent-Tiering and include its per-object monitoring and automation charge in the cost model.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Transition every object to S3 Glacier Flexible Retrieval after 30 days, regardless of access.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Keep all objects in S3 Standard because changing access patterns make tiering impossible.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Move the objects to S3 One Zone-IA and accept retrieval latency and single-AZ storage risk.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-002",
+      "task": "4.1",
+      "recordSha256": "15181ee4259e5296e37ac3e0e881827c4855ae0090914fefc36b2a1f2a28694b",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Requester Pays moves request and download data-transfer charges to authenticated requesters who signal acceptance; bucket owner continues to pay storage.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+          "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Enable S3 Transfer Acceleration and leave all request charges with the bucket owner.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Use S3 Storage Lens to assign each consumer’s data transfer charges to their account.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+              "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-003",
+      "task": "4.2",
+      "recordSha256": "f29246239fa5bca8ceb2c48c875d4c2abc9e469a360b6d0d719c8f21a46716e6",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Scheduled EC2 Auto Scaling actions adjust capacity for predictable time windows; lowering minimum/desired capacity outside the window removes idle instances when no work is needed.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+          "https://docs.aws.amazon.com/autoscaling/ec2/userguide/scheduled-scaling-create-scheduled-action.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Create scheduled scaling actions to raise capacity before the work window and reduce the group’s minimum and desired capacity after it.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/scheduled-scaling-create-scheduled-action.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Keep the group at its current size and purchase a one-year Compute Savings Plan.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/scheduled-scaling-create-scheduled-action.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Replace the group with a larger instance so tasks finish sooner during the same operating hours.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/scheduled-scaling-create-scheduled-action.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Add a target-tracking policy that scales out when CPU is low.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+              "https://docs.aws.amazon.com/autoscaling/ec2/userguide/scheduled-scaling-create-scheduled-action.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-004",
+      "task": "4.2",
+      "recordSha256": "212f43cafdb497e9871106f7cd74558465c708c103385b10cbb7d4ebf6939c76",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "Compute Optimizer presents Graviton price/performance comparisons, not an application compatibility guarantee; architecture-specific binaries must be tested and benchmarked before deployment. This is a validation decision, not a claim that every workload will save money.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/compute-optimizer/latest/ug/graviton-recommendations.html",
+          "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html",
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/graviton-recommendations.html",
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/graviton-recommendations.html",
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/graviton-recommendations.html",
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Move the service to Spot Instances because CPU utilization is steady and high.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/graviton-recommendations.html",
+              "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html",
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
+            ]
+          }
+        ],
+        "qualification": "The recommendation is a candidate for measured compatibility/performance testing, not a guarantee of application compatibility or savings."
+      }
+    },
+    {
+      "id": "q-saa-costbatch-005",
+      "task": "4.3",
+      "recordSha256": "ba1c6f83f22cda35ded265d1c0530aacff99c5737ede15e5d191d00ad8ba68db",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "DynamoDB provisioned capacity charges for provisioned units; auto scaling can respond to workload changes and reduce unused provisioned capacity, while on-demand is request-based and avoids provisioned-capacity planning.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+          "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Provisioned capacity with Application Auto Scaling policies, validated against observed peaks and required headroom.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "On-demand capacity permanently, because it is always less expensive when usage is predictable.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "A global secondary index for every attribute so DynamoDB can allocate capacity automatically.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Replace DynamoDB with an RDS read replica, preserving the same key-value access pattern.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-006",
+      "task": "4.3",
+      "recordSha256": "50eb1df5a0388c6d6d8a22ae9e32cb3806e37dbd5802d206a4270518896665f3",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "DynamoDB Standard-IA offers lower storage cost and higher request cost; total suitability depends on observed storage/throughput mix.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html",
+          "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableClass.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Test the DynamoDB Standard-IA table class and compare lower storage charges against its higher request charges for this workload.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableClass.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Move all items to DynamoDB Standard because that table class always has the lowest storage price.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableClass.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Switch from provisioned to on-demand capacity; capacity mode automatically reduces table storage charges.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableClass.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Export the records to S3 Glacier Deep Archive and continue querying them with DynamoDB Query at the same latency.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.tableclasses.html",
+              "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/CostOptimization_TableClass.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-007",
+      "task": "4.4",
+      "recordSha256": "aeb216a83a3a915038c86a79a38851286167fe052387e837aadfcf6d18465eea",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "VPC peering has no connection creation charge but cross-AZ/Region data transfer charges may apply; Transit Gateway charges attachment hours and data processing.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+          "https://aws.amazon.com/transit-gateway/pricing/"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "VPC peering between the required pairs, while including applicable data-transfer charges in the estimate.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+              "https://aws.amazon.com/transit-gateway/pricing/"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "A Transit Gateway with every VPC attached, because it has no hourly or data-processing charges.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+              "https://aws.amazon.com/transit-gateway/pricing/"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "A public NAT gateway in each VPC for private VPC-to-VPC traffic.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+              "https://aws.amazon.com/transit-gateway/pricing/"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "AWS Direct Connect between the VPCs, because it removes all inter-VPC transfer charges.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+              "https://aws.amazon.com/transit-gateway/pricing/"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-costbatch-008",
+      "task": "4.4",
+      "recordSha256": "fde0bc29382db54a39434b6045f49aa8b612f200d4ec0e8c7a1fccfe3e5bf536",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "method": "Official AWS documentation opened with the web documentation reader; direct shell requests are still blocked by HTTP tunnel 403.",
+        "verifiedClaim": "S3 and DynamoDB gateway endpoints have no additional endpoint charge; NAT pricing includes hourly and data-processing charges, and AZ-local paths avoid routing egress through another zone when the measured savings justify an extra gateway.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+          "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+          "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+          "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "Add S3 and DynamoDB gateway endpoints and route their service traffic through the endpoints.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+            ]
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Place a NAT gateway in each AZ and route each private subnet through the NAT gateway in its own AZ.",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+            ]
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Route both AZs through one NAT gateway in the first AZ to avoid paying for a second gateway.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+            ]
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Send S3 and DynamoDB requests through the public internet and a NAT gateway because gateway endpoints add a per-hour charge.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+            ]
+          },
+          {
+            "optionIndex": 4,
+            "choice": "Replace all private subnet routes with a single cross-Region Transit Gateway attachment.",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost04-bp03.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html",
+              "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html",
+              "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "q-saa-arch-31",
+      "task": "4.2",
+      "recordSha256": "9cdcabca5f3a1267cd979d66e8454628ee202ff45e4a5b4c81219c02fcc719ae",
+      "sourceVerification": {
+        "retrievalDate": "2026-11-20",
+        "status": "verified",
+        "verifiedClaim": "Spot can offer up to 90% savings versus On-Demand but capacity/continued availability is not guaranteed and interruptions can occur; this supports the narrower discounted-price wording, not a universal lowest-total-cost claim.",
+        "officialUrls": [
+          "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+          "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+        ],
+        "optionExplanationsChecked": [
+          {
+            "optionIndex": 0,
+            "choice": "On-Demand only",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+              "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+            ],
+            "retrievalDate": "2026-11-20"
+          },
+          {
+            "optionIndex": 1,
+            "choice": "Spot Instances",
+            "classification": "correct",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+              "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+            ],
+            "retrievalDate": "2026-11-20"
+          },
+          {
+            "optionIndex": 2,
+            "choice": "Capacity Reservations only",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+              "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+            ],
+            "retrievalDate": "2026-11-20"
+          },
+          {
+            "optionIndex": 3,
+            "choice": "Dedicated Hosts",
+            "classification": "incorrect",
+            "checked": true,
+            "officialSourceUrls": [
+              "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+              "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+            ],
+            "retrievalDate": "2026-11-20"
+          }
+        ]
+      }
+    }
+  ]
+}

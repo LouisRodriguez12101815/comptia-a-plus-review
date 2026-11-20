@@ -20,8 +20,9 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("testPage");
-  const { exam, focus, drill, pair, practice, domain } = await searchParams;
-  const initialExam = examCodes.includes(exam as ExamCode) ? (exam as ExamCode) : undefined;
+  const { exam, focus, drill, pair, practice, domain, diagnostic } = await searchParams;
+  const saaDiagnostic = diagnostic === "saa";
+  const initialExam = saaDiagnostic ? "saa-c03" : examCodes.includes(exam as ExamCode) ? (exam as ExamCode) : undefined;
   // ?focus=2.3,3.4 starts a test on those objectives (from the scorecard).
   const initialFocus = (typeof focus === "string" ? focus.split(",") : []).filter((id) => /^\d+\.\d+$/.test(id)).slice(0, 10);
   // ?drill=id,id&pair=group:a>b runs a short test on one look-alike pair (from the scorecard).
@@ -46,7 +47,7 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
           })}
         </p>
       </header>
-      <ExamTest initialExam={initialExam} initialFocus={initialFocus} initialDrill={initialDrill} drillPair={drillPair} labsByTopic={labsByTopic} practiceMode={practice === "mixed20" ? "mixed" : practice === "domain" ? "domain" : false} initialDomain={typeof domain === "string" ? domain : undefined} />
+      <ExamTest key={saaDiagnostic ? "saa-diagnostic" : "practice"} initialExam={initialExam} initialFocus={saaDiagnostic ? [] : initialFocus} initialDrill={saaDiagnostic ? [] : initialDrill} drillPair={drillPair} labsByTopic={labsByTopic} practiceMode={saaDiagnostic ? false : practice === "mixed20" ? "mixed" : practice === "domain" ? "domain" : false} initialDomain={typeof domain === "string" ? domain : undefined} saaDiagnostic={saaDiagnostic} />
     </div>
   );
 }

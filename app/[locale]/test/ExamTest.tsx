@@ -9,7 +9,7 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { getTopic, questions, topics } from "@/lib/content";
 import {
   EXAM_FORMATS, TEST_LENGTHS, MIXED_PRACTICE_QUESTION_COUNT, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
-  draftFocused, draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds,
+  draftFocused, draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds, summarizeTestTasks,
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
@@ -22,6 +22,8 @@ import type { Question } from "@/lib/types";
 import { conceptTitleByQuestion } from "@/lib/concepts";
 import { buildWeakReport, type WeakRow, type WeakStatus } from "@/lib/weak-report";
 import { mixedPracticeFeedback } from "@/lib/mixed-practice-feedback";
+import { rankDiagnosticMisses, saaDiagnosticPool } from "@/lib/saa-diagnostic.mjs";
+import { resolveSaaLesson } from "@/lib/saa-curriculum";
 
 const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as const;
 type ExamCode = (typeof examCodes)[number];
@@ -52,6 +54,12 @@ const coreTwoLabs = [
 
 const questionsById: Record<string, Question> = Object.fromEntries(questions.map((q) => [q.id, q]));
 const matrix = objectives as CoverageMatrix;
+const saaExam = objectives.exams.find((exam) => exam.code === "saa-c03");
+function saaLesson(objectiveId: string) {
+  const objective = saaExam?.domains.flatMap((domain) => domain.objectives).find((item) => item.id === objectiveId);
+  const evidence = objective as { reviewEvidence?: { section?: string } } | undefined;
+  return resolveSaaLesson(evidence?.reviewEvidence?.section ?? "", getTopic);
+}
 
 const card = "rounded-2xl border border-slate-700 bg-slate-900/60 p-5";
 const primary = "inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300";
@@ -115,7 +123,7 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
   );
 }
 
-export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string }) {
+export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain, saaDiagnostic = false }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string; saaDiagnostic?: boolean }) {
   const t = useTranslations("examTest");
   const [exam, setExam] = useState<ExamCode>(practiceMode ? "clf-c02" : initialExam ?? "220-1201");
   const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialFocus.length > 0 ? "quick" : "full");
@@ -136,6 +144,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const [missedOnly, setMissedOnly] = useState(true);
   const [announce, setAnnounce] = useState("");
   const [mockHistory, setMockHistory] = useState<MockAttempt[]>([]);
+  const [previouslySeen, setPreviouslySeen] = useState<string[]>([]);
   const [confidence, setConfidence] = useState<Record<string, Confidence>>({});
   const confidenceRef = useRef<Record<string, Confidence>>({});
   const [dueIds, setDueIds] = useState<string[]>([]);
@@ -160,11 +169,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const isMixedPractice = practiceMode === "mixed" && exam === "clf-c02";
   const isDomainPractice = practiceMode === "domain" && exam === "clf-c02";
   const sessionPool = useMemo(() => {
+    if (saaDiagnostic) return saaDiagnosticPool(pool);
     if (!isDomainPractice || !initialDomain) return pool;
     const domains = pool.domains.filter((domain) => domain.id === initialDomain);
     if (domains.length === 0) return pool;
     return { ...pool, domains, totalUnique: new Set(domains.flatMap((d) => d.objectives.flatMap((o) => o.questionIds))).size };
-  }, [initialDomain, isDomainPractice, pool]);
+  }, [initialDomain, isDomainPractice, pool, saaDiagnostic]);
   const immediatePractice = isMixedPractice || isDomainPractice;
   const requested = isMixedPractice ? MIXED_PRACTICE_QUESTION_COUNT : isDomainPractice ? 10 : questionsForLength(exam, lengthId);
   const planned = Math.min(requested, sessionPool.totalUnique);
@@ -343,6 +353,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
 
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
+    const snapshot = getProgressSnapshot();
+    setPreviouslySeen([...new Set([...snapshot.mockAttempts.flatMap((attempt) => attempt.questionIds ?? []), ...snapshot.quizAttempts.flatMap((attempt) => attempt.questionIds ?? [])])]);
     // Earlier sittings for this exam, oldest first, so unseen questions come up first.
     const history = getProgressSnapshot().mockAttempts
       .filter((attempt) => attempt.exam === exam)
@@ -352,7 +364,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const due = kind === "drill" ? [] : dueReviews(getProgressSnapshot().mockAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
     const priority = due.map((d) => d.questionId);
     const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
-    const draft = kind === "drill"
+    const draft = saaDiagnostic ? draftTest(sessionPool, requested, Math.random, { history }) : kind === "drill"
       ? draftTest(sessionPool, drillIds.length, Math.random, { priority: drillIds })
       : isDomainPractice
       ? draftTest(sessionPool, requested, Math.random, { history, priority, objectiveFor })
@@ -378,7 +390,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setReviewing(false);
     setResponses({});
     setFeedbackVisible(false);
-    setMissedOnly(true);
+    setMissedOnly(!saaDiagnostic);
     setAnnounce("");
     setPhase("running");
   }
@@ -388,6 +400,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const empty = sessionPool.domains.filter((d) => d.available === 0);
     return (
       <div className="space-y-6">
+        {saaDiagnostic && <section className={`${card} border-teal-400/50`} aria-labelledby="saa-diagnostic-heading">
+          <h2 id="saa-diagnostic-heading" className="text-xl font-semibold text-white">{t("saaDiagnosticTitle")}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-200">{t("saaDiagnosticLimit", { count: planned, minutes: Math.round(sessionDurationSeconds(exam, planned) / 60), missing: Math.max(0, 65 - planned) })}</p>
+          <p className="mt-2 text-sm text-slate-300">{t("saaDiagnosticCoverage")}</p>
+          <Link href="/test?exam=saa-c03" className="mt-2 inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{t("saaFullPractice")}</Link>
+        </section>}
         {drillIds.length > 0 && (
           <section className={`${card} border-violet-400/50`} aria-labelledby="drill-heading">
             <h2 id="drill-heading" className="text-lg font-semibold text-white">{t("drillHeading")}</h2>
@@ -401,7 +419,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("certification")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {examCodes.filter((code) => !practiceMode || code === "clf-c02").map((code) => (
+            {examCodes.filter((code) => saaDiagnostic ? code === "saa-c03" : !practiceMode || code === "clf-c02").map((code) => (
               <label key={code} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${exam === code ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
                 <span className="flex items-center gap-2">
                   <input type="radio" name="exam" value={code} checked={exam === code} onChange={() => setExam(code)} className="accent-teal-400" />
@@ -413,7 +431,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
           </div>
         </fieldset>
 
-        <fieldset className={card}>
+        {!saaDiagnostic && <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("length")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
             {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : isDomainPractice ? [{ id: "domain10", label: "domainPractice" }] : TEST_LENGTHS).map((length) => {
@@ -430,9 +448,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
               );
             })}
           </div>
-        </fieldset>
+        </fieldset>}
 
-        <fieldset className={card}>
+        {!saaDiagnostic && <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("modeHeading")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
             <label className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${mode === "standard" ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
@@ -460,7 +478,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             </ul>
           )}
           <Link href={`/scorecard?exam=${exam}`} className="mt-3 inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("scorecardLink")}</Link>
-        </fieldset>
+        </fieldset>}
 
         {exam === "220-1202" && <section className={card} aria-labelledby="labs-first-heading">
           <h2 id="labs-first-heading" className="text-lg font-semibold text-white">{t("labsFirstHeading")}</h2>
@@ -517,7 +535,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
           </ul>
         </section>
 
-        {dueCount > 0 && (
+        {!saaDiagnostic && dueCount > 0 && (
           <p className="rounded-xl border border-violet-400/40 bg-violet-400/10 p-3 text-sm text-violet-100">
             {t("dueLine", { count: dueCount, perTest: Math.min(dueCount, DUE_PER_TEST) })}
           </p>
@@ -640,6 +658,10 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   // Results
   const scored = scoredPicks;
   const result = gradeTest({ pool: sessionPool, picks: scored, questionsById, responses });
+  const scoredTasks = exam === "saa-c03" ? summarizeTestTasks({ picks: scored, questionsById, responses }) : [];
+  const saaTasks = saaDiagnostic ? pool.domains.flatMap((domain) => domain.objectives.map((objective) =>
+    scoredTasks.find((row) => row.domainId === domain.id && row.objectiveId === objective.id) ?? { domainId: domain.id, objectiveId: objective.id, correct: 0, attempted: 0, unanswered: 0 },
+  )) : scoredTasks;
   const passPercent = 80;
   const passed = result.percent >= passPercent;
   const usedSeconds = elapsed;
@@ -648,7 +670,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const review = scored.filter((p) => !missedOnly || !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const examMatrix = matrix.exams.find((item) => item.code === exam);
   const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status !== "covered").length ?? 0;
-  const awsReadiness = exam === "clf-c02" || exam === "saa-c03"
+  const awsReadiness = exam === "clf-c02"
     ? evaluateReadiness(mockHistory, exam, missingObjectives, pool.totalUnique, {
       version: assessmentVersion(pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
       questionIds: pool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)),
@@ -658,11 +680,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     : null;
 
   const missedPicks = scored.filter((p) => !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
-  const missedByObjective = [...missedPicks.reduce((map, p) => {
+  const missedGroups = [...missedPicks.reduce((map, p) => {
     const key = p.objectiveId;
     map.set(key, [...(map.get(key) ?? []), p]);
     return map;
   }, new Map<string, TestPick[]>())];
+  const missedByObjective = saaDiagnostic ? rankDiagnosticMisses(missedGroups, weakestObjectives(stats, stats.length).map((item) => item.id)) : missedGroups;
   const luckyPicks = scored.filter((p) => confidence[p.questionId] === "guess" && isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
   const missedObjectiveIds = missedByObjective.map(([id]) => id);
   const retestObjectiveIds = [...new Set([...missedObjectiveIds, ...luckyPicks.map((p) => p.objectiveId)])];
@@ -724,6 +747,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         ) : (
           <>
             <p className="mt-1 text-sm text-slate-300">{t("fixIntro", { count: missedByObjective.length })}</p>
+            {saaDiagnostic && <p className="mt-1 text-sm text-slate-300">{t("saaPriorityNote")}</p>}
             <ol className="mt-4 space-y-4">
               {missedByObjective.map(([objectiveId, picksFor]) => {
                 const domainId = picksFor[0].domainId;
@@ -763,7 +787,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         {luckyPicks.length > 0 && (
           <LuckyGuesses picks={luckyPicks} heading={t("luckyHeading", { count: luckyPicks.length })} intro={t("luckyIntro")} ruleLabel={t("fixRule")} notesLabel={(title) => t("fixNotes", { title })} />
         )}
-        {retestObjectiveIds.length > 0 && (
+        {!saaDiagnostic && retestObjectiveIds.length > 0 && (
           <button type="button" onClick={() => start("retest", retestObjectiveIds)} className={`${primary} mt-4`}>
             {t("fixRetest", { count: RETEST_QUESTIONS, minutes: Math.max(1, Math.round(sessionDurationSeconds(exam, RETEST_QUESTIONS) / 60)) })}
           </button>
@@ -779,8 +803,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       <section className={card} aria-labelledby="score-heading">
         <h2 id="score-heading" className="text-sm uppercase tracking-wide text-teal-300">{isMixedPractice ? t("mixedPractice") : isDomainPractice ? t("domainPractice") : format.label} · {exam}</h2>
         <p className="mt-2 text-4xl font-semibold text-white">{result.correct}/{result.total} <span className="text-2xl text-slate-300">({result.percent}%)</span></p>
-        <p className={`mt-2 font-medium ${immediatePractice ? "text-teal-200" : passed ? "text-emerald-300" : "text-amber-300"}`}>
-          {immediatePractice ? t("mixedPracticeResult") : passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
+        <p className={`mt-2 font-medium ${exam === "saa-c03" || immediatePractice ? "text-teal-200" : passed ? "text-emerald-300" : "text-amber-300"}`}>
+          {exam === "saa-c03" ? t("saaDescriptive") : immediatePractice ? t("mixedPracticeResult") : passed ? t("passedLine", { percent: passPercent }) : t("failedLine", { percent: passPercent })}
         </p>
         {!immediatePractice && <p className="mt-1 text-sm text-slate-400">
           {t("scaleNote", { min: format.scaleMin, max: format.scaleMax, passing: format.passingScore })}
@@ -792,19 +816,38 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         </dl>
       </section>
 
+      {exam === "saa-c03" && <section className={card} aria-labelledby="saa-tasks-heading">
+        <h2 id="saa-tasks-heading" className="text-lg font-semibold text-white">{t("saaTaskResults")}</h2>
+        <p className="mt-1 text-sm text-slate-300">{t("saaSampleNote")}</p>
+        <ul className="mt-3 space-y-3">{saaTasks.map((row) => {
+          const pick = scored.find((item) => item.domainId === row.domainId && item.objectiveId === row.objectiveId);
+          const topic = pick ? getTopic(questionsById[pick.questionId].topicId) : undefined;
+          const lesson = saaDiagnostic ? saaLesson(row.objectiveId) : null;
+          return <li key={`${row.domainId}:${row.objectiveId}`} className="rounded-xl border border-slate-700 p-3 text-sm">
+            <p className="text-white"><span className="font-mono text-teal-300">{row.domainId} / {row.objectiveId}</span> {objectiveTitle(row.domainId, row.objectiveId)}</p>
+            <p className="mt-1 text-slate-300">{t("saaTaskCounts", { correct: row.correct, attempted: row.attempted, unanswered: row.unanswered })}</p>
+            {saaDiagnostic && row.attempted + row.unanswered === 0 && <p className="mt-1 text-amber-200">{t("saaNoQuestions")}</p>}
+            {lesson ? <Link href={lesson.href} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{t("studyTopic", { title: lesson.title })}</Link> : topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{t("studyTopic", { title: topic.title })}</Link>}
+          </li>;
+        })}</ul>
+      </section>}
+
       <section className={card} aria-labelledby="domains-heading">
         <h2 id="domains-heading" className="text-lg font-semibold text-white">{t("byDomain")}</h2>
         <ul className="mt-3 space-y-3">
           {result.domains.map((d) => {
             const pct = Math.round((100 * d.correct) / d.total);
+            const taskRows = saaTasks.filter((row) => row.domainId === d.id);
+            const attempted = taskRows.reduce((sum, row) => sum + row.attempted, 0);
+            const unanswered = taskRows.reduce((sum, row) => sum + row.unanswered, 0);
             return (
               <li key={d.id}>
                 <div className="flex flex-wrap justify-between gap-2 text-sm">
                   <span className="text-slate-100"><span className="font-mono text-teal-300">{d.id}</span> {d.title}</span>
-                  <span className="font-mono text-slate-300">{d.correct}/{d.total} · {pct}%</span>
+                  <span className="font-mono text-slate-300">{exam === "saa-c03" ? t("saaTaskCounts", { correct: d.correct, attempted, unanswered }) : `${d.correct}/${d.total} · ${pct}%`}</span>
                 </div>
                 <div aria-hidden="true" className="mt-1 h-2 overflow-hidden rounded-full bg-slate-800">
-                  <div className={`h-full ${pct >= passPercent ? "bg-emerald-400" : "bg-amber-400"}`} style={{ width: `${pct}%` }} />
+                  <div className={`h-full ${exam === "saa-c03" ? "bg-teal-400" : pct >= passPercent ? "bg-emerald-400" : "bg-amber-400"}`} style={{ width: `${pct}%` }} />
                 </div>
               </li>
             );
@@ -879,6 +922,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                 <li key={p.questionId} className={`rounded-xl border p-4 ${ok ? "border-slate-700" : "border-amber-900/70"} bg-slate-900`}>
                   <p className="font-mono text-xs text-teal-300">{exam} / {p.objectiveId} · {objectiveTitle(p.domainId, p.objectiveId)}</p>
                   <p className="mt-2 font-medium text-white">{q.prompt}</p>
+                  {saaDiagnostic && <p className="mt-1 text-sm text-slate-300">{previouslySeen.includes(p.questionId) ? t("saaPreviouslySeen") : t("saaHistoryUnknown")}</p>}
                   <p className={`mt-2 text-sm ${ok ? "text-emerald-300" : "text-red-300"}`}>
                     {t("answerLine", {
                       answer: answerText(q, r?.answer, t("noAnswer")),
@@ -887,8 +931,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                       seconds: r?.seconds ?? 0,
                     })}
                   </p>
-                  {!ok && <p className="mt-1 text-sm text-teal-200">{t("correctAnswer", { answer: answerText(q, q.answer, t("noAnswer")) })}</p>}
+                  {(!ok || saaDiagnostic) && <p className="mt-1 text-sm text-teal-200">{t("correctAnswer", { answer: answerText(q, q.answer, t("noAnswer")) })}</p>}
                   <p className="mt-2 text-sm text-slate-400"><ExplanationText text={q.explanation} /></p>
+                  {saaDiagnostic && !ok && <p className="mt-2 text-sm text-amber-200">{t("saaAlternativeUnavailable")}</p>}
                   <div className="mt-2 flex flex-wrap gap-x-4">
                     {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("studyTopic", { title: topic.title })}</Link>}
                     <button type="button" onClick={() => reportContent(`Question ${q.id}: ${q.prompt}`, "Wrong answer key")} className="inline-flex min-h-11 items-center text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200">{t("disputeQuestion")}</button>
@@ -901,8 +946,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={immediatePractice ? primary : primary}>{isMixedPractice ? t("practiceMore") : isDomainPractice ? t("domainPracticeMore") : t("retake")}</button>
-        <button type="button" onClick={() => setPhase("setup")} className={secondary}>{t("changeExam")}</button>
+        <button type="button" onClick={() => start(runInfo.kind, runInfo.objectiveIds)} className={primary}>{saaDiagnostic ? t("saaRepeatDiagnostic") : isMixedPractice ? t("practiceMore") : isDomainPractice ? t("domainPracticeMore") : t("retake")}</button>
+        {saaDiagnostic ? <Link href="/aws-saa" className={secondary}>{t("saaReturnWorkspace")}</Link> : <button type="button" onClick={() => setPhase("setup")} className={secondary}>{t("changeExam")}</button>}
       </div>
     </div>
   );

@@ -47,6 +47,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
     ...(counts.cards > 0 ? [{ label: tTrack("tools.flashcards.label"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ label: tTrack("tools.quiz.label"), href: "/quiz" }] : []),
     ...(track.id === "aws-clf" ? [{ label: t("workspaceMixedPractice"), href: "/test?exam=clf-c02&practice=mixed20" }] : []),
+    ...(track.id === "aws-saa" ? [{ label: t("saaDiagnostic"), href: "/test?diagnostic=saa" }] : []),
     ...(counts.questions > 0 ? [{ label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` }] : []),
     ...(track.id === "aws-saa" ? [
       { label: journey("sharedReview"), href: "/weak-areas" },
