@@ -74,3 +74,16 @@ export function daysUntilDue(stored: StoredSchedule | undefined, now: Date = new
 export function isKnownGrade(grade: ReviewGrade): boolean {
   return grade === "good" || grade === "easy";
 }
+
+/**
+ * A 1–5 label derived from FSRS stability for display only.
+ * It is not stored and it does not schedule the card.
+ */
+export function displayBox(stored: StoredSchedule | undefined): 1 | 2 | 3 | 4 | 5 {
+  const stability = stored?.stability;
+  if (stability === undefined || !Number.isFinite(stability) || stability < 1) return 1;
+  if (stability < 4) return 2;
+  if (stability < 10) return 3;
+  if (stability < 30) return 4;
+  return 5;
+}

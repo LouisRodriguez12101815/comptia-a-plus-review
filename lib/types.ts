@@ -53,6 +53,18 @@ export type Flashcard = {
   front: string;
   back: string;
   weak?: boolean;
+  /**
+   * One SAA-C03 task chosen from this card's own front and back.
+   * Null means no single task fits. Absent on cards that are not in SAA.
+   * Domain is derived from the task and is not stored.
+   */
+  taskId?: string | null;
+  /** Service names found in the card text. An index, not a second answer. */
+  services?: string[];
+  /** Official AWS documentation for a tagged card. */
+  docsUrl?: string;
+  /** Extra accepted answers for type-the-term. The front always counts. */
+  aliases?: string[];
 };
 
 export type Question = {

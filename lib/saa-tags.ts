@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/types";
+import type { Flashcard, Question } from "@/lib/types";
 
 /** Official SAA-C03 task statements. The exam guide does not publish per-task weights. */
 export const SAA_TASK_IDS = [
@@ -209,5 +209,43 @@ export function assertSaaQuestionTags(question: Question): void {
   }
   if (question.difficulty !== saaDifficulty(question)) {
     throw new Error(`${question.id}: difficulty does not match the item shape`);
+  }
+}
+
+/** Service names in a card's own front and back, in first-seen order. */
+export function servicesInCard(card: Pick<Flashcard, "front" | "back">): string[] {
+  return servicesInQuestion({ prompt: card.front, choices: [], explanation: card.back });
+}
+
+/** Domain implied by the card's one task. Null when the card has no task. */
+export function saaCardDomain(card: Pick<Flashcard, "taskId">): SaaDomainId | null {
+  if (!card.taskId) return null;
+  return saaDomainFromTask(card.taskId) ?? null;
+}
+
+/** Throws when an SAA card's task, services, or docs URL do not match the card text. */
+export function assertSaaCardTags(card: Flashcard): void {
+  if (card.taskId !== null && (typeof card.taskId !== "string" || !saaDomainFromTask(card.taskId))) {
+    throw new Error(`${card.id}: taskId must be a SAA task id or null`);
+  }
+  if ("domain" in card && (card as { domain?: unknown }).domain !== undefined) {
+    throw new Error(`${card.id}: domain must be derived from the task, not stored`);
+  }
+  if (card.taskId && saaCardDomain(card) !== saaDomainFromTask(card.taskId)) {
+    throw new Error(`${card.id}: derived domain disagrees with task ${card.taskId}`);
+  }
+  if (!Array.isArray(card.services) || card.services.some((service) => typeof service !== "string" || service.length === 0)) {
+    throw new Error(`${card.id}: services must be an array of service names`);
+  }
+  const expectedServices = servicesInCard(card);
+  if (card.services.join("\n") !== expectedServices.join("\n")) {
+    throw new Error(`${card.id}: services do not match the names found in the card`);
+  }
+  if (card.taskId) {
+    if (typeof card.docsUrl !== "string" || !card.docsUrl.startsWith("https://")) {
+      throw new Error(`${card.id}: tagged cards need an https docsUrl`);
+    }
+  } else if (card.docsUrl !== undefined) {
+    throw new Error(`${card.id}: an untagged card does not carry a docsUrl`);
   }
 }

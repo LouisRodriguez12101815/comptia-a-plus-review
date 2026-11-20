@@ -19,7 +19,7 @@ export default async function FlashcardsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("flashcardsPage");
-  const { topic } = (await searchParams) as { topic?: string };
+  const { topic, exam, task, mode } = (await searchParams) as { topic?: string; exam?: string; task?: string; mode?: string };
   const chapter = topic ? getTopic(topic) : undefined;
   return (
     <div className="space-y-6">
@@ -32,7 +32,7 @@ export default async function FlashcardsPage({
       {chapter && <ChapterStrip topicId={chapter.id} current="flashcards" />}
       {topic === "n10-ch9" && <MissionReturnLink />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
-      <FlashcardDeck initialTopic={topic ?? "all"} />
+      <FlashcardDeck initialTopic={topic ?? "all"} initialExam={exam} initialTask={task} initialMode={mode} />
     </div>
   );
 }
