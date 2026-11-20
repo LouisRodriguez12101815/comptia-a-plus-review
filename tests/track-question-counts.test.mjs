@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { getQuestions } from "../lib/content.ts";
+import { getFlashcards, getQuestions } from "../lib/content.ts";
 import { getTrack, progressExamFocus, trackCounts } from "../lib/tracks.ts";
 
 test("a track progress panel counts the track exam when the saved focus is another exam", () => {
@@ -12,6 +12,11 @@ test("a track progress panel counts the track exam when the saved focus is anoth
   const progressCount = getQuestions("all", focus).length;
   assert.equal(progressCount, trackCounts(track).questions);
   assert.notEqual(progressCount, getQuestions("all", "220-1201").length);
+  const cards = getFlashcards("all", focus).length;
+  assert.equal(cards, trackCounts(track).cards);
+  assert.notEqual(cards, getFlashcards("all", "220-1201").length);
+  const dashboard = readFileSync(new URL("../app/components/ProgressDashboard.tsx", import.meta.url), "utf8");
+  assert.match(dashboard, /getFlashcards\("all", focus\)/);
 
   const hub = readFileSync(new URL("../app/components/TrackHub.tsx", import.meta.url), "utf8");
   const uses = hub.match(/<ProgressDashboard\b[^>]*>/g);

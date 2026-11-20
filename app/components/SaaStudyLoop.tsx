@@ -1,0 +1,103 @@
+"use client";
+
+import { useMemo, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import objectives from "@/content/objectives.json";
+import { questions } from "@/lib/content";
+import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
+import { nextSaaQuestionIds, saaDomainSummary, saaUntimedMisses } from "@/lib/saa-study-loop";
+
+function PatternCard({ id, title, diagram, when, docs, questionIds }: { id?: string; title: string; diagram: string; when: string; docs: string; questionIds: string[] }) {
+  const t = useTranslations("saaStudyLoop");
+  return (
+    <li id={id} className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+      <h4 className="font-medium text-white">{title}</h4>
+      <p className="mt-2 text-sm text-slate-300">{diagram}</p>
+      <p className="mt-2 text-sm text-slate-300">{when}</p>
+      <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+        <a href={docs} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{t("docsLink")}</a>
+        <Link href={`/quiz?exam=saa-c03&questions=${questionIds.join(",")}`} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{t("patternQuiz")}</Link>
+      </p>
+    </li>
+  );
+}
+
+const domains = objectives.exams.find((exam) => exam.code === "saa-c03")?.domains.map((domain) => ({
+  id: domain.id,
+  title: domain.title,
+})) ?? [];
+
+export function SaaStudyLoop() {
+  const t = useTranslations("saaStudyLoop");
+  const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
+  const domainRows = useMemo(
+    () => saaDomainSummary([...progress.quizAttempts, ...progress.mockAttempts], questions, domains),
+    [progress],
+  );
+  const nextIds = useMemo(
+    () => nextSaaQuestionIds([...progress.quizAttempts, ...progress.mockAttempts], questions, domains),
+    [progress],
+  );
+  const misses = useMemo(() => saaUntimedMisses(progress.quizAttempts, questions), [progress]);
+  const byId = useMemo(() => new Map(questions.map((question) => [question.id, question])), []);
+
+  return (
+    <section id="study-loop" aria-labelledby="saa-study-loop-heading" className="scroll-mt-24 space-y-6">
+      <div>
+        <h2 id="saa-study-loop-heading" className="text-lg font-medium text-white">{t("heading")}</h2>
+        <p className="mt-1 text-sm text-slate-400">{t("targetNote")}</p>
+      </div>
+
+      {domainRows.length === 0 ? (
+        <p className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-300">{t("empty")}</p>
+      ) : (
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {domainRows.map((domain) => (
+            <li key={domain.id} className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+              <p className="font-medium text-white"><span className="font-mono text-teal-300">{domain.id}</span> {domain.title}</p>
+              <p className="mt-1 text-sm text-slate-300">{t("domainLine", { correct: domain.correct, answered: domain.answered, percent: domain.percent, sittings: domain.sittings })}</p>
+              {domain.weak ? <p className="mt-2 text-sm text-amber-200">{t("weak")}</p> : null}
+              <Link href={`/quiz?exam=saa-c03&domain=${domain.id}`} className="mt-3 inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{t("domainQuiz")}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div id="saa-next-10">
+        <h3 className="font-medium text-white">{t("nextHeading")}</h3>
+        {nextIds.length === 0 ? (
+          <p className="mt-1 text-sm text-slate-400">{t("nextEmpty")}</p>
+        ) : (
+          <Link href={`/quiz?exam=saa-c03&questions=${nextIds.join(",")}`} className="mt-2 inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950">{t("nextLink", { count: nextIds.length })}</Link>
+        )}
+      </div>
+
+      <div>
+        <h3 className="font-medium text-white">{t("missHeading")}</h3>
+        {misses.length === 0 ? (
+          <p className="mt-1 text-sm text-slate-400">{t("missEmpty")}</p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {misses.slice(0, 10).map((miss) => (
+              <li key={miss.id} className="text-sm text-slate-200">
+                {byId.get(miss.id)?.prompt} <span className="text-slate-400">{t("missCount", { count: miss.misses })}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div>
+        <h3 className="font-medium text-white">{t("patternsHeading")}</h3>
+        <ul className="mt-3 grid gap-3">
+          <PatternCard id="saa-pattern-multiaz" title={t("patterns.multiAz.title")} diagram={t("patterns.multiAz.diagram")} when={t("patterns.multiAz.when")} docs={t("patterns.multiAz.docs")} questionIds={["q-aws-found-02", "q-aws-found-06"]} />
+          <PatternCard title={t("patterns.decouple.title")} diagram={t("patterns.decouple.diagram")} when={t("patterns.decouple.when")} docs={t("patterns.decouple.docs")} questionIds={["q-saa-practice-18", "q-saa-core-35"]} />
+          <PatternCard title={t("patterns.cache.title")} diagram={t("patterns.cache.diagram")} when={t("patterns.cache.when")} docs={t("patterns.cache.docs")} questionIds={["q-saa-core-27", "q-saa-practice-52"]} />
+          <PatternCard title={t("patterns.storage.title")} diagram={t("patterns.storage.diagram")} when={t("patterns.storage.when")} docs={t("patterns.storage.docs")} questionIds={["q-saa-costbatch-001", "q-aws-found-14"]} />
+          <PatternCard title={t("patterns.cost.title")} diagram={t("patterns.cost.diagram")} when={t("patterns.cost.when")} docs={t("patterns.cost.docs")} questionIds={["q-saa-arch-32", "q-saa-arch-31"]} />
+        </ul>
+      </div>
+    </section>
+  );
+}

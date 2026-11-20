@@ -319,7 +319,7 @@
     "title": "Practice quiz",
     "intro": "Original questions written from class notes — not CompTIA exam dumps. Choose an exam focus, check each answer, and review every miss.",
     "domainTitle": "Domain {id}: {title}",
-    "domainIntro": "Practice quiz from this domain only, worth {weight}% of the N10-009 exam. The answer and explanation show after each question.",
+    "domainIntro": "Practice quiz from this domain only, worth {weight}% of the {exam} exam. The answer and explanation show after each question.",
     "conceptTitle": "Concept drill: {title}",
     "conceptIntro": "Practice limited to one concept under objective {objective}. The answer and explanation show after each question."
   },
@@ -430,6 +430,7 @@
     "passedLine": "Study target met: {percent}% raw accuracy. This is not an exam pass prediction.",
     "failedLine": "Study target: {percent}% raw accuracy. Review the missed concepts and practice unfamiliar scenarios.",
     "scaleNote": "Official passing score: {passing} on a {min}–{max} scale. Raw practice accuracy cannot be converted to that score.",
+    "saaScoredNote": "Practice scores all 65 questions in this sitting. The exam scores 50 questions and does not identify the 15 unscored questions.",
     "timeUsed": "Time used",
     "timeAllowed": "Time allowed",
     "timedOut": "Timed out",
@@ -4035,5 +4036,54 @@
     "insightsLink": "Explore Insights",
     "coverageLink": "Inspect objective coverage",
     "studyLink": "Open certification catalog"
+  },
+  "saaStudyLoop": {
+    "heading": "Where to practice next",
+    "targetNote": "Domains under 80% are flagged from answered SAA questions. 80% is this site's practice target. It is not an AWS passing score.",
+    "empty": "No answered SAA questions yet. Finish a quiz or mock to see a domain summary.",
+    "domainLine": "{correct}/{answered} answered · {percent}% · {sittings, plural, one {# sitting} other {# sittings}}",
+    "weak": "Under the 80% practice target",
+    "domainQuiz": "Practice this domain",
+    "nextHeading": "Next questions",
+    "nextEmpty": "No domain is under 80% yet, so there is no next set.",
+    "nextLink": "Start these {count} questions",
+    "missHeading": "Missed on untimed quizzes",
+    "missEmpty": "No missed questions from untimed SAA quizzes yet.",
+    "missCount": "{count, plural, one {# miss} other {# misses}}",
+    "patternsHeading": "Architecture patterns",
+    "docsLink": "AWS documentation",
+    "patternQuiz": "Practice questions",
+    "patterns": {
+      "multiAz": {
+        "title": "Multi-AZ or multi-Region",
+        "diagram": "One Region with two Availability Zones behind a load balancer, versus two Regions that each keep a copy and a routing choice in front.",
+        "when": "Use Multi-AZ when one Region can fail over. Use more than one Region when the workload must survive a Region outage or be served from more than one Region.",
+        "docs": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
+      },
+      "decouple": {
+        "title": "Decouple with a queue, topic, or event bus",
+        "diagram": "A producer hands work to a queue or event bus. Consumers take it when they are ready, instead of calling one another and waiting.",
+        "when": "Use a queue when work must wait. Use a topic when many subscribers need the same message. Use an event bus when services should react to events without a direct call.",
+        "docs": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+      },
+      "cache": {
+        "title": "Cache at the edge or in front of the data",
+        "diagram": "Repeated reads stop at a cache near the user or the database. The origin or the primary is used when the cache does not have the item.",
+        "when": "Use CloudFront for HTTP content at the edge. Use ElastiCache for an application cache. Use DAX when the cache sits in front of DynamoDB.",
+        "docs": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+      },
+      "storage": {
+        "title": "Pick the storage type",
+        "diagram": "Objects, block volumes, and shared files are different services. How often the data is read decides an S3 class. How it is attached decides EBS, EFS, or FSx.",
+        "when": "Use S3 classes for objects. Use EBS for a volume on one instance. Use EFS or FSx when instances need a shared file system.",
+        "docs": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      "cost": {
+        "title": "Cost levers",
+        "diagram": "Steady usage can take a commitment. Spare capacity that can stop can take Spot. The size comes from what the workload measured, not from the largest instance.",
+        "when": "Use Savings Plans for steady usage. Use Spot only when interruption is acceptable. Right-size from measured CPU, memory, and traffic.",
+        "docs": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+      }
+    }
   }
 }

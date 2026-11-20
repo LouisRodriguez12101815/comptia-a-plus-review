@@ -184,19 +184,30 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   assert.deepEqual(liveHashStage.excludedFields, [...SAA_TAG_FIELDS]);
   assert.equal(liveHashStage.questions.length, 314);
   const liveHashes = new Map(liveHashStage.questions.map((row) => [row.id, row.sha256]));
+  assert.deepEqual(audit.changeStages.map((stage) => stage.id), ["explanation-rewrite", "distractor-realism"]);
+  for (const stage of audit.changeStages) assert.deepEqual(stage.excludedFields, [...SAA_TAG_FIELDS]);
   const changeStage = audit.changeStages.find((stage) => stage.id === "explanation-rewrite");
-  assert.ok(changeStage, "missing explanation-rewrite change stage");
-  assert.deepEqual(changeStage.excludedFields, [...SAA_TAG_FIELDS]);
   const changes = new Map(changeStage.items.map((row) => [row.id, row]));
   assert.equal(changes.size, changeStage.items.length);
   assert.equal(changes.size, 56);
+  const chains = new Map();
+  for (const stage of audit.changeStages) {
+    for (const row of stage.items) {
+      const chain = chains.get(row.id) ?? [];
+      chain.push(row);
+      chains.set(row.id, chain);
+    }
+  }
   for (const question of saa) {
     const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(question))).digest("hex");
-    const change = changes.get(question.id);
-    if (change) {
-      assert.equal(digest, change.newHash, `${question.id}: change-stage hash`);
-      if (change.oldHash === null) assert.equal(liveHashes.has(question.id), false, `${question.id}: new id already in the 314 stage`);
-      else assert.equal(change.oldHash, liveHashes.get(question.id), `${question.id}: old hash is not the 314 stage`);
+    const chain = chains.get(question.id);
+    if (chain) {
+      assert.equal(digest, chain.at(-1).newHash, `${question.id}: change-stage hash`);
+      if (chain[0].oldHash === null) assert.equal(liveHashes.has(question.id), false, `${question.id}: new id already in the 314 stage`);
+      else assert.equal(chain[0].oldHash, liveHashes.get(question.id), `${question.id}: old hash is not the 314 stage`);
+      for (let index = 1; index < chain.length; index += 1) {
+        assert.equal(chain[index].oldHash, chain[index - 1].newHash, `${question.id}: stage ${index} does not cite the previous hash`);
+      }
     } else {
       assert.equal(digest, liveHashes.get(question.id), `${question.id}: live preservation hash`);
     }
@@ -210,13 +221,13 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
     assert.ok(current, `missing existing question ${baseline.id}`);
     const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(current))).digest("hex");
     const correction = corrections.get(baseline.id);
-    const change = changes.get(baseline.id);
+    const chain = chains.get(baseline.id);
     if (correction) {
       assert.equal(correction.beforeSha256, baseline.sha256, `${baseline.id}: correction does not cite baseline`);
       assert.equal(digest, correction.afterSha256, `${baseline.id}: corrected record differs from reviewed record`);
-    } else if (change) {
-      assert.equal(change.oldHash, baseline.sha256, `${baseline.id}: rewrite does not cite the 149 baseline`);
-      assert.equal(digest, change.newHash, `${baseline.id}: rewritten record differs from the change stage`);
+    } else if (chain) {
+      assert.equal(chain[0].oldHash, baseline.sha256, `${baseline.id}: rewrite does not cite the 149 baseline`);
+      assert.equal(digest, chain.at(-1).newHash, `${baseline.id}: rewritten record differs from the change stage`);
     } else {
       assert.equal(digest, baseline.sha256, `modified existing question ${baseline.id}`);
     }
@@ -288,12 +299,14 @@ test("network-cost items move from task 4.3 to task 4.4 and shared CLF answers s
     maxBuffer: 32 * 1024 * 1024,
   }));
   const parentById = new Map(parent.map((question) => [question.id, question]));
+  const distractorIds = new Set(audit.changeStages.find((stage) => stage.id === "distractor-realism").items.map((row) => row.id));
+  assert.equal(distractorIds.size, 10);
   for (const row of changeStage.items) {
     if (!row.reason.includes("CLF objective tags are unchanged")) continue;
     const current = questions.find((question) => question.id === row.id);
     const previous = parentById.get(row.id);
     assert.deepEqual(current.answer, previous.answer, row.id);
-    assert.deepEqual(current.choices, previous.choices, row.id);
+    if (!distractorIds.has(row.id)) assert.deepEqual(current.choices, previous.choices, row.id);
     assert.deepEqual(current.examCodes, previous.examCodes, row.id);
     assert.deepEqual(current.objectiveIds["clf-c02"] ?? null, previous.objectiveIds["clf-c02"] ?? null, row.id);
   }
