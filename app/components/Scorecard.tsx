@@ -36,6 +36,7 @@ const barStyle: Record<ObjectiveStat["status"], string> = {
 export function Scorecard({ exam }: { exam: string }) {
   const t = useTranslations("scorecard");
   const skills = useTranslations("saaTestSkills");
+  const mistakes = useTranslations("saaMistakes");
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
   const pool = useMemo(() => buildExamPool({ objectives: objectives as CoverageMatrix, questions, topics, examCode: exam }), [exam]);
   const stats = useMemo(() => objectiveStats(pool, progress.mockAttempts, exam), [pool, progress.mockAttempts, exam]);
@@ -85,6 +86,9 @@ export function Scorecard({ exam }: { exam: string }) {
             URL.revokeObjectURL(url);
           }}>{skills("exportCsv")}</button>
         )}
+        {exam === "saa-c03" ? (
+          <Link href="/aws-saa/mistakes" className="mt-4 inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{mistakes("link")}</Link>
+        ) : null}
         {weakest.length > 0 ? (
           <Link href={`/test?exam=${exam}&focus=${weakest.map((s) => s.id).join(",")}`} className="mt-4 inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400">
             {t("practiceWeakest", { count: weakest.length })}
