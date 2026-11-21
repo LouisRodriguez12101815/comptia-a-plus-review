@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
@@ -53,14 +53,15 @@ export function SaaMemoryGame({ game, board = "all" }: { game: GameId; board?: s
   );
   const [round, setRound] = useState<GameRound>(() => startGame(game, "saa", weak, board));
   const [startedAt] = useState(() => Date.now());
-  const [graded, setGraded] = useState<string[]>([]);
+  const graded = useRef(new Set<string>());
 
   useEffect(() => {
-    const fresh = round.misses.filter((id) => !graded.includes(id));
-    if (fresh.length === 0) return;
-    for (const id of fresh) rateCard(id, "again");
-    setGraded((current) => [...current, ...fresh]);
-  }, [round.misses, graded]);
+    for (const id of round.misses) {
+      if (graded.current.has(id)) continue;
+      graded.current.add(id);
+      rateCard(id, "again");
+    }
+  }, [round.misses]);
 
   useEffect(() => {
     if (round.phase !== "done") return;
