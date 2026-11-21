@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { flashcards, topics } from "../lib/content.ts";
+import { flashcards, questions as servedQuestions, topics } from "../lib/content.ts";
 import { drillItem, pairSourcesFor, resolvedPairs, studyRecord, studyRecords } from "../lib/study/records.ts";
 import { cardsForQuestion, clozeForCard, termMatches } from "../lib/study/memory.ts";
 import { displayBox, reviewCard } from "../lib/study/schedule.ts";
@@ -9,7 +9,6 @@ import { dueReviews } from "../lib/weakness.ts";
 
 const objectives = JSON.parse(readFileSync(new URL("../content/objectives.json", import.meta.url), "utf8"));
 const pairFile = readFileSync(new URL("../content/study-pairs.json", import.meta.url), "utf8");
-const questions = JSON.parse(readFileSync(new URL("../content/questions.json", import.meta.url), "utf8"));
 const examOf = (card) => card.examCodes ?? topics.find((topic) => topic.id === card.topicId)?.examCodes ?? [];
 const copiedCues = [
   "Stateful resource-level network filtering",
@@ -50,7 +49,7 @@ test("comparison pairs link existing drill items and add only the six missing co
     assert.ok(pair.questionIds.length >= 2, pair.id);
     assert.ok(pair.sides.length >= 2, pair.id);
     for (const id of pair.questionIds) {
-      const question = questions.find((item) => item.id === id);
+      const question = servedQuestions.find((item) => item.id === id);
       assert.ok(question?.examCodes?.includes("saa-c03"), `${pair.id} ${id}`);
     }
     const resolved = resolvedPairs("saa-c03").find((item) => item.id === pair.id);
@@ -73,7 +72,7 @@ test("one study record per id, with card, pair, and game-item variants", () => {
   const records = studyRecords();
   const ids = records.map((record) => record.id);
   assert.equal(new Set(ids).size, ids.length);
-  assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 120);
+  assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 145);
   assert.equal(records.filter((record) => record.kind === "pair").length, 15);
   assert.equal(records.some((record) => record.id === "fc-saa-nat-gw"), false);
   assert.ok(records.some((record) => record.kind === "game-item" && record.id === "aws-saa-service-compare/spot"));

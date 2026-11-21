@@ -1,0 +1,1299 @@
+{
+  "questions": [
+    {
+      "id": "q-saa-hy-mgn-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A fleet of virtual machines must keep running in the data center while their disks replicate, and then cut over to EC2 on a chosen night. The machines are not a database schema conversion. Which service fits that server move?",
+      "choices": [
+        "Application Migration Service (MGN)",
+        "AWS Schema Conversion Tool",
+        "AWS Database Migration Service",
+        "AWS DataSync"
+      ],
+      "answer": 0,
+      "explanation": "Option: Application Migration Service (MGN) — Correct: MGN replicates the server and performs the cutover onto EC2, which is the move this fleet is asking for.\nOption: AWS Schema Conversion Tool — Incorrect: SCT converts database schema and application code between engines. These machines are not that conversion.\nOption: AWS Database Migration Service — Incorrect: DMS copies database data between database endpoints. It does not cut a virtual machine over to EC2.\nOption: AWS DataSync — Incorrect: DataSync copies files and objects over the network. It does not replicate a server for cutover.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon EC2",
+        "AWS DataSync",
+        "AWS Database Migration Service"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-transfer-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "Partners must keep uploading files with their existing SFTP client. The objects should land in S3, and the partners should not receive IAM users. Which service presents that file protocol?",
+      "choices": [
+        "AWS DataSync",
+        "AWS Transfer Family",
+        "Application Migration Service (MGN)",
+        "AWS Database Migration Service"
+      ],
+      "answer": 1,
+      "explanation": "Option: AWS DataSync — Incorrect: DataSync is a scheduled or agent-based copy between storage systems. It does not give partners an SFTP endpoint.\nOption: AWS Transfer Family — Correct: Transfer Family presents SFTP in front of S3 so the existing client works without an IAM user for each partner.\nOption: Application Migration Service (MGN) — Incorrect: MGN replicates servers for a cutover to EC2. It does not accept partner file uploads.\nOption: AWS Database Migration Service — Incorrect: DMS moves database data between database endpoints. It is not an SFTP server.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon S3",
+        "AWS Identity and Access Management",
+        "AWS DataSync",
+        "AWS Transfer Family",
+        "Amazon EC2",
+        "AWS Database Migration Service"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-dms-sct-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A database must move to a different engine. The rows have to keep copying while the source still takes writes, and the stored procedures have to be converted. Which pairing matches those two jobs?",
+      "choices": [
+        "AWS DataSync for the rows and AWS Transfer Family for the procedures",
+        "Application Migration Service (MGN) for both the rows and the procedures",
+        "AWS Database Migration Service for the data and the Schema Conversion Tool for the schema",
+        "AWS Snowball for the rows and AWS Glue for the procedures"
+      ],
+      "answer": 2,
+      "explanation": "Option: AWS DataSync for the rows and AWS Transfer Family for the procedures — Incorrect: DataSync and Transfer Family move files. They do not replicate a live database or convert its procedures.\nOption: Application Migration Service (MGN) for both the rows and the procedures — Incorrect: MGN cuts a server over to EC2. It does not convert a schema to another engine.\nOption: AWS Database Migration Service for the data and the Schema Conversion Tool for the schema — Correct: DMS copies and can keep copying the data. SCT is the separate tool that converts schema and code when the engines differ.\nOption: AWS Snowball for the rows and AWS Glue for the procedures — Incorrect: Snowball ships an appliance, and Glue transforms objects. Neither is the database replication and schema-conversion pair.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
+        "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "AWS DataSync",
+        "AWS Transfer Family",
+        "AWS Snow Family",
+        "AWS Glue",
+        "Amazon EC2",
+        "AWS Database Migration Service"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-snow-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "The data center link cannot finish a large copy in the time the move allows. The data can leave the building on an appliance and be loaded into S3. Which service is that offline transfer?",
+      "choices": [
+        "AWS DataSync",
+        "AWS Transfer Family",
+        "AWS Database Migration Service",
+        "AWS Snowball"
+      ],
+      "answer": 3,
+      "explanation": "Option: AWS DataSync — Incorrect: DataSync copies over the network. The constraint here is that the link cannot finish the copy in time.\nOption: AWS Transfer Family — Incorrect: Transfer Family presents a file protocol for clients. It does not ship an appliance.\nOption: AWS Database Migration Service — Incorrect: DMS replicates a database over the network. It is not the offline appliance path.\nOption: AWS Snowball — Correct: Snowball moves the data on an appliance when the network is what blocks the transfer, and the data can then be loaded into S3.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/snowball/latest/developer-guide/what-is-snowball-edge.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon S3",
+        "AWS DataSync",
+        "AWS Transfer Family",
+        "AWS Snow Family",
+        "AWS Database Migration Service"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/snowball/latest/developer-guide/what-is-snowball-edge.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-quicksight-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "Analysts need to explore charts of data that already sits in S3. They should not write the SQL themselves, and the objects should stay in the bucket. Which service is the visual layer?",
+      "choices": [
+        "Amazon QuickSight",
+        "Amazon Athena",
+        "AWS Glue",
+        "Amazon EMR"
+      ],
+      "answer": 0,
+      "explanation": "Option: Amazon QuickSight — Correct: QuickSight is the analysis and dashboard layer people use. The objects can stay in S3 and the query can be supplied by another service.\nOption: Amazon Athena — Incorrect: Athena is where you run SQL against the objects. It is not the charting tool for people who do not write that SQL.\nOption: AWS Glue — Incorrect: Glue crawls and transforms the data. It does not present the business charts.\nOption: Amazon EMR — Incorrect: EMR runs a cluster for big-data frameworks. It is not the analyst's visual layer.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon S3",
+        "Amazon QuickSight",
+        "Amazon Athena",
+        "AWS Glue",
+        "Amazon EMR"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-emr-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A team already runs Spark jobs and wants a managed cluster for those frameworks, with the data remaining in S3. They do not need a serverless data-integration job. Which service provides that cluster?",
+      "choices": [
+        "AWS Glue",
+        "Amazon EMR",
+        "Amazon Athena",
+        "Amazon OpenSearch Service"
+      ],
+      "answer": 1,
+      "explanation": "Option: AWS Glue — Incorrect: Glue is the serverless catalog and job service. The team asked for a cluster that runs their existing Spark framework.\nOption: Amazon EMR — Correct: EMR provides the managed cluster for frameworks such as Spark, and the data can stay in S3.\nOption: Amazon Athena — Incorrect: Athena runs SQL against objects. It does not give the team a Spark cluster.\nOption: Amazon OpenSearch Service — Incorrect: OpenSearch is for search and log analytics, not for running the Spark jobs.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon S3",
+        "AWS Glue",
+        "Amazon EMR",
+        "Amazon Athena",
+        "Amazon OpenSearch Service"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-opensearch-01",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "Operators need to search application logs by words and filter them, not look up one item by its primary key and not build a chart for an executive. Which service fits that search?",
+      "choices": [
+        "Amazon Athena",
+        "Amazon QuickSight",
+        "Amazon OpenSearch Service",
+        "AWS Glue"
+      ],
+      "answer": 2,
+      "explanation": "Option: Amazon Athena — Incorrect: Athena answers SQL over objects. It is not the search index operators use for words and filters in logs.\nOption: Amazon QuickSight — Incorrect: QuickSight is the visual layer for analysis. It is not the log search service.\nOption: Amazon OpenSearch Service — Correct: OpenSearch Service indexes the logs so operators can search by text and filter the results.\nOption: AWS Glue — Incorrect: Glue catalogs and transforms data. It does not serve the interactive log search.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.5"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon Athena",
+        "Amazon QuickSight",
+        "Amazon OpenSearch Service",
+        "AWS Glue"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.5",
+        "docsUrl": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-s3-bpa-01",
+      "topicId": "aws-saa-storage",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A bucket policy was edited to allow public reads, and the account still must refuse that exposure. Which control stops the public policy even though the policy text allows it?",
+      "choices": [
+        "A presigned URL on one object",
+        "An S3 access point for a single application",
+        "S3 Transfer Acceleration",
+        "S3 Block Public Access"
+      ],
+      "answer": 3,
+      "explanation": "Option: A presigned URL on one object — Incorrect: A presigned URL grants one signed action. It does not override a bucket policy that was opened to the public.\nOption: An S3 access point for a single application — Incorrect: An access point adds its own policy for one entry to the bucket. It is not the account-wide block on public access.\nOption: S3 Transfer Acceleration — Incorrect: Transfer Acceleration changes the network path for uploads. It does not reject a public bucket policy.\nOption: S3 Block Public Access — Correct: Block Public Access can reject public ACLs and public bucket policies even when those policies would otherwise allow the public read.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "1.3"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      ],
+      "services": [
+        "Amazon S3"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "1.3",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-s3-presign-01",
+      "topicId": "aws-saa-storage",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A vendor must upload one object into a private bucket with the HTTP client they already have. They must not receive an IAM user, and the bucket must stay private. Which grant fits that one upload?",
+      "choices": [
+        "A presigned URL for the upload",
+        "S3 Block Public Access removed for the day",
+        "An IAM access key emailed to the vendor",
+        "A public-read ACL on the object"
+      ],
+      "answer": 0,
+      "explanation": "Option: A presigned URL for the upload — Correct: The presigned URL carries permission for that upload and expires. The vendor does not need an IAM user, and the bucket can stay private.\nOption: S3 Block Public Access removed for the day — Incorrect: Removing the block opens a public path. The request is for one vendor upload, not a public bucket.\nOption: An IAM access key emailed to the vendor — Incorrect: An access key is a long-lived credential. The upload does not require handing one out.\nOption: A public-read ACL on the object — Incorrect: A public ACL exposes the object. It does not give the vendor a private upload.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "1.3"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      ],
+      "services": [
+        "AWS Identity and Access Management",
+        "Amazon S3"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "1.3",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-s3-ap-01",
+      "topicId": "aws-saa-storage",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "Two applications share one S3 bucket. Each application should use its own hostname and its own policy, and one of them must reach the bucket only from a VPC. Which S3 feature gives that separate entry?",
+      "choices": [
+        "A second bucket with a copy of every object",
+        "An S3 access point for each application",
+        "S3 Block Public Access on the account",
+        "A presigned URL minted once a year"
+      ],
+      "answer": 1,
+      "explanation": "Option: A second bucket with a copy of every object — Incorrect: A copy is a second store to keep current. The applications can share the one bucket through separate entries.\nOption: An S3 access point for each application — Correct: Each access point has its own hostname and policy, and an access point can be restricted to a VPC.\nOption: S3 Block Public Access on the account — Incorrect: Block Public Access stops public exposure. It does not give each application its own entry policy.\nOption: A presigned URL minted once a year — Incorrect: A presigned URL is a temporary grant for one action. It is not the per-application entry to the bucket.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "1.3"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      ],
+      "services": [
+        "Amazon S3",
+        "Amazon VPC"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "1.3",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-ddb-streams-01",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "When an item in a DynamoDB table is inserted, updated, or removed, another service must see that change in order. The table itself should stay the system of record. Which feature publishes those changes?",
+      "choices": [
+        "DynamoDB TTL",
+        "A DynamoDB global table",
+        "DynamoDB Streams",
+        "A DynamoDB backup vault"
+      ],
+      "answer": 2,
+      "explanation": "Option: DynamoDB TTL — Incorrect: TTL deletes items that have expired. It does not publish each change for another service to consume.\nOption: A DynamoDB global table — Incorrect: A global table replicates the table so more than one Region can write. It is not the ordered change feed for one table.\nOption: DynamoDB Streams — Correct: Streams records the item-level inserts, updates, and deletes in order so another service can consume them. The table remains the system of record.\nOption: A DynamoDB backup vault — Incorrect: A backup is a recovery copy. It is not a live feed of each item change.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.3"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.3",
+        "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-ddb-ttl-01",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "Session items in DynamoDB should disappear after they expire, using a timestamp attribute already stored on the item. The application should not scan the table to delete them. Which feature does that deletion?",
+      "choices": [
+        "DynamoDB Streams",
+        "A global secondary index",
+        "On-demand capacity mode",
+        "DynamoDB TTL"
+      ],
+      "answer": 3,
+      "explanation": "Option: DynamoDB Streams — Incorrect: Streams publishes the changes. It does not delete an item because its timestamp has passed.\nOption: A global secondary index — Incorrect: An index is another way to query the items. It does not expire them.\nOption: On-demand capacity mode — Incorrect: On-demand changes how capacity is billed. It does not remove expired items.\nOption: DynamoDB TTL — Correct: TTL uses the item's timestamp attribute and deletes the item after it expires, so the application does not scan for those deletes.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.3"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.3",
+        "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-sqs-dlq-01",
+      "topicId": "aws-saa-resilient-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A consumer receives an SQS message and then crashes before it finishes. Other consumers must not take that message while the first one might still be working, and a message that keeps failing should leave the main queue. Which pair of behaviors matches?",
+      "choices": [
+        "Visibility timeout while the message is held, and a dead-letter queue for the failures",
+        "Delete the message as soon as it is received, and keep the failures on the main queue",
+        "An SNS topic for the hide window, and S3 for the failures",
+        "A FIFO content-based deduplication id used as the failure bucket"
+      ],
+      "answer": 0,
+      "explanation": "Option: Visibility timeout while the message is held, and a dead-letter queue for the failures — Correct: The visibility timeout hides the message from other consumers while it is being worked. A dead-letter queue takes messages the redrive policy has given up on, so they leave the main queue.\nOption: Delete the message as soon as it is received, and keep the failures on the main queue — Incorrect: Deleting on receive drops the work if the consumer crashes. Leaving poison messages on the main queue blocks the rest.\nOption: An SNS topic for the hide window, and S3 for the failures — Incorrect: SNS fans a notification out. It does not hide an in-flight queue message, and S3 is not the queue's failure path.\nOption: A FIFO content-based deduplication id used as the failure bucket — Incorrect: Deduplication stops a duplicate send. It does not hide an in-flight message or park the failures.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "2.1"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+        "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+      ],
+      "services": [
+        "Amazon SQS",
+        "Amazon SNS",
+        "Amazon S3"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "2.1",
+        "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-aurora-sv2-01",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "An Aurora cluster's load rises and falls through the day. The team wants the database capacity to follow that load instead of staying on one fixed instance size. Which Aurora choice matches?",
+      "choices": [
+        "A cross-Region read replica that is never promoted",
+        "Aurora Serverless v2",
+        "A single-AZ instance that is stopped overnight",
+        "An Aurora clone used as the production writer"
+      ],
+      "answer": 1,
+      "explanation": "Option: A cross-Region read replica that is never promoted — Incorrect: A read replica serves reads in another Region. It does not change the writer capacity as today's load changes.\nOption: Aurora Serverless v2 — Correct: Serverless v2 adjusts Aurora capacity as the load changes, instead of leaving the cluster on one fixed size.\nOption: A single-AZ instance that is stopped overnight — Incorrect: Stopping an instance removes it from service. The request is for capacity that follows the load while the database stays available.\nOption: An Aurora clone used as the production writer — Incorrect: A clone is a copy for another purpose. It is not the capacity setting for the production writer.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "3.3"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      ],
+      "services": [
+        "Amazon Aurora"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "3.3",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-aurora-global-01",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "Readers in a second Region must query Aurora locally, and that second Region must be able to become the writer if the first Region is unavailable. Which Aurora feature is this? The study pair pair-aurora-global-replica compares the neighboring choice.",
+      "choices": [
+        "A manual snapshot copied when someone remembers",
+        "Aurora Serverless v2 in the original Region only",
+        "Aurora Global Database",
+        "An RDS read replica in the same Region"
+      ],
+      "answer": 2,
+      "explanation": "Option: A manual snapshot copied when someone remembers — Incorrect: A snapshot copy is a point in time you start yourself. Readers in the second Region do not get a live secondary from that habit.\nOption: Aurora Serverless v2 in the original Region only — Incorrect: Serverless v2 changes capacity in the Region where it runs. It does not place a secondary Region that readers query and that can be promoted.\nOption: Aurora Global Database — Correct: The secondary Region serves local reads, and that secondary can be promoted to writer if the first Region is unavailable. See pair-aurora-global-replica for the neighboring replica choice.\nOption: An RDS read replica in the same Region — Incorrect: A same-Region replica does not give the second Region its own readers or a Regional promotion target.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "2.2"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+      ],
+      "services": [
+        "Amazon Aurora",
+        "Amazon RDS"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "2.2",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+        "retrievalDate": "2026-11-20"
+      }
+    },
+    {
+      "id": "q-saa-hy-backup-01",
+      "topicId": "aws-saa-resilient-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "prompt": "A team wants one schedule that protects several AWS resources, and one place that stores the recovery points those jobs create. Which AWS Backup pieces are those two?",
+      "choices": [
+        "A CloudWatch alarm and an S3 lifecycle rule",
+        "An Auto Scaling lifecycle hook and an AMI",
+        "A DynamoDB stream and a Lambda function",
+        "A backup plan and a backup vault"
+      ],
+      "answer": 3,
+      "explanation": "Option: A CloudWatch alarm and an S3 lifecycle rule — Incorrect: An alarm notifies, and a lifecycle rule moves objects between classes. Neither is the central backup schedule or the store for its recovery points.\nOption: An Auto Scaling lifecycle hook and an AMI — Incorrect: A lifecycle hook pauses an instance transition. An AMI is one image, not the vault for every protected resource.\nOption: A DynamoDB stream and a Lambda function — Incorrect: A stream and a function react to item changes. They are not the backup plan or the vault.\nOption: A backup plan and a backup vault — Correct: The plan defines which resources are protected and on what schedule. The vault stores the recovery points that plan creates.",
+      "weak": false,
+      "objectiveIds": {
+        "saa-c03": [
+          "2.2"
+        ]
+      },
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/aws-backup/latest/devguide/about-backup-plans.html",
+        "https://docs.aws.amazon.com/aws-backup/latest/devguide/vaults.html",
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+      ],
+      "services": [
+        "AWS Backup",
+        "Amazon CloudWatch",
+        "Amazon S3",
+        "AWS Auto Scaling",
+        "Amazon DynamoDB",
+        "AWS Lambda"
+      ],
+      "difficulty": "medium",
+      "audit": {
+        "taskId": "2.2",
+        "docsUrl": "https://docs.aws.amazon.com/aws-backup/latest/devguide/about-backup-plans.html",
+        "retrievalDate": "2026-11-20"
+      }
+    }
+  ],
+  "cards": [
+    {
+      "id": "fc-saa-hy-elb-compare",
+      "topicId": "aws-saa-networking",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "ALB versus NLB versus Gateway Load Balancer",
+      "back": "An Application Load Balancer routes HTTP by host or path. A Network Load Balancer forwards TCP or UDP and can present a static IP. A Gateway Load Balancer sends the flow through a fleet of virtual appliances.",
+      "weak": false,
+      "taskId": "3.4",
+      "services": [
+        "Elastic Load Balancing"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    },
+    {
+      "id": "fc-saa-hy-asg-lifecycle",
+      "topicId": "aws-saa-compute",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "EC2 Auto Scaling lifecycle hook",
+      "back": "A lifecycle hook holds an instance in a wait state at launch or at termination until the hook action finishes. The instance is not serving, or not removed, while that wait lasts.",
+      "weak": false,
+      "taskId": "2.2",
+      "services": [
+        "Amazon EC2 Auto Scaling"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
+    },
+    {
+      "id": "fc-saa-hy-lambda-concurrency",
+      "topicId": "aws-saa-compute",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Reserved Lambda concurrency",
+      "back": "Reserved concurrency sets aside executions for one Lambda function and caps that function. Other functions share the concurrency that was not reserved.",
+      "weak": false,
+      "taskId": "3.2",
+      "services": [
+        "AWS Lambda"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+    },
+    {
+      "id": "fc-saa-hy-lambda-vpc",
+      "topicId": "aws-saa-compute",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "A Lambda function attached to a VPC",
+      "back": "Attaching the Lambda function to a VPC lets it use the subnets and security groups you choose to reach private resources. A route out of those subnets is still required when the function must also call the public internet.",
+      "weak": false,
+      "taskId": "3.2",
+      "services": [
+        "AWS Lambda",
+        "Amazon VPC"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html"
+    },
+    {
+      "id": "fc-saa-hy-apigw",
+      "topicId": "aws-saa-resilient-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "API Gateway in front of a private function",
+      "back": "Callers use the Amazon API Gateway endpoint. The Lambda function can stay private behind that API instead of being invoked directly by those callers.",
+      "weak": false,
+      "taskId": "2.1",
+      "services": [
+        "Amazon API Gateway",
+        "AWS Lambda"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+    },
+    {
+      "id": "fc-saa-hy-step-functions",
+      "topicId": "aws-saa-resilient-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Step Functions keeps the workflow state",
+      "back": "A Step Functions state machine runs the steps, remembers where the workflow is, and can retry a step. That state does not have to live inside one Lambda function.",
+      "weak": false,
+      "taskId": "2.1",
+      "services": [
+        "AWS Step Functions",
+        "AWS Lambda"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+    },
+    {
+      "id": "fc-saa-hy-parameter-store",
+      "topicId": "aws-saa-secure-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Parameter Store or a secret that rotates",
+      "back": "Put ordinary configuration in Parameter Store. When the value is a credential that should rotate, choose Secrets Manager rather than treating Parameter Store as the rotation service.",
+      "weak": false,
+      "taskId": "1.3",
+      "services": [
+        "AWS Systems Manager",
+        "AWS Secrets Manager"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    },
+    {
+      "id": "fc-saa-hy-kms-key-policy",
+      "topicId": "aws-saa-secure-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "The KMS key policy comes first",
+      "back": "A KMS key policy has to allow the caller, either directly or by allowing the account to delegate through IAM. An IAM allow cannot use a key whose key policy never permits that account.",
+      "weak": false,
+      "taskId": "1.3",
+      "services": [
+        "AWS Key Management Service",
+        "AWS Identity and Access Management"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html"
+    },
+    {
+      "id": "fc-saa-hy-mgn",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Replicate a server, then cut over",
+      "back": "Application Migration Service (MGN) replicates a server and then cuts it over to an EC2 instance. That is the server move, not a database schema conversion.",
+      "weak": false,
+      "taskId": "3.5",
+      "services": [
+        "Amazon EC2"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html"
+    },
+    {
+      "id": "fc-saa-hy-dms-sct",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Copy the rows and convert the schema",
+      "back": "AWS DMS copies the database data and can keep copying while the source changes. The Schema Conversion Tool is the separate tool that converts schema and code when the engines differ.",
+      "weak": false,
+      "taskId": "3.5",
+      "services": [
+        "AWS Database Migration Service"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    {
+      "id": "fc-saa-hy-trusted-advisor",
+      "topicId": "aws-saa-cost-optimized",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Trusted Advisor checks",
+      "back": "Trusted Advisor reports best-practice checks for the account. It does not replace CloudTrail's record of API calls or a detector's security findings.",
+      "weak": false,
+      "taskId": "4.1",
+      "services": [
+        "AWS Trusted Advisor",
+        "AWS CloudTrail"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+    },
+    {
+      "id": "fc-saa-hy-control-tower",
+      "topicId": "aws-saa-secure-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Control Tower landing zone",
+      "back": "AWS Control Tower provisions a landing zone on AWS Organizations and enrolls accounts under guardrails. The organization and its policies remain AWS Organizations.",
+      "weak": false,
+      "taskId": "1.1",
+      "services": [
+        "AWS Control Tower",
+        "AWS Organizations"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+    },
+    {
+      "id": "fc-saa-hy-athena",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "SQL against objects that stay in S3",
+      "back": "Athena runs SQL against objects in S3. It does not load those objects into a database server you manage, and it is not the dashboard a business user clicks.",
+      "weak": false,
+      "taskId": "3.5",
+      "services": [
+        "Amazon S3",
+        "Amazon Athena"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+    },
+    {
+      "id": "fc-saa-hy-glue",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Classify the objects, then transform them",
+      "back": "A Glue crawler classifies objects into the Data Catalog, and a Glue job can transform them. The catalog entry is not the permission grant on that data.",
+      "weak": false,
+      "taskId": "3.5",
+      "services": [
+        "AWS Glue"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    {
+      "id": "fc-saa-hy-lake-formation",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Grant access on the lake catalog",
+      "back": "Lake Formation grants and revokes permissions on the catalog databases and the data they describe. It does not replace the crawler that infers the schema.",
+      "weak": false,
+      "taskId": "3.5",
+      "services": [
+        "AWS Lake Formation"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    },
+    {
+      "id": "fc-saa-hy-quicksight",
+      "topicId": "aws-saa-dns-data",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Charts for people who do not write the query",
+      "back": "QuickSight is where people explore visuals. Athena or another source can supply the query. QuickSight is not the store that holds the objects.",
+      "weak": false,
+      "taskId": "3.5",
+      "services": [
+        "Amazon QuickSight",
+        "Amazon Athena"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html"
+    },
+    {
+      "id": "fc-saa-hy-s3-bpa",
+      "topicId": "aws-saa-storage",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "S3 Block Public Access",
+      "back": "Block Public Access can reject a public ACL or a public bucket policy on the bucket or across the account. A policy that says public does not win while the block is on.",
+      "weak": false,
+      "taskId": "1.3",
+      "services": [
+        "Amazon S3"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"
+    },
+    {
+      "id": "fc-saa-hy-s3-presign",
+      "topicId": "aws-saa-storage",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "One upload or download without an IAM user",
+      "back": "A presigned URL carries a time-bounded S3 action for whoever holds the URL. Use it for that one action. It is not the control that keeps the bucket private.",
+      "weak": false,
+      "taskId": "1.3",
+      "services": [
+        "AWS Identity and Access Management",
+        "Amazon S3"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html"
+    },
+    {
+      "id": "fc-saa-hy-s3-ap",
+      "topicId": "aws-saa-storage",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "One bucket, a separate entry per application",
+      "back": "An S3 access point is a named entry to one bucket, with its own policy and hostname. It can be limited to traffic from a VPC.",
+      "weak": false,
+      "taskId": "3.1",
+      "services": [
+        "Amazon S3",
+        "Amazon VPC"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html"
+    },
+    {
+      "id": "fc-saa-hy-ddb-streams",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "DynamoDB Streams",
+      "back": "DynamoDB Streams is an ordered record of item inserts, updates, and deletes. Another service can consume that record while the table stays the system of record.",
+      "weak": false,
+      "taskId": "3.3",
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html"
+    },
+    {
+      "id": "fc-saa-hy-ddb-ttl",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "DynamoDB TTL",
+      "back": "DynamoDB TTL deletes an item after the timestamp in the chosen attribute has passed. The application does not scan the table to find those expired items.",
+      "weak": false,
+      "taskId": "3.3",
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html"
+    },
+    {
+      "id": "fc-saa-hy-sqs-dlq",
+      "topicId": "aws-saa-resilient-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Hide an in-flight SQS message, park the failures",
+      "back": "The visibility timeout hides an SQS message while a consumer holds it. A dead-letter queue receives messages the redrive policy stops retrying, so one failure can leave the main queue.",
+      "weak": false,
+      "taskId": "2.1",
+      "services": [
+        "Amazon SQS"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+    },
+    {
+      "id": "fc-saa-hy-aurora-sv2",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Aurora capacity that follows the load",
+      "back": "Aurora Serverless v2 changes cluster capacity as the load changes. It is the capacity choice, not a second Region and not a snapshot copy.",
+      "weak": false,
+      "taskId": "3.3",
+      "services": [
+        "Amazon Aurora"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+    },
+    {
+      "id": "fc-saa-hy-aurora-global",
+      "topicId": "aws-saa-databases",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "Readers in another Region, and a promotion path",
+      "back": "With Aurora Global Database, readers in a secondary Region query locally, and that secondary can be promoted if the writer Region is unavailable. Compare the neighboring choice in pair-aurora-global-replica.",
+      "weak": false,
+      "taskId": "2.2",
+      "services": [
+        "Amazon Aurora"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+    },
+    {
+      "id": "fc-saa-hy-backup",
+      "topicId": "aws-saa-resilient-architectures",
+      "examCodes": [
+        "saa-c03"
+      ],
+      "front": "AWS Backup plan and vault",
+      "back": "A backup plan says which resources AWS Backup protects and on what schedule. A backup vault is where the recovery points from that plan are stored.",
+      "weak": false,
+      "taskId": "2.2",
+      "services": [
+        "AWS Backup"
+      ],
+      "docsUrl": "https://docs.aws.amazon.com/aws-backup/latest/devguide/about-backup-plans.html"
+    }
+  ],
+  "drills": [
+    {
+      "id": "hy-dms",
+      "objective": "3.5",
+      "topic": "DMS and schema conversion",
+      "items": [
+        {
+          "id": "ongoing",
+          "objective": "3.5",
+          "cue": "The source database keeps accepting writes while its rows copy to the target database",
+          "answer": "DMS ongoing replication",
+          "detail": "DMS can keep replicating after the initial copy.",
+          "hook": "The source is still changing.",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+        },
+        {
+          "id": "assess",
+          "objective": "3.5",
+          "cue": "A report should list schema objects that will not convert to the new engine on their own",
+          "answer": "SCT assessment report",
+          "detail": "The Schema Conversion Tool assessment lists what will not convert automatically.",
+          "hook": "Read the conversion report first.",
+          "docsUrl": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        },
+        {
+          "id": "validate",
+          "objective": "3.5",
+          "cue": "After the database copy, the target rows should be compared with the source",
+          "answer": "DMS data validation",
+          "detail": "DMS validation compares source and target data.",
+          "hook": "Check the rows after the copy.",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html"
+        },
+        {
+          "id": "reload",
+          "objective": "3.5",
+          "cue": "One table in the database migration should be copied again without restarting every table",
+          "answer": "Reload that DMS table",
+          "detail": "A single table can be reloaded inside the migration task.",
+          "hook": "One table, not the whole task.",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.ReloadTables.html"
+        },
+        {
+          "id": "endpoint",
+          "objective": "3.5",
+          "cue": "The migration target is another database engine, not an object bucket",
+          "answer": "A DMS database endpoint",
+          "detail": "DMS connects to database endpoints.",
+          "hook": "Database to database.",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Endpoints.html"
+        },
+        {
+          "id": "convert",
+          "objective": "3.5",
+          "cue": "Stored procedures have to be rewritten because the target engine is different",
+          "answer": "Schema Conversion Tool",
+          "detail": "SCT converts schema and code between engines. DMS moves the data.",
+          "hook": "Different engine, convert the code.",
+          "docsUrl": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "hy-datasync",
+      "objective": "3.5",
+      "topic": "DataSync transfers",
+      "items": [
+        {
+          "id": "nightly",
+          "objective": "3.5",
+          "cue": "Changed files on an NFS share should copy into S3 on a repeating schedule",
+          "answer": "A scheduled DataSync task",
+          "detail": "DataSync can run the copy on a schedule.",
+          "hook": "The share copies on a schedule.",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        },
+        {
+          "id": "metadata",
+          "objective": "3.5",
+          "cue": "The file copy into S3 should keep the POSIX metadata with the objects",
+          "answer": "DataSync preserving metadata",
+          "detail": "DataSync can copy metadata along with the file data.",
+          "hook": "The metadata rides with the file.",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+        },
+        {
+          "id": "network",
+          "objective": "3.5",
+          "cue": "The network can carry the files, so no appliance should be shipped",
+          "answer": "DataSync over the network",
+          "detail": "DataSync is the online transfer. Snowball is the appliance path.",
+          "hook": "The link can finish it.",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        },
+        {
+          "id": "verify",
+          "objective": "3.5",
+          "cue": "The file transfer should check the destination against the source when it finishes",
+          "answer": "DataSync verification",
+          "detail": "DataSync can verify the destination after the transfer.",
+          "hook": "Check the destination at the end.",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/configure-data-verification-options.html"
+        },
+        {
+          "id": "agent",
+          "objective": "3.5",
+          "cue": "An agent in the data center should read the file share and write the objects",
+          "answer": "A DataSync agent",
+          "detail": "The agent sits next to the source storage and sends the data.",
+          "hook": "The agent reads the share.",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/working-with-agents.html"
+        },
+        {
+          "id": "changed",
+          "objective": "3.5",
+          "cue": "A later DataSync run should move files that changed after the previous successful run",
+          "answer": "An incremental DataSync transfer",
+          "detail": "A later run can transfer what changed.",
+          "hook": "The next run takes the changes.",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "hy-cloudwatch",
+      "objective": "1.2",
+      "topic": "CloudWatch signals",
+      "items": [
+        {
+          "id": "alarm",
+          "objective": "1.2",
+          "cue": "Operators should be notified when a CloudWatch metric stays high",
+          "answer": "CloudWatch alarm",
+          "detail": "An alarm watches a metric and notifies when it breaches.",
+          "hook": "The metric pages someone.",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+        },
+        {
+          "id": "logs",
+          "objective": "1.2",
+          "cue": "Application log lines should collect in one CloudWatch log group",
+          "answer": "CloudWatch Logs",
+          "detail": "Logs land in a log group that operators can search.",
+          "hook": "One group for the lines.",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html"
+        },
+        {
+          "id": "board",
+          "objective": "1.2",
+          "cue": "Operators want one screen of CloudWatch graphs for the service",
+          "answer": "CloudWatch dashboard",
+          "detail": "A dashboard is the screen of graphs.",
+          "hook": "One screen, many graphs.",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html"
+        },
+        {
+          "id": "custom",
+          "objective": "1.2",
+          "cue": "The application should publish its own business measurement to CloudWatch",
+          "answer": "CloudWatch custom metric",
+          "detail": "A custom metric is one the application publishes.",
+          "hook": "Your own number, on the graph.",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html"
+        },
+        {
+          "id": "composite",
+          "objective": "1.2",
+          "cue": "Several CloudWatch alarms should be true together before anyone is paged",
+          "answer": "CloudWatch composite alarm",
+          "detail": "A composite alarm combines other alarms.",
+          "hook": "Page only when they agree.",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html"
+        },
+        {
+          "id": "math",
+          "objective": "1.2",
+          "cue": "Two CloudWatch metrics should become one graphed line",
+          "answer": "CloudWatch metric math",
+          "detail": "Metric math combines metrics into another series.",
+          "hook": "Two metrics, one line.",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html"
+        }
+      ]
+    },
+    {
+      "id": "hy-trusted-advisor",
+      "objective": "4.1",
+      "topic": "Trusted Advisor checks",
+      "items": [
+        {
+          "id": "quota",
+          "objective": "4.1",
+          "cue": "A Trusted Advisor check says a service quota is nearly used up",
+          "answer": "Trusted Advisor service-limit check",
+          "detail": "The service-limit check flags a quota that is close to its use.",
+          "hook": "The quota is nearly used.",
+          "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        },
+        {
+          "id": "cost",
+          "objective": "4.1",
+          "cue": "A Trusted Advisor check points at resources that still cost money while idle",
+          "answer": "Trusted Advisor cost check",
+          "detail": "Cost checks recommend changes that reduce spend.",
+          "hook": "Idle and still billed.",
+          "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        },
+        {
+          "id": "security",
+          "objective": "1.2",
+          "cue": "A Trusted Advisor check lists a security gap and is not a threat-detector finding",
+          "answer": "Trusted Advisor security check",
+          "detail": "The check is a recommendation. A detector finding is a different service.",
+          "hook": "A check, not a detection.",
+          "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        },
+        {
+          "id": "fault",
+          "objective": "2.2",
+          "cue": "A Trusted Advisor check looks at backups and spread across Availability Zones",
+          "answer": "Trusted Advisor fault-tolerance check",
+          "detail": "Fault-tolerance checks look at resilience practices.",
+          "hook": "Backups and more than one zone.",
+          "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        },
+        {
+          "id": "perf",
+          "objective": "3.2",
+          "cue": "A Trusted Advisor check flags a resource that is heavily used",
+          "answer": "Trusted Advisor performance check",
+          "detail": "Performance checks flag utilization.",
+          "hook": "The resource is heavily used.",
+          "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        },
+        {
+          "id": "not-bill",
+          "objective": "4.1",
+          "cue": "The list of Trusted Advisor checks is not the invoice and not the API audit trail",
+          "answer": "Trusted Advisor recommendations",
+          "detail": "The checks are recommendations. The bill and the API trail are other tools.",
+          "hook": "Advice, not the invoice.",
+          "docsUrl": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        }
+      ]
+    },
+    {
+      "id": "hy-organizations",
+      "objective": "1.1",
+      "topic": "Organizations and guardrails",
+      "items": [
+        {
+          "id": "bill",
+          "objective": "4.1",
+          "cue": "In AWS Organizations, one payment method should cover every member account",
+          "answer": "Consolidated billing",
+          "detail": "The management account can pay for the member accounts.",
+          "hook": "One payment for the members.",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
+        },
+        {
+          "id": "scp",
+          "objective": "1.1",
+          "cue": "In AWS Organizations, a deny should hold in every account of an OU even if an admin allows it",
+          "answer": "A service control policy",
+          "detail": "An SCP can deny an action across the accounts it attaches to.",
+          "hook": "The OU deny still holds.",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        },
+        {
+          "id": "ou",
+          "objective": "1.1",
+          "cue": "In AWS Organizations, accounts that share one guardrail should sit in one group",
+          "answer": "An organizational unit",
+          "detail": "An OU groups accounts so one policy can attach to the group.",
+          "hook": "Group the accounts, then attach.",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html"
+        },
+        {
+          "id": "invite",
+          "objective": "1.1",
+          "cue": "An existing account should join the AWS Organizations organization",
+          "answer": "An invitation to join",
+          "detail": "An existing account joins by accepting an invitation.",
+          "hook": "Invite the account that already exists.",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_invites.html"
+        },
+        {
+          "id": "create",
+          "objective": "1.1",
+          "cue": "A new account should be created inside the AWS Organizations organization",
+          "answer": "Create the account in the organization",
+          "detail": "The organization can create the new account.",
+          "hook": "Born inside the organization.",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html"
+        },
+        {
+          "id": "tower",
+          "objective": "1.1",
+          "cue": "AWS Organizations should gain a landing zone that enrolls accounts under guardrails",
+          "answer": "AWS Control Tower",
+          "detail": "Control Tower sets up the landing zone on Organizations.",
+          "hook": "The landing zone enrolls the account.",
+          "docsUrl": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ]
+    }
+  ]
+}

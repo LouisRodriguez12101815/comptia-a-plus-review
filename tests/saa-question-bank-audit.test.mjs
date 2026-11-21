@@ -3,26 +3,37 @@ import { createHash as sha256 } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { buildExamPool } from "../lib/exam-test.mjs";
+import { questions as servedQuestions, topics } from "../lib/content.ts";
 import { SAA_TAG_FIELDS, withoutSaaTagFields } from "../lib/saa-tags.ts";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 const questions = read("content/questions.json");
 const audit = read("docs/saa-c03-question-bank-audit.json");
 const saa = questions.filter((question) => question.examCodes?.includes("saa-c03"));
+
+function assertSaaAuditCoverage(bank, reviewed) {
+  const selected = bank.filter((question) => question.examCodes?.includes("saa-c03"));
+  const ids = reviewed.questionMappings.map((row) => row.questionId);
+  const idSet = new Set(ids);
+  if (idSet.size !== ids.length) throw new Error("duplicate audit mappings");
+  const missing = selected.filter((question) => !idSet.has(question.id)).map((question) => question.id);
+  if (reviewed.questionMappings.length !== selected.length || missing.length > 0) {
+    throw new Error(`SAA questions missing an audit mapping: ${missing.join(", ") || "count mismatch"}`);
+  }
+  for (const question of selected) {
+    const mapping = reviewed.questionMappings.find((row) => row.questionId === question.id);
+    if (!question.objectiveIds?.["saa-c03"]?.includes(mapping.taskId)) throw new Error(`${question.id}: task`);
+    if (mapping.domainId !== `${mapping.taskId[0]}.0`) throw new Error(`${question.id}: domain`);
+    if (!reviewed.skillCatalog[mapping.skillId]) throw new Error(`${question.id}: unknown skill ${mapping.skillId}`);
+    if (reviewed.skillCatalog[mapping.skillId].text !== mapping.skill) throw new Error(`${question.id}: skill text`);
+  }
+}
 const reviewedNewIds = new Set(audit.after.newQuestionIds);
 const newQuestions = saa.filter((question) => reviewedNewIds.has(question.id));
 
 test("SAA audit maps each existing and new question to one current task and skill", () => {
-  assert.equal(audit.questionMappings.length, saa.length);
-  assert.equal(new Set(audit.questionMappings.map((row) => row.questionId)).size, saa.length);
-  for (const question of saa) {
-    const mapping = audit.questionMappings.find((row) => row.questionId === question.id);
-    assert.ok(mapping, question.id);
-    assert.ok(question.objectiveIds["saa-c03"].includes(mapping.taskId), question.id);
-    assert.equal(mapping.domainId, `${mapping.taskId[0]}.0`, question.id);
-    assert.ok(audit.skillCatalog[mapping.skillId], `${question.id}: ${mapping.skillId}`);
-    assert.equal(audit.skillCatalog[mapping.skillId].text, mapping.skill, question.id);
-  }
+  assertSaaAuditCoverage(servedQuestions, audit);
   assert.equal(new Set(audit.after.byTask && Object.keys(audit.after.byTask)).size, 14);
   assert.deepEqual(audit.baseline.objectiveStatuses, audit.after.objectiveStatuses);
   assert.ok(Object.values(audit.after.objectiveStatuses).every((status) => status === "partial"));
@@ -317,6 +328,71 @@ test("network-cost items move from task 4.3 to task 4.4 and shared CLF answers s
     assert.deepEqual(current.answer, previous.answer, current.id);
     assert.deepEqual(current.objectiveIds["clf-c02"], previous.objectiveIds["clf-c02"], current.id);
   }
+});
+
+test("the high-yield fill is stage 319 to 335 and every id is in the saa-c03 mock pool", () => {
+  const stage = audit.countStages.find((item) => item.stage === "after-high-yield-fill");
+  assert.equal(stage.commit, "98d9caec40ad7d213d924b8be01a442fda8665cb");
+  assert.equal(stage.saaQuestionCount, 335);
+  assert.equal(stage.addedIds.length, 16);
+  const tasks = ["1.1", "1.2", "1.3", "2.1", "2.2", "3.1", "3.2", "3.3", "3.4", "3.5", "4.1", "4.2", "4.3", "4.4"];
+  const byTask = Object.fromEntries(tasks.map((id) => [id, 0]));
+  const byDomain = { "1.0": 0, "2.0": 0, "3.0": 0, "4.0": 0 };
+  const servedSaa = servedQuestions.filter((question) => question.examCodes?.includes("saa-c03"));
+  for (const question of servedSaa) {
+    const task = question.objectiveIds["saa-c03"][0];
+    byDomain[`${task[0]}.0`] += 1;
+    byTask[task] += 1;
+  }
+  assert.deepEqual({
+    saaQuestionCount: servedSaa.length,
+    uniqueIdCount: new Set(servedSaa.map((question) => question.id)).size,
+    byDomain,
+    byTask,
+  }, {
+    saaQuestionCount: stage.saaQuestionCount,
+    uniqueIdCount: stage.uniqueIdCount,
+    byDomain: stage.byDomain,
+    byTask: stage.byTask,
+  });
+  const hashStage = audit.hashStages.find((item) => item.id === "high-yield-fill-exclude-study-tags");
+  assert.equal(hashStage.rewritesBaseline, false);
+  assert.deepEqual(hashStage.excludedFields, [...SAA_TAG_FIELDS]);
+  assert.equal(hashStage.questionCount, 16);
+  const hashes = new Map(hashStage.questions.map((row) => [row.id, row.sha256]));
+  assert.deepEqual([...hashes.keys()], stage.addedIds);
+  const retask = audit.hashStages.find((item) => item.id === "high-yield-fill-task-check");
+  assert.equal(retask.rewritesBaseline, false);
+  assert.deepEqual(retask.excludedFields, [...SAA_TAG_FIELDS]);
+  assert.equal(retask.questionCount, 1);
+  const retaskById = new Map(retask.questions.map((row) => [row.id, row]));
+  const preserved = new Set(audit.hashStages.find((item) => item.id === "live-314-exclude-study-tags").questions.map((row) => row.id));
+  for (const id of stage.addedIds) {
+    const question = servedQuestions.find((item) => item.id === id);
+    const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(question))).digest("hex");
+    const moved = retaskById.get(id);
+    if (moved) {
+      assert.equal(moved.oldHash, hashes.get(id), id);
+      assert.equal(digest, moved.sha256, id);
+    } else {
+      assert.equal(digest, hashes.get(id), id);
+    }
+    assert.equal(preserved.has(id), false, id);
+  }
+  const objectives = read("content/objectives.json");
+  const pool = buildExamPool({ objectives, questions: servedQuestions, topics, examCode: "saa-c03" });
+  for (const id of stage.addedIds) {
+    const question = servedQuestions.find((item) => item.id === id);
+    const task = question.objectiveIds["saa-c03"][0];
+    const objective = pool.domains.flatMap((domain) => domain.objectives).find((item) => item.id === task);
+    assert.ok(objective.questionIds.includes(id), `${id} missing from task ${task}`);
+  }
+});
+
+test("a side-file question with no audit entry fails coverage", () => {
+  const fixture = read("tests/fixtures/saa-unaudited-question.json");
+  assert.equal(servedQuestions.some((question) => question.id === fixture.id), false);
+  assert.throws(() => assertSaaAuditCoverage([...servedQuestions, fixture], audit), /q-saa-fixture-unaudited/);
 });
 
 function escapeRegExp(value) {

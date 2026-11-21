@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { topics } from "../lib/content.ts";
+import { questions as servedQuestions, topics } from "../lib/content.ts";
 import { assertSaaCardTags, assertSaaQuestionTags, saaCardDomain, saaDomainFromTask } from "../lib/saa-tags.ts";
 
 const questions = JSON.parse(readFileSync(new URL("../content/questions.json", import.meta.url), "utf8"));
@@ -30,8 +30,10 @@ const base = {
 
 test("every SAA question has one legal task and study tags that match the item text", () => {
   assert.equal(saa.length, 319);
-  for (const question of saa) assertSaaQuestionTags(question);
-  for (const question of questions) {
+  const served = servedQuestions.filter((question) => question.examCodes?.includes("saa-c03"));
+  assert.equal(served.length, 335);
+  for (const question of served) assertSaaQuestionTags(question);
+  for (const question of servedQuestions) {
     if (question.examCodes?.includes("saa-c03")) continue;
     assert.equal(question.services, undefined, question.id);
     assert.equal(question.difficulty, undefined, question.id);

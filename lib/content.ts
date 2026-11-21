@@ -1,4 +1,5 @@
 import flashcardsJson from "@/content/flashcards.json";
+import highYieldFill from "@/content/saa-high-yield-fill.json";
 import labsJson from "@/content/labs.json";
 import networkPlusTopicsJson from "@/content/topics-network-plus.json";
 import questionsJson from "@/content/questions.json";
@@ -19,8 +20,8 @@ export const topics = [
   ...(topicsJson as Topic[]),
   ...(networkPlusTopicsJson as Topic[]),
 ];
-export const flashcards = flashcardsJson as Flashcard[];
-export const questions = (questionsJson as Question[]).map(withDerivedSaaDomain);
+export const flashcards = [...(flashcardsJson as Flashcard[]), ...(highYieldFill.cards as Flashcard[])];
+export const questions = [...(questionsJson as Question[]), ...(highYieldFill.questions as Question[])].map(withDerivedSaaDomain);
 export const labs = labsJson as Lab[];
 
 export const conceptOrder: Concept[] = [
