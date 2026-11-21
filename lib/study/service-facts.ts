@@ -110,6 +110,7 @@ function baseDetail(fact: ServiceFact): string {
 /** Drill items generated from the service records. Core and peripheral tiers differ. */
 export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem[] {
   const items: DrillItem[] = [];
+  const expansionPrompts = new Set<string>();
   for (const fact of facts) {
     const primary = fact.tasks[0];
     const detail = baseDetail(fact);
@@ -153,13 +154,18 @@ export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem
       ));
     });
     if (fact.acronym && fact.expansion) {
+      const fields: Record<string, string> = { acronym: fact.acronym, matchLeft: fact.acronym };
+      if (!expansionPrompts.has(fact.expansion)) {
+        fields.expansion = fact.expansion;
+        expansionPrompts.add(fact.expansion);
+      }
       items.push(item(
         fact,
         "acronym",
         primary,
         `What does ${fact.acronym} stand for on the current ${fact.name} page?`,
         fact.expansion,
-        { acronym: fact.acronym, expansion: fact.expansion, matchLeft: fact.acronym },
+        fields,
         `${fact.acronym} expands to ${fact.expansion}.${fact.acronymNote ? ` ${fact.acronymNote}` : ""}`,
         hook,
       ));
@@ -202,6 +208,21 @@ export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem
         docsUrl: fact.cost.docsUrl,
       });
     }
+    for (const entry of fact.classes ?? []) {
+      items.push({
+        id: `${fact.id}-class-${entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        objective: entry.task,
+        fields: {
+          cue: `What is ${entry.name} for?`,
+          reply: entry.purpose,
+          purpose: entry.purpose,
+          board: fact.category,
+        },
+        detail: entry.purpose,
+        hook,
+        docsUrl: entry.docsUrl,
+      });
+    }
     if (fact.tier !== "core") continue;
     items.push(item(
       fact,
@@ -225,21 +246,6 @@ export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem
       claim.answer ? detail : `False. ${claim.correction}`,
       hook,
     ));
-    for (const entry of fact.classes ?? []) {
-      items.push({
-        id: `${fact.id}-class-${entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
-        objective: entry.task,
-        fields: {
-          cue: `What is ${entry.name} for?`,
-          reply: entry.purpose,
-          purpose: entry.purpose,
-          board: fact.category,
-        },
-        detail: entry.purpose,
-        hook,
-        docsUrl: entry.docsUrl,
-      });
-    }
     for (const entry of fact.numbers ?? []) {
       const changed = entry.changedNote ? ` ${OLDER_LINE(entry.changedNote)}` : "";
       items.push({
