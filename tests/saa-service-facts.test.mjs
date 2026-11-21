@@ -237,7 +237,7 @@ test("every record has the memory-match fields, or n/a with a reason", () => {
     assert.equal(typeof fact.cost.freeTier, "string", fact.id);
     if (fact.cost.anchor) {
       assert.equal(fact.cost.anchor.asOf, "2026-11", fact.id);
-      assert.equal(fact.cost.anchor.region, "us-east-1", fact.id);
+      assert.ok(fact.cost.anchor.region === "us-east-1" || fact.cost.anchor.region === "not named on page", fact.id);
       assert.equal(fact.cost.anchor.url.startsWith("https://"), true, fact.id);
     }
     const tokens = fact.name.split(/[^A-Za-z0-9]+/).filter((token) => token !== "AWS" && token !== "Amazon" && ACRONYM_TOKEN.test(token));
@@ -300,6 +300,21 @@ test("every record has the memory-match fields, or n/a with a reason", () => {
   for (const name of ["S3 Standard", "gp3", "io2 Block Express", "st1", "sc1", "DynamoDB on-demand", "DynamoDB provisioned", "SQS standard", "SQS FIFO"]) {
     assert.equal(serviceFacts.some((fact) => fact.classes?.some((entry) => entry.name === name)), true, name);
   }
+});
+
+test("every anchor has a region value, and a reason that says us-east-1 only when region is us-east-1", () => {
+  const allowed = new Set(["us-east-1", "not named on page"]);
+  for (const fact of serviceFacts) {
+    const anchor = fact.cost.anchor;
+    if (!anchor) continue;
+    assert.equal(allowed.has(anchor.region), true, `${fact.id} ${anchor.region}`);
+    assert.equal(fact.cost.reason.includes("us-east-1"), anchor.region === "us-east-1", fact.id);
+  }
+  const vpn = serviceFacts.find((fact) => fact.id === "site-to-site-vpn");
+  assert.equal(vpn.cost.anchor, undefined);
+  const tunnel = vpn.classes.find((entry) => entry.name === "Large Bandwidth Tunnel");
+  assert.match(tunnel.note, /\$0\.60 per hour/);
+  assert.match(tunnel.note, /all AWS Regions/);
 });
 
 test("the service-fact checks stay on the checks workflow", () => {

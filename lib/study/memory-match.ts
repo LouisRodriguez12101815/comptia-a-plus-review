@@ -55,7 +55,7 @@ function addPair(pairs: MemoryMatchPair[], pair: Omit<MemoryMatchPair, "domain">
 
 function costRight(fact: ServiceFact): string {
   const dimension = fact.cost?.dimension || "n/a";
-  if (fact.cost?.anchor) return `${fact.cost.anchor.amount} · ${dimension}`;
+  if (fact.cost?.anchor) return `${fact.cost.anchor.amount} · ${fact.cost.anchor.region} · ${dimension}`;
   return `${fact.cost?.band ?? "n/a"} · ${dimension}`;
 }
 

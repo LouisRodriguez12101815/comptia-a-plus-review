@@ -47,11 +47,19 @@ test("out-of-scope classes stay on the record and stay out of drills and match r
 test("cost pairs use the anchor when one was stored, and the band otherwise", () => {
   const costs = memoryMatchPairs().filter((pair) => pair.field === "cost");
   const anchored = costs.filter((pair) => pair.id.endsWith("-cost-anchor"));
-  assert.equal(anchored.length, 13);
+  assert.equal(anchored.length, serviceFacts.filter((fact) => fact.cost.anchor).length);
   const s3 = anchored.find((pair) => pair.id === "s3-cost-anchor");
   assert.equal(s3.left, "Amazon S3");
   assert.match(s3.right, /\$0\.023 per GB/);
   assert.match(s3.right, /GB-month and requests, by storage class/);
+  const route53 = anchored.find((pair) => pair.id === "route53-cost-anchor");
+  assert.match(route53.right, /\$0\.50 per hosted zone/);
+  assert.match(route53.right, /not named on page/);
+  const fargate = anchored.find((pair) => pair.id === "fargate-cost-anchor");
+  assert.match(fargate.right, /\$0\.000011244 per vCPU-second/);
+  assert.match(fargate.right, /us-east-1/);
+  const vpn = costs.find((pair) => pair.id === "site-to-site-vpn-cost-band");
+  assert.equal(vpn.right, "$ · VPN connection-hour and traffic");
   const iam = costs.find((pair) => pair.id === "iam-cost-band");
   assert.equal(iam.right, "n/a · n/a");
   const coreCosts = filterMatchPairs(costs, { domain: "", task: "", tier: "core", field: "cost" });
