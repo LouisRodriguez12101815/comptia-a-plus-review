@@ -11,6 +11,7 @@ import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } fro
 import { confusionPairs, drillQuestionIds } from "@/lib/confusions";
 import { LookAlike } from "@/app/components/LookAlike";
 import { confidenceByObjective, dueReviews, objectiveStats, weakestObjectives, type ObjectiveStat } from "@/lib/weakness";
+import { saaAttemptCsv } from "@/lib/saa-test-skills";
 
 const statusStyle: Record<ObjectiveStat["status"], string> = {
   weak: "border-amber-400/50 bg-amber-400/10 text-amber-200",
@@ -34,6 +35,7 @@ const barStyle: Record<ObjectiveStat["status"], string> = {
  */
 export function Scorecard({ exam }: { exam: string }) {
   const t = useTranslations("scorecard");
+  const skills = useTranslations("saaTestSkills");
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
   const pool = useMemo(() => buildExamPool({ objectives: objectives as CoverageMatrix, questions, topics, examCode: exam }), [exam]);
   const stats = useMemo(() => objectiveStats(pool, progress.mockAttempts, exam), [pool, progress.mockAttempts, exam]);
@@ -66,6 +68,23 @@ export function Scorecard({ exam }: { exam: string }) {
           <li className="rounded-full border border-violet-400/50 bg-violet-400/10 px-3 py-1 text-sm text-violet-100">{t("guessRightChip", { count: totals.guessRight })}</li>
           <li className="rounded-full border border-slate-600 bg-slate-800/60 px-3 py-1 text-sm text-slate-200">{t("dueChip", { count: due })}</li>
         </ul>
+        {exam === "saa-c03" && (
+          <button type="button" className="mt-4 block min-h-11 rounded-full border border-teal-300 px-5 py-2 text-sm font-medium text-teal-100" onClick={() => {
+            const key = "comptia-saa-learner-id";
+            let learner = window.localStorage.getItem(key);
+            if (!learner) {
+              learner = crypto.randomUUID();
+              window.localStorage.setItem(key, learner);
+            }
+            const csv = saaAttemptCsv([...progress.quizAttempts, ...progress.mockAttempts], questions, learner);
+            const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "saa-attempts.csv";
+            link.click();
+            URL.revokeObjectURL(url);
+          }}>{skills("exportCsv")}</button>
+        )}
         {weakest.length > 0 ? (
           <Link href={`/test?exam=${exam}&focus=${weakest.map((s) => s.id).join(",")}`} className="mt-4 inline-flex min-h-11 items-center rounded-full bg-teal-500 px-5 py-2 font-medium text-slate-950 hover:bg-teal-400">
             {t("practiceWeakest", { count: weakest.length })}

@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { choicesFor, drillDecks, drillHref, getDeck, itemsForMode, shuffle, type DrillDeck, type DrillItem, type DrillMode } from "@/lib/practice/drills";
 import { applyResult, finishForTime, sessionKind, speedRemaining, startSession, type DrillSession, type SessionKind } from "@/lib/practice/drill-session";
-import { getProgressSnapshot, getServerProgressSnapshot, recordDrillOutcome, subscribeProgress } from "@/lib/progress";
+import { getProgressSnapshot, getServerProgressSnapshot, recordDrillOutcome, recordDrillScore, subscribeProgress } from "@/lib/progress";
 
 type Answer = { item: DrillItem; picked: string; correct: boolean };
 
@@ -93,6 +93,7 @@ export function FactDrill({
     setNow(at);
     setAnswer({ item, picked, correct });
     recordDrillOutcome(deck.id, item.id, correct, next.bestStreak);
+    recordDrillScore(deck.id, next.score);
   }
 
   function pick(choice: string) {

@@ -9,6 +9,7 @@ import type { ExamCode } from "@/lib/types";
 import { controlledQuestionIds, questionIdsFromParam } from "@/lib/controlled-question-pool";
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
+import { SAA_CLUSTERS, selectTopicQuiz } from "@/lib/saa-test-skills";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/quiz">) {
   const { locale } = await params;
@@ -23,13 +24,20 @@ export default async function QuizPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("quizPage");
-  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string | string[]; exam?: string };
+  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam, cluster: clusterParam, mode: modeParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string | string[]; exam?: string; cluster?: string; mode?: string };
   const concept = getConcept(conceptParam);
   const domainExam: ExamCode | undefined = examParam === "saa-c03" ? "saa-c03" : examParam === "n10-009" || examParam === undefined ? "n10-009" : undefined;
   const domain = domainExam ? getDomainQuiz(domainParam, domainExam) : undefined;
-  const questionIds = questionIdsParam
-    ? controlledQuestionIds(questionIdsFromParam(questionIdsParam), allQuestions, allTopics, isStudyFocus(examParam) ? examParam : "all")
-    : undefined;
+  const cluster = SAA_CLUSTERS.some((item) => item.id === clusterParam) ? clusterParam : undefined;
+  const twinMode = modeParam === "twin";
+  const questionIds = twinMode
+    ? undefined
+    : cluster
+      ? selectTopicQuiz(cluster, allQuestions)
+      : questionIdsParam
+        ? controlledQuestionIds(questionIdsFromParam(questionIdsParam), allQuestions, allTopics, isStudyFocus(examParam) ? examParam : "all")
+        : undefined;
+  const attemptMode = twinMode ? "twin" : cluster ? "topic" : "quiz";
   const chapter = topic && !domain && !concept ? getTopic(topic) : undefined;
   return (
     <div className="space-y-6">
@@ -45,8 +53,10 @@ export default async function QuizPage({
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       {domain && domainExam ? <EnsureTopicFocus codes={[domainExam]} preferred={domainExam} /> : null}
       {concept ? <EnsureTopicFocus codes={["n10-009"]} preferred="n10-009" /> : null}
-      {questionIds && questionIds.length > 0 ? (
-        <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped />
+      {twinMode ? (
+        <QuizRunner initialTopic="all" scoped attemptMode="twin" />
+      ) : questionIds && questionIds.length > 0 ? (
+        <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped attemptMode={attemptMode} />
       ) : concept ? (
         <QuizRunner initialTopic="all" questionIds={concept.questionIds} scoped />
       ) : domain ? (
