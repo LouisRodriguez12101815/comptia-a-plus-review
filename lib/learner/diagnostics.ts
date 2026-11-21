@@ -2,6 +2,15 @@
 
 export type UsageRow = { category: string; count: string; usage: string; price: string };
 
+export type DiagnosticSection = {
+  call: "account" | "parent" | "sync" | "usage";
+  ok: boolean;
+  skipped?: boolean;
+  code: number | null;
+  status: number | null;
+  hint: string;
+};
+
 export type PublicDiagnostics = {
   accountFriendlyName: string;
   accountSidLast4: string;
@@ -13,6 +22,7 @@ export type PublicDiagnostics = {
   usage: UsageRow[];
   usageStart: string;
   usageEnd: string;
+  sections?: DiagnosticSection[];
 };
 
 const civicPath = (name: string) => /civic\s*path/i.test(name);

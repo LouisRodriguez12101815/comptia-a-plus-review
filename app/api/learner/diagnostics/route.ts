@@ -3,6 +3,7 @@ import { json, needConfig } from "@/lib/learner/api";
 import { readPublicDiagnostics } from "@/lib/learner/diagnostics-read";
 import { authorizeOwner } from "@/lib/learner/owner-access";
 import { twilioLearner, type LearnerConfig } from "@/lib/learner/twilio";
+import { twilioFailure } from "@/lib/learner/twilio-error";
 import type { PublicDiagnostics } from "@/lib/learner/diagnostics";
 
 export const runtime = "nodejs";
@@ -27,11 +28,16 @@ export function createDiagnosticsGet(deps: DiagnosticsDeps = {}) {
     if ("response" in gate) return gate.response;
     try {
       await assertActive(c.config);
-      return json(await read(c.config, at));
+      const body = await read(c.config, at);
+      for (const section of body.sections ?? []) {
+        if (!section.ok) console.error("learner/diagnostics", section.call, section.code ?? "none");
+      }
+      return json(body);
     } catch (error) {
       if (error instanceof RoomError && error.status === 423) return json({ error: "paused" }, 423);
-      console.error("learner/diagnostics failed", (error as { status?: number })?.status ?? "unknown");
-      return json({ error: "unavailable" }, 502);
+      const failure = twilioFailure(error);
+      console.error("learner/diagnostics", "account", failure.code ?? "none");
+      return json({ error: "unavailable", reason: { call: "account", code: failure.code, status: failure.status } }, 502);
     }
   };
 }

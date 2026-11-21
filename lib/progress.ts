@@ -2,6 +2,7 @@ import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "@/lib/exams";
 import type { StudyFocus } from "@/lib/types";
 import { rememberMatchMiss, type MemoryMiss } from "@/lib/study/memory-match";
 import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from "@/lib/study/schedule";
+import { requestLearnerFlush } from "@/lib/learner/flush";
 
 export type QuizAttempt = {
   topicId: string;
@@ -518,6 +519,7 @@ export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
     ].slice(0, 40),
   };
   saveProgress(next);
+  requestLearnerFlush();
   return next;
 }
 
@@ -531,6 +533,7 @@ export function recordMock(attempt: Omit<MockAttempt, "at">) {
     ].slice(0, 30),
   };
   saveProgress(next);
+  requestLearnerFlush();
   return next;
 }
 
@@ -634,6 +637,7 @@ export function progressAfterMatchMiss(current: Progress, miss: { id: string; ta
 export function recordMatchMiss(miss: { id: string; task: string; prompt: string }, now: Date = new Date()) {
   const next = progressAfterMatchMiss(loadProgress(), miss, now);
   saveProgress(next);
+  requestLearnerFlush();
   return next;
 }
 

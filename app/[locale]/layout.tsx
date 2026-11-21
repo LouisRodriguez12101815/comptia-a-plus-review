@@ -3,6 +3,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
+import { LearnerPersistence } from "@/app/components/LearnerPersistence";
 import { SiteFooter } from "@/app/components/SiteFooter";
 import { SiteHeader } from "@/app/components/SiteHeader";
 import { TrackBar } from "@/app/components/TrackBar";
@@ -52,6 +53,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <TrackBar />
             <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">{children}</main>
             <SiteFooter />
+            <LearnerPersistence />
             <WebAnalytics />
             <WebSpeedInsights />
           </TrackTheme>
