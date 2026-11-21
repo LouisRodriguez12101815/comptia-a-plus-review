@@ -94,8 +94,8 @@ const moveChoices = [
 const cache = "A read-heavy key-value cache must survive the loss of one Availability Zone, and clients must authenticate.";
 const cacheChoices = [
   "Amazon ElastiCache with a replica in a second Availability Zone",
-  "Files cached only on one instance store volume",
-  "Amazon CloudFront pointed at a database port",
+  "Application cache files kept on a single instance store volume inside the account",
+  "Amazon CloudFront placed in front of the database endpoint",
   "Amazon ElastiCache in private subnets with in-transit encryption and AUTH",
 ];
 
@@ -110,17 +110,17 @@ const edgeChoices = [
 const share = "A bucket must stay closed to the public. One partner needs to download a single object today.";
 const shareChoices = [
   "S3 Block Public Access left on for the bucket",
-  "A presigned URL that expires",
-  "A public-read ACL on the object",
-  "An IAM access key emailed to the partner",
+  "A presigned URL that expires after this download",
+  "An object ACL that grants public-read on the object for the partner today",
+  "An IAM access key sent to the partner by email",
 ];
 
 const org = "People in several accounts need a sign-in, and a deny must apply even if an account administrator adds a broader permission.";
 const orgChoices = [
   "IAM Identity Center permission sets for workforce sign-in",
-  "A service control policy that denies the action",
-  "The root access key for each account",
-  "A bucket policy in only one of the accounts",
+  "An Organizations service control policy denying the action",
+  "A root user access key created and stored for every member account",
+  "An S3 bucket policy attached in one account",
 ];
 
 export const qualifierTwins: QualifierTwin[] = [

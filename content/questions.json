@@ -10054,13 +10054,13 @@
     ],
     "prompt": "A workload must remain available if one data center location in a Region fails. Which design is the best starting point?",
     "choices": [
-      "Use a single subnet",
+      "Use one larger EC2 instance in the Region",
       "Use multiple Availability Zones",
-      "Use one edge location",
-      "Use one larger EC2 instance"
+      "Use a single subnet for the application",
+      "Use one edge location for the users"
     ],
     "answer": 1,
-    "explanation": "Multi-AZ design removes a single-AZ failure from the availability plan.",
+    "explanation": "Use one larger EC2 instance in the Region \u2014 Incorrect. A larger instance in one place still stops when that location fails.\nUse multiple Availability Zones \u2014 Correct. Placing the workload in more than one Availability Zone is the starting design when one location in the Region can fail.\nUse a single subnet for the application \u2014 Incorrect. A single subnet stays in one Availability Zone, so it does not remove that location as a failure point.\nUse one edge location for the users \u2014 Incorrect. An edge location shortens the path for distant users. It does not keep the regional workload up when one location fails.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10072,7 +10072,8 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
     ],
     "services": ["Amazon EC2"],
     "difficulty": "medium"
@@ -10153,13 +10154,13 @@
     ],
     "prompt": "Which statement best distinguishes scalability from elasticity?",
     "choices": [
-      "They are identical",
-      "Scalability means disaster recovery",
-      "Elasticity only applies to storage",
-      "Scalability is growth capacity; elasticity is dynamic demand matching"
+      "Scalability and elasticity are two names for disaster recovery",
+      "Scalability is the ability to add capacity over time",
+      "Elasticity is a feature of storage capacity",
+      "Scalability is growth; elasticity matches demand"
     ],
     "answer": 3,
-    "explanation": "Scalability is capacity to handle growth; elasticity emphasizes dynamic adjustment.",
+    "explanation": "Scalability and elasticity are two names for disaster recovery \u2014 Incorrect. Scalability and elasticity are related, but they are not two names for disaster recovery.\nScalability is the ability to add capacity over time \u2014 Incorrect. Adding capacity over time describes scalability. It leaves out elasticity.\nElasticity is a feature of storage capacity \u2014 Incorrect. Elasticity is not limited to storage. Compute and other capacity can change with demand too.\nScalability is growth; elasticity matches demand \u2014 Correct. Scalability is the capacity to grow. Elasticity is matching capacity to demand as the load changes.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10171,7 +10172,8 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html"
     ],
     "services": [],
     "difficulty": "easy"
@@ -10619,13 +10621,13 @@
     ],
     "prompt": "Private-subnet IPv4 instances need internet updates and no unsolicited inbound internet connections. Which gateway type fits when the VPC has an internet gateway?",
     "choices": [
-      "Internet gateway without public instance addressing",
-      "Private NAT gateway routed to an internet gateway",
-      "Zonal public NAT gateway with an Elastic IP and appropriate routes",
-      "Egress-only internet gateway for the IPv4 traffic"
+      "Internet gateway on the VPC route tables",
+      "Private NAT gateway toward the internet gateway",
+      "Public NAT gateway with an Elastic IP",
+      "Egress-only internet gateway for this IPv4 path"
     ],
     "answer": 2,
-    "explanation": "Internet gateway without public instance addressing — Incorrect. An internet gateway alone does not give private instances outbound IPv4 without public addresses.\nPrivate NAT gateway routed to an internet gateway — Incorrect. A private NAT gateway is for private connectivity. It is not the internet egress path for these instances.\nZonal public NAT gateway with an Elastic IP and appropriate routes — Correct. A public NAT gateway in a public subnet, with an Elastic IP and routes, gives private instances outbound IPv4 and does not accept unsolicited inbound connections for them.\nEgress-only internet gateway for the IPv4 traffic — Incorrect. An egress-only internet gateway serves IPv6, not this IPv4 path.",
+    "explanation": "Internet gateway on the VPC route tables \u2014 Incorrect. An internet gateway alone does not give private instances outbound IPv4 without public addresses.\nPrivate NAT gateway toward the internet gateway \u2014 Incorrect. A private NAT gateway is for private connectivity. It is not the internet egress path for these instances.\nPublic NAT gateway with an Elastic IP \u2014 Correct. A public NAT gateway in a public subnet, with an Elastic IP and routes, gives private instances outbound IPv4 and does not accept unsolicited inbound connections for them.\nEgress-only internet gateway for this IPv4 path \u2014 Incorrect. An egress-only internet gateway serves IPv6, not this IPv4 path.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10637,7 +10639,8 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
     ],
     "services": [
       "Amazon VPC"
@@ -10653,13 +10656,13 @@
     ],
     "prompt": "Which statement about security groups and network ACLs is correct?",
     "choices": [
-      "Security groups are DNS services",
-      "NACLs attach only to IAM users",
-      "Both are stateless",
-      "Security groups are stateful; NACLs are stateless"
+      "Security groups and network ACLs both track connection state",
+      "Network ACLs track each new connection and security groups do not",
+      "Network ACL rules apply in whatever order a packet arrives",
+      "Security groups track connection state and network ACLs do not"
     ],
     "answer": 3,
-    "explanation": "Security groups are stateful resource-level controls; NACLs are stateless subnet controls.",
+    "explanation": "Security groups and network ACLs both track connection state \u2014 Incorrect. Both controls do not track connection state. A security group does. A network ACL does not.\nNetwork ACLs track each new connection and security groups do not \u2014 Incorrect. This swaps the two controls. A network ACL does not track connection state, and a security group does.\nNetwork ACL rules apply in whatever order a packet arrives \u2014 Incorrect. A network ACL processes its numbered rules in order. It does not apply them in arrival order.\nSecurity groups track connection state and network ACLs do not \u2014 Correct. A security group tracks connection state and returns the response traffic. A network ACL does not, so both directions need rules.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10671,9 +10674,11 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"
     ],
-    "services": ["Amazon VPC","AWS Identity and Access Management"],
+    "services": ["Amazon VPC"],
     "difficulty": "easy"
   },
   {
@@ -10818,13 +10823,13 @@
     ],
     "prompt": "Which service is best for CPU metrics, log streams, alarms, and dashboards?",
     "choices": [
-      "Amazon Route 53",
+      "Amazon Route 53 health checks",
       "Amazon CloudWatch",
       "AWS CloudTrail",
       "AWS Config"
     ],
     "answer": 1,
-    "explanation": "CloudWatch is the primary monitoring/observability service for those needs.",
+    "explanation": "Amazon Route 53 health checks \u2014 Incorrect. Route 53 health checks tell you whether an endpoint answers. They are not the service for CPU metrics, log streams, alarms, and dashboards.\nAmazon CloudWatch \u2014 Correct. CloudWatch collects metrics and logs and evaluates alarms, and its dashboards show those signals.\nAWS CloudTrail \u2014 Incorrect. CloudTrail records API activity. It is not the metrics, log-stream, alarm, and dashboard service.\nAWS Config \u2014 Incorrect. Config tracks resource configuration. It is not the service for CPU metrics, log streams, alarms, and dashboards.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10836,9 +10841,13 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html",
+      "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+      "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
     ],
-    "services": ["Amazon Route 53","Amazon CloudWatch","AWS CloudTrail","AWS Config"],
+    "services": ["Amazon Route 53", "Amazon CloudWatch", "AWS CloudTrail", "AWS Config"],
     "difficulty": "easy"
   },
   {
@@ -10914,13 +10923,13 @@
     ],
     "prompt": "Which tool should you use first to estimate the monthly price of a planned AWS deployment?",
     "choices": [
-      "Amazon Inspector",
+      "AWS Cost and Usage Report",
       "AWS Pricing Calculator",
-      "AWS CloudTrail",
-      "AWS Cost Explorer"
+      "AWS Cost Explorer",
+      "AWS Cost Categories"
     ],
     "answer": 1,
-    "explanation": "Pricing Calculator estimates planned architecture costs.",
+    "explanation": "AWS Cost and Usage Report \u2014 Incorrect. Cost and Usage Reports describe billing data you already have. They do not estimate a deployment you have not launched.\nAWS Pricing Calculator \u2014 Correct. Pricing Calculator estimates the monthly cost of a planned architecture before you run it.\nAWS Cost Explorer \u2014 Incorrect. Cost Explorer analyzes cost and usage after the account has billing data. It is the wrong first tool for a plan that is not deployed yet.\nAWS Cost Categories \u2014 Incorrect. Cost Categories group costs for reporting. They do not estimate a planned deployment.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10932,9 +10941,13 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html",
+      "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html",
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+      "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cost-categories.html"
     ],
-    "services": ["Amazon Inspector","AWS CloudTrail","AWS Cost Explorer"],
+    "services": ["AWS Cost and Usage Report", "AWS Cost Explorer"],
     "difficulty": "easy"
   },
   {
@@ -12375,13 +12388,13 @@
     ],
     "prompt": "Users on another continent must upload large files to S3 faster over long distances. Which feature is designed for this?",
     "choices": [
-      "S3 lifecycle",
-      "IAM Identity Center",
-      "EBS Multi-Attach",
+      "S3 Multi-Region Access Points",
+      "S3 Batch Operations",
+      "S3 Lifecycle configuration",
       "S3 Transfer Acceleration"
     ],
     "answer": 3,
-    "explanation": "Transfer Acceleration uses AWS edge infrastructure to speed long-distance S3 transfers.",
+    "explanation": "S3 Multi-Region Access Points \u2014 Incorrect. Multi-Region Access Points give one global endpoint for S3 requests. They are not the feature that accelerates an upload from a distant client.\nS3 Batch Operations \u2014 Incorrect. S3 Batch Operations runs bulk object actions. It does not speed a long-distance upload.\nS3 Lifecycle configuration \u2014 Incorrect. A lifecycle configuration moves or expires objects over time. It does not shorten the upload path.\nS3 Transfer Acceleration \u2014 Correct. S3 Transfer Acceleration uses edge locations so distant clients can upload to the bucket over the AWS network.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -12389,9 +12402,13 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
     ],
-    "services": ["Amazon S3","AWS IAM Identity Center","Amazon EBS"],
+    "services": ["Amazon S3"],
     "difficulty": "medium"
   },
   {
@@ -12775,13 +12792,13 @@
     ],
     "prompt": "An application repeatedly reads hot data from a relational database and latency must be reduced. Which service can provide an in-memory cache?",
     "choices": [
-      "Amazon SNS",
-      "Amazon S3 Glacier",
-      "AWS Artifact",
+      "Amazon DynamoDB Accelerator",
+      "Amazon RDS Proxy",
+      "Amazon S3 Express One Zone",
       "Amazon ElastiCache"
     ],
     "answer": 3,
-    "explanation": "ElastiCache provides managed in-memory caching.",
+    "explanation": "Amazon DynamoDB Accelerator \u2014 Incorrect. DynamoDB Accelerator is an in-memory cache for DynamoDB, not for a relational database.\nAmazon RDS Proxy \u2014 Incorrect. RDS Proxy pools database connections. It is not an in-memory cache of query results.\nAmazon S3 Express One Zone \u2014 Incorrect. S3 Express One Zone is a storage class for objects. It does not cache rows from a relational database.\nAmazon ElastiCache \u2014 Correct. ElastiCache is the managed in-memory cache you place in front of a relational database to serve repeated reads.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -12789,9 +12806,13 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-one-zone.html"
     ],
-    "services": ["Amazon SNS","Amazon S3","AWS Artifact","Amazon ElastiCache"],
+    "services": ["Amazon DynamoDB", "Amazon RDS", "Amazon S3", "Amazon ElastiCache"],
     "difficulty": "medium"
   },
   {
@@ -13233,13 +13254,13 @@
     ],
     "prompt": "A central security team must prevent member accounts in an AWS Organization from using specific high-risk services, even if account administrators attach Allow policies. What should be used?",
     "choices": [
-      "S3 lifecycle rules",
-      "Route 53 policies",
-      "Security groups",
+      "AWS Organizations tag policies",
+      "IAM permissions boundaries",
+      "Resource control policies",
       "Service control policies"
     ],
     "answer": 3,
-    "explanation": "SCPs set organization-level permission guardrails; an explicit organizational restriction can limit member-account permissions.",
+    "explanation": "AWS Organizations tag policies \u2014 Incorrect. Tag policies standardize tags. They do not block a member account from using a service.\nIAM permissions boundaries \u2014 Incorrect. A permissions boundary can limit an identity, and an account administrator can change it. It is not the organization guardrail that still wins over a member Allow.\nResource control policies \u2014 Incorrect. Resource control policies set maximum permissions on resources. They are not the control that stops a member account from using a service.\nService control policies \u2014 Correct. A service control policy can deny a service in member accounts, and the member account cannot override that deny with an Allow.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13247,9 +13268,13 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps.html"
     ],
-    "services": ["Amazon S3","Amazon Route 53","Amazon VPC","AWS Organizations"],
+    "services": ["AWS Organizations", "AWS Identity and Access Management"],
     "difficulty": "medium"
   },
   {
@@ -13702,13 +13727,13 @@
     ],
     "prompt": "A service occasionally returns throttling errors during traffic bursts. Which client behavior improves resilience?",
     "choices": [
-      "Raise the request rate until throttling stops",
-      "Open a support case and send no retry",
-      "Retry with exponential backoff and jitter where appropriate",
-      "Retry continuously with no delay"
+      "Raise the client request rate during the throttling errors",
+      "Open a support case and pause the client",
+      "Retry with exponential backoff and jitter",
+      "Retry each throttled request again immediately"
     ],
     "answer": 2,
-    "explanation": "Raise the request rate until throttling stops — Incorrect. Sending more requests during throttling makes the burst worse.\nOpen a support case and send no retry — Incorrect. A support case does not retry the throttled request.\nRetry with exponential backoff and jitter where appropriate — Correct. Backoff with jitter spaces retries so a burst does not keep hammering a throttled API.\nRetry continuously with no delay — Incorrect. Immediate retries with no delay repeat the same burst and can extend the throttling.",
+    "explanation": "Raise the client request rate during the throttling errors \u2014 Incorrect. Sending more requests during throttling makes the burst worse.\nOpen a support case and pause the client \u2014 Incorrect. A support case does not retry the throttled request.\nRetry with exponential backoff and jitter \u2014 Correct. Backoff with jitter spaces retries so a burst does not keep hammering a throttled API.\nRetry each throttled request again immediately \u2014 Incorrect. Immediate retries with no delay repeat the same burst and can extend the throttling.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13877,13 +13902,13 @@
     ],
     "prompt": "A real-time telemetry system needs applications to consume streaming records ordered for each device partition key and perform custom processing. Which service is appropriate?",
     "choices": [
-      "Data Firehose only",
-      "AWS Artifact",
-      "Kinesis Data Streams",
-      "S3 Glacier"
+      "Amazon Data Firehose delivery streams",
+      "Amazon EventBridge pipes",
+      "Amazon Kinesis Data Streams",
+      "Amazon SQS standard queues"
     ],
     "answer": 2,
-    "explanation": "Kinesis Data Streams is built for real-time streams consumed by applications. Ordering is scoped to shards/partition keys and appropriate producer sequencing; there is no global ordering guarantee across shards. Handle retries, duplicates and consumer checkpoints explicitly.",
+    "explanation": "Amazon Data Firehose delivery streams \u2014 Incorrect. Data Firehose delivers a stream to a destination. It is not the service where your application consumes records in partition-key order and runs its own processing.\nAmazon EventBridge pipes \u2014 Incorrect. EventBridge pipes connect a source to a target. They are not an ordered per-key record stream for custom consumers.\nAmazon Kinesis Data Streams \u2014 Correct. Kinesis Data Streams holds the records for your consumers. Order is per shard, which follows the partition key, and your application does the processing.\nAmazon SQS standard queues \u2014 Incorrect. SQS standard queues do not keep order for a device partition key, and they are a message queue rather than this record stream.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13891,9 +13916,13 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/streams/latest/dev/introduction.html",
+      "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html",
+      "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html",
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
     ],
-    "services": ["Amazon Kinesis","AWS Artifact","Amazon S3 Glacier"],
+    "services": ["Amazon Kinesis", "Amazon EventBridge", "Amazon SQS"],
     "difficulty": "medium"
   },
   {
@@ -13932,12 +13961,12 @@
     "prompt": "An HPC cluster requires very low-latency communication between supported EC2 instances. Which feature should be considered?",
     "choices": [
       "Elastic Fabric Adapter",
-      "Route 53 geolocation",
-      "S3 lifecycle",
-      "AWS Budgets"
+      "Elastic Network Adapter",
+      "Partition placement group",
+      "Single root I/O virtualization"
     ],
     "answer": 0,
-    "explanation": "EFA provides specialized high-performance networking for supported HPC workloads.",
+    "explanation": "Elastic Fabric Adapter \u2014 Correct. Elastic Fabric Adapter is the low-latency network adapter for supported HPC instances.\nElastic Network Adapter \u2014 Incorrect. Elastic Network Adapter is the standard enhanced-networking adapter. It is not the HPC OS-bypass fabric.\nPartition placement group \u2014 Incorrect. A partition placement group spreads instances into partitions. It is not the adapter for very low-latency HPC traffic.\nSingle root I/O virtualization \u2014 Incorrect. Single root I/O virtualization is a device-virtualization mechanism. It is not the HPC adapter the cluster should use.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13945,9 +13974,12 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking-ena.html",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html"
     ],
-    "services": ["Amazon EC2","Amazon Route 53","Amazon S3","AWS Budgets"],
+    "services": ["Amazon EC2"],
     "difficulty": "medium"
   },
   {
@@ -14223,13 +14255,13 @@
     ],
     "prompt": "A database instance averages 10% CPU and has no evidence of memory pressure. What is the first cost-optimization action to evaluate?",
     "choices": [
-      "Choose a smaller instance solely from average CPU",
-      "Add read replicas even when there is no measured read bottleneck",
-      "Measure memory, I/O, connections and peak demand, then evaluate rightsizing",
-      "Remove backups before checking recovery requirements"
+      "Choose the instance size from the average CPU reading",
+      "Add read replicas on the database tier",
+      "Measure demand, then evaluate rightsizing",
+      "Drop backups ahead of a recovery review"
     ],
     "answer": 2,
-    "explanation": "Measure all relevant bottlenecks and peak demand before rightsizing. Low average CPU alone does not establish spare memory/I/O/connection capacity. Removing backups changes recovery, while unnecessary replicas add cost.",
+    "explanation": "Choose the instance size from the average CPU reading \u2014 Incorrect. Average CPU alone does not show whether memory, I/O, connections, or peaks have spare capacity.\nAdd read replicas on the database tier \u2014 Incorrect. Read replicas add cost and address read traffic. This instance has no measured read bottleneck to justify them.\nMeasure demand, then evaluate rightsizing \u2014 Correct. Measure memory, I/O, connections, and peak demand, then decide whether a smaller size still meets the workload.\nDrop backups ahead of a recovery review \u2014 Incorrect. Removing backups changes recoverability. Do that only after the recovery requirement is known, and it is not the first rightsizing step.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -14237,7 +14269,8 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
     ],
     "services": [],
     "difficulty": "medium"
@@ -15268,18 +15301,19 @@
     },
     "prompt": "A private application needs frequent S3 access without NAT processing. Its users still require application authentication. Which design addresses both without conflating them?",
     "choices": [
-      "Direct Connect without encryption because private always means encrypted",
-      "A public bucket plus a WAF rule that substitutes for IAM",
-      "An S3 gateway endpoint with appropriate policies, plus an application identity/authentication design",
-      "A gateway endpoint that automatically authenticates every end user"
+      "A Direct Connect circuit for the S3 calls and the user sign-in",
+      "A bucket policy that grants the application role",
+      "An S3 gateway endpoint plus application authentication",
+      "A gateway endpoint treated as the user directory"
     ],
     "answer": 2,
-    "explanation": "A gateway endpoint changes the S3 network path; it does not authenticate application users or grant all data access. IAM/resource policies and user identity remain separate. Public buckets and unencrypted-private assumptions do not meet the stated design.",
+    "explanation": "A Direct Connect circuit for the S3 calls and the user sign-in \u2014 Incorrect. Direct Connect is a private network path. It does not authenticate the application's users, and it is not the S3 path this design is choosing.\nA bucket policy that grants the application role \u2014 Incorrect. A bucket policy can allow the application role. It does not replace user authentication, and it does not remove NAT processing.\nAn S3 gateway endpoint plus application authentication \u2014 Correct. An S3 gateway endpoint keeps the S3 traffic on the private AWS path. Application authentication stays a separate design.\nA gateway endpoint treated as the user directory \u2014 Incorrect. A gateway endpoint changes the network path to S3. It does not become the user directory or sign users in.",
     "weak": false,
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
     ],
-    "services": ["Amazon S3","AWS Direct Connect","AWS WAF","AWS Identity and Access Management"],
+    "services": ["Amazon S3", "AWS Direct Connect"],
     "difficulty": "medium"
   },
   {
@@ -15353,18 +15387,19 @@
     },
     "prompt": "An ALB detects unhealthy application targets, but their EC2 status checks pass and the ASG never replaces them. What configuration should be reviewed?",
     "choices": [
-      "ASG Elastic Load Balancing health-check integration and grace-period behavior",
-      "Whether adding read replicas will change EC2 health status",
-      "Whether an S3 lifecycle transition has occurred",
-      "Whether CloudTrail automatically terminates unhealthy targets"
+      "The ASG load-balancer health check and grace period",
+      "Read replicas as the EC2 health signal",
+      "An S3 lifecycle rule as the instance health signal",
+      "A CloudTrail alarm as the instance replacement signal"
     ],
     "answer": 0,
-    "explanation": "Target-group application checks and ASG replacement checks are separate. Enable the appropriate ELB health checks and grace period, and verify replacement behavior. Storage lifecycle, database replicas and audit logging do not establish that integration.",
+    "explanation": "The ASG load-balancer health check and grace period \u2014 Correct. The Auto Scaling group replaces instances when its load-balancer health check says so, after the grace period. That integration is what to review.\nRead replicas as the EC2 health signal \u2014 Incorrect. Read replicas do not change the EC2 status check or the target health check that this group is ignoring.\nAn S3 lifecycle rule as the instance health signal \u2014 Incorrect. An S3 lifecycle rule moves objects. It does not decide whether the Auto Scaling group replaces an unhealthy instance.\nA CloudTrail alarm as the instance replacement signal \u2014 Incorrect. A CloudTrail alarm records or notifies on API activity. It does not terminate unhealthy targets for the group.",
     "weak": false,
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html"
     ],
-    "services": ["Elastic Load Balancing","Amazon EC2","Amazon S3","AWS CloudTrail"],
+    "services": ["Elastic Load Balancing", "Amazon EC2", "Amazon S3", "AWS CloudTrail", "AWS Auto Scaling"],
     "difficulty": "medium"
   },
   {
@@ -15436,18 +15471,20 @@
     },
     "prompt": "A user must immediately read a just-written DynamoDB value with a strong consistency requirement. Which design avoids relying on stale cached data?",
     "choices": [
-      "A read replica in another Region without considering replication delay",
-      "Only a DAX eventual cache read because all cache hits are current",
-      "A supported strongly consistent table read rather than assuming a DAX cache hit is strongly consistent",
-      "A GSI read with the assumption that every GSI supports strong consistency"
+      "A cross-Region read replica for the value just written",
+      "A DAX cache read of the just-written value",
+      "A strongly consistent read of the base table",
+      "A global secondary index read of the new value"
     ],
     "answer": 2,
-    "explanation": "Use a supported strong read for that requirement. DAX eventual caches and GSIs do not guarantee the same freshness, and asynchronously replicated paths may lag. A fast response is not a consistency guarantee.",
+    "explanation": "A cross-Region read replica for the value just written \u2014 Incorrect. A cross-Region replica can lag behind the write. It is the wrong place to read a value that was just written.\nA DAX cache read of the just-written value \u2014 Incorrect. A DAX cache can return an older item. A cache hit is not the strongly consistent table read this screen requires.\nA strongly consistent read of the base table \u2014 Correct. Read the base table with a strongly consistent read when the user must see the value that was just written.\nA global secondary index read of the new value \u2014 Incorrect. A global secondary index is eventually consistent. It is not a strongly consistent read of the new item.",
     "weak": false,
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
     ],
-    "services": ["Amazon DynamoDB","Amazon DynamoDB Accelerator"],
+    "services": ["Amazon DynamoDB", "Amazon DynamoDB Accelerator"],
     "difficulty": "medium"
   },
   {
@@ -15525,18 +15562,19 @@
     },
     "prompt": "A team archives small objects and retrieves them frequently. Its storage bill falls but request/retrieval charges rise sharply. What did the design omit?",
     "choices": [
-      "Object size, access frequency, retrieval and minimum-duration/request economics",
-      "The assumption that every archival class is instant and free to read",
-      "Only the number of IAM groups in the account",
-      "A requirement to use the highest IOPS EBS volume for all objects"
+      "Object size, request rate, and retrieval cost",
+      "An archival class treated as free instant reads",
+      "The number of IAM groups in the account",
+      "The highest IOPS EBS volume for every object"
     ],
     "answer": 0,
-    "explanation": "Storage-class selection requires the full access and lifecycle cost, including small-object and retrieval constraints. Identity-group count does not explain it; archives are not universally instant/free, and block storage is not a blanket fix for an object workload.",
+    "explanation": "Object size, request rate, and retrieval cost \u2014 Correct. Small objects, how often they are read, retrieval, and minimum storage duration all belong in the storage-class decision.\nAn archival class treated as free instant reads \u2014 Incorrect. Archive classes are not free to read and are not all instant. Treating them that way misses the charges that rose.\nThe number of IAM groups in the account \u2014 Incorrect. The number of IAM groups does not explain a higher request and retrieval bill.\nThe highest IOPS EBS volume for every object \u2014 Incorrect. A high-IOPS EBS volume is block storage. It does not fix request pricing on an object archive.",
     "weak": false,
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
     ],
-    "services": ["AWS Identity and Access Management","Amazon EBS"],
+    "services": ["AWS Identity and Access Management", "Amazon EBS"],
     "difficulty": "medium"
   },
   {
@@ -15609,18 +15647,19 @@
     },
     "prompt": "Private instances send large S3 volumes through a NAT gateway. The workload must keep S3 access private and maintain its AZ-resilience design. What should be evaluated first?",
     "choices": [
-      "An interface endpoint assumed to have no hourly or per-GB charges",
-      "Public bucket access with no IAM restrictions to eliminate private routing",
-      "A single shared NAT as an automatic resilience improvement",
-      "S3 gateway endpoints with the relevant subnet route-table associations and access policies"
+      "An interface endpoint for the S3 traffic",
+      "A bucket policy granting every principal in the account",
+      "One NAT gateway shared by every private subnet",
+      "S3 gateway endpoints on the subnet route tables"
     ],
     "answer": 3,
-    "explanation": "Gateway endpoints can remove eligible S3 traffic from NAT without gateway-endpoint charges. Validate route/policy scope. A single zonal NAT can introduce an AZ dependency, public access changes authorization, and interface endpoint costs are different.",
+    "explanation": "An interface endpoint for the S3 traffic \u2014 Incorrect. An interface endpoint is a different endpoint type and has its own charges. It is not the first S3 path to evaluate here.\nA bucket policy granting every principal in the account \u2014 Incorrect. A broader bucket policy changes who can read the objects. It does not take the S3 traffic off the NAT gateway.\nOne NAT gateway shared by every private subnet \u2014 Incorrect. One NAT gateway shared by the private subnets still processes the S3 bytes and can tie those subnets to one Availability Zone.\nS3 gateway endpoints on the subnet route tables \u2014 Correct. S3 gateway endpoints, associated with the subnet route tables and constrained by the endpoint policy, keep eligible S3 traffic off the NAT gateway.",
     "weak": false,
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
     ],
-    "services": ["Amazon S3","Amazon VPC","AWS Identity and Access Management"],
+    "services": ["Amazon S3", "Amazon VPC"],
     "difficulty": "medium"
   },
   {
@@ -44618,20 +44657,20 @@
     },
     "prompt": "A load balancer uses a third-party TLS certificate imported into AWS Certificate Manager. The certificate owner will renew it outside AWS. What should the operations plan include?",
     "choices": [
-      "Track the external certificate expiry, renew it with its issuer, and reimport the renewed certificate before expiration",
-      "Assume ACM will renew the imported certificate automatically because it is attached to a load balancer",
-      "Rotate the KMS key used by the load balancer; that renews the TLS certificate",
-      "Create an ACM renewal alarm and take no action on the imported certificate"
+      "Renew the imported certificate and reimport it before expiry",
+      "Leave ACM to renew the imported certificate on its own",
+      "Rotate the load balancer KMS key to renew the certificate",
+      "Create an ACM expiry alarm and leave the imported certificate"
     ],
     "answer": 0,
-    "explanation": "Track the external certificate expiry, renew it with its issuer, and reimport the renewed certificate before expiration \u2014 Correct. ACM does not provide managed renewal for imported certificates, so the owner must renew and reimport them.\nAssume ACM will renew the imported certificate automatically because it is attached to a load balancer \u2014 Incorrect. Attachment to a supported service does not make an imported certificate eligible for ACM managed renewal.\nRotate the KMS key used by the load balancer; that renews the TLS certificate \u2014 Incorrect. KMS key rotation and TLS certificate renewal are separate lifecycles.\nCreate an ACM renewal alarm and take no action on the imported certificate \u2014 Incorrect. Monitoring can help detect expiry but does not renew or replace an imported certificate.",
+    "explanation": "Renew the imported certificate and reimport it before expiry \u2014 Correct. ACM does not provide managed renewal for imported certificates, so the owner must renew and reimport them.\nLeave ACM to renew the imported certificate on its own \u2014 Incorrect. Attachment to a supported service does not make an imported certificate eligible for ACM managed renewal.\nRotate the load balancer KMS key to renew the certificate \u2014 Incorrect. KMS key rotation and TLS certificate renewal are separate lifecycles.\nCreate an ACM expiry alarm and leave the imported certificate \u2014 Incorrect. Monitoring can help detect expiry but does not renew or replace an imported certificate.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html",
       "https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html",
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
     ],
-    "services": ["Elastic Load Balancing","AWS Certificate Manager","AWS Key Management Service"],
+    "services": ["Elastic Load Balancing", "AWS Certificate Manager", "AWS Key Management Service"],
     "difficulty": "medium"
   },
   {
@@ -44680,13 +44719,13 @@
     },
     "prompt": "A reporting pipeline must run two independent AWS Glue jobs in parallel, then start a publishing job only after both finish. Operators need retry rules and a visible execution state. Which design fits?",
     "choices": [
-      "Use an AWS Step Functions Standard workflow with parallel branches, Glue job integrations that wait for completion, and retry/catch handling",
-      "Create one EventBridge rule per job and assume the rules will wait for both jobs before publishing",
-      "Send job-start messages to an SNS topic and use delivery order as the dependency control",
-      "Use an SQS queue as the workflow state store and have every worker infer when both jobs are finished"
+      "A Step Functions Standard workflow with parallel Glue branches",
+      "One EventBridge rule per Glue job, with the publisher started by those rules",
+      "An SNS topic whose delivery order controls the publisher",
+      "An SQS queue that each worker uses as the workflow state"
     ],
     "answer": 0,
-    "explanation": "Use an AWS Step Functions Standard workflow with parallel branches, Glue job integrations that wait for completion, and retry/catch handling \u2014 Correct. A state machine models branches and sequencing, can wait for integrated job completion, and provides workflow-level error handling and execution history.\nCreate one EventBridge rule per job and assume the rules will wait for both jobs before publishing \u2014 Incorrect. EventBridge routes matching events; separate rules do not by themselves implement a joined workflow that waits for both job results.\nSend job-start messages to an SNS topic and use delivery order as the dependency control \u2014 Incorrect. SNS fan-out does not provide this workflow\u2019s completion barrier or state handling.\nUse an SQS queue as the workflow state store and have every worker infer when both jobs are finished \u2014 Incorrect. A queue buffers work, but custom coordination would still be required for completion, dependency, and retry state.",
+    "explanation": "A Step Functions Standard workflow with parallel Glue branches \u2014 Correct. A state machine models branches and sequencing, can wait for integrated job completion, and provides workflow-level error handling and execution history.\nOne EventBridge rule per Glue job, with the publisher started by those rules \u2014 Incorrect. EventBridge routes matching events; separate rules do not by themselves implement a joined workflow that waits for both job results.\nAn SNS topic whose delivery order controls the publisher \u2014 Incorrect. SNS fan-out does not provide this workflow\u2019s completion barrier or state handling.\nAn SQS queue that each worker uses as the workflow state \u2014 Incorrect. A queue buffers work, but custom coordination would still be required for completion, dependency, and retry state.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html",
@@ -44694,7 +44733,7 @@
       "https://docs.aws.amazon.com/step-functions/latest/dg/state-parallel.html",
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
     ],
-    "services": ["AWS Glue","AWS Step Functions","Amazon EventBridge","Amazon SNS","Amazon SQS"],
+    "services": ["AWS Glue", "AWS Step Functions", "Amazon EventBridge", "Amazon SNS", "Amazon SQS"],
     "difficulty": "medium"
   },
   {
@@ -44801,13 +44840,13 @@
     },
     "prompt": "A team has 16 KB S3 objects and expects a lifecycle rule to transition every object to an archive class after one year. The bucket uses the current default lifecycle minimum-size behavior. What should the team verify or change?",
     "choices": [
-      "Explicitly configure the rule\u2019s object-size filter to allow the 16 KB objects, then validate transition and retrieval economics",
-      "Leave the rule unchanged because an age-based transition applies to every object size by default",
-      "Add an S3 tag to each object; tags override lifecycle minimum-size behavior automatically",
-      "Increase the expiration age because objects smaller than 128 KB transition only after one year"
+      "Set the lifecycle object-size filter to include the 16 KB objects",
+      "Leave the current age-based lifecycle rule in place for every object",
+      "Add an object tag to override the size filter",
+      "Raise the expiration age so small objects transition later"
     ],
     "answer": 0,
-    "explanation": "Explicitly configure the rule\u2019s object-size filter to allow the 16 KB objects, then validate transition and retrieval economics \u2014 Correct. Current S3 Lifecycle defaults do not transition objects smaller than 128 KB unless the rule explicitly allows a smaller size. Small-object archive overhead and access patterns still affect the design.\nLeave the rule unchanged because an age-based transition applies to every object size by default \u2014 Incorrect. The current default behavior excludes objects below 128 KB from transitions.\nAdd an S3 tag to each object; tags override lifecycle minimum-size behavior automatically \u2014 Incorrect. Tags can select objects for a rule but do not automatically override the minimum object-size behavior.\nIncrease the expiration age because objects smaller than 128 KB transition only after one year \u2014 Incorrect. Waiting longer does not remove the size restriction.",
+    "explanation": "Set the lifecycle object-size filter to include the 16 KB objects \u2014 Correct. Current S3 Lifecycle defaults do not transition objects smaller than 128 KB unless the rule explicitly allows a smaller size. Small-object archive overhead and access patterns still affect the design.\nLeave the current age-based lifecycle rule in place for every object \u2014 Incorrect. The current default behavior excludes objects below 128 KB from transitions.\nAdd an object tag to override the size filter \u2014 Incorrect. Tags can select objects for a rule but do not automatically override the minimum object-size behavior.\nRaise the expiration age so small objects transition later \u2014 Incorrect. Waiting longer does not remove the size restriction.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
@@ -44830,20 +44869,21 @@
     },
     "prompt": "A research team receives tabular sensor exports as CSV files in Amazon S3. Analysts need a repeatable transformation into Parquet files in a separate S3 prefix, with minimal server administration. Which service is the best starting point?",
     "choices": [
-      "Create an AWS Glue ETL job to read the source data, transform the format, and write the Parquet output",
-      "Launch an EC2 instance and manually convert each file on a local disk every day",
-      "Use AWS Batch only to define a schedule; a job definition does not need transformation logic",
-      "Use Amazon Route 53 to convert CSV records into Parquet files"
+      "An AWS Glue ETL job that writes Parquet to the other prefix",
+      "An EC2 instance that converts each CSV file on a local disk every day",
+      "An AWS Batch schedule used as the transformation itself",
+      "An AWS Glue crawler that rewrites the files as Parquet"
     ],
     "answer": 0,
-    "explanation": "Create an AWS Glue ETL job to read the source data, transform the format, and write the Parquet output \u2014 Correct. Glue provides managed ETL jobs and supports writing Parquet to S3; a crawler or explicit schema can supply source metadata as appropriate.\nLaunch an EC2 instance and manually convert each file on a local disk every day \u2014 Incorrect. This adds server and operational work and does not provide the repeatable managed ETL requested.\nUse AWS Batch only to define a schedule; a job definition does not need transformation logic \u2014 Incorrect. Batch schedules and runs containerized batch work, but a transformation program and execution configuration still need to be supplied.\nUse Amazon Route 53 to convert CSV records into Parquet files \u2014 Incorrect. Route 53 provides DNS services, not ETL or file-format conversion.",
+    "explanation": "An AWS Glue ETL job that writes Parquet to the other prefix \u2014 Correct. Glue ETL jobs read the CSV, transform it, and write Parquet to another prefix without a server to administer.\nAn EC2 instance that converts each CSV file on a local disk every day \u2014 Incorrect. An EC2 conversion host adds an instance to patch and a manual daily copy. It is not the managed transformation.\nAn AWS Batch schedule used as the transformation itself \u2014 Incorrect. AWS Batch runs a job you define. A schedule alone does not turn CSV into Parquet.\nAn AWS Glue crawler that rewrites the files as Parquet \u2014 Incorrect. A Glue crawler catalogs the files. It does not transform CSV into Parquet.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/three-aws-glue-etl-job-types-for-converting-data-to-apache-parquet.html",
       "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format-parquet-home.html",
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html"
     ],
-    "services": ["Amazon S3","AWS Glue","Amazon EC2","AWS Batch","Amazon Route 53"],
+    "services": ["Amazon S3", "AWS Glue", "Amazon EC2", "AWS Batch"],
     "difficulty": "medium"
   },
   {
@@ -44859,13 +44899,13 @@
     },
     "prompt": "A regional health team may query only records for patients in its own region from a shared S3 data lake using Athena. Which control best enforces that row-level restriction?",
     "choices": [
-      "Define a Lake Formation data filter for the table and grant the team filtered SELECT access, with required Athena IAM permissions",
-      "Give the team broad S3 bucket access and ask analysts to add a WHERE clause to each query",
-      "Encrypt the whole bucket with one KMS key; the key automatically filters rows by region",
-      "Enable CloudTrail data events so queries outside the region are rejected"
+      "A Lake Formation data filter with filtered SELECT for the team",
+      "Broad S3 bucket access plus a WHERE clause written into each Athena query",
+      "One KMS key on the bucket as the row filter",
+      "CloudTrail data events as the query allow-list"
     ],
     "answer": 0,
-    "explanation": "Define a Lake Formation data filter for the table and grant the team filtered SELECT access, with required Athena IAM permissions \u2014 Correct. Lake Formation data filters can enforce row-level access on supported Athena queries by applying a row expression to table permissions. The analyst also needs required IAM permissions to use Athena.\nGive the team broad S3 bucket access and ask analysts to add a WHERE clause to each query \u2014 Incorrect. A query convention is not an authorization boundary and can be omitted or changed.\nEncrypt the whole bucket with one KMS key; the key automatically filters rows by region \u2014 Incorrect. Encryption and key access protect data at rest; they do not implement row-level query filtering.\nEnable CloudTrail data events so queries outside the region are rejected \u2014 Incorrect. CloudTrail records activity for investigation; it does not enforce query access.",
+    "explanation": "A Lake Formation data filter with filtered SELECT for the team \u2014 Correct. Lake Formation data filters can enforce row-level access on supported Athena queries by applying a row expression to table permissions. The analyst also needs required IAM permissions to use Athena.\nBroad S3 bucket access plus a WHERE clause written into each Athena query \u2014 Incorrect. A query convention is not an authorization boundary and can be omitted or changed.\nOne KMS key on the bucket as the row filter \u2014 Incorrect. Encryption and key access protect data at rest; they do not implement row-level query filtering.\nCloudTrail data events as the query allow-list \u2014 Incorrect. CloudTrail records activity for investigation; it does not enforce query access.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/lake-formation/latest/dg/lf-permissions-overview.html",
@@ -44873,7 +44913,7 @@
       "https://docs.aws.amazon.com/athena/latest/ug/lf-athena-user-permissions.html",
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
     ],
-    "services": ["Amazon S3","Amazon Athena","AWS Lake Formation","AWS Identity and Access Management","AWS Key Management Service","AWS CloudTrail"],
+    "services": ["Amazon S3", "Amazon Athena", "AWS Lake Formation", "AWS Key Management Service", "AWS CloudTrail", "AWS Identity and Access Management"],
     "difficulty": "medium"
   },
   {
@@ -44918,13 +44958,13 @@
     },
     "prompt": "A 90 TB on-premises file dataset must move to Amazon S3 over a private Direct Connect path. Applications will continue writing to the source during most of the transfer, but can pause writes briefly for cutover. Which plan best limits the final inconsistency window?",
     "choices": [
-      "Run an initial AWS DataSync transfer, run a final incremental transfer after pausing source writes, verify the destination, and then switch consumers",
-      "Make one DataSync pass and immediately delete the source, even if files changed during the run",
-      "Copy a point-in-time backup to a Snowball device and switch consumers while the source remains writable",
-      "Use an S3 Lifecycle rule to discover changed source files and synchronize them over Direct Connect"
+      "A final DataSync incremental after source writes stop, then cut over",
+      "One DataSync pass followed by deleting the source while files are still changing",
+      "A Snowball copy while the source is still taking writes",
+      "An S3 Lifecycle rule that synchronizes the changed source files"
     ],
     "answer": 0,
-    "explanation": "Run an initial AWS DataSync transfer, run a final incremental transfer after pausing source writes, verify the destination, and then switch consumers \u2014 Correct. DataSync supports initial and subsequent changed-data transfers; a controlled write pause and destination verification provide a cutover point for changes made during the first pass. Direct Connect can carry the network path when configured for DataSync.\nMake one DataSync pass and immediately delete the source, even if files changed during the run \u2014 Incorrect. A single pass can miss changes made during migration, and deleting the source before verification removes recovery options.\nCopy a point-in-time backup to a Snowball device and switch consumers while the source remains writable \u2014 Incorrect. A static copy does not capture later writes unless a synchronization/cutover process accounts for them.\nUse an S3 Lifecycle rule to discover changed source files and synchronize them over Direct Connect \u2014 Incorrect. Lifecycle acts on objects already in S3; it does not scan or synchronize the on-premises source.",
+    "explanation": "A final DataSync incremental after source writes stop, then cut over \u2014 Correct. DataSync supports initial and subsequent changed-data transfers; a controlled write pause and destination verification provide a cutover point for changes made during the first pass. Direct Connect can carry the network path when configured for DataSync.\nOne DataSync pass followed by deleting the source while files are still changing \u2014 Incorrect. A single pass can miss changes made during migration, and deleting the source before verification removes recovery options.\nA Snowball copy while the source is still taking writes \u2014 Incorrect. A static copy does not capture later writes unless a synchronization/cutover process accounts for them.\nAn S3 Lifecycle rule that synchronizes the changed source files \u2014 Incorrect. Lifecycle acts on objects already in S3; it does not scan or synchronize the on-premises source.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html",
@@ -44932,7 +44972,7 @@
       "https://docs.aws.amazon.com/datasync/latest/userguide/configure-metadata.html",
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
     ],
-    "services": ["Amazon S3","AWS Direct Connect","AWS DataSync","AWS Snow Family"],
+    "services": ["Amazon S3", "AWS Direct Connect", "AWS DataSync", "AWS Snow Family"],
     "difficulty": "medium"
   },
   {
@@ -45011,13 +45051,13 @@
     ],
     "prompt": "A production service connects to a database using a password that must rotate automatically. The application should not keep a static copy in its deployment configuration. Which approach best meets the requirement?",
     "choices": [
-      "Put the password in an environment variable and rotate it manually during deployments.",
-      "Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime.",
-      "Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it.",
-      "Use an IAM permissions boundary because it encrypts database credentials."
+      "An environment variable rotated by the deployment pipeline",
+      "Secrets Manager with rotation and a runtime retrieval role",
+      "Parameter Store SecureString plus a separate rotation process",
+      "An IAM permissions boundary holding the database password"
     ],
     "answer": 1,
-    "explanation": "Option: Put the password in an environment variable and rotate it manually during deployments. \u2014 Incorrect: Environment variables remain deployment configuration and manual rotation is explicitly excluded; stale copies can remain after a change.\nOption: Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime. \u2014 Correct: Secrets Manager is designed to store and retrieve secrets and supports configured rotation. A workload role avoids embedding long-lived credentials, while the application must handle refreshed credentials according to its connection behavior.\nOption: Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it. \u2014 Incorrect: SecureString encrypts a parameter value and IAM can control retrieval, but Parameter Store does not provide the managed secret rotation required here. An external automation could be built, but it is not the simplest fit.\nOption: Use an IAM permissions boundary because it encrypts database credentials. \u2014 Incorrect: A permissions boundary limits the maximum permissions an IAM principal can receive; it does not encrypt or store database passwords.",
+    "explanation": "Option: An environment variable rotated by the deployment pipeline \u2014 Incorrect: Environment variables remain deployment configuration and manual rotation is explicitly excluded; stale copies can remain after a change.\nOption: Secrets Manager with rotation and a runtime retrieval role \u2014 Correct: Secrets Manager is designed to store and retrieve secrets and supports configured rotation. A workload role avoids embedding long-lived credentials, while the application must handle refreshed credentials according to its connection behavior.\nOption: Parameter Store SecureString plus a separate rotation process \u2014 Incorrect: SecureString encrypts a parameter value and IAM can control retrieval, but Parameter Store does not provide the managed secret rotation required here. An external automation could be built, but it is not the simplest fit.\nOption: An IAM permissions boundary holding the database password \u2014 Incorrect: A permissions boundary limits the maximum permissions an IAM principal can receive; it does not encrypt or store database passwords.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45032,7 +45072,7 @@
       "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
     ],
     "format": "single",
-    "services": ["AWS Secrets Manager","AWS Systems Manager","AWS Identity and Access Management"],
+    "services": ["AWS Secrets Manager", "AWS Systems Manager", "AWS Identity and Access Management"],
     "difficulty": "medium"
   },
   {
@@ -45138,13 +45178,13 @@
     ],
     "prompt": "A public REST API receives bursts of repeated reads. Catalog responses are identical for all customers for several minutes, while account-specific routes must always return current private data. Which design reduces repeated backend work without serving one customer\u2019s data to another?",
     "choices": [
-      "Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached.",
-      "Cache all API responses under a single cache key so every route has the highest hit rate.",
-      "Increase the database writer size and cache no responses, even for identical public catalog reads.",
-      "Move the entire API to an SQS queue so each client polls until its read response is available."
+      "Cache the shared catalog routes with a short TTL",
+      "Cache every route under one shared cache key",
+      "A larger database writer serving every catalog read",
+      "An SQS queue that clients poll for the read response"
     ],
     "answer": 0,
-    "explanation": "Option: Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached. \u2014 Correct: API Gateway caching can reduce backend calls for cacheable responses. Limiting it to shared catalog routes and using a bounded TTL respects the distinct freshness and privacy requirement; cache-key and invalidation behavior still need design.\nOption: Cache all API responses under a single cache key so every route has the highest hit rate. \u2014 Incorrect: A shared key across personalized routes can return one customer\u2019s data to another and violates isolation.\nOption: Increase the database writer size and cache no responses, even for identical public catalog reads. \u2014 Incorrect: Vertical database scaling may add capacity but does not eliminate repeat work and ignores the stated cacheable pattern.\nOption: Move the entire API to an SQS queue so each client polls until its read response is available. \u2014 Incorrect: SQS is useful for asynchronous work, not a synchronous read API whose clients require an immediate catalog response.",
+    "explanation": "Option: Cache the shared catalog routes with a short TTL \u2014 Correct: API Gateway caching can reduce backend calls for cacheable responses. Limiting it to shared catalog routes and using a bounded TTL respects the distinct freshness and privacy requirement; cache-key and invalidation behavior still need design.\nOption: Cache every route under one shared cache key \u2014 Incorrect: A shared key across personalized routes can return one customer\u2019s data to another and violates isolation.\nOption: A larger database writer serving every catalog read \u2014 Incorrect: Vertical database scaling may add capacity but does not eliminate repeat work and ignores the stated cacheable pattern.\nOption: An SQS queue that clients poll for the read response \u2014 Incorrect: SQS is useful for asynchronous work, not a synchronous read API whose clients require an immediate catalog response.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45157,7 +45197,7 @@
       "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html#apigateway-enable-caching-stage"
     ],
     "format": "single",
-    "services": ["Amazon API Gateway","Amazon SQS"],
+    "services": ["Amazon SQS", "Amazon API Gateway"],
     "difficulty": "medium"
   },
   {
@@ -45168,13 +45208,13 @@
     ],
     "prompt": "A company uses warm standby in a second Region. The recovery plan assumes it can scale the standby fleet to production size, but the Region\u2019s EC2 quotas have never been checked and failover has not been exercised. What should the architect do before relying on the stated recovery time?",
     "choices": [
-      "Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure.",
-      "Assume quotas are global because the application uses the same AWS account in both Regions.",
-      "Remove the standby and rely on backups; that makes the current recovery-time target automatic.",
-      "Reduce the primary Region\u2019s quotas so the standby Region receives capacity."
+      "Validate recovery-Region quotas and test the failover",
+      "Treat the account quotas as shared by both Regions",
+      "Drop the standby and rely on backups for the recovery target",
+      "Lower the primary Region quotas to feed the standby"
     ],
     "answer": 0,
-    "explanation": "Option: Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure. \u2014 Correct: Quotas and available service capacity can constrain recovery scale-up. Confirming required quotas ahead of time and exercising the runbook tests whether warm standby can meet its recovery objectives.\nOption: Assume quotas are global because the application uses the same AWS account in both Regions. \u2014 Incorrect: Many service quotas are Region-specific; using one account does not guarantee equal capacity or quota values in another Region.\nOption: Remove the standby and rely on backups; that makes the current recovery-time target automatic. \u2014 Incorrect: Backups support recovery but do not automatically meet a warm-standby recovery-time target.\nOption: Reduce the primary Region\u2019s quotas so the standby Region receives capacity. \u2014 Incorrect: Reducing a primary Region quota does not reserve or increase capacity in the recovery Region.",
+    "explanation": "Option: Validate recovery-Region quotas and test the failover \u2014 Correct: Quotas and available service capacity can constrain recovery scale-up. Confirming required quotas ahead of time and exercising the runbook tests whether warm standby can meet its recovery objectives.\nOption: Treat the account quotas as shared by both Regions \u2014 Incorrect: Many service quotas are Region-specific; using one account does not guarantee equal capacity or quota values in another Region.\nOption: Drop the standby and rely on backups for the recovery target \u2014 Incorrect: Backups support recovery but do not automatically meet a warm-standby recovery-time target.\nOption: Lower the primary Region quotas to feed the standby \u2014 Incorrect: Reducing a primary Region quota does not reserve or increase capacity in the recovery Region.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45233,13 +45273,13 @@
     ],
     "prompt": "A clustered Linux database uses a filesystem designed for coordinated access by multiple EC2 instances to the same block device. The workload needs very low storage latency and can use a cluster-aware filesystem. Which storage choice should the architect evaluate?",
     "choices": [
-      "An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements.",
-      "A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination.",
-      "An S3 bucket mounted as a POSIX block device with simultaneous write locking.",
-      "An EFS file system, because it exposes the same shared block device to each instance."
+      "An io2 volume with Multi-Attach where the platform supports it",
+      "A gp3 volume mounted by several instances through ordinary file-system mounts",
+      "An S3 bucket used as the shared block device",
+      "An EFS file system used as the shared block device"
     ],
     "answer": 0,
-    "explanation": "Option: An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements. \u2014 Correct: EBS Multi-Attach for supported io1/io2 volumes can attach one volume to multiple Nitro instances in the same Availability Zone. A cluster-aware filesystem or application must coordinate writes; verify the current Multi-Attach limitations before deployment.\nOption: A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination. \u2014 Incorrect: Ordinary EBS volumes are attached as block devices and do not provide safe shared-write coordination just because multiple mounts are attempted.\nOption: An S3 bucket mounted as a POSIX block device with simultaneous write locking. \u2014 Incorrect: S3 is object storage, not a shared block device with filesystem write locking.\nOption: An EFS file system, because it exposes the same shared block device to each instance. \u2014 Incorrect: EFS is a shared file system, not a shared block device. It may fit a file-sharing workload but not software that requires coordinated shared block storage.",
+    "explanation": "Option: An io2 volume with Multi-Attach where the platform supports it \u2014 Correct: EBS Multi-Attach for supported io1/io2 volumes can attach one volume to multiple Nitro instances in the same Availability Zone. A cluster-aware filesystem or application must coordinate writes; verify the current Multi-Attach limitations before deployment.\nOption: A gp3 volume mounted by several instances through ordinary file-system mounts \u2014 Incorrect: Ordinary EBS volumes are attached as block devices and do not provide safe shared-write coordination just because multiple mounts are attempted.\nOption: An S3 bucket used as the shared block device \u2014 Incorrect: S3 is object storage, not a shared block device with filesystem write locking.\nOption: An EFS file system used as the shared block device \u2014 Incorrect: EFS is a shared file system, not a shared block device. It may fit a file-sharing workload but not software that requires coordinated shared block storage.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45252,7 +45292,7 @@
       "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
     ],
     "format": "single",
-    "services": ["Amazon EC2","Amazon EBS","Amazon S3","Amazon EFS"],
+    "services": ["Amazon EC2", "Amazon EBS", "Amazon S3", "Amazon EFS"],
     "difficulty": "medium"
   },
   {
@@ -45263,13 +45303,13 @@
     ],
     "prompt": "A short-lived Lambda image-processing function is CPU-bound. Its input and algorithm are unchanged, and the team wants to find a faster configuration through controlled benchmarking. Which setting should it test first?",
     "choices": [
-      "Increase the function\u2019s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory.",
-      "Increase the function timeout; this allocates more CPU to each invocation.",
-      "Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation.",
-      "Increase reserved concurrency; this raises the CPU allocation of each individual invocation."
+      "Raise the function memory and benchmark duration and cost",
+      "Raise the function timeout to grant more CPU",
+      "Attach a larger EBS volume to raise function CPU",
+      "Raise reserved concurrency to add more CPU on each invocation"
     ],
     "answer": 0,
-    "explanation": "Option: Increase the function\u2019s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory. \u2014 Correct: Lambda memory configuration controls the memory and proportional CPU allocated to the function. Benchmark representative inputs and compare duration and billed cost rather than assuming that more memory is always cheaper.\nOption: Increase the function timeout; this allocates more CPU to each invocation. \u2014 Incorrect: Timeout sets the maximum allowed execution duration, not CPU capacity.\nOption: Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation. \u2014 Incorrect: EBS is not the per-invocation CPU setting for Lambda.\nOption: Increase reserved concurrency; this raises the CPU allocation of each individual invocation. \u2014 Incorrect: Reserved concurrency limits or reserves concurrent invocation capacity; it does not change the CPU allocation of each invocation.",
+    "explanation": "Option: Raise the function memory and benchmark duration and cost \u2014 Correct: Lambda memory configuration controls the memory and proportional CPU allocated to the function. Benchmark representative inputs and compare duration and billed cost rather than assuming that more memory is always cheaper.\nOption: Raise the function timeout to grant more CPU \u2014 Incorrect: Timeout sets the maximum allowed execution duration, not CPU capacity.\nOption: Attach a larger EBS volume to raise function CPU \u2014 Incorrect: EBS is not the per-invocation CPU setting for Lambda.\nOption: Raise reserved concurrency to add more CPU on each invocation \u2014 Incorrect: Reserved concurrency limits or reserves concurrent invocation capacity; it does not change the CPU allocation of each invocation.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45282,7 +45322,7 @@
       "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
     ],
     "format": "single",
-    "services": ["AWS Lambda","Amazon EBS"],
+    "services": ["AWS Lambda", "Amazon EBS"],
     "difficulty": "medium"
   },
   {
@@ -45293,13 +45333,13 @@
     ],
     "prompt": "A DynamoDB table is keyed by customer ID. A new screen must fetch orders for a given status and time range across many customers. Expected traffic is modest and comfortably within the projected GSI partition throughput, and results may be eventually consistent. Which design avoids repeatedly scanning the whole table?",
     "choices": [
-      "Create a global secondary index with status as its partition key and time as its sort key, then query that index.",
-      "Run a strongly consistent Scan on the base table and discard records that do not match.",
-      "Create a local secondary index whose partition key is different from the table partition key.",
-      "Add a read replica to the DynamoDB table."
+      "A GSI on status and time, queried for the screen",
+      "A table Scan that filters status in the application",
+      "A local secondary index with a new partition key",
+      "A read replica added to the DynamoDB table"
     ],
     "answer": 0,
-    "explanation": "Option: Create a global secondary index with status as its partition key and time as its sort key, then query that index. \u2014 Correct: A GSI can use a partition and sort key different from the base table, enabling a Query for the access pattern. GSI reads are eventually consistent, matching the scenario; account for index write and storage capacity, and reassess key cardinality and hot-partition risk if traffic grows.\nOption: Run a strongly consistent Scan on the base table and discard records that do not match. \u2014 Incorrect: A Scan reads the table\u2019s items and filters afterward, doing unnecessary work as the table grows. Strong consistency does not make the access pattern efficient.\nOption: Create a local secondary index whose partition key is different from the table partition key. \u2014 Incorrect: An LSI must use the same partition key as its table, so it cannot key this query by status across customers.\nOption: Add a read replica to the DynamoDB table. \u2014 Incorrect: DynamoDB does not use relational read replicas for this pattern; a secondary index is the purpose-built access path.",
+    "explanation": "Option: A GSI on status and time, queried for the screen \u2014 Correct: A GSI can use a partition and sort key different from the base table, enabling a Query for the access pattern. GSI reads are eventually consistent, matching the scenario; account for index write and storage capacity, and reassess key cardinality and hot-partition risk if traffic grows.\nOption: A table Scan that filters status in the application \u2014 Incorrect: A Scan reads the table\u2019s items and filters afterward, doing unnecessary work as the table grows. Filtering after the scan is not the Query this screen needs.\nOption: A local secondary index with a new partition key \u2014 Incorrect: An LSI must use the same partition key as its table, so it cannot key this query by status across customers.\nOption: A read replica added to the DynamoDB table \u2014 Incorrect: DynamoDB does not use relational read replicas for this pattern; a secondary index is the purpose-built access path.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45354,13 +45394,13 @@
     ],
     "prompt": "A company expects steady compute use but plans to move workloads between EC2 instance families and Regions, with a possible migration to Fargate during the next year. It can commit to consistent hourly spend. Which purchasing option best preserves that flexibility?",
     "choices": [
-      "A Compute Savings Plan, after validating that the committed hourly amount fits the organization\u2019s steady usage.",
-      "An EC2 Instance Savings Plan tied to one instance family and Region.",
-      "Spot Instances for all customer-facing baseline capacity, without an interruption strategy.",
-      "On-Demand Capacity Reservations, because they automatically provide a billing discount."
+      "A Compute Savings Plan sized to steady hourly use",
+      "An EC2 Instance Savings Plan for one family and Region",
+      "Spot Instances for the customer-facing baseline capacity",
+      "On-Demand Capacity Reservations for the billing discount"
     ],
     "answer": 0,
-    "explanation": "Option: A Compute Savings Plan, after validating that the committed hourly amount fits the organization\u2019s steady usage. \u2014 Correct: Compute Savings Plans apply across EC2 instance families and Regions and can also apply to Fargate and Lambda. They suit planned compute-platform changes, but the commitment should be sized against stable usage to avoid unused commitment.\nOption: An EC2 Instance Savings Plan tied to one instance family and Region. \u2014 Incorrect: An EC2 Instance Savings Plan provides a narrower commitment tied to a chosen instance family and Region, which conflicts with the planned flexibility.\nOption: Spot Instances for all customer-facing baseline capacity, without an interruption strategy. \u2014 Incorrect: Spot can reduce costs for interruptible workloads, but the scenario describes steady customer-facing baseline use and no interruption strategy.\nOption: On-Demand Capacity Reservations, because they automatically provide a billing discount. \u2014 Incorrect: Capacity Reservations reserve capacity and do not themselves provide a billing discount.",
+    "explanation": "Option: A Compute Savings Plan sized to steady hourly use \u2014 Correct: Compute Savings Plans apply across EC2 instance families and Regions and can also apply to Fargate and Lambda. They suit planned compute-platform changes, but the commitment should be sized against stable usage to avoid unused commitment.\nOption: An EC2 Instance Savings Plan for one family and Region \u2014 Incorrect: An EC2 Instance Savings Plan provides a narrower commitment tied to a chosen instance family and Region, which conflicts with the planned flexibility.\nOption: Spot Instances for the customer-facing baseline capacity \u2014 Incorrect: Spot can reduce costs for interruptible workloads, but the scenario describes steady customer-facing baseline use and no interruption strategy.\nOption: On-Demand Capacity Reservations for the billing discount \u2014 Incorrect: Capacity Reservations reserve capacity and do not themselves provide a billing discount.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45374,7 +45414,7 @@
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
     ],
     "format": "single",
-    "services": ["Amazon EC2","AWS Fargate","Savings Plans","AWS Lambda"],
+    "services": ["Amazon EC2", "AWS Fargate", "Savings Plans", "AWS Lambda"],
     "difficulty": "medium"
   },
   {
@@ -45480,13 +45520,13 @@
     ],
     "prompt": "A research group hosts a large public-to-members dataset in S3. Download volume varies, storage must remain under the group\u2019s account, and the group wants authenticated consumers to pay the S3 request and download transfer charges. Which feature best matches that billing requirement?",
     "choices": [
-      "Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing.",
-      "Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA.",
-      "Enable S3 Transfer Acceleration and leave all request charges with the bucket owner.",
-      "Use S3 Storage Lens to assign each consumer\u2019s data transfer charges to their account."
+      "Requester Pays with authenticated requests that accept the charge",
+      "A lifecycle rule moving objects to S3 Standard-IA",
+      "Transfer Acceleration with request charges left on the owner",
+      "S3 Storage Lens assigning each consumer data-transfer charges to that consumer"
     ],
     "answer": 0,
-    "explanation": "Option: Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing. \u2014 Correct: Requester Pays assigns request and data-transfer charges to the requester, while the bucket owner continues to pay storage. Requests must be authenticated and identify the requester as payer.\nOption: Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA. \u2014 Incorrect: A lifecycle transition changes storage class and cost characteristics; it does not transfer request or download charges to consumers. It can fit data with suitable infrequent access and retention economics.\nOption: Enable S3 Transfer Acceleration and leave all request charges with the bucket owner. \u2014 Incorrect: Acceleration can improve transfer performance for some distant clients, but it does not reassign request and transfer charges.\nOption: Use S3 Storage Lens to assign each consumer\u2019s data transfer charges to their account. \u2014 Incorrect: Storage Lens provides usage and activity visibility; it does not change who is billed. Use it to analyze usage, not to implement Requester Pays.",
+    "explanation": "Option: Requester Pays with authenticated requests that accept the charge \u2014 Correct: Requester Pays assigns request and data-transfer charges to the requester, while the bucket owner continues to pay storage. Requests must be authenticated and identify the requester as payer.\nOption: A lifecycle rule moving objects to S3 Standard-IA \u2014 Incorrect: A lifecycle transition changes storage class and cost characteristics; it does not transfer request or download charges to consumers. It can fit data with suitable infrequent access and retention economics.\nOption: Transfer Acceleration with request charges left on the owner \u2014 Incorrect: Acceleration can improve transfer performance for some distant clients, but it does not reassign request and transfer charges.\nOption: S3 Storage Lens assigning each consumer data-transfer charges to that consumer \u2014 Incorrect: Storage Lens provides usage and activity visibility; it does not change who is billed. Use it to analyze usage, not to implement Requester Pays.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45542,13 +45582,13 @@
     ],
     "prompt": "A compute-optimized Linux service has high, steady CPU utilization. Compute Optimizer recommends testing a Graviton-based instance with a favorable projected price-performance result, but the service includes native libraries and deployment images built for x86-64. What should the architect do before changing the production fleet?",
     "choices": [
-      "Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance.",
-      "Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost.",
-      "Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64.",
-      "Move the service to Spot Instances because CPU utilization is steady and high."
+      "Benchmark ARM64 after checking binaries, libraries, and images",
+      "Move every instance on the day a Graviton recommendation appears",
+      "Buy Reserved Instances for the current x86 family",
+      "Move the steady high-CPU service onto Spot Instances"
     ],
     "answer": 0,
-    "explanation": "Option: Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance. \u2014 Correct: The recommendation is a candidate for evaluation, not a compatibility guarantee. Architecture-specific dependencies and measured application performance determine whether migration meets the service requirements and total-cost goal.\nOption: Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost. \u2014 Incorrect: Recommendations do not guarantee application compatibility or realized savings for every workload. A validated, measured rollout is needed.\nOption: Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64. \u2014 Incorrect: A pricing commitment does not test an architecture migration. It may reduce cost for stable usage but leaves the application on x86.\nOption: Move the service to Spot Instances because CPU utilization is steady and high. \u2014 Incorrect: High steady utilization alone does not show the workload tolerates interruption or replacement. Spot can fit fault-tolerant, flexible workloads with interruption handling, not as an architecture compatibility test.",
+    "explanation": "Option: Benchmark ARM64 after checking binaries, libraries, and images \u2014 Correct: The recommendation is a candidate for evaluation, not a compatibility guarantee. Architecture-specific dependencies and measured application performance determine whether migration meets the service requirements and total-cost goal.\nOption: Move every instance on the day a Graviton recommendation appears \u2014 Incorrect: Recommendations do not guarantee application compatibility or realized savings for every workload. A validated, measured rollout is needed.\nOption: Buy Reserved Instances for the current x86 family \u2014 Incorrect: A pricing commitment does not test an architecture migration. It may reduce cost for stable usage but leaves the application on x86.\nOption: Move the steady high-CPU service onto Spot Instances \u2014 Incorrect: High steady utilization alone does not show the workload tolerates interruption or replacement. Spot can fit fault-tolerant, flexible workloads with interruption handling, not as an architecture compatibility test.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -45562,7 +45602,7 @@
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
     ],
     "format": "single",
-    "services": ["AWS Compute Optimizer","Amazon EC2"],
+    "services": ["AWS Compute Optimizer", "Amazon EC2"],
     "difficulty": "medium"
   },
   {
@@ -45792,13 +45832,13 @@
     },
     "prompt": "Which approach gives an on-premises application temporary AWS API access without embedding long-term keys in the datacenter?",
     "choices": [
-      "Share one root MFA device across operations shifts",
-      "Copy an IAM user access key onto every on-premises host",
-      "Open the AWS Management Console to the public internet without authentication",
-      "Use IAM Roles Anywhere or a federation pattern that issues temporary credentials"
+      "One shared root MFA device across operations shifts",
+      "An IAM user access key copied to every on-premises host",
+      "A public Management Console session for operators",
+      "IAM Roles Anywhere for temporary credentials"
     ],
     "answer": 3,
-    "explanation": "Share one root MFA device across operations shifts \u2014 Incorrect. Root MFA is for break-glass account recovery, not shared app auth.\nCopy an IAM user access key onto every on-premises host \u2014 Incorrect. Static keys on every host expand blast radius and rotation burden.\nOpen the AWS Management Console to the public internet without authentication \u2014 Incorrect. Unauthenticated console access is not a valid design.\nUse IAM Roles Anywhere or a federation pattern that issues temporary credentials \u2014 Correct. Roles Anywhere or federation mints short-lived credentials for non-AWS workloads.",
+    "explanation": "One shared root MFA device across operations shifts \u2014 Incorrect. Root MFA is for break-glass account recovery, not shared app auth.\nAn IAM user access key copied to every on-premises host \u2014 Incorrect. Static keys on every host expand blast radius and rotation burden.\nA public Management Console session for operators \u2014 Incorrect. Unauthenticated console access is not a valid design.\nIAM Roles Anywhere for temporary credentials \u2014 Correct. Roles Anywhere or federation mints short-lived credentials for non-AWS workloads.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
@@ -46154,19 +46194,19 @@
     },
     "prompt": "EBS volumes for a PCI workload must be encrypted, including copies and snapshots. What is the correct approach?",
     "choices": [
-      "Store cardholder data unencrypted in instance store without backups",
-      "Leave volumes unencrypted and encrypt only application log files",
-      "Rely solely on security groups for data-at-rest protection",
-      "Enable EBS encryption with KMS so snapshots and volumes derived from them stay encrypted"
+      "Cardholder data kept in unencrypted instance store",
+      "Unencrypted volumes, with encryption limited to log files",
+      "Security groups as the data-at-rest control",
+      "EBS encryption with KMS for volumes and their snapshots"
     ],
     "answer": 3,
-    "explanation": "Store cardholder data unencrypted in instance store without backups \u2014 Incorrect. Unencrypted instance store fails both encryption and durability needs.\nLeave volumes unencrypted and encrypt only application log files \u2014 Incorrect. Encrypting only logs leaves primary data unprotected.\nRely solely on security groups for data-at-rest protection \u2014 Incorrect. Security groups filter network traffic, not disk encryption.\nEnable EBS encryption with KMS so snapshots and volumes derived from them stay encrypted \u2014 Correct. EBS encryption with KMS covers volumes and resulting snapshots.",
+    "explanation": "Cardholder data kept in unencrypted instance store \u2014 Incorrect. Unencrypted instance store fails both encryption and durability needs.\nUnencrypted volumes, with encryption limited to log files \u2014 Incorrect. Encrypting only logs leaves primary data unprotected.\nSecurity groups as the data-at-rest control \u2014 Incorrect. Security groups filter network traffic, not disk encryption.\nEBS encryption with KMS for volumes and their snapshots \u2014 Correct. EBS encryption with KMS covers volumes and resulting snapshots.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html",
       "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
     ],
-    "services": ["Amazon EBS","Amazon VPC","AWS Key Management Service"],
+    "services": ["Amazon EBS", "Amazon VPC", "AWS Key Management Service"],
     "difficulty": "easy"
   },
   {
@@ -46447,18 +46487,18 @@
     "prompt": "An architecture must continue serving read traffic if the primary database AZ fails, with minimal RPO for Aurora. What helps?",
     "choices": [
       "A weekly filesystem copy on a USB drive",
-      "Aurora with replicas and Multi-AZ storage architecture",
-      "Stopping automated backups to save cost",
-      "One RDS single-AZ instance without backups"
+      "Aurora with replicas and Multi-AZ storage",
+      "Automated backups turned off to reduce cost",
+      "One RDS instance in a single Availability Zone"
     ],
     "answer": 1,
-    "explanation": "A weekly filesystem copy on a USB drive \u2014 Incorrect. USB copies are not automated multi-AZ DR.\nAurora with replicas and Multi-AZ storage architecture \u2014 Correct. Aurora replicates across AZs and supports reader endpoints for resilience.\nStopping automated backups to save cost \u2014 Incorrect. Disabling backups increases RPO risk.\nOne RDS single-AZ instance without backups \u2014 Incorrect. Single-AZ without backups is fragile.",
+    "explanation": "A weekly filesystem copy on a USB drive \u2014 Incorrect. USB copies are not automated multi-AZ DR.\nAurora with replicas and Multi-AZ storage \u2014 Correct. Aurora replicates across AZs and supports reader endpoints for resilience.\nAutomated backups turned off to reduce cost \u2014 Incorrect. Disabling backups increases RPO risk.\nOne RDS instance in a single Availability Zone \u2014 Incorrect. Single-AZ without backups is fragile.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html",
       "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
     ],
-    "services": ["Amazon Aurora","Amazon RDS"],
+    "services": ["Amazon Aurora", "Amazon RDS"],
     "difficulty": "medium"
   },
   {
@@ -46502,13 +46542,13 @@
     },
     "prompt": "Which pattern reduces blast radius when deploying a bad application version?",
     "choices": [
-      "Disabling load balancer health checks during deploy",
-      "Updating all production instances simultaneously with no health gate",
-      "Deploying only on Fridays without monitoring",
-      "Rolling or blue/green deployments with health checks and automatic rollback signals"
+      "Load balancer health checks disabled for the duration of the deploy",
+      "Every production instance updated in the same change window",
+      "A Friday deploy window and a dashboard left closed",
+      "Rolling or blue/green deploys with health checks and rollback"
     ],
     "answer": 3,
-    "explanation": "Disabling load balancer health checks during deploy \u2014 Incorrect. Health checks are the gate that detect bad versions.\nUpdating all production instances simultaneously with no health gate \u2014 Incorrect. Big-bang deploys risk total outage.\nDeploying only on Fridays without monitoring \u2014 Incorrect. Calendar-based deploys without monitoring ignore safety.\nRolling or blue/green deployments with health checks and automatic rollback signals \u2014 Correct. Incremental or blue/green deploys limit exposure and allow rollback.",
+    "explanation": "Load balancer health checks disabled for the duration of the deploy \u2014 Incorrect. Health checks are the gate that detect bad versions.\nEvery production instance updated in the same change window \u2014 Incorrect. Big-bang deploys risk total outage.\nA Friday deploy window and a dashboard left closed \u2014 Incorrect. Calendar-based deploys without monitoring ignore safety.\nRolling or blue/green deploys with health checks and rollback \u2014 Correct. Incremental or blue/green deploys limit exposure and allow rollback.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
@@ -46586,19 +46626,19 @@
     },
     "prompt": "CloudWatch alarms should page operators when 5xx rates exceed a threshold on an ALB. What is required?",
     "choices": [
-      "Only monthly manual log reading",
-      "No metrics and hope users email support",
-      "Metric alarms on ALB 5xx metrics with SNS notifications",
-      "Deleting access logs to save storage"
+      "A monthly manual review of the load balancer access logs",
+      "User email as the signal for errors",
+      "ALB 5xx metric alarms with SNS notifications",
+      "Access logs deleted to reduce stored bytes"
     ],
     "answer": 2,
-    "explanation": "Only monthly manual log reading \u2014 Incorrect. Monthly reviews miss real-time incidents.\nNo metrics and hope users email support \u2014 Incorrect. User email is too slow as the only signal.\nMetric alarms on ALB 5xx metrics with SNS notifications \u2014 Correct. Alarms on ALB metrics with SNS enable timely response.\nDeleting access logs to save storage \u2014 Incorrect. Deleting logs removes forensic evidence.",
+    "explanation": "A monthly manual review of the load balancer access logs \u2014 Incorrect. Monthly reviews miss real-time incidents.\nUser email as the signal for errors \u2014 Incorrect. User email is too slow as the only signal.\nALB 5xx metric alarms with SNS notifications \u2014 Correct. Alarms on ALB metrics with SNS enable timely response.\nAccess logs deleted to reduce stored bytes \u2014 Incorrect. Deleting logs removes forensic evidence.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
     ],
-    "services": ["Amazon CloudWatch","Elastic Load Balancing","Amazon SNS"],
+    "services": ["Amazon CloudWatch", "Elastic Load Balancing", "Amazon SNS"],
     "difficulty": "easy"
   },
   {
@@ -46698,13 +46738,13 @@
     },
     "prompt": "One hostname must send /api traffic to the order service and /images traffic to the media service, and it must terminate HTTPS. Which load balancer fits?",
     "choices": [
-      "A Network Load Balancer, because it selects a target group from the URL path.",
-      "An Application Load Balancer with a listener rule for each path and a target group for each service.",
-      "Two public IP addresses, with the client choosing the service.",
-      "AWS WAF with no load balancer in front of the services."
+      "A Network Load Balancer selecting the target from the URL path",
+      "An Application Load Balancer with a path rule per service",
+      "Two public IP addresses chosen by the client",
+      "AWS WAF sitting directly on the two services"
     ],
     "answer": 1,
-    "explanation": "A Network Load Balancer, because it selects a target group from the URL path. — Incorrect. A Network Load Balancer forwards TCP or UDP. It does not route by URL path or terminate HTTP path rules.\nAn Application Load Balancer with a listener rule for each path and a target group for each service. — Correct. An Application Load Balancer terminates HTTPS and can send each path to a different target group.\nTwo public IP addresses, with the client choosing the service. — Incorrect. Asking the client to pick an IP removes the single hostname and the path routing.\nAWS WAF with no load balancer in front of the services. — Incorrect. WAF filters requests. It does not balance them across the two services.",
+    "explanation": "A Network Load Balancer selecting the target from the URL path \u2014 Incorrect. A Network Load Balancer forwards TCP or UDP. It does not route by URL path or terminate HTTP path rules.\nAn Application Load Balancer with a path rule per service \u2014 Correct. An Application Load Balancer terminates HTTPS and can send each path to a different target group.\nTwo public IP addresses chosen by the client \u2014 Incorrect. Asking the client to pick an IP removes the single hostname and the path routing.\nAWS WAF sitting directly on the two services \u2014 Incorrect. WAF filters requests. It does not balance them across the two services.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
@@ -46870,18 +46910,20 @@
     "prompt": "A company wants improved internet user performance to multi-Region applications using anycast IPs and health-aware routing. Which service fits?",
     "choices": [
       "AWS Global Accelerator",
-      "Amazon Macie",
-      "AWS Budgets only",
-      "AWS Artifact only"
+      "Amazon CloudFront distribution",
+      "Amazon Route 53",
+      "AWS PrivateLink"
     ],
     "answer": 0,
-    "explanation": "AWS Global Accelerator \u2014 Correct. Global Accelerator provides static anycast entry points and routes to healthy Region endpoints.\nAmazon Macie \u2014 Incorrect. Macie is data security discovery.\nAWS Budgets only \u2014 Incorrect. Budgets track cost.\nAWS Artifact only \u2014 Incorrect. Artifact provides compliance reports.",
+    "explanation": "AWS Global Accelerator \u2014 Correct. Global Accelerator provides static anycast entry points and sends traffic to healthy Regional endpoints.\nAmazon CloudFront distribution \u2014 Incorrect. A CloudFront distribution caches HTTP. It is not the anycast accelerator for this entry.\nAmazon Route 53 \u2014 Incorrect. Route 53 is DNS. It does not replace the anycast application entry.\nAWS PrivateLink \u2014 Incorrect. PrivateLink is a private service endpoint. It is not the public anycast entry.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
-      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html",
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
     ],
-    "services": ["AWS Global Accelerator","Amazon Macie","AWS Budgets","AWS Artifact"],
+    "services": ["AWS Global Accelerator", "Amazon CloudFront", "Amazon Route 53", "Amazon VPC"],
     "difficulty": "medium"
   },
   {
@@ -47186,13 +47228,13 @@
     },
     "prompt": "CloudFront can reduce origin data transfer and improve performance for global static assets. Why can this lower cost?",
     "choices": [
-      "CloudFront deletes the origin bucket automatically",
-      "CloudFront always increases origin load for cached content",
-      "CloudFront requires disabling TLS which lowers cost",
-      "Edge caching serves repeated requests without refetching the origin each time"
+      "CloudFront deletes the origin bucket as part of caching",
+      "CloudFront raises origin load for cached content",
+      "CloudFront turns off TLS to lower the bill",
+      "Edge cache hits avoid repeat fetches from the origin"
     ],
     "answer": 3,
-    "explanation": "CloudFront deletes the origin bucket automatically — Incorrect. CloudFront does not delete origins.\nCloudFront always increases origin load for cached content — Incorrect. Caching reduces, not increases, repeated origin load.\nCloudFront requires disabling TLS which lowers cost — Incorrect. TLS remains standard; it is not disabled for savings.\nEdge caching serves repeated requests without refetching the origin each time — Correct. Cache hits avoid repeated origin fetches and associated data transfer.",
+    "explanation": "CloudFront deletes the origin bucket as part of caching \u2014 Incorrect. CloudFront does not delete origins.\nCloudFront raises origin load for cached content \u2014 Incorrect. Caching reduces, not increases, repeated origin load.\nCloudFront turns off TLS to lower the bill \u2014 Incorrect. TLS remains standard; it is not disabled for savings.\nEdge cache hits avoid repeat fetches from the origin \u2014 Correct. Cache hits avoid repeated origin fetches and associated data transfer.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
@@ -47278,13 +47320,13 @@
     },
     "prompt": "Idle load balancers and unattached Elastic IPs appear in a cost review. What should operators do?",
     "choices": [
-      "Create more unused EIPs for future unknown projects immediately",
-      "Ignore idle resources because they never incur charges",
-      "Remove or release unused networking resources after confirming they are not required",
-      "Attach every idle EIP to random instances without need"
+      "Create additional unused Elastic IPs for unspecified later projects",
+      "Leave the idle load balancers and Elastic IPs in place",
+      "Release unused Elastic IPs and idle load balancers",
+      "Attach idle Elastic IPs to arbitrary stopped instances"
     ],
     "answer": 2,
-    "explanation": "Create more unused EIPs for future unknown projects immediately \u2014 Incorrect. Creating more unused resources increases waste.\nIgnore idle resources because they never incur charges \u2014 Incorrect. They do incur charges when idle/unattached.\nRemove or release unused networking resources after confirming they are not required \u2014 Correct. Idle ELBs and unattached EIPs incur charges; reclaim them.\nAttach every idle EIP to random instances without need \u2014 Incorrect. Random attachments do not equal intentional design.",
+    "explanation": "Create additional unused Elastic IPs for unspecified later projects \u2014 Incorrect. Creating more unused resources increases waste.\nLeave the idle load balancers and Elastic IPs in place \u2014 Incorrect. They do incur charges when idle/unattached.\nRelease unused Elastic IPs and idle load balancers \u2014 Correct. Idle ELBs and unattached EIPs incur charges; reclaim them.\nAttach idle Elastic IPs to arbitrary stopped instances \u2014 Incorrect. Random attachments do not equal intentional design.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
@@ -47306,19 +47348,19 @@
     },
     "prompt": "A stateful production database cannot tolerate Spot interruption. Which purchase option is appropriate for the primary instance?",
     "choices": [
-      "Shared student lab credits as the only DR plan",
-      "Only Spot without snapshots or Multi-AZ",
-      "No backups and the smallest burstable size regardless of load",
-      "On-Demand or Reserved/Savings Plan capacity for the primary, not sole Spot"
+      "Shared student lab credits treated as the production recovery plan",
+      "Spot capacity as the primary database",
+      "The smallest burstable size and backups turned off",
+      "On-Demand or a Savings Plan for the primary database"
     ],
     "answer": 3,
-    "explanation": "Shared student lab credits as the only DR plan \u2014 Incorrect. Lab credits are not a production DR strategy.\nOnly Spot without snapshots or Multi-AZ \u2014 Incorrect. Spot-only primary DBs risk sudden stop without careful architecture.\nNo backups and the smallest burstable size regardless of load \u2014 Incorrect. Undersizing and skipping backups invite outages.\nOn-Demand or Reserved/Savings Plan capacity for the primary, not sole Spot \u2014 Correct. Stable databases need interruption-resistant capacity; Spot is for flexible work.",
+    "explanation": "Shared student lab credits treated as the production recovery plan \u2014 Incorrect. Lab credits are not a production DR strategy.\nSpot capacity as the primary database \u2014 Incorrect. Spot-only primary DBs risk sudden stop without careful architecture.\nThe smallest burstable size and backups turned off \u2014 Incorrect. Undersizing and skipping backups invite outages.\nOn-Demand or a Savings Plan for the primary database \u2014 Correct. Stable databases need interruption-resistant capacity; Spot is for flexible work.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
     ],
-    "services": ["Amazon EC2","Savings Plans"],
+    "services": ["Amazon EC2", "Savings Plans"],
     "difficulty": "medium"
   },
   {
@@ -48180,19 +48222,22 @@
     "prompt": "L7 path-based HTTP + WAF?",
     "choices": [
       "Application Load Balancer",
-      "NLB for path rules",
-      "CLB only modern choice",
-      "DataSync"
+      "Network Load Balancer",
+      "Gateway Load Balancer endpoint",
+      "Classic Load Balancer"
     ],
     "answer": 0,
-    "explanation": "Application Load Balancer \u2014 Correct. ALB is L7 path/host + WAF.\nNLB for path rules \u2014 Incorrect. NLB is L4.\nCLB only modern choice \u2014 Incorrect. CLB is legacy.\nDataSync \u2014 Incorrect. DataSync moves data.",
+    "explanation": "Application Load Balancer \u2014 Correct. An Application Load Balancer routes HTTP by path and host and can have AWS WAF attached.\nNetwork Load Balancer \u2014 Incorrect. A Network Load Balancer routes by port at layer 4. It does not choose a target from the URL path or host AWS WAF.\nGateway Load Balancer endpoint \u2014 Incorrect. A Gateway Load Balancer sends traffic through security appliances. It is not the HTTP path router.\nClassic Load Balancer \u2014 Incorrect. A Classic Load Balancer is the legacy option. It is not the current design for path-based HTTP with AWS WAF.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html",
-      "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+      "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html",
+      "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html"
     ],
     "studyGuideChapter": "ch2",
-    "services": ["AWS WAF","Elastic Load Balancing","AWS DataSync"],
+    "services": ["AWS WAF", "Elastic Load Balancing"],
     "difficulty": "easy"
   },
   {
@@ -48442,20 +48487,22 @@
     },
     "prompt": "Anycast multi-Region entry on AWS backbone?",
     "choices": [
-      "Amazon Macie",
+      "Amazon CloudFront distribution",
       "AWS Global Accelerator",
-      "Detective only",
-      "Snowball Edge as CDN"
+      "Amazon Route 53",
+      "AWS PrivateLink"
     ],
     "answer": 1,
-    "explanation": "Amazon Macie \u2014 Incorrect. Macie is S3 sensitive data.\nAWS Global Accelerator \u2014 Correct. GA provides anycast + healthy Regional endpoints.\nDetective only \u2014 Incorrect. Detective investigates findings.\nSnowball Edge as CDN \u2014 Incorrect. Snowball is offline transfer.",
+    "explanation": "Amazon CloudFront distribution \u2014 Incorrect. CloudFront is the HTTP cache and content distribution service. It is not the static anycast entry for TCP and UDP onto the AWS backbone.\nAWS Global Accelerator \u2014 Correct. Global Accelerator gives static anycast IP addresses and routes traffic onto the AWS backbone to healthy Regional endpoints.\nAmazon Route 53 \u2014 Incorrect. Route 53 answers DNS. It does not provide the anycast application entry this design is asking for.\nAWS PrivateLink \u2014 Incorrect. PrivateLink exposes a service inside a VPC. It is not a multi-Region anycast entry on the public backbone.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
-      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+      "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html",
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
     ],
     "studyGuideChapter": "ch8",
-    "services": ["Amazon Macie","AWS Global Accelerator","Amazon Detective","AWS Snow Family","Amazon S3"],
+    "services": ["Amazon CloudFront", "AWS Global Accelerator", "Amazon Route 53", "Amazon VPC"],
     "difficulty": "easy"
   },
   {
@@ -48618,20 +48665,20 @@
     },
     "prompt": "Prod RDS OLTP purchase posture?",
     "choices": [
-      "Spot only no Multi-AZ/backups",
-      "Disable automated backups for savings",
-      "Always db.t3.micro",
-      "On-Demand/reserved style\u2014not sole Spot"
+      "A db.t3.micro instance chosen for every production environment",
+      "Automated backups disabled on the primary",
+      "Spot capacity as the primary database",
+      "On-Demand or Reserved capacity for the primary"
     ],
     "answer": 3,
-    "explanation": "Spot only no Multi-AZ/backups \u2014 Incorrect. Spot-only primary is unsafe without design.\nDisable automated backups for savings \u2014 Incorrect. Backups are required for prod OLTP.\nAlways db.t3.micro \u2014 Incorrect. Undersizing causes outages.\nOn-Demand/reserved style\u2014not sole Spot \u2014 Correct. OLTP needs interruption-resistant capacity.",
+    "explanation": "A db.t3.micro instance chosen for every production environment \u2014 Incorrect. A db.t3.micro size for every environment ignores the production load. Burstable micro is not the production purchase decision.\nAutomated backups disabled on the primary \u2014 Incorrect. Turning off automated backups removes the recovery points a production OLTP database needs.\nSpot capacity as the primary database \u2014 Incorrect. Spot capacity can be interrupted. It is a poor primary purchase for a production database that must stay up.\nOn-Demand or Reserved capacity for the primary \u2014 Correct. On-Demand or Reserved capacity keeps the primary database running without depending on Spot interruption.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
     ],
     "studyGuideChapter": "ch4",
-    "services": ["Amazon RDS","Amazon EC2"],
+    "services": ["Amazon RDS", "Amazon EC2"],
     "difficulty": "easy"
   },
   {
@@ -48647,20 +48694,20 @@
     },
     "prompt": "Cold S3 objects after 90 days?",
     "choices": [
-      "Lifecycle to IA/Glacier classes",
-      "All Standard forever",
-      "Delete backups no policy",
-      "Laptop archives only"
+      "A lifecycle rule into infrequent or archive classes",
+      "S3 Standard retained for the entire life of every object",
+      "Backups removed from S3 on a fixed date",
+      "Archives copied to a laptop and deleted from S3"
     ],
     "answer": 0,
-    "explanation": "Lifecycle to IA/Glacier classes \u2014 Correct. Lifecycle lowers cold storage cost.\nAll Standard forever \u2014 Incorrect. All Standard overpays.\nDelete backups no policy \u2014 Incorrect. Blind delete risks recovery.\nLaptop archives only \u2014 Incorrect. Laptops are not durable archives.",
+    "explanation": "A lifecycle rule into infrequent or archive classes \u2014 Correct. Lifecycle lowers cold storage cost.\nS3 Standard retained for the entire life of every object \u2014 Incorrect. All Standard overpays.\nBackups removed from S3 on a fixed date \u2014 Incorrect. Blind delete risks recovery.\nArchives copied to a laptop and deleted from S3 \u2014 Incorrect. Laptops are not durable archives.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
     ],
     "studyGuideChapter": "ch6",
-    "services": ["Amazon S3","Amazon S3 Glacier"],
+    "services": ["Amazon S3"],
     "difficulty": "easy"
   },
   {
@@ -48796,13 +48843,13 @@
     },
     "prompt": "Why CloudFront can cut origin transfer cost?",
     "choices": [
-      "Caching permanently off by default",
-      "Edge cache hits avoid repeat origin fetches",
-      "Deletes lifecycle rules",
-      "Must disable TLS to save"
+      "Caching disabled on the distribution by the cache policy",
+      "Edge cache hits that skip repeat origin fetches",
+      "Lifecycle rules removed from the origin",
+      "TLS disabled on the distribution to save money"
     ],
     "answer": 1,
-    "explanation": "Caching permanently off by default — Incorrect. Caching is a primary benefit.\nEdge cache hits avoid repeat origin fetches — Correct. Cache hits reduce origin data transfer.\nDeletes lifecycle rules — Incorrect. CF does not delete lifecycle for savings.\nMust disable TLS to save — Incorrect. TLS stays standard.",
+    "explanation": "Caching disabled on the distribution by the cache policy \u2014 Incorrect. Caching is a primary benefit.\nEdge cache hits that skip repeat origin fetches \u2014 Correct. Cache hits reduce origin data transfer.\nLifecycle rules removed from the origin \u2014 Incorrect. CF does not delete lifecycle for savings.\nTLS disabled on the distribution to save money \u2014 Incorrect. TLS stays standard.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
@@ -49011,13 +49058,13 @@
     },
     "prompt": "A stateful web tier must remain available if an Availability Zone fails. Which design meets this?",
     "choices": [
-      "Run a single large instance in one AZ",
-      "Use only instance store without snapshots in one AZ",
-      "Disable health checks to keep failing targets in service",
-      "Deploy instances across at least two AZs behind an Elastic Load Balancer"
+      "One large instance in a single Availability Zone",
+      "Instance store volumes on one host for the web tier",
+      "Health checks disabled so unhealthy targets remain in service",
+      "Instances in two Availability Zones behind a load balancer"
     ],
     "answer": 3,
-    "explanation": "Run a single large instance in one AZ \u2014 Incorrect. One instance in one AZ fails when that AZ or host fails.\nUse only instance store without snapshots in one AZ \u2014 Incorrect. Instance store in one AZ is neither durable nor multi-AZ.\nDisable health checks to keep failing targets in service \u2014 Incorrect. Health checks must remove bad targets; disabling them harms availability.\nDeploy instances across at least two AZs behind an Elastic Load Balancer \u2014 Correct. Multi-AZ with load balancing removes a single AZ as a single point of failure.",
+    "explanation": "One large instance in a single Availability Zone \u2014 Incorrect. One instance in one AZ fails when that AZ or host fails.\nInstance store volumes on one host for the web tier \u2014 Incorrect. Instance store in one AZ is neither durable nor multi-AZ.\nHealth checks disabled so unhealthy targets remain in service \u2014 Incorrect. Health checks must remove bad targets; disabling them harms availability.\nInstances in two Availability Zones behind a load balancer \u2014 Correct. Multi-AZ with load balancing removes a single AZ as a single point of failure.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html",
@@ -49040,13 +49087,13 @@
     },
     "prompt": "App instances in private subnets must pull patches from the internet without accepting inbound internet connections. Which pattern is standard?",
     "choices": [
-      "NAT gateway in a public subnet with a default route from private subnets to the NAT",
-      "Attach an internet gateway as the default route for private-only instances",
-      "Assign public IPs and open SSH from 0.0.0.0/0 to each private instance",
-      "Deny all egress in the network ACL permanently"
+      "A NAT gateway in a public subnet, with private default routes",
+      "An internet gateway as the default route for the private subnets",
+      "SSH from the internet opened on the application instances",
+      "A network ACL that denies egress on the private subnets"
     ],
     "answer": 0,
-    "explanation": "NAT gateway in a public subnet with a default route from private subnets to the NAT \u2014 Correct. NAT provides outbound-initiated access while instances stay private.\nAttach an internet gateway as the default route for private-only instances \u2014 Incorrect. Private-only hosts should not use IGW default routes.\nAssign public IPs and open SSH from 0.0.0.0/0 to each private instance \u2014 Incorrect. Public IPs plus open SSH defeat private tier design.\nDeny all egress in the network ACL permanently \u2014 Incorrect. Blocking all egress breaks patching and updates.",
+    "explanation": "A NAT gateway in a public subnet, with private default routes \u2014 Correct. NAT provides outbound-initiated access while instances stay private.\nAn internet gateway as the default route for the private subnets \u2014 Incorrect. Private-only hosts should not use IGW default routes.\nSSH from the internet opened on the application instances \u2014 Incorrect. Public IPs plus open SSH defeat private tier design.\nA network ACL that denies egress on the private subnets \u2014 Incorrect. Blocking all egress breaks patching and updates.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
@@ -49158,20 +49205,20 @@
     },
     "prompt": "EC2 workers must read one DynamoDB table without embedding static access keys. What is the correct credential pattern?",
     "choices": [
-      "An instance profile role with least-privilege DynamoDB permissions",
-      "IAM user access keys baked into the AMI",
-      "Account root keys in environment files on disk",
-      "A publicly writable DynamoDB table with no authentication"
+      "An instance profile role limited to that DynamoDB table",
+      "IAM user access keys baked into the instance AMI",
+      "Account root access keys stored in files on the instance",
+      "A DynamoDB resource policy that allows anonymous reads"
     ],
     "answer": 0,
-    "explanation": "An instance profile role with least-privilege DynamoDB permissions \u2014 Correct. Instance profiles provide temporary role credentials.\nIAM user access keys baked into the AMI \u2014 Incorrect. Static keys in AMIs leak and rotate poorly.\nAccount root keys in environment files on disk \u2014 Incorrect. Root keys are not for applications.\nA publicly writable DynamoDB table with no authentication \u2014 Incorrect. Public unauthenticated tables fail security requirements.",
+    "explanation": "An instance profile role limited to that DynamoDB table \u2014 Correct. Instance profiles provide temporary role credentials.\nIAM user access keys baked into the instance AMI \u2014 Incorrect. Static keys in AMIs leak and rotate poorly.\nAccount root access keys stored in files on the instance \u2014 Incorrect. Root keys are not for applications.\nA DynamoDB resource policy that allows anonymous reads \u2014 Incorrect. Public unauthenticated tables fail security requirements.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
       "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/access-control-overview.html"
     ],
     "chapterId": "ch05",
-    "services": ["Amazon EC2","Amazon DynamoDB","AWS Identity and Access Management"],
+    "services": ["Amazon EC2", "Amazon DynamoDB", "AWS Identity and Access Management"],
     "difficulty": "easy"
   },
   {
@@ -49217,20 +49264,20 @@
     },
     "prompt": "A media archive needs high durability, HTTP access, and lifecycle movement from frequent to rare access. Which primary store fits?",
     "choices": [
-      "A single EBS volume attached to one instance as the only copy",
-      "Instance store on one host",
-      "Amazon S3 with lifecycle rules to colder classes as objects age",
-      "Local laptop disks as the system of record"
+      "One EBS volume attached to a single instance as the archive",
+      "Instance store on the archive host",
+      "Amazon S3 with lifecycle rules toward colder classes",
+      "Laptop disks kept as the system of record"
     ],
     "answer": 2,
-    "explanation": "A single EBS volume attached to one instance as the only copy \u2014 Incorrect. Single EBS volumes are AZ-scoped and not multi-client object stores.\nInstance store on one host \u2014 Incorrect. Instance store is ephemeral.\nAmazon S3 with lifecycle rules to colder classes as objects age \u2014 Correct. S3 provides durable object storage with lifecycle tiering.\nLocal laptop disks as the system of record \u2014 Incorrect. Laptops are not durable enterprise archives.",
+    "explanation": "One EBS volume attached to a single instance as the archive \u2014 Incorrect. Single EBS volumes are AZ-scoped and not multi-client object stores.\nInstance store on the archive host \u2014 Incorrect. Instance store is ephemeral.\nAmazon S3 with lifecycle rules toward colder classes \u2014 Correct. S3 provides durable object storage with lifecycle tiering.\nLaptop disks kept as the system of record \u2014 Incorrect. Laptops are not durable enterprise archives.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
     ],
     "chapterId": "ch06",
-    "services": ["Amazon EBS","Amazon S3"],
+    "services": ["Amazon EBS", "Amazon S3"],
     "difficulty": "medium"
   },
   {
@@ -49364,20 +49411,20 @@
     },
     "prompt": "Popular downloadable objects cause repeated origin GETs and rising data transfer. How does CloudFront help performance and often cost?",
     "choices": [
-      "CloudFront always disables caching permanently by default",
-      "CloudFront deletes S3 lifecycle rules automatically",
-      "TLS must be disabled to save money",
-      "Edge caches satisfy repeat viewers without refetching the origin every time"
+      "CloudFront caching turned off for this distribution",
+      "CloudFront removing the S3 lifecycle rules",
+      "TLS turned off on the distribution to lower the transfer bill",
+      "Edge caches serving repeat viewers and sparing the origin"
     ],
     "answer": 3,
-    "explanation": "CloudFront always disables caching permanently by default \u2014 Incorrect. Caching is a primary benefit, not permanently disabled.\nCloudFront deletes S3 lifecycle rules automatically \u2014 Incorrect. CloudFront does not remove lifecycle configuration as a cost feature.\nTLS must be disabled to save money \u2014 Incorrect. TLS remains standard for public HTTPS distributions.\nEdge caches satisfy repeat viewers without refetching the origin every time \u2014 Correct. Cache hits reduce origin load and repeated data transfer.",
+    "explanation": "CloudFront caching turned off for this distribution \u2014 Incorrect. Caching is a primary benefit, not permanently disabled.\nCloudFront removing the S3 lifecycle rules \u2014 Incorrect. CloudFront does not remove lifecycle configuration as a cost feature.\nTLS turned off on the distribution to lower the transfer bill \u2014 Incorrect. TLS remains standard for public HTTPS distributions.\nEdge caches serving repeat viewers and sparing the origin \u2014 Correct. Cache hits reduce origin load and repeated data transfer.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
       "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html"
     ],
     "chapterId": "ch08",
-    "services": ["Amazon CloudFront","Amazon S3"],
+    "services": ["Amazon CloudFront", "Amazon S3"],
     "difficulty": "medium"
   },
   {
@@ -49599,20 +49646,20 @@
     },
     "prompt": "Member accounts must be blocked from leaving the organization or disabling critical security services except a break-glass security account. Which control enforces this centrally?",
     "choices": [
-      "A single security group rule in one VPC",
-      "S3 Object Lock on unrelated application buckets",
-      "Closing the billing console UI",
-      "Service control policies (SCPs) in AWS Organizations"
+      "A security group rule in the production VPC",
+      "S3 Object Lock enabled on the application data buckets",
+      "The billing console closed for member accounts",
+      "Service control policies for AWS Organizations"
     ],
     "answer": 3,
-    "explanation": "A single security group rule in one VPC \u2014 Incorrect. Security groups filter network traffic only.\nS3 Object Lock on unrelated application buckets \u2014 Incorrect. Object Lock is for object retention.\nClosing the billing console UI \u2014 Incorrect. Billing UI access is unrelated to service API guardrails.\nService control policies (SCPs) in AWS Organizations \u2014 Correct. SCPs set permission guardrails across member accounts.",
+    "explanation": "A security group rule in the production VPC \u2014 Incorrect. Security groups filter network traffic only.\nS3 Object Lock enabled on the application data buckets \u2014 Incorrect. Object Lock is for object retention.\nThe billing console closed for member accounts \u2014 Incorrect. Billing UI access is unrelated to service API guardrails.\nService control policies for AWS Organizations \u2014 Correct. SCPs set permission guardrails across member accounts.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
       "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
     ],
     "chapterId": "ch12",
-    "services": ["Amazon VPC","Amazon S3","AWS Organizations"],
+    "services": ["Amazon VPC", "Amazon S3", "AWS Organizations"],
     "difficulty": "medium"
   },
   {
@@ -49628,20 +49675,20 @@
     },
     "prompt": "Compute Optimizer reports an EC2 instance is consistently over-provisioned on CPU and memory. What is the cost-aware next step?",
     "choices": [
-      "Rightsize or stop/schedule the instance after validating performance needs",
-      "Immediately double the instance size",
-      "Ignore the recommendation permanently without review",
-      "Move the workload to a larger Dedicated Host without analysis"
+      "Rightsize the instance after checking the performance need",
+      "Double the instance size immediately",
+      "Leave the recommendation unused",
+      "Move the workload onto a larger Dedicated Host before another review"
     ],
     "answer": 0,
-    "explanation": "Rightsize or stop/schedule the instance after validating performance needs \u2014 Correct. Rightsizing or scheduling removes paid idle capacity while preserving required performance.\nImmediately double the instance size \u2014 Incorrect. Upsizing increases cost without evidence of need.\nIgnore the recommendation permanently without review \u2014 Incorrect. Ignoring sustained waste leaves money on the table.\nMove the workload to a larger Dedicated Host without analysis \u2014 Incorrect. Larger hosts need justification.",
+    "explanation": "Rightsize the instance after checking the performance need \u2014 Correct. Rightsizing or scheduling removes paid idle capacity while preserving required performance.\nDouble the instance size immediately \u2014 Incorrect. Upsizing increases cost without evidence of need.\nLeave the recommendation unused \u2014 Incorrect. Ignoring sustained waste leaves money on the table.\nMove the workload onto a larger Dedicated Host before another review \u2014 Incorrect. Larger hosts need justification.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
     ],
     "chapterId": "ch13",
-    "services": ["AWS Compute Optimizer","Amazon EC2"],
+    "services": ["AWS Compute Optimizer", "Amazon EC2"],
     "difficulty": "medium"
   },
   {
@@ -49657,13 +49704,13 @@
     },
     "prompt": "A cost review finds unattached Elastic IPs and idle load balancers in a non-production account. What should operators do?",
     "choices": [
-      "Assume idle networking resources never incur charges",
-      "Release unused Elastic IPs and delete idle load balancers after confirmation they are not required",
-      "Allocate more unused Elastic IPs for unknown future projects immediately",
-      "Attach idle Elastic IPs to random stopped instances without need"
+      "Treat the idle addresses and load balancers as free",
+      "Release unused Elastic IPs and delete idle load balancers",
+      "Allocate additional Elastic IPs now for unspecified future projects",
+      "Attach idle Elastic IPs to stopped instances at random"
     ],
     "answer": 1,
-    "explanation": "Assume idle networking resources never incur charges \u2014 Incorrect. They are not free when idle or unattached.\nRelease unused Elastic IPs and delete idle load balancers after confirmation they are not required \u2014 Correct. Unattached EIPs and idle load balancers incur charges; reclaim them.\nAllocate more unused Elastic IPs for unknown future projects immediately \u2014 Incorrect. Creating more unused resources increases waste.\nAttach idle Elastic IPs to random stopped instances without need \u2014 Incorrect. Random attachments are not intentional design.",
+    "explanation": "Treat the idle addresses and load balancers as free \u2014 Incorrect. They are not free when idle or unattached.\nRelease unused Elastic IPs and delete idle load balancers \u2014 Correct. Unattached EIPs and idle load balancers incur charges; reclaim them.\nAllocate additional Elastic IPs now for unspecified future projects \u2014 Incorrect. Creating more unused resources increases waste.\nAttach idle Elastic IPs to stopped instances at random \u2014 Incorrect. Random attachments are not intentional design.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html",
@@ -49687,18 +49734,18 @@
     },
     "prompt": "A growing company wants one workforce identity plane across many AWS accounts, with temporary credentials and centralized permission assignment. Which baseline fits best?",
     "choices": [
-      "Create unique long-term IAM user access keys in every account and email them to staff",
-      "Share a single IAM user password across accounts for simplicity",
-      "Use AWS IAM Identity Center (successor to AWS SSO) with permission sets mapped to accounts and groups",
-      "Disable MFA organization-wide to reduce login friction"
+      "Long-term IAM user access keys issued in every member account",
+      "One IAM user password shared across the accounts",
+      "IAM Identity Center permission sets for the accounts",
+      "MFA turned off for the organization"
     ],
     "answer": 2,
-    "explanation": "Create unique long-term IAM user access keys in every account and email them to staff \u2014 Incorrect. Long-term keys per account do not scale and are hard to rotate and audit.\nShare a single IAM user password across accounts for simplicity \u2014 Incorrect. Shared passwords violate least privilege and accountability.\nUse AWS IAM Identity Center (successor to AWS SSO) with permission sets mapped to accounts and groups \u2014 Correct. Identity Center centralizes workforce access with temporary sessions via permission sets.\nDisable MFA organization-wide to reduce login friction \u2014 Incorrect. MFA strengthens access control and should not be disabled for convenience.",
+    "explanation": "Long-term IAM user access keys issued in every member account \u2014 Incorrect. Long-term keys per account do not scale and are hard to rotate and audit.\nOne IAM user password shared across the accounts \u2014 Incorrect. Shared passwords violate least privilege and accountability.\nIAM Identity Center permission sets for the accounts \u2014 Correct. Identity Center centralizes workforce access with temporary sessions via permission sets.\nMFA turned off for the organization \u2014 Incorrect. MFA strengthens access control and should not be disabled for convenience.",
     "sourceUrls": [
       "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
       "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
     ],
-    "services": ["AWS Identity and Access Management","AWS IAM Identity Center"],
+    "services": ["AWS Identity and Access Management", "AWS IAM Identity Center"],
     "difficulty": "medium"
   },
   {
@@ -49744,18 +49791,18 @@
     },
     "prompt": "A new EC2 application needs durable block storage with predictable baseline SSD performance and the ability to tune throughput independently of size. The workload is not a latency-sensitive database that needs extreme IOPS. Which EBS choice fits?",
     "choices": [
-      "Instance store only, with no EBS volume, for the only copy of application data",
-      "Magnetic cold HDD as the boot and data volume for a latency-sensitive API",
-      "A single local USB drive attached to one laptop as the shared data plane",
-      "General Purpose SSD (gp3) volumes sized for capacity, with IOPS/throughput set to the measured need"
+      "Instance store as the only copy of the application data",
+      "A magnetic HDD volume chosen for the latency-sensitive API tier",
+      "A USB drive on one laptop as the shared data volume",
+      "gp3 volumes sized for capacity, with throughput set to demand"
     ],
     "answer": 3,
-    "explanation": "Instance store only, with no EBS volume, for the only copy of application data \u2014 Incorrect. Instance store is ephemeral and tied to the host lifetime.\nMagnetic cold HDD as the boot and data volume for a latency-sensitive API \u2014 Incorrect. Cold HDD is for infrequent throughput-oriented workloads, not general low-latency APIs.\nA single local USB drive attached to one laptop as the shared data plane \u2014 Incorrect. Local laptop storage is not durable cloud block storage.\nGeneral Purpose SSD (gp3) volumes sized for capacity, with IOPS/throughput set to the measured need \u2014 Correct. gp3 provides durable SSD performance with independently configurable IOPS and throughput for many general workloads.",
+    "explanation": "Instance store as the only copy of the application data \u2014 Incorrect. Instance store is ephemeral and tied to the host lifetime.\nA magnetic HDD volume chosen for the latency-sensitive API tier \u2014 Incorrect. Cold HDD is for infrequent throughput-oriented workloads, not general low-latency APIs.\nA USB drive on one laptop as the shared data volume \u2014 Incorrect. Local laptop storage is not durable cloud block storage.\ngp3 volumes sized for capacity, with throughput set to demand \u2014 Correct. gp3 provides durable SSD performance with independently configurable IOPS and throughput for many general workloads.",
     "sourceUrls": [
       "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html",
       "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
     ],
-    "services": ["Amazon EC2","Amazon EBS"],
+    "services": ["Amazon EC2", "Amazon EBS"],
     "difficulty": "medium"
   },
   {
@@ -49772,13 +49819,13 @@
     },
     "prompt": "A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers. Which approach fits?",
     "choices": [
-      "Purchase Dedicated Hosts for every burst worker regardless of utilization",
-      "Disable Auto Scaling and run one oversized On-Demand instance continuously",
-      "Use EC2 Spot capacity for the interruption-tolerant workers, with On-Demand or diversified capacity as a fallback path",
-      "Buy a Compute Savings Plan sized to the peak burst so idle interrupted workers are still committed at the peak rate."
+      "Dedicated Hosts purchased for every interruption-tolerant burst worker",
+      "One oversized On-Demand instance and Auto Scaling off",
+      "Spot capacity for the workers, with an On-Demand fallback",
+      "A Compute Savings Plan committed at the peak burst rate"
     ],
     "answer": 2,
-    "explanation": "Purchase Dedicated Hosts for every burst worker regardless of utilization — Incorrect. Dedicated Hosts add tenancy cost and do not use the fact that these workers can be interrupted.\nDisable Auto Scaling and run one oversized On-Demand instance continuously — Incorrect. One always-on On-Demand instance is the steady cost the team is trying to reduce.\nUse EC2 Spot capacity for the interruption-tolerant workers, with On-Demand or diversified capacity as a fallback path — Correct. Spot can lower the price of workers that can be interrupted, with On-Demand or mixed capacity when Spot is not available.\nBuy a Compute Savings Plan sized to the peak burst so idle interrupted workers are still committed at the peak rate. — Incorrect. A commitment sized to the peak pays for capacity the burst does not use all month.",
+    "explanation": "Dedicated Hosts purchased for every interruption-tolerant burst worker \u2014 Incorrect. Dedicated Hosts add tenancy cost and do not use the fact that these workers can be interrupted.\nOne oversized On-Demand instance and Auto Scaling off \u2014 Incorrect. One always-on On-Demand instance is the steady cost the team is trying to reduce.\nSpot capacity for the workers, with an On-Demand fallback \u2014 Correct. Spot can lower the price of workers that can be interrupted, with On-Demand or mixed capacity when Spot is not available.\nA Compute Savings Plan committed at the peak burst rate \u2014 Incorrect. A commitment sized to the peak pays for capacity the burst does not use all month.",
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
@@ -49832,18 +49879,18 @@
     },
     "prompt": "A three-tier application needs separate public ingress and private application subnets and must survive an Availability Zone impairment. Which VPC layout meets the requirement?",
     "choices": [
-      "One public subnet in a single AZ holding every tier, including databases",
-      "Private subnets only, with no path for a load balancer or controlled ingress",
-      "Public and private subnets in at least two AZs, with the load balancer spanning the public subnets and app tiers in private subnets",
-      "A single private subnet in one AZ with an internet gateway attached directly to every private instance"
+      "One public subnet holding the web, app, and database tiers",
+      "Private subnets for every tier, including the load balancer",
+      "Public and private subnets in two AZs, with the apps kept private",
+      "One private subnet whose instances use the internet gateway directly"
     ],
     "answer": 2,
-    "explanation": "One public subnet in a single AZ holding every tier, including databases \u2014 Incorrect. One AZ is a single point of failure and co-locating data tiers publicly is poor isolation.\nPrivate subnets only, with no path for a load balancer or controlled ingress \u2014 Incorrect. Public-facing apps still need a designed ingress path such as public subnets for the load balancer.\nPublic and private subnets in at least two AZs, with the load balancer spanning the public subnets and app tiers in private subnets \u2014 Correct. Multi-AZ public/private tiering is the standard HA VPC pattern.\nA single private subnet in one AZ with an internet gateway attached directly to every private instance \u2014 Incorrect. IGW routes on private-only hosts and single-AZ design break isolation and resilience.",
+    "explanation": "One public subnet holding the web, app, and database tiers \u2014 Incorrect. One AZ is a single point of failure and co-locating data tiers publicly is poor isolation.\nPrivate subnets for every tier, including the load balancer \u2014 Incorrect. Public-facing apps still need a designed ingress path such as public subnets for the load balancer.\nPublic and private subnets in two AZs, with the apps kept private \u2014 Correct. Multi-AZ public/private tiering is the standard HA VPC pattern.\nOne private subnet whose instances use the internet gateway directly \u2014 Incorrect. IGW routes on private-only hosts and single-AZ design break isolation and resilience.",
     "sourceUrls": [
       "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-example-private-subnets-nat.html",
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html"
     ],
-    "services": ["Amazon VPC","Elastic Load Balancing"],
+    "services": ["Amazon VPC", "Elastic Load Balancing"],
     "difficulty": "medium"
   },
   {
@@ -49886,13 +49933,13 @@
     ],
     "prompt": "An application writes high-rate sensor readings and queries them by time range. Older readings are read rarely but must stay queryable. Which database fits this pattern at lower operational cost than a general-purpose row store sized for peak ingest?",
     "choices": [
-      "A large provisioned Amazon RDS instance that stores every reading as a row and is sized for peak ingest.",
-      "Amazon Timestream for LiveAnalytics, with recent data in memory and older data moved to the magnetic store.",
-      "A new Amazon DynamoDB table for every minute of readings.",
-      "Amazon ElastiCache as the only durable store for the readings."
+      "A large provisioned Amazon RDS instance that stores every reading",
+      "Amazon Timestream with a memory tier and a magnetic tier",
+      "A new DynamoDB table for each minute of readings",
+      "Amazon ElastiCache as the durable store for the readings"
     ],
     "answer": 1,
-    "explanation": "A large provisioned Amazon RDS instance that stores every reading as a row and is sized for peak ingest. — Incorrect. A row store sized for peak ingest stays large for readings that are rarely read later.\nAmazon Timestream for LiveAnalytics, with recent data in memory and older data moved to the magnetic store. — Correct. Timestream for LiveAnalytics is a time-series database and can move older data to a lower-cost magnetic store under a retention policy.\nA new Amazon DynamoDB table for every minute of readings. — Incorrect. A table per minute multiplies operational overhead and is not a time-series store.\nAmazon ElastiCache as the only durable store for the readings. — Incorrect. ElastiCache is a cache. It is not the durable system of record for the readings.",
+    "explanation": "A large provisioned Amazon RDS instance that stores every reading \u2014 Incorrect. A row store sized for peak ingest stays large for readings that are rarely read later.\nAmazon Timestream with a memory tier and a magnetic tier \u2014 Correct. Timestream for LiveAnalytics is a time-series database and can move older data to a lower-cost magnetic store under a retention policy.\nA new DynamoDB table for each minute of readings \u2014 Incorrect. A table per minute multiplies operational overhead and is not a time-series store.\nAmazon ElastiCache as the durable store for the readings \u2014 Incorrect. ElastiCache is a cache. It is not the durable system of record for the readings.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [

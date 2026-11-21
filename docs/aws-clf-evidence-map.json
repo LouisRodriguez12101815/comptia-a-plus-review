@@ -19718,18 +19718,19 @@
       "topicId": "aws-foundation-cloud-global",
       "prompt": "A workload must remain available if one data center location in a Region fails. Which design is the best starting point?",
       "choices": [
-        "Use a single subnet",
+        "Use one larger EC2 instance in the Region",
         "Use multiple Availability Zones",
-        "Use one edge location",
-        "Use one larger EC2 instance"
+        "Use a single subnet for the application",
+        "Use one edge location for the users"
       ],
       "answer": 1,
-      "explanation": "Multi-AZ design removes a single-AZ failure from the availability plan.",
+      "explanation": "Use one larger EC2 instance in the Region — Incorrect. A larger instance in one place still stops when that location fails.\nUse multiple Availability Zones — Correct. Placing the workload in more than one Availability Zone is the starting design when one location in the Region can fail.\nUse a single subnet for the application — Incorrect. A single subnet stays in one Availability Zone, so it does not remove that location as a failure point.\nUse one edge location for the users — Incorrect. An edge location shortens the path for distant users. It does not keep the regional workload up when one location fails.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
       ],
-      "review": "Existing associated item; no exhaustive fresh option-by-option correctness claim"
+      "review": "Option lines added in the SAA answer-cue rewrite. CLF tags and the answer index are unchanged."
     },
     "q-aws-found-03": {
       "kind": "question",
@@ -19775,18 +19776,19 @@
       "topicId": "aws-foundation-cloud-global",
       "prompt": "Which statement best distinguishes scalability from elasticity?",
       "choices": [
-        "They are identical",
-        "Scalability means disaster recovery",
-        "Elasticity only applies to storage",
-        "Scalability is growth capacity; elasticity is dynamic demand matching"
+        "Scalability and elasticity are two names for disaster recovery",
+        "Scalability is the ability to add capacity over time",
+        "Elasticity is a feature of storage capacity",
+        "Scalability is growth; elasticity matches demand"
       ],
       "answer": 3,
-      "explanation": "Scalability is capacity to handle growth; elasticity emphasizes dynamic adjustment.",
+      "explanation": "Scalability and elasticity are two names for disaster recovery — Incorrect. Scalability and elasticity are related, but they are not two names for disaster recovery.\nScalability is the ability to add capacity over time — Incorrect. Adding capacity over time describes scalability. It leaves out elasticity.\nElasticity is a feature of storage capacity — Incorrect. Elasticity is not limited to storage. Compute and other capacity can change with demand too.\nScalability is growth; elasticity matches demand — Correct. Scalability is the capacity to grow. Elasticity is matching capacity to demand as the load changes.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+        "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html"
       ],
-      "review": "Existing associated item; no exhaustive fresh option-by-option correctness claim"
+      "review": "Option lines added in the SAA answer-cue rewrite. CLF tags and the answer index are unchanged."
     },
     "q-aws-found-06": {
       "kind": "question",
@@ -20041,18 +20043,19 @@
       "topicId": "aws-foundation-network-database",
       "prompt": "Private-subnet IPv4 instances need internet updates and no unsolicited inbound internet connections. Which gateway type fits when the VPC has an internet gateway?",
       "choices": [
-        "Internet gateway without public instance addressing",
-        "Private NAT gateway routed to an internet gateway",
-        "Zonal public NAT gateway with an Elastic IP and appropriate routes",
-        "Egress-only internet gateway for the IPv4 traffic"
+        "Internet gateway on the VPC route tables",
+        "Private NAT gateway toward the internet gateway",
+        "Public NAT gateway with an Elastic IP",
+        "Egress-only internet gateway for this IPv4 path"
       ],
       "answer": 2,
-      "explanation": "Internet gateway without public instance addressing — Incorrect. An internet gateway alone does not give private instances outbound IPv4 without public addresses.\nPrivate NAT gateway routed to an internet gateway — Incorrect. A private NAT gateway is for private connectivity. It is not the internet egress path for these instances.\nZonal public NAT gateway with an Elastic IP and appropriate routes — Correct. A public NAT gateway in a public subnet, with an Elastic IP and routes, gives private instances outbound IPv4 and does not accept unsolicited inbound connections for them.\nEgress-only internet gateway for the IPv4 traffic — Incorrect. An egress-only internet gateway serves IPv6, not this IPv4 path.",
+      "explanation": "Internet gateway on the VPC route tables — Incorrect. An internet gateway alone does not give private instances outbound IPv4 without public addresses.\nPrivate NAT gateway toward the internet gateway — Incorrect. A private NAT gateway is for private connectivity. It is not the internet egress path for these instances.\nPublic NAT gateway with an Elastic IP — Correct. A public NAT gateway in a public subnet, with an Elastic IP and routes, gives private instances outbound IPv4 and does not accept unsolicited inbound connections for them.\nEgress-only internet gateway for this IPv4 path — Incorrect. An egress-only internet gateway serves IPv6, not this IPv4 path.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
       ],
-      "review": "Existing associated item; no exhaustive fresh option-by-option correctness claim"
+      "review": "Option lines added in the SAA answer-cue rewrite. CLF tags and the answer index are unchanged."
     },
     "q-aws-found-20": {
       "kind": "question",
@@ -20060,18 +20063,20 @@
       "topicId": "aws-foundation-network-database",
       "prompt": "Which statement about security groups and network ACLs is correct?",
       "choices": [
-        "Security groups are DNS services",
-        "NACLs attach only to IAM users",
-        "Both are stateless",
-        "Security groups are stateful; NACLs are stateless"
+        "Security groups and network ACLs both track connection state",
+        "Network ACLs track each new connection and security groups do not",
+        "Network ACL rules apply in whatever order a packet arrives",
+        "Security groups track connection state and network ACLs do not"
       ],
       "answer": 3,
-      "explanation": "Security groups are stateful resource-level controls; NACLs are stateless subnet controls.",
+      "explanation": "Security groups and network ACLs both track connection state — Incorrect. Both controls do not track connection state. A security group does. A network ACL does not.\nNetwork ACLs track each new connection and security groups do not — Incorrect. This swaps the two controls. A network ACL does not track connection state, and a security group does.\nNetwork ACL rules apply in whatever order a packet arrives — Incorrect. A network ACL processes its numbered rules in order. It does not apply them in arrival order.\nSecurity groups track connection state and network ACLs do not — Correct. A security group tracks connection state and returns the response traffic. A network ACL does not, so both directions need rules.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"
       ],
-      "review": "Existing associated item; no exhaustive fresh option-by-option correctness claim"
+      "review": "Option lines added in the SAA answer-cue rewrite. CLF tags and the answer index are unchanged."
     },
     "q-aws-found-21": {
       "kind": "question",
@@ -20155,18 +20160,22 @@
       "topicId": "aws-foundation-observability-cost",
       "prompt": "Which service is best for CPU metrics, log streams, alarms, and dashboards?",
       "choices": [
-        "Amazon Route 53",
+        "Amazon Route 53 health checks",
         "Amazon CloudWatch",
         "AWS CloudTrail",
         "AWS Config"
       ],
       "answer": 1,
-      "explanation": "CloudWatch is the primary monitoring/observability service for those needs.",
+      "explanation": "Amazon Route 53 health checks — Incorrect. Route 53 health checks tell you whether an endpoint answers. They are not the service for CPU metrics, log streams, alarms, and dashboards.\nAmazon CloudWatch — Correct. CloudWatch collects metrics and logs and evaluates alarms, and its dashboards show those signals.\nAWS CloudTrail — Incorrect. CloudTrail records API activity. It is not the metrics, log-stream, alarm, and dashboard service.\nAWS Config — Incorrect. Config tracks resource configuration. It is not the service for CPU metrics, log streams, alarms, and dashboards.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+        "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html",
+        "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+        "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
       ],
-      "review": "Existing associated item; no exhaustive fresh option-by-option correctness claim"
+      "review": "Option lines added in the SAA answer-cue rewrite. CLF tags and the answer index are unchanged."
     },
     "q-aws-found-26": {
       "kind": "question",
@@ -20212,18 +20221,22 @@
       "topicId": "aws-foundation-observability-cost",
       "prompt": "Which tool should you use first to estimate the monthly price of a planned AWS deployment?",
       "choices": [
-        "Amazon Inspector",
+        "AWS Cost and Usage Report",
         "AWS Pricing Calculator",
-        "AWS CloudTrail",
-        "AWS Cost Explorer"
+        "AWS Cost Explorer",
+        "AWS Cost Categories"
       ],
       "answer": 1,
-      "explanation": "Pricing Calculator estimates planned architecture costs.",
+      "explanation": "AWS Cost and Usage Report — Incorrect. Cost and Usage Reports describe billing data you already have. They do not estimate a deployment you have not launched.\nAWS Pricing Calculator — Correct. Pricing Calculator estimates the monthly cost of a planned architecture before you run it.\nAWS Cost Explorer — Incorrect. Cost Explorer analyzes cost and usage after the account has billing data. It is the wrong first tool for a plan that is not deployed yet.\nAWS Cost Categories — Incorrect. Cost Categories group costs for reporting. They do not estimate a planned deployment.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+        "https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html",
+        "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html",
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cost-categories.html"
       ],
-      "review": "Existing associated item; no exhaustive fresh option-by-option correctness claim"
+      "review": "Option lines added in the SAA answer-cue rewrite. CLF tags and the answer index are unchanged."
     },
     "q-aws-found-29": {
       "kind": "question",
