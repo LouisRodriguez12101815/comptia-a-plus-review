@@ -64,7 +64,7 @@ test("one study record per id, with card, pair, and game-item variants", () => {
   const records = studyRecords();
   const ids = records.map((record) => record.id);
   assert.equal(new Set(ids).size, ids.length);
-  assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 145);
+  assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 150);
   assert.equal(records.filter((record) => record.kind === "pair").length, 33);
   assert.equal(records.some((record) => record.id === "fc-saa-nat-gw"), false);
   assert.ok(records.some((record) => record.kind === "game-item" && record.id === "aws-saa-service-compare/spot"));

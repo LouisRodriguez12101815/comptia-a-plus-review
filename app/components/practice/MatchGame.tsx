@@ -11,8 +11,19 @@ export function MatchGame({ deckId }: { deckId: string }) {
   const t = useTranslations("matchGame");
   const d = useTranslations("drillDecks") as unknown as (key: string) => string;
   const deck = getDeck(deckId)!;
-  const mode = deck.modes[0];
-  const total = itemsForMode(deck, mode).length;
+  const boards = [...new Set(deck.items.map((item) => item.fields.board).filter(Boolean))];
+  const [board, setBoard] = useState(boards[0] ?? "");
+  const [pair, setPair] = useState<"definition" | "acronym">("definition");
+  const mode = pair === "acronym"
+    ? deck.modes.find((item) => item.id === "acronymToExpansion") ?? deck.modes[0]
+    : deck.modes[0];
+  const pool = itemsForMode(deck, mode).filter((item) => {
+    if (!boards.length) return true;
+    if (item.fields.board !== board) return false;
+    if (!item.fields.board) return true;
+    return pair === "acronym" ? item.id.endsWith("-acronym") : item.id.endsWith("-definition");
+  });
+  const total = boards.length ? pool.length : itemsForMode(deck, mode).length;
 
   // Nothing is shuffled until the learner starts, so server and client HTML match.
   const [started, setStarted] = useState(false);
@@ -42,7 +53,7 @@ export function MatchGame({ deckId }: { deckId: string }) {
     setStarted(true);
     setCorrect(0);
     setAttempts(0);
-    loadRound(shuffle(itemsForMode(deck, mode)));
+    loadRound(shuffle(boards.length ? pool : itemsForMode(deck, mode)));
   }
 
   function check(id: string, value: string) {
@@ -98,9 +109,18 @@ export function MatchGame({ deckId }: { deckId: string }) {
       <p className="text-slate-300">{t("intro")}</p>
     </header>
 
+    {boards.length > 0 && <div className="space-y-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Category">
+        {boards.map((name) => <button key={name} type="button" aria-pressed={board === name} onClick={() => { setBoard(name); setStarted(false); }} className={`min-h-11 rounded-full border px-4 text-sm ${board === name ? "border-teal-300 bg-teal-300 font-semibold text-slate-950" : "border-slate-600 text-slate-100"}`}>{name}</button>)}
+      </div>
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Pair">
+        {(["definition", "acronym"] as const).map((kind) => <button key={kind} type="button" aria-pressed={pair === kind} onClick={() => { setPair(kind); setStarted(false); }} className={`min-h-11 rounded-full border px-4 text-sm ${pair === kind ? "border-cyan-300 bg-cyan-300 font-semibold text-slate-950" : "border-slate-600 text-slate-100"}`}>{kind === "definition" ? "Service and definition" : "Acronym and expansion"}</button>)}
+      </div>
+    </div>}
+
     {!started && <section className="space-y-3 rounded-2xl border border-cyan-300/30 bg-slate-900 p-5">
       <p className="text-slate-300">{t("ready", { count: total })}</p>
-      <button type="button" onClick={start} className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950">{t("start")}</button>
+      <button type="button" disabled={total < 1} onClick={start} className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950 disabled:opacity-50">{t("start")}</button>
     </section>}
 
     {started && !allDone && <>
@@ -113,7 +133,7 @@ export function MatchGame({ deckId }: { deckId: string }) {
           {round.map((item) => {
             const done = matched.has(item.id);
             const bad = wrong?.id === item.id;
-            return <button key={item.id} type="button" disabled={done} onClick={() => pickLeft(item.id)} aria-pressed={leftId === item.id} className={`min-h-14 rounded-xl border p-3 text-left font-mono text-sm ${cardState(leftId === item.id, done, bad)}`}>{item.fields[mode.from]}</button>;
+            return <button key={item.id} type="button" disabled={done} onClick={() => pickLeft(item.id)} aria-pressed={leftId === item.id} className={`min-h-14 rounded-xl border p-3 text-left font-mono text-sm ${cardState(leftId === item.id, done, bad)}`}>{item.fields.matchLeft ?? item.fields[mode.from]}</button>;
           })}
         </div>
         <div className="grid gap-3">

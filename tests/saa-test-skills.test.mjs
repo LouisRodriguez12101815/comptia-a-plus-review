@@ -198,7 +198,7 @@ test("the missed list is sure-but-wrong, then other wrong, then lucky guesses", 
 
 test("every SAA drill deck can show a count, its modes, and a saved best", () => {
   const decks = drillDecks.filter((deck) => deck.exam === "saa-c03" && deck.id.startsWith("aws-saa-"));
-  assert.equal(decks.length, 16);
+  assert.equal(decks.length, 17);
   for (const deck of decks) {
     const facts = deckCardFacts(deck, { bestScore: 4, bestStreak: 3 });
     assert.equal(facts.count, deck.items.length);

@@ -8,6 +8,7 @@ import highYieldFill from "../../content/saa-high-yield-fill.json" with { type: 
 import topicDeckSources from "../../content/saa-drill-decks.json" with { type: "json" };
 import pairSources from "../../content/study-pairs.json" with { type: "json" };
 import { corePorts } from "@/lib/practice/ports";
+import { serviceFactDeck } from "@/lib/study/service-facts";
 
 export type DrillItem = {
   /** Explicit primary objective for cross-domain AWS decks. */
@@ -19,6 +20,8 @@ export type DrillItem = {
   hook: string;
   /** Hand-picked wrong answers per target field, used before random ones. */
   wrong?: Record<string, string[]>;
+  /** Extra right answers for one target field, such as a renamed product. */
+  also?: Record<string, string[]>;
   docsUrl?: string;
   /** Checked choices for which-TWO and spot-the-wrong. `correct` marks the keyed set. */
   select?: { text: string; why: string; correct: boolean }[];
@@ -2867,7 +2870,7 @@ function topicDeck(source: (typeof topicDeckSources)[number]): DrillDeck {
 
 const saaTopicDecks = [...topicDeckSources, ...(highYieldFill.drills as typeof topicDeckSources)].map(topicDeck);
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, ...saaTopicDecks, selectDeck("aws-saa-which-two", "Which TWO", "whichTwo", expansion.whichTwo), selectDeck("aws-saa-spot-wrong", "Spot the wrong statement", "spotWrong", expansion.spotWrong), confusionDeck(), awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+export const drillDecks: DrillDeck[] = [serviceFactDeck(), ...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, ...saaTopicDecks, selectDeck("aws-saa-which-two", "Which TWO", "whichTwo", expansion.whichTwo), selectDeck("aws-saa-spot-wrong", "Spot the wrong statement", "spotWrong", expansion.spotWrong), confusionDeck(), awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
@@ -2920,8 +2923,9 @@ export function shuffle<T>(items: T[], random: () => number = Math.random): T[] 
 /** Up to four distinct answer strings: the right one plus wrong ones. */
 export function choicesFor(deck: DrillDeck, mode: DrillMode, item: DrillItem, random: () => number = Math.random): string[] {
   const answer = item.fields[mode.to];
-  const picked = (item.wrong?.[mode.to] ?? []).filter((w) => w !== answer);
-  const pool = shuffle([...new Set(itemsForMode(deck, mode).map((i) => i.fields[mode.to]))].filter((v) => v !== answer && !picked.includes(v)), random);
-  const wrong = [...shuffle(picked, random), ...pool].slice(0, 3);
-  return shuffle([answer, ...wrong], random);
+  const extras = (item.also?.[mode.to] ?? []).filter((value) => value && value !== answer);
+  const picked = (item.wrong?.[mode.to] ?? []).filter((w) => w !== answer && !extras.includes(w));
+  const pool = shuffle([...new Set(itemsForMode(deck, mode).map((i) => i.fields[mode.to]))].filter((v) => v && v !== answer && !picked.includes(v) && !extras.includes(v)), random);
+  const wrong = [...shuffle(picked, random), ...pool].slice(0, Math.max(0, 3 - extras.length));
+  return shuffle([answer, ...extras, ...wrong], random);
 }
