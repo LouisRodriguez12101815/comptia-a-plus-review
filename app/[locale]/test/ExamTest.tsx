@@ -969,7 +969,13 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                   <p className="mt-2 text-sm text-slate-400"><ExplanationText text={q.explanation} /></p>
                   <div className="mt-2 flex flex-wrap gap-x-4">
                     {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("studyTopic", { title: topic.title })}</Link>}
-                    <button type="button" onClick={() => reportContent(`Question ${q.id}: ${q.prompt}`, "Wrong answer key")} className="inline-flex min-h-11 items-center text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200">{t("disputeQuestion")}</button>
+                    <button type="button" onClick={() => {
+                      const order = orders[q.id] ?? q.choices.map((_, choice) => choice);
+                      const pick = r?.answer;
+                      const selected = (pick === undefined ? [] : Array.isArray(pick) ? pick : [pick]).map((choice) => q.choices[choice]).filter((choice) => Boolean(choice));
+                      const keyed = (Array.isArray(q.answer) ? q.answer : [q.answer]).map((choice) => q.choices[choice]);
+                      reportContent(`Question ${q.id}: ${q.prompt}`, "Wrong answer key", { id: q.id, choiceOrder: order.map((choice) => q.choices[choice]), selected, keyed });
+                    }} className="inline-flex min-h-11 items-center text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200">{t("disputeQuestion")}</button>
                   </div>
                 </li>
               );

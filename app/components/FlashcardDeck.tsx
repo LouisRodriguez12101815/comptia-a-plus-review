@@ -79,6 +79,12 @@ export function FlashcardDeck({
   const [draft, setDraft] = useState("");
   const [checked, setChecked] = useState<"match" | "miss" | null>(null);
   const [matchPick, setMatchPick] = useState<number | null>(null);
+  const [matchChecked, setMatchChecked] = useState(false);
+  const [results, setResults] = useState<{ id: string; prompt: string; yours: string; correct: string; explanation: string; docsUrl?: string; ok: boolean }[]>([]);
+  const [showSummary, setShowSummary] = useState(false);
+  const [missedOnly, setMissedOnly] = useState(false);
+  const [lookback, setLookback] = useState<number | null>(null);
+  const [retryIds, setRetryIds] = useState<string[] | null>(null);
 
   useEffect(() => {
     if (initialExam === "saa-c03" || initialExam === "clf-c02") setFocus(initialExam);
@@ -107,7 +113,10 @@ export function FlashcardDeck({
   );
   const currentIndex = cards.length ? index % cards.length : 0;
   const card = cards[currentIndex];
-  const pair = pairs.length ? pairs[index % pairs.length] : undefined;
+  const roundCards = retryIds ? cards.filter((item) => retryIds.includes(item.id)) : cards;
+  const roundPairs = retryIds ? pairs.filter((item) => retryIds.includes(item.id)) : pairs;
+  const roundCard = roundCards.length ? roundCards[index % roundCards.length] : undefined;
+  const roundPair = roundPairs.length ? roundPairs[index % roundPairs.length] : undefined;
   const knownCount = cards.filter((item) => progress.knownCards[item.id]).length;
   const drillId = activeFocus === "saa-c03"
     ? "aws-saa-service-compare"
@@ -122,6 +131,12 @@ export function FlashcardDeck({
     setDraft("");
     setChecked(null);
     setMatchPick(null);
+    setMatchChecked(false);
+    setResults([]);
+    setShowSummary(false);
+    setMissedOnly(false);
+    setLookback(null);
+    setRetryIds(null);
   }
 
   function changeFocus(nextFocus: StudyFocus) {
@@ -137,6 +152,8 @@ export function FlashcardDeck({
     setDraft("");
     setChecked(null);
     setMatchPick(null);
+    setMatchChecked(false);
+    setLookback(null);
     if (topicId === DUE_MODE && mode !== "match") {
       setOrder((prev) => prev.filter((id) => id !== cardId));
     } else {
@@ -147,6 +164,18 @@ export function FlashcardDeck({
   function grade(id: string, gradeValue: ReviewGrade) {
     rateCard(id, gradeValue);
     advance(id);
+  }
+
+  function noteResult(result: { id: string; prompt: string; yours: string; correct: string; explanation: string; docsUrl?: string; ok: boolean }) {
+    const next = [...results, result];
+    setResults(next);
+    const total = mode === "match" ? roundPairs.length : roundCards.length;
+    if (next.length >= total) {
+      rateCard(result.id, result.ok ? "good" : "again");
+      setShowSummary(true);
+      return;
+    }
+    grade(result.id, result.ok ? "good" : "again");
   }
 
   const gradeButtons = (id: string) => (
@@ -274,17 +303,74 @@ export function FlashcardDeck({
         )}
       </div>
 
-      {mode === "match" ? (
-        !pair ? (
+      {showSummary ? (
+        <section className="space-y-4 rounded-2xl border border-teal-700 bg-slate-900 p-5">
+          <h2 className="text-xl font-semibold text-white">{t("summary")}</h2>
+          <label className="flex min-h-11 items-center gap-2 text-sm text-slate-200">
+            <input type="checkbox" checked={missedOnly} onChange={(event) => setMissedOnly(event.target.checked)} />
+            {t("missedOnly")}
+          </label>
+          <ol className="space-y-3">
+            {results.filter((result) => !missedOnly || !result.ok).map((result) => (
+              <li key={result.id} className="rounded-xl border border-slate-700 p-3">
+                <p className="font-medium text-white">{result.prompt}</p>
+                <p className="text-sm text-slate-200">{t("yourAnswer", { answer: result.yours || "—" })}</p>
+                <p className="text-sm text-teal-100">{t("correctAnswer", { answer: result.correct })}</p>
+                <p className="mt-1 text-sm text-slate-300">{result.explanation}</p>
+                {result.docsUrl ? <a href={result.docsUrl} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline">{t("docs")}</a> : null}
+              </li>
+            ))}
+          </ol>
+          <div className="sticky bottom-0 flex flex-wrap gap-2 bg-slate-900 py-2">
+            <button type="button" className="min-h-11 rounded-xl bg-teal-500 px-4 font-semibold text-slate-950" onClick={() => { setRetryIds(null); setResults([]); setShowSummary(false); setIndex(0); setChecked(null); setMatchChecked(false); setMatchPick(null); setDraft(""); }}>{t("playAgain")}</button>
+            <button type="button" className="min-h-11 rounded-xl border border-slate-600 px-4 text-slate-100" disabled={results.every((result) => result.ok)} onClick={() => { setRetryIds(results.filter((result) => !result.ok).map((result) => result.id)); setResults([]); setShowSummary(false); setIndex(0); setChecked(null); setMatchChecked(false); setMatchPick(null); setDraft(""); }}>{t("retryMissed")}</button>
+            <Link href="/flashcards?exam=saa-c03&topic=due" className="inline-flex min-h-11 items-center rounded-xl border border-slate-600 px-4 text-sm text-slate-100">{t("reviewMissedCards")}</Link>
+          </div>
+        </section>
+      ) : lookback !== null && results[lookback] ? (
+        <section className="space-y-3 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+          <p className="font-medium text-white">{results[lookback].prompt}</p>
+          <p className="text-sm text-slate-200">{t("yourAnswer", { answer: results[lookback].yours || "—" })}</p>
+          <p className="text-sm text-teal-100">{t("correctAnswer", { answer: results[lookback].correct })}</p>
+          <p className="text-sm text-slate-300">{results[lookback].explanation}</p>
+          <div className="sticky bottom-0 flex gap-2 bg-slate-900 py-2">
+            <button type="button" className="min-h-11 rounded-xl border border-slate-600 px-4" disabled={lookback === 0} onClick={() => setLookback((value) => (value ?? 1) - 1)}>{t("backResult")}</button>
+            <button type="button" autoFocus className="min-h-11 rounded-xl bg-teal-500 px-4 font-semibold text-slate-950" onClick={() => setLookback((value) => value !== null && value + 1 < results.length ? value + 1 : null)}>{t("next")}</button>
+          </div>
+        </section>
+      ) : mode === "match" ? (
+        !roundPair ? (
           <p className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-slate-400">{t("noPairs")}</p>
         ) : (
-          <MatchPair
-            key={`${pair.id}-${index}`}
-            pair={pair}
-            pick={matchPick}
-            onPick={setMatchPick}
-            gradeButtons={gradeButtons(pair.id)}
-          />
+          <>
+            <p className="text-sm text-slate-300">{t("itemProgress", { current: (index % roundPairs.length) + 1, total: roundPairs.length, score: results.filter((result) => result.ok).length })}</p>
+            <div role="progressbar" aria-valuemin={0} aria-valuemax={roundPairs.length} aria-valuenow={results.length} className="h-2 overflow-hidden rounded-full bg-slate-800"><div className="h-full bg-teal-400" style={{ width: `${(100 * results.length) / Math.max(1, roundPairs.length)}%` }} /></div>
+            <MatchPair
+              key={`${roundPair.id}-${index}`}
+              pair={roundPair}
+              pick={matchPick}
+              checked={matchChecked}
+              last={results.length + 1 >= roundPairs.length}
+              onPick={(value) => { setMatchPick(value); setMatchChecked(false); }}
+              onCheck={() => setMatchChecked(true)}
+              onBack={() => setLookback(Math.max(0, results.length - 1))}
+              canBack={results.length > 0}
+              onNext={() => {
+                const asked = seededOrder(roundPair.sides.length, roundPair.id)[0];
+                const side = roundPair.sides[asked];
+                noteResult({
+                  id: roundPair.id,
+                  prompt: side.pickWhen,
+                  yours: matchPick === null ? "" : roundPair.sides[matchPick]?.label ?? "",
+                  correct: side.label,
+                  explanation: roundPair.difference ?? side.pickWhen,
+                  docsUrl: roundPair.docsUrl,
+                  ok: matchPick === asked,
+                });
+              }}
+              gradeButtons={gradeButtons(roundPair.id)}
+            />
+          </>
         )
       ) : !card ? (
         <p className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-slate-400">
@@ -343,19 +429,40 @@ export function FlashcardDeck({
           </div>
         </>
       ) : (
-        <TypedCard
-          card={card}
-          mode={mode}
-          draft={draft}
-          checked={checked}
-          status={t("cardStatus", { current: currentIndex + 1, total: cards.length, known: knownCount })}
-          onDraft={(value) => {
-            setDraft(value);
-            setChecked(null);
-          }}
-          onCheck={() => setChecked(termMatches(draft, mode === "type" ? card : { front: clozeForCard(card).answer }) ? "match" : "miss")}
-          gradeButtons={gradeButtons(card.id)}
-        />
+        <>
+          <p className="text-sm text-slate-300">{t("itemProgress", { current: (roundCards.length ? index % roundCards.length : 0) + 1, total: roundCards.length, score: results.filter((result) => result.ok).length })}</p>
+          <div role="progressbar" aria-valuemin={0} aria-valuemax={Math.max(1, roundCards.length)} aria-valuenow={results.length} className="h-2 overflow-hidden rounded-full bg-slate-800"><div className="h-full bg-teal-400" style={{ width: `${(100 * results.length) / Math.max(1, roundCards.length)}%` }} /></div>
+          <TypedCard
+            card={roundCard ?? card}
+            mode={mode}
+            draft={draft}
+            checked={checked}
+            last={results.length + 1 >= roundCards.length}
+            status={t("cardStatus", { current: (roundCards.length ? index % roundCards.length : 0) + 1, total: roundCards.length, known: knownCount })}
+            onDraft={(value) => {
+              setDraft(value);
+              setChecked(null);
+            }}
+            onCheck={() => setChecked(termMatches(draft, mode === "type" ? (roundCard ?? card) : { front: clozeForCard(roundCard ?? card).answer }) ? "match" : "miss")}
+            onBack={() => setLookback(Math.max(0, results.length - 1))}
+            canBack={results.length > 0}
+            onNext={() => {
+              const currentCard = roundCard ?? card;
+              const cloze = clozeForCard(currentCard);
+              const expected = mode === "type" ? currentCard.front : cloze.answer;
+              noteResult({
+                id: currentCard.id,
+                prompt: mode === "type" ? currentCard.back : cloze.prompt,
+                yours: draft,
+                correct: expected,
+                explanation: currentCard.back,
+                docsUrl: currentCard.docsUrl,
+                ok: checked === "match",
+              });
+            }}
+            gradeButtons={gradeButtons((roundCard ?? card).id)}
+          />
+        </>
       )}
     </div>
   );
@@ -366,18 +473,26 @@ function TypedCard({
   mode,
   draft,
   checked,
+  last,
   status,
   onDraft,
   onCheck,
+  onBack,
+  canBack,
+  onNext,
   gradeButtons,
 }: {
   card: Flashcard;
   mode: "type" | "cloze";
   draft: string;
   checked: "match" | "miss" | null;
+  last: boolean;
   status: string;
   onDraft: (value: string) => void;
   onCheck: () => void;
+  onBack: () => void;
+  canBack: boolean;
+  onNext: () => void;
   gradeButtons: ReactNode;
 }) {
   const t = useTranslations("flashcardDeck");
@@ -406,9 +521,7 @@ function TypedCard({
           autoComplete="off"
         />
       </label>
-      <button type="submit" className="min-h-11 rounded-full bg-teal-500 px-4 py-2 text-sm font-medium text-slate-950">
-        {t("check")}
-      </button>
+      {!checked ? <button type="submit" className="min-h-11 rounded-full bg-teal-500 px-4 py-2 text-sm font-medium text-slate-950">{t("check")}</button> : null}
       {checked && (
         <div className="space-y-3">
           <p className={checked === "match" ? "text-teal-200" : "text-amber-200"}>
@@ -418,6 +531,10 @@ function TypedCard({
           {card.docsUrl && <a href={card.docsUrl} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline">{t("docs")}</a>}
           <p className="text-sm text-slate-400">{t("ratePrompt")}</p>
           {gradeButtons}
+          <div className="sticky bottom-0 flex flex-wrap gap-2 bg-slate-950 py-2">
+            <button type="button" disabled={!canBack} onClick={onBack} className="min-h-11 rounded-full border border-slate-600 px-4 text-sm disabled:opacity-40">{t("backResult")}</button>
+            <button type="button" autoFocus onClick={onNext} className="min-h-11 rounded-full bg-teal-500 px-4 text-sm font-semibold text-slate-950">{last ? t("finish") : t("next")}</button>
+          </div>
         </div>
       )}
     </form>
@@ -427,12 +544,24 @@ function TypedCard({
 function MatchPair({
   pair,
   pick,
+  checked,
+  last,
   onPick,
+  onCheck,
+  onBack,
+  canBack,
+  onNext,
   gradeButtons,
 }: {
   pair: ReturnType<typeof resolvedPairs>[number];
   pick: number | null;
+  checked: boolean;
+  last: boolean;
   onPick: (index: number) => void;
+  onCheck: () => void;
+  onBack: () => void;
+  canBack: boolean;
+  onNext: () => void;
   gradeButtons: ReactNode;
 }) {
   const t = useTranslations("flashcardDeck");
@@ -451,13 +580,15 @@ function MatchPair({
             key={pair.sides[sideIndex].label}
             type="button"
             onClick={() => onPick(sideIndex)}
-            className="min-h-11 rounded-xl border border-slate-600 px-4 py-2 text-left text-slate-100 hover:border-teal-400"
+            disabled={checked}
+            className={`min-h-11 rounded-xl border px-4 py-2 text-left text-slate-100 hover:border-teal-400 ${pick === sideIndex ? "border-teal-300" : "border-slate-600"}`}
           >
             {pair.sides[sideIndex].label}
           </button>
         ))}
       </div>
-      {pickedSide && (
+      {!checked ? <button type="button" disabled={pick === null} onClick={onCheck} className="min-h-11 rounded-full bg-teal-500 px-4 text-sm font-semibold text-slate-950 disabled:opacity-40">{t("check")}</button> : null}
+      {checked && pickedSide && (
         <div className="space-y-3">
           <p className={pick === asked ? "text-teal-200" : "text-amber-200"}>
             {pick === asked ? t("matchCorrect") : t("matchMiss")}
@@ -466,6 +597,10 @@ function MatchPair({
           <a href={pair.docsUrl} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline">{t("docs")}</a>
           <p className="text-sm text-slate-400">{t("ratePrompt")}</p>
           {gradeButtons}
+          <div className="sticky bottom-0 flex flex-wrap gap-2 bg-slate-950 py-2">
+            <button type="button" disabled={!canBack} onClick={onBack} className="min-h-11 rounded-full border border-slate-600 px-4 text-sm disabled:opacity-40">{t("backResult")}</button>
+            <button type="button" autoFocus onClick={onNext} className="min-h-11 rounded-full bg-teal-500 px-4 text-sm font-semibold text-slate-950">{last ? t("finish") : t("next")}</button>
+          </div>
         </div>
       )}
     </div>

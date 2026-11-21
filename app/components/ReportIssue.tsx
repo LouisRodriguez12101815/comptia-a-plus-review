@@ -3,12 +3,12 @@
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { categories, githubIssueUrl, limits, type Category } from "@/lib/report/issue";
+import { categories, githubIssueUrl, limits, type Category, type QuestionReport } from "@/lib/report/issue";
 
 /** Open the report form from anywhere: reportContent("Question q-12: ...") */
 export const REPORT_EVENT = "report-content";
-export function reportContent(item: string, category?: Category) {
-  window.dispatchEvent(new CustomEvent(REPORT_EVENT, { detail: { item, category } }));
+export function reportContent(item: string, category?: Category, question?: QuestionReport) {
+  window.dispatchEvent(new CustomEvent(REPORT_EVENT, { detail: { item, category, question } }));
 }
 
 type Status =
@@ -27,6 +27,7 @@ export function ReportIssue() {
   const openedAt = useRef(0);
   const [category, setCategory] = useState<Category>("Factual error");
   const [item, setItem] = useState("");
+  const [question, setQuestion] = useState<QuestionReport | undefined>();
   const [claim, setClaim] = useState("");
   const [source, setSource] = useState("");
   const [reporter, setReporter] = useState("");
@@ -38,9 +39,10 @@ export function ReportIssue() {
     if (status.kind === "error") alertRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [status]);
 
-  const open = useCallback((prefill?: { item?: string; category?: Category }) => {
+  const open = useCallback((prefill?: { item?: string; category?: Category; question?: QuestionReport }) => {
     const selected = typeof window !== "undefined" ? window.getSelection()?.toString().trim() ?? "" : "";
     setItem((prefill?.item ?? selected).slice(0, limits.item));
+    setQuestion(prefill?.question);
     if (prefill?.category) setCategory(prefill.category);
     setStatus({ kind: "idle" });
     openedAt.current = Date.now();
@@ -55,6 +57,7 @@ export function ReportIssue() {
 
   const reset = () => {
     setItem("");
+    setQuestion(undefined);
     setClaim("");
     setSource("");
     setCategory("Factual error");
@@ -71,6 +74,7 @@ export function ReportIssue() {
       claim,
       source,
       reporter,
+      question,
       website,
       elapsedMs: Date.now() - openedAt.current,
     };

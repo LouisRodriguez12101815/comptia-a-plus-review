@@ -18,6 +18,14 @@ export const categories = [
 
 export type Category = (typeof categories)[number];
 
+/** What was on screen for a question. No name, email, or other personal data. */
+export type QuestionReport = {
+  id: string;
+  choiceOrder: string[];
+  selected: string[];
+  keyed: string[];
+};
+
 export type DisputeReport = {
   category: Category;
   page: string;
@@ -26,6 +34,7 @@ export type DisputeReport = {
   claim: string;
   source: string;
   reporter: string;
+  question?: QuestionReport;
 };
 
 export const limits = { page: 300, pageTitle: 200, item: 600, claim: 4000, source: 1000, reporter: 80 } as const;
@@ -34,6 +43,24 @@ export type ValidationResult = { ok: true; report: DisputeReport } | { ok: false
 
 const clean = (value: unknown, max: number) =>
   typeof value === "string" ? value.replace(/\r\n?/g, "\n").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "").trim().slice(0, max) : "";
+
+function cleanList(value: unknown, maxItems = 12): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, maxItems).map((item) => clean(item, 400)).filter((item) => item.length > 0);
+}
+
+function cleanQuestion(value: unknown): QuestionReport | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const raw = value as Record<string, unknown>;
+  const id = clean(raw.id, 80);
+  if (!id) return undefined;
+  return {
+    id,
+    choiceOrder: cleanList(raw.choiceOrder),
+    selected: cleanList(raw.selected),
+    keyed: cleanList(raw.keyed),
+  };
+}
 
 /**
  * Checks every field and collects every problem, like validate_lead in Python Class 10,
@@ -64,8 +91,13 @@ export function validateReport(input: unknown): ValidationResult {
       claim,
       source: clean(raw.source, limits.source),
       reporter: clean(raw.reporter, limits.reporter),
+      question: cleanQuestion(raw.question),
     },
   };
+}
+
+function plain(text: string): string {
+  return text.replace(/@/g, "@​").replace(/#(\d)/g, "#​$1").replace(/</g, "&lt;");
 }
 
 /** Neutralise markdown that could ping people, close the quote, or inject HTML into the issue. */
@@ -102,6 +134,19 @@ export function issueBody(r: DisputeReport, siteOrigin: string): string {
     "### Source or reference",
     quote(r.source),
     "",
+    ...(r.question
+      ? [
+          "### Question record",
+          `**Question id:** ${plain(r.question.id)}`,
+          "",
+          "**Displayed choice order:**",
+          r.question.choiceOrder.length ? r.question.choiceOrder.map((choice, index) => `${index + 1}. ${plain(choice)}`).join("\n") : "_(not provided)_",
+          "",
+          `**Selected choices:** ${plain(r.question.selected.join(" · ")) || "_(none)_"}`,
+          `**Keyed choices:** ${plain(r.question.keyed.join(" · ")) || "_(none)_"}`,
+          "",
+        ]
+      : []),
     `**Reported by:** ${r.reporter ? quote(r.reporter).slice(2) : "anonymous"}`,
     "",
     "---",
