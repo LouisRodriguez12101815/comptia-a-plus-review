@@ -98,7 +98,8 @@ export function FactDrill({
 
   function pick(choice: string) {
     if (!current || current.select) return;
-    grade(current, choice === current.fields[mode.to], choice);
+    const extras = current.also?.[mode.to] ?? [];
+    grade(current, choice === current.fields[mode.to] || extras.includes(choice), choice);
   }
 
   function toggle(text: string) {
@@ -265,14 +266,14 @@ function Question({
       {!answer && <button type="button" disabled={selected.length !== limit} onClick={onSubmit} className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950 disabled:opacity-50">{t("selectSubmit")}</button>}
     </fieldset> : <div className="grid gap-3 sm:grid-cols-2">
       {choices.map((choice) => {
-        const isAnswer = choice === item.fields[mode.to];
+        const isAnswer = choice === item.fields[mode.to] || (item.also?.[mode.to] ?? []).includes(choice);
         const isPicked = answer?.picked === choice;
         const state = !answer ? "border-slate-600 bg-slate-950 hover:border-cyan-300" : isAnswer ? "border-emerald-400 bg-emerald-950" : isPicked ? "border-rose-400 bg-rose-950" : "border-slate-700 bg-slate-950 opacity-60";
         return <button key={choice} type="button" disabled={!!answer} onClick={() => onPick(choice)} className={`min-h-14 rounded-xl border p-3 text-left ${choice.length > 24 ? "text-sm" : "font-mono text-lg"} ${state}`}>{choice}{answer && isAnswer ? " ✓" : answer && isPicked ? " ✗" : ""}</button>;
       })}
     </div>}
     {answer && <div role="status" className="space-y-2 rounded-xl border border-slate-700 bg-slate-950 p-4">
-      <p className="font-semibold">{answer.correct ? t("right") : t("wrong", { answer: item.select ? keyed.join("; ") : item.fields[mode.to] })}</p>
+      <p className="font-semibold">{answer.correct ? t("right") : t("wrong", { answer: item.select ? keyed.join("; ") : [item.fields[mode.to], ...(item.also?.[mode.to] ?? [])].join(" or ") })}</p>
       <p className="text-sm text-slate-200">{answer.item.detail}</p>
       <p className="text-sm text-cyan-100">{answer.item.hook}</p>
       {answer.item.docsUrl && <a href={answer.item.docsUrl} className="inline-flex min-h-11 items-center text-sm text-cyan-200 underline">{t("docs")}</a>}
