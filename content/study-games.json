@@ -1,0 +1,378 @@
+{
+  "ladders": [
+    {
+      "id": "ladder-dr",
+      "taskId": "2.2",
+      "services": [],
+      "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "questionIds": ["q-saa-arch-16", "q-saa-arch-17"],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "Order these recovery designs from lower cost and slower recovery toward higher cost and faster recovery.",
+      "explanation": "Backup/restore, pilot light, warm standby, and active/active are a usual order of rising cost and faster recovery. The notes give relative tradeoffs, not a universal minute guarantee.",
+      "order": ["Backup/restore", "Pilot light", "Warm standby", "Active/active"]
+    },
+    {
+      "id": "ladder-s3",
+      "taskId": "4.1",
+      "services": ["Amazon S3"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "questionIds": ["q-saa-costbatch-001", "q-saa-costbatch-002"],
+      "cardId": "fc-saa-cost-small-objects",
+      "prompt": "Order these classes for a known access pattern, from frequent reads toward the longest restore delay.",
+      "explanation": "Standard, Standard-IA, Glacier Flexible Retrieval, then Glacier Deep Archive follows a known pattern from frequent reads toward a long restore. Intelligent-Tiering monitors an unknown pattern. Glacier Instant Retrieval still serves immediate reads.",
+      "order": ["S3 Standard", "S3 Standard-IA", "S3 Glacier Flexible Retrieval", "S3 Glacier Deep Archive"]
+    }
+  ],
+  "odd": [
+    {
+      "id": "odd-decouple",
+      "taskId": "2.1",
+      "services": ["Amazon SQS", "Amazon SNS", "Amazon EventBridge"],
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-1",
+      "prompt": "Which one does not decouple a producer from its consumers?",
+      "explanation": "SQS, SNS, and EventBridge separate the sender from the receivers. A NAT gateway is a network path.",
+      "choices": ["Amazon SQS", "Amazon SNS", "Amazon EventBridge", "NAT gateway"],
+      "answer": 3
+    },
+    {
+      "id": "odd-keys",
+      "taskId": "1.3",
+      "services": ["AWS Key Management Service", "AWS CloudHSM", "AWS Certificate Manager", "Amazon EC2"],
+      "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-secure-kms",
+      "prompt": "Which one is not a control for keys or certificates?",
+      "explanation": "KMS, CloudHSM, and Certificate Manager protect keys or certificates. Spot is spare compute capacity.",
+      "choices": ["AWS KMS", "AWS CloudHSM", "AWS Certificate Manager", "Spot"],
+      "answer": 3
+    },
+    {
+      "id": "odd-recovery",
+      "taskId": "2.2",
+      "services": ["Amazon S3"],
+      "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "Which one is not a recovery design?",
+      "explanation": "Multi-AZ, pilot light, and warm standby are recovery designs. S3 Standard is a storage class for frequent reads.",
+      "choices": ["Multi-AZ", "Pilot light", "Warm standby", "S3 Standard"],
+      "answer": 3
+    },
+    {
+      "id": "odd-purchase",
+      "taskId": "4.2",
+      "services": ["Amazon EC2", "Savings Plans", "Amazon VPC"],
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "questionIds": [],
+      "cardId": "fc-saa-cost-baseline-peaks",
+      "prompt": "Which one is not a way to pay for compute?",
+      "explanation": "Savings Plans, Spot, and On-Demand are compute purchase choices. A security group filters traffic.",
+      "choices": ["Savings Plans", "Spot", "On-Demand", "Security group"],
+      "answer": 3
+    }
+  ],
+  "builder": [
+    {
+      "id": "builder-cross-account",
+      "taskId": "1.1",
+      "services": ["AWS Identity and Access Management"],
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-secure-role",
+      "prompt": "A person in account A must work in account B without a long-lived access key.",
+      "explanation": "A role gives temporary credentials. A copied access key, the root password, and a public bucket leave a lasting or public path.",
+      "choices": ["IAM role with temporary credentials", "Copy an access key into the application", "Share the root password", "Open the bucket to the internet"],
+      "answer": 0
+    },
+    {
+      "id": "builder-private-objects",
+      "taskId": "1.1",
+      "services": ["Amazon S3"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-1-1",
+      "prompt": "Objects in the bucket must stay private.",
+      "explanation": "Block public access keeps the objects off the public internet. A public website, a key in the page, or a world-readable ACL opens them.",
+      "choices": ["Block public access", "Turn the bucket into a public website", "Put the access key in the page", "Add a world-readable ACL"],
+      "answer": 0
+    },
+    {
+      "id": "builder-tiers",
+      "taskId": "1.2",
+      "services": ["Amazon VPC"],
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "questionIds": [],
+      "cardId": "fc-aws-sg-nacl",
+      "prompt": "Only the load balancer may reach the application tier, and the database is not reachable from the internet.",
+      "explanation": "Security groups can allow the load balancer to reach the app and keep the database off the internet. A public database address or a rule that allows everyone does not.",
+      "choices": ["Security groups on each tier", "A public address on the database", "One rule that allows all traffic", "A security group that allows the internet to the database"],
+      "answer": 0
+    },
+    {
+      "id": "builder-hsm",
+      "taskId": "1.3",
+      "services": ["AWS CloudHSM"],
+      "docsUrl": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-secure-kms",
+      "prompt": "The company must keep the keys in hardware it controls.",
+      "explanation": "CloudHSM keeps the keys in hardware the customer controls. An access key, a public bucket, and a NAT gateway do not hold those keys.",
+      "choices": ["AWS CloudHSM", "A long-lived access key", "A public bucket", "A NAT gateway"],
+      "answer": 0
+    },
+    {
+      "id": "builder-queue",
+      "taskId": "2.1",
+      "services": ["Amazon SQS"],
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-res-sqs",
+      "prompt": "A burst of orders must wait until workers are ready to pull them.",
+      "explanation": "A queue holds the burst until a worker pulls it. A larger single instance, DNS weights, and a public snapshot do not absorb that work.",
+      "choices": ["Amazon SQS", "One larger instance", "Route 53 weighted routing", "A public snapshot"],
+      "answer": 0
+    },
+    {
+      "id": "builder-fanout",
+      "taskId": "2.1",
+      "services": ["Amazon SNS"],
+      "docsUrl": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-1",
+      "prompt": "Several independent services must each receive a copy of the same notification.",
+      "explanation": "SNS delivers a copy to each subscriber. One queue message is gone after the first successful reader. A shared disk and a NAT gateway do not fan out.",
+      "choices": ["Amazon SNS", "One queue message for the first reader", "A shared disk on one instance", "A NAT gateway"],
+      "answer": 0
+    },
+    {
+      "id": "builder-multiaz",
+      "taskId": "2.2",
+      "services": ["Amazon RDS"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "The database must fail over on its own, and ordinary reads stay on the writer.",
+      "explanation": "A Multi-AZ standby fails over and keeps ordinary reads on the writer. A read replica is a read copy, a manual snapshot is a restore, and Spot is interruptible compute.",
+      "choices": ["Multi-AZ standby", "A read replica as the only failover plan", "A manual snapshot restore", "Spot instances"],
+      "answer": 0
+    },
+    {
+      "id": "builder-global",
+      "taskId": "2.2",
+      "services": ["Amazon Aurora"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "Writes must stay near-current in a second Region.",
+      "explanation": "Aurora Global Database keeps a second Region current from the storage layer. A cross-Region read replica, a weekly backup, and a single-AZ volume do not keep those writes current in the same way.",
+      "choices": ["Aurora Global Database", "A cross-Region read replica as the only copy of new writes", "A weekly backup", "A single-AZ volume"],
+      "answer": 0
+    }
+  ],
+  "keywords": [
+    {
+      "id": "keyword-overhead-copy",
+      "taskId": "2.1",
+      "services": [],
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-1",
+      "prompt": "The stem says LEAST operational overhead for a scheduled file move that a managed service can do.",
+      "explanation": "Least operational overhead points at a managed service that still meets the requirement, not at the cheapest design that misses it.",
+      "answer": 0
+    },
+    {
+      "id": "keyword-overhead-fanout",
+      "taskId": "2.1",
+      "services": ["Amazon SNS"],
+      "docsUrl": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-1",
+      "prompt": "The stem says LEAST operational overhead for delivering one event to several subscribers.",
+      "explanation": "Least operational overhead points at a managed fan-out, not at servers the team would have to run.",
+      "answer": 0
+    },
+    {
+      "id": "keyword-cost-baseline",
+      "taskId": "4.2",
+      "services": ["Amazon EC2"],
+      "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+      "questionIds": [],
+      "cardId": "fc-saa-cost-baseline-peaks",
+      "prompt": "The stem says MOST cost-effective for a measured steady baseline plus short peaks that cannot be interrupted.",
+      "explanation": "Most cost-effective means the lower cost among designs that still meet the requirement: commit to the baseline and cover the peaks without Spot.",
+      "answer": 1
+    },
+    {
+      "id": "keyword-cost-reads",
+      "taskId": "4.1",
+      "services": ["Amazon S3"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-4-1",
+      "prompt": "The stem says MOST cost-effective for objects that are read often and must survive an Availability Zone loss.",
+      "explanation": "Most cost-effective still has to meet frequent multi-AZ reads. A cheaper archive or a single-zone class misses that requirement.",
+      "answer": 1
+    },
+    {
+      "id": "keyword-rpo-az",
+      "taskId": "2.2",
+      "services": ["Amazon RDS"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "The stem asks for a near-zero RPO inside the Region when one Availability Zone fails.",
+      "explanation": "Near-zero RPO means replication that keeps the recovery point current. A nightly backup accepts a day of loss.",
+      "answer": 2
+    },
+    {
+      "id": "keyword-rpo-region",
+      "taskId": "2.2",
+      "services": ["Amazon Aurora"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "The stem asks for a near-zero RPO for writes in a second Region, not a nightly backup.",
+      "explanation": "Near-zero RPO across Regions needs replication that stays current. A backup schedule leaves a gap.",
+      "answer": 2
+    }
+  ],
+  "pillars": [
+    {
+      "id": "pillar-operate",
+      "taskId": "2.2",
+      "services": [],
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "The team needs alarms and a practiced runbook so the next failure is seen and improved.",
+      "explanation": "The primary pillar is operational excellence: operate, observe, and improve. The SAA task is the recovery evidence the scenario also teaches. Operational excellence has no task of its own.",
+      "answer": 0
+    },
+    {
+      "id": "pillar-security",
+      "taskId": "1.1",
+      "services": ["AWS Identity and Access Management"],
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-secure-role",
+      "prompt": "Identities, data, and systems must stay protected from access that was not granted.",
+      "explanation": "That is the security pillar.",
+      "answer": 1
+    },
+    {
+      "id": "pillar-reliability",
+      "taskId": "2.2",
+      "services": [],
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "The workload must keep serving and recover when one Availability Zone is lost.",
+      "explanation": "That is the reliability pillar.",
+      "answer": 2
+    },
+    {
+      "id": "pillar-performance",
+      "taskId": "3.2",
+      "services": ["Amazon EC2"],
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-3-2",
+      "prompt": "One instance is CPU-bound, and the work can be split across more instances.",
+      "explanation": "That is performance efficiency: use the right compute for the bottleneck.",
+      "answer": 3
+    },
+    {
+      "id": "pillar-cost",
+      "taskId": "4.2",
+      "services": ["Amazon EC2"],
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html",
+      "questionIds": [],
+      "cardId": "fc-saa-cost-baseline-peaks",
+      "prompt": "Steady instances sit idle every night while the bill stays the same.",
+      "explanation": "That is cost optimization: stop paying for capacity the requirement does not need.",
+      "answer": 4
+    },
+    {
+      "id": "pillar-sustain",
+      "taskId": "4.2",
+      "services": ["Amazon EC2"],
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-cost-rightsize",
+      "prompt": "A smaller instance still meets the workload, and the unused capacity can be turned off.",
+      "explanation": "The primary pillar is sustainability: use fewer resources for the same requirement. Sustainability has no SAA task of its own, so the item keeps the cost task that rightsizing also teaches.",
+      "answer": 5
+    }
+  ],
+  "lightning": [
+    {
+      "id": "lightning-deny",
+      "taskId": "1.1",
+      "services": ["AWS Identity and Access Management"],
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+      "questionIds": [],
+      "cardId": "fc-saa-explicit-deny",
+      "prompt": "A matching explicit deny overrides any allow.",
+      "explanation": "True. An explicit deny wins over an allow.",
+      "answer": true
+    },
+    {
+      "id": "lightning-boundary",
+      "taskId": "1.1",
+      "services": ["AWS Identity and Access Management"],
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+      "questionIds": [],
+      "cardId": "fc-saa-boundary",
+      "prompt": "A permissions boundary grants the permissions it names.",
+      "explanation": "False. A boundary limits identity-policy permissions. It does not grant them.",
+      "answer": false
+    },
+    {
+      "id": "lightning-spot",
+      "taskId": "4.2",
+      "services": ["Amazon EC2"],
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "questionIds": [],
+      "cardId": "fc-saa-arch-cost-spot",
+      "prompt": "Spot is a fit for work that can be interrupted and restarted.",
+      "explanation": "True. Spot uses spare capacity and can be interrupted.",
+      "answer": true
+    },
+    {
+      "id": "lightning-replica",
+      "taskId": "2.2",
+      "services": ["Amazon RDS"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "questionIds": [],
+      "cardId": "fc-aws-review-saa-c03-2-2",
+      "prompt": "A read replica is the same mechanism as a Multi-AZ failover.",
+      "explanation": "False. A Multi-AZ standby fails over. A read replica serves reads and can lag.",
+      "answer": false
+    },
+    {
+      "id": "lightning-one-zone",
+      "taskId": "4.1",
+      "services": ["Amazon S3"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "questionIds": [],
+      "cardId": "fc-saa-cost-one-zone",
+      "prompt": "One Zone-IA keeps the object in several Availability Zones.",
+      "explanation": "False. One Zone-IA stores the object in one Availability Zone.",
+      "answer": false
+    },
+    {
+      "id": "lightning-cloudfront",
+      "taskId": "4.4",
+      "services": ["Amazon CloudFront"],
+      "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "questionIds": [],
+      "cardId": "fc-saa-cost-cloudfront-hits",
+      "prompt": "CloudFront can cut repeated transfer of cacheable content from the origin.",
+      "explanation": "True. Count requests, invalidations, and the cache-hit rate before calling it a saving.",
+      "answer": true
+    }
+  ]
+}

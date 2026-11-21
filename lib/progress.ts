@@ -78,6 +78,8 @@ export type Progress = {
   clfAssessmentSnapshots?: ClfAssessmentSnapshot[];
   /** FSRS schedule per flashcard id (see lib/study/schedule.ts). */
   schedules: Record<string, StoredSchedule>;
+  /** SAA game streak and best times. Optional so older saves still load. */
+  memoryGames?: { lastMixDay?: string; streak: number; bestMs: Record<string, number> };
 };
 
 const KEY = "comptia-a-plus-review-progress-v1";
@@ -183,6 +185,23 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
+function parseMemoryGames(value: unknown): { value?: Progress["memoryGames"]; repaired: boolean } {
+  if (value === undefined) return { repaired: false };
+  if (!isRecord(value)) return { repaired: true };
+  const streak = Number.isInteger(value.streak) && (value.streak as number) >= 0 ? value.streak as number : 0;
+  const lastMixDay = typeof value.lastMixDay === "string" ? value.lastMixDay : undefined;
+  const bestMs: Record<string, number> = {};
+  if (isRecord(value.bestMs)) {
+    for (const [key, ms] of Object.entries(value.bestMs)) {
+      if (typeof ms === "number" && Number.isFinite(ms) && ms >= 0) bestMs[key] = ms;
+    }
+  }
+  return {
+    value: { streak, bestMs, ...(lastMixDay ? { lastMixDay } : {}) },
+    repaired: !Number.isInteger(value.streak) || (value.streak as number) < 0 || (value.bestMs !== undefined && !isRecord(value.bestMs)) || (value.lastMixDay !== undefined && typeof value.lastMixDay !== "string"),
+  };
+}
+
 function isClfSnapshot(value: unknown): value is ClfAssessmentSnapshot {
   if (!isRecord(value) || typeof value.id !== "string" || (value.kind !== "baseline" && value.kind !== "retest") || (value.baselineId !== undefined && typeof value.baselineId !== "string") || (value.kind === "baseline" && value.baselineId !== undefined) || !Number.isFinite(value.at) || typeof value.bankVersion !== "string" || !isRecord(value.objectives)) return false;
   return Object.values(value.objectives).every((objective) => isRecord(objective) && (objective.accuracy === null || Number.isFinite(objective.accuracy)) && Number.isInteger(objective.distinctQuestions) && typeof objective.evidence === "string" && typeof objective.state === "string" && Array.isArray(objective.questionEvidence) && objective.questionEvidence.every((item) => isRecord(item) && typeof item.questionId === "string" && typeof item.correct === "boolean" && Number.isFinite(item.at)));
@@ -211,7 +230,8 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   const rawSnapshots = Array.isArray(parsed.clfAssessmentSnapshots) ? parsed.clfAssessmentSnapshots : [];
   const clfAssessmentSnapshots = rawSnapshots.filter(isClfSnapshot).slice(0, 20);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
-  const repaired = known.repaired || unknown.repaired
+  const memoryGames = parseMemoryGames(parsed.memoryGames);
+  const repaired = known.repaired || unknown.repaired || memoryGames.repaired
     || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
     || quizAttempts.length !== attempts.length
     || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
@@ -228,6 +248,7 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
       schedules,
     };
   if (clfAssessmentSnapshots.length > 0) progress.clfAssessmentSnapshots = clfAssessmentSnapshots;
+  if (memoryGames.value) progress.memoryGames = memoryGames.value;
   return {
     progress,
     problems: repaired ? ["repaired"] : [],
@@ -354,6 +375,24 @@ export function recordClfAssessmentSnapshot(snapshot: ClfAssessmentSnapshot) {
   const current = loadProgress();
   const snapshots = [snapshot, ...(current.clfAssessmentSnapshots ?? []).filter((item) => item.id !== snapshot.id)].slice(0, 20);
   const next = { ...current, clfAssessmentSnapshots: snapshots };
+  saveProgress(next);
+  return next;
+}
+
+export function recordMemoryBest(boardId: string, ms: number) {
+  const current = loadProgress();
+  const games = current.memoryGames ?? { streak: 0, bestMs: {} };
+  const previous = games.bestMs[boardId];
+  if (previous !== undefined && previous <= ms) return current;
+  const next = { ...current, memoryGames: { ...games, bestMs: { ...games.bestMs, [boardId]: ms } } };
+  saveProgress(next);
+  return next;
+}
+
+export function recordMemoryStreak(lastMixDay: string, streak: number) {
+  const current = loadProgress();
+  const games = current.memoryGames ?? { streak: 0, bestMs: {} };
+  const next = { ...current, memoryGames: { ...games, lastMixDay, streak } };
   saveProgress(next);
   return next;
 }

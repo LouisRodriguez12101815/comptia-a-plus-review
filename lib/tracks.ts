@@ -167,7 +167,8 @@ export type ChipText = {
     | "labs"
     | "comingSoon"
     | "inCcnaTrack"
-    | "allTracks";
+    | "allTracks"
+  | "games";
   count?: number;
 };
 
@@ -208,6 +209,7 @@ export function trackForPath(pathname: string, focus: StudyFocus): Track | undef
     (track) => pathname === track.href || pathname.startsWith(`${track.href}/`),
   );
   if (direct) return direct;
+  if (pathname === "/flashcards/cheat-sheet" || pathname.startsWith("/flashcards/cheat-sheet/")) return getTrack("aws-saa");
   if (pathname.startsWith("/practice-games/component-match")) return getTrack("core1");
   if (pathname.startsWith("/practice-games/subnet-architect")) return getTrack("networking");
   if (pathname.startsWith("/subnet-sources")) return getTrack("networking");
@@ -286,6 +288,9 @@ export function toolStatuses(track: Track): ToolStatus[] {
           chip: { key: "inCcnaTrack" },
         };
       case "game":
+        if (track.id === "aws-saa") {
+          return { ...base, href: "/aws-saa/games", state: "ready", chip: { key: "games", count: 9 } };
+        }
         return { ...base, state: "shared", chip: { key: "allTracks" } };
     }
   });

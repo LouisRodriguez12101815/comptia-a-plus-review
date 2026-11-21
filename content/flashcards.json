@@ -4174,6 +4174,7 @@
   },
   {
     "id": "fc-saa-nat-gw",
+    "retired": true,
     "topicId": "aws-saa-networking",
     "examCodes": [
       "saa-c03"
@@ -4323,11 +4324,11 @@
       "saa-c03"
     ],
     "front": "IAM explicit deny",
-    "back": "Overrides any matching allow.",
+    "back": "A matching explicit deny overrides any allow.",
     "weak": false,
     "taskId": "1.1",
     "services": ["AWS Identity and Access Management"],
-    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
+    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
   },
   {
     "id": "fc-saa-boundary",
@@ -4488,6 +4489,7 @@
   },
   {
     "id": "fc-saa-arch-secure-boundary",
+    "retired": true,
     "topicId": "aws-saa-secure-architectures",
     "examCodes": [
       "saa-c03"
@@ -4566,6 +4568,7 @@
   },
   {
     "id": "fc-saa-arch-secure-deny",
+    "retired": true,
     "topicId": "aws-saa-secure-architectures",
     "examCodes": [
       "saa-c03"
@@ -4575,7 +4578,7 @@
     "weak": false,
     "taskId": "1.1",
     "services": ["AWS Identity and Access Management"],
-    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
+    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
   },
   {
     "id": "fc-saa-arch-res-sqs",
@@ -4747,6 +4750,7 @@
   },
   {
     "id": "fc-saa-arch-perf-kds",
+    "retired": true,
     "topicId": "aws-saa-high-performing",
     "examCodes": [
       "saa-c03"
@@ -5085,7 +5089,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Evaluate a complete authorization request — name the key design constraint",
+    "front": "Evaluate a complete authorization request",
     "back": "Identify the principal (human, role or role session), action, resource, account boundary and conditions before evaluating policy. Federate workforce access where appropriate; use roles/STS for temporary workload credentials. For cross-account role use, the target role trust permits the source principal, the caller has sts:AssumeRole permission and the assumed role has required resource permissions. Control Tower and Organizations provide multi-account governance; choose the least privilege that matches the workload.",
     "weak": false,
     "taskId": "1.1",
@@ -5098,7 +5102,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Secure the request path and application identity — name the key design constraint",
+    "front": "Secure the request path and application identity",
     "back": "Separate public entry points, private application tiers and data stores. Security groups permit required resource flows; NACLs evaluate ordered stateless subnet rules including return traffic. A private subnet name or missing public IPv4 is not proof of isolation for every address family. WAF filters supported HTTP/S attacks, Shield addresses DDoS, GuardDuty detects threats, Inspector assesses vulnerabilities and Cognito can provide application user identity. These controls solve separate problems; workload credentials belong in suitable role/secret mechanisms.",
     "weak": false,
     "taskId": "1.2",
@@ -5111,7 +5115,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Keys, retention, recovery and sharing — name the key design constraint",
+    "front": "Keys, retention, recovery and sharing",
     "back": "KMS key policies, IAM permissions and encryption context/conditions determine key use; encrypting data does not neutralize an overly broad read permission. Plan key rotation/lifecycle and certificate renewal; ACM TLS certificates serve a different role from application secrets. Versioning preserves previous versions; replication needs both buckets versioned, permission/encryption setup and status validation. Existing objects need a backfill strategy. Backup, deletion recovery and Object Lock retention are distinct requirements; test recovery with the intended permissions.",
     "weak": false,
     "taskId": "1.3",
@@ -5124,7 +5128,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Loose coupling with correct failure semantics — name the key design constraint",
+    "front": "Loose coupling with correct failure semantics",
     "back": "Use queues to absorb bursts and separate producer/worker scaling. SQS standard queues are at-least-once with best-effort ordering; processing must be idempotent. Visibility hides in-flight work temporarily, and successful processing must be acknowledged/deleted. Stateful sessions/files on one instance prevent easy horizontal replacement. Externalize appropriate state, choose container/serverless services based on runtime/operational constraints, and scale workers against backlog and processing time rather than an unrelated metric.",
     "weak": false,
     "taskId": "2.1",
@@ -5137,7 +5141,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Failure domains, health and recovery evidence — name the key design constraint",
+    "front": "Failure domains, health and recovery evidence",
     "back": "Deploy independent serving capacity across AZs, configure load-balancer target health and ASG ELB health checks where application failures should cause replacement, and maintain enough surviving capacity. ALB can fail open when all targets are unhealthy; a health check is not a universal safety barrier. Choose DR from measured RTO/RPO and test data recovery, dependencies, credentials, quotas, routing and startup order. Backup/restore, pilot light, warm standby and active/active have relative cost/recovery tradeoffs, not universal minute guarantees. Workload metrics, logs and traces supply evidence of recovery.",
     "weak": false,
     "taskId": "2.2",
@@ -5150,7 +5154,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Storage access, throughput and capacity — name the key design constraint",
+    "front": "Storage access, throughput and capacity",
     "back": "EBS provides persistent AZ-scoped block volumes; volume type and provisioned IOPS/throughput must match the instance and workload. A volume remaining after stop differs from DeleteOnTermination behavior. Instance store is scratch storage that can be lost on stop/termination or host loss. S3 handles objects with key-based access; multipart/parallel access, object size and request patterns affect performance. DataSync and hybrid gateways solve movement/interface needs rather than making every storage service interchangeable. Measure IOPS, throughput, latency and concurrency separately.",
     "weak": false,
     "taskId": "3.1",
@@ -5163,7 +5167,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Choose and scale compute for the bottleneck — name the key design constraint",
+    "front": "Choose and scale compute for the bottleneck",
     "back": "Match EC2 family/size to CPU, memory, storage, network and accelerator demand. Horizontal scaling needs a partitionable/stateless design; vertical scaling changes one node and retains its failure boundary. Benchmark before assuming the largest size is efficient. For Lambda, consider memory/CPU coupling, concurrency, execution limits and downstream connection pressure. ECS/EKS orchestrate containers; Fargate supplies supported serverless task compute. Batch/EMR target suitable batch/distributed processing. Placement/EFA choices have supported-instance and topology constraints.",
     "weak": false,
     "taskId": "3.2",
@@ -5176,7 +5180,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Database access patterns, consistency and connections — name the key design constraint",
+    "front": "Database access patterns, consistency and connections",
     "back": "Relational replicas offload suitable reads but may lag. RDS Proxy pools supported connections; reader endpoints distribute connections rather than guaranteeing equal query cost. Distinguish single-standby Multi-AZ, readable Multi-AZ clusters and Aurora read/failover roles. On-demand adapts capacity but retains warm-throughput/partition/table limits. DAX accelerates eventual cache hits, not strongly consistent reads. ElastiCache reduces repeated work where freshness requirements permit. Database-engine and migration choices require schema, transaction, query and compatibility analysis.",
     "weak": false,
     "taskId": "3.3",
@@ -5189,7 +5193,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Network topology, transport and DNS behavior — name the key design constraint",
+    "front": "Network topology, transport and DNS behavior",
     "back": "Plan nonoverlapping address ranges, AZ subnets and route tables, including return paths and IPv4/IPv6 differences. Select gateway/interface endpoints, PrivateLink, peering or Transit Gateway from service exposure versus network-routing requirements. Route 53 weighted routing selects DNS responses probabilistically, with caching effects; latency routing uses AWS latency information, not simply map distance. Multivalue can return up to eight records and depends on health-check configuration, including an all-unhealthy fallback. DNS TTL limits how quickly clients observe failover.",
     "weak": false,
     "taskId": "3.4",
@@ -5202,7 +5206,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "End-to-end ingestion and transformation — name the key design constraint",
+    "front": "End-to-end ingestion and transformation",
     "back": "Kinesis Data Streams supports streaming records consumed by applications; ordering is scoped to shard/partition-key sequencing, with producer retry and consumer checkpoint behavior to design. Firehose supplies managed buffered delivery and optional transformations to supported destinations. DataSync, Storage Gateway and supported transfer services address different movement and interface needs. Secure ingestion endpoints, roles, encryption, data-lake access and catalog governance. Design throughput, buffering, latency, replay and malformed-record handling together.",
     "weak": false,
     "taskId": "3.5",
@@ -5215,7 +5219,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Price the complete storage lifecycle — name the key design constraint",
+    "front": "Price the complete storage lifecycle",
     "back": "Compare object/file/block access requirements before cost. Include stored bytes, provisioned performance, requests, transitions, retrieval, minimum-duration/object-size rules, replicas and transfers. The cheapest GB price may violate retrieval or durability requirements. Size persistent storage and backup retention from recovery/compliance needs. Delete only genuinely unused volumes/snapshots under policy; snapshot dependencies mean billed savings may differ from visible snapshot count. Compare DataSync/transfer/gateway options against scale, bandwidth and change rate.",
     "weak": false,
     "taskId": "4.1",
@@ -5228,7 +5232,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Commit the baseline and scale the variable work — name the key design constraint",
+    "front": "Commit the baseline and scale the variable work",
     "back": "Right-size and measure before choosing commitments. Use eligible Savings Plans/Reserved discounts for a stable baseline; On-Demand for flexibility; Spot for interruption-tolerant work after accounting for capacity/restart behavior. A discount is not a capacity guarantee. Compute topology also determines load-balancing, network and resilience costs. Select ALB/NLB/GWLB and horizontal/vertical/suspend/hibernate choices from protocol, state and availability requirements. Outposts/hybrid choices add operational and placement considerations.",
     "weak": false,
     "taskId": "4.2",
@@ -5241,7 +5245,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Database cost without losing correctness — name the key design constraint",
+    "front": "Database cost without losing correctness",
     "back": "Choose engine/model from transactions, access patterns, schema, scale and compatibility; compare relational, key-value/document, time-series and analytical workloads deliberately. A low instance rate is not a reason to select an incompatible data model. Backups, cross-Region copies, retention and migrations all cost money but meet different requirements. Heterogeneous migration needs schema/application validation. Estimate the cost of read scaling, data retention and recovery before eliminating safeguards for savings.",
     "weak": false,
     "taskId": "4.3",
@@ -5254,12 +5258,133 @@
     "examCodes": [
       "saa-c03"
     ],
-    "front": "Network cost follows the traffic path — name the key design constraint",
+    "front": "Network cost follows the traffic path",
     "back": "Identify bytes and paths: same-AZ, cross-AZ, cross-Region, service endpoint, NAT, dedicated link and internet delivery. Data-transfer pricing is service-specific; do not assume all same-Region traffic is free or all cross-AZ paths charge identically. Compare Direct Connect, VPN and internet designs using bandwidth, encryption, redundancy and business targets. CloudFront may reduce repeated origin work/transfer, but include CDN/request/invalidations and cache hit behavior. Do not minimize transfer by removing required failure isolation.",
     "weak": false,
     "taskId": "4.4",
     "services": ["AWS Direct Connect","AWS Site-to-Site VPN","Amazon CloudFront"],
     "docsUrl": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+  },
+  {
+    "id": "fc-saa-cost-unused-ebs",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Unattached EBS and old snapshots",
+    "back": "A volume or snapshot can keep billing after the instance is gone. Delete only what the retention rule and the snapshot lineage allow.",
+    "weak": false,
+    "taskId": "4.1",
+    "services": ["Amazon EBS"],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-deleting-volume.html"
+  },
+  {
+    "id": "fc-saa-cost-small-objects",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Small objects, frequent reads",
+    "back": "A lower price per GB can cost more when objects are small and read often, because requests, retrieval, and minimum duration sit beside the storage price.",
+    "weak": false,
+    "taskId": "4.1",
+    "services": [],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+  },
+  {
+    "id": "fc-saa-cost-one-zone",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "One Zone-IA",
+    "back": "The lower price stores the object in one Availability Zone. That is the wrong trade when the object has to survive loss of that zone.",
+    "weak": false,
+    "taskId": "4.1",
+    "services": ["Amazon S3"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+  },
+  {
+    "id": "fc-saa-cost-baseline-peaks",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Baseline and peaks",
+    "back": "Commit to the measured steady baseline. Cover short peaks with On-Demand. A commitment sized to the peak pays for idle capacity, and customer transactions that cannot stop do not belong on Spot.",
+    "weak": false,
+    "taskId": "4.2",
+    "services": ["Amazon EC2"],
+    "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+  },
+  {
+    "id": "fc-saa-cost-rds-measure",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Measure before a smaller RDS instance",
+    "back": "Low average CPU is one signal. Check memory, I/O, connections, and peaks before shrinking the instance.",
+    "weak": false,
+    "taskId": "4.3",
+    "services": ["Amazon RDS"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MonitoringOverview.html"
+  },
+  {
+    "id": "fc-saa-cost-cache-bill",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "A cache is another bill",
+    "back": "ElastiCache can remove repeated database reads. It still costs money, and it is the wrong save when every read must see the latest write.",
+    "weak": false,
+    "taskId": "4.3",
+    "services": ["Amazon ElastiCache"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+  },
+  {
+    "id": "fc-saa-cost-backup-retention",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Backup retention costs money",
+    "back": "Automated backups, a longer window, and a cross-Region copy each add cost. Shorten retention only when the recovery requirement allows it.",
+    "weak": false,
+    "taskId": "4.3",
+    "services": [],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html"
+  },
+  {
+    "id": "fc-saa-cost-cold-data",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Rarely read rows",
+    "back": "Move data the application rarely reads out of the primary database when the application can read it from cheaper storage. A low instance price does not fix an incompatible data model.",
+    "weak": false,
+    "taskId": "4.3",
+    "services": [],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+  },
+  {
+    "id": "fc-saa-cost-s3-gateway",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "S3 gateway endpoint",
+    "back": "Eligible S3 traffic can leave the NAT path. A gateway endpoint has no hourly or data-processing fee. Check the route table and the access policy.",
+    "weak": false,
+    "taskId": "4.4",
+    "services": ["Amazon S3"],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+  },
+  {
+    "id": "fc-saa-cost-interface-endpoint",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Interface endpoint bill",
+    "back": "An interface endpoint can charge hourly and for data processed. That is a different bill from a gateway endpoint. Use it when the service needs that endpoint type.",
+    "weak": false,
+    "taskId": "4.4",
+    "services": [],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-interface.html"
+  },
+  {
+    "id": "fc-saa-cost-cloudfront-hits",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": ["saa-c03"],
+    "front": "Repeated origin transfer",
+    "back": "CloudFront can cut repeated transfer of cacheable content. Count requests, invalidations, and the cache-hit rate before calling it a saving.",
+    "weak": false,
+    "taskId": "4.4",
+    "services": ["Amazon CloudFront"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
   },
   {
     "id": "fc-c2-assessment-01",

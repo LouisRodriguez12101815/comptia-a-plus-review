@@ -65,6 +65,8 @@ export type Flashcard = {
   docsUrl?: string;
   /** Extra accepted answers for type-the-term. The front always counts. */
   aliases?: string[];
+  /** Hidden from decks, games, and the cheat sheet. The id stays so a saved schedule is not dropped. */
+  retired?: boolean;
 };
 
 export type Question = {

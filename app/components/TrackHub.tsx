@@ -191,11 +191,11 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
                   <span className="track-accent-text">
                     <ToolIcon id={tool.id} width={26} height={26} />
                   </span>
-                  <StatusChip state={tool.state}>{tool.id === "game" && drillCount > 0 ? tTrack("chips.drills", { count: drillCount }) : tTrack(`chips.${tool.chip.key}`, { count: tool.chip.count ?? 0 })}</StatusChip>
+                  <StatusChip state={tool.state}>{tool.id === "game" && track.id !== "aws-saa" && drillCount > 0 ? tTrack("chips.drills", { count: drillCount }) : tTrack(`chips.${tool.chip.key}`, { count: tool.chip.count ?? 0 })}</StatusChip>
                 </div>
                 <div>
                   <p className="text-lg font-medium text-white">{tTrack(`tools.${tool.id}.label`)}</p>
-                  <p className="mt-1 text-sm text-slate-400">{tool.id === "labs" && track.id === "aws-saa" ? journey("labsBlurb") : tool.id === "game" && drillCount > 0 ? tTrack("tools.game.drillsBlurb") : tTrack(`tools.${tool.id}.blurb`)}</p>
+                  <p className="mt-1 text-sm text-slate-400">{tool.id === "labs" && track.id === "aws-saa" ? journey("labsBlurb") : tool.id === "game" && track.id === "aws-saa" ? tTrack("tools.game.saaBlurb") : tool.id === "game" && drillCount > 0 ? tTrack("tools.game.drillsBlurb") : tTrack(`tools.${tool.id}.blurb`)}</p>
                 </div>
               </>
             );

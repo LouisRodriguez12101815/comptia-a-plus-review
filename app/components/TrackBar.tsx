@@ -9,7 +9,7 @@ import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { isHubPath, toolStatuses, trackForPath } from "@/lib/tracks";
 
 function isActive(toolId: string, pathname: string): boolean {
-  if (toolId === "game") return pathname.startsWith("/game") || pathname.startsWith("/practice-games");
+  if (toolId === "game") return pathname.startsWith("/game") || pathname.startsWith("/practice-games") || pathname.startsWith("/aws-saa/games");
   if (toolId === "labs") return pathname.startsWith("/labs");
   if (toolId === "visuals") return pathname.endsWith("/visuals") || pathname.startsWith("/network-plus");
   return pathname.startsWith(`/${toolId}`);
