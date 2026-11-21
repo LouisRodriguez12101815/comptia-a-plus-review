@@ -17,6 +17,18 @@ export type QuizAttempt = {
   /** Optional future-proof history; multi-select values are retained as complete sets. */
   selectedChoices?: Record<string, number | number[]>;
   missedIds: string[];
+  /** Correct answers marked Unsure or Guess. They still count in `correct`. */
+  luckyIds?: string[];
+  sureIds?: string[];
+  unsureIds?: string[];
+  guessedIds?: string[];
+  confidenceByQuestion?: Record<string, "sure" | "unsure" | "guess">;
+  /** Why a wrong answer was missed. Absent when the learner skipped the tap. */
+  missReasons?: Record<string, string>;
+  secondsByQuestion?: Record<string, number>;
+  sittingId?: string;
+  /** quiz, topic, or twin. Timed tests also write a mock row. */
+  mode?: string;
   at: number;
 };
 
@@ -46,6 +58,14 @@ export type MockAttempt = {
   /** Questions the learner marked as sure or as a guess before answering. */
   sureIds?: string[];
   guessedIds?: string[];
+  unsureIds?: string[];
+  luckyIds?: string[];
+  confidenceByQuestion?: Record<string, "sure" | "unsure" | "guess">;
+  missReasons?: Record<string, string>;
+  secondsByQuestion?: Record<string, number>;
+  sittingId?: string;
+  /** mock or mini. */
+  mode?: string;
   /** The wrong choice picked (authored index) for each missed single-answer question. */
   wrongChoices?: Record<string, number>;
   missedIds: string[];
@@ -81,7 +101,11 @@ export type Progress = {
   /** SAA game streak and best times. Optional so older saves still load. */
   memoryGames?: { lastMixDay?: string; streak: number; bestMs: Record<string, number> };
   /** Missed drill cues and the best survival or speed streak. Optional so older saves still load. */
-  drillPractice?: { missedIds: string[]; bestStreak: number };
+  drillPractice?: {
+    missedIds: string[];
+    bestStreak: number;
+    decks?: Record<string, { bestScore: number; bestStreak: number }>;
+  };
 };
 
 const KEY = "comptia-a-plus-review-progress-v1";
@@ -142,6 +166,87 @@ function repairedChoiceMap(value: unknown, allowSets: boolean): { value?: Record
   return { value: Object.keys(kept).length ? kept : undefined, repaired };
 }
 
+const CONFIDENCE_LEVELS = new Set(["sure", "unsure", "guess"]);
+const MISS_REASONS = new Set(["qualifier", "confused", "unknown", "time"]);
+const ATTEMPT_MODES = new Set(["quiz", "mock", "mini", "topic", "twin"]);
+
+function optionalStringList(value: unknown): { value?: string[]; bad: boolean } {
+  if (value === undefined) return { bad: false };
+  if (!Array.isArray(value) || value.some((id) => typeof id !== "string")) return { bad: true };
+  return { value: value as string[], bad: false };
+}
+
+function optionalConfidence(value: unknown): { value?: Record<string, "sure" | "unsure" | "guess">; bad: boolean } {
+  if (value === undefined) return { bad: false };
+  if (!isRecord(value)) return { bad: true };
+  const kept: Record<string, "sure" | "unsure" | "guess"> = {};
+  let bad = false;
+  for (const [id, level] of Object.entries(value)) {
+    if (CONFIDENCE_LEVELS.has(level as string)) kept[id] = level as "sure" | "unsure" | "guess";
+    else bad = true;
+  }
+  return { value: Object.keys(kept).length ? kept : undefined, bad };
+}
+
+function optionalReasons(value: unknown): { value?: Record<string, string>; bad: boolean } {
+  if (value === undefined) return { bad: false };
+  if (!isRecord(value)) return { bad: true };
+  const kept: Record<string, string> = {};
+  let bad = false;
+  for (const [id, reason] of Object.entries(value)) {
+    if (typeof reason === "string" && MISS_REASONS.has(reason)) kept[id] = reason;
+    else bad = true;
+  }
+  return { value: Object.keys(kept).length ? kept : undefined, bad };
+}
+
+function optionalSeconds(value: unknown): { value?: Record<string, number>; bad: boolean } {
+  if (value === undefined) return { bad: false };
+  if (!isRecord(value)) return { bad: true };
+  const kept: Record<string, number> = {};
+  let bad = false;
+  for (const [id, seconds] of Object.entries(value)) {
+    if (typeof seconds === "number" && Number.isFinite(seconds) && seconds >= 0) kept[id] = seconds;
+    else bad = true;
+  }
+  return { value: Object.keys(kept).length ? kept : undefined, bad };
+}
+
+function applyAttemptExtras<T extends QuizAttempt | MockAttempt>(attempt: T): { attempt: T; repaired: boolean } {
+  const input = attempt as T & Record<string, unknown>;
+  let repaired = false;
+  const lucky = optionalStringList(input.luckyIds);
+  const sure = optionalStringList(input.sureIds);
+  const unsure = optionalStringList(input.unsureIds);
+  const guessed = optionalStringList(input.guessedIds);
+  const confidence = optionalConfidence(input.confidenceByQuestion);
+  const reasons = optionalReasons(input.missReasons);
+  const seconds = optionalSeconds(input.secondsByQuestion);
+  repaired = lucky.bad || sure.bad || unsure.bad || guessed.bad || confidence.bad || reasons.bad || seconds.bad;
+  if (input.sittingId !== undefined && typeof input.sittingId !== "string") repaired = true;
+  if (input.mode !== undefined && (typeof input.mode !== "string" || !ATTEMPT_MODES.has(input.mode))) repaired = true;
+  const next = { ...attempt };
+  const write = (key: "luckyIds" | "sureIds" | "unsureIds" | "guessedIds", value?: string[]) => {
+    if (value) next[key] = value;
+    else delete next[key];
+  };
+  write("luckyIds", lucky.value);
+  write("sureIds", sure.value);
+  write("unsureIds", unsure.value);
+  write("guessedIds", guessed.value);
+  if (confidence.value) next.confidenceByQuestion = confidence.value;
+  else delete next.confidenceByQuestion;
+  if (reasons.value) next.missReasons = reasons.value;
+  else delete next.missReasons;
+  if (seconds.value) next.secondsByQuestion = seconds.value;
+  else delete next.secondsByQuestion;
+  if (typeof input.sittingId === "string") next.sittingId = input.sittingId;
+  else delete next.sittingId;
+  if (typeof input.mode === "string" && ATTEMPT_MODES.has(input.mode)) next.mode = input.mode;
+  else delete next.mode;
+  return { attempt: next, repaired };
+}
+
 function parseQuizAttempt(value: unknown): { attempt: QuizAttempt | null; repaired: boolean } {
   if (!isAttemptBase(value)) return { attempt: null, repaired: false };
   const input = value as QuizAttempt;
@@ -152,7 +257,8 @@ function parseQuizAttempt(value: unknown): { attempt: QuizAttempt | null; repair
   else delete attempt.wrongChoices;
   if (selected.value) attempt.selectedChoices = selected.value;
   else delete attempt.selectedChoices;
-  return { attempt, repaired: wrong.repaired || selected.repaired };
+  const extras = applyAttemptExtras(attempt);
+  return { attempt: extras.attempt, repaired: wrong.repaired || selected.repaired || extras.repaired };
 }
 
 /**
@@ -193,9 +299,25 @@ function parseDrillPractice(value: unknown): { value?: Progress["drillPractice"]
   const rawIds = Array.isArray(value.missedIds) ? value.missedIds : [];
   const missedIds = [...new Set(rawIds.filter((id): id is string => typeof id === "string" && id.includes("/")))];
   const bestStreak = Number.isInteger(value.bestStreak) && (value.bestStreak as number) >= 0 ? value.bestStreak as number : 0;
+  let decks: Record<string, { bestScore: number; bestStreak: number }> | undefined;
+  let decksRepaired = false;
+  if (value.decks !== undefined) {
+    if (!isRecord(value.decks)) decksRepaired = true;
+    else {
+      const kept: Record<string, { bestScore: number; bestStreak: number }> = {};
+      for (const [id, row] of Object.entries(value.decks)) {
+        if (!isRecord(row) || !Number.isInteger(row.bestScore) || (row.bestScore as number) < 0 || !Number.isInteger(row.bestStreak) || (row.bestStreak as number) < 0) {
+          decksRepaired = true;
+          continue;
+        }
+        kept[id] = { bestScore: row.bestScore as number, bestStreak: row.bestStreak as number };
+      }
+      decks = kept;
+    }
+  }
   return {
-    value: { missedIds, bestStreak },
-    repaired: !Array.isArray(value.missedIds) || missedIds.length !== rawIds.length || !Number.isInteger(value.bestStreak) || (value.bestStreak as number) < 0,
+    value: { missedIds, bestStreak, ...(decks ? { decks } : {}) },
+    repaired: !Array.isArray(value.missedIds) || missedIds.length !== rawIds.length || !Number.isInteger(value.bestStreak) || (value.bestStreak as number) < 0 || decksRepaired,
   };
 }
 
@@ -240,7 +362,8 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   const parsedQuizAttempts = attempts.map(parseQuizAttempt);
   const quizAttempts = parsedQuizAttempts.flatMap(({ attempt }) => attempt ? [attempt] : []);
   const rawMockAttempts = Array.isArray(parsed.mockAttempts) ? parsed.mockAttempts : [];
-  const mockAttempts = rawMockAttempts.filter(isMockAttempt);
+  const parsedMockAttempts = rawMockAttempts.filter(isMockAttempt).map((attempt) => applyAttemptExtras(attempt));
+  const mockAttempts = parsedMockAttempts.map(({ attempt }) => attempt);
   const rawSnapshots = Array.isArray(parsed.clfAssessmentSnapshots) ? parsed.clfAssessmentSnapshots : [];
   const clfAssessmentSnapshots = rawSnapshots.filter(isClfSnapshot).slice(0, 20);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
@@ -252,6 +375,7 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
     || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
     || (parsed.mockAttempts !== undefined && !Array.isArray(parsed.mockAttempts))
     || mockAttempts.length !== rawMockAttempts.length
+    || parsedMockAttempts.some(({ repaired: mockRepaired }) => mockRepaired)
     || (parsed.clfAssessmentSnapshots !== undefined && (!Array.isArray(parsed.clfAssessmentSnapshots) || clfAssessmentSnapshots.length !== rawSnapshots.length))
     || (parsed.schedules !== undefined && !isRecord(parsed.schedules));
   const progress: Progress = {
@@ -405,6 +529,21 @@ export function recordMemoryBest(boardId: string, ms: number) {
   return next;
 }
 
+function withDeckBest(
+  practice: NonNullable<Progress["drillPractice"]>,
+  deckId: string,
+  patch: { bestScore?: number; bestStreak?: number },
+) {
+  const previous = practice.decks?.[deckId] ?? { bestScore: 0, bestStreak: 0 };
+  return {
+    ...practice.decks,
+    [deckId]: {
+      bestScore: Math.max(previous.bestScore, patch.bestScore ?? previous.bestScore),
+      bestStreak: Math.max(previous.bestStreak, patch.bestStreak ?? previous.bestStreak),
+    },
+  };
+}
+
 /** Remember a miss, clear it after a later correct answer, and keep a higher streak. */
 export function recordDrillOutcome(deckId: string, itemId: string, correct: boolean, streak: number) {
   const current = loadProgress();
@@ -413,7 +552,42 @@ export function recordDrillOutcome(deckId: string, itemId: string, correct: bool
   const missedIds = correct
     ? practice.missedIds.filter((id) => id !== key)
     : practice.missedIds.includes(key) ? practice.missedIds : [...practice.missedIds, key];
-  const next = { ...current, drillPractice: { missedIds, bestStreak: Math.max(practice.bestStreak, streak) } };
+  const next = {
+    ...current,
+    drillPractice: {
+      missedIds,
+      bestStreak: Math.max(practice.bestStreak, streak),
+      decks: withDeckBest(practice, deckId, { bestStreak: streak }),
+    },
+  };
+  saveProgress(next);
+  return next;
+}
+
+/** Keep the higher speed-run score for one deck. */
+export function recordDrillScore(deckId: string, score: number) {
+  const current = loadProgress();
+  const practice = current.drillPractice ?? { missedIds: [], bestStreak: 0 };
+  const next = { ...current, drillPractice: { ...practice, decks: withDeckBest(practice, deckId, { bestScore: score }) } };
+  saveProgress(next);
+  return next;
+}
+
+/** One tap after a wrong answer. Null clears a reason the learner skipped or undid. */
+export function setMissReason(sittingId: string, questionId: string, reason: string | null) {
+  const current = loadProgress();
+  const apply = <T extends { sittingId?: string; missReasons?: Record<string, string> }>(attempt: T): T => {
+    if (attempt.sittingId !== sittingId) return attempt;
+    const missReasons = { ...attempt.missReasons };
+    if (reason && MISS_REASONS.has(reason)) missReasons[questionId] = reason;
+    else delete missReasons[questionId];
+    return { ...attempt, missReasons };
+  };
+  const next = {
+    ...current,
+    quizAttempts: current.quizAttempts.map(apply),
+    mockAttempts: current.mockAttempts.map(apply),
+  };
   saveProgress(next);
   return next;
 }

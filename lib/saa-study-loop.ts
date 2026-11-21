@@ -12,6 +12,11 @@ export type AnsweredAttempt = {
   selectedChoices?: Record<string, number | number[]>;
   answeredIds?: string[];
   correctIds?: string[];
+  luckyIds?: string[];
+  sureIds?: string[];
+  unsureIds?: string[];
+  guessedIds?: string[];
+  confidenceByQuestion?: Record<string, string>;
 };
 
 export type AnsweredOutcome = { id: string; correct: boolean };
@@ -30,37 +35,65 @@ export type DomainSummary = {
  * Questions with a recorded answer. Unshown ids and misses with no recorded choice
  * are left out, so an abandoned sitting cannot be scored as correct.
  */
+function recordedLucky(attempt: AnsweredAttempt, id: string): boolean {
+  return attempt.luckyIds?.includes(id) ?? false;
+}
+
+/** A lucky guess stays correct even if a review flag also lists the id. */
+function countedCorrect(attempt: AnsweredAttempt, id: string, missed: Set<string>): boolean {
+  return recordedLucky(attempt, id) || !missed.has(id);
+}
+
 export function answeredOutcomes(attempt: AnsweredAttempt): AnsweredOutcome[] {
   const shown = attempt.questionIds ?? [];
   const shownSet = new Set(shown);
   const missed = new Set(attempt.missedIds ?? []);
+  const lucky = new Set(attempt.luckyIds ?? []);
   const inScope = (id: string) => shownSet.size === 0 || shownSet.has(id);
 
   if (Array.isArray(attempt.answeredIds)) {
-    return attempt.answeredIds.filter(inScope).map((id) => ({ id, correct: !missed.has(id) }));
+    return attempt.answeredIds.filter(inScope).map((id) => ({ id, correct: countedCorrect(attempt, id, missed) }));
   }
   if (attempt.selectedChoices) {
-    return Object.keys(attempt.selectedChoices).filter(inScope).map((id) => ({ id, correct: !missed.has(id) }));
+    return Object.keys(attempt.selectedChoices).filter(inScope).map((id) => ({ id, correct: countedCorrect(attempt, id, missed) }));
   }
   if (Array.isArray(attempt.correctIds)) {
     const wrong = new Set(Object.keys(attempt.wrongChoices ?? {}));
     const outcomes: AnsweredOutcome[] = [];
+    const seen = new Set<string>();
     for (const id of attempt.correctIds) {
-      if (!inScope(id) || missed.has(id) || wrong.has(id)) continue;
+      if (!inScope(id) || seen.has(id)) continue;
+      if (!recordedLucky(attempt, id) && (missed.has(id) || wrong.has(id))) continue;
       outcomes.push({ id, correct: true });
+      seen.add(id);
     }
     for (const id of wrong) {
-      if (inScope(id)) outcomes.push({ id, correct: false });
+      if (!inScope(id) || seen.has(id) || recordedLucky(attempt, id)) continue;
+      outcomes.push({ id, correct: false });
+      seen.add(id);
+    }
+    for (const id of lucky) {
+      if (inScope(id) && !seen.has(id)) outcomes.push({ id, correct: true });
     }
     return outcomes;
   }
   if (attempt.wrongChoices) {
     const outcomes: AnsweredOutcome[] = [];
+    const seen = new Set<string>();
     for (const id of shown) {
-      if (attempt.wrongChoices[id] !== undefined) outcomes.push({ id, correct: false });
+      if (recordedLucky(attempt, id)) outcomes.push({ id, correct: true });
+      else if (attempt.wrongChoices[id] !== undefined) outcomes.push({ id, correct: false });
       else if (!missed.has(id)) outcomes.push({ id, correct: true });
+      else continue;
+      seen.add(id);
+    }
+    for (const id of lucky) {
+      if (inScope(id) && !seen.has(id)) outcomes.push({ id, correct: true });
     }
     return outcomes;
+  }
+  if (lucky.size > 0) {
+    return [...lucky].filter(inScope).map((id) => ({ id, correct: true }));
   }
   return [];
 }
@@ -134,19 +167,24 @@ export function nextSaaQuestionIds(
 ): string[] {
   const summary = saaDomainSummary(attempts, questions, domains);
   const weakDomains = new Set(summary.filter((domain) => domain.weak).map((domain) => domain.id));
-  if (weakDomains.size === 0) return [];
 
   const byId = new Map(questions.map((question) => [question.id, question]));
   const saa = questions.filter((question) => question.examCodes?.includes("saa-c03") && saaTask(question));
-  const latest = new Map<string, boolean>();
+  const latest = new Map<string, { correct: boolean; sure: boolean; lucky: boolean }>();
   const taskStats = new Map<string, { correct: number; answered: number }>();
 
   for (const attempt of [...attempts].sort((a, b) => (a.at ?? 0) - (b.at ?? 0))) {
     if (attempt.exam !== "saa-c03") continue;
     for (const outcome of answeredOutcomes(attempt)) {
       const task = saaTask(byId.get(outcome.id));
-      if (!task || !weakDomains.has(domainIdForTask(task))) continue;
-      latest.set(outcome.id, outcome.correct);
+      if (!task) continue;
+      const lucky = outcome.correct && reviewLucky(attempt, outcome.id);
+      latest.set(outcome.id, {
+        correct: outcome.correct,
+        sure: !outcome.correct && reviewSure(attempt, outcome.id),
+        lucky,
+      });
+      if (!weakDomains.has(domainIdForTask(task))) continue;
       const stats = taskStats.get(task) ?? { correct: 0, answered: 0 };
       stats.answered += 1;
       if (outcome.correct) stats.correct += 1;
@@ -162,16 +200,37 @@ export function nextSaaQuestionIds(
     return aPercent - bPercent || bMisses - aMisses || a[0].localeCompare(b[0]);
   }).map(([task]) => task);
 
-  const missed: string[] = [];
+  const sureWrong: string[] = [];
+  const otherWrong: string[] = [];
+  const lucky: string[] = [];
   const unseen: string[] = [];
   for (const task of tasks) {
     const inTask = saa.filter((question) => saaTask(question) === task).sort((a, b) => a.id.localeCompare(b.id));
     for (const question of inTask) {
-      if (latest.get(question.id) === false) missed.push(question.id);
-      else if (!latest.has(question.id)) unseen.push(question.id);
+      const state = latest.get(question.id);
+      if (!state) unseen.push(question.id);
+      else if (!state.correct && state.sure) sureWrong.push(question.id);
+      else if (!state.correct) otherWrong.push(question.id);
+      else if (state.lucky) lucky.push(question.id);
     }
   }
-  return [...missed, ...unseen].slice(0, limit);
+  const listed = new Set(lucky);
+  const otherLucky = saa
+    .map((question) => question.id)
+    .filter((id) => latest.get(id)?.lucky && !listed.has(id))
+    .sort();
+  return [...sureWrong, ...otherWrong, ...lucky, ...otherLucky, ...unseen].slice(0, limit);
+}
+
+function reviewSure(attempt: AnsweredAttempt, id: string): boolean {
+  return attempt.confidenceByQuestion?.[id] === "sure" || (attempt.sureIds?.includes(id) ?? false);
+}
+
+function reviewLucky(attempt: AnsweredAttempt, id: string): boolean {
+  if (attempt.luckyIds?.includes(id)) return true;
+  const level = attempt.confidenceByQuestion?.[id];
+  if (level === "unsure" || level === "guess") return true;
+  return (attempt.unsureIds?.includes(id) ?? false) || (attempt.guessedIds?.includes(id) ?? false);
 }
 
 export type UntimedMiss = { id: string; misses: number; latestAt: number };

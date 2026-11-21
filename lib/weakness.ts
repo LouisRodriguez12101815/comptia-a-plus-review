@@ -86,11 +86,19 @@ export type DueReview = { questionId: string; objectiveId?: string; dueAt: numbe
  * and a second correct answer ends the schedule. Any miss starts it again.
  * Returns the due ones, most overdue first.
  */
-export function dueReviews(attempts: MockAttempt[], exam: string, now: number): DueReview[] {
+type ScheduledAttempt = {
+  exam?: string;
+  at: number;
+  questionIds?: string[];
+  missedIds?: string[];
+  objectiveByQuestion?: Record<string, string>;
+};
+
+export function dueReviews(attempts: ScheduledAttempt[], exam: string, now: number): DueReview[] {
   const state = new Map<string, { step: 0 | 1 | 2; dueAt: number; objectiveId?: string }>();
   const oldestFirst = attempts.filter((attempt) => attempt.exam === exam).slice().sort((a, b) => a.at - b.at);
   for (const attempt of oldestFirst) {
-    const missed = new Set(attempt.missedIds);
+    const missed = new Set(attempt.missedIds ?? []);
     for (const id of attempt.questionIds ?? []) {
       const objectiveId = attempt.objectiveByQuestion?.[id];
       const current = state.get(id) ?? { step: 0, dueAt: 0 };

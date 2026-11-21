@@ -6,7 +6,8 @@ import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
 import { questions } from "@/lib/content";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
-import { nextSaaQuestionIds, saaDomainSummary, saaUntimedMisses } from "@/lib/saa-study-loop";
+import { nextSaaQuestionIds, saaDomainSummary } from "@/lib/saa-study-loop";
+import { mostCommonMissReason, reasonTools, SAA_CLUSTERS, saaReviewMisses } from "@/lib/saa-test-skills";
 
 function PatternCard({ id, title, diagram, when, docs, questionIds }: { id?: string; title: string; diagram: string; when: string; docs: string; questionIds: string[] }) {
   const t = useTranslations("saaStudyLoop");
@@ -30,6 +31,7 @@ const domains = objectives.exams.find((exam) => exam.code === "saa-c03")?.domain
 
 export function SaaStudyLoop() {
   const t = useTranslations("saaStudyLoop");
+  const skills = useTranslations("saaTestSkills");
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
   const domainRows = useMemo(
     () => saaDomainSummary([...progress.quizAttempts, ...progress.mockAttempts], questions, domains),
@@ -39,7 +41,15 @@ export function SaaStudyLoop() {
     () => nextSaaQuestionIds([...progress.quizAttempts, ...progress.mockAttempts], questions, domains),
     [progress],
   );
-  const misses = useMemo(() => saaUntimedMisses(progress.quizAttempts, questions), [progress]);
+  const reviewMisses = useMemo(
+    () => saaReviewMisses([...progress.quizAttempts, ...progress.mockAttempts], questions),
+    [progress],
+  );
+  const commonReason = useMemo(
+    () => mostCommonMissReason([...progress.quizAttempts, ...progress.mockAttempts]),
+    [progress],
+  );
+  const tools = reasonTools();
   const byId = useMemo(() => new Map(questions.map((question) => [question.id, question])), []);
 
   return (
@@ -74,14 +84,42 @@ export function SaaStudyLoop() {
       </div>
 
       <div>
+        <h3 className="font-medium text-white">{skills("practiceHeading")}</h3>
+        <p className="mt-1 text-sm text-slate-400">{skills("practiceIntro")}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link href="/test?exam=saa-c03&length=mini" className="inline-flex min-h-11 items-center rounded-full bg-teal-500 px-4 text-sm font-medium text-slate-950">{skills("miniLink")}</Link>
+          <Link href="/quiz?exam=saa-c03&mode=twin" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 text-sm text-teal-100">{skills("twinLink")}</Link>
+        </div>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          {SAA_CLUSTERS.map((cluster) => (
+            <li key={cluster.id}>
+              <Link href={`/quiz?exam=saa-c03&cluster=${cluster.id}`} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{skills("clusterLink", { id: cluster.id, title: cluster.title })}</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h3 className="font-medium text-white">{skills("reasonHeading")}</h3>
+        <p className="mt-1 text-sm text-slate-300">{commonReason ? skills("reasonCommon", { reason: skills(`reasons.${commonReason}`) }) : skills("reasonEmpty")}</p>
+        <ul className="mt-3 space-y-2">
+          {tools.map((tool) => (
+            <li key={tool.reason}>
+              <Link href={tool.href} className={`inline-flex min-h-11 items-center text-sm underline underline-offset-4 ${tool.reason === commonReason ? "text-amber-200" : "text-teal-200"}`}>{skills(`reasonLinks.${tool.reason}`)}</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
         <h3 className="font-medium text-white">{t("missHeading")}</h3>
-        {misses.length === 0 ? (
+        {reviewMisses.length === 0 ? (
           <p className="mt-1 text-sm text-slate-400">{t("missEmpty")}</p>
         ) : (
           <ul className="mt-2 space-y-2">
-            {misses.slice(0, 10).map((miss) => (
-              <li key={miss.id} className="text-sm text-slate-200">
-                {byId.get(miss.id)?.prompt} <span className="text-slate-400">{t("missCount", { count: miss.misses })}</span>
+            {reviewMisses.slice(0, 10).map((miss) => (
+              <li key={`${miss.id}-${miss.lucky ? "lucky" : "miss"}`} className="text-sm text-slate-200">
+                {byId.get(miss.id)?.prompt} <span className="text-slate-400">{miss.lucky ? skills("luckyBadge") : t("missCount", { count: miss.misses })}</span>
               </li>
             ))}
           </ul>

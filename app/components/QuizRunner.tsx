@@ -9,21 +9,25 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuestions } from "@/lib/content";
 import { conceptVideos } from "@/lib/concept-videos";
-import { assessmentVersion, freshFirstIds, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
-import { getProgressSnapshot, questionHistory, recordQuiz } from "@/lib/progress";
+import { assessmentVersion, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
+import { qualifierTwins } from "@/content/saa-qualifier-twins";
+import { getProgressSnapshot, questionHistory, rateCard, recordQuiz, setMissReason } from "@/lib/progress";
+import { isLuckyGuess, orderedTwinIds, rotatePracticeIds, saaRotationHistory, type AttemptMode, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
+import { dueReviews } from "@/lib/weakness";
 import { answerLabel, correctIndices, isCorrectPick, mapAuthoredAnswersToDisplayed } from "@/lib/quiz-feedback";
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
 import { n10AddressingGuidanceKeys } from "@/lib/n10-remediation";
 import { saaTaskId } from "@/lib/saa-tags";
-import { cardsForTask } from "@/lib/study/memory";
+import { cardsForQuestion, cardsForTask } from "@/lib/study/memory";
 import { examForStudyQuestion, examForStudyQuestions, isN10Question, isQuestionForExam, sendStudyEvent, sendStudyEventOnNavigation } from "@/lib/study-telemetry";
 import { wrongChoicesForQuiz } from "@/lib/quiz-answer-history";
 import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
 
-export function QuizRunner({ initialTopic, questionIds, scoped = false }: { initialTopic: string; questionIds?: string[]; scoped?: boolean }) {
+export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptMode = "quiz" }: { initialTopic: string; questionIds?: string[]; scoped?: boolean; attemptMode?: AttemptMode }) {
   const t = useTranslations("quizRunner");
+  const skills = useTranslations("saaTestSkills");
   const remediationT = useTranslations("weakAreas.remediation");
   const addressingT = useTranslations("weakAreas.addressingRemediation");
   const [focus, setFocus] = useStudyFocus();
@@ -38,12 +42,22 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   const telemetryCompleted = useRef(false);
   const displayedOrders = useRef<Record<string, number[]>>({});
 
+  const [confidence, setConfidence] = useState<Record<string, ConfidenceLevel>>({});
+  const [missReasons, setMissReasons] = useState<Record<string, MissReason>>({});
+  const [secondsByQuestion, setSecondsByQuestion] = useState<Record<string, number>>({});
+  const [sittingId, setSittingId] = useState("");
+  const startedAt = useRef(0);
+
   const idKey = questionIds ? questionIds.join("|") : null;
   const pool = useMemo(() => {
+    if (attemptMode === "twin") {
+      const order = new Map(orderedTwinIds(qualifierTwins).map((id, index) => [id, index]));
+      return [...qualifierTwins].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+    }
     if (idKey === null) return getQuestions(topicId, focus);
     const wanted = new Set(idKey.split("|"));
     return allQuestions.filter((q) => wanted.has(q.id));
-  }, [topicId, focus, idKey]);
+  }, [attemptMode, topicId, focus, idKey]);
   const topicOptions = getTopics(focus);
   const [quiz, setQuiz] = useState<Question[]>([]);
 
@@ -80,11 +94,23 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
   }
 
   function start() {
-    // Questions not seen in earlier quizzes or tests come first, then the ones seen longest ago.
+    // Unseen questions come first. SAA modes share one history, and due misses lead a topic or twin sitting.
     const byId = new Map(pool.map((q) => [q.id, q]));
-    const order = freshFirstIds(pool.map((q) => q.id), questionHistory(getProgressSnapshot()));
+    const snapshot = getProgressSnapshot();
+    const saaSitting = attemptMode === "topic" || attemptMode === "twin" || (pool.length > 0 && pool.every((question) => question.examCodes?.includes("saa-c03")));
+    const history = saaSitting ? saaRotationHistory(snapshot) : questionHistory(snapshot);
+    const dueIds = attemptMode === "topic" || attemptMode === "twin"
+      ? dueReviews([...snapshot.quizAttempts, ...snapshot.mockAttempts], "saa-c03", Date.now()).map((item) => item.questionId)
+      : [];
+    const order = rotatePracticeIds(pool.map((q) => q.id), { history, dueIds });
     displayedOrders.current = {};
-    const deck = order.slice(0, Math.min(15, order.length)).map((id) => {
+    const cap = attemptMode === "twin" ? order.length : Math.min(15, order.length);
+    startedAt.current = Date.now();
+    setSittingId(crypto.randomUUID());
+    setConfidence({});
+    setMissReasons({});
+    setSecondsByQuestion({});
+    const deck = order.slice(0, cap).map((id) => {
       const source = byId.get(id)!;
       const choiceOrder = shuffleChoiceOrder(source);
       displayedOrders.current[id] = choiceOrder;
@@ -137,6 +163,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
         missCount: correctAnswer ? undefined : priorMisses + 1,
       });
     }
+    setSecondsByQuestion((prev) => ({ ...prev, [current.id]: (prev[current.id] ?? 0) + Math.max(0, Math.round((Date.now() - startedAt.current) / 1000)) }));
     setAnswers({ ...answers, [current.id]: answer });
   }
 
@@ -149,7 +176,28 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
     const bankVersion = exam
       ? assessmentVersion(allQuestions.filter((question) => isQuestionForExam(question, exam)))
       : undefined;
-    recordQuiz({ exam, bankVersion, topicId, correct: quiz.length - missed.length, total: quiz.length, questionIds: quiz.map((question) => question.id), missedIds: missed, wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current) });
+    const luckyIds = quiz.filter((question) => isLuckyGuess(confidence[question.id], isCorrectPick(question, answers[question.id]))).map((question) => question.id);
+    const saaSitting = exam === "saa-c03" || attemptMode === "twin" || attemptMode === "topic";
+    recordQuiz({
+      exam: saaSitting ? "saa-c03" : exam,
+      bankVersion,
+      topicId,
+      correct: quiz.length - missed.length,
+      total: quiz.length,
+      questionIds: quiz.map((question) => question.id),
+      missedIds: missed,
+      luckyIds,
+      confidenceByQuestion: confidence,
+      sureIds: Object.keys(confidence).filter((id) => confidence[id] === "sure"),
+      unsureIds: Object.keys(confidence).filter((id) => confidence[id] === "unsure"),
+      guessedIds: Object.keys(confidence).filter((id) => confidence[id] === "guess"),
+      missReasons,
+      secondsByQuestion,
+      sittingId,
+      mode: attemptMode,
+      wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current),
+    });
+    if (saaSitting) for (const id of luckyIds) for (const card of cardsForQuestion(id)) rateCard(card.id, "again");
     if (!telemetryCompleted.current) {
       telemetryCompleted.current = true;
       const exam = examForStudyQuestions(quiz, focus !== "all" ? focus : undefined);
@@ -190,7 +238,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
           ))}
         </select>}
         <p className="text-sm text-slate-400">
-          {t("poolSummary", { count: pool.length })}
+          {attemptMode === "twin" ? skills("twinPool", { count: pool.length }) : t("poolSummary", { count: pool.length })}
         </p>
         <button
           type="button"
@@ -206,7 +254,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
 
   if (done) {
     const missed = quiz.filter(
-      (question) => !isCorrectPick(question, answers[question.id]),
+      (question) => !isCorrectPick(question, answers[question.id]) || isLuckyGuess(confidence[question.id], isCorrectPick(question, answers[question.id])),
     );
     return (
       <div className="space-y-6">
@@ -235,6 +283,25 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
                   {t("correctAnswer", { answer: answerLabel(question, question.answer) })}
                 </p>
                 <p className="mt-2 text-sm text-slate-400"><ExplanationText text={question.explanation} /></p>
+                {isLuckyGuess(confidence[question.id], true) && <p className="mt-2 text-sm text-violet-200">{skills("luckyBadge")}</p>}
+                {!isCorrectPick(question, answers[question.id]) && (question.examCodes?.includes("saa-c03") || attemptMode === "twin") && (
+                  <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={skills("missReasonLabel")}>
+                    {(["qualifier", "confused", "unknown", "time"] as const).map((reason) => (
+                      <button key={reason} type="button" aria-pressed={missReasons[question.id] === reason} onClick={() => {
+                        const next = missReasons[question.id] === reason ? null : reason;
+                        setMissReasons((prev) => {
+                          const updated = { ...prev };
+                          if (next) updated[question.id] = next;
+                          else delete updated[question.id];
+                          return updated;
+                        });
+                        if (sittingId) setMissReason(sittingId, question.id, next);
+                      }} className="min-h-11 rounded-full border border-slate-600 px-3 text-sm text-slate-100">
+                        {skills(`reasons.${reason}`)}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {(() => {
                   const task = saaTaskId(question);
                   if (!task || cardsForTask(task).length === 0) return null;
@@ -275,6 +342,16 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
           multi: multi ? "yes" : "no",
         })}
       </p>
+      {(current.examCodes?.includes("saa-c03") || attemptMode === "twin") && (
+        <div role="group" aria-label={skills("confidenceLabel")} className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-slate-300">{skills("confidenceLabel")}</span>
+          {(["sure", "unsure", "guess"] as const).map((level) => (
+            <button key={level} type="button" aria-pressed={confidence[current.id] === level} disabled={revealed} onClick={() => setConfidence((prev) => ({ ...prev, [current.id]: level }))} className={`min-h-11 rounded-full border px-3 text-sm ${confidence[current.id] === level ? "border-teal-300 text-white" : "border-slate-600 text-slate-100"}`}>
+              {skills(level)}
+            </button>
+          ))}
+        </div>
+      )}
       <h2 data-quiz-question className="text-xl font-medium text-white">{current.prompt}</h2>
       <ul data-quiz-choices className="space-y-2">
         {current.choices.map((choice, choiceIndex) => {
@@ -332,6 +409,25 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
           <p className="text-slate-300">
             <ExplanationText text={current.explanation} />
           </p>
+          {correct && isLuckyGuess(confidence[current.id], true) && <p>{skills("luckyBadge")}</p>}
+          {!correct && (current.examCodes?.includes("saa-c03") || attemptMode === "twin") && (
+            <div className="flex flex-wrap gap-2" role="group" aria-label={skills("missReasonLabel")}>
+              {(["qualifier", "confused", "unknown", "time"] as const).map((reason) => (
+                <button key={reason} type="button" aria-pressed={missReasons[current.id] === reason} onClick={() => {
+                  const next = missReasons[current.id] === reason ? null : reason;
+                  setMissReasons((prev) => {
+                    const updated = { ...prev };
+                    if (next) updated[current.id] = next;
+                    else delete updated[current.id];
+                    return updated;
+                  });
+                }} className="min-h-11 rounded-full border border-slate-600 px-3 text-sm text-slate-100">
+                  {skills(`reasons.${reason}`)}
+                </button>
+              ))}
+              <span className="text-xs text-slate-400">{skills("missReasonSkip")}</span>
+            </div>
+          )}
           {!correct && inlineRemediation && (
             <details data-inline-remediation onToggle={(event) => {
               if (event.currentTarget.open && !telemetryRemediation.current.has(current.id) && isN10Question(current)) {
@@ -381,6 +477,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false }: { init
             finish();
             return;
           }
+          startedAt.current = Date.now();
           setIndex(index + 1);
           setPicked([]);
         }}

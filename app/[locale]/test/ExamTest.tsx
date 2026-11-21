@@ -13,7 +13,9 @@ import {
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
-import { getProgressSnapshot, getServerProgressSnapshot, recordMock, recordQuiz, subscribeProgress, type MockAttempt } from "@/lib/progress";
+import { cardsForQuestion } from "@/lib/study/memory";
+import { getProgressSnapshot, getServerProgressSnapshot, rateCard, recordMock, recordQuiz, setMissReason, subscribeProgress, type MockAttempt } from "@/lib/progress";
+import { isLuckyGuess, isSlowAnswer, saaRotationHistory, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
 import { dueReviews, objectiveStats, weakestObjectives } from "@/lib/weakness";
 import { evaluateReadiness } from "@/lib/readiness";
 import { confusionFor, pairFromKey } from "@/lib/confusions";
@@ -27,7 +29,7 @@ const examCodes = ["220-1201", "220-1202", "n10-009", "clf-c02", "saa-c03"] as c
 type ExamCode = (typeof examCodes)[number];
 type Phase = "setup" | "running" | "done";
 type RunKind = "standard" | "targeted" | "retest" | "drill";
-type Confidence = "sure" | "guess";
+type Confidence = ConfidenceLevel;
 /** At most this many due missed questions go into one sitting. */
 const DUE_PER_TEST = 5;
 export type LabLink = { file: string; title: string };
@@ -115,10 +117,11 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
   );
 }
 
-export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string }) {
+export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain, initialLength }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string; initialLength?: string }) {
   const t = useTranslations("examTest");
+  const skills = useTranslations("saaTestSkills");
   const [exam, setExam] = useState<ExamCode>(practiceMode ? (initialExam === "saa-c03" ? "saa-c03" : "clf-c02") : initialExam ?? "220-1201");
-  const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialFocus.length > 0 ? "quick" : initialExam === "saa-c03" ? "count20" : "full");
+  const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialLength === "mini" && initialExam === "saa-c03" ? "mini" : initialFocus.length > 0 ? "quick" : initialExam === "saa-c03" ? "count20" : "full");
   const [mode, setMode] = useState<"standard" | "targeted">(initialFocus.length > 0 ? "targeted" : "standard");
   const [runInfo, setRunInfo] = useState<{ kind: RunKind; objectiveIds: string[] }>({ kind: "standard", objectiveIds: [] });
   const [sessionSeconds, setSessionSeconds] = useState(0);
@@ -138,6 +141,10 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const [mockHistory, setMockHistory] = useState<MockAttempt[]>([]);
   const [confidence, setConfidence] = useState<Record<string, Confidence>>({});
   const confidenceRef = useRef<Record<string, Confidence>>({});
+  const [missReasons, setMissReasons] = useState<Record<string, MissReason>>({});
+  const missReasonsRef = useRef<Record<string, MissReason>>({});
+  const [sittingId, setSittingId] = useState("");
+  const enteredAt = useRef(0);
   const [dueIds, setDueIds] = useState<string[]>([]);
   // Read the clock once per mount so the due count stays stable while rendering.
   const [now] = useState(nowMs);
@@ -174,6 +181,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     if (id === "mixed20") return t("mixedPractice");
     if (id === "count10") return t("count10");
     if (id === "count20") return t("count20");
+    if (id === "mini") return skills("miniLabel");
     if (id === "count40") return t("count40");
     if (id === "half") return t("halfExam");
     if (id === "quick") return t("quickCheck");
@@ -198,6 +206,18 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const [reviewing, setReviewing] = useState(false);
   const warnedIndex = useRef(-1);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const indexRef = useRef(0);
+
+  const stamp = useCallback((questionId: string | undefined) => {
+    if (!questionId || enteredAt.current === 0) return;
+    const add = Math.max(0, Math.round((Date.now() - enteredAt.current) / 1000));
+    enteredAt.current = Date.now();
+    const prev = responsesRef.current[questionId];
+    responsesRef.current = {
+      ...responsesRef.current,
+      [questionId]: { answer: prev?.answer, timedOut: prev?.timedOut ?? false, seconds: (prev?.seconds ?? 0) + add },
+    };
+  }, []);
 
   const rate = useCallback((questionId: string, level: Confidence) => {
     const prev = confidenceRef.current;
@@ -217,6 +237,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const beginQuestion = useCallback((seconds: number) => {
     warnedIndex.current = -1;
     startedAt.current = Date.now();
+    enteredAt.current = startedAt.current;
     deadline.current = startedAt.current + seconds * 1000;
     sessionRef.current = seconds;
     setSessionSeconds(seconds);
@@ -230,6 +251,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const finish = useCallback((finalResponses: Record<string, TestResponse>, finalPicks: TestPick[], timedOut = false) => {
     if (completed.current) return;
     completed.current = true;
+    stamp(finalPicks[indexRef.current]?.questionId);
+    finalResponses = responsesRef.current;
     if (timedOut) finalResponses = Object.fromEntries(finalPicks.map(p => [p.questionId, finalResponses[p.questionId] ?? { answer: undefined, timedOut: true, seconds: 0 }]));
     responsesRef.current = finalResponses;
     setResponses(finalResponses);
@@ -263,20 +286,33 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       multiQuestionIds: multiPicks.filter(p => visited.current.has(p.questionId)).map(p => p.questionId),
       bankVersion: assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
       missedIds: missed,
+      luckyIds: finalPicks.map((p) => p.questionId).filter((id) => isLuckyGuess(confidenceRef.current[id], isCorrect(questionsById[id], finalResponses[id]?.answer))),
       sureIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "sure"),
+      unsureIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "unsure"),
       guessedIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "guess"),
+      confidenceByQuestion: Object.fromEntries(finalPicks.flatMap((p) => confidenceRef.current[p.questionId] ? [[p.questionId, confidenceRef.current[p.questionId]]] : [])),
+      missReasons: missReasonsRef.current,
+      secondsByQuestion: Object.fromEntries(finalPicks.map((p) => [p.questionId, finalResponses[p.questionId]?.seconds ?? 0])),
+      sittingId: sittingId,
+      mode: exam === "saa-c03" && lengthId === "mini" ? "mini" : "mock",
       wrongChoices: Object.fromEntries(missed.flatMap((id) => {
         const answer = finalResponses[id]?.answer;
         return typeof answer === "number" && !Array.isArray(questionsById[id].answer) ? [[id, answer]] : [];
       })),
     });
+    if (exam === "saa-c03") {
+      const lucky = finalPicks.map((p) => p.questionId).filter((id) => isLuckyGuess(confidenceRef.current[id], isCorrect(questionsById[id], finalResponses[id]?.answer)));
+      for (const id of lucky) for (const card of cardsForQuestion(id)) rateCard(card.id, "again");
+    }
     setMockHistory(next.mockAttempts);
     setPhase("done");
     setConfirmEnd(false);
-  }, [exam, sessionPool, setPhase]);
+  }, [exam, lengthId, sessionPool, setPhase, sittingId, stamp]);
 
   const navigate = useCallback((nextIndex: number) => {
     const next = Math.max(0, Math.min(picks.length - 1, nextIndex));
+    stamp(picks[indexRef.current]?.questionId);
+    indexRef.current = next;
     setIndex(next);
     const id = picks[next].questionId;
     visited.current.add(id);
@@ -284,7 +320,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     choose(answer === undefined ? [] : Array.isArray(answer) ? [...answer] : [answer]);
     setReviewing(false);
     setFeedbackVisible(false);
-  }, [picks, choose, setReviewing]);
+  }, [picks, choose, setReviewing, stamp]);
 
   const lockIn = useCallback(() => {
     // Mixed-practice compatibility: isMixedPractice && !feedbackVisible
@@ -327,7 +363,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     choose(next);
     if (current) {
       const answer = next.length === 0 ? undefined : multi ? next : next[0];
-      const updated = { ...responsesRef.current, [current.id]: { answer, timedOut: false, seconds: 0 } };
+      const updated = { ...responsesRef.current, [current.id]: { answer, timedOut: false, seconds: responsesRef.current[current.id]?.seconds ?? 0 } };
       responsesRef.current = updated;
       setResponses(updated);
     }
@@ -342,22 +378,27 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       const key = event.key.toLowerCase();
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
       if (Number.isInteger(n) && n >= 1 && n <= current.choices.length) { event.preventDefault(); toggle(orders[current.id]?.[n - 1] ?? n - 1); }
-      else if (key === "s" || key === "g") { event.preventDefault(); rate(current.id, key === "s" ? "sure" : "guess"); }
+      else if (key === "s" || key === "g" || (exam === "saa-c03" && key === "u")) { event.preventDefault(); rate(current.id, key === "s" ? "sure" : key === "u" ? "unsure" : "guess"); }
       else if (event.key === "Enter" && selectedRef.current.length > 0 && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); lockIn(); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [feedbackVisible, phase, current, toggle, lockIn, orders, reviewing, rate, immediatePractice]);
+  }, [exam, feedbackVisible, phase, current, toggle, lockIn, orders, reviewing, rate, immediatePractice]);
 
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
     // Earlier sittings for this exam, oldest first, so unseen questions come up first.
-    const history = getProgressSnapshot().mockAttempts
-      .filter((attempt) => attempt.exam === exam)
-      .reverse()
-      .flatMap((attempt) => attempt.questionIds ?? []);
+    // SAA quizzes, topic drills, twins, mini-mocks, and full mocks share one history.
+    const snapshot = getProgressSnapshot();
+    const history = exam === "saa-c03"
+      ? saaRotationHistory(snapshot)
+      : snapshot.mockAttempts
+        .filter((attempt) => attempt.exam === exam)
+        .reverse()
+        .flatMap((attempt) => attempt.questionIds ?? []);
     // Missed questions whose 1-day or 3-day review is due go in first.
-    const due = kind === "drill" ? [] : dueReviews(getProgressSnapshot().mockAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
+    const dueAttempts = exam === "saa-c03" ? [...snapshot.quizAttempts, ...snapshot.mockAttempts] : snapshot.mockAttempts;
+    const due = kind === "drill" ? [] : dueReviews(dueAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
     const priority = due.map((d) => d.questionId);
     const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
     const draft = kind === "drill"
@@ -372,13 +413,19 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setDueIds(priority.filter((id) => draft.some((p) => p.questionId === id)));
     confidenceRef.current = {};
     setConfidence({});
+    missReasonsRef.current = {};
+    setMissReasons({});
+    const nextSitting = crypto.randomUUID();
+    setSittingId(nextSitting);
+    indexRef.current = 0;
     setFlags([]);
     setReviewing(false);
     setRunInfo(kind === "drill" ? { kind, objectiveIds: [] } : { kind: objectiveIds.length === 0 ? "standard" : kind, objectiveIds: kind === "standard" ? [] : objectiveIds });
     setPicks(draft);
     setIndex(0);
     choose([]);
-    beginQuestion(immediatePractice ? 0 : sessionDurationSeconds(exam, draft.length));
+    const timed = exam === "saa-c03" && lengthId === "mini" ? 40 * 60 : sessionDurationSeconds(exam, draft.length);
+    beginQuestion(immediatePractice ? 0 : timed);
     responsesRef.current = {};
     visited.current = new Set(draft.slice(0, 1).map(p => p.questionId));
     setOrders(Object.fromEntries(draft.map(p => [p.questionId, shuffleChoiceOrder(questionsById[p.questionId])])));
@@ -424,8 +471,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         <fieldset className={card}>
           <legend className="px-1 text-lg font-semibold text-white">{t("length")}</legend>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
-            {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : isDomainPractice ? [{ id: "domain10", label: "domainPractice" }] : TEST_LENGTHS).map((length) => {
+            {(isMixedPractice ? [{ id: "mixed20", label: "mixedPractice" }] : isDomainPractice ? [{ id: "domain10", label: "domainPractice" }] : [...TEST_LENGTHS, ...(exam === "saa-c03" ? [{ id: "mini", label: "mini" }] : [])]).map((length) => {
               const requestedForLength = length.id === "mixed20" ? MIXED_PRACTICE_QUESTION_COUNT : length.id === "domain10" ? 10 : questionsForLength(exam, length.id);
+              const minutes = length.id === "mini" ? 40 : Math.round((Math.min(requestedForLength, sessionPool.totalUnique) * perQuestion) / 60);
               const count = Math.min(requestedForLength, sessionPool.totalUnique);
               return (
                 <label key={length.id} className={`flex min-h-11 cursor-pointer flex-col rounded-xl border p-4 ${lengthId === length.id ? "border-teal-400 bg-teal-400/10" : "border-slate-700 hover:border-slate-500"}`}>
@@ -433,7 +481,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                     <input type="radio" name="length" value={length.id} checked={lengthId === length.id} onChange={() => setLengthId(length.id)} className="accent-teal-400" />
                     <span className="font-medium text-white">{lengthLabel(length.id)}</span>
                   </span>
-                  <span className="mt-1 text-sm text-slate-300">{isMixedPractice ? t("mixedPracticeDetail") : isDomainPractice ? t("domainPracticeDetail") : t("questionCount", { count, minutes: Math.round((count * perQuestion) / 60) })}</span>
+                  <span className="mt-1 text-sm text-slate-300">{isMixedPractice ? t("mixedPracticeDetail") : isDomainPractice ? t("domainPracticeDetail") : t("questionCount", { count, minutes })}</span>
                 </label>
               );
             })}
@@ -553,6 +601,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
               {formatClock(remaining)}
             </p>}
           </div>
+          {exam === "saa-c03" && !immediatePractice && <p className="text-xs text-slate-400">{skills("pace")}</p>}
           {!immediatePractice && <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
             <div className={`h-full transition-[width] duration-200 ${warned ? "bg-amber-400" : "bg-teal-400"}`} style={{ width: `${100 * fraction}%` }} />
           </div>}
@@ -610,14 +659,14 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         })()}
         <div role="group" aria-labelledby="confidence-label" className="flex flex-wrap items-center gap-2">
           <span id="confidence-label" className="text-sm text-slate-300">{t("confidenceLabel")}</span>
-          {(["sure", "guess"] as const).map((level) => (
+          {(exam === "saa-c03" ? (["sure", "unsure", "guess"] as const) : (["sure", "guess"] as const)).map((level) => (
             <button key={level} type="button" aria-pressed={confidence[current.id] === level} onClick={() => rate(current.id, level)}
-              aria-keyshortcuts={level === "sure" ? "S" : "G"}
-              className={`${secondary} ${confidence[current.id] === level ? (level === "sure" ? "border-emerald-400 bg-emerald-950/50" : "border-violet-400 bg-violet-950/50") : ""}`}>
-              {level === "sure" ? t("confidenceSure") : t("confidenceGuess")}
+              aria-keyshortcuts={level === "sure" ? "S" : level === "unsure" ? "U" : "G"}
+              className={`${secondary} ${confidence[current.id] === level ? (level === "sure" ? "border-emerald-400 bg-emerald-950/50" : level === "unsure" ? "border-amber-400 bg-amber-950/50" : "border-violet-400 bg-violet-950/50") : ""}`}>
+              {level === "sure" ? t("confidenceSure") : level === "unsure" ? skills("unsure") : t("confidenceGuess")}
             </button>
           ))}
-          <span className="text-xs text-slate-400">{t("confidenceKeys")}</span>
+          <span className="text-xs text-slate-400">{exam === "saa-c03" ? skills("confidenceKeys") : t("confidenceKeys")}</span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={lockIn} className={primary}>
@@ -653,7 +702,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const usedSeconds = elapsed;
   const objectiveTitle = (domainId: string, objectiveId: string) =>
     sessionPool.domains.find((d) => d.id === domainId)?.objectives.find((o) => o.id === objectiveId)?.title ?? "";
-  const review = scored.filter((p) => !missedOnly || !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
+  const review = scored.filter((p) => !missedOnly || !isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer) || isLuckyGuess(confidence[p.questionId], isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer)) || isSlowAnswer(responses[p.questionId]?.seconds));
   const examMatrix = matrix.exams.find((item) => item.code === exam);
   const missingObjectives = examMatrix?.domains.flatMap((domain) => domain.objectives).filter((objective) => objective.status !== "covered").length ?? 0;
   const awsReadiness = exam === "clf-c02" || exam === "saa-c03"
@@ -671,7 +720,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     map.set(key, [...(map.get(key) ?? []), p]);
     return map;
   }, new Map<string, TestPick[]>())];
-  const luckyPicks = scored.filter((p) => confidence[p.questionId] === "guess" && isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer));
+  const luckyPicks = scored.filter((p) => isLuckyGuess(confidence[p.questionId], isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer)));
   const missedObjectiveIds = missedByObjective.map(([id]) => id);
   const retestObjectiveIds = [...new Set([...missedObjectiveIds, ...luckyPicks.map((p) => p.objectiveId)])];
   const conceptTitles = conceptTitleByQuestion();
@@ -681,7 +730,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const right = isCorrect(q, answer);
     const level = confidence[p.questionId];
     const flagged = flags.includes(p.questionId);
-    const status: WeakStatus | null = !right ? (level === "sure" ? "sure-wrong" : level === "guess" ? "guessed-wrong" : "wrong") : level === "guess" ? "lucky-guess" : flagged ? "flagged" : null;
+    const status: WeakStatus | null = !right ? (level === "sure" ? "sure-wrong" : level === "guess" || level === "unsure" ? "guessed-wrong" : "wrong") : isLuckyGuess(level, true) ? "lucky-guess" : flagged ? "flagged" : null;
     if (!status) return [];
     return [{ id: p.questionId, objectiveId: p.objectiveId, topicId: q.topicId, topicTitle: getTopic(q.topicId)?.title ?? q.topicId, conceptTitle: exam === "n10-009" ? conceptTitles.get(p.questionId) : undefined, status, flagged, prompt: q.prompt, picked: answerText(q, answer, t("noAnswer")), correct: answerText(q, q.answer, ""), explanation: q.explanation }];
   });
@@ -769,7 +818,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
           </>
         )}
         {luckyPicks.length > 0 && (
-          <LuckyGuesses picks={luckyPicks} heading={t("luckyHeading", { count: luckyPicks.length })} intro={t("luckyIntro")} ruleLabel={t("fixRule")} notesLabel={(title) => t("fixNotes", { title })} />
+          <LuckyGuesses picks={luckyPicks} heading={skills("luckyHeading", { count: luckyPicks.length })} intro={skills("luckyIntro")} ruleLabel={t("fixRule")} notesLabel={(title) => t("fixNotes", { title })} />
         )}
         {retestObjectiveIds.length > 0 && (
           <button type="button" onClick={() => start("retest", retestObjectiveIds)} className={`${primary} mt-4`}>
@@ -896,7 +945,27 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                       seconds: r?.seconds ?? 0,
                     })}
                   </p>
+                  {isSlowAnswer(r?.seconds) && <p className="mt-1 text-sm text-amber-200">{skills("slow")}</p>}
+                  {ok && isLuckyGuess(confidence[p.questionId], true) && <p className="mt-1 text-sm text-violet-200">{skills("luckyBadge")}</p>}
                   {!ok && <p className="mt-1 text-sm text-teal-200">{t("correctAnswer", { answer: answerText(q, q.answer, t("noAnswer")) })}</p>}
+                  {!ok && exam === "saa-c03" && (
+                    <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label={skills("missReasonLabel")}>
+                      {(["qualifier", "confused", "unknown", "time"] as const).map((reason) => (
+                        <button key={reason} type="button" aria-pressed={missReasons[p.questionId] === reason} onClick={() => {
+                          const next = missReasons[p.questionId] === reason ? null : reason;
+                          const updated = { ...missReasonsRef.current };
+                          if (next) updated[p.questionId] = next;
+                          else delete updated[p.questionId];
+                          missReasonsRef.current = updated;
+                          setMissReasons(updated);
+                          if (sittingId) setMissReason(sittingId, p.questionId, next);
+                        }} className={`${secondary} ${missReasons[p.questionId] === reason ? "border-amber-400 bg-amber-950/50" : ""}`}>
+                          {skills(`reasons.${reason}`)}
+                        </button>
+                      ))}
+                      <span className="text-xs text-slate-400">{skills("missReasonSkip")}</span>
+                    </div>
+                  )}
                   <p className="mt-2 text-sm text-slate-400"><ExplanationText text={q.explanation} /></p>
                   <div className="mt-2 flex flex-wrap gap-x-4">
                     {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-sm text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("studyTopic", { title: topic.title })}</Link>}
