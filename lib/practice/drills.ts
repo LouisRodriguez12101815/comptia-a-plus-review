@@ -4,6 +4,7 @@
 // Fact text stays in English (like protocol names); UI text lives in messages/.
 import assessmentDrills from "../../content/core2-assessment-drills.json" with { type: "json" };
 import expansion from "../../content/saa-drill-expansion.json" with { type: "json" };
+import topicDeckSources from "../../content/saa-drill-decks.json" with { type: "json" };
 import pairSources from "../../content/study-pairs.json" with { type: "json" };
 import { corePorts } from "@/lib/practice/ports";
 
@@ -2840,7 +2841,32 @@ function confusionDeck(): DrillDeck {
   };
 }
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, selectDeck("aws-saa-which-two", "Which TWO", "whichTwo", expansion.whichTwo), selectDeck("aws-saa-spot-wrong", "Spot the wrong statement", "spotWrong", expansion.spotWrong), confusionDeck(), awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+function topicDeck(source: (typeof topicDeckSources)[number]): DrillDeck {
+  return {
+    id: source.id,
+    certification: "AWS Solutions Architect – Associate",
+    exam: "saa-c03",
+    objective: source.objective,
+    topic: source.topic,
+    modes: [
+      { id: "cueToAnswer", from: "cue", to: "answer" },
+      { id: "answerToCue", from: "answer", to: "cue" },
+    ],
+    tables: [{ id: "cues", fields: ["cue", "answer"] }],
+    items: source.items.map((item) => ({
+      id: item.id,
+      objective: item.objective,
+      fields: { cue: item.cue, answer: item.answer },
+      detail: item.detail,
+      hook: item.hook,
+      docsUrl: item.docsUrl,
+    })),
+  };
+}
+
+const saaTopicDecks = topicDeckSources.map(topicDeck);
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, ...saaTopicDecks, selectDeck("aws-saa-which-two", "Which TWO", "whichTwo", expansion.whichTwo), selectDeck("aws-saa-spot-wrong", "Spot the wrong statement", "spotWrong", expansion.spotWrong), confusionDeck(), awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
