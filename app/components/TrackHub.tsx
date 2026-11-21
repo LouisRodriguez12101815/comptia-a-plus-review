@@ -26,6 +26,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const tTrack = await getTranslations("tracks");
   const tChapter = await getTranslations("networkChapters");
   const journey = await getTranslations("navigationJourney");
+  const mistakes = await getTranslations("saaMistakes");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
   const counts = trackCounts(track);
@@ -55,6 +56,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
     ...(counts.questions > 0 ? [{ label: t("workspaceMockExam"), href: `/test?exam=${track.focus}` }] : []),
     ...(track.id === "aws-saa" ? [
       { label: journey("sharedReview"), href: "/weak-areas" },
+      { label: mistakes("link"), href: "/aws-saa/mistakes" },
       { label: journey("sharedPerformance"), href: "/performance" },
     ] : []),
     ...((track.id === "core1" || track.id === "core2" || track.id === "networking") && counts.questions > 0

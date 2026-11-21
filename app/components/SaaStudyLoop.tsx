@@ -32,6 +32,7 @@ const domains = objectives.exams.find((exam) => exam.code === "saa-c03")?.domain
 export function SaaStudyLoop() {
   const t = useTranslations("saaStudyLoop");
   const skills = useTranslations("saaTestSkills");
+  const mistakes = useTranslations("saaMistakes");
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
   const domainRows = useMemo(
     () => saaDomainSummary([...progress.quizAttempts, ...progress.mockAttempts], questions, domains),
@@ -113,6 +114,7 @@ export function SaaStudyLoop() {
 
       <div>
         <h3 className="font-medium text-white">{t("missHeading")}</h3>
+        <Link href="/aws-saa/mistakes" className="mt-1 inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{mistakes("link")}</Link>
         {reviewMisses.length === 0 ? (
           <p className="mt-1 text-sm text-slate-400">{t("missEmpty")}</p>
         ) : (
