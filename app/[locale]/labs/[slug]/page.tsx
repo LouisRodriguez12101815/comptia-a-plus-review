@@ -91,6 +91,8 @@ export default async function LabPage({
 
       {lab.image ? (
         <figure className="overflow-hidden rounded-2xl border border-slate-800 bg-white">
+          {/* Topology art includes SVG and keeps its own aspect ratio. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={lab.image} alt={lab.imageAlt ?? ""} className="w-full" />
           {lab.imageCaption ? (
             <figcaption className="border-t border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-400">

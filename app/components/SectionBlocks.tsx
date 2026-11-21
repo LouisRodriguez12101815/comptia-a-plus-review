@@ -43,6 +43,8 @@ export async function SectionBlocks({ blocks }: { blocks: Block[] }) {
               key={index}
               className="overflow-hidden rounded-2xl border border-slate-800 bg-white"
             >
+              {/* Note figures include SVG and keep their own aspect ratio. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={block.src} alt={block.alt} className="w-full" />
               <figcaption className="border-t border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-400">
                 {block.caption}
