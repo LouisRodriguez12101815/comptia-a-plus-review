@@ -166,12 +166,12 @@
       "prompt": "Analysts need to explore charts of data that already sits in S3. They should not write the SQL themselves, and the objects should stay in the bucket. Which service is the visual layer?",
       "choices": [
         "Amazon QuickSight",
-        "Amazon Athena",
-        "AWS Glue",
-        "Amazon EMR"
+        "Amazon Athena queries the analysts write",
+        "AWS Glue jobs that transform the objects",
+        "Amazon EMR cluster for the same charts"
       ],
       "answer": 0,
-      "explanation": "Option: Amazon QuickSight — Correct: QuickSight is the analysis and dashboard layer people use. The objects can stay in S3 and the query can be supplied by another service.\nOption: Amazon Athena — Incorrect: Athena is where you run SQL against the objects. It is not the charting tool for people who do not write that SQL.\nOption: AWS Glue — Incorrect: Glue crawls and transforms the data. It does not present the business charts.\nOption: Amazon EMR — Incorrect: EMR runs a cluster for big-data frameworks. It is not the analyst's visual layer.",
+      "explanation": "Option: Amazon QuickSight \u2014 Correct: QuickSight is the visual analysis layer. It can use data in S3 without the analysts writing the SQL.\nOption: Amazon Athena queries the analysts write \u2014 Incorrect: Athena queries objects with SQL. The analysts would be writing that SQL, which this request rules out.\nOption: AWS Glue jobs that transform the objects \u2014 Incorrect: Glue transforms and catalogs data. It does not draw the charts.\nOption: Amazon EMR cluster for the same charts \u2014 Incorrect: EMR runs big-data clusters. It is not the visual layer over the existing objects.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -180,7 +180,10 @@
       },
       "sourceUrls": [
         "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+        "https://docs.aws.amazon.com/athena/latest/ug/what-is.html",
+        "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html",
+        "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html"
       ],
       "services": [
         "Amazon S3",
@@ -243,13 +246,13 @@
       ],
       "prompt": "Operators need to search application logs by words and filter them, not look up one item by its primary key and not build a chart for an executive. Which service fits that search?",
       "choices": [
-        "Amazon Athena",
-        "Amazon QuickSight",
+        "Amazon Athena SQL queries over the log objects",
+        "Amazon CloudWatch Logs Insights queries",
         "Amazon OpenSearch Service",
-        "AWS Glue"
+        "Amazon QuickSight dashboards of the log data"
       ],
       "answer": 2,
-      "explanation": "Option: Amazon Athena — Incorrect: Athena answers SQL over objects. It is not the search index operators use for words and filters in logs.\nOption: Amazon QuickSight — Incorrect: QuickSight is the visual layer for analysis. It is not the log search service.\nOption: Amazon OpenSearch Service — Correct: OpenSearch Service indexes the logs so operators can search by text and filter the results.\nOption: AWS Glue — Incorrect: Glue catalogs and transforms data. It does not serve the interactive log search.",
+      "explanation": "Option: Amazon Athena SQL queries over the log objects \u2014 Incorrect: Athena runs SQL against objects in S3. It is not the search index operators use for word and filter search.\nOption: Amazon CloudWatch Logs Insights queries \u2014 Incorrect: Logs Insights queries CloudWatch Logs. It is not the OpenSearch index for the application log store.\nOption: Amazon OpenSearch Service \u2014 Correct: OpenSearch Service indexes the logs so operators can search by words and apply filters.\nOption: Amazon QuickSight dashboards of the log data \u2014 Incorrect: QuickSight draws charts for analysis. It is not the log search index.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -258,13 +261,17 @@
       },
       "sourceUrls": [
         "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
+        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+        "https://docs.aws.amazon.com/athena/latest/ug/what-is.html",
+        "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
+        "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
       ],
       "services": [
         "Amazon Athena",
-        "Amazon QuickSight",
+        "Amazon CloudWatch",
         "Amazon OpenSearch Service",
-        "AWS Glue"
+        "Amazon QuickSight",
+        "Amazon S3"
       ],
       "difficulty": "medium",
       "audit": {
