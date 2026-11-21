@@ -26,6 +26,8 @@ export type MistakeRow = {
   lastSeen: number;
   status: MistakeStatus;
   kind: MistakeKind;
+  /** True after any sure-but-wrong, including after the row is mastered or reopened as Active. */
+  wasMisconception: boolean;
   masteredAt: number | null;
 };
 
@@ -70,7 +72,7 @@ type Draft = {
   status: MistakeStatus;
   kind: MistakeKind;
   masteredAt: number | null;
-  hadSureWrong: boolean;
+  wasMisconception: boolean;
   sureDays: string[];
   task: string;
   reasons: Map<MissReason, number>;
@@ -79,8 +81,16 @@ type Draft = {
 const STATUS_ORDER: Record<MistakeStatus, number> = { misconception: 0, active: 1, mastered: 2 };
 const KIND_ORDER: Record<MistakeKind, number> = { misconception: 0, wrong: 1, lucky: 2 };
 
-function utcDay(at: number): string {
-  return new Date(at).toISOString().slice(0, 10);
+/** Calendar date in the runtime time zone, or in `timeZone` when a test pins one. */
+export function localDayKey(at: number, timeZone?: string): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(at));
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${value("year")}-${value("month")}-${value("day")}`;
 }
 
 function daysApart(earlier: string, later: string): number {
@@ -125,7 +135,7 @@ function blankDraft(at: number): Draft {
     status: "active",
     kind: "wrong",
     masteredAt: null,
-    hadSureWrong: false,
+    wasMisconception: false,
     sureDays: [],
     task: "",
     reasons: new Map(),
@@ -158,18 +168,21 @@ function commonReason(reasons: Map<MissReason, number>): MissReason | null {
   return best;
 }
 
-function reopen(draft: Draft, sureWrong: boolean) {
-  if (sureWrong) draft.hadSureWrong = true;
-  draft.status = draft.hadSureWrong ? "misconception" : "active";
-  draft.kind = draft.hadSureWrong ? "misconception" : "wrong";
+function recordMiss(draft: Draft, at: number, confidence: MistakeConfidence) {
+  const sureWrong = confidence === "sure";
+  const afterMastery = draft.status === "mastered";
+  if (sureWrong) draft.wasMisconception = true;
+  if (sureWrong) {
+    draft.status = "misconception";
+    draft.kind = "misconception";
+  } else if (afterMastery || draft.status !== "misconception") {
+    draft.status = "active";
+    draft.kind = "wrong";
+  }
   draft.masteredAt = null;
   draft.sureDays = [];
   draft.timesMissed += 1;
   draft.correctSinceLastMiss = 0;
-}
-
-function recordMiss(draft: Draft, at: number, confidence: MistakeConfidence) {
-  reopen(draft, confidence === "sure");
   touch(draft, at, confidence, "miss");
 }
 
@@ -177,17 +190,17 @@ function recordLucky(draft: Draft, at: number, confidence: MistakeConfidence) {
   draft.correctSinceLastMiss += 1;
   touch(draft, at, confidence, "correct");
   if (draft.status === "mastered") return;
-  if (!draft.hadSureWrong && draft.timesMissed === 0) {
+  if (!draft.wasMisconception && draft.timesMissed === 0) {
     draft.status = "active";
     draft.kind = "lucky";
   }
 }
 
-function recordSureProgress(draft: Draft, at: number, confidence: MistakeConfidence) {
+function recordSureProgress(draft: Draft, at: number, confidence: MistakeConfidence, timeZone?: string) {
   draft.correctSinceLastMiss += 1;
   touch(draft, at, confidence, "correct");
   if (confidence !== "sure" || draft.status === "mastered") return;
-  const day = utcDay(at);
+  const day = localDayKey(at, timeZone);
   if (!draft.sureDays.includes(day)) draft.sureDays.push(day);
   if (draft.sureDays.length < 2) return;
   const first = draft.sureDays[0];
@@ -207,10 +220,10 @@ function compareRows(a: MistakeRow, b: MistakeRow): number {
 
 /**
  * Every SAA sitting, oldest first. A later Sure-correct stays on the row.
- * Mastered means two Sure-correct days at least one UTC day apart, after the last miss.
- * A later miss reopens the row. A sure-but-wrong, including one from before mastery, reopens as Misconception.
+ * Mastered means two Sure-correct answers on different local dates at least one day apart, after the last miss.
+ * A later miss reopens a mastered row as Active. That miss is a Misconception only when it is sure-but-wrong.
  */
-export function saaMistakeLog(attempts: Sitting[], questions: MistakeQuestion[] = []): MistakeRow[] {
+export function saaMistakeLog(attempts: Sitting[], questions: MistakeQuestion[] = [], options: { timeZone?: string } = {}): MistakeRow[] {
   const byId = new Map(questions.map((question) => [question.id, question]));
   const drafts = new Map<string, Draft>();
   const ordered = attempts
@@ -241,7 +254,7 @@ export function saaMistakeLog(attempts: Sitting[], questions: MistakeQuestion[] 
       if (!opened && !guessed) continue;
       if (!opened) drafts.set(id, draft);
       if (guessed) recordLucky(draft, at, confidence);
-      else recordSureProgress(draft, at, confidence);
+      else recordSureProgress(draft, at, confidence, options.timeZone);
     }
   }
 
@@ -261,6 +274,7 @@ export function saaMistakeLog(attempts: Sitting[], questions: MistakeQuestion[] 
       lastSeen: draft.lastSeen,
       status: draft.status,
       kind: draft.kind,
+      wasMisconception: draft.wasMisconception,
       masteredAt: draft.masteredAt,
     };
   }).sort(compareRows);

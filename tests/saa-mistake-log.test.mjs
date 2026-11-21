@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { saaReviewMisses } from "../lib/saa-test-skills.ts";
 import {
   filterMistakeRows,
+  localDayKey,
   mistakeCardHref,
   mistakeDrillLinks,
   mistakeRetestIds,
@@ -36,7 +37,7 @@ test("status stays open after one Sure day, then Mastered on a later UTC day, an
     sitting({ questionIds: ["q-sure"], missedIds: ["q-sure"], sureIds: ["q-sure"], missReasons: { "q-sure": "qualifier" } }),
     sitting({ questionIds: ["q-other"], missedIds: ["q-other"], guessedIds: ["q-other"], missReasons: { "q-other": "time" } }),
     sitting({ questionIds: ["q-lucky"], luckyIds: ["q-lucky"], unsureIds: ["q-lucky"] }),
-  ], questions);
+  ], questions, { timeZone: "UTC" });
   const sure = opened.find((row) => row.id === "q-sure");
   const other = opened.find((row) => row.id === "q-other");
   const lucky = opened.find((row) => row.id === "q-lucky");
@@ -56,7 +57,7 @@ test("status stays open after one Sure day, then Mastered on a later UTC day, an
     sitting({ questionIds: ["q-sure"], missedIds: ["q-sure"], confidenceByQuestion: { "q-sure": "sure" } }),
     sitting({ at: day("2026-11-01T18:00:00Z"), questionIds: ["q-sure"], sureIds: ["q-sure"] }),
     sitting({ at: day("2026-11-01T23:00:00Z"), questionIds: ["q-sure"], sureIds: ["q-sure"] }),
-  ], questions);
+  ], questions, { timeZone: "UTC" });
   assert.equal(sameDay[0].status, "misconception");
   assert.equal(sameDay[0].correctSinceLastMiss, 2);
   assert.equal(sameDay[0].masteredAt, null);
@@ -67,8 +68,9 @@ test("status stays open after one Sure day, then Mastered on a later UTC day, an
     sitting({ at: day("2026-11-01T18:00:00Z"), questionIds: ["q-sure"], sureIds: ["q-sure"] }),
     sitting({ at: masteredAt, questionIds: ["q-sure"], sureIds: ["q-sure"] }),
     sitting({ at: day("2026-11-04T12:00:00Z"), questionIds: ["q-sure"], luckyIds: ["q-sure"], guessedIds: ["q-sure"] }),
-  ], questions);
+  ], questions, { timeZone: "UTC" });
   assert.equal(mastered[0].status, "mastered");
+  assert.equal(mastered[0].wasMisconception, true);
   assert.equal(mastered[0].masteredAt, masteredAt);
   assert.equal(mastered[0].lastResult, "correct");
   assert.equal(mastered[0].lastConfidence, "guess");
@@ -81,8 +83,10 @@ test("status stays open after one Sure day, then Mastered on a later UTC day, an
       sitting({ at: masteredAt, questionIds: ["q-sure"], sureIds: ["q-sure"] }),
     ],
     sitting({ at: day("2026-11-05T12:00:00Z"), questionIds: ["q-sure"], missedIds: ["q-sure"], guessedIds: ["q-sure"] }),
-  ], questions);
-  assert.equal(reopened[0].status, "misconception");
+  ], questions, { timeZone: "UTC" });
+  assert.equal(reopened[0].status, "active");
+  assert.equal(reopened[0].kind, "wrong");
+  assert.equal(reopened[0].wasMisconception, true);
   assert.equal(reopened[0].masteredAt, null);
   assert.equal(reopened[0].timesMissed, 2);
   assert.equal(reopened[0].correctSinceLastMiss, 0);
@@ -92,7 +96,7 @@ test("status stays open after one Sure day, then Mastered on a later UTC day, an
     sitting({ at: day("2026-11-02T12:00:00Z"), questionIds: ["q-other"], sureIds: ["q-other"] }),
     sitting({ at: day("2026-11-03T12:00:00Z"), questionIds: ["q-other"], missedIds: ["q-other"] }),
     sitting({ at: day("2026-11-04T12:00:00Z"), questionIds: ["q-other"], sureIds: ["q-other"] }),
-  ], questions);
+  ], questions, { timeZone: "UTC" });
   assert.equal(reset[0].status, "active");
   assert.equal(reset[0].masteredAt, null);
 });
@@ -152,10 +156,58 @@ test("a later Sure-correct stays in the log and sittings from every mode add up 
     sitting({ questionIds: ["q2"], missedIds: ["q2"] }),
     sitting({ at: day("2026-11-02T12:00:00Z"), questionIds: ["q2"], sureIds: ["q2"] }),
     sitting({ at: day("2026-11-03T12:00:00Z"), questionIds: ["q2"], sureIds: ["q2"] }),
-  ], questions);
+  ], questions, { timeZone: "UTC" });
   assert.equal(mistakeSummary(week, day("2026-11-06T12:00:00Z")).masteredThisWeek, 1);
   assert.equal(mistakeSummary(week, day("2026-11-20T12:00:00Z")).masteredThisWeek, 0);
   assert.deepEqual(filterMistakeRows(rows, { domain: "4.0", status: "active", reason: "unknown" }).map((row) => row.id), ["q2"]);
+});
+
+test("two Sure answers on one New York date do not master, and a later miss reopens as Active", () => {
+  const zone = { timeZone: "America/New_York" };
+  const questions = [q("q-ny", "1.1")];
+  const sameEvening = Date.parse("2026-11-21T23:30:00Z");
+  const laterSameEvening = Date.parse("2026-11-22T01:30:00Z");
+  const nextLocalDay = Date.parse("2026-11-22T23:30:00Z");
+  assert.equal(localDayKey(sameEvening, "America/New_York"), "2026-11-21");
+  assert.equal(localDayKey(laterSameEvening, "America/New_York"), "2026-11-21");
+  assert.equal(localDayKey(nextLocalDay, "America/New_York"), "2026-11-22");
+  const miss = sitting({
+    at: Date.parse("2026-11-20T16:00:00Z"),
+    questionIds: ["q-ny"],
+    missedIds: ["q-ny"],
+    sureIds: ["q-ny"],
+  });
+  const held = saaMistakeLog([
+    miss,
+    sitting({ at: sameEvening, questionIds: ["q-ny"], sureIds: ["q-ny"] }),
+    sitting({ at: laterSameEvening, questionIds: ["q-ny"], sureIds: ["q-ny"] }),
+  ], questions, zone);
+  assert.equal(held[0].status, "misconception");
+  assert.equal(held[0].masteredAt, null);
+  assert.equal(held[0].wasMisconception, true);
+
+  const masteredPath = [
+    miss,
+    sitting({ at: sameEvening, questionIds: ["q-ny"], sureIds: ["q-ny"] }),
+    sitting({ at: nextLocalDay, questionIds: ["q-ny"], sureIds: ["q-ny"] }),
+  ];
+  const mastered = saaMistakeLog(masteredPath, questions, zone);
+  assert.equal(mastered[0].status, "mastered");
+  assert.equal(mastered[0].wasMisconception, true);
+
+  const reopened = saaMistakeLog([
+    ...masteredPath,
+    sitting({ at: Date.parse("2026-11-23T16:00:00Z"), questionIds: ["q-ny"], missedIds: ["q-ny"], guessedIds: ["q-ny"] }),
+  ], questions, zone);
+  assert.equal(reopened[0].status, "active");
+  assert.equal(reopened[0].wasMisconception, true);
+
+  const sureAgain = saaMistakeLog([
+    ...masteredPath,
+    sitting({ at: Date.parse("2026-11-23T16:00:00Z"), questionIds: ["q-ny"], missedIds: ["q-ny"], sureIds: ["q-ny"] }),
+  ], questions, zone);
+  assert.equal(sureAgain[0].status, "misconception");
+  assert.equal(sureAgain[0].wasMisconception, true);
 });
 
 test("retest leads with misconceptions and rotates the other open rows by shared history", () => {
@@ -167,7 +219,7 @@ test("retest leads with misconceptions and rotates the other open rows by shared
     sitting({ questionIds: ["done"], missedIds: ["done"] }),
     sitting({ at: day("2026-11-02T12:00:00Z"), questionIds: ["done"], sureIds: ["done"] }),
     sitting({ at: day("2026-11-03T12:00:00Z"), questionIds: ["done"], sureIds: ["done"] }),
-  ], questions);
+  ], questions, { timeZone: "UTC" });
   const ids = mistakeRetestIds(rows, ["seen"], () => 0);
   assert.equal(ids[0], "miss");
   assert.ok(ids.indexOf("fresh") < ids.indexOf("seen"));

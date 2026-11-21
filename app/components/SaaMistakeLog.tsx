@@ -162,7 +162,10 @@ export function SaaMistakeLog() {
                   <td className="px-3 py-3">{row.lastConfidence ? skills(row.lastConfidence) : t("none")}</td>
                   <td className="px-3 py-3">{row.missReason ? skills(`reasons.${row.missReason}`) : t("none")}</td>
                   <td className="px-3 py-3 whitespace-nowrap">{when.format(row.lastSeen)}</td>
-                  <td className="px-3 py-3">{t(`statuses.${row.status}`)}</td>
+                  <td className="px-3 py-3">
+                    {t(`statuses.${row.status}`)}
+                    {row.wasMisconception ? <span className="mt-1 block text-xs text-rose-200">{t("wasMisconception")}</span> : null}
+                  </td>
                 </tr>
               ))}
             </tbody>
