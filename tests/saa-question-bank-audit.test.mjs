@@ -195,7 +195,7 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   assert.deepEqual(liveHashStage.excludedFields, [...SAA_TAG_FIELDS]);
   assert.equal(liveHashStage.questions.length, 314);
   const liveHashes = new Map(liveHashStage.questions.map((row) => [row.id, row.sha256]));
-  assert.deepEqual(audit.changeStages.map((stage) => stage.id), ["explanation-rewrite", "distractor-realism", "answer-length-cue"]);
+  assert.deepEqual(audit.changeStages.map((stage) => stage.id), ["explanation-rewrite", "distractor-realism", "answer-length-cue", "answer-length-cue-2"]);
   for (const stage of audit.changeStages) assert.deepEqual(stage.excludedFields, [...SAA_TAG_FIELDS]);
   const changeStage = audit.changeStages.find((stage) => stage.id === "explanation-rewrite");
   const changes = new Map(changeStage.items.map((row) => [row.id, row]));
@@ -311,7 +311,7 @@ test("network-cost items move from task 4.3 to task 4.4 and shared CLF answers s
   }));
   const parentById = new Map(parent.map((question) => [question.id, question]));
   const distractorIds = new Set(audit.changeStages.find((stage) => stage.id === "distractor-realism").items.map((row) => row.id));
-  const lengthCueIds = new Set(audit.changeStages.find((stage) => stage.id === "answer-length-cue").items.map((row) => row.id));
+  const lengthCueIds = new Set(audit.changeStages.filter((stage) => stage.id === "answer-length-cue" || stage.id === "answer-length-cue-2").flatMap((stage) => stage.items.map((row) => row.id)));
   assert.equal(distractorIds.size, 10);
   for (const row of changeStage.items) {
     if (!row.reason.includes("CLF objective tags are unchanged")) continue;
@@ -368,21 +368,23 @@ test("the high-yield fill is stage 319 to 335 and every id is in the saa-c03 moc
   assert.equal(retask.questionCount, 1);
   const retaskById = new Map(retask.questions.map((row) => [row.id, row]));
   const preserved = new Set(audit.hashStages.find((item) => item.id === "live-314-exclude-study-tags").questions.map((row) => row.id));
-  const lengthCue = new Map(audit.changeStages.find((item) => item.id === "answer-length-cue").items.map((row) => [row.id, row]));
+  const cueStages = ["answer-length-cue", "answer-length-cue-2"].map((id) => new Map(audit.changeStages.find((item) => item.id === id).items.map((row) => [row.id, row])));
   for (const id of stage.addedIds) {
     const question = servedQuestions.find((item) => item.id === id);
     const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(question))).digest("hex");
+    let expected = hashes.get(id);
     const moved = retaskById.get(id);
-    const cue = lengthCue.get(id);
     if (moved) {
-      assert.equal(moved.oldHash, hashes.get(id), id);
-      assert.equal(digest, moved.sha256, id);
-    } else if (cue) {
-      assert.equal(cue.oldHash, hashes.get(id), id);
-      assert.equal(digest, cue.newHash, id);
-    } else {
-      assert.equal(digest, hashes.get(id), id);
+      assert.equal(moved.oldHash, expected, id);
+      expected = moved.sha256;
     }
+    for (const cue of cueStages) {
+      const row = cue.get(id);
+      if (!row) continue;
+      assert.equal(row.oldHash, expected, id);
+      expected = row.newHash;
+    }
+    assert.equal(digest, expected, id);
     assert.equal(preserved.has(id), false, id);
   }
   const objectives = read("content/objectives.json");

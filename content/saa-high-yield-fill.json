@@ -8,13 +8,13 @@
       ],
       "prompt": "A fleet of virtual machines must keep running in the data center while their disks replicate, and then cut over to EC2 on a chosen night. The machines are not a database schema conversion. Which service fits that server move?",
       "choices": [
-        "Application Migration Service (MGN)",
-        "AWS Schema Conversion Tool",
-        "AWS Database Migration Service",
-        "AWS DataSync"
-      ],
+      "AWS Application Migration Service",
+      "AWS Schema Conversion Tool",
+      "AWS Database Migration Service endpoints",
+      "AWS Application Discovery Service"
+    ],
       "answer": 0,
-      "explanation": "Option: Application Migration Service (MGN) — Correct: MGN replicates the server and performs the cutover onto EC2, which is the move this fleet is asking for.\nOption: AWS Schema Conversion Tool — Incorrect: SCT converts database schema and application code between engines. These machines are not that conversion.\nOption: AWS Database Migration Service — Incorrect: DMS copies database data between database endpoints. It does not cut a virtual machine over to EC2.\nOption: AWS DataSync — Incorrect: DataSync copies files and objects over the network. It does not replicate a server for cutover.",
+      "explanation": "Option: AWS Application Migration Service \u2014 Correct: Application Migration Service replicates the server disks and performs the cutover onto EC2. That is the move this fleet is asking for.\nOption: AWS Schema Conversion Tool \u2014 Incorrect: The Schema Conversion Tool converts database schema and application code between engines. These machines are not that conversion.\nOption: AWS Database Migration Service endpoints \u2014 Incorrect: Database Migration Service copies database data between database endpoints. It does not cut a virtual machine over to EC2.\nOption: AWS Application Discovery Service \u2014 Incorrect: Application Discovery Service inventories servers in the data center. It does not replicate disks or perform the cutover.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -22,14 +22,13 @@
         ]
       },
       "sourceUrls": [
-        "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
-        "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
-      ],
+      "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html"
+    ],
       "services": [
-        "Amazon EC2",
-        "AWS DataSync",
-        "AWS Database Migration Service"
-      ],
+      "Amazon EC2"
+    ],
       "difficulty": "medium",
       "audit": {
         "taskId": "3.5",
@@ -85,13 +84,13 @@
       ],
       "prompt": "A database must move to a different engine. The rows have to keep copying while the source still takes writes, and the stored procedures have to be converted. Which pairing matches those two jobs?",
       "choices": [
-        "AWS DataSync for the rows and AWS Transfer Family for the procedures",
-        "Application Migration Service (MGN) for both the rows and the procedures",
-        "AWS Database Migration Service for the data and the Schema Conversion Tool for the schema",
-        "AWS Snowball for the rows and AWS Glue for the procedures"
-      ],
+      "DataSync for the rows and Transfer Family for the procedures",
+      "Application Migration Service for both the rows and the stored procedures",
+      "DMS for the data and the Schema Conversion Tool for the schema",
+      "Snowball for the rows and Glue for the procedures"
+    ],
       "answer": 2,
-      "explanation": "Option: AWS DataSync for the rows and AWS Transfer Family for the procedures — Incorrect: DataSync and Transfer Family move files. They do not replicate a live database or convert its procedures.\nOption: Application Migration Service (MGN) for both the rows and the procedures — Incorrect: MGN cuts a server over to EC2. It does not convert a schema to another engine.\nOption: AWS Database Migration Service for the data and the Schema Conversion Tool for the schema — Correct: DMS copies and can keep copying the data. SCT is the separate tool that converts schema and code when the engines differ.\nOption: AWS Snowball for the rows and AWS Glue for the procedures — Incorrect: Snowball ships an appliance, and Glue transforms objects. Neither is the database replication and schema-conversion pair.",
+      "explanation": "Option: DataSync for the rows and Transfer Family for the procedures \u2014 Incorrect: DataSync and Transfer Family move files. They do not replicate a live database or convert its procedures.\nOption: Application Migration Service for both the rows and the stored procedures \u2014 Incorrect: MGN cuts a server over to EC2. It does not convert a schema to another engine.\nOption: DMS for the data and the Schema Conversion Tool for the schema \u2014 Correct: DMS copies and can keep copying the data. SCT is the separate tool that converts schema and code when the engines differ.\nOption: Snowball for the rows and Glue for the procedures \u2014 Incorrect: Snowball ships an appliance, and Glue transforms objects. Neither is the database replication and schema-conversion pair.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -104,13 +103,13 @@
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
       ],
       "services": [
-        "AWS DataSync",
-        "AWS Transfer Family",
-        "AWS Snow Family",
-        "AWS Glue",
-        "Amazon EC2",
-        "AWS Database Migration Service"
-      ],
+      "AWS DataSync",
+      "AWS Transfer Family",
+      "AWS Database Migration Service",
+      "AWS Snow Family",
+      "AWS Glue",
+      "Amazon EC2"
+    ],
       "difficulty": "medium",
       "audit": {
         "taskId": "3.5",

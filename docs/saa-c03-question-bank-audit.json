@@ -4797,24 +4797,24 @@
       "answerIndexOrIndexes": 1,
       "optionExplanationCoverage": [
         {
-          "choice": "Put the password in an environment variable and rotate it manually during deployments.",
+          "choice": "An environment variable rotated by the deployment pipeline",
           "classification": "incorrect",
-          "explanation": "Option: Put the password in an environment variable and rotate it manually during deployments. — Incorrect: Environment variables remain deployment configuration and manual rotation is explicitly excluded; stale copies can remain after a change."
+          "explanation": "Option: An environment variable rotated by the deployment pipeline — Incorrect: Environment variables remain deployment configuration and manual rotation is explicitly excluded; stale copies can remain after a change."
         },
         {
-          "choice": "Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime.",
+          "choice": "Secrets Manager with rotation and a runtime retrieval role",
           "classification": "correct",
-          "explanation": "Option: Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime. — Correct: Secrets Manager is designed to store and retrieve secrets and supports configured rotation. A workload role avoids embedding long-lived credentials, while the application must handle refreshed credentials according to its connection behavior."
+          "explanation": "Option: Secrets Manager with rotation and a runtime retrieval role — Correct: Secrets Manager is designed to store and retrieve secrets and supports configured rotation. A workload role avoids embedding long-lived credentials, while the application must handle refreshed credentials according to its connection behavior."
         },
         {
-          "choice": "Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it.",
+          "choice": "Parameter Store SecureString plus a separate rotation process",
           "classification": "incorrect",
-          "explanation": "Option: Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it. — Incorrect: SecureString encrypts a parameter value and IAM can control retrieval, but Parameter Store does not provide the managed secret rotation required here. An external automation could be built, but it is not the simplest fit."
+          "explanation": "Option: Parameter Store SecureString plus a separate rotation process — Incorrect: SecureString encrypts a parameter value and IAM can control retrieval, but Parameter Store does not provide the managed secret rotation required here. An external automation could be built, but it is not the simplest fit."
         },
         {
-          "choice": "Use an IAM permissions boundary because it encrypts database credentials.",
+          "choice": "An IAM permissions boundary holding the database password",
           "classification": "incorrect",
-          "explanation": "Option: Use an IAM permissions boundary because it encrypts database credentials. — Incorrect: A permissions boundary limits the maximum permissions an IAM principal can receive; it does not encrypt or store database passwords."
+          "explanation": "Option: An IAM permissions boundary holding the database password — Incorrect: A permissions boundary limits the maximum permissions an IAM principal can receive; it does not encrypt or store database passwords."
         }
       ],
       "sourceUrls": [
@@ -4840,7 +4840,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Put the password in an environment variable and rotate it manually during deployments.",
+            "choice": "An environment variable rotated by the deployment pipeline",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -4853,7 +4853,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Store the credential in AWS Secrets Manager, configure supported rotation, and have the workload role retrieve the current secret at runtime.",
+            "choice": "Secrets Manager with rotation and a runtime retrieval role",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -4866,7 +4866,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Store it in an SSM Parameter Store SecureString and retrieve it with a role, but rely on a separate manual process to rotate it.",
+            "choice": "Parameter Store SecureString plus a separate rotation process",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -4879,7 +4879,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Use an IAM permissions boundary because it encrypts database credentials.",
+            "choice": "An IAM permissions boundary holding the database password",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5175,24 +5175,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached.",
+          "choice": "Cache the shared catalog routes with a short TTL",
           "classification": "correct",
-          "explanation": "Option: Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached. — Correct: API Gateway caching can reduce backend calls for cacheable responses. Limiting it to shared catalog routes and using a bounded TTL respects the distinct freshness and privacy requirement; cache-key and invalidation behavior still need design."
+          "explanation": "Option: Cache the shared catalog routes with a short TTL — Correct: API Gateway caching can reduce backend calls for cacheable responses. Limiting it to shared catalog routes and using a bounded TTL respects the distinct freshness and privacy requirement; cache-key and invalidation behavior still need design."
         },
         {
-          "choice": "Cache all API responses under a single cache key so every route has the highest hit rate.",
+          "choice": "Cache every route under one shared cache key",
           "classification": "incorrect",
-          "explanation": "Option: Cache all API responses under a single cache key so every route has the highest hit rate. — Incorrect: A shared key across personalized routes can return one customer’s data to another and violates isolation."
+          "explanation": "Option: Cache every route under one shared cache key — Incorrect: A shared key across personalized routes can return one customer’s data to another and violates isolation."
         },
         {
-          "choice": "Increase the database writer size and cache no responses, even for identical public catalog reads.",
+          "choice": "A larger database writer serving every catalog read",
           "classification": "incorrect",
-          "explanation": "Option: Increase the database writer size and cache no responses, even for identical public catalog reads. — Incorrect: Vertical database scaling may add capacity but does not eliminate repeat work and ignores the stated cacheable pattern."
+          "explanation": "Option: A larger database writer serving every catalog read — Incorrect: Vertical database scaling may add capacity but does not eliminate repeat work and ignores the stated cacheable pattern."
         },
         {
-          "choice": "Move the entire API to an SQS queue so each client polls until its read response is available.",
+          "choice": "An SQS queue that clients poll for the read response",
           "classification": "incorrect",
-          "explanation": "Option: Move the entire API to an SQS queue so each client polls until its read response is available. — Incorrect: SQS is useful for asynchronous work, not a synchronous read API whose clients require an immediate catalog response."
+          "explanation": "Option: An SQS queue that clients poll for the read response — Incorrect: SQS is useful for asynchronous work, not a synchronous read API whose clients require an immediate catalog response."
         }
       ],
       "sourceUrls": [
@@ -5212,7 +5212,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Enable API Gateway response caching only on the shared catalog routes with a short suitable TTL; leave personalized routes uncached.",
+            "choice": "Cache the shared catalog routes with a short TTL",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5222,7 +5222,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Cache all API responses under a single cache key so every route has the highest hit rate.",
+            "choice": "Cache every route under one shared cache key",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5232,7 +5232,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Increase the database writer size and cache no responses, even for identical public catalog reads.",
+            "choice": "A larger database writer serving every catalog read",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5242,7 +5242,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Move the entire API to an SQS queue so each client polls until its read response is available.",
+            "choice": "An SQS queue that clients poll for the read response",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5262,24 +5262,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure.",
+          "choice": "Validate recovery-Region quotas and test the failover",
           "classification": "correct",
-          "explanation": "Option: Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure. — Correct: Quotas and available service capacity can constrain recovery scale-up. Confirming required quotas ahead of time and exercising the runbook tests whether warm standby can meet its recovery objectives."
+          "explanation": "Option: Validate recovery-Region quotas and test the failover — Correct: Quotas and available service capacity can constrain recovery scale-up. Confirming required quotas ahead of time and exercising the runbook tests whether warm standby can meet its recovery objectives."
         },
         {
-          "choice": "Assume quotas are global because the application uses the same AWS account in both Regions.",
+          "choice": "Treat the account quotas as shared by both Regions",
           "classification": "incorrect",
-          "explanation": "Option: Assume quotas are global because the application uses the same AWS account in both Regions. — Incorrect: Many service quotas are Region-specific; using one account does not guarantee equal capacity or quota values in another Region."
+          "explanation": "Option: Treat the account quotas as shared by both Regions — Incorrect: Many service quotas are Region-specific; using one account does not guarantee equal capacity or quota values in another Region."
         },
         {
-          "choice": "Remove the standby and rely on backups; that makes the current recovery-time target automatic.",
+          "choice": "Drop the standby and rely on backups for the recovery target",
           "classification": "incorrect",
-          "explanation": "Option: Remove the standby and rely on backups; that makes the current recovery-time target automatic. — Incorrect: Backups support recovery but do not automatically meet a warm-standby recovery-time target."
+          "explanation": "Option: Drop the standby and rely on backups for the recovery target — Incorrect: Backups support recovery but do not automatically meet a warm-standby recovery-time target."
         },
         {
-          "choice": "Reduce the primary Region’s quotas so the standby Region receives capacity.",
+          "choice": "Lower the primary Region quotas to feed the standby",
           "classification": "incorrect",
-          "explanation": "Option: Reduce the primary Region’s quotas so the standby Region receives capacity. — Incorrect: Reducing a primary Region quota does not reserve or increase capacity in the recovery Region."
+          "explanation": "Option: Lower the primary Region quotas to feed the standby — Incorrect: Reducing a primary Region quota does not reserve or increase capacity in the recovery Region."
         }
       ],
       "sourceUrls": [
@@ -5303,7 +5303,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Raise or validate the required service quotas in the recovery Region and regularly test the failover and scale-up procedure.",
+            "choice": "Validate recovery-Region quotas and test the failover",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5315,7 +5315,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Assume quotas are global because the application uses the same AWS account in both Regions.",
+            "choice": "Treat the account quotas as shared by both Regions",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5327,7 +5327,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Remove the standby and rely on backups; that makes the current recovery-time target automatic.",
+            "choice": "Drop the standby and rely on backups for the recovery target",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5339,7 +5339,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Reduce the primary Region’s quotas so the standby Region receives capacity.",
+            "choice": "Lower the primary Region quotas to feed the standby",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5454,24 +5454,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements.",
+          "choice": "An io2 volume with Multi-Attach where the platform supports it",
           "classification": "correct",
-          "explanation": "Option: An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements. — Correct: EBS Multi-Attach for supported io1/io2 volumes can attach one volume to multiple Nitro instances in the same Availability Zone. A cluster-aware filesystem or application must coordinate writes; verify the current Multi-Attach limitations before deployment."
+          "explanation": "Option: An io2 volume with Multi-Attach where the platform supports it — Correct: EBS Multi-Attach for supported io1/io2 volumes can attach one volume to multiple Nitro instances in the same Availability Zone. A cluster-aware filesystem or application must coordinate writes; verify the current Multi-Attach limitations before deployment."
         },
         {
-          "choice": "A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination.",
+          "choice": "A gp3 volume mounted by several instances through ordinary file-system mounts",
           "classification": "incorrect",
-          "explanation": "Option: A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination. — Incorrect: Ordinary EBS volumes are attached as block devices and do not provide safe shared-write coordination just because multiple mounts are attempted."
+          "explanation": "Option: A gp3 volume mounted by several instances through ordinary file-system mounts — Incorrect: Ordinary EBS volumes are attached as block devices and do not provide safe shared-write coordination just because multiple mounts are attempted."
         },
         {
-          "choice": "An S3 bucket mounted as a POSIX block device with simultaneous write locking.",
+          "choice": "An S3 bucket used as the shared block device",
           "classification": "incorrect",
-          "explanation": "Option: An S3 bucket mounted as a POSIX block device with simultaneous write locking. — Incorrect: S3 is object storage, not a shared block device with filesystem write locking."
+          "explanation": "Option: An S3 bucket used as the shared block device — Incorrect: S3 is object storage, not a shared block device with filesystem write locking."
         },
         {
-          "choice": "An EFS file system, because it exposes the same shared block device to each instance.",
+          "choice": "An EFS file system used as the shared block device",
           "classification": "incorrect",
-          "explanation": "Option: An EFS file system, because it exposes the same shared block device to each instance. — Incorrect: EFS is a shared file system, not a shared block device. It may fit a file-sharing workload but not software that requires coordinated shared block storage."
+          "explanation": "Option: An EFS file system used as the shared block device — Incorrect: EFS is a shared file system, not a shared block device. It may fit a file-sharing workload but not software that requires coordinated shared block storage."
         }
       ],
       "sourceUrls": [
@@ -5491,7 +5491,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "An io2 EBS volume with Multi-Attach enabled, after confirming the Region, instance, and filesystem support requirements.",
+            "choice": "An io2 volume with Multi-Attach where the platform supports it",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5501,7 +5501,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "A gp3 EBS volume attached to several instances using ordinary filesystem mounts with no cluster coordination.",
+            "choice": "A gp3 volume mounted by several instances through ordinary file-system mounts",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5511,7 +5511,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "An S3 bucket mounted as a POSIX block device with simultaneous write locking.",
+            "choice": "An S3 bucket used as the shared block device",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5521,7 +5521,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "An EFS file system, because it exposes the same shared block device to each instance.",
+            "choice": "An EFS file system used as the shared block device",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5541,24 +5541,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "Increase the function’s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory.",
+          "choice": "Raise the function memory and benchmark duration and cost",
           "classification": "correct",
-          "explanation": "Option: Increase the function’s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory. — Correct: Lambda memory configuration controls the memory and proportional CPU allocated to the function. Benchmark representative inputs and compare duration and billed cost rather than assuming that more memory is always cheaper."
+          "explanation": "Option: Raise the function memory and benchmark duration and cost — Correct: Lambda memory configuration controls the memory and proportional CPU allocated to the function. Benchmark representative inputs and compare duration and billed cost rather than assuming that more memory is always cheaper."
         },
         {
-          "choice": "Increase the function timeout; this allocates more CPU to each invocation.",
+          "choice": "Raise the function timeout to grant more CPU",
           "classification": "incorrect",
-          "explanation": "Option: Increase the function timeout; this allocates more CPU to each invocation. — Incorrect: Timeout sets the maximum allowed execution duration, not CPU capacity."
+          "explanation": "Option: Raise the function timeout to grant more CPU — Incorrect: Timeout sets the maximum allowed execution duration, not CPU capacity."
         },
         {
-          "choice": "Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation.",
+          "choice": "Attach a larger EBS volume to raise function CPU",
           "classification": "incorrect",
-          "explanation": "Option: Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation. — Incorrect: EBS is not the per-invocation CPU setting for Lambda."
+          "explanation": "Option: Attach a larger EBS volume to raise function CPU — Incorrect: EBS is not the per-invocation CPU setting for Lambda."
         },
         {
-          "choice": "Increase reserved concurrency; this raises the CPU allocation of each individual invocation.",
+          "choice": "Raise reserved concurrency to add more CPU on each invocation",
           "classification": "incorrect",
-          "explanation": "Option: Increase reserved concurrency; this raises the CPU allocation of each individual invocation. — Incorrect: Reserved concurrency limits or reserves concurrent invocation capacity; it does not change the CPU allocation of each invocation."
+          "explanation": "Option: Raise reserved concurrency to add more CPU on each invocation — Incorrect: Reserved concurrency limits or reserves concurrent invocation capacity; it does not change the CPU allocation of each invocation."
         }
       ],
       "sourceUrls": [
@@ -5578,7 +5578,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Increase the function’s memory setting and benchmark duration and cost, because Lambda allocates CPU in proportion to configured memory.",
+            "choice": "Raise the function memory and benchmark duration and cost",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5588,7 +5588,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Increase the function timeout; this allocates more CPU to each invocation.",
+            "choice": "Raise the function timeout to grant more CPU",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5598,7 +5598,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Attach a larger EBS volume; Lambda execution environments do not use EBS for function CPU allocation.",
+            "choice": "Attach a larger EBS volume to raise function CPU",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5608,7 +5608,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Increase reserved concurrency; this raises the CPU allocation of each individual invocation.",
+            "choice": "Raise reserved concurrency to add more CPU on each invocation",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5628,24 +5628,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "Create a global secondary index with status as its partition key and time as its sort key, then query that index.",
+          "choice": "A GSI on status and time, queried for the screen",
           "classification": "correct",
-          "explanation": "Option: Create a global secondary index with status as its partition key and time as its sort key, then query that index. — Correct: A GSI can use a partition and sort key different from the base table, enabling a Query for the access pattern. GSI reads are eventually consistent, matching the scenario; account for index write and storage capacity."
+          "explanation": "Option: A GSI on status and time, queried for the screen — Correct: A GSI can use a partition and sort key different from the base table, enabling a Query for the access pattern. GSI reads are eventually consistent, matching the scenario; account for index write and storage capacity."
         },
         {
-          "choice": "Run a strongly consistent Scan on the base table and discard records that do not match.",
+          "choice": "A table Scan that filters status in the application",
           "classification": "incorrect",
-          "explanation": "Option: Run a strongly consistent Scan on the base table and discard records that do not match. — Incorrect: A Scan reads the table’s items and filters afterward, doing unnecessary work as the table grows. Strong consistency does not make the access pattern efficient."
+          "explanation": "Option: A table Scan that filters status in the application — Incorrect: A Scan reads the table’s items and filters afterward, doing unnecessary work as the table grows. Filtering after the scan is not the Query this screen needs."
         },
         {
-          "choice": "Create a local secondary index whose partition key is different from the table partition key.",
+          "choice": "A local secondary index with a new partition key",
           "classification": "incorrect",
-          "explanation": "Option: Create a local secondary index whose partition key is different from the table partition key. — Incorrect: An LSI must use the same partition key as its table, so it cannot key this query by status across customers."
+          "explanation": "Option: A local secondary index with a new partition key — Incorrect: An LSI must use the same partition key as its table, so it cannot key this query by status across customers."
         },
         {
-          "choice": "Add a read replica to the DynamoDB table.",
+          "choice": "A read replica added to the DynamoDB table",
           "classification": "incorrect",
-          "explanation": "Option: Add a read replica to the DynamoDB table. — Incorrect: DynamoDB does not use relational read replicas for this pattern; a secondary index is the purpose-built access path."
+          "explanation": "Option: A read replica added to the DynamoDB table — Incorrect: DynamoDB does not use relational read replicas for this pattern; a secondary index is the purpose-built access path."
         }
       ],
       "sourceUrls": [
@@ -5666,7 +5666,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Create a global secondary index with status as its partition key and time as its sort key, then query that index.",
+            "choice": "A GSI on status and time, queried for the screen",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5676,7 +5676,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Run a strongly consistent Scan on the base table and discard records that do not match.",
+            "choice": "A table Scan that filters status in the application",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5686,7 +5686,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Create a local secondary index whose partition key is different from the table partition key.",
+            "choice": "A local secondary index with a new partition key",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5696,7 +5696,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Add a read replica to the DynamoDB table.",
+            "choice": "A read replica added to the DynamoDB table",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5809,24 +5809,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "A Compute Savings Plan, after validating that the committed hourly amount fits the organization’s steady usage.",
+          "choice": "A Compute Savings Plan sized to steady hourly use",
           "classification": "correct",
-          "explanation": "Option: A Compute Savings Plan, after validating that the committed hourly amount fits the organization’s steady usage. — Correct: Compute Savings Plans apply across EC2 instance families and Regions and can also apply to Fargate and Lambda. They suit planned compute-platform changes, but the commitment should be sized against stable usage to avoid unused commitment."
+          "explanation": "Option: A Compute Savings Plan sized to steady hourly use — Correct: Compute Savings Plans apply across EC2 instance families and Regions and can also apply to Fargate and Lambda. They suit planned compute-platform changes, but the commitment should be sized against stable usage to avoid unused commitment."
         },
         {
-          "choice": "An EC2 Instance Savings Plan tied to one instance family and Region.",
+          "choice": "An EC2 Instance Savings Plan for one family and Region",
           "classification": "incorrect",
-          "explanation": "Option: An EC2 Instance Savings Plan tied to one instance family and Region. — Incorrect: An EC2 Instance Savings Plan provides a narrower commitment tied to a chosen instance family and Region, which conflicts with the planned flexibility."
+          "explanation": "Option: An EC2 Instance Savings Plan for one family and Region — Incorrect: An EC2 Instance Savings Plan provides a narrower commitment tied to a chosen instance family and Region, which conflicts with the planned flexibility."
         },
         {
-          "choice": "Spot Instances for all customer-facing baseline capacity, without an interruption strategy.",
+          "choice": "Spot Instances for the customer-facing baseline capacity",
           "classification": "incorrect",
-          "explanation": "Option: Spot Instances for all customer-facing baseline capacity, without an interruption strategy. — Incorrect: Spot can reduce costs for interruptible workloads, but the scenario describes steady customer-facing baseline use and no interruption strategy."
+          "explanation": "Option: Spot Instances for the customer-facing baseline capacity — Incorrect: Spot can reduce costs for interruptible workloads, but the scenario describes steady customer-facing baseline use and no interruption strategy."
         },
         {
-          "choice": "On-Demand Capacity Reservations, because they automatically provide a billing discount.",
+          "choice": "On-Demand Capacity Reservations for the billing discount",
           "classification": "incorrect",
-          "explanation": "Option: On-Demand Capacity Reservations, because they automatically provide a billing discount. — Incorrect: Capacity Reservations reserve capacity and do not themselves provide a billing discount."
+          "explanation": "Option: On-Demand Capacity Reservations for the billing discount — Incorrect: Capacity Reservations reserve capacity and do not themselves provide a billing discount."
         }
       ],
       "sourceUrls": [
@@ -5848,7 +5848,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "A Compute Savings Plan, after validating that the committed hourly amount fits the organization’s steady usage.",
+            "choice": "A Compute Savings Plan sized to steady hourly use",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5859,7 +5859,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "An EC2 Instance Savings Plan tied to one instance family and Region.",
+            "choice": "An EC2 Instance Savings Plan for one family and Region",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5870,7 +5870,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Spot Instances for all customer-facing baseline capacity, without an interruption strategy.",
+            "choice": "Spot Instances for the customer-facing baseline capacity",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5881,7 +5881,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "On-Demand Capacity Reservations, because they automatically provide a billing discount.",
+            "choice": "On-Demand Capacity Reservations for the billing discount",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6193,24 +6193,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "option": "Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing.",
+          "option": "Requester Pays with authenticated requests that accept the charge",
           "classification": "correct",
-          "rationale": "Option: Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing. — Correct: Requester Pays assigns request and data-transfer charges to the requester, while the bucket owner continues to pay storage. Requests must be authenticated and identify the requester as payer."
+          "rationale": "Option: Requester Pays with authenticated requests that accept the charge — Correct: Requester Pays assigns request and data-transfer charges to the requester, while the bucket owner continues to pay storage. Requests must be authenticated and identify the requester as payer."
         },
         {
-          "option": "Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA.",
+          "option": "A lifecycle rule moving objects to S3 Standard-IA",
           "classification": "incorrect",
-          "rationale": "Option: Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA. — Incorrect: A lifecycle transition changes storage class and cost characteristics; it does not transfer request or download charges to consumers. It can fit data with suitable infrequent access and retention economics."
+          "rationale": "Option: A lifecycle rule moving objects to S3 Standard-IA — Incorrect: A lifecycle transition changes storage class and cost characteristics; it does not transfer request or download charges to consumers. It can fit data with suitable infrequent access and retention economics."
         },
         {
-          "option": "Enable S3 Transfer Acceleration and leave all request charges with the bucket owner.",
+          "option": "Transfer Acceleration with request charges left on the owner",
           "classification": "incorrect",
-          "rationale": "Option: Enable S3 Transfer Acceleration and leave all request charges with the bucket owner. — Incorrect: Acceleration can improve transfer performance for some distant clients, but it does not reassign request and transfer charges."
+          "rationale": "Option: Transfer Acceleration with request charges left on the owner — Incorrect: Acceleration can improve transfer performance for some distant clients, but it does not reassign request and transfer charges."
         },
         {
-          "option": "Use S3 Storage Lens to assign each consumer’s data transfer charges to their account.",
+          "option": "S3 Storage Lens assigning each consumer data-transfer charges to that consumer",
           "classification": "incorrect",
-          "rationale": "Option: Use S3 Storage Lens to assign each consumer’s data transfer charges to their account. — Incorrect: Storage Lens provides usage and activity visibility; it does not change who is billed. Use it to analyze usage, not to implement Requester Pays."
+          "rationale": "Option: S3 Storage Lens assigning each consumer data-transfer charges to that consumer — Incorrect: Storage Lens provides usage and activity visibility; it does not change who is billed. Use it to analyze usage, not to implement Requester Pays."
         }
       ],
       "sourceUrls": [
@@ -6238,7 +6238,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Enable Requester Pays and require consumers to make authenticated requests that acknowledge requester billing.",
+            "choice": "Requester Pays with authenticated requests that accept the charge",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6248,7 +6248,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Apply a bucket lifecycle rule that transitions objects to S3 Standard-IA.",
+            "choice": "A lifecycle rule moving objects to S3 Standard-IA",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6258,7 +6258,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Enable S3 Transfer Acceleration and leave all request charges with the bucket owner.",
+            "choice": "Transfer Acceleration with request charges left on the owner",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6268,7 +6268,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Use S3 Storage Lens to assign each consumer’s data transfer charges to their account.",
+            "choice": "S3 Storage Lens assigning each consumer data-transfer charges to that consumer",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6383,24 +6383,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "option": "Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance.",
+          "option": "Benchmark ARM64 after checking binaries, libraries, and images",
           "classification": "correct",
-          "rationale": "Option: Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance. — Correct: The recommendation is a candidate for evaluation, not a compatibility guarantee. Architecture-specific dependencies and measured application performance determine whether migration meets the service requirements and total-cost goal."
+          "rationale": "Option: Benchmark ARM64 after checking binaries, libraries, and images — Correct: The recommendation is a candidate for evaluation, not a compatibility guarantee. Architecture-specific dependencies and measured application performance determine whether migration meets the service requirements and total-cost goal."
         },
         {
-          "option": "Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost.",
+          "option": "Move every instance on the day a Graviton recommendation appears",
           "classification": "incorrect",
-          "rationale": "Option: Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost. — Incorrect: Recommendations do not guarantee application compatibility or realized savings for every workload. A validated, measured rollout is needed."
+          "rationale": "Option: Move every instance on the day a Graviton recommendation appears — Incorrect: Recommendations do not guarantee application compatibility or realized savings for every workload. A validated, measured rollout is needed."
         },
         {
-          "option": "Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64.",
+          "option": "Buy Reserved Instances for the current x86 family",
           "classification": "incorrect",
-          "rationale": "Option: Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64. — Incorrect: A pricing commitment does not test an architecture migration. It may reduce cost for stable usage but leaves the application on x86."
+          "rationale": "Option: Buy Reserved Instances for the current x86 family — Incorrect: A pricing commitment does not test an architecture migration. It may reduce cost for stable usage but leaves the application on x86."
         },
         {
-          "option": "Move the service to Spot Instances because CPU utilization is steady and high.",
+          "option": "Move the steady high-CPU service onto Spot Instances",
           "classification": "incorrect",
-          "rationale": "Option: Move the service to Spot Instances because CPU utilization is steady and high. — Incorrect: High steady utilization alone does not show the workload tolerates interruption or replacement. Spot can fit fault-tolerant, flexible workloads with interruption handling, not as an architecture compatibility test."
+          "rationale": "Option: Move the steady high-CPU service onto Spot Instances — Incorrect: High steady utilization alone does not show the workload tolerates interruption or replacement. Spot can fit fault-tolerant, flexible workloads with interruption handling, not as an architecture compatibility test."
         }
       ],
       "sourceUrls": [
@@ -6434,7 +6434,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Validate ARM64 support across binaries, libraries, and images, then benchmark representative workloads and compare projected and observed cost and performance.",
+            "choice": "Benchmark ARM64 after checking binaries, libraries, and images",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6445,7 +6445,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Switch every instance immediately because a Graviton recommendation guarantees compatibility and lower total cost.",
+            "choice": "Move every instance on the day a Graviton recommendation appears",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6456,7 +6456,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Purchase Reserved Instances for the existing x86 family; this verifies whether the application can run on ARM64.",
+            "choice": "Buy Reserved Instances for the current x86 family",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6467,7 +6467,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Move the service to Spot Instances because CPU utilization is steady and high.",
+            "choice": "Move the steady high-CPU service onto Spot Instances",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -10616,6 +10616,569 @@
           "oldHash": "963108fb1ac64246dbf5278a757e0934bfd8e432b50083cc88e7a69fedae7a6f",
           "newHash": "558287de60e62f04a03595f03796e75219d043e26ecdd52b09019573eefb8812",
           "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html",
+          "numbers": ""
+        }
+      ]
+    },
+    {
+      "id": "answer-length-cue-2",
+      "description": "Batch 2a of the SAA answer-length rewrite. The 66 saa-c03 items that were still strongly length-biased. Same-category near misses or trimmed keys, parallel choices, and a sourced Correct or Incorrect line on every choice. Shared CLF tags and answer indexes are unchanged. Tag fields are excluded from the hashes.",
+      "excludedFields": [
+        "services",
+        "difficulty",
+        "domain"
+      ],
+      "items": [
+        {
+          "id": "q-aws-found-02",
+          "reason": "answer-length cue",
+          "oldHash": "0ee340ce12fce28d0c94e7b37907fb025a66bfcfd75615c02a6b6613b9540f0b",
+          "newHash": "00432e22cb03d87721b095303f82c17ee6bd237aa517d5db96d0914e828bb3b6",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-found-05",
+          "reason": "answer-length cue",
+          "oldHash": "9d5f8b6e1aeab8e74acb3e6e6134daddbbe402a06c6be56a069a23213a5bcbc0",
+          "newHash": "dd934972b1342b62892ab5c165948b01f3e7c8fc9c223fbd581e2cd797f65bd6",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-found-19",
+          "reason": "answer-length cue",
+          "oldHash": "bfaee41e81967d49bff401fc016d09fa5ae07fbff9c30efed811a0f6e7b65441",
+          "newHash": "6faff8d42afcfe80d50e260ff518a4a7cddaadd4c59504d099db7489d468b279",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-found-20",
+          "reason": "answer-length cue",
+          "oldHash": "d2b42ef10617f57137200b56459ba011ad14e32d57ba58588718687e7c3ce1d6",
+          "newHash": "7db5e2fc0f8b9b901e1c40f92066c0766a64bf4ab54cc7f1a24692cfcbee020b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-found-25",
+          "reason": "answer-length cue",
+          "oldHash": "9d6d2cf4af2a101b50a4fc6d4c840ace01964b35da9dbade8fe83824d96ebca8",
+          "newHash": "8ab62fb70af021404db4f7f0663c2fdc4f9c62936eb35f7224d062c6c14233f8",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-found-28",
+          "reason": "answer-length cue",
+          "oldHash": "c32e434006d5f82a9fb103599faf1de50c8fdbd99b9e223a4dfbae087e3d7722",
+          "newHash": "2b59fa7316f02fe2bab29f64cc4904726770aac70ee623ec3a300fa4665e21e4",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-14",
+          "reason": "answer-length cue",
+          "oldHash": "0ddf289925d76466bb3c3ee46d1d990af19740dab57f2b6f56f8b33517de5709",
+          "newHash": "02a02976bc8a0f3df2b481f41d3ba293efcc36c9487cdc7379a90ccce5026c82",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-28",
+          "reason": "answer-length cue",
+          "oldHash": "4095422271638c8d8886573d8535de287526ec7d8ddb23a18580a5f8f925f902",
+          "newHash": "37a1be23d4d939ed1616b7cf7b5f74f429f835803fb289266a78cfd268b76125",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-02",
+          "reason": "answer-length cue",
+          "oldHash": "d3faa7011f8868a0ecbf6d5ae9c35729f1bb66c749d41c75bf3491cb93d1cfba",
+          "newHash": "f8f79521ef3432da238009c8cf29f4963fd3bcb3513f10654c4291e043e14b15",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-19",
+          "reason": "answer-length cue",
+          "oldHash": "59525d0a9c8f4dff7493e5d742b7ab8418af50797b7112304f0de546436852b4",
+          "newHash": "467d1096b720818d24ee27bde885cecc4a01947805e76b299740108483a20b5b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-25",
+          "reason": "answer-length cue",
+          "oldHash": "e29599724a1074bad8b9872cc27bd2e718154069e13bbbda79ccbe8b8a4d36fa",
+          "newHash": "2486d778074d96bb290612ad6b7939341e0cc86998b1e12b8210d1babd65b995",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-27",
+          "reason": "answer-length cue",
+          "oldHash": "04320ca8be898db0551e1709d51acddc60470130590eaff66c7ac12fc64f6d73",
+          "newHash": "63e9b5ed946925a56e6ef11c8aeca8de456bc6d73599e12248c334770e811bdd",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-37",
+          "reason": "answer-length cue",
+          "oldHash": "8ec4adca017c552e685f8f35e7bdbb2e86ce5253b2bf31d9b59aff3cef60245b",
+          "newHash": "41ca94189ee32206286700ccdc4317d9b863ee391d6abb107d65ac6c3b65b72b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-review-saa-c03-1-2",
+          "reason": "answer-length cue",
+          "oldHash": "bd20fba5ca91f4b6a39eb61bc9abe24379764474d2e17effa821d0dd587dd6e0",
+          "newHash": "a3f8fe209299bc5cbc43f57454254b03d8f3aa2bbef8fc9378e0ece0fd09c0e0",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-review-saa-c03-2-2",
+          "reason": "answer-length cue",
+          "oldHash": "b85286f22002de82b2516fbbc7fbae29e00044fcf5af1a972af4000fda6ed71a",
+          "newHash": "96f675151332f0096c833dd7c3f0ebaab1fd714fa66e1520525757c14b9adf98",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-review-saa-c03-3-3",
+          "reason": "answer-length cue",
+          "oldHash": "24c94f39b9b75a95cc4a5ee94f735d882a8838b75396ad7d8651295c5e3af8de",
+          "newHash": "465aca28c3cf4818bc291d60abdb691566bd764fbee2175b51bf6e34bbb60a41",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-review-saa-c03-4-1",
+          "reason": "answer-length cue",
+          "oldHash": "99ea0855dcf90fffa4ee0a2443599693d5c40291c043b48c5055e0d1acd8b5e8",
+          "newHash": "09ba9efcf2754ffca7c630684fa2e464cc20bc4a55d3cf95ea7e557dd5d79bf6",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-aws-review-saa-c03-4-4",
+          "reason": "answer-length cue",
+          "oldHash": "33a405ba06fe1ecd18cd66eb97e5c9f5e49d028e3b546d948bdeff447e57030f",
+          "newHash": "5e37943866a16bf8d5e9d850d66bc88fb4e5df5fe2ccaf3cfdfb2f6cf87e4a4e",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-02",
+          "reason": "answer-length cue",
+          "oldHash": "109d8ba77b6f41ff06c016d3b534dcbb2f3d9470589ae25edb382fc9f11bf6ad",
+          "newHash": "f90fd90be8f3001b8819175181fc6809a326a165f2dccd29e580fee1931ba834",
+          "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-04",
+          "reason": "answer-length cue",
+          "oldHash": "3e3c7327718d668614b2308d3deb5e031255a10ea542d64351e07232dbdf0316",
+          "newHash": "765bf600ae41dc74fc605ab5c31bcfc1120425a371cad46a4a3b7f4f9ffa3046",
+          "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-08",
+          "reason": "answer-length cue",
+          "oldHash": "0df52d013ba1893a1181b3f39b23ecedbd56058b19526d84e21bc266e190bde5",
+          "newHash": "ae308dd59beac2675e442b143b1e6c70ffeec2b70ff8b8085ff4da20cae7471f",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-09",
+          "reason": "answer-length cue",
+          "oldHash": "b1d905d49ec2f8be8474c3f3ff8198d89b75182428f1dbd6736181b2c9a1866c",
+          "newHash": "669cbac596ca25b3a45c7292e269d18d0839efb158fae6f80f049a02e93e7a24",
+          "docsUrl": "https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/three-aws-glue-etl-job-types-for-converting-data-to-apache-parquet.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-10",
+          "reason": "answer-length cue",
+          "oldHash": "5e0c770519596cf1cfdc03d7418912105b81955c57031d9f21bcda8189d4b149",
+          "newHash": "69d01faa56cf32d515428e7615ce43dab7765e49448071e6df516096d4ee3fc7",
+          "docsUrl": "https://docs.aws.amazon.com/lake-formation/latest/dg/lf-permissions-overview.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-12",
+          "reason": "answer-length cue",
+          "oldHash": "d24442b7564e436883e87eaa5970b15b91ed358ccb3e16e4e71cf9ee36c6c680",
+          "newHash": "1e244b5782b52f96777fbb90c76bc90885966440e1e70ababd3eefe3c896a0c8",
+          "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/datasync-large-migration-running-tasks.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-003",
+          "reason": "answer-length cue",
+          "oldHash": "56d37510821eeae451ef9c82e7060c9e435f8f7325932929091e44e783c89a76",
+          "newHash": "e08671df6794f129c4a21d76937012234a4987a5bfe53fd7a5af3f80bdbfc88b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-007",
+          "reason": "answer-length cue",
+          "oldHash": "e15ea5faf286bdb794826f7996f477439209d307729fb929f9b5329501ff4233",
+          "newHash": "a965e5f0b468d76df843c41ee5493d76d7cb4e63fef441a0ebc3167b436c66e9",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-008",
+          "reason": "answer-length cue",
+          "oldHash": "311fb67ec33e52735f8eaa221b96da06d8199c54c0c452f60dfd348573a91f81",
+          "newHash": "9d1a54f00fe89920e7a4b9cd505fb95ccbd5c2b9fa18a4babcab2177cf294f5b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-010",
+          "reason": "answer-length cue",
+          "oldHash": "01264a14c1146f2878949a8a3e576e262483ffbc1d927048b9c9eec551f3f910",
+          "newHash": "d92f1267075abac7c6e28ff2a56b5e4e0cd339d9a412059d01c3cb2855c0e9c1",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-011",
+          "reason": "answer-length cue",
+          "oldHash": "ca4e292a2c0df9139976d638d98fc5b034eee736da2f0fe6ea2e82174e147c71",
+          "newHash": "e7ce1d09a689d22ec10952feaf113139c845291015722d8542a040b41d00ec7b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-012",
+          "reason": "answer-length cue",
+          "oldHash": "ed4ee17a6c4a0e5fff3c93264d772791ad84f1f82f12f0d1a14cee4b14daabce",
+          "newHash": "c385c81ac67b3887df4c13cda89b59aadb2aa2c89955fc7e0d7b39ed390c25a2",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-014",
+          "reason": "answer-length cue",
+          "oldHash": "27104cb433c6d9d942d407bcb68460d08e574b930a3b87b1fd1e73a6660d4c7b",
+          "newHash": "6690fb2d585c6eb0352635de62fdee517c59ba91dd7e4f509efb02293eb9c5ea",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-002",
+          "reason": "answer-length cue",
+          "oldHash": "15181ee4259e5296e37ac3e0e881827c4855ae0090914fefc36b2a1f2a28694b",
+          "newHash": "89d92863bdd7816dde34b119d93115441c4649944c0ce4193287ae34c171807a",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-004",
+          "reason": "answer-length cue",
+          "oldHash": "212f43cafdb497e9871106f7cd74558465c708c103385b10cbb7d4ebf6939c76",
+          "newHash": "81b3c80f3f1d495fad4a1a85213efa66fadabe09dc638be008e4e020fd33972b",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-04",
+          "reason": "answer-length cue",
+          "oldHash": "681acd3cc0e68beee0ddc7a346bf903dacc51b6cef064afdd0d1fae1709a79f6",
+          "newHash": "fbc32bc2413748352eb8d42ea6339600d0fbcb70d5a67926269472b3ba2797ad",
+          "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-16",
+          "reason": "answer-length cue",
+          "oldHash": "48509aed75b498a1ea831a42cb50c3cb816492e162ebf8aa0befb60b92c7915d",
+          "newHash": "7dc8d91f7d36e5d3c8913dd6b690b5c3fa174804139916a4881d3fdf7bbcfc61",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-26",
+          "reason": "answer-length cue",
+          "oldHash": "c0de01b88ab7d7c37f76b0e71db951221a6bd312579e5a77f773fc35d8f950fb",
+          "newHash": "bb9a0bd73e9c9ced64915736db9d144799a000e18aa37596f21bd892434cf37e",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-28",
+          "reason": "answer-length cue",
+          "oldHash": "fdccaa433b7eda502bd0f1596efee4780d960441cf9d6a4b613fcd636451a90e",
+          "newHash": "32df96651a11d7a603b071691f5fa32e9fefe0f1e283f10ad0abc2139c4c2bbe",
+          "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-31",
+          "reason": "answer-length cue",
+          "oldHash": "a1a9f4ea1d2d90a645b2d06dbf7c23dc102069f07aba9f85b5da7bd31ac88e51",
+          "newHash": "5dc02582854dfcbb200179ec413dbd0b4bbac0b8bf3178d789790397042a4cec",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-35",
+          "reason": "answer-length cue",
+          "oldHash": "644cc7ce6526a4428a4661de81a0ae04cf928ee6151da5560390d1507f6b9a23",
+          "newHash": "faefada2c4d6907463fa30623d53b3d5f43da57d64fd9eecc882a1d7c11406ad",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-41",
+          "reason": "answer-length cue",
+          "oldHash": "33d92014f28d8ab284334eba3dcfb8d8df3bde4d339d462a8da6701294448afb",
+          "newHash": "2a4d78e530e641312ec291a05b1e1b9e59c73d88df966f8dfeb2499d3f985125",
+          "docsUrl": "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-52",
+          "reason": "answer-length cue",
+          "oldHash": "70d47091f6993d5574da8d13cb391f826b3fa006095e03e4618d6f8c372ad733",
+          "newHash": "08532bee6e3a9144145efc64f6087a03ad8414793b43a6ce78ddc8aa3a0c000c",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-55",
+          "reason": "answer-length cue",
+          "oldHash": "9024bbe3879739058350a47b724242ea0b85579fd0b755ace6dac05546ad8ac1",
+          "newHash": "c666927f3e9f3dd36bc59de06484a28fd1712486f04a6c5cada13af6b7833ec1",
+          "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-56",
+          "reason": "answer-length cue",
+          "oldHash": "35e1364adae91e073aa69a464cd417bc0520182b6c5f92d408a3b341eee48123",
+          "newHash": "9db5028e8e15e22cc8dd251dc7be1a789f05d35c04e88e165d5e4982a7794c1d",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-29",
+          "reason": "answer-length cue",
+          "oldHash": "9567e126f1e17909e56bee5f342e755d7f46c67bf6b49bb148b16a5b05be0bd9",
+          "newHash": "7d922bc0d7e441145f5abf815fba8db2dec3484f01868623e0c72b5075c69b48",
+          "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-38",
+          "reason": "answer-length cue",
+          "oldHash": "b4c9d999431fd4b895e80110c86a478d832a9dfd86289639a8295426a1413c22",
+          "newHash": "564868cc9b7e4410895e8b6e5345992123d31a886cab5c67edf7a907963b2a55",
+          "docsUrl": "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-44",
+          "reason": "answer-length cue",
+          "oldHash": "97426bcf15d22321c37f1cb1b50270920cfccab0b7267700957f2de6f3b84238",
+          "newHash": "71319a02b7560f844afb3f3cc050864500125bd21c25f1950cb15cba2e5c6d2d",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-45",
+          "reason": "answer-length cue",
+          "oldHash": "55fd88a5fc0f7f2b62991d32d7d57d4e94c016ec9e68417338a0dd7ff12cfedd",
+          "newHash": "41af290ca0dfaf417393e3e6673e32885958b23f7bccf23ce4228a9fd09b2282",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-50",
+          "reason": "answer-length cue",
+          "oldHash": "c4da97beda55381a0b4e8833a5f38af7fcf51457e60c596b5c184a24735c5f9b",
+          "newHash": "beaeaf12ad4c57003eddc92c40a3b719d4df6bb50214856e26b2b44359939d7c",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-04",
+          "reason": "answer-length cue",
+          "oldHash": "d1f3267420d9583884793fd309804b922ae53c6c62c72cf7a183933a1df66ac4",
+          "newHash": "8313529f75e2b38c9682d6e2fdd0061eee81317d4d3b85c1dff48960f3b9b786",
+          "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-05",
+          "reason": "answer-length cue",
+          "oldHash": "59f0fbb505fead487a4d64ad20c749053e5e63dc7bca7d0be737c42015970a6d",
+          "newHash": "5c51bc3c9baccba202c57c96c7ceee2b20edadf82ba60f7d0a30e982114eccd1",
+          "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-09",
+          "reason": "answer-length cue",
+          "oldHash": "b66bfc1ee0915ef9deee0d7248553bbe650ae560b8fc2742e0c307d8e556479d",
+          "newHash": "b3888251f215136a595a5a5fc738682d6ae89d282931813725849102d7f6f005",
+          "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-11",
+          "reason": "answer-length cue",
+          "oldHash": "64c080b79b52fe086adcd1723c241596254a6da8275c68a707a52b98c2cbb6b2",
+          "newHash": "f972fbb6a959df397b6fc098de982162b0dcf21a49a7cedab4b98c0bbd1ed90a",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-16",
+          "reason": "answer-length cue",
+          "oldHash": "ec0b12061842733365b506d342c6a6732a99b678aaf425c08cc0c428aaf684d5",
+          "newHash": "246f19151b9c8dbc3bdb79aaca718f4cdde7d78620ad1c592cd69033673f4908",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-24",
+          "reason": "answer-length cue",
+          "oldHash": "f7933f5bdb1b6170adfd2a9cacf13c522329f9d45dd94934769b27ac77fbe382",
+          "newHash": "0dbda7c723d7c08a874a181ae661cf2004c3304dccd3dc55fbbf20aa85682658",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-25",
+          "reason": "answer-length cue",
+          "oldHash": "6de46b149fec0fa023b6b7cc4a8586ec57f3301b82d2ad91fb2c2d010c16d6ee",
+          "newHash": "26ecd088922ce5aee7e30583e6fd73f13d1853ea7321f8d41c7b35251685c133",
+          "docsUrl": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-26",
+          "reason": "answer-length cue",
+          "oldHash": "b69b321ccb6e337ffcd877b4b87898d520b058b06147ae085b6fae15eee78a07",
+          "newHash": "424c8e0087fea4a90f94c3438d348f1d82b1f90a810eedee8d211e83c04ea297",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-27",
+          "reason": "answer-length cue",
+          "oldHash": "419148d233f2480764abb81f50ef650130586db1b84cef5a6e652c62a9f4bb8f",
+          "newHash": "af88168408be723b09053cbd7393fb8fda372b1923a641a35487d565921dd9bf",
+          "docsUrl": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-29",
+          "reason": "answer-length cue",
+          "oldHash": "c6285009f18f986f9c8ea1e163433c1834181e78c27aca51ccf37898aea4b521",
+          "newHash": "14c23aae46632c72951da8f8e3e3d32f3ff3aecd6454660c50b13798b8f04523",
+          "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-30",
+          "reason": "answer-length cue",
+          "oldHash": "1adcfc318440658abda9398722690a872bc67ca29b3eddaf0052285b199da097",
+          "newHash": "3023becb29d80ab229b1a983ceac735f2f2f1c4e61804e3b8b1bd6c4762109a8",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-32",
+          "reason": "answer-length cue",
+          "oldHash": "f058e358c8c6b59b12f9cb9627a2f4502c7d401b54763846c47095a17b2063bf",
+          "newHash": "2cf7c08062c0e8471260546dd09055109286bab849c18140abe0b3b6f3aa531f",
+          "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-example-private-subnets-nat.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-010",
+          "reason": "answer-length cue",
+          "oldHash": "ae8e37f4f11e4e27c442165fca4b54be684270a48ca0a1c93dc85b99c56dd9ca",
+          "newHash": "0e4155e8dba7b7c61ab868425e0b90179f13a3fb0ca4068a4acf9ff2a6e62405",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-hy-mgn-01",
+          "reason": "answer-length cue",
+          "oldHash": "edc4135e51a1502565bea625b3c1509842f25b28423e04b8d1910a110c8d63a0",
+          "newHash": "d9b2d6c344afd73da0f0c8b9deaa10b54e6abe2ea846dd497e568f23c7b94614",
+          "docsUrl": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-hy-dms-sct-01",
+          "reason": "answer-length cue",
+          "oldHash": "455be0cb238a0f1540173b86f8331ae92881ae455ac546c7cd3572d72a8bc0f7",
+          "newHash": "796672a46da17aa998b6d503920bb8e2303c650e6b07e8fbe13dde68d41c6053",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-07-resilient",
+          "reason": "answer-length cue",
+          "oldHash": "d4a7a28cec3a206e167841e34babd8573058d0f46f77b439b2151de64fe9ce79",
+          "newHash": "9f4c27f9b5da805102a472ba36a11a9bdfe27e71dc59cf63387abdd342d07028",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-07-secure",
+          "reason": "answer-length cue",
+          "oldHash": "92f63b6b452c062c37c85c3acdf57d17e2202976cf10ef7f06b916c4520e2730",
+          "newHash": "d6288f75c9434d7a5b5ad2328252c9288485075e3e12830910aa60729d149722",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/in-transit-encryption.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-09-secure",
+          "reason": "answer-length cue",
+          "oldHash": "86f8ab691cd35b6595df3edf4ed2e2d918ec9f9f68bec7f5265d9b22f0089ef1",
+          "newHash": "8fa42226a7e845d808a7666647687e183afe16a9dc4612062b3b109b07ed79cd",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-09-ops",
+          "reason": "answer-length cue",
+          "oldHash": "74c70a7a49766fdf62c3a0bd8e3182e1c52e05401826ab9240514b0389ae2745",
+          "newHash": "c235d36d60a6061e8e0ccde2227152ffca979ab7eeab06c26e681ca038e5a8cb",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-10-ops",
+          "reason": "answer-length cue",
+          "oldHash": "4aac6eebde5fc4d02710a0d3ccdb0fede75046d38d7ec46c23410164f7e12f68",
+          "newHash": "66366da200c7c0c2c8a3fa2d83f2d55cc23316e63b2e337e9a05071a61516b2e",
+          "docsUrl": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-10-secure",
+          "reason": "answer-length cue",
+          "oldHash": "af62cdb1fcde506256919d3986b5742a27959a2089e5eb03a5d96ba75da3f53b",
+          "newHash": "222f08529efea5fcba7711f5fc9b19a31d92c885ef274378785131ff9ce98294",
+          "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
           "numbers": ""
         }
       ]
