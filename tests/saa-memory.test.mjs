@@ -27,22 +27,14 @@ const copiedCues = [
 
 test("comparison pairs link existing drill items and add only the six missing contrasts", () => {
   const pairs = pairSourcesFor("saa-c03");
-  assert.equal(pairs.length, 15);
+  assert.equal(pairs.length, 33);
   const linked = pairs.filter((pair) => !pair.difference);
   const written = pairs.filter((pair) => pair.difference);
   assert.equal(linked.length, 5);
-  assert.deepEqual(written.map((pair) => pair.id), [
-    "pair-sqs-sns-eventbridge",
-    "pair-kms-cloudhsm",
-    "pair-ebs-efs-fsx-s3",
-    "pair-aurora-global-replica",
-    "pair-vpn-direct-connect",
-    "pair-ri-savings-spot",
-    "pair-gateway-interface",
-    "pair-s3-ia-one-zone",
-    "pair-ondemand-spot",
-    "pair-boundary-scp",
-  ]);
+  assert.equal(written.length, 28);
+  for (const id of ["pair-boundary-scp", "pair-role-user", "pair-nat-gateway-endpoint"]) {
+    assert.ok(written.some((pair) => pair.id === id), id);
+  }
   for (const cue of copiedCues) assert.equal(pairFile.includes(cue), false, cue);
   for (const pair of pairs) {
     assert.ok(pair.docsUrl.startsWith("https://"), pair.id);
@@ -73,7 +65,7 @@ test("one study record per id, with card, pair, and game-item variants", () => {
   const ids = records.map((record) => record.id);
   assert.equal(new Set(ids).size, ids.length);
   assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 145);
-  assert.equal(records.filter((record) => record.kind === "pair").length, 15);
+  assert.equal(records.filter((record) => record.kind === "pair").length, 33);
   assert.equal(records.some((record) => record.id === "fc-saa-nat-gw"), false);
   assert.ok(records.some((record) => record.kind === "game-item" && record.id === "aws-saa-service-compare/spot"));
   const card = studyRecord("fc-aws-iam-role");

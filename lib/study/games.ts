@@ -21,6 +21,9 @@ export const PRINCIPLES = [
   "Prefer a managed service that still meets the requirement",
   "Choose the lower cost among designs that meet the requirement",
   "Replicate so the recovery point stays current",
+  "Keep access inside the permissions that were granted",
+  "Keep serving through the failure the stem names",
+  "Remove the bottleneck the stem names",
 ] as const;
 
 const ORIGINAL_PAIRS = [
@@ -44,8 +47,11 @@ type Tagged = {
   services?: string[];
   questionIds?: string[];
   choices?: string[];
+  choiceWhy?: string[];
   answer?: number | boolean;
   order?: string[];
+  rungWhy?: string[];
+  correction?: string;
 };
 
 type Step = {
@@ -94,13 +100,23 @@ function seededOrder(count: number, seed: string): number[] {
   return order;
 }
 
+function shownExplanation(item: Tagged, labels: string[] = []): string {
+  const reasons = (item.choiceWhy ?? []).map((why, index) => {
+    const label = labels[index] ?? item.choices?.[index];
+    return label && why ? `${label}: ${why}` : why;
+  }).filter((line) => line.length > 0);
+  const rungs = item.rungWhy ?? [];
+  const correction = item.answer === false && item.correction && !item.explanation.includes(item.correction) ? item.correction : "";
+  return [item.explanation, correction, ...reasons, ...rungs].filter((line, index, all) => line.length > 0 && all.indexOf(line) === index).join(" ");
+}
+
 function choiceSteps(items: Tagged[], labels: string[]): Step[] {
   return items.map((item) => ({
     id: item.id,
     prompt: item.prompt,
-    choices: labels.map((label, index) => ({ key: String(index + 1), label })),
+    choices: (labels.length > 0 ? labels : item.choices ?? []).map((label, index) => ({ key: String(index + 1), label })),
     answerKey: String(Number(item.answer) + 1),
-    explanation: item.explanation,
+    explanation: shownExplanation(item, labels.length > 0 ? labels : item.choices ?? []),
     cardId: item.cardId,
     taskId: item.taskId,
     docsUrl: item.docsUrl,
@@ -137,7 +153,7 @@ function lightningSteps(): Step[] {
       { key: "f", label: "False" },
     ],
     answerKey: item.answer === true ? "t" : "f",
-    explanation: item.explanation,
+    explanation: shownExplanation(item),
     cardId: item.cardId,
     taskId: item.taskId,
     docsUrl: item.docsUrl,
@@ -223,19 +239,6 @@ export function startGame(game: GameId, seed = "saa", weakDomain: SaaDomainId | 
   if (game === "pillars") round.steps = choiceSteps(catalog.pillars as Tagged[], [...PILLARS]);
   if (game === "lightning") round.steps = lightningSteps();
   if (game === "daily") round.steps = dailySteps(weakDomain, seed);
-  if (game === "odd" || game === "builder") {
-    const source = (game === "odd" ? catalog.odd : catalog.builder) as Tagged[];
-    round.steps = source.map((item) => ({
-      id: item.id,
-      prompt: item.prompt,
-      choices: (item.choices ?? []).map((label, index) => ({ key: String(index + 1), label })),
-      answerKey: String(Number(item.answer) + 1),
-      explanation: item.explanation,
-      cardId: item.cardId,
-      taskId: item.taskId,
-      docsUrl: item.docsUrl,
-    }));
-  }
   if (game === "ladder") {
     round.order = (catalog.ladders as Tagged[]).map((item) => [...(item.order ?? [])].reverse());
     round.steps = (catalog.ladders as Tagged[]).map((item) => ({
@@ -243,7 +246,7 @@ export function startGame(game: GameId, seed = "saa", weakDomain: SaaDomainId | 
       prompt: item.prompt,
       choices: [],
       answerKey: "Enter",
-      explanation: item.explanation,
+      explanation: shownExplanation(item),
       cardId: item.cardId,
       taskId: item.taskId,
       docsUrl: item.docsUrl,
