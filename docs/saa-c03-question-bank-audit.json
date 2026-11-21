@@ -4301,11 +4301,11 @@
       "taskId": "3.5",
       "domainId": "3.0",
       "topicId": "aws-saa-dns-data",
-      "skillId": "3.5-S03",
-      "skill": "Designing data transfer solutions",
+      "skillId": "3.5-S07",
+      "skill": "Transforming data between formats (for example, .csv to .parquet)",
       "primaryDecision": "A database must move to a different engine. The rows have to keep copying while the source still takes writes, and the stored procedures have to be converted. Which pairing matches those two jobs?",
       "stretch": true,
-      "reviewNote": "Stretch: the row copy fits 3.5-S03; the schema-conversion half is closer to 3.5-S07. Mapping is a review aid, not evidence of complete task coverage."
+      "reviewNote": "Mapped to 3.5-S07 because the distinguishing job is converting schema and code. The skill example is a file-format change, so the engine conversion is the nearer skill. Mapping is a review aid, not evidence of complete task coverage."
     },
     {
       "questionId": "q-saa-hy-snow-01",
@@ -4375,14 +4375,14 @@
     },
     {
       "questionId": "q-saa-hy-s3-ap-01",
-      "taskId": "3.1",
-      "domainId": "3.0",
+      "taskId": "1.3",
+      "domainId": "1.0",
       "topicId": "aws-saa-storage",
-      "skillId": "3.1-S01",
-      "skill": "Determining storage services and configurations that meet performance demands",
+      "skillId": "1.3-S06",
+      "skill": "Implementing policies for data access, lifecycle, and protection",
       "primaryDecision": "Two applications share one S3 bucket. Each application should use its own hostname and its own policy, and one of them must reach the bucket only from a VPC. Which S3 feature gives that separate entry?",
-      "stretch": true,
-      "reviewNote": "Stretch: 3.1-S01 is a performance configuration; this item is a separate access entry on one bucket. Mapping is a review aid, not evidence of complete task coverage."
+      "stretch": false,
+      "reviewNote": "Moved from 3.1 to 1.3. The stem asks for a per-application policy and a VPC-only entry on shared data, which is data-access control, not a performance configuration. Mapping is a review aid, not evidence of complete task coverage."
     },
     {
       "questionId": "q-saa-hy-ddb-streams-01",
@@ -4404,7 +4404,7 @@
       "skill": "Designing database architectures",
       "primaryDecision": "Session items in DynamoDB should disappear after they expire, using a timestamp attribute already stored on the item. The application should not scan the table to delete them. Which feature does that deletion?",
       "stretch": true,
-      "reviewNote": "Stretch: 3.3-S02 is database architecture design; this item is item expiry. Mapping is a review aid, not evidence of complete task coverage."
+      "reviewNote": "Kept on 3.3. The stem asks which feature deletes an expired item without a table scan. It does not mention storage cost, so task 4.3 does not fit. Mapping is a review aid, not evidence of complete task coverage."
     },
     {
       "questionId": "q-saa-hy-sqs-dlq-01",
@@ -8276,6 +8276,20 @@
           "sha256": "97590f038641ef5190a8f2351d79e4df7246630cc46da5c8d690950afb5e7c5d"
         }
       ]
+    },
+    {
+      "id": "high-yield-fill-task-check",
+      "description": "q-saa-hy-s3-ap-01 moved from task 3.1 to task 1.3 after the stem check. services, difficulty, and a derived domain stay excluded. The 16-question hash stage is not rewritten.",
+      "excludedFields": ["services", "difficulty", "domain"],
+      "rewritesBaseline": false,
+      "questionCount": 1,
+      "questions": [
+        {
+          "id": "q-saa-hy-s3-ap-01",
+          "oldHash": "848ebfb8597fc1e25ed62c6ab591b8f8fd0b0ec4d00621f8c20b235f013b49c5",
+          "sha256": "b5e830a7dba795609c191a982d9877119fb657da72e573397482104e04b0e147"
+        }
+      ]
     }
   ],
   "preservationBaseline": {
@@ -9463,22 +9477,22 @@
         "q-saa-hy-aurora-global-01",
         "q-saa-hy-backup-01"
       ],
-      "description": "PR 247 commit 98d9cae adds 16 questions in content/saa-high-yield-fill.json. content/questions.json stays at 319. Earlier count stages are unchanged.",
+      "description": "PR 247 commit 98d9cae adds 16 questions in content/saa-high-yield-fill.json. content/questions.json stays at 319. Earlier count stages are unchanged. q-saa-hy-s3-ap-01 is counted on task 1.3 after the stem check.",
       "saaQuestionCount": 335,
       "uniqueIdCount": 335,
       "byDomain": {
-        "1.0": 82,
+        "1.0": 83,
         "2.0": 66,
-        "3.0": 117,
+        "3.0": 116,
         "4.0": 70
       },
       "byTask": {
         "1.1": 27,
         "1.2": 33,
-        "1.3": 22,
+        "1.3": 23,
         "2.1": 26,
         "2.2": 40,
-        "3.1": 20,
+        "3.1": 19,
         "3.2": 23,
         "3.3": 23,
         "3.4": 23,

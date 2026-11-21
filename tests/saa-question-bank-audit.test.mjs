@@ -361,11 +361,22 @@ test("the high-yield fill is stage 319 to 335 and every id is in the saa-c03 moc
   assert.equal(hashStage.questionCount, 16);
   const hashes = new Map(hashStage.questions.map((row) => [row.id, row.sha256]));
   assert.deepEqual([...hashes.keys()], stage.addedIds);
+  const retask = audit.hashStages.find((item) => item.id === "high-yield-fill-task-check");
+  assert.equal(retask.rewritesBaseline, false);
+  assert.deepEqual(retask.excludedFields, [...SAA_TAG_FIELDS]);
+  assert.equal(retask.questionCount, 1);
+  const retaskById = new Map(retask.questions.map((row) => [row.id, row]));
   const preserved = new Set(audit.hashStages.find((item) => item.id === "live-314-exclude-study-tags").questions.map((row) => row.id));
   for (const id of stage.addedIds) {
     const question = servedQuestions.find((item) => item.id === id);
     const digest = sha256("sha256").update(JSON.stringify(withoutSaaTagFields(question))).digest("hex");
-    assert.equal(digest, hashes.get(id), id);
+    const moved = retaskById.get(id);
+    if (moved) {
+      assert.equal(moved.oldHash, hashes.get(id), id);
+      assert.equal(digest, moved.sha256, id);
+    } else {
+      assert.equal(digest, hashes.get(id), id);
+    }
     assert.equal(preserved.has(id), false, id);
   }
   const objectives = read("content/objectives.json");
