@@ -38,17 +38,17 @@ Turn off all billing alerts until go-live — Incorrect. Alerts help catch surpr
 
 **Prompt:** An API tier needs horizontal scale based on CPU and must replace unhealthy instances automatically. Which combination fits?
 
-- A. One oversized instance with termination protection and no load balancer
-- B. Manual AMI copies once a quarter only
-- C. An Auto Scaling group with ELB health checks and a launch template **← correct**
-- D. Disable health checks so failed instances stay in service
+- A. One larger instance with termination protection
+- B. A launch template the team launches by hand
+- C. An Auto Scaling group with CPU and health checks **← correct**
+- D. An Auto Scaling group held at one fixed desired capacity
 
 **Explanation:**
 
-One oversized instance with termination protection and no load balancer — Incorrect. A single protected instance is a bottleneck and SPOF.
-Manual AMI copies once a quarter only — Incorrect. Quarterly AMI copy is not automated scaling.
-An Auto Scaling group with ELB health checks and a launch template — Correct. ASG + health checks + launch template provides elastic, replaceable capacity.
-Disable health checks so failed instances stay in service — Incorrect. Health checks are required for automatic replacement.
+One larger instance with termination protection — Incorrect. One instance does not add or replace capacity horizontally when CPU rises or a host fails.
+A launch template the team launches by hand — Incorrect. A launch template describes an instance. Launching it by hand is not automatic replacement.
+An Auto Scaling group with CPU and health checks — Correct. The group scales on CPU and the health checks replace instances that fail.
+An Auto Scaling group held at one fixed desired capacity — Incorrect. A fixed desired capacity does not add instances when CPU rises.
 
 
 ## q-saa-chapter-04 (ch02 · objective 2.2)
@@ -123,17 +123,17 @@ Run peak ETL full scans on the writer during business hours — Incorrect. Heavy
 
 **Prompt:** RDS needs automatic failover to a standby in another Availability Zone with minimal operational reinstall. Which feature provides this?
 
-- A. A single-AZ instance with backups disabled
-- B. Only increasing instance size in one AZ
-- C. Storing the only copy on a developer laptop
+- A. RDS read replica
+- B. RDS backup and restore
+- C. RDS cross-Region read replica
 - D. RDS Multi-AZ deployment **← correct**
 
 **Explanation:**
 
-A single-AZ instance with backups disabled — Incorrect. Single-AZ without backups is fragile.
-Only increasing instance size in one AZ — Incorrect. Larger size improves capacity, not AZ failure tolerance.
-Storing the only copy on a developer laptop — Incorrect. Laptops are not resilient cloud databases.
-RDS Multi-AZ deployment — Correct. Multi-AZ maintains a synchronous standby and fails over on primary failure.
+RDS read replica — Incorrect. A read replica serves reads. It is not the synchronous standby that fails over for the writer.
+RDS backup and restore — Incorrect. Backup and restore recovers from a snapshot. It is not automatic failover to a standby.
+RDS cross-Region read replica — Incorrect. A cross-Region replica is a copy in another Region, not the standby in another Availability Zone.
+RDS Multi-AZ deployment — Correct. Multi-AZ keeps a standby in another Availability Zone and fails over to it.
 
 
 ## q-saa-chapter-09 (ch05 · objective 1.1)
@@ -209,33 +209,33 @@ SSE-KMS using a customer managed KMS key and key policies — Correct. SSE-KMS C
 **Prompt:** Route 53 should shift users from a primary regional endpoint to a secondary when health checks fail. Which routing policy supports active-passive failover?
 
 - A. Failover routing with health checks **← correct**
-- B. Simple routing with one record and no health check
-- C. Weighted routing with equal weights and no health checks
-- D. Geoproximity only with no health evaluation
+- B. Simple routing with one record for the primary endpoint
+- C. Weighted routing with health checks and equal weights
+- D. Geoproximity routing with a failover bias toward one Region
 
 **Explanation:**
 
-Failover routing with health checks — Correct. Failover routing is active-passive and uses health checks.
-Simple routing with one record and no health check — Incorrect. Simple routing does not fail over on health.
-Weighted routing with equal weights and no health checks — Incorrect. Weighted without health still sends traffic to unhealthy targets.
-Geoproximity only with no health evaluation — Incorrect. Geoproximity alone is not failover.
+Failover routing with health checks — Correct. Failover routing sends traffic to the primary and moves it to the secondary when health checks fail.
+Simple routing with one record for the primary endpoint — Incorrect. Simple routing returns the one record. It does not switch to a secondary on a failed health check.
+Weighted routing with health checks and equal weights — Incorrect. Health checks on weighted records can drop a bad endpoint. Equal weights still split traffic instead of active-passive failover.
+Geoproximity routing with a failover bias toward one Region — Incorrect. A geoproximity bias shifts traffic by location. It is not active-passive failover on health.
 
 
 ## q-saa-chapter-14 (ch07 · objective 3.4)
 
 **Prompt:** A global audience needs latency-based DNS answers to the nearest healthy regional API. Which Route 53 approach fits?
 
-- A. A single A record to one instance in one AZ with no health check
-- B. Latency-based routing with health checks on regional endpoints **← correct**
-- C. Turning off DNS entirely and hard-coding IPs in mobile apps
-- D. Using only TXT records for API routing
+- A. Geolocation by country across the regional endpoints
+- B. Latency routing with health checks on the regional endpoints **← correct**
+- C. Geoproximity routing with a bias around one Region
+- D. Weighted routing with health checks and equal weights
 
 **Explanation:**
 
-A single A record to one instance in one AZ with no health check — Incorrect. One instance in one AZ is neither global nor highly available.
-Latency-based routing with health checks on regional endpoints — Correct. Latency routing steers users to lower-latency healthy regions.
-Turning off DNS entirely and hard-coding IPs in mobile apps — Incorrect. Hard-coded IPs defeat DNS-based traffic management.
-Using only TXT records for API routing — Incorrect. TXT records are not for API endpoint routing.
+Geolocation by country across the regional endpoints — Incorrect. Geolocation answers from the record for the user's country, not from the lowest measured latency.
+Latency routing with health checks on the regional endpoints — Correct. Latency routing answers from the regional endpoint with the lowest latency, and health checks drop an unhealthy endpoint.
+Geoproximity routing with a bias around one Region — Incorrect. Geoproximity uses a bias around a location. It is not the latency measurement between the user and the Region.
+Weighted routing with health checks and equal weights — Incorrect. Weights split traffic by the numbers you set. They do not pick the lowest-latency Region.
 
 
 ## q-saa-chapter-15 (ch08 · objective 3.4)
@@ -277,33 +277,33 @@ Edge caches satisfy repeat viewers without refetching the origin every time — 
 **Prompt:** Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which decoupling service fits between API and workers?
 
 - A. Amazon SQS **← correct**
-- B. Tight synchronous calls with no queue and no retries
-- C. Jobs stored only in one instance's memory
-- D. Public unauthenticated S3 listings as a work queue
+- B. Amazon SNS
+- C. Amazon EventBridge
+- D. Amazon Kinesis Data Streams
 
 **Explanation:**
 
-Amazon SQS — Correct. SQS buffers work so producers and consumers scale independently.
-Tight synchronous calls with no queue and no retries — Incorrect. Tight coupling propagates backpressure and failures.
-Jobs stored only in one instance's memory — Incorrect. In-memory queues die with the instance.
-Public unauthenticated S3 listings as a work queue — Incorrect. Public S3 listings are not a proper work queue.
+Amazon SQS — Correct. SQS holds each order until a worker receives it, so a slow worker does not stop intake.
+Amazon SNS — Incorrect. SNS pushes a message to subscribers. It does not keep a backlog for a worker that is briefly down.
+Amazon EventBridge — Incorrect. EventBridge routes events. It is not the queue that stores work until a consumer is ready.
+Amazon Kinesis Data Streams — Incorrect. Kinesis retains a stream of records. The order intake here is a job queue, which is SQS.
 
 
 ## q-saa-chapter-18 (ch09 · objective 3.5)
 
 **Prompt:** A multi-step workflow needs retries, branching, and visible state across Lambda tasks. Which service is purpose-built?
 
-- A. A single SSH script with no durable state
+- A. Amazon EventBridge
 - B. AWS Step Functions **← correct**
-- C. Manual spreadsheet tracking only
-- D. Disabling all dead-letter queues everywhere
+- C. AWS Lambda destinations
+- D. Amazon SWF
 
 **Explanation:**
 
-A single SSH script with no durable state — Incorrect. Ad-hoc scripts lack durable orchestration state.
-AWS Step Functions — Correct. Step Functions orchestrates steps with state, retries, and branches.
-Manual spreadsheet tracking only — Incorrect. Spreadsheets are not runtime orchestration.
-Disabling all dead-letter queues everywhere — Incorrect. DLQs help surface poison messages; removing them hides failures.
+Amazon EventBridge — Incorrect. EventBridge routes events to targets. It does not run a multi-step state machine with branching.
+AWS Step Functions — Correct. Step Functions runs the steps, retries them, and keeps a visible state for the workflow.
+AWS Lambda destinations — Incorrect. Lambda destinations hand one result to another target. They are not the workflow's state machine.
+Amazon SWF — Incorrect. SWF is an older workflow service. The managed state machine for these Lambda tasks is Step Functions.
 
 
 ## q-saa-chapter-19 (ch10 · objective 2.1)
@@ -345,16 +345,16 @@ S3 Cross-Region Replication — Correct. CRR replicates objects asynchronously t
 **Prompt:** A TCP service needs ultra-low latency load balancing and preservation of client source IP at very high connection rates. Which load balancer type is designed for this?
 
 - A. Network Load Balancer **← correct**
-- B. Application Load Balancer used only for layer-4 TCP without HTTP features
-- C. AWS WAF without any load balancer
-- D. Amazon SES
+- B. Application Load Balancer
+- C. Gateway Load Balancer
+- D. Classic Load Balancer
 
 **Explanation:**
 
-Network Load Balancer — Correct. NLB operates at layer 4 for high-performance TCP/UDP workloads and can preserve source IP.
-Application Load Balancer used only for layer-4 TCP without HTTP features — Incorrect. ALB is layer 7 for HTTP features; NLB is the L4 high-performance choice.
-AWS WAF without any load balancer — Incorrect. WAF needs an association target and is not an L4 load balancer.
-Amazon SES — Incorrect. SES sends email.
+Network Load Balancer — Correct. A Network Load Balancer is built for high-rate TCP and can preserve the client source address.
+Application Load Balancer — Incorrect. An Application Load Balancer is for HTTP and HTTPS. It is not the low-latency TCP balancer.
+Gateway Load Balancer — Incorrect. A Gateway Load Balancer sends traffic through appliances. It is not the application's TCP load balancer.
+Classic Load Balancer — Incorrect. A Classic Load Balancer is the legacy option. It is not the current choice for this TCP profile.
 
 
 ## q-saa-chapter-22 (ch11 · objective 3.5)
@@ -515,17 +515,17 @@ Bake root user access keys into the AMI so workers start faster — Incorrect. R
 
 **Prompt:** Web instances must accept HTTPS only from an Application Load Balancer security group, not from the public internet. Which control is the standard least-privilege pattern?
 
-- A. Open instance security group TCP 443 to 0.0.0.0/0 and rely on obscurity
-- B. Allow inbound TCP 443 on the instance security group only from the ALB security group **← correct**
-- C. Disable all security groups and use only a wide-open network ACL allow-all rule
-- D. Publish each instance with a public Elastic IP and no load balancer
+- A. Allow TCP 443 on the instance security group from the VPC CIDR
+- B. Allow TCP 443 on the instance security group from the ALB security group **← correct**
+- C. Allow TCP 443 on the subnet network ACL from the ALB subnet CIDR
+- D. Allow TCP 443 on the instance security group from the ALB subnet CIDR
 
 **Explanation:**
 
-Open instance security group TCP 443 to 0.0.0.0/0 and rely on obscurity — Incorrect. Public 443 on instances bypasses the ALB as the controlled entry point.
-Allow inbound TCP 443 on the instance security group only from the ALB security group — Correct. Referencing the ALB security group limits app-tier ingress to the load balancer path.
-Disable all security groups and use only a wide-open network ACL allow-all rule — Incorrect. NACLs are stateless subnet guards; they do not replace instance-level least privilege.
-Publish each instance with a public Elastic IP and no load balancer — Incorrect. Public instance EIPs expand attack surface and drop centralized TLS entry.
+Allow TCP 443 on the instance security group from the VPC CIDR — Incorrect. The VPC CIDR includes more than the load balancer, so other hosts in the VPC could reach the instances.
+Allow TCP 443 on the instance security group from the ALB security group — Correct. The instance rule references the load balancer's security group, so the path is the balancer and not the open internet.
+Allow TCP 443 on the subnet network ACL from the ALB subnet CIDR — Incorrect. A network ACL uses CIDR ranges. It cannot name a security group as its source.
+Allow TCP 443 on the instance security group from the ALB subnet CIDR — Incorrect. The ALB subnet CIDR allows any host in that subnet, which is wider than the balancer's security group.
 
 
 ## q-saa-chapter-32 (ch03 · objective 3.4)

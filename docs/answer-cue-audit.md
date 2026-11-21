@@ -6,7 +6,7 @@ Enforced now: none. Targets: key-is-longest ≤ 35.0% and strongly length-biased
 
 | Exam | Single-answer | Key longest | Strongly biased | Key at A | Stem-word | Absolute words only on wrong choices | All/none of the above | Only complete key | Near-duplicate choices | Self-disqualifying distractor | Choices not parallel |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| saa-c03 | 344 | 47 (13.7%) | 0 (0.0%) | 112 | 111 | 124 | 0 | 6 | 0 | 47 | 30 |
+| saa-c03 | 344 | 42 (12.2%) | 0 (0.0%) | 112 | 90 | 78 | 0 | 5 | 0 | 0 | 0 |
 | clf-c02 | 373 | 162 (43.4%) | 146 (39.1%) | 192 | 74 | 117 | 0 | 8 | 1 | 25 | 25 |
 | comptia | 230 | 146 (63.5%) | 134 (58.3%) | 55 | 78 | 56 | 0 | 15 | 1 | 10 | 33 |
 | 220-1201 | 39 | 35 (89.7%) | 35 (89.7%) | 9 | 16 | 14 | 0 | 4 | 0 | 3 | 2 |

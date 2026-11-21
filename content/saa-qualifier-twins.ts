@@ -63,8 +63,8 @@ const keys = "Objects in Amazon S3 must be encrypted at rest. The security team 
 const keyChoices = [
   "SSE-S3, with Amazon S3 managing the encryption key",
   "SSE-KMS with a customer managed key and a key policy",
-  "A public-read bucket policy and no encryption",
-  "The access key written into each object's metadata",
+  "SSE-C, with the application sending the key to Amazon S3",
+  "Client-side encryption with the key stored in the application"
 ];
 
 const fanout = "Orders must reach billing, shipping, and email. A subscriber can be offline for a while and must not lose the order.";
@@ -77,18 +77,18 @@ const fanoutChoices = [
 
 const jobs = "A job runs for a few seconds when a file arrives. It should not need a server that stays on all day, and it should reach a private database.";
 const jobChoices = [
-  "AWS Lambda, invoked when the file arrives",
-  "One EC2 instance left running overnight in a public subnet",
-  "AWS Lambda in a VPC, with an IAM role and no public function URL",
-  "A shared IAM access key baked into the deployment package",
+  "AWS Lambda, invoked for each new file",
+  "One EC2 instance left running the whole day for the database",
+  "AWS Lambda in a VPC, with an IAM role for the database",
+  "A long-lived access key stored in the deployment package"
 ];
 
 const move = "A database must keep replicating to AWS until cutover. The replication path should not sit on the public internet.";
 const moveChoices = [
   "AWS Database Migration Service for the ongoing copy",
-  "An AWS Snowball device ordered again every night",
-  "A DMS replication instance in private subnets",
-  "A public snapshot shared with every AWS account",
+  "An AWS Snowball transfer of the database",
+  "A DMS replication instance placed in the VPC subnets",
+  "An RDS snapshot copied once in place of ongoing replication"
 ];
 
 const cache = "A read-heavy key-value cache must survive the loss of one Availability Zone, and clients must authenticate.";
@@ -101,10 +101,10 @@ const cacheChoices = [
 
 const edge = "A public HTTP site is served from two origins. Most requests repeat the same files.";
 const edgeChoices = [
-  "Amazon CloudFront caching the repeated files",
+  "Amazon CloudFront with a cache for the repeated files",
   "CloudFront with origin failover to the second origin",
-  "One public Application Load Balancer and no cache",
-  "AWS Global Accelerator with no cache in front of the files",
+  "An Application Load Balancer in front of the repeated files",
+  "AWS Global Accelerator in front of both origins"
 ];
 
 const share = "A bucket must stay closed to the public. One partner needs to download a single object today.";
@@ -200,8 +200,8 @@ export const qualifierTwins: QualifierTwin[] = [
     why: [
       "SSE-S3 encrypts the objects and Amazon S3 manages the key, so there is no key policy to write.",
       "A customer managed key is the right control when the team must decide key use, and that is more to operate.",
-      "A public-read policy exposes the objects and does not meet the encryption requirement.",
-      "Putting an access key in metadata discloses a credential and does not encrypt the object.",
+      "SSE-C makes the application supply the key on every request, which is more work than SSE-S3.",
+      "A key stored in the application is another secret to deploy, which is more overhead than SSE-S3."
     ],
   }),
   twin({
@@ -216,8 +216,8 @@ export const qualifierTwins: QualifierTwin[] = [
     why: [
       "SSE-S3 encrypts the data, but the team cannot write a key policy for who may use that key.",
       "A customer managed key lets the key policy decide who can use the key, which matches the security team's requirement.",
-      "Public read removes access control instead of adding it.",
-      "An access key in metadata is a leaked credential, not a key-management control.",
+      "SSE-C encrypts the object, but the application holds the key, so a key policy does not decide who uses it.",
+      "A key in the application is visible to anyone who can read the deployment, which is weaker than a key policy."
     ],
   }),
   twin({
@@ -263,9 +263,9 @@ export const qualifierTwins: QualifierTwin[] = [
     docsUrl: "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
     why: [
       "Lambda runs for the few seconds the file needs and does not bill an instance that sits idle all day.",
-      "An EC2 instance left running overnight is paying for time the job is not doing work.",
+      "An EC2 instance left running all day is paying for time the job is not doing work.",
       "A VPC attachment is the private-network choice. It is not what makes the short job cheaper.",
-      "A shared access key does not change the compute bill and it exposes a credential.",
+      "A long-lived access key does not change the compute bill, and it puts a credential in the package."
     ],
   }),
   twin({
@@ -278,10 +278,10 @@ export const qualifierTwins: QualifierTwin[] = [
     taskId: "1.2",
     docsUrl: "https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html",
     why: [
-      "Lambda without a VPC placement does not by itself put the function on the private network with the database.",
-      "A public instance plus a long-running server adds an exposed host the job does not need.",
-      "Lambda in the VPC uses an IAM role for AWS permissions and has no public function URL, so the private database path stays private.",
-      "An access key in the package is a long-lived secret in the wrong place.",
+      "Lambda without a VPC placement does not by itself put the function on the network with the private database.",
+      "An instance left running all day is another server to protect for a job that lasts a few seconds.",
+      "Lambda in the VPC uses an IAM role and can reach the private database without a long-lived key in the package.",
+      "An access key in the package is a long-lived secret in the deployment artifact."
     ],
   }),
   twin({
@@ -294,10 +294,10 @@ export const qualifierTwins: QualifierTwin[] = [
     taskId: "3.5",
     docsUrl: "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
     why: [
-      "DMS keeps copying changes until cutover, so the team does not ship a new device every night.",
-      "A new Snowball every night is a physical transfer, not an ongoing database replication, and it repeats the shipping cost.",
-      "Private subnets are the secure placement of the replication instance. They are not the reason the copy is cheaper.",
-      "A public snapshot share does not replicate the database and it exposes the data.",
+      "DMS keeps copying changes until cutover, so the team does not repeat a physical transfer.",
+      "Snowball moves a point-in-time copy. It does not keep replicating changes until cutover.",
+      "The VPC placement is the network choice for the replication instance. It is not what makes the copy cheaper.",
+      "One snapshot at cutover misses the changes written while that copy was being taken."
     ],
   }),
   twin({
@@ -310,10 +310,10 @@ export const qualifierTwins: QualifierTwin[] = [
     taskId: "1.2",
     docsUrl: "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html",
     why: [
-      "DMS can copy the database, but the qualifier here is the path. A replication instance still needs a private placement.",
-      "Shipping appliances does not keep a continuous private replication path.",
-      "A replication instance in private subnets keeps the migration off a public address.",
-      "Sharing a snapshot publicly exposes the database to accounts that should not have it.",
+      "DMS can copy the database, and the replication instance still needs a placement off the public internet.",
+      "A Snowball transfer is a shipped device, not a continuous replication path.",
+      "A replication instance in the VPC subnets keeps the migration off a public address.",
+      "A snapshot copied at cutover is a one-time share of the data, not the private replication path."
     ],
   }),
   twin({
@@ -360,8 +360,8 @@ export const qualifierTwins: QualifierTwin[] = [
     why: [
       "CloudFront serves the repeated files from the cache, so those requests do not all go back to the origins.",
       "Origin failover is the resilience addition. The cost win for repeated files is the cache itself.",
-      "An origin load balancer with no cache sends every repeated request to the application.",
-      "Global Accelerator does not cache the files, so repeated HTTP reads still hit an origin.",
+      "An Application Load Balancer sends each request to an origin. It does not cache the repeated files.",
+      "Global Accelerator routes packets to an origin. It does not cache the files."
     ],
   }),
   twin({
@@ -376,8 +376,8 @@ export const qualifierTwins: QualifierTwin[] = [
     why: [
       "A cache helps repeated reads. It does not by itself switch to the second origin when the first one fails.",
       "Origin failover sends the request to the second origin when the first origin fails its health check.",
-      "One load balancer and no second origin leaves a single place for the site to fail.",
-      "Global Accelerator routes network traffic. It does not fail an HTTP origin over to the second file origin.",
+      "A load balancer in front of the origins does not apply CloudFront's origin failover to the files.",
+      "Global Accelerator routes network traffic. It does not fail an HTTP origin over to the second file origin."
     ],
   }),
   twin({
