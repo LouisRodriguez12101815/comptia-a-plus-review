@@ -1,0 +1,1107 @@
+{
+  "cues": {
+    "aws-saa-secure-cues": [
+      {
+        "id": "explicit-deny",
+        "objective": "1.1",
+        "cue": "An allow and a matching explicit deny both apply to the same request",
+        "answer": "Explicit deny wins",
+        "detail": "A matching explicit deny overrides any allow.",
+        "hook": "Deny beats allow.",
+        "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+      },
+      {
+        "id": "boundary",
+        "objective": "1.1",
+        "cue": "Cap the maximum permissions of one IAM user or role inside this account",
+        "answer": "Permissions boundary",
+        "detail": "A permissions boundary limits one identity. It does not grant a permission by itself.",
+        "hook": "Boundary is a ceiling, not a grant.",
+        "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+      },
+      {
+        "id": "scp",
+        "objective": "1.1",
+        "cue": "Limit what member accounts in the organization are allowed to do",
+        "answer": "Service control policy",
+        "detail": "An SCP is a guardrail on accounts in the organization. It does not grant a permission by itself.",
+        "hook": "SCP guards accounts, not one user.",
+        "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+      },
+      {
+        "id": "federation",
+        "objective": "1.1",
+        "cue": "Workforce users should sign in through the company identity provider",
+        "answer": "IAM identity federation",
+        "detail": "Federation lets the workforce use the company IdP instead of an IAM user password for each person.",
+        "hook": "Company login, temporary AWS credentials.",
+        "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers.html"
+      },
+      {
+        "id": "cross-account-role",
+        "objective": "1.1",
+        "cue": "A person in account A must work in account B without a long-lived access key",
+        "answer": "Cross-account IAM role",
+        "detail": "The target role trust allows the source principal, and the caller receives temporary credentials.",
+        "hook": "Assume a role. Do not copy a key.",
+        "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html"
+      },
+      {
+        "id": "kms",
+        "objective": "1.3",
+        "cue": "Managed keys that AWS services can use to encrypt data",
+        "answer": "AWS KMS",
+        "detail": "KMS is the managed key service integrated with AWS encryption.",
+        "hook": "AWS service encryption usually calls KMS.",
+        "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+      },
+      {
+        "id": "cloudhsm",
+        "objective": "1.3",
+        "cue": "Dedicated hardware security modules that the customer controls",
+        "answer": "AWS CloudHSM",
+        "detail": "CloudHSM is dedicated HSM hardware under customer control, not the shared KMS service.",
+        "hook": "Dedicated module, customer control.",
+        "docsUrl": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+      },
+      {
+        "id": "acm",
+        "objective": "1.3",
+        "cue": "A TLS certificate for a supported AWS integration should be provisioned and renewed for that service",
+        "answer": "AWS Certificate Manager",
+        "detail": "ACM provisions and manages TLS certificates for supported AWS integrations. It is not a store for database passwords.",
+        "hook": "Certificate for the load balancer, not the DB password.",
+        "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+      },
+      {
+        "id": "encrypt-is-not-authz",
+        "objective": "1.3",
+        "cue": "The object is encrypted, and a broad read permission still exists",
+        "answer": "Encryption does not replace the read permission",
+        "detail": "Key use and data access are separate. Encrypting data does not remove an overly broad read permission.",
+        "hook": "Ciphertext still needs an allow to be denied.",
+        "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/control-access.html"
+      }
+    ],
+    "aws-saa-resilient-cues": [
+      {
+        "id": "sns",
+        "objective": "2.1",
+        "cue": "One published message must reach many subscribers",
+        "answer": "Amazon SNS",
+        "detail": "SNS is pub/sub. A queue is for one consumer pipeline, not a fan-out by itself.",
+        "hook": "Notify many.",
+        "docsUrl": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html"
+      },
+      {
+        "id": "eventbridge",
+        "objective": "2.1",
+        "cue": "A rule should match events from AWS services and send them to targets",
+        "answer": "Amazon EventBridge",
+        "detail": "EventBridge routes events with rules. It is not the durable work queue.",
+        "hook": "Event in, rule, target.",
+        "docsUrl": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+      },
+      {
+        "id": "dlq",
+        "objective": "2.1",
+        "cue": "A message that keeps failing should leave the main queue",
+        "answer": "Dead-letter queue",
+        "detail": "A dead-letter queue holds messages that could not be processed, so one poison message does not block the rest.",
+        "hook": "Failed messages go aside.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+      },
+      {
+        "id": "idempotent",
+        "objective": "2.1",
+        "cue": "The same standard-queue message may arrive more than once",
+        "answer": "Idempotent processing",
+        "detail": "SQS standard queues are at-least-once. The consumer must tolerate a duplicate.",
+        "hook": "Twice must be safe.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html"
+      },
+      {
+        "id": "visibility",
+        "objective": "2.1",
+        "cue": "Hide an in-flight SQS message until the consumer finishes or the timeout ends",
+        "answer": "Visibility timeout",
+        "detail": "Visibility timeout hides a received message. It does not delete it. The consumer still has to delete a success.",
+        "hook": "Hidden, not done.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+      },
+      {
+        "id": "external-state",
+        "objective": "2.1",
+        "cue": "Session files on one instance make that instance hard to replace",
+        "answer": "Externalize the session state",
+        "detail": "Horizontal replacement needs state off the instance. Local session files tie the user to one machine.",
+        "hook": "State off the box.",
+        "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html"
+      },
+      {
+        "id": "active-active",
+        "objective": "2.2",
+        "cue": "Both sites serve production traffic, and either site can take the load",
+        "answer": "Active/active",
+        "detail": "Active/active costs more and recovers faster than a standby that still has to scale up. There is no universal minute guarantee.",
+        "hook": "Both sites are live.",
+        "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+      },
+      {
+        "id": "backup-restore",
+        "objective": "2.2",
+        "cue": "Recovery starts from backups after the failure, accepting the slowest of these patterns",
+        "answer": "Backup and restore",
+        "detail": "Backup and restore is the lower-cost, slower-recovery end of the DR line. It is not a warm environment already running.",
+        "hook": "Restore after the failure.",
+        "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+      },
+      {
+        "id": "alb-fail-open",
+        "objective": "2.2",
+        "cue": "Every Application Load Balancer target is unhealthy",
+        "answer": "ALB fail-open sends traffic to all targets",
+        "detail": "When no target is healthy, an ALB fails open and sends requests to all targets. A health check is not a universal stop.",
+        "hook": "None healthy, traffic still flows.",
+        "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html"
+      }
+    ],
+    "aws-saa-performance-cues": [
+      {
+        "id": "ebs",
+        "objective": "3.1",
+        "cue": "Persistent block storage that remains available after the instance stops",
+        "answer": "Amazon EBS",
+        "detail": "EBS is persistent block storage in one Availability Zone. Stopping the instance does not delete the volume by itself.",
+        "hook": "Stop the instance, the volume remains.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html"
+      },
+      {
+        "id": "instance-store",
+        "objective": "3.1",
+        "cue": "Temporary block storage that can be lost when the instance stops",
+        "answer": "EC2 instance store",
+        "detail": "Instance store is scratch storage tied to the host. It is not a durable volume for data you must keep.",
+        "hook": "Scratch disk. Do not keep the only copy there.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+      },
+      {
+        "id": "s3-objects",
+        "objective": "3.1",
+        "cue": "Many clients need key-addressed object storage, not a file system mount",
+        "answer": "Amazon S3",
+        "detail": "S3 stores objects by key. It is not a replacement for a POSIX file system or a block volume.",
+        "hook": "Bucket and key, not a drive letter.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+      },
+      {
+        "id": "horizontal",
+        "objective": "3.2",
+        "cue": "The same stateless work should run on more instances",
+        "answer": "Horizontal scaling",
+        "detail": "Horizontal scaling adds instances. The work has to be partitionable. A bigger single instance is vertical scaling.",
+        "hook": "More machines, not a bigger one.",
+        "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/compute.html"
+      },
+      {
+        "id": "lambda-concurrency",
+        "objective": "3.2",
+        "cue": "Too many Lambda executions are running at the same time for this account",
+        "answer": "Lambda concurrency limit",
+        "detail": "Lambda concurrency is the number of executions in flight. Extra invocations are throttled when the limit is reached.",
+        "hook": "In flight, not requests per day.",
+        "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+      },
+      {
+        "id": "read-replica",
+        "objective": "3.3",
+        "cue": "Scale relational reads and accept that the replica can lag",
+        "answer": "RDS read replica",
+        "detail": "A read replica adds read capacity and can lag. It is not the automatic failover of a Multi-AZ standby.",
+        "hook": "Reads scale. Writes and failover do not.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+      },
+      {
+        "id": "rds-proxy",
+        "objective": "3.3",
+        "cue": "Many short-lived application connections are exhausting the database",
+        "answer": "RDS Proxy",
+        "detail": "RDS Proxy pools connections for supported engines. It does not make an incompatible query faster.",
+        "hook": "Pool the connections.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+      },
+      {
+        "id": "shard-order",
+        "objective": "3.5",
+        "cue": "Stream order is required only for records that share a partition key",
+        "answer": "Kinesis shard order",
+        "detail": "Kinesis ordering follows the shard and partition key. The whole stream is not one ordered line.",
+        "hook": "Same key, same shard order.",
+        "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
+      },
+      {
+        "id": "glue",
+        "objective": "3.5",
+        "cue": "Discover the schema and transform data before it is queried in the lake",
+        "answer": "AWS Glue",
+        "detail": "Glue catalogs and transforms data. It is not the service that fans out one notification to subscribers.",
+        "hook": "Catalog and transform.",
+        "docsUrl": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+      }
+    ],
+    "aws-saa-cost-cues": [
+      {
+        "id": "standard-ia",
+        "objective": "4.1",
+        "cue": "Reads are infrequent and immediate, and the object must survive loss of an Availability Zone",
+        "answer": "S3 Standard-IA",
+        "detail": "Standard-IA keeps infrequently accessed objects across Availability Zones with immediate retrieval.",
+        "hook": "Infrequent, still multi-AZ.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      {
+        "id": "one-zone-ia",
+        "objective": "4.1",
+        "cue": "The infrequent object can be recreated, and loss of one Availability Zone is acceptable",
+        "answer": "S3 One Zone-IA",
+        "detail": "One Zone-IA stores the object in a single Availability Zone at a lower price than Standard-IA.",
+        "hook": "One zone, recreate if it is lost.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      {
+        "id": "unused-ebs",
+        "objective": "4.1",
+        "cue": "An EBS volume is no longer attached and is still billed",
+        "answer": "Delete the unused volume after checking it",
+        "detail": "An unattached EBS volume still incurs storage charges. Delete it only when the data is no longer required.",
+        "hook": "Detached is not free.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html"
+      },
+      {
+        "id": "ia-minimum",
+        "objective": "4.1",
+        "cue": "Many tiny objects are moving to an infrequent class because the per-GB price looks lower",
+        "answer": "Check the infrequent-class minimum size and duration",
+        "detail": "A lower per-GB price can cost more when minimum object size, minimum duration, and request charges apply.",
+        "hook": "The GB price is not the whole bill.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+      },
+      {
+        "id": "baseline-spot",
+        "objective": "4.2",
+        "cue": "A steady daily baseline and separate peaks that can be interrupted",
+        "answer": "Commit the baseline and use Spot for the peaks",
+        "detail": "A commitment fits measured steady use. Spot fits work that can stop and restart. Spot is not a capacity guarantee.",
+        "hook": "Commit the floor. Spot the burst.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+      },
+      {
+        "id": "on-demand",
+        "objective": "4.2",
+        "cue": "The work cannot stop, and there is no measured commitment to buy yet",
+        "answer": "On-Demand",
+        "detail": "On-Demand has no term and is not interrupted for capacity. It is the flexible price, not the committed discount.",
+        "hook": "No term, no Spot interruption.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html"
+      },
+      {
+        "id": "measure-db",
+        "objective": "4.3",
+        "cue": "The database looks expensive, and nobody has measured the actual queries",
+        "answer": "Measure the database before buying a larger instance",
+        "detail": "A larger instance is not justified by the price list alone. Measure connections, CPU, and query shape first.",
+        "hook": "Measure, then resize.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MonitoringOverview.html"
+      },
+      {
+        "id": "cache-bill",
+        "objective": "4.3",
+        "cue": "A cache would remove repeated reads, and the comparison ignores the cache price",
+        "answer": "Include the cache in the database bill",
+        "detail": "A cache can cut database load, but the comparison has to include the cache nodes and the freshness the workload allows.",
+        "hook": "The cache is part of the bill.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+      },
+      {
+        "id": "gateway-not-interface",
+        "objective": "4.4",
+        "cue": "Private S3 traffic should leave the NAT path without an hourly endpoint fee",
+        "answer": "S3 gateway endpoint rather than an interface endpoint",
+        "detail": "A gateway endpoint is a route-table target for S3 or DynamoDB and has no hourly fee. An interface endpoint adds hourly and data-processing charges.",
+        "hook": "S3 route-table endpoint has no hourly fee.",
+        "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+      }
+    ],
+    "aws-saa-service-compare": [
+      {
+        "id": "efs",
+        "objective": "3.1",
+        "scenario": "Linux instances need a shared file system",
+        "answer": "Amazon EFS",
+        "detail": "EFS is a shared file system for Linux workloads. It is not block storage for one instance.",
+        "hook": "Shared files, Linux.",
+        "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+      },
+      {
+        "id": "fsx-windows",
+        "objective": "3.1",
+        "scenario": "Windows instances need a shared SMB file system",
+        "answer": "Amazon FSx for Windows File Server",
+        "detail": "FSx for Windows File Server provides managed Windows file shares. EFS is the Linux shared file system.",
+        "hook": "Windows shares, not EFS.",
+        "docsUrl": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+      },
+      {
+        "id": "fargate",
+        "objective": "3.2",
+        "scenario": "Run a container task without managing EC2 instances",
+        "answer": "AWS Fargate",
+        "detail": "Fargate is serverless compute for supported container tasks. ECS and EKS can also run on EC2 instances you manage.",
+        "hook": "Containers, no instance fleet.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+      },
+      {
+        "id": "dynamodb",
+        "objective": "3.3",
+        "scenario": "A key-value workload needs single-digit millisecond reads at a changing request rate",
+        "answer": "Amazon DynamoDB",
+        "detail": "DynamoDB is a managed key-value and document database. A relational join-heavy schema is a different choice.",
+        "hook": "Key-value, not a join engine.",
+        "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
+      },
+      {
+        "id": "athena",
+        "objective": "3.5",
+        "scenario": "Run SQL on objects in S3 without loading them into a database first",
+        "answer": "Amazon Athena",
+        "detail": "Athena queries data in S3. It does not replace a transactional database for the application.",
+        "hook": "SQL on the files in place.",
+        "docsUrl": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+      }
+    ]
+  },
+  "whichTwo": [
+    {
+      "id": "d1-deny-boundary",
+      "domain": "D1",
+      "objective": "1.1",
+      "prompt": "Which TWO statements about access control are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+      "detail": "Deny overrides allow. A boundary limits an identity and does not grant access.",
+      "hook": "Deny wins. A boundary is a ceiling.",
+      "choices": [
+        {"text": "A matching explicit deny overrides an allow", "correct": true, "why": "IAM evaluation lets an explicit deny beat an allow."},
+        {"text": "A permissions boundary sets a maximum on one IAM user or role and does not itself grant access", "correct": true, "why": "The boundary filters identity-based allows. It is not an allow."},
+        {"text": "A permissions boundary grants every action listed in it, even when the identity policy has no allow", "correct": false, "why": "The boundary does not grant. The identity still needs an allow."},
+        {"text": "A service control policy on one IAM user replaces that user's identity policy", "correct": false, "why": "An SCP applies to accounts in the organization, not as a per-user identity policy."}
+      ]
+    },
+    {
+      "id": "d1-sg-nacl",
+      "domain": "D1",
+      "objective": "1.2",
+      "prompt": "Which TWO statements about network controls are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "detail": "Security groups are stateful and attached to resources. NACLs are stateless and attached to subnets.",
+      "hook": "Group remembers. NACL does not.",
+      "choices": [
+        {"text": "A security group is stateful", "correct": true, "why": "Return traffic for an allowed flow is allowed by the security group."},
+        {"text": "A network ACL is stateless and is applied at the subnet", "correct": true, "why": "A NACL evaluates each packet, including the return, and it is associated with a subnet."},
+        {"text": "A security group can explicitly deny one source IP while allowing the rest of the traffic", "correct": false, "why": "Security group rules are allows. A NACL is the control with explicit deny."},
+        {"text": "A network ACL remembers the outbound packet and automatically allows the return", "correct": false, "why": "NACLs are stateless, so the return direction needs its own rule."}
+      ]
+    },
+    {
+      "id": "d1-waf-shield",
+      "domain": "D1",
+      "objective": "1.2",
+      "prompt": "Which TWO statements about edge protection are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html",
+      "detail": "WAF filters web requests. Shield is DDoS protection. They are not substitutes.",
+      "hook": "WAF reads the request. Shield absorbs the flood.",
+      "choices": [
+        {"text": "AWS WAF filters HTTP and HTTPS requests by rules you define", "correct": true, "why": "WAF inspects web requests and can block patterns such as SQL injection."},
+        {"text": "AWS Shield is the managed DDoS protection service", "correct": true, "why": "Shield addresses DDoS. It is not the web request filter."},
+        {"text": "AWS WAF is the service that stops a volumetric network flood by itself", "correct": false, "why": "A volumetric flood is a DDoS problem for Shield, not a WAF rule match."},
+        {"text": "AWS Shield inspects SQL strings inside an HTTP body and blocks the injection", "correct": false, "why": "SQL-injection filtering is a WAF rule, not Shield's job."}
+      ]
+    },
+    {
+      "id": "d1-kms-secret",
+      "domain": "D1",
+      "objective": "1.3",
+      "prompt": "Which TWO statements about keys and secrets are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+      "detail": "KMS manages keys. Secrets Manager stores and can rotate the secret value.",
+      "hook": "Key service versus secret value.",
+      "choices": [
+        {"text": "AWS KMS manages cryptographic keys used by AWS encryption integrations", "correct": true, "why": "KMS is the key-management service, not the password vault."},
+        {"text": "Secrets Manager stores and can rotate a database credential", "correct": true, "why": "The secret value and its rotation live in Secrets Manager."},
+        {"text": "Storing a password in KMS is the rotation feature for database credentials", "correct": false, "why": "KMS holds keys. Rotation of the database secret is Secrets Manager."},
+        {"text": "Encrypting an object removes the need for an IAM allow on GetObject", "correct": false, "why": "Encryption and the read permission are separate checks."}
+      ]
+    },
+    {
+      "id": "d1-endpoint",
+      "domain": "D1",
+      "objective": "1.2",
+      "prompt": "Which TWO statements about private service access are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html",
+      "detail": "A VPC endpoint keeps supported service traffic off the public internet path. It is not a NAT gateway.",
+      "hook": "Private path to the service.",
+      "choices": [
+        {"text": "A gateway endpoint for S3 is a route in the route table", "correct": true, "why": "S3 and DynamoDB gateway endpoints are route-table targets."},
+        {"text": "An interface endpoint is an elastic network interface in the subnet", "correct": true, "why": "Interface endpoints use PrivateLink network interfaces."},
+        {"text": "A NAT gateway is the private path from the VPC to S3 that avoids the internet", "correct": false, "why": "A public NAT gateway sends IPv4 to the internet through an internet gateway."},
+        {"text": "A gateway endpoint for S3 has the same hourly charge as an interface endpoint", "correct": false, "why": "The S3 gateway endpoint has no hourly fee. Interface endpoints do."}
+      ]
+    },
+    {
+      "id": "d1-federation-role",
+      "domain": "D1",
+      "objective": "1.1",
+      "prompt": "Which TWO statements about workload identity are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html",
+      "detail": "Roles and federation issue temporary credentials. A copied access key is a long-lived secret.",
+      "hook": "Temporary credentials for the workload.",
+      "choices": [
+        {"text": "An IAM role can provide temporary credentials to a workload", "correct": true, "why": "The application assumes a role instead of embedding a long-lived key."},
+        {"text": "Federation can give a workforce user temporary credentials from the company identity provider", "correct": true, "why": "The IdP session becomes a temporary AWS session."},
+        {"text": "The recommended workload credential is a long-lived access key in the source repository", "correct": false, "why": "A key in source is a lasting secret. Use a role."},
+        {"text": "The AWS account root user should be the daily credential for the application", "correct": false, "why": "Root is not an application identity."}
+      ]
+    },
+    {
+      "id": "d2-queue",
+      "domain": "D2",
+      "objective": "2.1",
+      "prompt": "Which TWO statements about decoupling are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "detail": "SQS buffers work and can deliver a message more than once. SNS fans out.",
+      "hook": "Queue buffers. Topic notifies.",
+      "choices": [
+        {"text": "SQS lets the producer continue when consumers are briefly slower", "correct": true, "why": "The queue holds the work between the two sides."},
+        {"text": "A standard SQS queue can deliver the same message more than once", "correct": true, "why": "Standard queues are at-least-once, so the consumer must be idempotent."},
+        {"text": "SNS is the durable buffer that hides work until one consumer polls it", "correct": false, "why": "SNS delivers to subscribers. The durable poll buffer is SQS."},
+        {"text": "A standard queue guarantees that each message is delivered exactly once in order", "correct": false, "why": "Exactly-once ordered delivery is not the standard-queue contract."}
+      ]
+    },
+    {
+      "id": "d2-dr",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which TWO statements about recovery patterns are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+      "detail": "Pilot light keeps a core running. Warm standby is a reduced live environment. Neither is a fixed number of minutes.",
+      "hook": "Relative cost and speed, not a minute promise.",
+      "choices": [
+        {"text": "Pilot light keeps the core of the recovery environment running and scales the rest during recovery", "correct": true, "why": "The core stays up. Full capacity is added when you fail over."},
+        {"text": "Warm standby runs a reduced but functional copy that you scale during recovery", "correct": true, "why": "Warm standby is already serving at lower capacity."},
+        {"text": "Backup and restore keeps a full second site serving production traffic", "correct": false, "why": "Backup and restore recovers from backups after the failure. It is not an already-serving second site."},
+        {"text": "These patterns guarantee recovery in a fixed number of minutes for every workload", "correct": false, "why": "The patterns are relative. The actual time depends on the workload and the test."}
+      ]
+    },
+    {
+      "id": "d2-rto-rpo",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which TWO statements about recovery objectives are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+      "detail": "RTO is time to recover. RPO is how much data you can lose.",
+      "hook": "T is time. P is the point in the data.",
+      "choices": [
+        {"text": "RTO is the maximum acceptable time to restore service", "correct": true, "why": "Recovery time is how long the service may stay down."},
+        {"text": "RPO is the maximum acceptable data-loss window", "correct": true, "why": "Recovery point is how far back the restored data may be."},
+        {"text": "RPO is the maximum time the application may stay unavailable", "correct": false, "why": "Downtime length is RTO, not RPO."},
+        {"text": "RTO is the number of transactions you can afford to lose", "correct": false, "why": "Lost data is the recovery point, not the recovery time."}
+      ]
+    },
+    {
+      "id": "d2-multiaz",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which TWO statements about RDS availability are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "detail": "A single-standby Multi-AZ instance fails over and the standby is not a read endpoint. A read replica scales reads.",
+      "hook": "Standby fails over. Replica serves reads.",
+      "choices": [
+        {"text": "Multi-AZ with one standby fails over when the primary Availability Zone is lost", "correct": true, "why": "The standby exists for failover of that deployment type."},
+        {"text": "A read replica can serve read queries and can lag behind the writer", "correct": true, "why": "Replicas add read capacity. Replication is asynchronous, so lag is possible."},
+        {"text": "The single Multi-AZ standby is a general-purpose read endpoint", "correct": false, "why": "That standby is for failover, not for application reads. A readable standby is a different deployment."},
+        {"text": "A read replica is the automatic same-Region failover target of a single-standby Multi-AZ instance", "correct": false, "why": "Failover uses the standby. A read replica is a separate read-scaling feature."}
+      ]
+    },
+    {
+      "id": "d2-alb",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which TWO statements about load-balancer health are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html",
+      "detail": "Health checks remove bad targets. If every target is unhealthy, an ALB fails open.",
+      "hook": "Some unhealthy: skip them. All unhealthy: fail open.",
+      "choices": [
+        {"text": "Healthy targets receive traffic and unhealthy targets are taken out of rotation", "correct": true, "why": "That is the normal health-check result."},
+        {"text": "If every ALB target is unhealthy, the load balancer sends requests to the targets anyway", "correct": true, "why": "The ALB fails open when the target group has no healthy target."},
+        {"text": "An unhealthy target stays in rotation because the health check is only a metric", "correct": false, "why": "A failed health check removes the target while any healthy target remains."},
+        {"text": "An ALB stops all traffic forever once one target fails a health check", "correct": false, "why": "One failure removes that target. The healthy targets still receive traffic."}
+      ]
+    },
+    {
+      "id": "d2-state",
+      "domain": "D2",
+      "objective": "2.1",
+      "prompt": "Which TWO statements about replacing instances are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "detail": "Local session state blocks replacement. A queue lets the other side slow down without losing the request.",
+      "hook": "No local session. Queue the burst.",
+      "choices": [
+        {"text": "Session files stored only on the instance tie the user to that instance", "correct": true, "why": "Replacing the instance loses or strands that session."},
+        {"text": "A queue absorbs a burst so the producer does not have to wait for every consumer", "correct": true, "why": "The queue is the buffer between the two rates."},
+        {"text": "Keeping the shopping cart on the instance disk is what makes horizontal replacement safe", "correct": false, "why": "Local disk state makes replacement unsafe for that user."},
+        {"text": "EventBridge stores the work until a worker polls and deletes it", "correct": false, "why": "That poll-and-delete buffer is SQS. EventBridge routes events."}
+      ]
+    },
+    {
+      "id": "d3-storage",
+      "domain": "D3",
+      "objective": "3.1",
+      "prompt": "Which TWO statements about storage durability are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html",
+      "detail": "EBS persists across stop. Instance store can be lost on stop.",
+      "hook": "EBS stays. Instance store may not.",
+      "choices": [
+        {"text": "An EBS volume remains available after the instance stops, unless you delete it", "correct": true, "why": "EBS is persistent block storage, separate from the instance lifetime."},
+        {"text": "Instance-store data can be lost when the instance stops or the host fails", "correct": true, "why": "Instance store is temporary storage on the host."},
+        {"text": "Instance store is the durable place for the only copy of a database", "correct": false, "why": "Instance store is scratch storage. Do not keep the only copy there."},
+        {"text": "Stopping an instance always deletes its EBS volumes", "correct": false, "why": "Stop does not delete EBS volumes. DeleteOnTermination is a separate setting, and it applies on termination."}
+      ]
+    },
+    {
+      "id": "d3-files",
+      "domain": "D3",
+      "objective": "3.1",
+      "prompt": "Which TWO statements about shared files are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+      "detail": "EFS is the Linux shared file system. FSx for Windows serves SMB.",
+      "hook": "Linux EFS. Windows FSx.",
+      "choices": [
+        {"text": "Amazon EFS provides a shared file system for Linux clients", "correct": true, "why": "EFS is the elastic Linux file system."},
+        {"text": "Amazon FSx for Windows File Server provides managed Windows file shares", "correct": true, "why": "Windows SMB shares are the FSx for Windows use, not EFS."},
+        {"text": "Amazon EFS is the managed SMB file server for Windows instances", "correct": false, "why": "EFS is not the Windows SMB product. That role is FSx for Windows."},
+        {"text": "Amazon S3 is a POSIX file system you mount as the only disk of an instance", "correct": false, "why": "S3 is object storage addressed by key, not the instance's block disk."}
+      ]
+    },
+    {
+      "id": "d3-scale",
+      "domain": "D3",
+      "objective": "3.2",
+      "prompt": "Which TWO statements about compute scaling are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/compute.html",
+      "detail": "Horizontal scaling adds instances and needs stateless work. A larger instance is vertical scaling.",
+      "hook": "Out is more machines. Up is a bigger machine.",
+      "choices": [
+        {"text": "Horizontal scaling adds instances and needs work that can be split", "correct": true, "why": "More instances help only when the work is not pinned to one machine."},
+        {"text": "Vertical scaling changes the size of an instance and keeps that instance as the failure boundary", "correct": true, "why": "A bigger instance is still one instance."},
+        {"text": "Horizontal scaling is choosing a larger instance type for the same one machine", "correct": false, "why": "A larger type is vertical scaling."},
+        {"text": "Fargate requires you to patch the EC2 instances that run the task", "correct": false, "why": "Fargate runs the task without an EC2 fleet for you to patch."}
+      ]
+    },
+    {
+      "id": "d3-db",
+      "domain": "D3",
+      "objective": "3.3",
+      "prompt": "Which TWO statements about database reads are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "detail": "Replicas can lag. RDS Proxy pools connections. Neither one is a cache of DynamoDB.",
+      "hook": "Replica lag. Proxy pools.",
+      "choices": [
+        {"text": "A read replica can be behind the writer", "correct": true, "why": "Replication to a read replica is asynchronous."},
+        {"text": "RDS Proxy pools database connections for supported engines", "correct": true, "why": "The proxy sits between the app and the database and reuses connections."},
+        {"text": "A read replica is always a strongly consistent view of the latest commit", "correct": false, "why": "The replica can lag, so a just-written row may be missing."},
+        {"text": "DAX makes every DynamoDB read strongly consistent and served from cache", "correct": false, "why": "DAX serves eventually consistent cache hits. Strongly consistent reads go to DynamoDB."}
+      ]
+    },
+    {
+      "id": "d3-stream",
+      "domain": "D3",
+      "objective": "3.5",
+      "prompt": "Which TWO statements about streaming are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html",
+      "detail": "Data Streams is for your consumers. Firehose delivers to a destination. Order is per shard.",
+      "hook": "Consumers read the stream. Firehose delivers it.",
+      "choices": [
+        {"text": "Kinesis Data Streams holds records for applications that read them", "correct": true, "why": "Your consumers read and checkpoint the stream."},
+        {"text": "Data Firehose can deliver a stream to S3 without you running the consumer", "correct": true, "why": "Firehose is managed delivery to supported destinations."},
+        {"text": "Kinesis order is one sequence for every record in the stream, regardless of key", "correct": false, "why": "Order follows the shard and partition key, not the entire stream."},
+        {"text": "Athena stores the transactional rows of the application database", "correct": false, "why": "Athena queries data in place, typically in S3. It is not the transactional store."}
+      ]
+    },
+    {
+      "id": "d3-edge",
+      "domain": "D3",
+      "objective": "3.4",
+      "prompt": "Which TWO statements about global entry points are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html",
+      "detail": "CloudFront caches content. Global Accelerator improves the network path to regional endpoints and does not cache the object.",
+      "hook": "CloudFront caches. Accelerator routes.",
+      "choices": [
+        {"text": "CloudFront can cache content at edge locations", "correct": true, "why": "CloudFront is the CDN. Cache hits avoid a repeat trip to the origin."},
+        {"text": "Global Accelerator sends TCP or UDP traffic onto the AWS network toward regional endpoints", "correct": true, "why": "Accelerator is a network path, not an object cache."},
+        {"text": "Global Accelerator caches HTML and images the way a CDN does", "correct": false, "why": "Caching objects is CloudFront. Accelerator does not replace that cache."},
+        {"text": "CloudFront is the dedicated private circuit from a data center to a VPC", "correct": false, "why": "A dedicated private circuit is Direct Connect, not CloudFront."}
+      ]
+    },
+    {
+      "id": "d4-ia",
+      "domain": "D4",
+      "objective": "4.1",
+      "prompt": "Which TWO statements about infrequent S3 classes are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "detail": "Standard-IA is multi-AZ. One Zone-IA is one zone and is for data you can recreate.",
+      "hook": "IA still has zones. One Zone is one zone.",
+      "choices": [
+        {"text": "Standard-IA stores infrequently accessed objects across Availability Zones", "correct": true, "why": "Standard-IA is the multi-AZ infrequent class with immediate retrieval."},
+        {"text": "One Zone-IA stores the object in a single Availability Zone", "correct": true, "why": "Loss of that zone can lose the object, which is acceptable only if you can recreate it."},
+        {"text": "One Zone-IA keeps a copy in every Availability Zone of the Region", "correct": false, "why": "One Zone-IA is one zone. Multi-AZ infrequent storage is Standard-IA."},
+        {"text": "Standard-IA is the class for data that must not be readable for hours", "correct": false, "why": "Standard-IA retrieval is immediate. Long retrieval waits belong to Glacier classes, and those waits are not a single number for every option."}
+      ]
+    },
+    {
+      "id": "d4-spot",
+      "domain": "D4",
+      "objective": "4.2",
+      "prompt": "Which TWO statements about compute purchasing are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "detail": "Spot can be interrupted. On-Demand is not interrupted for capacity and has no term.",
+      "hook": "Spot can stop. On-Demand does not.",
+      "choices": [
+        {"text": "Spot uses spare capacity and the instance can be interrupted", "correct": true, "why": "Spot is for work that can stop and restart. It is not a capacity promise."},
+        {"text": "On-Demand has no term commitment and is not taken back for capacity", "correct": true, "why": "On-Demand is the flexible price for work that cannot be interrupted."},
+        {"text": "Spot is a guarantee that the instance runs until you stop it", "correct": false, "why": "Spot can be interrupted when AWS needs the capacity."},
+        {"text": "A Savings Plan is the right commitment when you have not measured any steady usage", "correct": false, "why": "A commitment needs a measured baseline. Unmeasured, uninterruptible work starts on On-Demand."}
+      ]
+    },
+    {
+      "id": "d4-endpoint-cost",
+      "domain": "D4",
+      "objective": "4.4",
+      "prompt": "Which TWO statements about S3 network cost are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "detail": "The S3 gateway endpoint has no hourly fee. An interface endpoint adds hourly and data-processing charges.",
+      "hook": "Gateway for S3 has no hourly fee.",
+      "choices": [
+        {"text": "An S3 gateway endpoint does not add an hourly endpoint fee", "correct": true, "why": "The gateway endpoint is a route-table target without that hourly charge."},
+        {"text": "An interface endpoint can charge hourly and for data processed", "correct": true, "why": "Interface endpoints are elastic network interfaces with those charges."},
+        {"text": "Sending S3 traffic through a NAT gateway is required for a private S3 path", "correct": false, "why": "A gateway endpoint removes eligible S3 traffic from the NAT path."},
+        {"text": "An S3 gateway endpoint and an interface endpoint have the same hourly price", "correct": false, "why": "The gateway endpoint has no hourly fee. The interface endpoint does."}
+      ]
+    },
+    {
+      "id": "d4-db-cost",
+      "domain": "D4",
+      "objective": "4.3",
+      "prompt": "Which TWO statements about database cost are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MonitoringOverview.html",
+      "detail": "Measure before a larger instance. A cache has its own price.",
+      "hook": "Measure first. Count the cache.",
+      "choices": [
+        {"text": "A larger database instance should follow a measurement, not only a price-list guess", "correct": true, "why": "CPU, connections, and query shape decide whether a larger instance helps."},
+        {"text": "A cache that removes repeated reads still belongs in the cost comparison", "correct": true, "why": "The cache nodes are part of the bill."},
+        {"text": "The lowest instance price is a reason to pick a database engine that cannot run the queries", "correct": false, "why": "An incompatible engine does not meet the requirement, so its price is not the decision."},
+        {"text": "Deleting backups is free of consequence when the recovery policy still requires them", "correct": false, "why": "Backup retention is a recovery requirement. Removing it to save money breaks that requirement."}
+      ]
+    },
+    {
+      "id": "d4-ebs",
+      "domain": "D4",
+      "objective": "4.1",
+      "prompt": "Which TWO statements about storage waste are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html",
+      "detail": "Unattached EBS is still billed. A lower per-GB class can cost more for tiny objects.",
+      "hook": "Detached still bills. Tiny objects have a minimum.",
+      "choices": [
+        {"text": "An unattached EBS volume can still incur storage charges", "correct": true, "why": "Detaching the volume does not stop its storage charge."},
+        {"text": "Infrequent-access classes can bill a minimum object size and a minimum duration", "correct": true, "why": "The headline per-GB price is not the whole charge for a small or short-lived object."},
+        {"text": "Detaching an EBS volume stops all charges for that volume", "correct": false, "why": "The volume remains billable storage until you delete it."},
+        {"text": "Moving every small object to an infrequent class always lowers the bill", "correct": false, "why": "Minimum size, duration, and request charges can make the move more expensive."}
+      ]
+    },
+    {
+      "id": "d4-commit",
+      "domain": "D4",
+      "objective": "4.2",
+      "prompt": "Which TWO statements about commitments are correct?",
+      "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+      "detail": "A commitment fits a measured baseline. A discount is not spare capacity and it is not a capacity guarantee.",
+      "hook": "Commit what you measured. Spot what can stop.",
+      "choices": [
+        {"text": "Savings Plans or eligible Reserved pricing fit a steady measured baseline", "correct": true, "why": "The discount follows usage you expect to keep running."},
+        {"text": "Interruption-tolerant peaks can use Spot while the baseline stays committed", "correct": true, "why": "The two purchasing options solve different parts of the same workload."},
+        {"text": "A Reserved discount promises that Spot capacity will be available", "correct": false, "why": "A commitment discount and Spot spare capacity are different. Spot can be unavailable or interrupted."},
+        {"text": "Rightsizing is unnecessary once a Savings Plan is active", "correct": false, "why": "A commitment on an oversized resource still pays for capacity you do not use."}
+      ]
+    }
+  ],
+  "spotWrong": [
+    {
+      "id": "d1-boundary-grants",
+      "domain": "D1",
+      "objective": "1.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+      "detail": "A permissions boundary does not grant access. The other three statements match the evaluation and network models.",
+      "hook": "The boundary is not an allow.",
+      "choices": [
+        {"text": "A permissions boundary grants every action it lists, even with no identity-policy allow", "correct": true, "why": "This is wrong. The boundary sets a maximum. It does not grant."},
+        {"text": "A matching explicit deny overrides an allow", "correct": false, "why": "This is true. Explicit deny wins the evaluation."},
+        {"text": "A security group is stateful", "correct": false, "why": "This is true. Allowed flows get their return traffic."},
+        {"text": "An SCP limits accounts in the organization and does not by itself grant a permission", "correct": false, "why": "This is true. An SCP is a guardrail, not an allow."}
+      ]
+    },
+    {
+      "id": "d1-nacl-stateful",
+      "domain": "D1",
+      "objective": "1.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html",
+      "detail": "NACLs are stateless. The other statements match the security group, WAF, and Shield roles.",
+      "hook": "NACL does not remember.",
+      "choices": [
+        {"text": "A network ACL remembers an allowed outbound connection and allows the return automatically", "correct": true, "why": "This is wrong. A NACL is stateless, so the return needs a rule."},
+        {"text": "A security group allows return traffic for a flow it allowed", "correct": false, "why": "This is true. Security groups are stateful."},
+        {"text": "AWS WAF can block a web request that matches a SQL-injection rule", "correct": false, "why": "This is true. WAF filters the HTTP request."},
+        {"text": "AWS Shield is for DDoS protection, not for SQL-injection rules", "correct": false, "why": "This is true. Injection rules belong to WAF."}
+      ]
+    },
+    {
+      "id": "d1-root-app",
+      "domain": "D1",
+      "objective": "1.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html",
+      "detail": "The root user is not the application credential. Roles, federation, and deny behavior are the correct statements.",
+      "hook": "Root is not the workload.",
+      "choices": [
+        {"text": "The application should use the account root user for its daily AWS calls", "correct": true, "why": "This is wrong. A workload uses a role and temporary credentials."},
+        {"text": "An IAM role can hand a workload temporary credentials", "correct": false, "why": "This is true. AssumeRole yields temporary credentials."},
+        {"text": "Workforce access can be federated from a company identity provider", "correct": false, "why": "This is true. Federation avoids an IAM user for every person."},
+        {"text": "An explicit deny still applies when another policy allows the action", "correct": false, "why": "This is true. The deny wins."}
+      ]
+    },
+    {
+      "id": "d1-kms-password",
+      "domain": "D1",
+      "objective": "1.3",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+      "detail": "KMS does not rotate the database password. Secrets Manager does. The other statements match KMS, CloudHSM, and ACM.",
+      "hook": "Passwords are secrets, not KMS keys.",
+      "choices": [
+        {"text": "AWS KMS rotates the database username and password on a schedule", "correct": true, "why": "This is wrong. Credential rotation is Secrets Manager. KMS manages keys."},
+        {"text": "AWS KMS manages keys that AWS services use for encryption", "correct": false, "why": "This is true. KMS is the managed key service."},
+        {"text": "CloudHSM is dedicated HSM hardware under customer control", "correct": false, "why": "This is true. It is not the shared KMS service."},
+        {"text": "ACM provisions TLS certificates for supported AWS integrations", "correct": false, "why": "This is true. ACM is the certificate service, not the secret vault."}
+      ]
+    },
+    {
+      "id": "d1-encrypt-allow",
+      "domain": "D1",
+      "objective": "1.3",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/control-access.html",
+      "detail": "Encryption does not delete a read permission. Macie, Secrets Manager, and private endpoints are described correctly.",
+      "hook": "Encrypted is not the same as unauthorized.",
+      "choices": [
+        {"text": "Encrypting an S3 object deletes every IAM allow for reading that object", "correct": true, "why": "This is wrong. The read permission and the key permission are separate."},
+        {"text": "Macie looks for sensitive data in Amazon S3", "correct": false, "why": "This is true. Macie's focus is sensitive data in S3."},
+        {"text": "Secrets Manager can store a database credential and rotate it", "correct": false, "why": "This is true. That is the secret-value service."},
+        {"text": "A VPC endpoint can keep supported AWS service traffic off the public internet", "correct": false, "why": "This is true. The endpoint is a private path to the service."}
+      ]
+    },
+    {
+      "id": "d1-nat-private-s3",
+      "domain": "D1",
+      "objective": "1.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "detail": "A NAT gateway is not the private S3 path. Shield, WAF, and security-group state are described correctly.",
+      "hook": "NAT is internet egress, not the S3 endpoint.",
+      "choices": [
+        {"text": "A public NAT gateway is the private, non-internet path from a VPC to S3", "correct": true, "why": "This is wrong. Public NAT sends IPv4 through an internet gateway. The private S3 path is a gateway endpoint."},
+        {"text": "AWS Shield provides managed DDoS protection", "correct": false, "why": "This is true. Shield is the DDoS service."},
+        {"text": "AWS WAF filters web requests", "correct": false, "why": "This is true. WAF sees the HTTP request."},
+        {"text": "Security groups do not require a separate rule for the return traffic of an allowed flow", "correct": false, "why": "This is true because the group is stateful."}
+      ]
+    },
+    {
+      "id": "d2-sqs-once",
+      "domain": "D2",
+      "objective": "2.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html",
+      "detail": "Standard SQS is not exactly-once. SNS, EventBridge, and dead-letter queues are described correctly.",
+      "hook": "Standard queue means at least once.",
+      "choices": [
+        {"text": "A standard SQS queue delivers each message exactly once and in send order", "correct": true, "why": "This is wrong. Standard queues are at-least-once with best-effort ordering."},
+        {"text": "Amazon SNS publishes one message to many subscribers", "correct": false, "why": "This is true. SNS is the fan-out."},
+        {"text": "EventBridge rules route matching events to targets", "correct": false, "why": "This is true. Rules select events and targets."},
+        {"text": "A dead-letter queue can hold messages that failed processing", "correct": false, "why": "This is true. The failed message leaves the main processing path."}
+      ]
+    },
+    {
+      "id": "d2-visibility-deletes",
+      "domain": "D2",
+      "objective": "2.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "detail": "Visibility timeout hides a message. It does not delete it. The other three recovery and queue statements are correct.",
+      "hook": "Hidden is not deleted.",
+      "choices": [
+        {"text": "The visibility timeout deletes the SQS message as soon as a consumer receives it", "correct": true, "why": "This is wrong. The timeout only hides the message. The consumer deletes it after success."},
+        {"text": "RTO is how long the service may take to recover", "correct": false, "why": "This is true. RTO is the time objective."},
+        {"text": "RPO is how much recent data the recovery may lose", "correct": false, "why": "This is true. RPO is the data-loss window."},
+        {"text": "A queue lets a fast producer outrun a slower consumer without dropping the handoff", "correct": false, "why": "This is true. The queue is the buffer."}
+      ]
+    },
+    {
+      "id": "d2-backup-serves",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+      "detail": "Backup and restore does not keep a second site serving. Pilot light, warm standby, and active/active are described by their relative roles.",
+      "hook": "Backups are not a live second site.",
+      "choices": [
+        {"text": "Backup and restore keeps a full second site serving users during normal operation", "correct": true, "why": "This is wrong. That live second site is active/active or a scaled standby, not backup and restore."},
+        {"text": "Pilot light keeps a core running and scales the rest at failover", "correct": false, "why": "This is true. Only the core stays on."},
+        {"text": "Warm standby is a reduced environment that is already running", "correct": false, "why": "This is true. You scale it up during recovery."},
+        {"text": "Active/active serves from more than one site", "correct": false, "why": "This is true. Both sites take traffic."}
+      ]
+    },
+    {
+      "id": "d2-replica-failover",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "detail": "A read replica is not the single-standby failover mechanism. Multi-AZ failover, ALB fail-open, and externalized state are described correctly.",
+      "hook": "Replica reads. Standby fails over.",
+      "choices": [
+        {"text": "An RDS read replica is the automatic failover target of a single-standby Multi-AZ instance", "correct": true, "why": "This is wrong. Failover uses the standby. The replica is for reads and can lag."},
+        {"text": "A single-standby Multi-AZ deployment fails over to the standby", "correct": false, "why": "This is true for that deployment type."},
+        {"text": "An ALB with no healthy targets fails open and sends requests to the registered targets", "correct": false, "why": "This is true. Fail-open is the all-unhealthy behavior."},
+        {"text": "Session state kept only on one instance makes that instance hard to replace", "correct": false, "why": "This is true. The session has to move off the instance."}
+      ]
+    },
+    {
+      "id": "d2-minutes",
+      "domain": "D2",
+      "objective": "2.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+      "detail": "The DR line has no universal minute guarantee. SNS, idempotent consumers, and Multi-AZ are described correctly.",
+      "hook": "No fixed minute promise.",
+      "choices": [
+        {"text": "Pilot light, warm standby, and active/active each guarantee the same recovery time in minutes", "correct": true, "why": "This is wrong. They are relative tradeoffs. The minutes come from a test of that workload."},
+        {"text": "SNS delivers one notification to many subscribers", "correct": false, "why": "This is true. That is pub/sub."},
+        {"text": "A consumer of a standard queue should tolerate a duplicate message", "correct": false, "why": "This is true. Delivery is at-least-once."},
+        {"text": "Spreading a tier across Availability Zones survives loss of one zone", "correct": false, "why": "This is true when the surviving zones still have capacity."}
+      ]
+    },
+    {
+      "id": "d2-eventbridge-queue",
+      "domain": "D2",
+      "objective": "2.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html",
+      "detail": "EventBridge does not replace the SQS buffer. Dead-letter queues, warm standby, and RPO are described correctly.",
+      "hook": "Rules are not a queue.",
+      "choices": [
+        {"text": "EventBridge is the polled queue that hides a message until the worker deletes it", "correct": true, "why": "This is wrong. That behavior is SQS. EventBridge routes events with rules."},
+        {"text": "A dead-letter queue keeps a poison message from blocking the main queue", "correct": false, "why": "This is true. The failed message is set aside."},
+        {"text": "Warm standby is already running at lower capacity", "correct": false, "why": "This is true. You scale it during recovery."},
+        {"text": "RPO describes lost data, not hours of downtime", "correct": false, "why": "This is true. Downtime is RTO."}
+      ]
+    },
+    {
+      "id": "d3-instance-store-db",
+      "domain": "D3",
+      "objective": "3.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html",
+      "detail": "Instance store is not durable database storage. EBS, S3, and EFS are described correctly.",
+      "hook": "Scratch disk is not the database.",
+      "choices": [
+        {"text": "Instance store is the durable disk for the only copy of a database", "correct": true, "why": "This is wrong. Instance store can disappear on stop or host loss."},
+        {"text": "EBS volume data remains after the instance stops", "correct": false, "why": "This is true. EBS is persistent block storage."},
+        {"text": "S3 addresses objects by key", "correct": false, "why": "This is true. Clients use the bucket and key."},
+        {"text": "EFS is a shared file system for Linux", "correct": false, "why": "This is true. Linux clients share the file system."}
+      ]
+    },
+    {
+      "id": "d3-dax-strong",
+      "domain": "D3",
+      "objective": "3.3",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html",
+      "detail": "DAX does not serve strongly consistent reads from cache. Read replicas, RDS Proxy, and Fargate are described correctly.",
+      "hook": "Strong reads skip the DAX cache.",
+      "choices": [
+        {"text": "DAX serves strongly consistent DynamoDB reads from the cache", "correct": true, "why": "This is wrong. Strongly consistent reads pass through to DynamoDB. Cache hits are eventually consistent."},
+        {"text": "A read replica can lag behind the writer", "correct": false, "why": "This is true. Replica reads are not a latest-commit guarantee."},
+        {"text": "RDS Proxy pools connections for supported database engines", "correct": false, "why": "This is true. The proxy reuses connections."},
+        {"text": "Fargate runs a container without an EC2 fleet you manage", "correct": false, "why": "This is true. You do not patch those instances."}
+      ]
+    },
+    {
+      "id": "d3-accelerator-cache",
+      "domain": "D3",
+      "objective": "3.4",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html",
+      "detail": "Global Accelerator does not cache objects. CloudFront, Direct Connect, and horizontal scaling are described correctly.",
+      "hook": "Accelerator is a path, not a cache.",
+      "choices": [
+        {"text": "Global Accelerator caches images and HTML at edge locations", "correct": true, "why": "This is wrong. Object caching is CloudFront. Accelerator improves the network path."},
+        {"text": "CloudFront can answer a repeated request from cache", "correct": false, "why": "This is true when the object is cached and still fresh."},
+        {"text": "Direct Connect is a dedicated private connection from on-premises to AWS", "correct": false, "why": "This is true. It is not the CDN."},
+        {"text": "Horizontal scaling adds instances rather than only enlarging one instance", "correct": false, "why": "This is true. Enlarging one instance is vertical scaling."}
+      ]
+    },
+    {
+      "id": "d3-kinesis-global-order",
+      "domain": "D3",
+      "objective": "3.5",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html",
+      "detail": "Kinesis does not order the entire stream as one line. Firehose, Glue, and Athena are described correctly.",
+      "hook": "Order is per shard.",
+      "choices": [
+        {"text": "Kinesis Data Streams keeps one send order for every record in the stream", "correct": true, "why": "This is wrong. Order is within a shard for a partition key."},
+        {"text": "Data Firehose can deliver streaming data to S3", "correct": false, "why": "This is true. Firehose is managed delivery."},
+        {"text": "AWS Glue can catalog and transform data for analytics", "correct": false, "why": "This is true. Glue is the catalog and transform service."},
+        {"text": "Athena can query data in S3 with SQL", "correct": false, "why": "This is true. The data stays in S3."}
+      ]
+    },
+    {
+      "id": "d3-s3-block",
+      "domain": "D3",
+      "objective": "3.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "detail": "S3 is not the block volume. Lambda concurrency, EBS, and FSx for Windows are described correctly.",
+      "hook": "S3 is objects.",
+      "choices": [
+        {"text": "Amazon S3 is the block volume attached as the instance's boot disk", "correct": true, "why": "This is wrong. The boot disk is EBS or instance store. S3 is object storage."},
+        {"text": "Lambda concurrency counts executions in flight", "correct": false, "why": "This is true. Hitting the limit throttles more invocations."},
+        {"text": "An EBS volume is persistent block storage in one Availability Zone", "correct": false, "why": "This is true. The volume stays in its zone."},
+        {"text": "FSx for Windows File Server serves Windows file shares", "correct": false, "why": "This is true. It is the Windows SMB file system."}
+      ]
+    },
+    {
+      "id": "d3-vertical-name",
+      "domain": "D3",
+      "objective": "3.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/compute.html",
+      "detail": "A larger instance is vertical scaling, not horizontal. RDS Proxy, shard order, and CloudFront are described correctly.",
+      "hook": "Bigger box is vertical.",
+      "choices": [
+        {"text": "Changing to a larger instance type is horizontal scaling", "correct": true, "why": "This is wrong. A larger type is vertical scaling. Horizontal scaling adds instances."},
+        {"text": "RDS Proxy is a connection pool, not a query cache", "correct": false, "why": "This is true. It multiplexes connections to the database."},
+        {"text": "Records that share a Kinesis partition key are ordered within that shard", "correct": false, "why": "This is true. Other keys can be on other shards."},
+        {"text": "CloudFront cache hits can avoid repeating the same origin fetch", "correct": false, "why": "This is true when the cached object is still valid."}
+      ]
+    },
+    {
+      "id": "d4-spot-guarantee",
+      "domain": "D4",
+      "objective": "4.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+      "detail": "Spot is not a run-until-you-stop guarantee. On-Demand, Standard-IA, and the gateway endpoint fee are described correctly.",
+      "hook": "Spot can be interrupted.",
+      "choices": [
+        {"text": "A Spot instance keeps running until you stop it, because the discount includes a capacity guarantee", "correct": true, "why": "This is wrong. Spot uses spare capacity and can be interrupted."},
+        {"text": "On-Demand is not interrupted to reclaim capacity", "correct": false, "why": "This is true. On-Demand has no Spot interruption."},
+        {"text": "Standard-IA keeps an infrequently accessed object in more than one Availability Zone", "correct": false, "why": "This is true. One Zone-IA is the single-zone class."},
+        {"text": "An S3 gateway endpoint does not add an hourly endpoint charge", "correct": false, "why": "This is true. The hourly and data-processing charges belong to interface endpoints."}
+      ]
+    },
+    {
+      "id": "d4-one-zone-multi",
+      "domain": "D4",
+      "objective": "4.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "detail": "One Zone-IA is not multi-AZ. Unused EBS, minimum charges, and measuring a database are described correctly.",
+      "hook": "One Zone means one zone.",
+      "choices": [
+        {"text": "S3 One Zone-IA stores a copy in every Availability Zone so a zone loss cannot lose the object", "correct": true, "why": "This is wrong. One Zone-IA is a single zone. Zone loss can lose the object."},
+        {"text": "An unattached EBS volume can still be billed", "correct": false, "why": "This is true. Detach does not end the storage charge."},
+        {"text": "A lower per-GB infrequent class can still cost more for tiny objects", "correct": false, "why": "This is true when minimum size, duration, or requests dominate."},
+        {"text": "Buying a larger database instance without measuring the workload can miss the real bottleneck", "correct": false, "why": "This is true. The limit might be queries or connections, not the instance size."}
+      ]
+    },
+    {
+      "id": "d4-interface-free",
+      "domain": "D4",
+      "objective": "4.4",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+      "detail": "Interface endpoints are not free of hourly charges. Gateway endpoints, Spot interruption, and cache cost are described correctly.",
+      "hook": "Interface endpoints have an hourly charge.",
+      "choices": [
+        {"text": "An interface endpoint has no hourly charge and no data-processing charge", "correct": true, "why": "This is wrong. Interface endpoints can charge hourly and for data processed."},
+        {"text": "An S3 gateway endpoint is a route-table target without an hourly fee", "correct": false, "why": "This is true for the S3 and DynamoDB gateway endpoints."},
+        {"text": "Spot capacity can be taken back", "correct": false, "why": "This is true. The instance can be interrupted."},
+        {"text": "A cache added to cut database reads has its own cost", "correct": false, "why": "This is true. The comparison includes the cache."}
+      ]
+    },
+    {
+      "id": "d4-savings-unmeasured",
+      "domain": "D4",
+      "objective": "4.2",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+      "detail": "An unmeasured workload is not automatically a Savings Plan. Rightsizing, One Zone-IA, and NAT versus gateway are described correctly.",
+      "hook": "Measure before you commit.",
+      "choices": [
+        {"text": "Buy a three-year commitment before any usage has been measured, because the discount cannot be wasted", "correct": true, "why": "This is wrong. A commitment you do not use is wasted spend. Measure the baseline first."},
+        {"text": "An oversized instance still costs more after you attach a discount to it", "correct": false, "why": "This is true. Rightsizing removes capacity you do not need."},
+        {"text": "One Zone-IA is appropriate when losing one Availability Zone is acceptable", "correct": false, "why": "This is true only for data you can recreate or do not need after a zone loss."},
+        {"text": "Eligible S3 traffic can avoid NAT processing by using a gateway endpoint", "correct": false, "why": "This is true. The gateway endpoint takes that traffic off the NAT path."}
+      ]
+    },
+    {
+      "id": "d4-engine-price",
+      "domain": "D4",
+      "objective": "4.3",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "detail": "A cheaper engine that cannot run the workload does not meet the requirement. EBS waste, gateway pricing, and On-Demand are described correctly.",
+      "hook": "Wrong engine is not a saving.",
+      "choices": [
+        {"text": "Pick the database with the lowest instance price even when it cannot run the required queries", "correct": true, "why": "This is wrong. The design has to meet the data requirement before the price comparison matters."},
+        {"text": "Deleting an unused EBS volume stops its storage charge", "correct": false, "why": "This is true once the volume, and not a snapshot you still need, is gone."},
+        {"text": "An S3 gateway endpoint avoids the interface endpoint hourly fee", "correct": false, "why": "This is true. The gateway endpoint has no hourly fee."},
+        {"text": "On-Demand fits work that cannot be interrupted and has no commitment yet", "correct": false, "why": "This is true. There is no term and no Spot interruption."}
+      ]
+    },
+    {
+      "id": "d4-detach-free",
+      "domain": "D4",
+      "objective": "4.1",
+      "prompt": "Which statement is wrong?",
+      "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html",
+      "detail": "Detaching a volume does not make it free. Standard-IA, Spot, and including the cache are described correctly.",
+      "hook": "Detach is not delete.",
+      "choices": [
+        {"text": "Detaching an EBS volume from every instance makes the volume free", "correct": true, "why": "This is wrong. The unattached volume remains billable storage."},
+        {"text": "Standard-IA is still stored in multiple Availability Zones", "correct": false, "why": "This is true. It is the multi-AZ infrequent class."},
+        {"text": "Spot is a fit only when the work can be interrupted and restarted", "correct": false, "why": "This is true. Interruption is part of the Spot contract."},
+        {"text": "The price of a cache belongs in the comparison that claims the cache saves money", "correct": false, "why": "This is true. Savings are what remains after the cache cost."}
+      ]
+    }
+  ]
+}

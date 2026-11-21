@@ -11,9 +11,11 @@ test('every drill mode has unambiguous prompts and at least two choices', () => 
     for (const mode of deck.modes) {
       const items = itemsForMode(deck, mode);
       assert.ok(items.length >= 2, `${deck.id}/${mode.id} needs items`);
-      const prompts = items.map((i) => i.fields[mode.from]);
+      const graded = items.filter((item) => !item.select);
+      if (graded.length === 0) continue;
+      const prompts = graded.map((i) => i.fields[mode.from]);
       assert.equal(new Set(prompts).size, prompts.length, `${deck.id}/${mode.id} has a prompt with two right answers`);
-      for (const item of items) {
+      for (const item of graded) {
         const choices = choicesFor(deck, mode, item);
         assert.ok(choices.length >= 2 && choices.length <= 4, `${deck.id}/${mode.id}/${item.id} choice count`);
         assert.equal(new Set(choices).size, choices.length, `${deck.id}/${mode.id}/${item.id} duplicate choices`);

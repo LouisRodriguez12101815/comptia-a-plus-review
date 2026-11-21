@@ -3,6 +3,8 @@
 // given another; answer choices are the other distinct values of that field.
 // Fact text stays in English (like protocol names); UI text lives in messages/.
 import assessmentDrills from "../../content/core2-assessment-drills.json" with { type: "json" };
+import expansion from "../../content/saa-drill-expansion.json" with { type: "json" };
+import pairSources from "../../content/study-pairs.json" with { type: "json" };
 import { corePorts } from "@/lib/practice/ports";
 
 export type DrillItem = {
@@ -15,6 +17,9 @@ export type DrillItem = {
   hook: string;
   /** Hand-picked wrong answers per target field, used before random ones. */
   wrong?: Record<string, string[]>;
+  docsUrl?: string;
+  /** Checked choices for which-TWO and spot-the-wrong. `correct` marks the keyed set. */
+  select?: { text: string; why: string; correct: boolean }[];
 };
 
 export type DrillMode = { id: string; from: string; to: string };
@@ -1624,6 +1629,11 @@ const awsSaaServiceCompare: DrillDeck = {
       "id": "scenarioToAnswer",
       "from": "scenario",
       "to": "answer"
+    },
+    {
+      "id": "answerToScenario",
+      "from": "answer",
+      "to": "scenario"
     }
   ],
   "tables": [
@@ -2008,6 +2018,11 @@ const awsSaaSecureCues: DrillDeck = {
       "id": "cueToAnswer",
       "from": "cue",
       "to": "answer"
+    },
+    {
+      "id": "answerToCue",
+      "from": "answer",
+      "to": "cue"
     }
   ],
   "tables": [
@@ -2093,6 +2108,11 @@ const awsSaaResilientCues: DrillDeck = {
       "id": "cueToAnswer",
       "from": "cue",
       "to": "answer"
+    },
+    {
+      "id": "answerToCue",
+      "from": "answer",
+      "to": "cue"
     }
   ],
   "tables": [
@@ -2178,6 +2198,11 @@ const awsSaaPerformanceCues: DrillDeck = {
       "id": "cueToAnswer",
       "from": "cue",
       "to": "answer"
+    },
+    {
+      "id": "answerToCue",
+      "from": "answer",
+      "to": "cue"
     }
   ],
   "tables": [
@@ -2263,6 +2288,11 @@ const awsSaaCostCues: DrillDeck = {
       "id": "cueToAnswer",
       "from": "cue",
       "to": "answer"
+    },
+    {
+      "id": "answerToCue",
+      "from": "answer",
+      "to": "cue"
     }
   ],
   "tables": [
@@ -2720,7 +2750,97 @@ const awsClfBenefitsEconomics: DrillDeck = {
   ],
 };
 
-export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
+const saaCueDecks: Record<string, DrillDeck> = {
+  "aws-saa-secure-cues": awsSaaSecureCues,
+  "aws-saa-resilient-cues": awsSaaResilientCues,
+  "aws-saa-performance-cues": awsSaaPerformanceCues,
+  "aws-saa-cost-cues": awsSaaCostCues,
+  "aws-saa-service-compare": awsSaaServiceCompare,
+};
+
+for (const [deckId, items] of Object.entries(expansion.cues)) {
+  const deck = saaCueDecks[deckId];
+  for (const item of items) {
+    const fields: Record<string, string> = { answer: item.answer };
+    if ("cue" in item && item.cue) fields.cue = item.cue;
+    if ("scenario" in item && item.scenario) fields.scenario = item.scenario;
+    deck.items.push({
+      id: item.id,
+      objective: item.objective,
+      fields,
+      detail: item.detail,
+      hook: item.hook,
+      docsUrl: item.docsUrl,
+    });
+  }
+}
+
+function selectDeck(id: string, topic: string, modeId: string, items: typeof expansion.whichTwo): DrillDeck {
+  return {
+    id,
+    certification: "AWS Solutions Architect – Associate",
+    exam: "saa-c03",
+    objective: "1.1–4.4",
+    topic,
+    modes: [{ id: modeId, from: "prompt", to: "answer" }],
+    tables: [{ id: "checks", fields: ["prompt", "answer"] }],
+    items: items.map((item) => ({
+      id: item.id,
+      objective: item.objective,
+      fields: {
+        prompt: item.prompt,
+        answer: item.choices.filter((choice) => choice.correct).map((choice) => choice.text).join("\n"),
+      },
+      detail: item.detail,
+      hook: item.hook,
+      docsUrl: item.docsUrl,
+      select: item.choices,
+    })),
+  };
+}
+
+function pairSide(side: { ref?: string; label?: string; pickWhen?: string }) {
+  if (side.ref) {
+    const [deckId, itemId] = side.ref.split("/");
+    const item = saaCueDecks[deckId]?.items.find((candidate) => candidate.id === itemId);
+    return { label: item?.fields.answer ?? "", cue: item?.fields.cue ?? item?.fields.scenario ?? "" };
+  }
+  return { label: side.label ?? "", cue: side.pickWhen ?? "" };
+}
+
+function confusionDeck(): DrillDeck {
+  const items: DrillItem[] = [];
+  for (const pair of pairSources) {
+    if (pair.exam !== "saa-c03") continue;
+    const sides = pair.sides.map((side) => pairSide(side));
+    const two = sides.length === 2;
+    items.push({
+      id: pair.id,
+      objective: pair.taskId,
+      fields: two
+        ? { left: sides[0].label, right: sides[1].label }
+        : { left: pair.difference ?? sides.map((side) => side.label).join(" · "), right: sides.map((side) => side.label).join(" · ") },
+      detail: pair.difference ?? sides.map((side) => side.cue).filter(Boolean).join(" "),
+      hook: sides[0]?.cue || sides.map((side) => side.label).join(" · "),
+      docsUrl: pair.docsUrl,
+    });
+  }
+  return {
+    id: "aws-saa-confusion-pairs",
+    certification: "AWS Solutions Architect – Associate",
+    exam: "saa-c03",
+    objective: "1.1–4.4",
+    topic: "Confusion pairs",
+    modes: [
+      { id: "leftToRight", from: "left", to: "right" },
+      { id: "rightToLeft", from: "right", to: "left" },
+    ],
+    tables: [{ id: "pairs", fields: ["left", "right"] }],
+    items,
+  };
+}
+
+export const drillDecks: DrillDeck[] = [...assessmentDrills as DrillDeck[], awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsClfServiceCompare, awsSaaServiceCompare, selectDeck("aws-saa-which-two", "Which TWO", "whichTwo", expansion.whichTwo), selectDeck("aws-saa-spot-wrong", "Spot the wrong statement", "spotWrong", expansion.spotWrong), confusionDeck(), awsClfDomainCues, awsClfAiAnalytics, awsClfAccessCompare, awsClfCostCompare, awsClfBenefitsEconomics, awsClfMigrationCompare, awsClfOtherServicesCompare, awsClfSupportResources, awsClfWellArchitectedCompare, awsClfSecurityTransfer, awsClfCloudTechCore, awsClfDataNetworkStorage, ports, wifi, privateIps, appliances, dhcp, dns, networkConfig, connectionTypes, hardware, motherboardCpu, storageRaid, displays, printers, troubleshooting, mobile, virtualization, c2OsBasics, c2WindowsTools, c2CommandLine, c2WindowsSettings, c2Macos, c2Linux, c2AppsCloud, c2SecurityMeasures, c2WindowsSecurity, c2WirelessAuth, c2Malware, c2SocialEngineering, c2Hardening, c2TroubleshootWindows, c2TroubleshootMobile, c2TroubleshootSecurity, c2DocsChange, c2BackupSafety, c2PolicyCommunication, c2ScriptsRemoteAi, c2OsConcepts, c2Acronyms];
 
 export function drillHref(deckId: string) {
   return deckId === "ports" ? "/practice-games/port-drill" : `/practice-games/drills/${deckId}`;
@@ -2728,6 +2848,32 @@ export function drillHref(deckId: string) {
 
 export function getDeck(id: string) {
   return drillDecks.find((d) => d.id === id);
+}
+
+const BOSS_SOURCES = [awsSaaSecureCues, awsSaaResilientCues, awsSaaPerformanceCues, awsSaaCostCues, awsSaaServiceCompare];
+const BOSS_OBJECTIVES = { D1: "1.1–1.3", D2: "2.1–2.2", D3: "3.1–3.5", D4: "4.1–4.4" } as const;
+
+/** One mixed cue round from the decks in a single SAA domain. */
+export function bossDeck(domain: "D1" | "D2" | "D3" | "D4"): DrillDeck {
+  const major = domain.slice(1);
+  const seen = new Set<string>();
+  const items = BOSS_SOURCES.flatMap((deck) => deck.items.flatMap((item) => {
+    if (!item.objective?.startsWith(`${major}.`)) return [];
+    const prompt = item.fields.cue ?? item.fields.scenario;
+    if (!prompt || !item.fields.answer || seen.has(prompt)) return [];
+    seen.add(prompt);
+    return [{ ...item, fields: { prompt, answer: item.fields.answer } }];
+  }));
+  return {
+    id: `aws-saa-domain-boss-${domain}`,
+    certification: "AWS Solutions Architect – Associate",
+    exam: "saa-c03",
+    objective: BOSS_OBJECTIVES[domain],
+    topic: `Domain ${domain} boss round`,
+    modes: [{ id: "promptToAnswer", from: "prompt", to: "answer" }],
+    tables: [{ id: "cues", fields: ["prompt", "answer"] }],
+    items,
+  };
 }
 
 /** Items that have both fields a mode needs. */

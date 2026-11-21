@@ -80,6 +80,8 @@ export type Progress = {
   schedules: Record<string, StoredSchedule>;
   /** SAA game streak and best times. Optional so older saves still load. */
   memoryGames?: { lastMixDay?: string; streak: number; bestMs: Record<string, number> };
+  /** Missed drill cues and the best survival or speed streak. Optional so older saves still load. */
+  drillPractice?: { missedIds: string[]; bestStreak: number };
 };
 
 const KEY = "comptia-a-plus-review-progress-v1";
@@ -185,6 +187,18 @@ function isMockAttempt(value: unknown): value is MockAttempt {
     && Array.isArray(value.missedIds) && Number.isFinite(value.at);
 }
 
+function parseDrillPractice(value: unknown): { value?: Progress["drillPractice"]; repaired: boolean } {
+  if (value === undefined) return { repaired: false };
+  if (!isRecord(value)) return { repaired: true };
+  const rawIds = Array.isArray(value.missedIds) ? value.missedIds : [];
+  const missedIds = [...new Set(rawIds.filter((id): id is string => typeof id === "string" && id.includes("/")))];
+  const bestStreak = Number.isInteger(value.bestStreak) && (value.bestStreak as number) >= 0 ? value.bestStreak as number : 0;
+  return {
+    value: { missedIds, bestStreak },
+    repaired: !Array.isArray(value.missedIds) || missedIds.length !== rawIds.length || !Number.isInteger(value.bestStreak) || (value.bestStreak as number) < 0,
+  };
+}
+
 function parseMemoryGames(value: unknown): { value?: Progress["memoryGames"]; repaired: boolean } {
   if (value === undefined) return { repaired: false };
   if (!isRecord(value)) return { repaired: true };
@@ -231,7 +245,8 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   const clfAssessmentSnapshots = rawSnapshots.filter(isClfSnapshot).slice(0, 20);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
   const memoryGames = parseMemoryGames(parsed.memoryGames);
-  const repaired = known.repaired || unknown.repaired || memoryGames.repaired
+  const drillPractice = parseDrillPractice(parsed.drillPractice);
+  const repaired = known.repaired || unknown.repaired || memoryGames.repaired || drillPractice.repaired
     || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
     || quizAttempts.length !== attempts.length
     || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
@@ -249,6 +264,7 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
     };
   if (clfAssessmentSnapshots.length > 0) progress.clfAssessmentSnapshots = clfAssessmentSnapshots;
   if (memoryGames.value) progress.memoryGames = memoryGames.value;
+  if (drillPractice.value) progress.drillPractice = drillPractice.value;
   return {
     progress,
     problems: repaired ? ["repaired"] : [],
@@ -385,6 +401,19 @@ export function recordMemoryBest(boardId: string, ms: number) {
   const previous = games.bestMs[boardId];
   if (previous !== undefined && previous <= ms) return current;
   const next = { ...current, memoryGames: { ...games, bestMs: { ...games.bestMs, [boardId]: ms } } };
+  saveProgress(next);
+  return next;
+}
+
+/** Remember a miss, clear it after a later correct answer, and keep a higher streak. */
+export function recordDrillOutcome(deckId: string, itemId: string, correct: boolean, streak: number) {
+  const current = loadProgress();
+  const practice = current.drillPractice ?? { missedIds: [], bestStreak: 0 };
+  const key = `${deckId}/${itemId}`;
+  const missedIds = correct
+    ? practice.missedIds.filter((id) => id !== key)
+    : practice.missedIds.includes(key) ? practice.missedIds : [...practice.missedIds, key];
+  const next = { ...current, drillPractice: { missedIds, bestStreak: Math.max(practice.bestStreak, streak) } };
   saveProgress(next);
   return next;
 }

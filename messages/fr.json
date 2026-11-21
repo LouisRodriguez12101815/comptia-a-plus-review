@@ -69,6 +69,18 @@
       "daily": { "title": "Mélange du jour", "blurb": "Dix indices, pondérés vers le domaine le plus faible, avec une série." }
     }
   },
+  "saaDrills": {
+    "title": "Exercices SAA",
+    "intro": "Paquets d'indices, inverse, chrono de 60 secondes, survie à trois vies, erreurs enregistrées, lesquels deux, l'énoncé faux et les paires qui se confondent.",
+    "weakest": "Jouer mon domaine le plus faible",
+    "weakestHint": "Ouvre la manche du domaine {domain}. Sans réponse notée, c'est le domaine 1.",
+    "practice": "Entraînement",
+    "reverse": "Inverse",
+    "speed": "Contre-la-montre",
+    "survival": "Survie",
+    "missed": "Indices ratés",
+    "bossTitle": "Manche du domaine"
+  },
   "exams": {
     "220-1201": {
       "shortLabel": "Core 1",
@@ -214,7 +226,10 @@
     "sheetCards": "Fiches",
     "sheetPairs": "Comparaisons",
     "sheetEmpty": "Rien n'est étiqueté pour ce domaine.",
-    "sheetUntagged": "Les fiches sans tâche restent dans le paquet et n'entrent pas sur cette fiche."
+    "sheetUntagged": "Les fiches sans tâche restent dans le paquet et n'entrent pas sur cette fiche.",
+    "sheetTitleClf": "Fiche CLF",
+    "sheetExamSaa": "SAA-C03",
+    "sheetExamClf": "CLF-C02"
   },
   "sectionBlocks": {
     "codeExample": "Exemple de code",
@@ -1607,7 +1622,21 @@
     "otherDrills": "Autres exercices de mémorisation",
     "start": "Commencer",
     "ready": "{count} questions en mode {mode}. Choisissez un mode ci-dessus ou commencez.",
-    "matchLink": "Essayez le jeu d'association"
+    "matchLink": "Essayez le jeu d'association",
+    "backDrills": "Retour aux exercices SAA",
+    "practice": "Entraînement",
+    "speed": "Contre-la-montre",
+    "survival": "Survie",
+    "missed": "Indices ratés",
+    "sessionLabel": "Type de manche",
+    "lives": "Vies {lives}",
+    "speedStatus": "{seconds}s · combo ×{combo} · {score} points",
+    "selectNeed": "Choisissez {count}",
+    "selectSubmit": "Vérifier",
+    "docs": "Documentation AWS",
+    "noneMissed": "Aucun indice raté n'est enregistré pour ce paquet.",
+    "speedDone": "Score {score}.",
+    "survivalDone": "Meilleure série de cette manche : {streak}."
   },
   "drillDecks": {
     "ports": {
@@ -2618,6 +2647,10 @@
         "scenarioToAnswer": {
           "label": "Scénario → Réponse",
           "ask": "Quel service ou quelle fonction AWS convient le mieux ?"
+        },
+        "answerToScenario": {
+          "label": "Réponse → Scénario",
+          "ask": "Quel scénario correspond à cette réponse ?"
         }
       },
       "fields": {
@@ -2955,6 +2988,10 @@
         "cueToAnswer": {
           "label": "Indice → Réponse",
           "ask": "Quel choix d'architecture cet indice implique-t-il ?"
+        },
+        "answerToCue": {
+          "label": "Réponse → Indice",
+          "ask": "Quel indice correspond à cette réponse ?"
         }
       },
       "fields": {
@@ -2974,6 +3011,10 @@
         "cueToAnswer": {
           "label": "Indice → Réponse",
           "ask": "Quel choix d'architecture cet indice implique-t-il ?"
+        },
+        "answerToCue": {
+          "label": "Réponse → Indice",
+          "ask": "Quel indice correspond à cette réponse ?"
         }
       },
       "fields": {
@@ -2993,6 +3034,10 @@
         "cueToAnswer": {
           "label": "Indice → Réponse",
           "ask": "Quel choix d'architecture cet indice implique-t-il ?"
+        },
+        "answerToCue": {
+          "label": "Réponse → Indice",
+          "ask": "Quel indice correspond à cette réponse ?"
         }
       },
       "fields": {
@@ -3012,6 +3057,10 @@
         "cueToAnswer": {
           "label": "Indice → Réponse",
           "ask": "Quel choix d'architecture cet indice implique-t-il ?"
+        },
+        "answerToCue": {
+          "label": "Réponse → Indice",
+          "ask": "Quel indice correspond à cette réponse ?"
         }
       },
       "fields": {
@@ -3021,6 +3070,45 @@
       "tables": {
         "cues": "Indices"
       }
+    },
+    "aws-saa-which-two": {
+      "title": "Lesquels deux",
+      "topic": "Lesquels deux",
+      "intro": "Choisissez les deux énoncés qui sont vrais.",
+      "cardBody": "Six paires vérifiées dans chaque domaine SAA.",
+      "modes": { "whichTwo": { "label": "Lesquels deux", "ask": "Quels deux énoncés sont corrects ?" } },
+      "fields": { "prompt": "Énoncé", "answer": "Réponse" },
+      "tables": { "checks": "Vérifications" }
+    },
+    "aws-saa-spot-wrong": {
+      "title": "Repérer l'énoncé faux",
+      "topic": "Repérer l'énoncé faux",
+      "intro": "Trouvez le seul énoncé qui ne tient pas.",
+      "cardBody": "Six énoncés dans chaque domaine SAA, dont un est faux.",
+      "modes": { "spotWrong": { "label": "Énoncé faux", "ask": "Quel énoncé est faux ?" } },
+      "fields": { "prompt": "Énoncé", "answer": "Réponse" },
+      "tables": { "checks": "Vérifications" }
+    },
+    "aws-saa-confusion-pairs": {
+      "title": "Paires qui se confondent",
+      "topic": "Paires qui se confondent",
+      "intro": "Distinguez les côtés d'une confusion courante.",
+      "cardBody": "Les paires de comparaison SAA, dans les deux sens.",
+      "modes": {
+        "leftToRight": { "label": "Gauche → Droite", "ask": "Quel côté correspond à celui-ci ?" },
+        "rightToLeft": { "label": "Droite → Gauche", "ask": "Quel côté correspond à celui-ci ?" }
+      },
+      "fields": { "left": "Gauche", "right": "Droite" },
+      "tables": { "pairs": "Paires" }
+    },
+    "aws-saa-domain-boss": {
+      "title": "Manche du domaine",
+      "topic": "Manche du domaine",
+      "intro": "Une manche mélangée d'un domaine SAA.",
+      "cardBody": "Indices des paquets de ce domaine.",
+      "modes": { "promptToAnswer": { "label": "Indice → Réponse", "ask": "Quel choix d'architecture cet indice implique-t-il ?" } },
+      "fields": { "prompt": "Indice", "answer": "Réponse" },
+      "tables": { "cues": "Indices" }
     },
     "c2-assessment-os": {
       "title": "Révision de l’évaluation: Operating systems and tools",

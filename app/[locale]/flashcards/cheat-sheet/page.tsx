@@ -4,16 +4,25 @@ import { cheatSheet } from "@/lib/study/records";
 import type { SaaDomainId } from "@/lib/saa-tags";
 
 const domains = ["D1", "D2", "D3", "D4"] as const;
+const exams = ["saa-c03", "clf-c02"] as const;
 
 function domainFromParam(value: string | undefined): SaaDomainId {
   const match = domains.find((domain) => domain === value || domain === `D${value}`);
   return match ?? "D1";
 }
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/flashcards/cheat-sheet">) {
+function examFromParam(value: string | undefined) {
+  return exams.find((exam) => exam === value) ?? "saa-c03";
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps<"/[locale]/flashcards/cheat-sheet">) {
   const { locale } = await params;
+  const { exam: examParam } = (await searchParams) as { exam?: string };
   const t = await getTranslations({ locale, namespace: "flashcardDeck" });
-  return { title: t("sheetTitle") };
+  return { title: examFromParam(examParam) === "clf-c02" ? t("sheetTitleClf") : t("sheetTitle") };
 }
 
 export default async function CheatSheetPage({
@@ -23,9 +32,10 @@ export default async function CheatSheetPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("flashcardDeck");
-  const { domain: domainParam } = (await searchParams) as { domain?: string };
+  const { domain: domainParam, exam: examParam } = (await searchParams) as { domain?: string; exam?: string };
   const domain = domainFromParam(domainParam);
-  const sheet = cheatSheet(domain);
+  const exam = examFromParam(examParam);
+  const sheet = cheatSheet(domain, exam);
 
   return (
     <div className="space-y-6">
@@ -38,13 +48,28 @@ export default async function CheatSheetPage({
         }
       `}</style>
       <div className="no-print space-y-3">
-        <h1 className="text-3xl font-semibold text-white">{t("sheetTitle")}</h1>
+        <h1 className="text-3xl font-semibold text-white">{exam === "clf-c02" ? t("sheetTitleClf") : t("sheetTitle")}</h1>
         <p className="text-slate-400">{t("sheetIntro")}</p>
+        <div className="flex flex-wrap gap-2">
+          {exams.map((item) => (
+            <Link
+              key={item}
+              href={`/flashcards/cheat-sheet?exam=${item}&domain=${domain}`}
+              className={
+                item === exam
+                  ? "inline-flex min-h-11 items-center rounded-full bg-teal-500 px-4 text-sm font-medium text-slate-950"
+                  : "inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 text-sm text-slate-100"
+              }
+            >
+              {t(item === "clf-c02" ? "sheetExamClf" : "sheetExamSaa")}
+            </Link>
+          ))}
+        </div>
         <div className="flex flex-wrap gap-2">
           {domains.map((item) => (
             <Link
               key={item}
-              href={`/flashcards/cheat-sheet?domain=${item}`}
+              href={`/flashcards/cheat-sheet?exam=${exam}&domain=${item}`}
               className={
                 item === domain
                   ? "inline-flex min-h-11 items-center rounded-full bg-teal-500 px-4 text-sm font-medium text-slate-950"

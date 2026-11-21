@@ -1,23 +1,12 @@
 import catalog from "@/content/study-games.json";
 import { flashcards } from "@/lib/content";
 import { saaDomainFromTask, type SaaDomainId } from "@/lib/saa-tags";
+import { GAME_IDS, type GameId } from "@/lib/study/game-ids";
 import type { StoredSchedule } from "@/lib/study/schedule";
 import { resolvedPairs } from "@/lib/study/records";
 import type { Flashcard } from "@/lib/types";
 
-export const GAME_IDS = [
-  "sorter",
-  "ladder",
-  "odd",
-  "builder",
-  "keyword",
-  "pillars",
-  "concentration",
-  "lightning",
-  "daily",
-] as const;
-
-export type GameId = (typeof GAME_IDS)[number];
+export { GAME_IDS, type GameId };
 
 export const PILLARS = [
   "Operational excellence",

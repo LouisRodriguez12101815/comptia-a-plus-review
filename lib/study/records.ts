@@ -187,7 +187,23 @@ export function studyRecord(id: string): StudyRecord | undefined {
 
 export { cardsForQuestion, cardsForTask };
 
-export function cheatSheet(domain: "D1" | "D2" | "D3" | "D4") {
+const CLF_SHEET_TOPICS: Record<"D1" | "D2" | "D3" | "D4", string[]> = {
+  D1: ["aws-clf-cloud-concepts", "aws-clf-migration-decisions", "aws-clf-well-architected-decisions"],
+  D2: ["aws-clf-security-compliance", "aws-clf-security-transfer", "aws-clf-access-management"],
+  D3: ["aws-clf-technology-services", "aws-clf-ai-analytics", "aws-clf-other-service-categories"],
+  D4: ["aws-clf-billing-support"],
+};
+
+export function cheatSheet(domain: "D1" | "D2" | "D3" | "D4", exam: "saa-c03" | "clf-c02" = "saa-c03") {
+  if (exam === "clf-c02") {
+    const topicsForDomain = new Set(CLF_SHEET_TOPICS[domain]);
+    const cards = flashcards.filter((card) => {
+      const codes = cardExamCodes(card);
+      return !card.retired && codes.includes("clf-c02") && !codes.includes("saa-c03") && topicsForDomain.has(card.topicId);
+    });
+    const pairs = resolvedPairs("clf-c02").filter((pair) => saaDomainFromTask(pair.taskId) === domain);
+    return { cards, pairs };
+  }
   const cards = flashcards.filter((card) => !card.retired && card.taskId && saaDomainFromTask(card.taskId) === domain);
   const pairs = resolvedPairs("saa-c03").filter((pair) => saaDomainFromTask(pair.taskId) === domain);
   return { cards, pairs };
