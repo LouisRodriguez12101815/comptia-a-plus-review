@@ -16,7 +16,7 @@ const domains = objectives.exams.find((exam) => exam.code === "saa-c03")?.domain
 })) ?? [];
 
 function drills(): DrillDeck[] {
-  return drillDecks.filter((deck) => deck.exam === "saa-c03" && deck.id.startsWith("aws-saa-"));
+  return drillDecks.filter((deck) => deck.exam === "saa-c03" && (deck.id.startsWith("aws-saa-") || deck.id.startsWith("hy-")));
 }
 
 export function SaaDrillHub() {

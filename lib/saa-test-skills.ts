@@ -82,7 +82,7 @@ const CLUSTER_DEFS: { id: string; title: string; pattern: RegExp; exclude?: RegE
   { id: "12", title: "Lambda, API Gateway, Step Functions", pattern: /\bLambda\b|API Gateway|Step Functions/i },
   { id: "13", title: "KMS, CloudHSM, secrets, ACM", pattern: /\bKMS\b|CloudHSM|Secrets Manager|Certificate Manager|\bACM\b/i },
   { id: "14", title: "DMS, Snow, DataSync, Transfer, MGN", pattern: /Database Migration Service|\bDMS\b|Snowball|Snowcone|DataSync|Transfer Family|Application Migration Service|\bMGN\b/i },
-  { id: "15", title: "CloudWatch, CloudTrail, Config, orgs, Trusted Advisor", pattern: /CloudWatch|CloudTrail|AWS Config|Trusted Advisor|AWS Organizations/i },
+  { id: "15", title: "CloudWatch, CloudTrail, Config, orgs, Trusted Advisor", pattern: /CloudWatch|CloudTrail|AWS Config|Trusted Advisor|AWS Organizations|Control Tower/i },
   { id: "16", title: "Athena through QuickSight", pattern: /\bAthena\b|\bGlue\b|Lake Formation|QuickSight|\bEMR\b|OpenSearch|Redshift/i },
 ];
 
@@ -92,16 +92,30 @@ function clusterText(question: Question): string {
   return [question.prompt, ...(question.choices ?? []), question.explanation ?? ""].join("\n");
 }
 
-export function questionsInCluster(clusterId: string, questions: Question[]): Question[] {
+function clusterMatches(clusterId: string, text: string): boolean {
   const cluster = CLUSTER_DEFS.find((item) => item.id === clusterId);
-  if (!cluster) return [];
-  return questions.filter((question) => {
-    if (!question.examCodes?.includes("saa-c03")) return false;
-    const text = clusterText(question);
-    if (!cluster.pattern.test(text)) return false;
-    if (cluster.exclude && cluster.exclude.test(text) && !/load balancer|Auto Scaling group|launch template|\bALB\b|\bNLB\b|\bELB\b/i.test(text)) return false;
-    return true;
-  });
+  if (!cluster || !cluster.pattern.test(text)) return false;
+  if (cluster.exclude && cluster.exclude.test(text) && !/load balancer|Auto Scaling group|launch template|\bALB\b|\bNLB\b|\bELB\b/i.test(text)) return false;
+  return true;
+}
+
+export function questionsInCluster(clusterId: string, questions: Question[]): Question[] {
+  return questions.filter((question) => question.examCodes?.includes("saa-c03") && clusterMatches(clusterId, clusterText(question)));
+}
+
+/** Same cluster rules as the high-yield audit: questions, card faces, and drill cues. */
+export function highYieldClusterCounts(input: {
+  questions: Question[];
+  cards: { front: string; back: string; examCodes?: string[] }[];
+  drills: { cue: string; answer: string }[];
+}): { id: string; title: string; questions: number; cards: number; drills: number }[] {
+  return CLUSTER_DEFS.map((cluster) => ({
+    id: cluster.id,
+    title: cluster.title,
+    questions: input.questions.filter((question) => question.examCodes?.includes("saa-c03") && clusterMatches(cluster.id, clusterText(question))).length,
+    cards: input.cards.filter((card) => card.examCodes?.includes("saa-c03") && clusterMatches(cluster.id, `${card.front}\n${card.back}`)).length,
+    drills: input.drills.filter((item) => clusterMatches(cluster.id, `${item.cue}\n${item.answer}`)).length,
+  }));
 }
 
 export type RotationOptions = {
