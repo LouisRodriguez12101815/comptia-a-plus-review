@@ -68,7 +68,7 @@ function markdown(summary) {
     if (!row) continue;
     lines.push(`| ${exam} | ${row.single} | ${row.longest} (${pct(row.longestRate)}) | ${row.strong} (${pct(row.strongRate)}) | ${row.positions.A ?? 0} | ${row.stemWord} | ${row.absoluteWords} | ${row.allNone} | ${row.onlyComplete} | ${row.nearDuplicate} |`);
   }
-  lines.push("", "The full per-item CSV is written to ignored `tmp/answer-cue-audit.csv` when the audit runs. Authored key position is reported here and does not affect display: quiz, timed test, twin, topic, mini-mock, mistake-log retest, drills, and choice games shuffle choices when the sitting is shown.", "");
+  lines.push("", "The full per-item CSV is written to ignored `tmp/answer-cue-audit.csv` when the audit runs. Authored key position is reported here and does not affect display: quiz, timed test, twin, topic, mini-mock, mistake-log retest, drills, choice games, subnet concept and reason, and the optional IPv6 review shuffle choices when the sitting is shown.", "");
   return `${lines.join("\n")}\n`;
 }
 

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {subnetData as data} from '../lib/subnet/catalog.ts';
-import {newRun,stages,activeStage,grade,submitRun,hintRun,runSummary,restoreRun,getConcept} from '../lib/subnet/session.ts';
+import {newRun,stages,activeStage,grade,submitRun,hintRun,runSummary,restoreRun,getConcept,displayChoices} from '../lib/subnet/session.ts';
 import {calculate} from '../lib/subnet/ipv4.ts';
 const answersFor=(run,s)=>{
  if(s==='concept')return {choice:getConcept(run).choices.find(c=>c.correct).id};if(s==='reason')return {choice:'constraints'};
@@ -34,4 +34,14 @@ test('restore rejects invalid identifiers, future receipts, versions and duplica
  const future={...r,receipts:{capacity:{attempts:[answersFor(r,'capacity')],hintUsed:false}}};assert.equal(restoreRun(JSON.stringify(future)),null);
  const duplicate={...r,receipts:{mask:{attempts:[{bad:'wrong'},{bad:'wrong'}],hintUsed:false}}};assert.equal(restoreRun(JSON.stringify(duplicate)),null);
  const after={...r,receipts:{mask:{attempts:[answersFor(r,'mask'),{bad:'wrong'}],hintUsed:false}}};assert.equal(restoreRun(JSON.stringify(after)),null);
+});
+test('concept and IPv6 choice display order keeps every id and can move the authored first choice',()=>{
+ const concept=getConcept(newRun('detective','guided',data.exercises[0].id)).choices;
+ const ipv6=data.optionalIpv6[0].choices;
+ for (const choices of [concept, ipv6]) {
+  assert.ok(choices.length > 1);
+  const shown=displayChoices(choices, () => 0);
+  assert.deepEqual(shown.map(c=>c.id).sort(), choices.map(c=>c.id).sort());
+  assert.notEqual(shown[0].id, choices[0].id);
+ }
 });
