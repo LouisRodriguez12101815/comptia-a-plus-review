@@ -23,7 +23,22 @@
         "correction": "IAM is global. The same users, roles, and policies apply in every Region."
       },
       "acronym": "IAM",
-      "expansion": "AWS Identity and Access Management"
+      "expansion": "AWS Identity and Access Management",
+      "keywords": [
+        "users and roles",
+        "identity policy",
+        "least privilege",
+        "account access"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "IAM itself has no service charge. You pay for the resources the policies allow.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "identity-center",
@@ -45,7 +60,23 @@
       "lightning": {
         "claim": "IAM Identity Center replaced AWS Single Sign-On as the current service name.",
         "answer": true
-      }
+      },
+      "keywords": [
+        "workforce sign-in",
+        "many accounts",
+        "SSO",
+        "permission sets"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "IAM Identity Center has no separate service charge. You pay for the accounts and resources people reach.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+      },
+      "acronymReason": "The name contains IAM, which is the account identity service. Identity Center is the published product name and is not an expansion of those initials.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "organizations",
@@ -68,7 +99,23 @@
         "claim": "A service control policy can grant a permission that IAM denied.",
         "answer": false,
         "correction": "A service control policy only filters permissions the account already has. It does not grant new ones."
-      }
+      },
+      "keywords": [
+        "many accounts",
+        "service control policy",
+        "consolidated bill",
+        "organizational unit"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "AWS Organizations has no separate service charge. Member accounts pay for the resources they run.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "kms",
@@ -95,7 +142,22 @@
         "correction": "A KMS key is Regional unless you are using a multi-Region key that you created for that purpose."
       },
       "acronym": "KMS",
-      "expansion": "AWS Key Management Service"
+      "expansion": "AWS Key Management Service",
+      "keywords": [
+        "customer managed key",
+        "envelope encryption",
+        "key policy",
+        "encrypt at rest"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "customer managed key-month and requests",
+        "reason": "Compared with a dedicated HSM, a customer managed key is the lower tier. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/kms/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "secrets",
@@ -120,7 +182,23 @@
         "claim": "Secrets Manager is the service that encrypts the object bytes in an S3 bucket.",
         "answer": false,
         "correction": "S3 encryption uses a key, usually from KMS. Secrets Manager holds the credential, not the object."
-      }
+      },
+      "keywords": [
+        "rotate a database password",
+        "secret string",
+        "application credential",
+        "not a CMK"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "secret-month and API requests",
+        "reason": "A secret is the cheap control next to the database it protects. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/secrets-manager/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "acm",
@@ -145,7 +223,22 @@
         "correction": "A public ACM certificate is used with integrated services such as Elastic Load Balancing and CloudFront. It is not a general exported certificate for an arbitrary server."
       },
       "acronym": "ACM",
-      "expansion": "AWS Certificate Manager"
+      "expansion": "AWS Certificate Manager",
+      "keywords": [
+        "public TLS certificate",
+        "renew a certificate",
+        "attach a cert to a load balancer",
+        "HTTPS"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Public certificates from ACM have no charge. AWS Private CA is a different paid product, and no dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "waf",
@@ -171,7 +264,22 @@
       },
       "acronym": "WAF",
       "expansion": "web application firewall",
-      "scopeNote": "A web ACL attached to an Application Load Balancer is Regional. A web ACL attached to CloudFront is on the global edge."
+      "scopeNote": "A web ACL attached to an Application Load Balancer is Regional. A web ACL attached to CloudFront is on the global edge.",
+      "keywords": [
+        "web ACL",
+        "block a request pattern",
+        "rate-based rule",
+        "HTTP filtering"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "web ACL, rule, and request charges",
+        "reason": "WAF sits above a free security group and below Shield Advanced. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/waf/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "shield",
@@ -194,7 +302,23 @@
         "claim": "Shield inspects the HTTP body and blocks SQL injection.",
         "answer": false,
         "correction": "HTTP request rules belong to AWS WAF. Shield is the DDoS protection."
-      }
+      },
+      "keywords": [
+        "DDoS protection",
+        "Shield Standard",
+        "Shield Advanced",
+        "edge attack"
+      ],
+      "cost": {
+        "band": "$$$",
+        "dimension": "Shield Advanced subscription; Shield Standard has no charge",
+        "reason": "Standard is the free edge protection. Advanced is the expensive paid tier. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/shield/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "guardduty",
@@ -219,7 +343,23 @@
         "claim": "GuardDuty blocks the packet that triggered the finding.",
         "answer": false,
         "correction": "GuardDuty reports findings. Blocking the request is a separate control, such as a security group, WAF, or a response you build."
-      }
+      },
+      "keywords": [
+        "threat finding",
+        "unusual API call",
+        "detective control",
+        "account monitoring"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "analyzed events and data volume",
+        "reason": "GuardDuty is a usage-priced detector, cheaper than a dedicated investigation stack. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/guardduty/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "inspector",
@@ -242,7 +382,23 @@
         "claim": "Inspector rotates credentials when it finds a vulnerability.",
         "answer": false,
         "correction": "Inspector reports the vulnerability. Rotation belongs to Secrets Manager or the application."
-      }
+      },
+      "keywords": [
+        "vulnerability scan",
+        "EC2 and Lambda findings",
+        "package CVE",
+        "not a threat feed"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "scanned resources",
+        "reason": "Inspector bills for the scans, not for a second copy of the data. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/inspector/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "macie",
@@ -267,7 +423,23 @@
         "claim": "Macie encrypts every S3 object it scans.",
         "answer": false,
         "correction": "Macie classifies data. Encryption is a bucket or key setting, not the scan itself."
-      }
+      },
+      "keywords": [
+        "sensitive data in S3",
+        "PII discovery",
+        "bucket findings",
+        "data classification"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "buckets evaluated and data inspected",
+        "reason": "Macie is usage-priced discovery, not a storage class. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/macie/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cognito",
@@ -290,7 +462,23 @@
         "claim": "Cognito user-pool users are IAM users in the account.",
         "answer": false,
         "correction": "A user pool is an application directory. IAM users are account principals. Workforce access to accounts is IAM Identity Center."
-      }
+      },
+      "keywords": [
+        "app user sign-in",
+        "user pool",
+        "identity pool",
+        "not IAM users"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "monthly active users",
+        "reason": "A user pool is the app-login tier, not an enterprise directory. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/cognito/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "network-firewall",
@@ -313,7 +501,23 @@
         "claim": "Network Firewall is a cheaper replacement for every security group.",
         "answer": false,
         "correction": "A security group is still the instance-level allow list. Network Firewall is the VPC inspection point."
-      }
+      },
+      "keywords": [
+        "VPC traffic filtering",
+        "stateful rule group",
+        "subnet endpoint",
+        "not WAF"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "endpoint hours and traffic processed",
+        "reason": "A Network Firewall endpoint costs more than a security group and less than a dedicated appliance you run. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "vpc",
@@ -350,7 +554,22 @@
           "task": "4.4",
           "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
         }
-      ]
+      ],
+      "keywords": [
+        "private network",
+        "subnet and route table",
+        "isolated CIDR",
+        "your own network boundary"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "A VPC, subnet, and route table have no charge. NAT gateways, traffic, and some endpoints are billed separately, and no dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "route53",
@@ -375,7 +594,23 @@
         "claim": "Route 53 replaces an Application Load Balancer for instance-level HTTP balancing.",
         "answer": false,
         "correction": "Route 53 answers DNS. An Application Load Balancer distributes the HTTP connections."
-      }
+      },
+      "keywords": [
+        "DNS hosting",
+        "latency routing",
+        "health check",
+        "domain record"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "hosted zone-month and queries",
+        "reason": "A hosted zone is the small fixed charge in front of the traffic it routes. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/route53/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cloudfront",
@@ -400,7 +635,42 @@
         "claim": "CloudFront is the anycast front door for raw UDP game traffic.",
         "answer": false,
         "correction": "CloudFront serves HTTP and related content. AWS Global Accelerator is the anycast option for TCP and UDP."
-      }
+      },
+      "keywords": [
+        "edge cache",
+        "viewer closer to the content",
+        "origin",
+        "HTTP distribution"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "data transferred and requests, by price class",
+        "reason": "The edge cache is the mid-tier delivery option next to serving from the origin Region. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/cloudfront/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classes": [
+        {
+          "name": "Price Class All",
+          "purpose": "Uses all CloudFront edge locations. It is the highest-priced class.",
+          "task": "3.4",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html"
+        },
+        {
+          "name": "Price Class 200",
+          "purpose": "Drops the highest-priced locations.",
+          "task": "3.4",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html"
+        },
+        {
+          "name": "Price Class 100",
+          "purpose": "The smallest, lowest-priced set of locations.",
+          "task": "3.4",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html"
+        }
+      ]
     },
     {
       "id": "global-accelerator",
@@ -425,7 +695,23 @@
         "claim": "Global Accelerator caches HTTP objects at the edge the way CloudFront does.",
         "answer": false,
         "correction": "Global Accelerator routes the connection. It is not the content cache."
-      }
+      },
+      "keywords": [
+        "static anycast IP",
+        "TCP and UDP",
+        "regional failover",
+        "not a cache"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "accelerator hours and traffic",
+        "reason": "Anycast routing is a steady charge, not a cache you pay for by hit. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/global-accelerator/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "elb",
@@ -470,7 +756,22 @@
           "task": "3.4",
           "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
         }
-      ]
+      ],
+      "keywords": [
+        "spread traffic",
+        "healthy targets",
+        "listener",
+        "ALB or NLB"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "load balancer hours and LCUs or NLUs",
+        "reason": "A load balancer is a steady hourly charge plus a capacity unit. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+      },
+      "acronymReason": "The published name is Elastic Load Balancing. It does not contain the initials ELB."
     },
     {
       "id": "direct-connect",
@@ -495,7 +796,23 @@
         "claim": "Direct Connect caches web content at edge locations.",
         "answer": false,
         "correction": "Direct Connect is the private link. CloudFront is the edge cache."
-      }
+      },
+      "keywords": [
+        "dedicated private circuit",
+        "not the internet",
+        "on-premises link",
+        "consistent path"
+      ],
+      "cost": {
+        "band": "$$$",
+        "dimension": "port hours and data transfer",
+        "reason": "A dedicated circuit is the expensive private path next to a VPN over the internet. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/directconnect/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "site-to-site-vpn",
@@ -520,7 +837,23 @@
         "claim": "Site-to-Site VPN is a dedicated fiber circuit into the Region.",
         "answer": false,
         "correction": "The dedicated circuit is Direct Connect. Site-to-Site VPN is the IPsec tunnel."
-      }
+      },
+      "keywords": [
+        "IPsec tunnel",
+        "on-premises to VPC",
+        "encrypted over the internet",
+        "not Direct Connect"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "VPN connection-hour and traffic",
+        "reason": "A VPN is the cheaper connectivity option next to Direct Connect. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/vpn/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "transit-gateway",
@@ -543,7 +876,23 @@
         "claim": "A transit gateway is required for every pair of VPCs.",
         "answer": false,
         "correction": "Two VPCs can use peering. A transit gateway is the hub when many networks connect."
-      }
+      },
+      "keywords": [
+        "many VPC attachments",
+        "hub and spoke",
+        "transitive routing",
+        "not peering mesh"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "attachment hours and data processed",
+        "reason": "The hub costs more than one peering link and less than a private circuit. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/transit-gateway/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "privatelink",
@@ -566,7 +915,23 @@
         "claim": "A gateway endpoint uses PrivateLink.",
         "answer": false,
         "correction": "The gateway-endpoints page says gateway endpoints do not use AWS PrivateLink."
-      }
+      },
+      "keywords": [
+        "private service endpoint",
+        "no public IP",
+        "interface endpoint",
+        "provider and consumer"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "endpoint hours and data processed",
+        "reason": "An interface endpoint is a small hourly charge for a private path. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/privatelink/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "ec2",
@@ -714,6 +1079,30 @@
           "purpose": "High memory.",
           "task": "3.2",
           "docsUrl": "https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-type-names.html"
+        },
+        {
+          "name": "EC2 On-Demand",
+          "purpose": "Pay for the instance-hour with no term commitment. You can stop the instance.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+        },
+        {
+          "name": "EC2 Reserved Instances",
+          "purpose": "A term commitment for a lower price on a steady instance.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+        },
+        {
+          "name": "EC2 Spot",
+          "purpose": "Spare capacity that can be interrupted. It is not a commitment discount.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+        },
+        {
+          "name": "EC2 Dedicated Hosts",
+          "purpose": "A physical server in your account when the license must see the host.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
         }
       ],
       "costs": [
@@ -725,7 +1114,21 @@
           "task": "4.2",
           "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
         }
-      ]
+      ],
+      "keywords": [
+        "virtual server",
+        "instance family",
+        "purchase option",
+        "guest operating system"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "instance-hour by family and purchase option",
+        "reason": "On-Demand is the middle compute tier: more flexible than a commitment, more expensive than Spot. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/ec2/pricing/on-demand/"
+      }
     },
     {
       "id": "ec2-auto-scaling",
@@ -750,7 +1153,23 @@
         "claim": "EC2 Auto Scaling adds Aurora read replicas.",
         "answer": false,
         "correction": "EC2 Auto Scaling changes the EC2 group. Database replicas are a database feature."
-      }
+      },
+      "keywords": [
+        "replace an unhealthy instance",
+        "scale the group",
+        "desired capacity",
+        "EC2 fleet"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "EC2 Auto Scaling has no separate charge. You pay for the instances and the load balancer it uses.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+      },
+      "acronymReason": "EC2 in the name is Amazon Elastic Compute Cloud, expanded on the EC2 record. Auto Scaling is not an initialism.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "lambda",
@@ -793,6 +1212,35 @@
           "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html",
           "task": "3.2"
         }
+      ],
+      "keywords": [
+        "run code on an event",
+        "no server to patch",
+        "short invocation",
+        "function handler"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "requests and GB-seconds",
+        "reason": "Lambda is the pay-per-invocation tier next to an instance that runs all month. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/lambda/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classes": [
+        {
+          "name": "Lambda function memory",
+          "purpose": "A standard function can be set from 128 MB to 10,240 MB. CPU scales with that setting.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        },
+        {
+          "name": "Lambda function timeout",
+          "purpose": "A standard function can run up to 1,800 seconds (30 minutes). Some Managed Instances asynchronous calls can run longer.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
       ]
     },
     {
@@ -818,7 +1266,23 @@
         "claim": "Fargate lets you pick the EC2 instance family for the host.",
         "answer": false,
         "correction": "Fargate hides the instance. Choosing the instance family is EC2."
-      }
+      },
+      "keywords": [
+        "container without an EC2 host",
+        "serverless compute",
+        "task size",
+        "not a VM"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "vCPU and memory for the task time",
+        "reason": "Fargate is the container price without an EC2 instance to buy. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/fargate/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "ecs",
@@ -843,7 +1307,22 @@
         "correction": "Managed Kubernetes is Amazon EKS. ECS is the AWS container scheduler."
       },
       "acronym": "ECS",
-      "expansion": "Amazon Elastic Container Service"
+      "expansion": "Amazon Elastic Container Service",
+      "keywords": [
+        "run a container",
+        "task definition",
+        "orchestrator",
+        "EC2 or Fargate"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "The ECS orchestrator has no charge. You pay for EC2 or Fargate under the tasks.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "eks",
@@ -868,7 +1347,22 @@
         "correction": "Containers can run on ECS or on EC2. EKS is the Kubernetes option."
       },
       "acronym": "EKS",
-      "expansion": "Amazon Elastic Kubernetes Service"
+      "expansion": "Amazon Elastic Kubernetes Service",
+      "keywords": [
+        "Kubernetes control plane",
+        "pods",
+        "managed cluster",
+        "not ECS tasks"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "cluster-hour plus the compute under the pods",
+        "reason": "The control plane is a steady hourly charge on top of the nodes. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/eks/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "s3",
@@ -946,7 +1440,21 @@
           "task": "4.1",
           "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
         }
-      ]
+      ],
+      "keywords": [
+        "object storage",
+        "bucket",
+        "storage class",
+        "durable objects"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "GB-month and requests, by storage class",
+        "reason": "Standard storage is the low end of the storage price next to a database or a volume. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/s3/pricing/"
+      }
     },
     {
       "id": "s3-glacier",
@@ -987,6 +1495,41 @@
           "prompt": "Order Glacier Flexible Retrieval options from faster retrieval toward the slower, lower-cost option.",
           "answer": "Expedited, then Standard, then Bulk",
           "detail": "The retrieval-options page lists Expedited, Standard, and Bulk by retrieval speed. Expedited is the premium option. Bulk is the lowest-cost option, and Bulk retrievals are free for objects in S3 Glacier Flexible Retrieval. Relative, not a clock time you should invent.",
+          "task": "4.1",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        }
+      ],
+      "keywords": [
+        "archive object",
+        "restore before read",
+        "retrieval tier",
+        "cold storage"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "GB-month plus a retrieval tier",
+        "reason": "Archive storage is cheaper to keep than Standard and can cost more to read. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/s3/glacier/pricing/"
+      },
+      "acronymReason": "S3 in the name is Amazon Simple Storage Service, expanded on the S3 record. Glacier is not a separate initialism.",
+      "classes": [
+        {
+          "name": "Glacier Expedited retrieval",
+          "purpose": "The fastest Flexible Retrieval option.",
+          "task": "4.1",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        },
+        {
+          "name": "Glacier Standard retrieval",
+          "purpose": "The middle Flexible Retrieval option.",
+          "task": "4.1",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        },
+        {
+          "name": "Glacier Bulk retrieval",
+          "purpose": "The slowest Flexible Retrieval option, and the one the retrieval page treats as the lowest cost.",
           "task": "4.1",
           "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
         }
@@ -1080,7 +1623,21 @@
           "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html",
           "task": "3.1"
         }
-      ]
+      ],
+      "keywords": [
+        "block volume",
+        "one Availability Zone",
+        "attach to an instance",
+        "gp3 or io2"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "GB-month plus provisioned IOPS or throughput",
+        "reason": "A volume costs more than object storage and less than a replicated database. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/ebs/pricing/"
+      }
     },
     {
       "id": "efs",
@@ -1138,6 +1695,24 @@
           "purpose": "Cost-optimized class for data accessed a few times each year or less.",
           "task": "4.1",
           "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/features.html"
+        },
+        {
+          "name": "EFS Elastic throughput",
+          "purpose": "Throughput moves up and down with the workload.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        },
+        {
+          "name": "EFS Provisioned throughput",
+          "purpose": "You set the throughput the file system can drive.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        },
+        {
+          "name": "EFS Bursting throughput",
+          "purpose": "Throughput is tied to the file system's size and burst credits.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
         }
       ],
       "costs": [
@@ -1149,7 +1724,21 @@
           "task": "4.1",
           "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/features.html"
         }
-      ]
+      ],
+      "keywords": [
+        "shared Linux files",
+        "many instances mount it",
+        "NFS",
+        "files remain after an instance stops"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "GB-month by storage class, plus throughput mode",
+        "reason": "Shared file storage sits above S3 and below a high-IOPS volume for a single instance. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/efs/pricing/"
+      }
     },
     {
       "id": "fsx",
@@ -1172,7 +1761,48 @@
         "claim": "Every shared Linux file system should be FSx for Windows File Server.",
         "answer": false,
         "correction": "Simple shared NFS for Linux is Amazon EFS. Windows SMB is FSx for Windows File Server."
-      }
+      },
+      "keywords": [
+        "managed file server",
+        "match the protocol",
+        "Windows or Lustre or ONTAP or OpenZFS",
+        "not EFS for SMB"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "storage and throughput for the file-system type",
+        "reason": "Each FSx type is priced as managed file storage, above S3. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/fsx/pricing/"
+      },
+      "acronymReason": "Amazon FSx is the product name. The current overview does not publish a longer expansion of FSx.",
+      "classes": [
+        {
+          "name": "FSx for Windows File Server",
+          "purpose": "SMB shares and Windows ACLs.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+        },
+        {
+          "name": "FSx for Lustre",
+          "purpose": "A high-throughput POSIX file system for a compute cluster.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html"
+        },
+        {
+          "name": "FSx for NetApp ONTAP",
+          "purpose": "ONTAP features, including multiprotocol access.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html"
+        },
+        {
+          "name": "FSx for OpenZFS",
+          "purpose": "OpenZFS file storage for Linux workloads that need those snapshots and features.",
+          "task": "3.1",
+          "docsUrl": "https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/what-is-fsx.html"
+        }
+      ]
     },
     {
       "id": "storage-gateway",
@@ -1197,7 +1827,23 @@
         "claim": "Storage Gateway is the shippable appliance for an offline migration.",
         "answer": false,
         "correction": "The shippable devices are the Snow Family. Storage Gateway uses the network."
-      }
+      },
+      "keywords": [
+        "on-premises cache of cloud storage",
+        "hybrid files",
+        "tape or volume gateway",
+        "not a Snow shipment"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "gateway use plus the cloud storage behind it",
+        "reason": "The gateway is the small hybrid charge. The cloud storage is billed as that storage service. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "backup",
@@ -1222,7 +1868,23 @@
         "claim": "AWS Backup is the Multi-AZ failover for RDS.",
         "answer": false,
         "correction": "Multi-AZ is the database failover. AWS Backup is the recovery point."
-      }
+      },
+      "keywords": [
+        "one backup plan",
+        "many resource types",
+        "backup vault",
+        "central recovery points"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "backup storage GB-month and restores",
+        "reason": "The vault is storage-priced. It is not a second copy of the resource's own price. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/backup/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "rds",
@@ -1286,8 +1948,34 @@
           "purpose": "Memory-intensive instance classes, including the Z family named on the class-types page.",
           "task": "4.3",
           "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.Types.html"
+        },
+        {
+          "name": "RDS Multi-AZ DB instance",
+          "purpose": "A synchronous standby in another Availability Zone. The standby is for failover, not for serving your reads.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+        },
+        {
+          "name": "RDS read replica",
+          "purpose": "An asynchronous copy you can read from. You can promote it.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
         }
-      ]
+      ],
+      "keywords": [
+        "managed relational database",
+        "Multi-AZ standby",
+        "read replica",
+        "engine you choose"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "instance-hour, storage, and I/O or provisioned IOPS",
+        "reason": "A managed database costs more than the disk alone because you pay for the engine instance. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/rds/pricing/"
+      }
     },
     {
       "id": "aurora",
@@ -1312,7 +2000,30 @@
         "claim": "Aurora storage replaces DynamoDB for key-value items.",
         "answer": false,
         "correction": "Aurora is relational. Key-value at any scale is DynamoDB."
-      }
+      },
+      "keywords": [
+        "MySQL or PostgreSQL compatible",
+        "shared storage across zones",
+        "Aurora replica",
+        "not a key-value store"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "instance-hour, storage, and I/O",
+        "reason": "Aurora is the higher relational tier next to a single RDS instance. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/rds/aurora/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classes": [
+        {
+          "name": "Aurora Replica",
+          "purpose": "A reader in the same Regional cluster. Failover can promote a replica. It is not a cross-Region copy.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+        }
+      ]
     },
     {
       "id": "dynamodb",
@@ -1351,7 +2062,22 @@
           "task": "4.3",
           "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html"
         }
-      ]
+      ],
+      "keywords": [
+        "key-value items",
+        "on-demand or provisioned",
+        "single-digit millisecond",
+        "partition key"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "on-demand request units or provisioned capacity, plus storage",
+        "reason": "You pay for reads and writes, not for an instance you sized. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/dynamodb/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store."
     },
     {
       "id": "elasticache",
@@ -1376,7 +2102,42 @@
         "claim": "ElastiCache is a durable system of record.",
         "answer": false,
         "correction": "A cache can be empty. The durable copy stays in the database or in S3."
-      }
+      },
+      "keywords": [
+        "in-memory cache",
+        "rebuild from the database",
+        "Valkey Redis or Memcached",
+        "not the system of record"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "node-hour or serverless cache",
+        "reason": "The cache is an extra memory tier in front of the database. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/elasticache/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classes": [
+        {
+          "name": "ElastiCache for Valkey",
+          "purpose": "The Redis-compatible engine the ElastiCache guide lists with the newer feature set.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html"
+        },
+        {
+          "name": "ElastiCache for Redis OSS",
+          "purpose": "The Redis engine, with replication and richer data types than Memcached.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html"
+        },
+        {
+          "name": "ElastiCache for Memcached",
+          "purpose": "The simple multithreaded object cache. It does not replicate.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html"
+        }
+      ]
     },
     {
       "id": "redshift",
@@ -1401,7 +2162,23 @@
         "claim": "Redshift is the serverless SQL engine over objects left in S3.",
         "answer": false,
         "correction": "SQL over objects in S3 is Athena. Redshift is the warehouse."
-      }
+      },
+      "keywords": [
+        "data warehouse",
+        "columnar analytics",
+        "structured queries at scale",
+        "not SQL over raw S3"
+      ],
+      "cost": {
+        "band": "$$$",
+        "dimension": "node-hour or serverless RPU",
+        "reason": "A warehouse is the expensive analytics tier next to a serverless SQL query over S3. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/redshift/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "sqs",
@@ -1440,7 +2217,21 @@
           "task": "2.1",
           "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-types.html"
         }
-      ]
+      ],
+      "keywords": [
+        "pull queue",
+        "one consumer takes the message",
+        "message waits",
+        "decouple workers"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "requests, and FIFO is priced higher than standard",
+        "reason": "A queue is a tiny per-request charge next to the workers that pull it. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/sqs/pricing/"
+      }
     },
     {
       "id": "sns",
@@ -1465,7 +2256,22 @@
         "correction": "A single competing consumer is SQS. SNS fans the message out."
       },
       "acronym": "SNS",
-      "expansion": "Amazon Simple Notification Service"
+      "expansion": "Amazon Simple Notification Service",
+      "keywords": [
+        "push to subscribers",
+        "fan-out",
+        "topic",
+        "not a pull queue"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "publishes and deliveries",
+        "reason": "Fan-out is a small request charge next to the subscribers. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/sns/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "eventbridge",
@@ -1488,7 +2294,23 @@
         "claim": "EventBridge replaces SQS when a worker must pull and delete a message.",
         "answer": false,
         "correction": "Pull, visibility timeout, and delete are SQS. EventBridge routes events."
-      }
+      },
+      "keywords": [
+        "route an event",
+        "event bus",
+        "rule matches a pattern",
+        "not a queue"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "events published",
+        "reason": "The bus is a small per-event charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/eventbridge/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "step-functions",
@@ -1511,7 +2333,23 @@
         "claim": "Step Functions is the queue that hides an in-flight message.",
         "answer": false,
         "correction": "The visibility timeout is SQS. Step Functions is the workflow."
-      }
+      },
+      "keywords": [
+        "workflow of steps",
+        "state machine",
+        "retry a step",
+        "orchestrate services"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "state transitions",
+        "reason": "The workflow charge is per transition, not per server. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "kinesis",
@@ -1534,7 +2372,23 @@
         "claim": "Kinesis Data Streams deletes a record when one worker receives it, like a queue.",
         "answer": false,
         "correction": "A queue hands a message to one consumer. A stream keeps records for the consumers you attach."
-      }
+      },
+      "keywords": [
+        "streaming records",
+        "ordered shards",
+        "many consumers read the same record",
+        "not a queue"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "shard-hour or on-demand stream, plus payload",
+        "reason": "A stream costs more than a queue because shards stay up. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/kinesis/data-streams/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "athena",
@@ -1557,7 +2411,23 @@
         "claim": "Athena is the dashboard product for business users.",
         "answer": false,
         "correction": "Dashboards are Amazon Quick, whose visualization feature is Quick Sight. Athena runs the SQL."
-      }
+      },
+      "keywords": [
+        "SQL over objects in S3",
+        "serverless query",
+        "leave the data in the bucket",
+        "not a warehouse"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "data scanned per query",
+        "reason": "You pay for the scan, not for a cluster that idles. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/athena/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "glue",
@@ -1580,7 +2450,23 @@
         "claim": "Glue is the interactive SQL engine over S3.",
         "answer": false,
         "correction": "Interactive SQL over S3 is Athena. Glue prepares and catalogs the data."
-      }
+      },
+      "keywords": [
+        "data catalog",
+        "ETL job",
+        "crawler",
+        "prepare data for analytics"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "crawler time and job DPU-hours",
+        "reason": "The catalog and jobs are a mid-tier analytics charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/glue/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "dms",
@@ -1605,7 +2491,22 @@
         "correction": "File transfer is DataSync or Storage Gateway. DMS moves databases."
       },
       "acronym": "DMS",
-      "expansion": "AWS Database Migration Service"
+      "expansion": "AWS Database Migration Service",
+      "keywords": [
+        "migrate a database",
+        "ongoing replication",
+        "source and target endpoints",
+        "not a file copy"
+      ],
+      "cost": {
+        "band": "$$",
+        "dimension": "replication instance-hour",
+        "reason": "The replication instance is a steady charge while the migration runs. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/dms/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "datasync",
@@ -1628,7 +2529,23 @@
         "claim": "DataSync is the offline shipping device.",
         "answer": false,
         "correction": "Shipping a device is the Snow Family. DataSync copies over the network."
-      }
+      },
+      "keywords": [
+        "copy files over the network",
+        "scheduled transfer",
+        "agent",
+        "not a shipped device"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "data copied",
+        "reason": "You pay for the bytes transferred, not for a device. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/datasync/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "snow",
@@ -1651,7 +2568,36 @@
         "claim": "The Snow Family is the right tool for a small nightly sync.",
         "answer": false,
         "correction": "A scheduled network copy is DataSync. Snow is the offline shipment."
-      }
+      },
+      "keywords": [
+        "ship a device",
+        "network copy is impractical",
+        "offline transfer",
+        "existing customers"
+      ],
+      "cost": {
+        "band": "$$$",
+        "dimension": "device job, shipping, and days of use",
+        "reason": "Shipping a device is the expensive offline path next to a network copy. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/snowball/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classes": [
+        {
+          "name": "Snowball Edge",
+          "purpose": "Storage and compute device for existing customers. The availability page says it is not offered to new customers as of November 7, 2025.",
+          "task": "4.4",
+          "docsUrl": "https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html"
+        },
+        {
+          "name": "Snowcone",
+          "purpose": "Small portable device documented for edge transfer. The same availability page says AWS no longer offers Snow Family devices to new customers.",
+          "task": "4.4",
+          "docsUrl": "https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html"
+        }
+      ]
     },
     {
       "id": "cloudwatch",
@@ -1674,7 +2620,23 @@
         "claim": "CloudWatch is the audit trail of API calls.",
         "answer": false,
         "correction": "API call history is CloudTrail. CloudWatch is metrics, logs, and alarms."
-      }
+      },
+      "keywords": [
+        "metrics and alarms",
+        "logs",
+        "CPU alarm",
+        "not an API audit trail"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "metrics, logs ingested, dashboards, and alarms",
+        "reason": "Observability is usage-priced and usually small next to the workload. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/cloudwatch/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cloudtrail",
@@ -1697,7 +2659,23 @@
         "claim": "CloudTrail pages you when CPU stays high.",
         "answer": false,
         "correction": "A CPU alarm is CloudWatch. CloudTrail records the API call."
-      }
+      },
+      "keywords": [
+        "who called the API",
+        "audit trail",
+        "management events",
+        "not a CPU alarm"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "additional trails and data events",
+        "reason": "The first management-event trail is the free starting point. Extra trails and data events are the paid part. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/cloudtrail/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "config",
@@ -1720,7 +2698,23 @@
         "claim": "AWS Config is the API audit log.",
         "answer": false,
         "correction": "The API caller is in CloudTrail. Config records the resource configuration."
-      }
+      },
+      "keywords": [
+        "resource configuration history",
+        "config rule",
+        "compliance evaluation",
+        "not a threat finding"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "configuration items and rule evaluations",
+        "reason": "Config is a small per-item recorder, not the resource it watches. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/config/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "systems-manager",
@@ -1743,7 +2737,23 @@
         "claim": "The Systems Manager welcome page still expands the service name as SSM.",
         "answer": false,
         "correction": "The current welcome page titles the service AWS Systems Manager. SSM on that page names the agent, so this deck does not teach SSM as the expansion."
-      }
+      },
+      "keywords": [
+        "patch an instance",
+        "parameter store",
+        "run command",
+        "operational management"
+      ],
+      "cost": {
+        "band": "$",
+        "dimension": "advanced parameters, sessions, or other paid features",
+        "reason": "Many Systems Manager features have no charge. Some features are usage-priced, and no dollar figure was copied. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html"
+      },
+      "acronymReason": "The published name is AWS Systems Manager. It does not contain the initials SSM.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "savings-plans",
@@ -1766,7 +2776,23 @@
         "claim": "A Savings Plan is the interruptible spare-capacity option.",
         "answer": false,
         "correction": "Interruptible spare capacity is Spot. A Savings Plan is the commitment."
-      }
+      },
+      "keywords": [
+        "commit to compute usage",
+        "discount for steady load",
+        "not interruptible spare capacity",
+        "cost commitment"
+      ],
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "A Savings Plan is a discount commitment, not a separate product hour. You pay the committed compute usage. No dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "data-exchange",
@@ -1781,7 +2807,24 @@
       "definition": "AWS Data Exchange subscribes to third-party data sets.",
       "useWhen": [
         "Choose AWS Data Exchange when the data comes from a provider's published data set rather than your own bucket."
-      ]
+      ],
+      "keywords": [
+        "subscribe to third-party data",
+        "data products",
+        "provider catalog",
+        "not your own bucket"
+      ],
+      "notFor": "you need to query objects your own account already stores in S3",
+      "cost": {
+        "band": "$$",
+        "dimension": "the data product subscription",
+        "reason": "You pay the provider's offer, which is its own price, not an AWS storage class. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/data-exchange/latest/userguide/what-is.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "data-pipeline",
@@ -1796,7 +2839,24 @@
       "definition": "AWS Data Pipeline schedules data movement and processing.",
       "useWhen": [
         "Choose AWS Data Pipeline only when an existing pipeline already uses it. New orchestration is usually Step Functions or Glue."
-      ]
+      ],
+      "keywords": [
+        "older data workflow",
+        "move data on a schedule",
+        "prefer a current orchestration service",
+        "not the lake permissions"
+      ],
+      "notFor": "a new analytics pipeline should use the current catalog and job service",
+      "cost": {
+        "band": "$",
+        "dimension": "pipeline activity",
+        "reason": "The older pipeline is a small activity charge next to the compute it starts. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "emr",
@@ -1811,7 +2871,26 @@
       "definition": "Amazon EMR runs a managed cluster for big-data frameworks. The current page says it was previously called Amazon Elastic MapReduce.",
       "useWhen": [
         "Choose Amazon EMR when a Spark or Hadoop job needs a cluster. Do not expand EMR as the current name."
-      ]
+      ],
+      "keywords": [
+        "Hadoop or Spark cluster",
+        "big data processing",
+        "transient cluster",
+        "not a warehouse"
+      ],
+      "notFor": "analysts need a SQL warehouse rather than a Spark or Hadoop cluster",
+      "cost": {
+        "band": "$$$",
+        "dimension": "cluster instance-hours plus EMR",
+        "reason": "A big-data cluster is the expensive analytics tier next to one serverless query. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/emr/pricing/"
+      },
+      "acronym": "EMR",
+      "expansion": "Amazon Elastic MapReduce",
+      "acronymNote": "The current page says Amazon EMR was previously called Amazon Elastic MapReduce.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "lake-formation",
@@ -1826,7 +2905,24 @@
       "definition": "Lake Formation sets permissions on a data lake catalog and the data it describes.",
       "useWhen": [
         "Choose Lake Formation when access to the catalog and the underlying lake data should be granted in one place."
-      ]
+      ],
+      "keywords": [
+        "data lake permissions",
+        "govern tables",
+        "who can query the lake",
+        "not the query engine"
+      ],
+      "notFor": "you need the engine that runs the SQL, not the permissions around the lake",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Lake Formation permissions have no separate charge in this record. You pay for the storage and the query engine. No dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "msk",
@@ -1843,7 +2939,23 @@
         "Choose Amazon MSK when the application already produces and consumes Kafka topics."
       ],
       "acronym": "MSK",
-      "expansion": "Amazon Managed Streaming for Apache Kafka"
+      "expansion": "Amazon Managed Streaming for Apache Kafka",
+      "keywords": [
+        "Apache Kafka",
+        "streaming brokers you still design",
+        "topics and partitions",
+        "not Kinesis"
+      ],
+      "notFor": "you want the managed stream that is not an Apache Kafka cluster you size yourself",
+      "cost": {
+        "band": "$$$",
+        "dimension": "broker-hour",
+        "reason": "A Kafka cluster is the expensive stream next to a managed shard you do not size. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/msk/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "opensearch",
@@ -1858,7 +2970,24 @@
       "definition": "Amazon OpenSearch Service indexes data for search and log analytics.",
       "useWhen": [
         "Choose OpenSearch Service when operators need to search logs by text and filter."
-      ]
+      ],
+      "keywords": [
+        "search and log analytics",
+        "index documents",
+        "query a search cluster",
+        "not a relational table"
+      ],
+      "notFor": "the workload is relational transactions, not search",
+      "cost": {
+        "band": "$$",
+        "dimension": "instance-hour and storage",
+        "reason": "A search cluster is a steady instance charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/opensearch-service/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "quick",
@@ -1877,7 +3006,24 @@
       "aliases": [
         "Amazon QuickSight",
         "AWS Quick"
-      ]
+      ],
+      "keywords": [
+        "dashboard",
+        "business intelligence",
+        "visualize a query",
+        "not the warehouse itself"
+      ],
+      "notFor": "you need to store the warehouse data, not draw the dashboard",
+      "cost": {
+        "band": "$$",
+        "dimension": "author and reader subscriptions",
+        "reason": "The dashboard is a per-user charge, not a storage price. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/quicksight/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "appflow",
@@ -1892,7 +3038,24 @@
       "definition": "AppFlow transfers data between SaaS applications and AWS.",
       "useWhen": [
         "Choose AppFlow when a SaaS product such as Salesforce should load into S3 on a schedule."
-      ]
+      ],
+      "keywords": [
+        "SaaS to AWS transfer",
+        "Salesforce or similar connector",
+        "no code flow",
+        "not a database migration"
+      ],
+      "notFor": "the source is a database engine you are migrating, not a SaaS app",
+      "cost": {
+        "band": "$",
+        "dimension": "flow runs and data processed",
+        "reason": "A SaaS flow is usage-priced and usually smaller than a database migration instance. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "mq",
@@ -1907,7 +3070,24 @@
       "definition": "Amazon MQ runs a managed ActiveMQ or RabbitMQ broker.",
       "useWhen": [
         "Choose Amazon MQ when an application already speaks a standard message-broker protocol and cannot move to SQS."
-      ]
+      ],
+      "keywords": [
+        "existing message broker",
+        "ActiveMQ or RabbitMQ",
+        "application already speaks that protocol",
+        "not SQS"
+      ],
+      "notFor": "the application can use a native AWS queue and does not already speak ActiveMQ or RabbitMQ",
+      "cost": {
+        "band": "$$",
+        "dimension": "broker instance-hour",
+        "reason": "A broker is an instance you pay for while it runs. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/amazon-mq/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "budgets",
@@ -1922,7 +3102,24 @@
       "definition": "AWS Budgets alerts you when cost or usage crosses a threshold you set.",
       "useWhen": [
         "Choose AWS Budgets when someone should be notified before a spend limit is passed."
-      ]
+      ],
+      "keywords": [
+        "spend alert",
+        "budget threshold",
+        "notify before the bill grows",
+        "not the cost graph"
+      ],
+      "notFor": "you need the line-item export of the bill, not an alert at a threshold",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "AWS Budgets has no separate charge for the budgets in this record. No dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cur",
@@ -1937,7 +3134,24 @@
       "definition": "The Cost and Usage Report is the detailed billing export.",
       "useWhen": [
         "Choose the Cost and Usage Report when finance needs the line-item billing file."
-      ]
+      ],
+      "keywords": [
+        "detailed cost lines",
+        "cost and usage report",
+        "export for analysis",
+        "not a budget alarm"
+      ],
+      "notFor": "you want an email when spend crosses a number, not the detailed report",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Creating the cost and usage report has no separate charge in this record. Querying the export can bill the analytics service you use. No dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cost-explorer",
@@ -1952,7 +3166,24 @@
       "definition": "Cost Explorer charts cost and usage and can forecast from history.",
       "useWhen": [
         "Choose Cost Explorer when you need to see which service grew the bill."
-      ]
+      ],
+      "keywords": [
+        "explore past spend",
+        "filter the bill",
+        "forecast from history",
+        "not a budget email"
+      ],
+      "notFor": "you want a threshold notification, not an interactive look at past spend",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Cost Explorer has no separate charge in this record. No dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "batch",
@@ -1967,7 +3198,24 @@
       "definition": "AWS Batch runs batch jobs on compute it provisions.",
       "useWhen": [
         "Choose AWS Batch when a queue of jobs should run to completion on managed compute."
-      ]
+      ],
+      "keywords": [
+        "queue of batch jobs",
+        "run when capacity is free",
+        "job definition",
+        "not an interactive server"
+      ],
+      "notFor": "a person needs an interactive server that stays up all day",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "AWS Batch has no scheduler charge. You pay for the compute the jobs launch.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/batch/latest/userguide/what-is-batch.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "beanstalk",
@@ -1982,7 +3230,24 @@
       "definition": "Elastic Beanstalk deploys an application onto capacity it manages.",
       "useWhen": [
         "Choose Elastic Beanstalk when you want to upload an application and let AWS handle the environment."
-      ]
+      ],
+      "keywords": [
+        "upload an application",
+        "platform manages the environment",
+        "not a container orchestrator",
+        "web app hosting"
+      ],
+      "notFor": "you need a Kubernetes control plane rather than a managed application environment",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Elastic Beanstalk has no service charge. You pay for the EC2, the load balancer, and the storage it creates.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "outposts",
@@ -1997,7 +3262,24 @@
       "definition": "AWS Outposts runs AWS infrastructure in your own facility.",
       "useWhen": [
         "Choose Outposts when data must stay on premises and still use AWS APIs."
-      ]
+      ],
+      "keywords": [
+        "AWS hardware in your data center",
+        "local AZ extension",
+        "residency on premises",
+        "not a shipped disk"
+      ],
+      "notFor": "the workload can run in a Region and does not have to stay in your building",
+      "cost": {
+        "band": "$$$",
+        "dimension": "the Outpost configuration",
+        "reason": "Hardware in your building is the expensive capacity option next to a Region. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/outposts/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "serverless-app-repo",
@@ -2012,7 +3294,24 @@
       "definition": "The Serverless Application Repository publishes and deploys serverless applications.",
       "useWhen": [
         "Choose the Serverless Application Repository when you want to deploy a published serverless app."
-      ]
+      ],
+      "keywords": [
+        "publish a serverless app",
+        "share a SAM application",
+        "discover an app",
+        "not the function runtime"
+      ],
+      "notFor": "you need to run the function, not publish the application package",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Publishing or deploying from the Serverless Application Repository has no separate charge. You pay for the resources the application creates.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/serverlessrepo/latest/devguide/what-is-serverlessrepo.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "vmware-cloud",
@@ -2027,7 +3326,24 @@
       "definition": "VMware Cloud on AWS runs VMware workloads on AWS.",
       "useWhen": [
         "Choose VMware Cloud on AWS when vSphere workloads should move without a rewrite."
-      ]
+      ],
+      "keywords": [
+        "VMware workloads on AWS",
+        "keep vSphere",
+        "migrate a VM estate",
+        "not native EC2 design"
+      ],
+      "notFor": "the design should be native EC2 rather than a VMware estate",
+      "cost": {
+        "band": "$$$",
+        "dimension": "the VMware node subscription",
+        "reason": "A VMware environment on AWS is a large committed capacity, not an On-Demand instance. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/vmc/latest/userguide/what-is-vmware-cloud-on-aws.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "wavelength",
@@ -2042,7 +3358,24 @@
       "definition": "Wavelength places compute at a telecom edge for mobile latency.",
       "useWhen": [
         "Choose Wavelength when a mobile application needs compute inside the carrier network."
-      ]
+      ],
+      "keywords": [
+        "compute at the 5G edge",
+        "ultra-low latency to mobile",
+        "carrier location",
+        "not a Region"
+      ],
+      "notFor": "the users are not on that carrier's 5G edge and a Region is close enough",
+      "cost": {
+        "band": "$$",
+        "dimension": "the Wavelength carrier charges plus EC2",
+        "reason": "Edge zones bill the instances you run there, on top of the carrier arrangement. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "ecr",
@@ -2059,7 +3392,23 @@
         "Choose ECR when an ECS or EKS task should pull an image from a private registry."
       ],
       "acronym": "ECR",
-      "expansion": "Amazon Elastic Container Registry"
+      "expansion": "Amazon Elastic Container Registry",
+      "keywords": [
+        "store a container image",
+        "image registry",
+        "push and pull",
+        "not the cluster"
+      ],
+      "notFor": "you need to run the container, not store the image",
+      "cost": {
+        "band": "$",
+        "dimension": "image storage GB-month",
+        "reason": "The registry is storage-priced and small next to the cluster. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/ecr/pricing/"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "ecs-anywhere",
@@ -2074,7 +3423,24 @@
       "definition": "ECS Anywhere runs ECS tasks on infrastructure you manage.",
       "useWhen": [
         "Choose ECS Anywhere when the same ECS service should also run on premises."
-      ]
+      ],
+      "keywords": [
+        "ECS tasks on your own servers",
+        "outside the Region",
+        "same task definition",
+        "not EKS"
+      ],
+      "notFor": "the containers should run on AWS capacity in a Region",
+      "cost": {
+        "band": "$",
+        "dimension": "per on-premises instance hour under ECS",
+        "reason": "You pay the management charge for instances that are not in AWS, and you still own the hardware. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html"
+      },
+      "acronymReason": "ECS in the name is Amazon Elastic Container Service, expanded on the ECS record. Anywhere is not an initialism.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "eks-anywhere",
@@ -2089,7 +3455,24 @@
       "definition": "EKS Anywhere runs Kubernetes clusters on your own infrastructure.",
       "useWhen": [
         "Choose EKS Anywhere when the Kubernetes cluster must run outside the managed EKS control plane in a Region."
-      ]
+      ],
+      "keywords": [
+        "Kubernetes on your hardware",
+        "EKS distribution you run",
+        "not the managed control plane in a Region",
+        "on premises"
+      ],
+      "notFor": "you want AWS to run the Kubernetes control plane",
+      "cost": {
+        "band": "$$",
+        "dimension": "the support subscription if you buy it",
+        "reason": "Running the distribution yourself has no cluster-hour. Paid support is the optional charge, and no dollar figure was copied. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://docs.aws.amazon.com/eks/latest/userguide/eks-anywhere.html"
+      },
+      "acronymReason": "EKS in the name is Amazon Elastic Kubernetes Service, expanded on the EKS record. Anywhere is not an initialism.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "eks-distro",
@@ -2104,7 +3487,24 @@
       "definition": "EKS Distro is the Kubernetes distribution used by Amazon EKS.",
       "useWhen": [
         "Choose EKS Distro when you need the same Kubernetes bits EKS uses, on infrastructure you run."
-      ]
+      ],
+      "keywords": [
+        "the Kubernetes distribution",
+        "run it yourself",
+        "same open source bits",
+        "not the managed cluster"
+      ],
+      "notFor": "you want the managed cluster, not the distribution you operate yourself",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "EKS Distro is the open distribution. You pay for the infrastructure you run it on, not for a control-plane hour.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/eks/latest/userguide/eks-distro.html"
+      },
+      "acronymReason": "EKS in the name is Amazon Elastic Kubernetes Service, expanded on the EKS record. Distro is not an initialism.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "aurora-serverless",
@@ -2119,7 +3519,24 @@
       "definition": "Aurora Serverless scales Aurora capacity with the load.",
       "useWhen": [
         "Choose Aurora Serverless when the database load is intermittent and a fixed instance would sit idle."
-      ]
+      ],
+      "keywords": [
+        "Aurora capacity follows the load",
+        "irregular spikes",
+        "not a fixed instance all day",
+        "serverless database"
+      ],
+      "notFor": "the database load is steady enough for a fixed instance class",
+      "cost": {
+        "band": "$$",
+        "dimension": "capacity units while it is active",
+        "reason": "You pay for the capacity it scales to, not for a fixed instance that sits idle. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/rds/aurora/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "documentdb",
@@ -2134,7 +3551,24 @@
       "definition": "Amazon DocumentDB is a document database compatible with MongoDB workloads.",
       "useWhen": [
         "Choose DocumentDB when an application already uses MongoDB drivers."
-      ]
+      ],
+      "keywords": [
+        "MongoDB-compatible documents",
+        "document database",
+        "not a key-value table",
+        "JSON-like records"
+      ],
+      "notFor": "the records are key-value items, not MongoDB-compatible documents",
+      "cost": {
+        "band": "$$",
+        "dimension": "instance-hour and storage",
+        "reason": "A document cluster is priced like a managed database instance. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/documentdb/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "keyspaces",
@@ -2149,7 +3583,24 @@
       "definition": "Amazon Keyspaces is a managed Apache Cassandra-compatible database.",
       "useWhen": [
         "Choose Keyspaces when the application uses Cassandra query language."
-      ]
+      ],
+      "keywords": [
+        "Cassandra-compatible",
+        "wide-column",
+        "not a graph",
+        "managed tables"
+      ],
+      "notFor": "the access pattern is a graph, not Cassandra-compatible tables",
+      "cost": {
+        "band": "$$",
+        "dimension": "on-demand requests or provisioned capacity, plus storage",
+        "reason": "Wide-column tables are request-priced, like the key-value service, not like a graph. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/keyspaces/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "neptune",
@@ -2164,7 +3615,24 @@
       "definition": "Amazon Neptune is a graph database.",
       "useWhen": [
         "Choose Neptune when the data is relationships you need to traverse."
-      ]
+      ],
+      "keywords": [
+        "graph queries",
+        "relationships between records",
+        "not a relational join",
+        "property graph"
+      ],
+      "notFor": "the queries are relational joins, not graph traversals",
+      "cost": {
+        "band": "$$$",
+        "dimension": "instance-hour and storage",
+        "reason": "A graph database is a dedicated instance tier. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/neptune/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "xray",
@@ -2179,7 +3647,24 @@
       "definition": "AWS X-Ray traces a request across the services it touches.",
       "useWhen": [
         "Choose X-Ray when you need a trace of one request through several services."
-      ]
+      ],
+      "keywords": [
+        "trace a request",
+        "find the slow hop",
+        "distributed trace",
+        "not a metric alarm"
+      ],
+      "notFor": "you need an alarm on a metric, not a trace of one request",
+      "cost": {
+        "band": "$",
+        "dimension": "traces recorded and retrieved",
+        "reason": "Tracing is a small per-trace charge next to the service it watches. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/xray/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "amplify",
@@ -2194,7 +3679,24 @@
       "definition": "AWS Amplify hosts and builds front-end web and mobile applications.",
       "useWhen": [
         "Choose Amplify when a front-end app should build and host from a repository."
-      ]
+      ],
+      "keywords": [
+        "front-end hosting",
+        "web or mobile app",
+        "not the API backend by itself",
+        "build and host the UI"
+      ],
+      "notFor": "you need the API and data layer, not the front-end hosting",
+      "cost": {
+        "band": "$",
+        "dimension": "build minutes and hosting data",
+        "reason": "Hosting the front end is a small usage charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/amplify/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "api-gateway",
@@ -2209,7 +3711,24 @@
       "definition": "API Gateway publishes an HTTP API in front of Lambda or another backend.",
       "useWhen": [
         "Choose API Gateway when clients need a stable HTTP API that invokes a backend."
-      ]
+      ],
+      "keywords": [
+        "HTTP API front door",
+        "throttle and authorize calls",
+        "not a load balancer for instances",
+        "REST or HTTP API"
+      ],
+      "notFor": "the traffic is raw TCP to a fleet of instances, not an HTTP API",
+      "cost": {
+        "band": "$",
+        "dimension": "API calls and connection minutes",
+        "reason": "The HTTP front door is a per-request charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/api-gateway/pricing/"
+      },
+      "acronymReason": "API is a general term in Amazon API Gateway. The product name is not an initialism of its own.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "device-farm",
@@ -2224,7 +3743,24 @@
       "definition": "AWS Device Farm tests an app on real phones and browsers.",
       "useWhen": [
         "Choose Device Farm when a mobile build should run on a fleet of real devices."
-      ]
+      ],
+      "keywords": [
+        "test on real devices",
+        "mobile device lab",
+        "not a cloud phone number",
+        "app testing"
+      ],
+      "notFor": "you need to host the app, not test it on a lab of devices",
+      "cost": {
+        "band": "$$",
+        "dimension": "device minutes",
+        "reason": "The device lab bills for the minutes you use. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/device-farm/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "comprehend",
@@ -2239,7 +3775,24 @@
       "definition": "Amazon Comprehend is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Comprehend when text should be classified or have its entities extracted."
-      ]
+      ],
+      "keywords": [
+        "natural language",
+        "entities and sentiment",
+        "text already collected",
+        "not speech"
+      ],
+      "notFor": "the input is audio, not text",
+      "cost": {
+        "band": "$",
+        "dimension": "characters or units of text",
+        "reason": "The text API is usage-priced. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/comprehend/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "lex",
@@ -2254,7 +3807,24 @@
       "definition": "Amazon Lex is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Lex when a conversational bot should understand speech or text."
-      ]
+      ],
+      "keywords": [
+        "conversational bot",
+        "intents and slots",
+        "chat interface",
+        "not text-to-speech"
+      ],
+      "notFor": "you need spoken audio from text, not a conversation bot",
+      "cost": {
+        "band": "$",
+        "dimension": "speech or text requests",
+        "reason": "The bot is a per-request charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/lex/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "polly",
@@ -2269,7 +3839,24 @@
       "definition": "Amazon Polly is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Polly when text should become speech."
-      ]
+      ],
+      "keywords": [
+        "text to speech",
+        "spoken audio",
+        "not a transcript",
+        "voice output"
+      ],
+      "notFor": "you need a transcript of speech, not spoken audio",
+      "cost": {
+        "band": "$",
+        "dimension": "characters synthesized",
+        "reason": "Speech output is a per-character charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/polly/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "rekognition",
@@ -2284,7 +3871,24 @@
       "definition": "Amazon Rekognition is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Rekognition when an image or video needs labels, faces, or text detected."
-      ]
+      ],
+      "keywords": [
+        "image and video labels",
+        "faces and objects",
+        "not a document form",
+        "visual analysis"
+      ],
+      "notFor": "the input is a form or a PDF, not a picture or a video",
+      "cost": {
+        "band": "$",
+        "dimension": "images or minutes of video",
+        "reason": "Image analysis is a per-image charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/rekognition/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "sagemaker",
@@ -2299,7 +3903,24 @@
       "definition": "Amazon SageMaker AI is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon SageMaker AI when you need to build, train, and deploy your own model."
-      ]
+      ],
+      "keywords": [
+        "train and host a model",
+        "machine learning workflow",
+        "not a prebuilt API for text",
+        "custom model"
+      ],
+      "notFor": "a prebuilt API already does the text or image task and you are not training a model",
+      "cost": {
+        "band": "$$$",
+        "dimension": "training instance-hours and hosting instance-hours",
+        "reason": "Training your own model is the expensive ML path next to a prebuilt API. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/sagemaker/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "textract",
@@ -2314,7 +3935,24 @@
       "definition": "Amazon Textract is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Textract when a document's text and fields should be extracted."
-      ]
+      ],
+      "keywords": [
+        "extract text from documents",
+        "forms and tables",
+        "not a photo label",
+        "OCR"
+      ],
+      "notFor": "you need labels for a photograph, not text from a document",
+      "cost": {
+        "band": "$",
+        "dimension": "pages processed",
+        "reason": "Document extraction is a per-page charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/textract/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "transcribe",
@@ -2329,7 +3967,24 @@
       "definition": "Amazon Transcribe is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Transcribe when speech should become text."
-      ]
+      ],
+      "keywords": [
+        "speech to text",
+        "audio transcript",
+        "not translation",
+        "spoken words"
+      ],
+      "notFor": "you need the text translated into another language, not a transcript",
+      "cost": {
+        "band": "$",
+        "dimension": "audio minutes",
+        "reason": "Transcription is a per-minute charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/transcribe/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "translate",
@@ -2344,7 +3999,24 @@
       "definition": "Amazon Translate is a managed machine-learning service for that one job.",
       "useWhen": [
         "Choose Amazon Translate when text should be translated."
-      ]
+      ],
+      "keywords": [
+        "translate text",
+        "source and target language",
+        "not a transcript of audio",
+        "language pair"
+      ],
+      "notFor": "you need speech turned into text, not text moved between languages",
+      "cost": {
+        "band": "$",
+        "dimension": "characters translated",
+        "reason": "Translation is a per-character charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/translate/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "aws-auto-scaling",
@@ -2359,7 +4031,24 @@
       "definition": "AWS Auto Scaling is the scaling plan across more than one service, distinct from an EC2 Auto Scaling group.",
       "useWhen": [
         "Choose AWS Auto Scaling when one plan should scale several resources, not only an EC2 group."
-      ]
+      ],
+      "keywords": [
+        "scaling plan across services",
+        "not only an EC2 group",
+        "predictive or dynamic",
+        "fleet of resources"
+      ],
+      "notFor": "only one EC2 group needs a scaling policy",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "AWS Auto Scaling has no separate charge. You pay for the resources the plan scales.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/autoscaling/plans/userguide/what-is-aws-auto-scaling.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cli",
@@ -2376,7 +4065,23 @@
         "Choose the AWS CLI when a script or an operator should call an API without the console."
       ],
       "acronym": "CLI",
-      "expansion": "AWS Command Line Interface"
+      "expansion": "AWS Command Line Interface",
+      "keywords": [
+        "command line",
+        "script an API call",
+        "terminal access",
+        "not the web console"
+      ],
+      "notFor": "the person should use the browser console rather than a terminal",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "The AWS CLI has no charge. You pay for the API calls that change billable resources.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cloudformation",
@@ -2391,7 +4096,24 @@
       "definition": "CloudFormation creates and updates a stack from a template.",
       "useWhen": [
         "Choose CloudFormation when the infrastructure should be described in a template and deployed as a stack."
-      ]
+      ],
+      "keywords": [
+        "infrastructure as code",
+        "stack template",
+        "repeatable environment",
+        "not a manual click"
+      ],
+      "notFor": "a one-time click in the console is enough and no template will be reused",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "CloudFormation has no charge for stack operations in this record. You pay for the resources the stack creates.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "compute-optimizer",
@@ -2406,7 +4128,24 @@
       "definition": "Compute Optimizer recommends a compute size from observed utilization.",
       "useWhen": [
         "Choose Compute Optimizer when an instance or function looks over-provisioned."
-      ]
+      ],
+      "keywords": [
+        "rightsizing recommendation",
+        "over-provisioned instance",
+        "suggest a smaller size",
+        "not the discount plan"
+      ],
+      "notFor": "you need a spend commitment, not a size recommendation",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Compute Optimizer recommendations have no charge in this record.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "control-tower",
@@ -2421,7 +4160,24 @@
       "definition": "Control Tower sets up a multi-account landing zone with guardrails.",
       "useWhen": [
         "Choose Control Tower when a new multi-account environment should start from a landing zone."
-      ]
+      ],
+      "keywords": [
+        "landing zone",
+        "guardrails for new accounts",
+        "multi-account setup",
+        "not a single VPC"
+      ],
+      "notFor": "you are governing one account, not a landing zone of accounts",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Control Tower has no separate product price in this record. You pay for the accounts and the services the landing zone turns on. No dollar figure was copied.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "health-dashboard",
@@ -2436,7 +4192,24 @@
       "definition": "The AWS Health Dashboard shows events that affect your resources.",
       "useWhen": [
         "Choose the Health Dashboard when you need the service event behind an outage."
-      ]
+      ],
+      "keywords": [
+        "service event",
+        "account health",
+        "planned maintenance",
+        "not a CPU alarm"
+      ],
+      "notFor": "you need an alarm on your own CPU metric, not an AWS service event",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "The AWS Health Dashboard has no charge for the events it shows.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/health/latest/ug/what-is-aws-health.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "license-manager",
@@ -2451,7 +4224,24 @@
       "definition": "License Manager tracks software licenses used on AWS.",
       "useWhen": [
         "Choose License Manager when license counts have to stay inside an agreement."
-      ]
+      ],
+      "keywords": [
+        "track a software license",
+        "license rules",
+        "not the compute discount",
+        "bring your own license"
+      ],
+      "notFor": "you need a compute discount, not a license count",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "License Manager has no separate charge in this record. You pay for the licenses and the compute.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/license-manager/latest/userguide/license-manager.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "grafana",
@@ -2466,7 +4256,24 @@
       "definition": "Amazon Managed Grafana hosts Grafana dashboards.",
       "useWhen": [
         "Choose Managed Grafana when operators want Grafana charts over CloudWatch or Prometheus metrics."
-      ]
+      ],
+      "keywords": [
+        "operations dashboard",
+        "visualize metrics",
+        "Grafana workspace",
+        "not the metric store"
+      ],
+      "notFor": "you need the metric store, not the dashboard workspace",
+      "cost": {
+        "band": "$$",
+        "dimension": "workspace editor and viewer users",
+        "reason": "The workspace is a per-user operations charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/grafana/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "prometheus",
@@ -2481,7 +4288,24 @@
       "definition": "Amazon Managed Service for Prometheus stores Prometheus metrics.",
       "useWhen": [
         "Choose Managed Service for Prometheus when container metrics are already in Prometheus format."
-      ]
+      ],
+      "keywords": [
+        "Prometheus metrics",
+        "promql",
+        "container metrics store",
+        "not the dashboard"
+      ],
+      "notFor": "you need the dashboard, not the Prometheus-compatible store",
+      "cost": {
+        "band": "$$",
+        "dimension": "metrics ingested and queries",
+        "reason": "The metric store is usage-priced. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/prometheus/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "management-console",
@@ -2496,7 +4320,24 @@
       "definition": "The AWS Management Console is the browser UI for AWS services.",
       "useWhen": [
         "Choose the console when a person should click through a service rather than call the API."
-      ]
+      ],
+      "keywords": [
+        "web console",
+        "click through a service",
+        "not a script",
+        "browser access"
+      ],
+      "notFor": "the work should be scripted and repeated, not clicked once",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "The AWS Management Console has no charge.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/getting-started.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "proton",
@@ -2511,7 +4352,24 @@
       "definition": "AWS Proton templates how platform teams publish infrastructure and application stacks.",
       "useWhen": [
         "Choose Proton when a platform team wants self-service templates for other teams."
-      ]
+      ],
+      "keywords": [
+        "self-service platform templates",
+        "standardize a service",
+        "not a single CloudFormation stack you edit by hand",
+        "platform team"
+      ],
+      "notFor": "one team edits its own template and there is no platform catalog",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "AWS Proton has no separate charge in this record. You pay for the services the templates deploy.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/proton/latest/userguide/Welcome.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "service-catalog",
@@ -2526,7 +4384,24 @@
       "definition": "Service Catalog publishes a list of products people are allowed to launch.",
       "useWhen": [
         "Choose Service Catalog when users should launch an approved product and not a free-form stack."
-      ]
+      ],
+      "keywords": [
+        "approved products",
+        "users launch a product",
+        "governance of what can be launched",
+        "not the raw console"
+      ],
+      "notFor": "builders should use the raw service console with no approved-product list",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Service Catalog has no separate charge in this record. You pay for the products people launch.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/introduction.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "well-architected",
@@ -2541,7 +4416,24 @@
       "definition": "The Well-Architected Tool records a workload review against the framework.",
       "useWhen": [
         "Choose the Well-Architected Tool when a workload review should be written down and tracked."
-      ]
+      ],
+      "keywords": [
+        "workload review",
+        "pillars",
+        "improvement items",
+        "not a monitoring alarm"
+      ],
+      "notFor": "you need a live alarm, not a review of the design",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "The Well-Architected Tool has no charge for the review.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/wellarchitected/latest/userguide/intro.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "kinesis-video",
@@ -2556,7 +4448,24 @@
       "definition": "Kinesis Video Streams ingests video from devices.",
       "useWhen": [
         "Choose Kinesis Video Streams when cameras or devices stream video into AWS."
-      ]
+      ],
+      "keywords": [
+        "video streams",
+        "ingest camera video",
+        "not a data record stream",
+        "media"
+      ],
+      "notFor": "the stream is data records, not camera video",
+      "cost": {
+        "band": "$$",
+        "dimension": "data ingested and stored",
+        "reason": "Video ingest is a stream charge, higher than a short text API. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/kinesis/video-streams/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "app-discovery",
@@ -2571,7 +4480,24 @@
       "definition": "Application Discovery Service inventories on-premises servers before a migration.",
       "useWhen": [
         "Choose Application Discovery Service when you need an inventory before planning the move."
-      ]
+      ],
+      "keywords": [
+        "discover on-premises servers",
+        "migration inventory",
+        "not the cutover tool",
+        "what is running"
+      ],
+      "notFor": "you are ready to cut the server over, not still inventorying it",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Application Discovery Service has no charge in this record for the inventory connectors.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "application-migration",
@@ -2586,7 +4512,24 @@
       "definition": "Application Migration Service replicates servers and cuts them over to AWS.",
       "useWhen": [
         "Choose Application Migration Service for a lift-and-shift of servers."
-      ]
+      ],
+      "keywords": [
+        "lift and shift",
+        "replicate a server",
+        "cut over to AWS",
+        "not a file sync"
+      ],
+      "notFor": "the copy is files on a schedule, not a server cutover",
+      "cost": {
+        "band": "$$",
+        "dimension": "server-hours during replication, then the launched instances",
+        "reason": "The migration service bills while servers replicate, and the cutover instances bill as EC2. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/application-migration-service/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "transfer-family",
@@ -2601,7 +4544,24 @@
       "definition": "Transfer Family serves S3 or EFS over SFTP, FTPS, or FTP.",
       "useWhen": [
         "Choose Transfer Family when partners must upload with SFTP and the files should land in S3."
-      ]
+      ],
+      "keywords": [
+        "SFTP or FTPS or FTP",
+        "existing file-transfer clients",
+        "managed file transfer endpoint",
+        "not DataSync"
+      ],
+      "notFor": "the copy should be an agent-based sync, not an SFTP endpoint for existing clients",
+      "cost": {
+        "band": "$$",
+        "dimension": "endpoint hours and data transferred",
+        "reason": "A managed file-transfer endpoint is an hourly charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/aws-transfer-family/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "client-vpn",
@@ -2616,7 +4576,24 @@
       "definition": "Client VPN lets a person open a TLS VPN into a VPC.",
       "useWhen": [
         "Choose Client VPN when a person, not a site, needs remote access to a VPC."
-      ]
+      ],
+      "keywords": [
+        "users connect from laptops",
+        "client VPN",
+        "not a site-to-site tunnel",
+        "remote access"
+      ],
+      "notFor": "two sites need a permanent tunnel, not people on laptops",
+      "cost": {
+        "band": "$$",
+        "dimension": "endpoint association hours and connection hours",
+        "reason": "Remote-access VPN is an hourly charge per connection. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/vpn/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "artifact",
@@ -2631,7 +4608,24 @@
       "definition": "AWS Artifact is the portal for compliance reports.",
       "useWhen": [
         "Choose AWS Artifact when an auditor needs an AWS compliance report."
-      ]
+      ],
+      "keywords": [
+        "compliance reports",
+        "download an agreement",
+        "not a finding",
+        "audit paperwork"
+      ],
+      "notFor": "you need a security finding, not a compliance report download",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "AWS Artifact has no charge for the reports you download.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "cloudhsm",
@@ -2646,7 +4640,24 @@
       "definition": "CloudHSM is a hardware security module you administer.",
       "useWhen": [
         "Choose CloudHSM when a key must live in a dedicated HSM you control, rather than in KMS."
-      ]
+      ],
+      "keywords": [
+        "dedicated HSM",
+        "you hold the keys in the module",
+        "not a multi-tenant CMK",
+        "hardware security module"
+      ],
+      "notFor": "a multi-tenant customer managed key is enough and you do not need a dedicated module",
+      "cost": {
+        "band": "$$$",
+        "dimension": "HSM-hour",
+        "reason": "A dedicated module is the expensive key option next to a multi-tenant customer managed key. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/cloudhsm/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "detective",
@@ -2661,7 +4672,24 @@
       "definition": "Amazon Detective investigates findings by grouping related activity.",
       "useWhen": [
         "Choose Detective when a GuardDuty finding needs a timeline of related events."
-      ]
+      ],
+      "keywords": [
+        "investigate a finding",
+        "related API calls and resources",
+        "not the detector",
+        "security investigation"
+      ],
+      "notFor": "you need the detector that raises the finding, not the investigation graph",
+      "cost": {
+        "band": "$",
+        "dimension": "data ingested from findings",
+        "reason": "The investigation graph is usage-priced on top of the detectors. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/detective/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "directory-service",
@@ -2676,7 +4704,24 @@
       "definition": "AWS Directory Service runs a managed directory, including Microsoft AD.",
       "useWhen": [
         "Choose Directory Service when Windows workloads need a managed Active Directory."
-      ]
+      ],
+      "keywords": [
+        "managed Active Directory",
+        "domain join",
+        "not IAM users",
+        "corporate directory"
+      ],
+      "notFor": "the users are IAM or a user pool, not a managed Active Directory",
+      "cost": {
+        "band": "$$",
+        "dimension": "directory-hour",
+        "reason": "A managed directory is a steady hourly charge. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/directoryservice/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "firewall-manager",
@@ -2691,7 +4736,24 @@
       "definition": "Firewall Manager applies WAF, Shield, security group, and Network Firewall policies across accounts.",
       "useWhen": [
         "Choose Firewall Manager when one security policy should cover many accounts."
-      ]
+      ],
+      "keywords": [
+        "one policy across accounts",
+        "org-wide firewall rules",
+        "not the firewall itself",
+        "central security policy"
+      ],
+      "notFor": "one account needs a firewall policy and there is no organization to manage",
+      "cost": {
+        "band": "$",
+        "dimension": "policies per Region",
+        "reason": "The manager is a small policy charge. The firewalls it configures bill separately. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/firewall-manager/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "ram",
@@ -2708,7 +4770,23 @@
         "Choose AWS Resource Access Manager when a subnet or another supported resource should be shared with another account."
       ],
       "acronym": "RAM",
-      "expansion": "AWS Resource Access Manager"
+      "expansion": "AWS Resource Access Manager",
+      "keywords": [
+        "share a subnet or a rule",
+        "resource share",
+        "across accounts",
+        "not a copy of the resource"
+      ],
+      "notFor": "you need a copy of the data in the other account, not a share of the same resource",
+      "cost": {
+        "band": "n/a",
+        "dimension": "n/a",
+        "reason": "Resource Access Manager has no charge for the share. You pay for the resource you share.",
+        "freeTier": "n/a",
+        "freeTierReason": "There is no separate service charge to put on a free-tier line.",
+        "docsUrl": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+      },
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
       "id": "security-hub",
@@ -2723,7 +4801,24 @@
       "definition": "Security Hub collects findings from security services into one place.",
       "useWhen": [
         "Choose Security Hub when GuardDuty, Inspector, and Macie findings should land in one view."
-      ]
+      ],
+      "keywords": [
+        "one place for findings",
+        "security standards",
+        "aggregate alerts",
+        "not the scanner"
+      ],
+      "notFor": "you need the scanner that looks for vulnerabilities, not the place findings are collected",
+      "cost": {
+        "band": "$",
+        "dimension": "security checks and finding ingest",
+        "reason": "The aggregator is a small per-check charge on top of the scanners. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "freeTier": "n/a",
+        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
+        "docsUrl": "https://aws.amazon.com/security-hub/pricing/"
+      },
+      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     }
   ]
 }

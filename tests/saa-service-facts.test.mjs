@@ -35,6 +35,7 @@ const CONFIRMED_ACRONYMS = new Map([
   ["RAM", "AWS Resource Access Manager"],
   ["WAF", "web application firewall"],
   ["CLI", "AWS Command Line Interface"],
+  ["EMR", "Amazon Elastic MapReduce"],
 ]);
 
 function norm(value) {
@@ -78,12 +79,11 @@ test("core records carry the full base set and peripheral records stay short", (
     if (fact.tier === "peripheral") {
       assert.equal(fact.tasks.length, 1, fact.id);
       assert.equal(fact.useWhen.length, 1, fact.id);
-      assert.equal(fact.notFor, undefined, fact.id);
       assert.equal(fact.lightning, undefined, fact.id);
       assert.equal(fact.classes, undefined, fact.id);
       assert.equal(fact.numbers, undefined, fact.id);
       assert.equal(fact.costs, undefined, fact.id);
-      const allowed = ["category", "definition", "use-0"];
+      const allowed = ["category", "definition", "use-0", "not-for", "keyword", "cost-band"];
       if (fact.acronym) allowed.push("acronym");
       assert.deepEqual(kinds.slice().sort(), allowed.sort(), fact.id);
       continue;
@@ -102,7 +102,7 @@ test("core records carry the full base set and peripheral records stay short", (
       });
     }
     for (const kind of kinds) {
-      assert.equal(kind.startsWith("class-") || kind.startsWith("number-") || kind.startsWith("cost-") || ["definition", "category", "scope", "not-for", "lightning", "acronym"].includes(kind) || /^use-\d+$/.test(kind), true, `${fact.id} ${kind}`);
+      assert.equal(kind.startsWith("class-") || kind.startsWith("number-") || kind.startsWith("cost-") || ["definition", "category", "scope", "not-for", "lightning", "acronym", "keyword"].includes(kind) || /^use-\d+$/.test(kind), true, `${fact.id} ${kind}`);
     }
   }
 });
@@ -114,10 +114,14 @@ test("acronym expansions are only the ones confirmed on the current page", () =>
     assert.equal(CONFIRMED_ACRONYMS.get(fact.acronym), fact.expansion, fact.id);
   }
   assert.equal(new Set(stored.map((fact) => fact.expansion)).size, stored.length);
-  assert.equal(serviceFacts.find((fact) => fact.id === "emr").acronym, undefined);
+  assert.equal(serviceFacts.find((fact) => fact.id === "emr").acronym, "EMR");
+  assert.match(serviceFacts.find((fact) => fact.id === "emr").acronymNote, /previously called/i);
   assert.equal(serviceFacts.find((fact) => fact.id === "systems-manager").acronym, undefined);
+  assert.match(serviceFacts.find((fact) => fact.id === "systems-manager").acronymReason, /SSM/);
   assert.equal(serviceFacts.find((fact) => fact.name === "Elastic Load Balancing").acronym, undefined);
+  assert.match(serviceFacts.find((fact) => fact.name === "Elastic Load Balancing").acronymReason, /ELB/);
   assert.equal(serviceFacts.find((fact) => fact.name === "Amazon FSx").acronym, undefined);
+  assert.match(serviceFacts.find((fact) => fact.name === "Amazon FSx").acronymReason, /FSx/);
 });
 
 test("every quoted number and changed note cites a URL, and the drill shows the older line", () => {
@@ -140,6 +144,10 @@ test("every quoted number and changed note cites a URL, and the drill shows the 
     }
     for (const entry of [...(fact.classes ?? []), ...(fact.costs ?? [])]) {
       assert.equal(entry.docsUrl.startsWith("https://docs.aws.amazon.com/"), true, `${fact.id} ${entry.id ?? entry.name}`);
+    }
+    if (fact.cost) {
+      assert.equal(fact.cost.docsUrl.startsWith("https://"), true, fact.id);
+      if (fact.cost.anchor) assert.equal(fact.cost.anchor.url.startsWith("https://"), true, fact.id);
     }
   }
   for (const [factId, numberId, note] of required) {
@@ -191,6 +199,64 @@ test("Amazon QuickSight is accepted on the reverse drill and on type-the-term", 
   assert.equal(termMatches("Amazon QuickSight", card), true);
   assert.equal(termMatches("AWS Quick", card), true);
   assert.deepEqual(card.services, ["Amazon QuickSight"]);
+});
+
+const ACRONYM_TOKEN = /^(?:[A-Z0-9]{2,}|FSx)$/;
+
+test("every record has the memory-match fields, or n/a with a reason", () => {
+  const bands = new Set(["$", "$$", "$$$", "n/a"]);
+  for (const fact of serviceFacts) {
+    assert.equal(typeof fact.notFor, "string", fact.id);
+    assert.ok(fact.notFor.length > 12, fact.id);
+    assert.ok(fact.keywords.length >= 3 && fact.keywords.length <= 6, fact.id);
+    assert.ok(fact.keywords.every((keyword) => keyword.trim().length > 2), fact.id);
+    assert.ok(bands.has(fact.cost.band), fact.id);
+    assert.equal(fact.cost.docsUrl.startsWith("https://"), true, fact.id);
+    assert.ok(fact.cost.reason.length > 20, fact.id);
+    if (fact.cost.band === "n/a") assert.equal(fact.cost.dimension, "n/a", fact.id);
+    else assert.ok(fact.cost.dimension.length > 2 && fact.cost.dimension !== "n/a", fact.id);
+    assert.equal(typeof fact.cost.freeTier, "string", fact.id);
+    if (fact.cost.anchor) {
+      assert.equal(fact.cost.anchor.asOf, "2026-11", fact.id);
+      assert.equal(fact.cost.anchor.region, "us-east-1", fact.id);
+      assert.equal(fact.cost.anchor.url.startsWith("https://"), true, fact.id);
+    }
+    const tokens = fact.name.split(/[^A-Za-z0-9]+/).filter((token) => token !== "AWS" && token !== "Amazon" && ACRONYM_TOKEN.test(token));
+    if (fact.acronym) {
+      assert.ok(fact.expansion && fact.definition, fact.id);
+    } else {
+      assert.ok(fact.acronymReason && fact.acronymReason.length > 20, `${fact.id} ${tokens.join(",")}`);
+    }
+    if (fact.classes?.length) {
+      for (const entry of fact.classes) assert.equal(entry.docsUrl.startsWith("https://docs.aws.amazon.com/"), true, `${fact.id} ${entry.name}`);
+    } else {
+      assert.ok(fact.classesNote && fact.classesNote.length > 20, fact.id);
+    }
+  }
+  const named = new Map([
+    ["ec2", ["EC2 On-Demand", "EC2 Reserved Instances", "EC2 Spot", "EC2 Dedicated Hosts"]],
+    ["s3-glacier", ["Glacier Expedited retrieval", "Glacier Standard retrieval", "Glacier Bulk retrieval"]],
+    ["efs", ["EFS Elastic throughput", "EFS Provisioned throughput", "EFS Bursting throughput"]],
+    ["rds", ["RDS Multi-AZ DB instance", "RDS read replica"]],
+    ["aurora", ["Aurora Replica"]],
+    ["elasticache", ["ElastiCache for Valkey", "ElastiCache for Redis OSS", "ElastiCache for Memcached"]],
+    ["fsx", ["FSx for Windows File Server", "FSx for Lustre", "FSx for NetApp ONTAP", "FSx for OpenZFS"]],
+    ["lambda", ["Lambda function memory", "Lambda function timeout"]],
+    ["snow", ["Snowball Edge", "Snowcone"]],
+    ["cloudfront", ["Price Class All", "Price Class 200", "Price Class 100"]],
+  ]);
+  for (const [id, names] of named) {
+    const have = new Set(serviceFacts.find((fact) => fact.id === id).classes.map((entry) => entry.name));
+    for (const name of names) assert.equal(have.has(name), true, `${id} ${name}`);
+  }
+  for (const name of ["S3 Standard", "gp3", "io2 Block Express", "st1", "sc1", "DynamoDB on-demand", "DynamoDB provisioned", "SQS standard", "SQS FIFO"]) {
+    assert.equal(serviceFacts.some((fact) => fact.classes?.some((entry) => entry.name === name)), true, name);
+  }
+});
+
+test("the service-fact checks stay on the checks workflow", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/checks.yml", import.meta.url), "utf8");
+  assert.match(workflow, /npm run test:saa-tags/);
 });
 
 test("concentration boards exist for every appendix category", () => {

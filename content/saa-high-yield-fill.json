@@ -543,7 +543,7 @@
       "An Aurora cross-Region read replica"
     ],
       "answer": 2,
-      "explanation": "Option: An Aurora snapshot copy — Incorrect: A snapshot copy is a point in time. Readers in the second Region do not get ongoing local reads from it.\nOption: Aurora Serverless v2 — Incorrect: Serverless v2 changes capacity in the Region where the cluster runs. It does not add local reads in a second Region.\nOption: Aurora Global Database — Correct: Global Database serves local reads in a second Region, replicates without the database engine's replica process, and that Region can be promoted to writer in about a minute. An unplanned promotion is typically a few minutes, and a planned switchover on qualifying engines is typically well under a minute.\nOption: An Aurora cross-Region read replica — Incorrect: A cross-Region read replica uses the database engine's replica process. It is a separate replica cluster, so it misses the replication requirement.",
+      "explanation": "Option: An Aurora snapshot copy — Incorrect: A snapshot copy is a point in time. Readers in the second Region do not get ongoing local reads from it.\nOption: Aurora Serverless v2 — Incorrect: Serverless v2 changes capacity in the Region where the cluster runs. It does not add local reads in a second Region.\nOption: Aurora Global Database — Correct: Global Database serves local reads in a second Region and replicates without the database engine's replica process. A managed switchover on qualifying engines is typically well under a minute, and an unplanned failover is typically a few minutes, so the scenario's about a minute is not the unplanned figure.\nOption: An Aurora cross-Region read replica — Incorrect: A cross-Region read replica uses the database engine's replica process. It is a separate replica cluster, so it misses the replication requirement.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -556,7 +556,7 @@
         "https://docs.aws.amazon.com/prescriptive-guidance/latest/aurora-replication-options/compare-solutions.html",
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
       ],
-      "changedNote": "Older comparison pages say under a minute. The Aurora user guide says an unplanned promotion is typically a few minutes, and a planned switchover on qualifying engines is typically well under a minute.",
+      "changedNote": "Older comparison pages say under a minute. The Aurora user guide says a managed switchover on qualifying engines is typically well under a minute, and an unplanned failover is typically a few minutes.",
       "services": [
       "Amazon Aurora"
     ],
@@ -973,7 +973,7 @@
         "saa-c03"
       ],
       "front": "Readers in another Region, and a promotion path",
-      "back": "With Aurora Global Database, readers in a secondary Region query locally. Replication does not use the database engine's replica process, and that Region can be promoted to writer in about a minute.",
+      "back": "With Aurora Global Database, readers in a secondary Region query locally. Replication does not use the database engine's replica process. A managed switchover on qualifying engines is typically well under a minute, and an unplanned failover is typically a few minutes.",
       "weak": false,
       "taskId": "2.2",
       "services": [

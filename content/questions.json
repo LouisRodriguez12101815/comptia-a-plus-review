@@ -10482,7 +10482,7 @@
       "clf-c02",
       "saa-c03"
     ],
-    "prompt": "Multiple Linux EC2 instances need to mount the same managed file system. Which service fits best?",
+    "prompt": "Several Linux EC2 instances must read and write the same files at the same time, and the files must remain after an instance stops. Which service fits?",
     "choices": [
       "Amazon EBS",
       "Amazon SQS",
@@ -10490,7 +10490,7 @@
       "Instance store"
     ],
     "answer": 2,
-    "explanation": "EFS provides managed shared file storage for Linux workloads.",
+    "explanation": "Amazon EFS lets those instances read and write the same files at the same time, and the files remain after an instance stops. Amazon EBS is a volume for one instance. Amazon SQS holds messages for a consumer to pull. Instance store is local disk that disappears when the instance stops.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10505,7 +10505,7 @@
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
     ],
     "services": ["Amazon EC2","Amazon EBS","Amazon SQS","Amazon EFS"],
-    "difficulty": "easy"
+    "difficulty": "medium"
   },
   {
     "id": "q-aws-found-16",
@@ -10861,7 +10861,7 @@
       "clf-c02",
       "saa-c03"
     ],
-    "prompt": "A producer must place work in a durable queue so consumers can process it asynchronously. Which service fits?",
+    "prompt": "A producer must hand each piece of work to one consumer that pulls it when ready, and the work must wait while consumers are down. Which service fits?",
     "choices": [
       "Amazon SQS",
       "Amazon Route 53",
@@ -10869,7 +10869,7 @@
       "Amazon SNS"
     ],
     "answer": 0,
-    "explanation": "SQS is a durable message queue used for decoupling.",
+    "explanation": "Amazon SQS holds each piece of work until one consumer pulls it, and the work waits while consumers are down. Amazon SNS pushes a copy to subscribers. Amazon Route 53 answers DNS names. AWS KMS holds encryption keys.",
     "weak": false,
     "objectiveIds": {
       "clf-c02": [
@@ -10884,7 +10884,7 @@
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
     ],
     "services": ["Amazon SQS","Amazon Route 53","AWS Key Management Service","Amazon SNS"],
-    "difficulty": "easy"
+    "difficulty": "medium"
   },
   {
     "id": "q-aws-found-27",
@@ -12288,7 +12288,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Several Linux EC2 instances across AZs need concurrent access to the same managed POSIX file system. Which service fits?",
+    "prompt": "Several Linux EC2 instances in more than one Availability Zone must share one mount with file locks, and the files must remain after an instance stops. Which service fits?",
     "choices": [
       "Amazon S3 only",
       "Amazon EFS",
@@ -12296,7 +12296,7 @@
       "Instance store"
     ],
     "answer": 1,
-    "explanation": "EFS provides a managed shared Linux file system.",
+    "explanation": "Amazon EFS is the shared mount with file locks for those instances, and the files remain after an instance stops. Amazon S3 stores objects. Amazon EBS is a volume in one Availability Zone. Instance store is local disk that disappears when the instance stops.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [

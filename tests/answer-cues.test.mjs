@@ -101,7 +101,11 @@ test("keyword echo, odd-one-out openings, and a strictly shortest key are measur
   });
   assert.equal(category.categoryOnlyKey, "queue");
   const rates = rateFailures(summarize([generic, conditional, category]));
-  assert.deepEqual(rates, []);
+  assert.deepEqual(rates, [
+    "saa-c03: true conditional distractor 1 exceeds 0",
+    "saa-c03: category word only the key matches 1 exceeds 0",
+    "saa-c03: key-is-shortest 0.0% (0/3) is outside 15–35%",
+  ]);
   const shared = analyzeItem({
     id: "q-shared", exams: ["saa-c03"], source: "questions.json", answer: 0,
     prompt: "Which archive design fits?",

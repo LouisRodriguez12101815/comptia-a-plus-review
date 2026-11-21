@@ -32,12 +32,35 @@ export type FactCost = {
   docsUrl: string;
 };
 
+export type FactCostProfile = {
+  band: "$" | "$$" | "$$$" | "n/a";
+  reason: string;
+  dimension: string;
+  freeTier: string;
+  freeTierReason?: string;
+  docsUrl: string;
+  anchor?: {
+    amount: string;
+    asOf: "2026-11";
+    region: "us-east-1";
+    url: string;
+  };
+};
+
 export type ServiceFact = {
   id: string;
   name: string;
   aliases?: string[];
   acronym?: string;
   expansion?: string;
+  /** Extra line when the current page qualifies the expansion. */
+  acronymNote?: string;
+  /** Why this record has no acronym expansion. */
+  acronymReason?: string;
+  keywords?: string[];
+  /** Why this record has no exam class list. */
+  classesNote?: string;
+  cost?: FactCostProfile;
   category: string;
   tier: FactTier;
   scope: FactScope;
@@ -137,9 +160,47 @@ export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem
         `What does ${fact.acronym} stand for on the current ${fact.name} page?`,
         fact.expansion,
         { acronym: fact.acronym, expansion: fact.expansion, matchLeft: fact.acronym },
-        `${fact.acronym} expands to ${fact.expansion}.`,
+        `${fact.acronym} expands to ${fact.expansion}.${fact.acronymNote ? ` ${fact.acronymNote}` : ""}`,
         hook,
       ));
+    }
+    if (fact.notFor) {
+      items.push(item(
+        fact,
+        "not-for",
+        primary,
+        `Which service is the wrong fit when ${fact.notFor}?`,
+        fact.name,
+        { misfit: fact.name },
+        `${fact.name} is not for that. ${detail}`,
+        hook,
+      ));
+    }
+    if (fact.keywords?.length) {
+      items.push(item(
+        fact,
+        "keyword",
+        primary,
+        `Which service matches these cues: ${fact.keywords.join(", ")}?`,
+        fact.name,
+        { service: fact.name, keywords: fact.keywords.join(", ") },
+        detail,
+        hook,
+      ));
+    }
+    if (fact.cost) {
+      const reply = fact.cost.band === "n/a" ? "No separate service charge" : `${fact.cost.band} — ${fact.cost.dimension}`;
+      const anchor = fact.cost.anchor
+        ? ` ${fact.cost.anchor.region} as of ${fact.cost.anchor.asOf}: ${fact.cost.anchor.amount}.`
+        : "";
+      items.push({
+        id: `${fact.id}-cost-band`,
+        objective: primary,
+        fields: { cue: `What is the billing shape for ${fact.name}?`, reply, billing: reply, board: fact.category },
+        detail: `${fact.cost.reason}${anchor}`,
+        hook: fact.cost.band === "n/a" ? "No separate service charge." : "Band and dimension, not a copied list price.",
+        docsUrl: fact.cost.docsUrl,
+      });
     }
     if (fact.tier !== "core") continue;
     items.push(item(
@@ -150,16 +211,6 @@ export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem
       fact.scope,
       { scope: fact.scope },
       fact.scopeNote ? `${fact.name} is ${fact.scope}. ${fact.scopeNote}` : `${fact.name} is ${fact.scope}.`,
-      hook,
-    ));
-    items.push(item(
-      fact,
-      "not-for",
-      primary,
-      `Which service is the wrong fit when ${fact.notFor}?`,
-      fact.name,
-      { misfit: fact.name },
-      `${fact.name} is not for that. ${detail}`,
       hook,
     ));
     const claim = fact.lightning!;
@@ -241,6 +292,8 @@ export function serviceFactDeck(facts: ServiceFact[] = serviceFacts): DrillDeck 
       { id: "trapToService", from: "cue", to: "misfit" },
       { id: "claimToVerdict", from: "cue", to: "verdict" },
       { id: "labelToFigure", from: "cue", to: "figure" },
+      { id: "keywordToService", from: "keywords", to: "service" },
+      { id: "serviceToBilling", from: "cue", to: "billing" },
       { id: "acronymToExpansion", from: "cue", to: "expansion" },
       { id: "expansionToAcronym", from: "expansion", to: "acronym" },
       { id: "patternToChoice", from: "cue", to: "choice" },

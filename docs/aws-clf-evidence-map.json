@@ -19965,7 +19965,7 @@
       "kind": "question",
       "file": "content/questions.json",
       "topicId": "aws-foundation-compute-storage",
-      "prompt": "Multiple Linux EC2 instances need to mount the same managed file system. Which service fits best?",
+      "prompt": "Several Linux EC2 instances must read and write the same files at the same time, and the files must remain after an instance stops. Which service fits?",
       "choices": [
         "Amazon EBS",
         "Amazon SQS",
@@ -19973,7 +19973,7 @@
         "Instance store"
       ],
       "answer": 2,
-      "explanation": "EFS provides managed shared file storage for Linux workloads.",
+      "explanation": "Amazon EFS lets those instances read and write the same files at the same time, and the files remain after an instance stops. Amazon EBS is a volume for one instance. Amazon SQS holds messages for a consumer to pull. Instance store is local disk that disappears when the instance stops.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html"
@@ -20181,7 +20181,7 @@
       "kind": "question",
       "file": "content/questions.json",
       "topicId": "aws-foundation-observability-cost",
-      "prompt": "A producer must place work in a durable queue so consumers can process it asynchronously. Which service fits?",
+      "prompt": "A producer must hand each piece of work to one consumer that pulls it when ready, and the work must wait while consumers are down. Which service fits?",
       "choices": [
         "Amazon SQS",
         "Amazon Route 53",
@@ -20189,7 +20189,7 @@
         "Amazon SNS"
       ],
       "answer": 0,
-      "explanation": "SQS is a durable message queue used for decoupling.",
+      "explanation": "Amazon SQS holds each piece of work until one consumer pulls it, and the work waits while consumers are down. Amazon SNS pushes a copy to subscribers. Amazon Route 53 answers DNS names. AWS KMS holds encryption keys.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
