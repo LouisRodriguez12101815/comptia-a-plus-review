@@ -54,7 +54,10 @@ test("118 unique in-scope records, with https docs and a scope from the enum", (
   assert.equal(redshift[0].category, "Database");
   const quick = serviceFacts.find((fact) => fact.id === "quick");
   assert.equal(quick.name, "Amazon Quick");
-  assert.deepEqual(quick.aliases, ["Amazon QuickSight"]);
+  assert.deepEqual(quick.aliases, ["Amazon QuickSight", "AWS Quick"]);
+  const s3 = serviceFacts.find((fact) => fact.id === "s3");
+  assert.equal(s3.scope, "Regional");
+  assert.equal(s3.scopeNote, "Bucket names are globally unique, but each bucket and its data live in one Region.");
   assert.match(quick.definition, /Amazon QuickSight/);
   assert.equal(quick.docsUrl, "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html");
   for (const fact of serviceFacts) {
@@ -181,11 +184,12 @@ test("new cues do not repeat an existing drill cue or a card front", () => {
 
 test("Amazon QuickSight is accepted on the reverse drill and on type-the-term", () => {
   const item = serviceFactItems().find((entry) => entry.id === "quick-definition");
-  assert.deepEqual(item.also.name, ["Amazon QuickSight"]);
+  assert.deepEqual(item.also.name, ["Amazon QuickSight", "AWS Quick"]);
   assert.equal(item.fields.name, "Amazon Quick");
   const card = flashcards.find((entry) => entry.id === "fc-saa-fact-quick");
   assert.equal(termMatches("Amazon Quick", card), true);
   assert.equal(termMatches("Amazon QuickSight", card), true);
+  assert.equal(termMatches("AWS Quick", card), true);
   assert.deepEqual(card.services, ["Amazon QuickSight"]);
 });
 

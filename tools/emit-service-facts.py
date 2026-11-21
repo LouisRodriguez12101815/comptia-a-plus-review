@@ -393,6 +393,7 @@ core("s3", "Amazon S3", "Storage", "Regional", ["3.1", "4.1", "1.3"],
      "An S3 bucket is a multi-AZ file system with file locks.", False,
      "S3 is object storage. A shared file system is EFS or a matching FSx type.",
      "S3", "Amazon Simple Storage Service",
+     "Bucket names are globally unique, but each bucket and its data live in one Region.",
      classes=[
         klass("S3 Standard", "Default class for frequently accessed objects.", "4.1", S3_CLASSES),
         klass("S3 Express One Zone", "High-performance class in one Availability Zone for latency-sensitive access.", "4.1", S3_CLASSES),
@@ -903,7 +904,7 @@ peripheral("security-hub", "AWS Security Hub", "Security, Identity, and Complian
 # Amazon Quick aliases: peripheral() above didn't pass them. Patch the record.
 for row in records:
     if row["id"] == "quick":
-        row["aliases"] = ["Amazon QuickSight"]
+        row["aliases"] = ["Amazon QuickSight", "AWS Quick"]
 
 # Fix the ML docs URL to each service's own page where we know it.
 ml_docs = {
