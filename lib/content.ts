@@ -71,7 +71,7 @@ export function getFlashcards(
   topicId: string = "all",
   focus: StudyFocus = "all",
 ): Flashcard[] {
-  const focused = flashcards.filter((card) => cardMatchesFocus(card, focus));
+  const focused = flashcards.filter((card) => !card.retired && cardMatchesFocus(card, focus));
   if (topicId === "all") return focused;
   if (topicId === "weak") return focused.filter((card) => card.weak);
   return focused.filter((card) => card.topicId === topicId);

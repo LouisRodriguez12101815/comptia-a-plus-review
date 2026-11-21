@@ -48,7 +48,7 @@ export function clozeForCard(card: Pick<Flashcard, "front" | "back" | "services"
 }
 
 export function cardsForTask(taskId: string): Flashcard[] {
-  return flashcards.filter((card) => card.taskId === taskId);
+  return flashcards.filter((card) => !card.retired && card.taskId === taskId);
 }
 
 /** Cards that share the question's SAA task. This does not schedule the question. */

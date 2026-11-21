@@ -140,5 +140,57 @@
       { "ref": "aws-saa-cost-cues/steady" },
       { "label": "Reserved Instances", "pickWhen": "The discount should follow a specific instance family, size, and scope." }
     ]
+  },
+  {
+    "id": "pair-gateway-interface",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": ["Amazon S3", "Amazon DynamoDB"],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+    "questionIds": ["q-aws-review-saa-c03-4-4", "q-saa-chapter-06"],
+    "difference": "A gateway endpoint is a route-table target for S3 or DynamoDB and has no hourly fee; an interface endpoint is a network interface with hourly and data-processing charges.",
+    "sides": [
+      { "label": "S3 gateway endpoint", "pickWhen": "Private S3 traffic should leave the NAT path, and the endpoint type should not add an hourly fee." },
+      { "label": "Interface endpoint", "pickWhen": "The service needs a private network interface, and the hourly and data charges are an acceptable cost." }
+    ]
+  },
+  {
+    "id": "pair-s3-ia-one-zone",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": ["Amazon S3"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+    "questionIds": ["q-saa-costbatch-001", "q-saa-costbatch-002"],
+    "difference": "Standard-IA keeps an infrequently read object in several Availability Zones; One Zone-IA stores it in one zone at a lower price.",
+    "sides": [
+      { "label": "S3 Standard-IA", "pickWhen": "Reads are infrequent and immediate, and the object must survive loss of an Availability Zone." },
+      { "label": "S3 One Zone-IA", "pickWhen": "The object is infrequent, can be recreated, and loss of one Availability Zone is acceptable." }
+    ]
+  },
+  {
+    "id": "pair-ondemand-spot",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": ["Amazon EC2"],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+    "questionIds": ["q-aws-found-30", "q-aws-review-saa-c03-4-2"],
+    "difference": "On-Demand runs without a term commitment and is not taken back for capacity; Spot uses spare capacity and can be interrupted.",
+    "sides": [
+      { "label": "On-Demand", "pickWhen": "The work cannot stop, and there is no measured commitment to buy yet." },
+      { "label": "Spot", "pickWhen": "The work can be interrupted and restarted, and a lower price is worth the capacity risk." }
+    ]
+  },
+  {
+    "id": "pair-boundary-scp",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": ["AWS Identity and Access Management", "AWS Organizations"],
+    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+    "questionIds": ["q-saa-core-30", "q-saa-arch-02"],
+    "difference": "A permissions boundary limits one IAM user or role; a service control policy limits accounts in the organization. Neither statement grants a permission by itself.",
+    "sides": [
+      { "label": "Permissions boundary", "pickWhen": "The maximum must be set on one user or role in the account." },
+      { "label": "Service control policy", "pickWhen": "The guardrail must apply to member accounts in the organization." }
+    ]
   }
 ]

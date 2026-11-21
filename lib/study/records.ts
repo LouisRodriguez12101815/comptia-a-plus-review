@@ -1,3 +1,4 @@
+import gameCatalog from "@/content/study-games.json";
 import pairsJson from "@/content/study-pairs.json";
 import { flashcards, questions, topics } from "@/lib/content";
 import { cardsForQuestion, cardsForTask } from "@/lib/study/memory";
@@ -109,6 +110,7 @@ function relatedQuestionIds(card: Flashcard): string[] {
 }
 
 function cardRecord(card: Flashcard): StudyRecord | undefined {
+  if (card.retired) return undefined;
   const codes = cardExamCodes(card);
   const saa = codes.includes("saa-c03");
   const clf = codes.includes("clf-c02");
@@ -164,7 +166,18 @@ export function studyRecords(): StudyRecord[] {
     docsUrl: pair.docsUrl,
     questionIds: pair.questionIds,
   }));
-  cached = [...cards, ...pairs, ...gameItemRecords()];
+  const authored = (["ladders", "odd", "builder", "keywords", "pillars", "lightning"] as const).flatMap((group) =>
+    gameCatalog[group].map((item): StudyRecord => ({
+      id: item.id,
+      kind: "game-item",
+      exam: "saa-c03",
+      taskId: item.taskId,
+      services: item.services,
+      docsUrl: item.docsUrl,
+      questionIds: item.questionIds,
+    })),
+  );
+  cached = [...cards, ...pairs, ...gameItemRecords(), ...authored];
   return cached;
 }
 
@@ -175,7 +188,7 @@ export function studyRecord(id: string): StudyRecord | undefined {
 export { cardsForQuestion, cardsForTask };
 
 export function cheatSheet(domain: "D1" | "D2" | "D3" | "D4") {
-  const cards = flashcards.filter((card) => card.taskId && saaDomainFromTask(card.taskId) === domain);
+  const cards = flashcards.filter((card) => !card.retired && card.taskId && saaDomainFromTask(card.taskId) === domain);
   const pairs = resolvedPairs("saa-c03").filter((pair) => saaDomainFromTask(pair.taskId) === domain);
   return { cards, pairs };
 }

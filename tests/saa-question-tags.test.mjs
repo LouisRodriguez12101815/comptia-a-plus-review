@@ -60,17 +60,36 @@ test("a stored domain that disagrees with the task fails", () => {
 });
 
 test("every SAA card has one task or null, services from its own text, and a docs URL when tagged", () => {
-  assert.equal(saaCards.length, 113);
+  const active = saaCards.filter((card) => !card.retired);
+  assert.equal(saaCards.length, 124);
+  assert.equal(active.length, 120);
+  assert.deepEqual(saaCards.filter((card) => card.retired).map((card) => card.id).sort(), [
+    "fc-saa-arch-perf-kds",
+    "fc-saa-arch-secure-boundary",
+    "fc-saa-arch-secure-deny",
+    "fc-saa-nat-gw",
+  ]);
   for (const card of saaCards) assertSaaCardTags(card);
   assert.deepEqual(saaCards.filter((card) => card.taskId === null).map((card) => card.id).sort(), [...nullTaskIds].sort());
   const counts = {};
-  for (const card of saaCards) {
+  for (const card of active) {
     const key = card.taskId ?? "null";
     counts[key] = (counts[key] ?? 0) + 1;
     if (card.taskId) assert.equal(saaCardDomain(card), saaDomainFromTask(card.taskId));
     else assert.equal(saaCardDomain(card), null);
+    assert.equal(card.front.includes("name the key design constraint"), false, card.id);
   }
-  assert.equal(Object.values(counts).reduce((sum, count) => sum + count, 0), 113);
+  assert.equal(counts["4.1"], 6);
+  assert.equal(counts["4.2"], 6);
+  assert.equal(counts["4.3"], 6);
+  assert.equal(counts["4.4"], 6);
+  assert.equal(Object.values(counts).reduce((sum, count) => sum + count, 0), 120);
+  const fronts = new Map();
+  for (const card of active) {
+    const front = card.front.trim().toLowerCase();
+    assert.equal(fronts.has(front), false, `${front}: ${fronts.get(front)} and ${card.id}`);
+    fronts.set(front, card.id);
+  }
   for (const card of flashcards) {
     if (examOf(card).includes("saa-c03")) continue;
     assert.equal(card.taskId, undefined, card.id);
