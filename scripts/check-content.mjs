@@ -15,6 +15,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -309,6 +310,24 @@ for (const ex of factsFile.computed ?? []) {
       const hit = ex.routes.filter((r) => cidrContains(r.cidr, c.ip)).sort((a, b) => Number(b.cidr.split("/")[1]) - Number(a.cidr.split("/")[1]))[0];
       const got = hit ? hit.exit : null;
       if (got !== c.exit) add("error", "computed", where, `${c.ip} matches ${got ?? "no route"}, facts file says ${c.exit ?? "no route"}`);
+    }
+  }
+}
+
+/* ---------- SAA learner text must not leak internal ids ---------- */
+const INTERNAL_ID = /\b(?:pair-[a-z0-9-]+|q-saa-[a-z0-9-]+|cardId|taskId|study pair)\b/i;
+const highYieldQuestions = readJson("content/saa-high-yield-fill.json").questions ?? [];
+const { qualifierTwins } = await import(pathToFileURL(path.join(root, "content/saa-qualifier-twins.ts")).href);
+for (const record of [...questions, ...highYieldQuestions, ...qualifierTwins]) {
+  if (!record.examCodes?.includes("saa-c03")) continue;
+  const fields = [
+    ["prompt", record.prompt],
+    ...(record.choices ?? []).map((choice, index) => [`choice ${index}`, choice]),
+    ["explanation", record.explanation],
+  ];
+  for (const [field, text] of fields) {
+    if (typeof text === "string" && INTERNAL_ID.test(text)) {
+      add("error", "internal-id", `${record.id} ${field}`, "SAA question text contains an internal id");
     }
   }
 }

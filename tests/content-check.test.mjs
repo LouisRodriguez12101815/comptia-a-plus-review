@@ -29,6 +29,8 @@ test("the checker still catches seeded mistakes", () => {
     questions[questions.length - 1].answer = 9;
     const pinned = questions.find((q) => q.id === "q-n10c11-03");
     pinned.answer = (pinned.answer + 1) % pinned.choices.length;
+    const saa = questions.find((q) => q.examCodes?.includes("saa-c03"));
+    saa.prompt = "See the study pair pair-aurora-example before you answer.";
     fs.writeFileSync(qPath, JSON.stringify(questions));
 
     const fPath = path.join(dir, "scripts/content-facts.json");
@@ -46,6 +48,7 @@ test("the checker still catches seeded mistakes", () => {
     assert.ok(checks.has("fact-forbidden"), "FF:FF in the EUI-64 notes should be caught");
     assert.ok(checks.has("answer-pin"), "a valid-looking but wrong answer key should be caught");
     assert.ok(checks.has("computed"), "a wrong subnet worked example should be caught");
+    assert.ok(checks.has("internal-id"), "an internal study-pair id in an SAA question should be caught");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -53,6 +56,11 @@ test("the checker still catches seeded mistakes", () => {
 
 // The renderer accepts only authored local notes links; other text stays literal.
 import { parseRelatedConcept } from "../lib/explanation.ts";
+
+test("the internal-id check stays on the checks workflow", () => {
+  const workflow = fs.readFileSync(path.join(repo, ".github/workflows/checks.yml"), "utf8");
+  assert.match(workflow, /npm run check:content/);
+});
 
 test("related concept parser keeps a local route/anchor and descriptive label", () => {
   assert.deepEqual(parseRelatedConcept("Related concept: [DHCP lease exchange](/notes/n10-dhcp-ipam-time#3-4-dhcp)"), {

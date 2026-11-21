@@ -2,12 +2,38 @@
 
 const ABSOLUTE = ["always", "never", "only", "all"];
 const STOP = new Set("about after again also and are because been before being between both but can could does each from have into more most must not other over should than that the their them then there these this those through under using what when where which while will with would your".split(" "));
+const GENERIC_NOUNS = new Set("location locations customer customers average averages storage data application applications user users cost costs".split(" "));
+/** Echo counts only when the stem term is AWS-specific or technical. Generic nouns never count. */
+const TECHNICAL_TERMS = new Set(`
+archive archives aurora accelerator anomaly allocation availability backup backups balancer boundary
+bucket buckets burstable capacity certificate certificates cloudfront cloudtrail cloudwatch cluster
+clusters cognito compliance consistency credential credentials database databases datasync dedicated
+documentdb durability durable dynamodb egress elasticache encryption encrypted endpoint endpoints
+eventual failover fargate firehose gateway glacier global guardduty ingress instance instances
+kafka keyspaces kinesis lambda latency lifecycle listener listeners lustre macie memory multi-az
+mysql-compatible neptune netapp nfs ontap opensearch openzfs outposts partition partitions placement
+policy policies postgresql presigned principal principals private provisioned public queue queues
+quicksight redshift region regions replica replicas replication reserved restore serverless session
+sessions shard shards smb snapshot snapshots snowball spot subnet subnets throughput timestream
+transit versioning volume volumes windows
+`.split(/\s+/).filter(Boolean));
 const VERB = /\b(is|are|was|were|has|have|does|do|can|should|will|uses|provides|requires|allows|supports|stores|routes|encrypts|replicates)\b/i;
+const CONDITION = /\b(?:when|if|after|unless|only|while)\b/i;
+const CATEGORY_CUES = [
+  { name: "queue", prompt: /\bqueues?\b/i, members: [/\bSQS\b/i, /Simple Queue Service/i, /\bAmazon MQ\b/i] },
+  { name: "file system", prompt: /\bfile systems?\b/i, members: [/\bEFS\b/i, /Elastic File System/i, /\bFSx\b/i, /\bfile system\b/i] },
+  { name: "certificate", prompt: /\bcertificates?\b/i, members: [/\bcertificate\b/i, /\bACM\b/i, /Certificate Manager/i] },
+  { name: "load balancer", prompt: /\bload balancers?\b/i, members: [/\bload balancer\b/i, /\bALB\b/i, /\bNLB\b/i, /\bELB\b/i] },
+  { name: "placement group", prompt: /\bplacement groups?\b/i, members: [/\bplacement group\b/i] },
+  { name: "purchase option", prompt: /\b(?:purchase|purchasing) options?\b|\bpricing models?\b/i, members: [/\bSpot\b/i, /\bReserved\b/i, /Savings Plan/i, /On-Demand/i, /Dedicated Host/i] },
+];
 
-/** Exams whose rewrite batch has landed. SAA and CLF stay empty until that batch is in the tree. */
-export const ENFORCED_EXAMS = [];
+/** Exams whose rewrite batch has landed. CLF stays empty until that batch is in the tree. */
+export const ENFORCED_EXAMS = ["saa-c03"];
 export const LONGEST_MAX = 0.35;
 export const STRONG_MAX = 0.1;
+export const SHORTEST_MIN = 0.15;
+export const SHORTEST_MAX = 0.35;
 export const COMPTIA_EXAMS = ["220-1201", "220-1202", "n10-009"];
 
 export function choiceLength(text) {
@@ -59,6 +85,54 @@ export function nearDuplicateChoices(choices) {
   return pairs;
 }
 
+function isTechnicalTerm(word) {
+  if (GENERIC_NOUNS.has(word)) return false;
+  return TECHNICAL_TERMS.has(word) || /[0-9]/.test(word) || word.includes("-");
+}
+
+/** A distinctive AWS or technical stem term that appears in the key and in no distractor. */
+export function keywordEchoTerm(prompt, choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
+  const key = choices[keyIndex] ?? "";
+  const wrong = choices.filter((_, index) => index !== keyIndex);
+  const shared = new Set(words(choices[0] ?? "").filter((word) => choices.every((choice) => hasWord(choice, word))));
+  const stemWords = [...new Set(words(prompt).filter((word) => !STOP.has(word) && !GENERIC_NOUNS.has(word) && isTechnicalTerm(word) && !shared.has(word)))];
+  return stemWords.find((word) => hasWord(key, word) && wrong.every((choice) => !hasWord(choice, word))) ?? null;
+}
+
+/** A wrong choice that starts with the key and then adds a condition. Truth still needs a human read. */
+export function trueConditionalDistractor(choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
+  const key = norm(choices[keyIndex]);
+  if (key.split(" ").length < 3) return null;
+  for (const [index, choice] of choices.entries()) {
+    if (index === keyIndex) continue;
+    if (norm(choice).startsWith(`${key} `) && CONDITION.test(String(choice))) return String(choice);
+  }
+  return null;
+}
+
+/** A category named in the question when only the key belongs to that category. */
+export function categoryOnlyKey(prompt, choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
+  for (const category of CATEGORY_CUES) {
+    if (!category.prompt.test(prompt)) continue;
+    const matched = choices.flatMap((choice, index) => category.members.some((pattern) => pattern.test(choice)) ? [index] : []);
+    if (matched.length === 1 && matched[0] === keyIndex) return category.name;
+  }
+  return null;
+}
+
+/** The opening the distractors share when the key does not share those first three words. */
+export function oddOneOutOpening(choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || choices.length < 3) return null;
+  const opening = (text) => String(text).trim().split(/\s+/).slice(0, 3).join(" ").toLowerCase();
+  const wrong = choices.filter((_, index) => index !== keyIndex).map(opening);
+  if (wrong.length < 2 || wrong.some((text) => text.split(" ").length < 3)) return null;
+  if (new Set(wrong).size !== 1) return null;
+  return opening(choices[keyIndex]) === wrong[0] ? null : wrong[0];
+}
+
 /** Cue report for one item. Multi-answer items are described but excluded from length rates. */
 export function analyzeItem(item) {
   const choices = (item.choices ?? []).map((choice) => String(choice));
@@ -70,6 +144,7 @@ export function analyzeItem(item) {
   const others = keyIndex === null ? [] : lengths.filter((_, index) => index !== keyIndex);
   const longer = keyLength === null ? null : others.filter((length) => length > keyLength).length;
   const strictlyLongest = keyLength !== null && others.length > 0 && others.every((length) => keyLength > length);
+  const strictlyShortest = keyLength !== null && others.length > 0 && others.every((length) => keyLength < length);
   const meanOther = others.length ? others.reduce((sum, length) => sum + length, 0) / others.length : null;
   const ratio = keyLength !== null && meanOther ? keyLength / meanOther : null;
   const stronglyBiased = strictlyLongest && ratio !== null && ratio >= 1.3;
@@ -98,8 +173,13 @@ export function analyzeItem(item) {
     meanOther,
     ratio,
     strictlyLongest,
+    strictlyShortest,
     stronglyBiased,
     stemWord,
+    keywordEcho: keywordEchoTerm(item.prompt, choices, keyIndex),
+    trueConditional: trueConditionalDistractor(choices, keyIndex),
+    categoryOnlyKey: categoryOnlyKey(item.prompt, choices, keyIndex),
+    oddOneOut: oddOneOutOpening(choices, keyIndex),
     absoluteWords,
     allNone,
     onlyComplete,
@@ -196,6 +276,7 @@ export function summarize(rows) {
   for (const [exam, bucket] of byExam) {
     const single = bucket.filter((row) => row.single && row.lengthGate && row.keyLength !== null);
     const longest = single.filter((row) => row.strictlyLongest).length;
+    const shortest = single.filter((row) => row.strictlyShortest).length;
     const strong = single.filter((row) => row.stronglyBiased).length;
     const positions = {};
     for (const row of single) positions[row.keyLetter] = (positions[row.keyLetter] ?? 0) + 1;
@@ -204,6 +285,8 @@ export function summarize(rows) {
       single: single.length,
       longest,
       longestRate: single.length ? longest / single.length : 0,
+      shortest,
+      shortestRate: single.length ? shortest / single.length : 0,
       strong,
       strongRate: single.length ? strong / single.length : 0,
       positions,
@@ -214,6 +297,10 @@ export function summarize(rows) {
       nearDuplicate: bucket.filter((row) => row.nearDuplicate).length,
       selfDisqualifying: single.filter((row) => row.selfDisqualifying.length > 0).length,
       notParallel: single.filter((row) => row.notParallel).length,
+      keywordEcho: single.filter((row) => row.keywordEcho).length,
+      trueConditional: single.filter((row) => row.trueConditional).length,
+      categoryOnlyKey: single.filter((row) => row.categoryOnlyKey).length,
+      oddOneOut: single.filter((row) => row.oddOneOut).length,
     };
   }
   return result;
@@ -226,6 +313,8 @@ export function rateFailures(summary, enforced = ENFORCED_EXAMS) {
     if (!row) { failures.push(`${exam}: no single-answer items`); continue; }
     if (row.longestRate > LONGEST_MAX) failures.push(`${exam}: key-is-longest ${(row.longestRate * 100).toFixed(1)}% (${row.longest}/${row.single}) exceeds 35%`);
     if (row.strongRate > STRONG_MAX) failures.push(`${exam}: strongly length-biased ${(row.strongRate * 100).toFixed(1)}% (${row.strong}/${row.single}) exceeds 10%`);
+    if (row.selfDisqualifying > 0) failures.push(`${exam}: self-disqualifying ${row.selfDisqualifying} exceeds 0`);
+    if (row.notParallel > 0) failures.push(`${exam}: choices not parallel ${row.notParallel} exceeds 0`);
   }
   return failures;
 }

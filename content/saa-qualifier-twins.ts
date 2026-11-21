@@ -94,9 +94,9 @@ const moveChoices = [
 const cache = "A read-heavy key-value cache must survive the loss of one Availability Zone, and clients must authenticate.";
 const cacheChoices = [
   "Amazon ElastiCache with a replica in a second Availability Zone",
-  "Application cache files kept on a single instance store volume inside the account",
-  "Amazon CloudFront placed in front of the database endpoint",
-  "Amazon ElastiCache in private subnets with in-transit encryption and AUTH",
+  "Amazon ElastiCache with AUTH on, kept in one Availability Zone",
+  "Amazon ElastiCache with encryption in transit and AUTH left unset",
+  "Amazon ElastiCache with private subnets, in-transit encryption, and AUTH",
 ];
 
 const edge = "A public HTTP site is served from two origins. Most requests repeat the same files.";
@@ -109,18 +109,18 @@ const edgeChoices = [
 
 const share = "A bucket must stay closed to the public. One partner needs to download a single object today.";
 const shareChoices = [
-  "S3 Block Public Access left on for the bucket",
-  "A presigned URL that expires after this download",
-  "An object ACL that grants public-read on the object for the partner today",
-  "An IAM access key sent to the partner by email",
+  "Block Public Access stays on, with a partner role that can download the one object",
+  "A presigned URL for this one download from the bucket, expiring the same day",
+  "An object ACL for the partner today that also turns Block Public Access off for the bucket",
+  "An IAM user access key created for the partner and pasted into the ticket",
 ];
 
 const org = "People in several accounts need a sign-in, and a deny must apply even if an account administrator adds a broader permission.";
 const orgChoices = [
   "IAM Identity Center permission sets for workforce sign-in",
-  "An Organizations service control policy denying the action",
-  "A root user access key created and stored for every member account",
-  "An S3 bucket policy attached in one account",
+  "An Organizations service control policy denying that permission",
+  "An IAM user access key created in each member account for sign-in",
+  "An S3 bucket policy attached for the application in one account",
 ];
 
 export const qualifierTwins: QualifierTwin[] = [
@@ -327,8 +327,8 @@ export const qualifierTwins: QualifierTwin[] = [
     docsUrl: "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
     why: [
       "A replica in a second Availability Zone gives the cache another copy when one zone is lost.",
-      "One instance store volume is lost with that instance and is not shared.",
-      "CloudFront caches HTTP. It is not the cache for this key-value store.",
+      "AUTH makes clients authenticate. A cluster kept in one Availability Zone does not survive loss of that zone.",
+      "Encryption protects the connection. It does not add a second Availability Zone or require a client token.",
       "Private subnets, encryption, and AUTH are the access controls. They do not add the second Availability Zone.",
     ],
   }),
@@ -343,8 +343,8 @@ export const qualifierTwins: QualifierTwin[] = [
     docsUrl: "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/in-transit-encryption.html",
     why: [
       "A replica improves availability. It does not by itself require clients to authenticate.",
-      "An instance store has no client authentication for a shared cache.",
-      "CloudFront is the wrong service for this database-style cache.",
+      "AUTH is one control. This choice does not place the cache in private subnets or encrypt the connection.",
+      "In-transit encryption does not require clients to present a token.",
       "Private subnets, in-transit encryption, and AUTH keep the cache off the public network and require clients to authenticate.",
     ],
   }),
@@ -390,10 +390,10 @@ export const qualifierTwins: QualifierTwin[] = [
     taskId: "1.3",
     docsUrl: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
     why: [
-      "Block Public Access stops a public ACL or public bucket policy from opening the bucket.",
-      "A presigned URL is how one partner downloads one object. It is not the control that keeps the bucket closed.",
-      "A public-read ACL is the exposure Block Public Access is there to stop.",
-      "Emailing an access key gives away a credential that can outlive the one download.",
+      "Block Public Access stays on, and the partner role is limited to that one object instead of a link anyone can forward.",
+      "A presigned URL can be forwarded to someone else. It is a broader grant than a role scoped to the partner.",
+      "Turning Block Public Access off is the exposure the bucket was required to keep closed.",
+      "An access key in a ticket is a long-lived credential that can outlive the one download.",
     ],
   }),
   twin({
@@ -406,10 +406,10 @@ export const qualifierTwins: QualifierTwin[] = [
     taskId: "1.1",
     docsUrl: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
     why: [
-      "Leaving Block Public Access on is the security baseline. It does not hand the partner today's object.",
+      "A partner role meets the download, and it takes an identity and a policy the one-day transfer does not need.",
       "A presigned URL grants that one download and expires, without a new IAM user or a public object.",
-      "A public ACL is less work only because it removes the access control the bucket is required to keep.",
-      "Creating and emailing an access key means a long-lived credential to rotate and revoke.",
+      "Turning Block Public Access off is less work only because it removes the control the bucket must keep.",
+      "Creating an access key and pasting it into a ticket leaves a credential to rotate and revoke.",
     ],
   }),
   twin({
@@ -423,8 +423,8 @@ export const qualifierTwins: QualifierTwin[] = [
     docsUrl: "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
     why: [
       "IAM Identity Center is the workforce sign-in. People get permission sets without a password and a key in every account.",
-      "An SCP is the guardrail that still denies an action after an administrator adds a broader permission. It is not the sign-in.",
-      "Root access keys are long-lived credentials the team would have to protect in every account.",
+      "An SCP still denies the action after an administrator adds a broader permission. It is not the sign-in.",
+      "An access key in every member account is a long-lived credential the team would have to protect.",
       "One bucket policy does not sign people in and does not cover the other accounts.",
     ],
   }),
@@ -440,7 +440,7 @@ export const qualifierTwins: QualifierTwin[] = [
     why: [
       "Permission sets grant workforce access. They do not win when an account administrator attaches a broader identity policy.",
       "A service control policy can deny the action for the accounts even when an identity policy would allow it.",
-      "Root keys are the opposite of a guardrail. They are credentials to lock away.",
+      "Access keys in every account do not stop an administrator from adding a broader permission.",
       "A bucket policy in one account cannot deny the action in the other accounts.",
     ],
   }),
