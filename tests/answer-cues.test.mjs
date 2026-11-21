@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { analyzeItem, equalizeStrongCue, itemFailures, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
 
 const longKey = {
@@ -65,6 +66,41 @@ test("a distractor that contradicts the stem, or a bare key beside qualified dis
     choices: ["Deny the request when transport is insecure for this bucket policy", "SQS", "SNS", "WAF"],
   });
   assert.equal(qualifiedKey.notParallel, true);
+});
+
+test("keyword echo, odd-one-out openings, and a strictly shortest key are measured", () => {
+  const echo = analyzeItem({
+    id: "q-echo", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which design gives the archive durability?",
+    choices: ["Durable archive storage", "A queue", "A function", "A cache"],
+  });
+  assert.equal(echo.keywordEcho, "archive");
+  assert.equal(echo.strictlyShortest, false);
+  const shared = analyzeItem({
+    id: "q-shared", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which archive design fits?",
+    choices: ["Archive in vault A", "Archive in vault B", "Archive in vault C", "Archive in vault D"],
+  });
+  assert.equal(shared.keywordEcho, null);
+  const odd = analyzeItem({
+    id: "q-odd", exams: ["saa-c03"], source: "questions.json", answer: 3,
+    prompt: "What is the result?",
+    choices: ["The call is allowed", "The call is allowed later", "The call is allowed here", "The request is rejected"],
+  });
+  assert.equal(odd.oddOneOut, "the call is");
+  const shortest = analyzeItem({
+    id: "q-short", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which service fits?",
+    choices: ["Amazon S3", "A longer queue for orders", "A longer function for events", "A longer cache for reads"],
+  });
+  assert.equal(shortest.strictlyShortest, true);
+  const summary = summarize([shortest]);
+  assert.equal(summary["saa-c03"].shortest, 1);
+});
+
+test("the answer-cue gate fixtures are wired into checks", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/checks.yml", import.meta.url), "utf8");
+  assert.match(workflow, /npm run test:answer-cue-gates/);
 });
 
 test("equalizing a strong cue uses the existing explanation and keeps the key", () => {

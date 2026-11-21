@@ -55,34 +55,34 @@ An Auto Scaling group held at one fixed desired capacity — Incorrect. A fixed 
 
 **Prompt:** A stateful web tier must remain available if an Availability Zone fails. Which design meets this?
 
-- A. Run a single large instance in one AZ
-- B. Use only instance store without snapshots in one AZ
-- C. Disable health checks to keep failing targets in service
-- D. Deploy instances across at least two AZs behind an Elastic Load Balancer **← correct**
+- A. Instances in two subnets of one Availability Zone behind a load balancer
+- B. An Auto Scaling group in one Availability Zone with a minimum of two instances
+- C. Health checks that keep sending traffic to targets in the failed zone
+- D. Instances in two Availability Zones behind a load balancer **← correct**
 
 **Explanation:**
 
-Run a single large instance in one AZ — Incorrect. One instance in one AZ fails when that AZ or host fails.
-Use only instance store without snapshots in one AZ — Incorrect. Instance store in one AZ is neither durable nor multi-AZ.
-Disable health checks to keep failing targets in service — Incorrect. Health checks must remove bad targets; disabling them harms availability.
-Deploy instances across at least two AZs behind an Elastic Load Balancer — Correct. Multi-AZ with load balancing removes a single AZ as a single point of failure.
+Instances in two subnets of one Availability Zone behind a load balancer — Incorrect. Two subnets in one zone still fail together when that zone fails.
+An Auto Scaling group in one Availability Zone with a minimum of two instances — Incorrect. Two instances in one zone do not give the tier a place to run when that zone fails.
+Health checks that keep sending traffic to targets in the failed zone — Incorrect. Health checks that keep a failed zone in rotation send users to targets that are gone.
+Instances in two Availability Zones behind a load balancer — Correct. Instances in two zones behind a load balancer keep the tier up when one zone fails.
 
 
 ## q-saa-chapter-05 (ch03 · objective 1.2)
 
 **Prompt:** App instances in private subnets must pull patches from the internet without accepting inbound internet connections. Which pattern is standard?
 
-- A. NAT gateway in a public subnet with a default route from private subnets to the NAT **← correct**
-- B. Attach an internet gateway as the default route for private-only instances
-- C. Assign public IPs and open SSH from 0.0.0.0/0 to each private instance
-- D. Deny all egress in the network ACL permanently
+- A. A NAT gateway in a public subnet, with private default routes **← correct**
+- B. An internet gateway as the default route for the private subnets
+- C. Internet-facing addresses on the application instances themselves
+- D. An IPv6 egress internet gateway for this IPv4 patch traffic
 
 **Explanation:**
 
-NAT gateway in a public subnet with a default route from private subnets to the NAT — Correct. NAT provides outbound-initiated access while instances stay private.
-Attach an internet gateway as the default route for private-only instances — Incorrect. Private-only hosts should not use IGW default routes.
-Assign public IPs and open SSH from 0.0.0.0/0 to each private instance — Incorrect. Public IPs plus open SSH defeat private tier design.
-Deny all egress in the network ACL permanently — Incorrect. Blocking all egress breaks patching and updates.
+A NAT gateway in a public subnet, with private default routes — Correct. A NAT gateway in a public subnet lets the private instances open outbound connections, and unsolicited inbound internet connections stop at the NAT.
+An internet gateway as the default route for the private subnets — Incorrect. An internet gateway as the private subnet's default route is the path that expects public addressing, not a private outbound-only path.
+Internet-facing addresses on the application instances themselves — Incorrect. Public addresses on the app instances expose them to inbound internet connections.
+An IPv6 egress internet gateway for this IPv4 patch traffic — Incorrect. An egress-only internet gateway is for IPv6. It is not the IPv4 path for these patch downloads.
 
 
 ## q-saa-chapter-06 (ch03 · objective 4.4)
@@ -121,7 +121,7 @@ Run peak ETL full scans on the writer during business hours — Incorrect. Heavy
 
 ## q-saa-chapter-08 (ch04 · objective 2.2)
 
-**Prompt:** RDS needs automatic failover to a standby in another Availability Zone with minimal operational reinstall. Which feature provides this?
+**Prompt:** RDS needs automatic failover to a standby in another Availability Zone, without promoting a replica or restoring a snapshot by hand. Which feature provides this?
 
 - A. RDS read replica
 - B. RDS backup and restore
@@ -140,17 +140,17 @@ RDS Multi-AZ deployment — Correct. Multi-AZ keeps a standby in another Availab
 
 **Prompt:** EC2 workers must read one DynamoDB table without embedding static access keys. What is the correct credential pattern?
 
-- A. An instance profile role with least-privilege DynamoDB permissions **← correct**
-- B. IAM user access keys baked into the AMI
-- C. Account root keys in environment files on disk
-- D. A publicly writable DynamoDB table with no authentication
+- A. An instance profile role limited to that one DynamoDB resource **← correct**
+- B. IAM user access keys in the instance user data
+- C. An instance profile role limited to a different DynamoDB table
+- D. A resource-based policy that lets the instance role scan every table
 
 **Explanation:**
 
-An instance profile role with least-privilege DynamoDB permissions — Correct. Instance profiles provide temporary role credentials.
-IAM user access keys baked into the AMI — Incorrect. Static keys in AMIs leak and rotate poorly.
-Account root keys in environment files on disk — Incorrect. Root keys are not for applications.
-A publicly writable DynamoDB table with no authentication — Incorrect. Public unauthenticated tables fail security requirements.
+An instance profile role limited to that one DynamoDB resource — Correct. The instance profile hands the workers short-lived credentials, scoped to the table they read.
+IAM user access keys in the instance user data — Incorrect. Access keys in user data are static credentials on the instance, which is the pattern to avoid.
+An instance profile role limited to a different DynamoDB table — Incorrect. A role for a different table does not grant the read this table needs.
+A resource-based policy that lets the instance role scan every table — Incorrect. A policy that allows a scan of every table is wider than the one table these workers read.
 
 
 ## q-saa-chapter-10 (ch05 · objective 1.3)
@@ -174,17 +174,17 @@ Hard-coded strings inside AMI user data baked permanently — Incorrect. Baked A
 
 **Prompt:** A media archive needs high durability, HTTP access, and lifecycle movement from frequent to rare access. Which primary store fits?
 
-- A. A single EBS volume attached to one instance as the only copy
-- B. Instance store on one host
-- C. Amazon S3 with lifecycle rules to colder classes as objects age **← correct**
-- D. Local laptop disks as the system of record
+- A. One EBS volume attached to a single instance as the archive
+- B. Amazon S3 kept in Standard, without a lifecycle rule for colder objects
+- C. Amazon S3 with lifecycle rules toward colder classes **← correct**
+- D. S3 Glacier Deep Archive as the landing class for objects that are still read often
 
 **Explanation:**
 
-A single EBS volume attached to one instance as the only copy — Incorrect. Single EBS volumes are AZ-scoped and not multi-client object stores.
-Instance store on one host — Incorrect. Instance store is ephemeral.
-Amazon S3 with lifecycle rules to colder classes as objects age — Correct. S3 provides durable object storage with lifecycle tiering.
-Local laptop disks as the system of record — Incorrect. Laptops are not durable enterprise archives.
+One EBS volume attached to a single instance as the archive — Incorrect. One EBS volume is a single attach point. It is not the durable HTTP archive with lifecycle movement.
+Amazon S3 kept in Standard, without a lifecycle rule for colder objects — Incorrect. S3 Standard is durable HTTP storage. Without a lifecycle rule, cold objects stay on the frequent-access class.
+Amazon S3 with lifecycle rules toward colder classes — Correct. S3 is the durable HTTP store, and lifecycle rules move objects from frequent access toward colder classes.
+S3 Glacier Deep Archive as the landing class for objects that are still read often — Incorrect. Deep Archive is a cold landing zone. Objects that are still read often pay a retrieval penalty there.
 
 
 ## q-saa-chapter-12 (ch06 · objective 1.3)
@@ -259,22 +259,22 @@ FTP from a corporate desktop to each user — Incorrect. Desktop FTP is not a co
 
 **Prompt:** Popular downloadable objects cause repeated origin GETs and rising data transfer. How does CloudFront help performance and often cost?
 
-- A. CloudFront always disables caching permanently by default
-- B. CloudFront deletes S3 lifecycle rules automatically
-- C. TLS must be disabled to save money
-- D. Edge caches satisfy repeat viewers without refetching the origin every time **← correct**
+- A. A cache policy with a zero TTL, so each viewer still fetches from the origin
+- B. CloudFront removing the S3 lifecycle rules
+- C. A price class that pins every request to the origin Region
+- D. Edge caches serving repeat viewers and sparing the origin **← correct**
 
 **Explanation:**
 
-CloudFront always disables caching permanently by default — Incorrect. Caching is a primary benefit, not permanently disabled.
-CloudFront deletes S3 lifecycle rules automatically — Incorrect. CloudFront does not remove lifecycle configuration as a cost feature.
-TLS must be disabled to save money — Incorrect. TLS remains standard for public HTTPS distributions.
-Edge caches satisfy repeat viewers without refetching the origin every time — Correct. Cache hits reduce origin load and repeated data transfer.
+A cache policy with a zero TTL, so each viewer still fetches from the origin — Incorrect. A zero TTL does not keep a copy, so the origin still serves every download.
+CloudFront removing the S3 lifecycle rules — Incorrect. Lifecycle rules decide storage class. Removing them does not stop repeat downloads from the origin.
+A price class that pins every request to the origin Region — Incorrect. A price class limits locations. It does not serve a cached copy in place of the origin.
+Edge caches serving repeat viewers and sparing the origin — Correct. Edge caches answer repeat downloads, so those requests do not all go back to the origin.
 
 
 ## q-saa-chapter-17 (ch09 · objective 2.1)
 
-**Prompt:** Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which decoupling service fits between API and workers?
+**Prompt:** Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which queue should sit between the API and the workers?
 
 - A. Amazon SQS **← correct**
 - B. Amazon SNS
@@ -291,7 +291,7 @@ Amazon Kinesis Data Streams — Incorrect. Kinesis retains a stream of records. 
 
 ## q-saa-chapter-18 (ch09 · objective 3.5)
 
-**Prompt:** A multi-step workflow needs retries, branching, and visible state across Lambda tasks. Which service is purpose-built?
+**Prompt:** A new application needs a multi-step workflow with retries, branching, and visible state across Lambda tasks. Which service is purpose-built for that?
 
 - A. Amazon EventBridge
 - B. AWS Step Functions **← correct**
@@ -395,69 +395,68 @@ AWS Backup — Incorrect. Backup protects recovery points, not runtime HTTP filt
 
 **Prompt:** Member accounts must be blocked from leaving the organization or disabling critical security services except a break-glass security account. Which control enforces this centrally?
 
-- A. A single security group rule in one VPC
-- B. S3 Object Lock on unrelated application buckets
-- C. Closing the billing console UI
-- D. Service control policies (SCPs) in AWS Organizations **← correct**
+- A. An SCP that denies the actions in the break-glass account as well
+- B. A Config rule that reports a disabled security service after the change
+- C. A permissions boundary used as the account control in each member account
+- D. Service control policies for AWS Organizations **← correct**
 
 **Explanation:**
 
-A single security group rule in one VPC — Incorrect. Security groups filter network traffic only.
-S3 Object Lock on unrelated application buckets — Incorrect. Object Lock is for object retention.
-Closing the billing console UI — Incorrect. Billing UI access is unrelated to service API guardrails.
-Service control policies (SCPs) in AWS Organizations — Correct. SCPs set permission guardrails across member accounts.
+An SCP that denies the actions in the break-glass account as well — Incorrect. An SCP that also binds the break-glass account removes the exception the security team kept.
+A Config rule that reports a disabled security service after the change — Incorrect. Config can report the change. It does not block leaving the organization or disabling the service.
+A permissions boundary used as the account control in each member account — Incorrect. A permissions boundary in the member account can be changed by an administrator of that account.
+Service control policies for AWS Organizations — Correct. Service control policies can deny leaving the organization and disabling security services, with the break-glass account left out.
 
 
 ## q-saa-chapter-25 (ch13 · objective 4.2)
 
 **Prompt:** Compute Optimizer reports an EC2 instance is consistently over-provisioned on CPU and memory. What is the cost-aware next step?
 
-- A. Rightsize or stop/schedule the instance after validating performance needs **← correct**
-- B. Immediately double the instance size
-- C. Ignore the recommendation permanently without review
-- D. Move the workload to a larger Dedicated Host without analysis
+- A. Rightsize the instance after checking the performance need **← correct**
+- B. Double the instance size immediately
+- C. Leave the recommendation unused
+- D. Move the workload to a memory-optimized family before checking the CPU finding
 
 **Explanation:**
 
-Rightsize or stop/schedule the instance after validating performance needs — Correct. Rightsizing or scheduling removes paid idle capacity while preserving required performance.
-Immediately double the instance size — Incorrect. Upsizing increases cost without evidence of need.
-Ignore the recommendation permanently without review — Incorrect. Ignoring sustained waste leaves money on the table.
-Move the workload to a larger Dedicated Host without analysis — Incorrect. Larger hosts need justification.
+Rightsize the instance after checking the performance need — Correct. Compute Optimizer is a candidate. Confirm the performance need, then move to the smaller size it supports.
+Double the instance size immediately — Incorrect. A larger size raises cost. The finding says the instance is already bigger than the CPU and memory need.
+Leave the recommendation unused — Incorrect. Leaving the finding unused keeps paying for the spare CPU and memory.
+Move the workload to a memory-optimized family before checking the CPU finding — Incorrect. A memory-optimized family answers a memory bottleneck. This finding is spare CPU and memory, not a need for more memory.
 
 
 ## q-saa-chapter-26 (ch13 · objective 4.4)
 
 **Prompt:** A cost review finds unattached Elastic IPs and idle load balancers in a non-production account. What should operators do?
 
-- A. Assume idle networking resources never incur charges
-- B. Release unused Elastic IPs and delete idle load balancers after confirmation they are not required **← correct**
-- C. Allocate more unused Elastic IPs for unknown future projects immediately
-- D. Attach idle Elastic IPs to random stopped instances without need
+- A. Treat the idle addresses and load balancers as covered by the account support plan
+- B. Release unused Elastic IPs and delete idle load balancers **← correct**
+- C. Allocate additional Elastic IPs now for a project that has no running workload
+- D. Move the unattached addresses onto a NAT gateway that no route uses
 
 **Explanation:**
 
-Assume idle networking resources never incur charges — Incorrect. They are not free when idle or unattached.
-Release unused Elastic IPs and delete idle load balancers after confirmation they are not required — Correct. Unattached EIPs and idle load balancers incur charges; reclaim them.
-Allocate more unused Elastic IPs for unknown future projects immediately — Incorrect. Creating more unused resources increases waste.
-Attach idle Elastic IPs to random stopped instances without need — Incorrect. Random attachments are not intentional design.
+Treat the idle addresses and load balancers as covered by the account support plan — Incorrect. Support-plan price does not include idle Elastic IPs and idle load balancers.
+Release unused Elastic IPs and delete idle load balancers — Correct. Releasing unused Elastic IPs and deleting idle load balancers removes those charges.
+Allocate additional Elastic IPs now for a project that has no running workload — Incorrect. More addresses for a project that is not running add addresses the review is already trying to remove.
+Move the unattached addresses onto a NAT gateway that no route uses — Incorrect. An address attached to a NAT gateway with no route is still unused.
 
-# Phase A expanded set (q-saa-chapter-27..32)
 
 ## q-saa-chapter-27 (ch01 · objective 1.1)
 
 **Prompt:** A growing company wants one workforce identity plane across many AWS accounts, with temporary credentials and centralized permission assignment. Which baseline fits best?
 
-- A. Create unique long-term IAM user access keys in every account and email them to staff
-- B. Share a single IAM user password across accounts for simplicity
-- C. Use AWS IAM Identity Center (successor to AWS SSO) with permission sets mapped to accounts and groups **← correct**
-- D. Disable MFA organization-wide to reduce login friction
+- A. IAM users with long-term keys issued as the identity in every member account
+- B. One IAM user password shared as the identity across the accounts
+- C. IAM Identity Center permission sets for the accounts **← correct**
+- D. Permission sets created separately in each account, without an organization assignment
 
 **Explanation:**
 
-Create unique long-term IAM user access keys in every account and email them to staff — Incorrect. Long-term keys per account do not scale and are hard to rotate and audit.
-Share a single IAM user password across accounts for simplicity — Incorrect. Shared passwords violate least privilege and accountability.
-Use AWS IAM Identity Center (successor to AWS SSO) with permission sets mapped to accounts and groups — Correct. Identity Center centralizes workforce access with temporary sessions via permission sets.
-Disable MFA organization-wide to reduce login friction — Incorrect. MFA strengthens access control and should not be disabled for convenience.
+IAM users with long-term keys issued as the identity in every member account — Incorrect. Long-term keys in every account are the opposite of one workforce identity with temporary credentials.
+One IAM user password shared as the identity across the accounts — Incorrect. A shared password is one secret for many people, not an assigned permission set per person.
+IAM Identity Center permission sets for the accounts — Correct. IAM Identity Center assigns permission sets across the accounts and vends temporary credentials.
+Permission sets created separately in each account, without an organization assignment — Incorrect. Permission sets that are rebuilt by hand in each account are not the centralized assignment.
 
 
 ## q-saa-chapter-28 (ch01 · objective 4.2)
@@ -481,34 +480,34 @@ Turn off AWS Budgets so alerts never interrupt engineering — Incorrect. Budget
 
 **Prompt:** A new EC2 application needs durable block storage with predictable baseline SSD performance and the ability to tune throughput independently of size. The workload is not a latency-sensitive database that needs extreme IOPS. Which EBS choice fits?
 
-- A. Instance store only, with no EBS volume, for the only copy of application data
-- B. Magnetic cold HDD as the boot and data volume for a latency-sensitive API
-- C. A single local USB drive attached to one laptop as the shared data plane
-- D. General Purpose SSD (gp3) volumes sized for capacity, with IOPS/throughput set to the measured need **← correct**
+- A. io2 volumes with the IOPS setting raised and throughput left at its default
+- B. st1 volumes, picked for the throughput in the volume name
+- C. gp2 volumes, where throughput stays tied to the volume size
+- D. gp3 volumes sized for capacity, with throughput set to demand **← correct**
 
 **Explanation:**
 
-Instance store only, with no EBS volume, for the only copy of application data — Incorrect. Instance store is ephemeral and tied to the host lifetime.
-Magnetic cold HDD as the boot and data volume for a latency-sensitive API — Incorrect. Cold HDD is for infrequent throughput-oriented workloads, not general low-latency APIs.
-A single local USB drive attached to one laptop as the shared data plane — Incorrect. Local laptop storage is not durable cloud block storage.
-General Purpose SSD (gp3) volumes sized for capacity, with IOPS/throughput set to the measured need — Correct. gp3 provides durable SSD performance with independently configurable IOPS and throughput for many general workloads.
+io2 volumes with the IOPS setting raised and throughput left at its default — Incorrect. io2 is the high-IOPS volume. This workload wants a baseline SSD with throughput set apart from size, not extreme IOPS.
+st1 volumes, picked for the throughput in the volume name — Incorrect. st1 is a throughput-optimized hard disk. It is a poor fit for an SSD baseline that is not a disk archive.
+gp2 volumes, where throughput stays tied to the volume size — Incorrect. gp2 throughput follows the size of the volume. You do not set throughput on its own.
+gp3 volumes sized for capacity, with throughput set to demand — Correct. gp3 is the SSD baseline, and its throughput can be set separately from the volume size.
 
 
 ## q-saa-chapter-30 (ch02 · objective 4.2)
 
 **Prompt:** A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers. Which approach fits?
 
-- A. Purchase Dedicated Hosts for every burst worker regardless of utilization
-- B. Disable Auto Scaling and run one oversized On-Demand instance continuously
-- C. Use EC2 Spot capacity for the interruption-tolerant workers, with On-Demand or diversified capacity as a fallback path **← correct**
-- D. Bake root user access keys into the AMI so workers start faster
+- A. A Compute Savings Plan that covers the On-Demand fallback and not the burst
+- B. One On-Demand instance sized for the peak, with Auto Scaling turned off
+- C. Spot capacity for the burst tasks, with an On-Demand fallback **← correct**
+- D. Spot capacity for the burst tasks that stops when the Spot pool is empty
 
 **Explanation:**
 
-Purchase Dedicated Hosts for every burst worker regardless of utilization — Incorrect. Dedicated Hosts target compliance/licensing isolation, not generic burst savings.
-Disable Auto Scaling and run one oversized On-Demand instance continuously — Incorrect. A single always-on instance wastes money and removes elasticity.
-Use EC2 Spot capacity for the interruption-tolerant workers, with On-Demand or diversified capacity as a fallback path — Correct. Spot can discount spare capacity for fault-tolerant fleets when interruption handling exists.
-Bake root user access keys into the AMI so workers start faster — Incorrect. Root keys must not be embedded; this is a security failure, not a cost design.
+A Compute Savings Plan that covers the On-Demand fallback and not the burst — Incorrect. A Savings Plan on the fallback does not lower the price of the burst tasks that can be interrupted.
+One On-Demand instance sized for the peak, with Auto Scaling turned off — Incorrect. One large On-Demand instance priced for the peak is the steady cost the team is trying to beat.
+Spot capacity for the burst tasks, with an On-Demand fallback — Correct. Spot is the cheaper burst capacity, and an On-Demand fallback remains when Spot is not available.
+Spot capacity for the burst tasks that stops when the Spot pool is empty — Incorrect. Spot with no fallback stops the burst work when the pool is empty.
 
 
 ## q-saa-chapter-31 (ch03 · objective 1.2)
@@ -532,15 +531,15 @@ Allow TCP 443 on the instance security group from the ALB subnet CIDR — Incorr
 
 **Prompt:** A three-tier application needs separate public ingress and private application subnets and must survive an Availability Zone impairment. Which VPC layout meets the requirement?
 
-- A. One public subnet in a single AZ holding every tier, including databases
-- B. Private subnets only, with no path for a load balancer or controlled ingress
-- C. Public and private subnets in at least two AZs, with the load balancer spanning the public subnets and app tiers in private subnets **← correct**
-- D. A single private subnet in one AZ with an internet gateway attached directly to every private instance
+- A. One public subnet and one private subnet that share a single zone
+- B. Private subnets in two AZs for the load balancer and the applications
+- C. Public and private subnets in two AZs, with the apps kept private **← correct**
+- D. Public subnets in two AZs, with the database in those public subnets
 
 **Explanation:**
 
-One public subnet in a single AZ holding every tier, including databases — Incorrect. One AZ is a single point of failure and co-locating data tiers publicly is poor isolation.
-Private subnets only, with no path for a load balancer or controlled ingress — Incorrect. Public-facing apps still need a designed ingress path such as public subnets for the load balancer.
-Public and private subnets in at least two AZs, with the load balancer spanning the public subnets and app tiers in private subnets — Correct. Multi-AZ public/private tiering is the standard HA VPC pattern.
-A single private subnet in one AZ with an internet gateway attached directly to every private instance — Incorrect. IGW routes on private-only hosts and single-AZ design break isolation and resilience.
+One public subnet and one private subnet that share a single zone — Incorrect. The subnet split is right, but both subnets are in one zone, so a zone impairment takes the whole application out.
+Private subnets in two AZs for the load balancer and the applications — Incorrect. Private subnets in two zones survive a zone impairment, but a public load balancer has no public subnet to sit in.
+Public and private subnets in two AZs, with the apps kept private — Correct. Public subnets in two zones hold the load balancer, and the application stays in private subnets in those zones.
+Public subnets in two AZs, with the database in those public subnets — Incorrect. Two zones remove the single-zone failure, but the database is in the public subnets with the web tier.
 

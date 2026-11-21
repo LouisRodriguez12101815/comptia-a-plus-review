@@ -4,10 +4,12 @@ const ABSOLUTE = ["always", "never", "only", "all"];
 const STOP = new Set("about after again also and are because been before being between both but can could does each from have into more most must not other over should than that the their them then there these this those through under using what when where which while will with would your".split(" "));
 const VERB = /\b(is|are|was|were|has|have|does|do|can|should|will|uses|provides|requires|allows|supports|stores|routes|encrypts|replicates)\b/i;
 
-/** Exams whose rewrite batch has landed. SAA and CLF stay empty until that batch is in the tree. */
-export const ENFORCED_EXAMS = [];
+/** Exams whose rewrite batch has landed. CLF stays empty until that batch is in the tree. */
+export const ENFORCED_EXAMS = ["saa-c03"];
 export const LONGEST_MAX = 0.35;
 export const STRONG_MAX = 0.1;
+export const SHORTEST_MIN = 0.15;
+export const SHORTEST_MAX = 0.35;
 export const COMPTIA_EXAMS = ["220-1201", "220-1202", "n10-009"];
 
 export function choiceLength(text) {
@@ -59,6 +61,26 @@ export function nearDuplicateChoices(choices) {
   return pairs;
 }
 
+/** A distinctive stem term that appears in the key and in no distractor. */
+export function keywordEchoTerm(prompt, choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
+  const key = choices[keyIndex] ?? "";
+  const wrong = choices.filter((_, index) => index !== keyIndex);
+  const shared = new Set(words(choices[0] ?? "").filter((word) => choices.every((choice) => hasWord(choice, word))));
+  const stemWords = [...new Set(words(prompt).filter((word) => !STOP.has(word) && !shared.has(word)))];
+  return stemWords.find((word) => hasWord(key, word) && wrong.every((choice) => !hasWord(choice, word))) ?? null;
+}
+
+/** The opening the distractors share when the key does not share those first three words. */
+export function oddOneOutOpening(choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || choices.length < 3) return null;
+  const opening = (text) => String(text).trim().split(/\s+/).slice(0, 3).join(" ").toLowerCase();
+  const wrong = choices.filter((_, index) => index !== keyIndex).map(opening);
+  if (wrong.length < 2 || wrong.some((text) => text.split(" ").length < 3)) return null;
+  if (new Set(wrong).size !== 1) return null;
+  return opening(choices[keyIndex]) === wrong[0] ? null : wrong[0];
+}
+
 /** Cue report for one item. Multi-answer items are described but excluded from length rates. */
 export function analyzeItem(item) {
   const choices = (item.choices ?? []).map((choice) => String(choice));
@@ -70,6 +92,7 @@ export function analyzeItem(item) {
   const others = keyIndex === null ? [] : lengths.filter((_, index) => index !== keyIndex);
   const longer = keyLength === null ? null : others.filter((length) => length > keyLength).length;
   const strictlyLongest = keyLength !== null && others.length > 0 && others.every((length) => keyLength > length);
+  const strictlyShortest = keyLength !== null && others.length > 0 && others.every((length) => keyLength < length);
   const meanOther = others.length ? others.reduce((sum, length) => sum + length, 0) / others.length : null;
   const ratio = keyLength !== null && meanOther ? keyLength / meanOther : null;
   const stronglyBiased = strictlyLongest && ratio !== null && ratio >= 1.3;
@@ -98,8 +121,11 @@ export function analyzeItem(item) {
     meanOther,
     ratio,
     strictlyLongest,
+    strictlyShortest,
     stronglyBiased,
     stemWord,
+    keywordEcho: keywordEchoTerm(item.prompt, choices, keyIndex),
+    oddOneOut: oddOneOutOpening(choices, keyIndex),
     absoluteWords,
     allNone,
     onlyComplete,
@@ -196,6 +222,7 @@ export function summarize(rows) {
   for (const [exam, bucket] of byExam) {
     const single = bucket.filter((row) => row.single && row.lengthGate && row.keyLength !== null);
     const longest = single.filter((row) => row.strictlyLongest).length;
+    const shortest = single.filter((row) => row.strictlyShortest).length;
     const strong = single.filter((row) => row.stronglyBiased).length;
     const positions = {};
     for (const row of single) positions[row.keyLetter] = (positions[row.keyLetter] ?? 0) + 1;
@@ -204,6 +231,8 @@ export function summarize(rows) {
       single: single.length,
       longest,
       longestRate: single.length ? longest / single.length : 0,
+      shortest,
+      shortestRate: single.length ? shortest / single.length : 0,
       strong,
       strongRate: single.length ? strong / single.length : 0,
       positions,
@@ -214,6 +243,8 @@ export function summarize(rows) {
       nearDuplicate: bucket.filter((row) => row.nearDuplicate).length,
       selfDisqualifying: single.filter((row) => row.selfDisqualifying.length > 0).length,
       notParallel: single.filter((row) => row.notParallel).length,
+      keywordEcho: single.filter((row) => row.keywordEcho).length,
+      oddOneOut: single.filter((row) => row.oddOneOut).length,
     };
   }
   return result;
@@ -226,6 +257,8 @@ export function rateFailures(summary, enforced = ENFORCED_EXAMS) {
     if (!row) { failures.push(`${exam}: no single-answer items`); continue; }
     if (row.longestRate > LONGEST_MAX) failures.push(`${exam}: key-is-longest ${(row.longestRate * 100).toFixed(1)}% (${row.longest}/${row.single}) exceeds 35%`);
     if (row.strongRate > STRONG_MAX) failures.push(`${exam}: strongly length-biased ${(row.strongRate * 100).toFixed(1)}% (${row.strong}/${row.single}) exceeds 10%`);
+    if (row.selfDisqualifying > 0) failures.push(`${exam}: self-disqualifying ${row.selfDisqualifying} exceeds 0`);
+    if (row.notParallel > 0) failures.push(`${exam}: choices not parallel ${row.notParallel} exceeds 0`);
   }
   return failures;
 }

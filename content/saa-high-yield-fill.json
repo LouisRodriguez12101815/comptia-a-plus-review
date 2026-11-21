@@ -535,13 +535,13 @@
       "examCodes": [
         "saa-c03"
       ],
-      "prompt": "Readers in a second Region must query Aurora locally, and that second Region must be able to become the writer if the first Region is unavailable. Which Aurora feature is this? The study pair pair-aurora-global-replica compares the neighboring choice.",
+      "prompt": "Readers in a second Region must query Aurora locally, and that second Region must be able to become the writer if the first Region is unavailable. The copy has to be the storage-layer secondary, not a separate replica cluster. Which Aurora feature is this? The study pair pair-aurora-global-replica compares the neighboring choice.",
       "choices": [
-        "An Aurora snapshot copy",
-        "Aurora Serverless v2",
-        "Aurora Global Database",
-        "An Aurora cross-Region read replica"
-      ],
+      "An Aurora snapshot copy",
+      "Aurora Serverless v2",
+      "Aurora Global Database",
+      "An Aurora cross-Region read replica"
+    ],
       "answer": 2,
       "explanation": "Option: An Aurora snapshot copy — Incorrect: A snapshot copy is a point in time. Readers in the second Region do not get a live secondary from it.\nOption: Aurora Serverless v2 — Incorrect: Serverless v2 changes capacity in the Region where the cluster runs. It does not add the second Region.\nOption: Aurora Global Database — Correct: Global Database keeps a secondary Region that serves local reads and can be promoted if the first Region is unavailable. See pair-aurora-global-replica for the replica contrast.\nOption: An Aurora cross-Region read replica — Incorrect: A cross-Region read replica is a separate replica cluster with engine replication lag. The storage-layer secondary for this scenario is Global Database.",
       "weak": false,
@@ -555,8 +555,8 @@
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
       ],
       "services": [
-        "Amazon Aurora"
-      ],
+      "Amazon Aurora"
+    ],
       "difficulty": "medium",
       "audit": {
         "taskId": "2.2",
