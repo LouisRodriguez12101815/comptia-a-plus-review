@@ -17,19 +17,37 @@ The full per-item CSV is written to ignored `tmp/answer-cue-audit.csv` when the 
 
 ## SAA warn-only checks
 
-These three checks are SAA only and do not fail the build. Keyword echo is a distinctive question term in the key and in no distractor, ignoring stopwords and any term that appears in every choice. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.
+These checks are SAA only and do not fail the build. Keyword echo is an AWS-specific or technical question term in the key and in no distractor. Generic nouns (location, customer, average, storage, data, application, user, cost) do not count, nor do stopwords or a term that appears in every choice. A true-conditional pattern is a wrong choice that starts with the key and adds when, if, after, unless, only, or while. That pattern still needs a human truth check. A category word only the key matches is a named category such as queue, file system, certificate, load balancer, placement group, or purchase option when no distractor belongs to it. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.
 
 Key-is-longest: 43 (12.5%). Key-is-shortest: 71 (20.6%). Shortest target band: 15.0%–35.0%.
 
 ### Keyword echo
 
-Count: 56.
+Count: 34.
 
-- q-aws-found-03: location
-- q-aws-found-10: customer
-- q-saa-core-02: average
-- q-saa-core-13: storage
 - q-saa-core-15: subnet
+- q-saa-core-20: global
+- q-saa-core-32: database
+- q-saa-core-37: latency
+- q-saa-arch-13: restore
+- q-saa-arch-24: global
+- q-saa-arch-28: throughput
+- q-saa-arch-39: snapshots
+- q-aws-review-saa-c03-1-3: compliance
+- q-aws-review-saa-c03-3-4: global
+
+### True conditional distractor
+
+Count: 0.
+
+
+### Category word only the key matches
+
+Count: 3.
+
+- q-aws-found-15: file system
+- q-aws-found-26: queue
+- q-saa-core-10: file system
 
 ### Odd-one-out opening
 

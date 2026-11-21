@@ -76,6 +76,32 @@ test("keyword echo, odd-one-out openings, and a strictly shortest key are measur
   });
   assert.equal(echo.keywordEcho, "archive");
   assert.equal(echo.strictlyShortest, false);
+  const generic = analyzeItem({
+    id: "q-generic", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which design lowers the storage cost for this team?",
+    choices: ["Lower storage cost", "Amazon SQS", "AWS Lambda", "Amazon ElastiCache"],
+  });
+  assert.equal(generic.keywordEcho, null);
+  const technical = analyzeItem({
+    id: "q-subnet", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which option isolates the subnet?",
+    choices: ["Private subnet routing", "Amazon SQS", "AWS Lambda", "Amazon ElastiCache"],
+  });
+  assert.equal(technical.keywordEcho, "subnet");
+  const conditional = analyzeItem({
+    id: "q-conditional", exams: ["saa-c03"], source: "questions.json", answer: 3,
+    prompt: "What is the effective result?",
+    choices: ["The call is allowed", "The call is allowed later", "The call is rejected when the caller uses the console", "The call is rejected"],
+  });
+  assert.equal(conditional.trueConditional, "The call is rejected when the caller uses the console");
+  const category = analyzeItem({
+    id: "q-queue", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which queue should sit between the producers and the consumers?",
+    choices: ["Amazon SQS", "Amazon SNS", "Amazon EventBridge", "Amazon Kinesis Data Streams"],
+  });
+  assert.equal(category.categoryOnlyKey, "queue");
+  const rates = rateFailures(summarize([generic, conditional, category]));
+  assert.deepEqual(rates, []);
   const shared = analyzeItem({
     id: "q-shared", exams: ["saa-c03"], source: "questions.json", answer: 0,
     prompt: "Which archive design fits?",

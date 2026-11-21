@@ -3061,7 +3061,7 @@
       "topicId": "aws-saa-resilient-architectures",
       "skillId": "2.2-S04",
       "skill": "Implementing designs to mitigate single points of failure",
-      "primaryDecision": "A loosely coupled order pipeline must absorb traffic spikes between producers and consumers. Which queue should sit between them?",
+      "primaryDecision": "A loosely coupled order pipeline must absorb traffic spikes between producers and consumers. One worker processes each message, consumers pull at their own pace, and messages wait while workers are down. Which service should sit between them?",
       "reviewNote": "Primary decision mapped from the stem and keyed response. Mapping is a review aid, not evidence of complete task coverage."
     },
     {
@@ -4071,7 +4071,7 @@
       "topicId": "aws-saa-resilient-architectures",
       "skillId": "2.1-S03",
       "skill": "Determining the AWS services required to achieve loose coupling based on requirements",
-      "primaryDecision": "Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which queue should sit between the API and the workers?",
+      "primaryDecision": "Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. One worker processes each message, consumers pull at their own pace, and messages wait while workers are down. Which service should sit between the API and the workers?",
       "reviewNote": "Primary decision mapped from the stem and keyed response. Mapping is a review aid, not evidence of complete task coverage."
     },
     {
@@ -4201,7 +4201,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.2-S03",
       "skill": "Determining cost-effective AWS compute services with appropriate use cases (for example, AWS Lambda, Amazon EC2, AWS Fargate)",
-      "primaryDecision": "A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers. Which approach fits?",
+      "primaryDecision": "A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers, and the burst work must keep running when Spot capacity is gone. Which approach fits?",
       "reviewNote": "Primary decision mapped from the stem and keyed response. Mapping is a review aid, not evidence of complete task coverage."
     },
     {
@@ -4435,7 +4435,7 @@
       "topicId": "aws-saa-databases",
       "skillId": "2.2-S02",
       "skill": "Determining the AWS services required to provide a highly available and/or fault-tolerant architecture across AWS Regions or Availability Zones",
-      "primaryDecision": "Readers in a second Region must query Aurora locally, and that second Region must be able to become the writer if the first Region is unavailable. The copy has to be the storage-layer secondary, not a separate replica cluster. Which Aurora feature is this? The study pair pair-aurora-global-replica compares the neighboring choice.",
+      "primaryDecision": "Readers in a second Region must query Aurora locally. Replication must not use the engine's replica process, and the second Region must be promotable to writer in about a minute. Which Aurora feature is this?",
       "stretch": false,
       "reviewNote": "Mapped to the existing multi-Region availability skill on task 2.2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -11783,7 +11783,7 @@
           "id": "q-saa-core-29",
           "reason": "answer-cue 2b2",
           "oldHash": "66a65a1a24c4201fee6c677356d89d2800a749d6c6c7ff83345803af0bf3deb7",
-          "newHash": "f6f52510f71d4edc50435f898b212d279320c02ef145b7497f983e7e2f41e529",
+          "newHash": "c2bd129de6cb357b6aafb746c56e4c69033e37cbbbb15f098528510bd23c3c87",
           "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
           "numbers": ""
         },
@@ -11791,7 +11791,7 @@
           "id": "q-saa-arch-09",
           "reason": "answer-cue 2b2",
           "oldHash": "010ed8af4c969010bded0940878a436185fc3e37a5d07e37d6b2c56320206773",
-          "newHash": "5769fbbbcb7b23581fa813ff673784e2e2e9f1e80a0891a07475f709639a2229",
+          "newHash": "e351bac3b71230943296e6598b4c20dc0b39ebec388fc6560a1028a54c1c396a",
           "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
           "numbers": ""
         },
@@ -11879,7 +11879,7 @@
           "id": "q-saa-hy-aurora-global-01",
           "reason": "answer-cue 2b2",
           "oldHash": "21715700492a1935c3e8cc2e4c4bd0a8f260602253eb5ac4b08f27885947d6ca",
-          "newHash": "4c299a0c90dc232cbd485bba473f64007f062ec95a9c2d0dd07b4af94725f6be",
+          "newHash": "1b7df7dbc8bfead414e290043d15451e587322072035d240720ab96c57a1f55c",
           "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
           "numbers": ""
         },
@@ -11911,7 +11911,7 @@
           "id": "q-saa-chapter-17",
           "reason": "answer-cue 2b2",
           "oldHash": "9fa0513b6eb6101f4107c4f98ba600cad99d8addae9732970de7a51f75c1b0e2",
-          "newHash": "a4ed8ed732e5b7b849ed8450ec90310dfe5760125ea9f029e52c94028ecdad5e",
+          "newHash": "086167f9b8ffd2daf71d9cb7436fba3258d279f4c937f26241a7a414906feef9",
           "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
           "numbers": ""
         },
@@ -11919,7 +11919,7 @@
           "id": "q-saa-practice-25",
           "reason": "answer-cue 2b2",
           "oldHash": "59f6338b504d56ebd5d75a475bba165231bc839efb0814fd902415ae6aa89f92",
-          "newHash": "cdf33c4760ff35b05ba34cd2feb3ac6cf25ba553e197a953b474a722ac84f824",
+          "newHash": "00700d6df32993b8706cefb368b0cd27a7b64c604670d7ac5812e36adf9a8d68",
           "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
           "numbers": ""
         },
@@ -12263,7 +12263,7 @@
           "id": "q-saa-chapter-30",
           "reason": "answer-cue 2b2",
           "oldHash": "3023becb29d80ab229b1a983ceac735f2f2f1c4e61804e3b8b1bd6c4762109a8",
-          "newHash": "940ac3cfdfe0f84c38eee89a0e2632eec832d364c6e412690306d59ee2801399",
+          "newHash": "ffa0c0c76a42c09ef84d844c7bb775b808655a542a91c6f4fc3a8ad8e3b827fc",
           "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
           "numbers": ""
         },

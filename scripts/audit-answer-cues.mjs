@@ -51,20 +51,22 @@ function pct(rate) {
   return `${(rate * 100).toFixed(1)}%`;
 }
 
-function examples(rows, pick, label) {
-  return rows.filter(pick).slice(0, 5).map((row) => `- ${row.id}: ${label(row)}`);
+function examples(rows, pick, label, limit = 5) {
+  return rows.filter(pick).slice(0, limit).map((row) => `- ${row.id}: ${label(row)}`);
 }
 
 function saaWarnSection(rows, summary) {
   const saa = rows.filter((row) => row.exams.includes("saa-c03") && row.single && row.lengthGate);
   const row = summary["saa-c03"];
-  const echo = examples(saa, (item) => item.keywordEcho, (item) => item.keywordEcho);
+  const echo = examples(saa, (item) => item.keywordEcho, (item) => item.keywordEcho, 10);
+  const conditional = examples(saa, (item) => item.trueConditional, (item) => item.trueConditional, 10);
+  const category = examples(saa, (item) => item.categoryOnlyKey, (item) => item.categoryOnlyKey, 10);
   const odd = examples(saa, (item) => item.oddOneOut, (item) => item.oddOneOut);
   const shortest = examples(saa, (item) => item.strictlyShortest, (item) => `key length ${item.keyLength}`);
   return [
     "## SAA warn-only checks",
     "",
-    "These three checks are SAA only and do not fail the build. Keyword echo is a distinctive question term in the key and in no distractor, ignoring stopwords and any term that appears in every choice. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.",
+    "These checks are SAA only and do not fail the build. Keyword echo is an AWS-specific or technical question term in the key and in no distractor. Generic nouns (location, customer, average, storage, data, application, user, cost) do not count, nor do stopwords or a term that appears in every choice. A true-conditional pattern is a wrong choice that starts with the key and adds when, if, after, unless, only, or while. That pattern still needs a human truth check. A category word only the key matches is a named category such as queue, file system, certificate, load balancer, placement group, or purchase option when no distractor belongs to it. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.",
     "",
     `Key-is-longest: ${row.longest} (${pct(row.longestRate)}). Key-is-shortest: ${row.shortest} (${pct(row.shortestRate)}). Shortest target band: ${pct(SHORTEST_MIN)}–${pct(SHORTEST_MAX)}.`,
     "",
@@ -73,6 +75,18 @@ function saaWarnSection(rows, summary) {
     `Count: ${row.keywordEcho}.`,
     "",
     ...echo,
+    "",
+    `### True conditional distractor`,
+    "",
+    `Count: ${row.trueConditional}.`,
+    "",
+    ...conditional,
+    "",
+    `### Category word only the key matches`,
+    "",
+    `Count: ${row.categoryOnlyKey}.`,
+    "",
+    ...category,
     "",
     `### Odd-one-out opening`,
     "",
@@ -184,7 +198,7 @@ if (!check) {
   const saa = summary["saa-c03"];
   if (saa) {
     const band = saa.shortestRate < SHORTEST_MIN || saa.shortestRate > SHORTEST_MAX ? " outside 15–35%" : " inside 15–35%";
-    console.log(`saa-c03 warn-only: keyword echo ${saa.keywordEcho}, odd-one-out opening ${saa.oddOneOut}, key-is-shortest ${pct(saa.shortestRate)} (${saa.shortest}/${saa.single})${band}. Key-is-longest is ${pct(saa.longestRate)}.`);
+    console.log(`saa-c03 warn-only: keyword echo ${saa.keywordEcho}, true conditional distractor ${saa.trueConditional}, category word only the key matches ${saa.categoryOnlyKey}, odd-one-out opening ${saa.oddOneOut}, key-is-shortest ${pct(saa.shortestRate)} (${saa.shortest}/${saa.single})${band}. Key-is-longest is ${pct(saa.longestRate)}.`);
   }
   if (failures.length) {
     console.error(failures.join("\n"));

@@ -12847,11 +12847,11 @@
     "choices": [
       "The call is allowed",
       "The call is allowed when the Allow is the newer statement",
-      "The call is rejected when the caller uses the console",
+      "The call is rejected for a resource-based Deny, and an identity-policy Deny still allows the call",
       "The call is rejected"
     ],
     "answer": 3,
-    "explanation": "The call is allowed — Incorrect. An Allow does not win over an explicit Deny in another applicable policy.\nThe call is allowed when the Allow is the newer statement — Incorrect. IAM does not choose the newer statement. An explicit Deny still overrides the Allow.\nThe call is rejected when the caller uses the console — Incorrect. The console uses the same IAM evaluation. The call is rejected for every caller, not only the console.\nThe call is rejected — Correct. An explicit Deny overrides an Allow for the same action, so the call is rejected.",
+    "explanation": "The call is allowed — Incorrect. An Allow does not win over an explicit Deny in another applicable policy.\nThe call is allowed when the Allow is the newer statement — Incorrect. IAM does not choose the newer statement. An explicit Deny still overrides the Allow.\nThe call is rejected for a resource-based Deny, and an identity-policy Deny still allows the call — Incorrect. An explicit Deny in an identity policy rejects the call too. The Deny is not limited to a resource-based policy.\nThe call is rejected — Correct. An explicit Deny overrides an Allow for the same action, so the call is rejected.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -12859,7 +12859,8 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
     ],
     "services": [
       "AWS Identity and Access Management",
@@ -13479,10 +13480,10 @@
       "The request is rejected",
       "The request is allowed",
       "The request is allowed after MFA",
-      "The request is rejected when the caller is in another Region"
+      "The request is rejected for console sign-ins, and API calls are allowed"
     ],
     "answer": 0,
-    "explanation": "The request is rejected — Correct. An explicit Deny in an applicable policy overrides the role's Allow for that action and resource.\nThe request is allowed — Incorrect. The Allow is not enough. The explicit Deny still applies to the request.\nThe request is allowed after MFA — Incorrect. MFA does not cancel an explicit Deny for the same action and resource.\nThe request is rejected when the caller is in another Region — Incorrect. The Deny is not limited to another Region. The request is rejected in every Region.",
+    "explanation": "The request is rejected — Correct. An explicit Deny in an applicable policy overrides the role's Allow for that action and resource.\nThe request is allowed — Incorrect. The Allow is not enough. The explicit Deny still applies to the request.\nThe request is allowed after MFA — Incorrect. MFA does not cancel an explicit Deny for the same action and resource.\nThe request is rejected for console sign-ins, and API calls are allowed — Incorrect. An explicit Deny rejects the console call and the API call. API calls are not allowed past that Deny.",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -13490,7 +13491,8 @@
       ]
     },
     "sourceUrls": [
-      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html"
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
     ],
     "services": [
       "AWS Identity and Access Management",
@@ -46598,7 +46600,7 @@
         "2.2"
       ]
     },
-    "prompt": "A loosely coupled order pipeline must absorb traffic spikes between producers and consumers. Which queue should sit between them?",
+    "prompt": "A loosely coupled order pipeline must absorb traffic spikes between producers and consumers. One worker processes each message, consumers pull at their own pace, and messages wait while workers are down. Which service should sit between them?",
     "choices": [
       "Amazon SQS",
       "Amazon SNS",
@@ -46606,7 +46608,7 @@
       "Amazon Kinesis Data Streams"
     ],
     "answer": 0,
-    "explanation": "Amazon SQS — Correct. SQS buffers orders between producers and consumers, so a spike waits in the queue.\nAmazon SNS — Incorrect. SNS delivers to subscribers as they are. It does not store a backlog for a slow consumer.\nAmazon EventBridge — Incorrect. EventBridge routes events. It is not the queue that absorbs the spike.\nAmazon Kinesis Data Streams — Incorrect. Kinesis retains a stream. The loose order pipeline here is a queue, which is SQS.",
+    "explanation": "Amazon SQS — Correct. One worker takes each message, consumers pull at their own pace, and messages wait in SQS while workers are down.\nAmazon SNS — Incorrect. SNS delivers to subscribers as they are. It does not hold a message for one worker to pull later.\nAmazon EventBridge — Incorrect. EventBridge routes events. It does not keep a message waiting for a worker that pulls at its own pace.\nAmazon Kinesis Data Streams — Incorrect. Each consumer application can read the same record. This pipeline needs one worker to process each message.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
@@ -49714,7 +49716,7 @@
         "2.1"
       ]
     },
-    "prompt": "Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which queue should sit between the API and the workers?",
+    "prompt": "Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. One worker processes each message, consumers pull at their own pace, and messages wait while workers are down. Which service should sit between the API and the workers?",
     "choices": [
       "Amazon SQS",
       "Amazon SNS",
@@ -49722,7 +49724,7 @@
       "Amazon Kinesis Data Streams"
     ],
     "answer": 0,
-    "explanation": "Amazon SQS — Correct. SQS holds each order until a worker receives it, so a slow worker does not stop intake.\nAmazon SNS — Incorrect. SNS pushes a message to subscribers. It does not keep a backlog for a worker that is briefly down.\nAmazon EventBridge — Incorrect. EventBridge routes events. It is not the queue that stores work until a consumer is ready.\nAmazon Kinesis Data Streams — Incorrect. Kinesis retains a stream of records. The order intake here is a job queue, which is SQS.",
+    "explanation": "Amazon SQS — Correct. One worker takes each message, consumers pull when they are ready, and the message waits while a worker is down.\nAmazon SNS — Incorrect. SNS pushes a message to subscribers. It does not hold the message for one worker to pull at its own pace.\nAmazon EventBridge — Incorrect. EventBridge routes an event to targets. It does not leave the message waiting for a worker that pulls it.\nAmazon Kinesis Data Streams — Incorrect. Each consumer application can read the same record. This intake needs one worker to process each message.",
     "weak": false,
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
@@ -50118,7 +50120,7 @@
         "4.2"
       ]
     },
-    "prompt": "A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers. Which approach fits?",
+    "prompt": "A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers, and the burst work must keep running when Spot capacity is gone. Which approach fits?",
     "choices": [
       "A Compute Savings Plan that covers the On-Demand fallback and not the burst",
       "One On-Demand instance sized for the peak, with Auto Scaling turned off",
@@ -50126,15 +50128,15 @@
       "Spot capacity for the burst tasks that stops when the Spot pool is empty"
     ],
     "answer": 2,
-    "explanation": "A Compute Savings Plan that covers the On-Demand fallback and not the burst — Incorrect. A Savings Plan on the fallback does not lower the price of the burst tasks that can be interrupted.\nOne On-Demand instance sized for the peak, with Auto Scaling turned off — Incorrect. One large On-Demand instance priced for the peak is the steady cost the team is trying to beat.\nSpot capacity for the burst tasks, with an On-Demand fallback — Correct. Spot is the cheaper burst capacity, and an On-Demand fallback remains when Spot is not available.\nSpot capacity for the burst tasks that stops when the Spot pool is empty — Incorrect. Spot with no fallback stops the burst work when the pool is empty.",
+    "explanation": "A Compute Savings Plan that covers the On-Demand fallback and not the burst — Incorrect. A Savings Plan on the fallback does not lower the price of the burst tasks that can be interrupted.\nOne On-Demand instance sized for the peak, with Auto Scaling turned off — Incorrect. One large On-Demand instance priced for the peak is the steady cost the team is trying to beat.\nSpot capacity for the burst tasks, with an On-Demand fallback — Correct. Spot is the cheaper burst capacity, and the On-Demand fallback keeps the burst work running when Spot is gone.\nSpot capacity for the burst tasks that stops when the Spot pool is empty — Incorrect. The burst work must keep running when Spot is gone. Spot with no fallback stops that work when the pool is empty.",
     "sourceUrls": [
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
       "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html"
     ],
     "services": [
       "AWS Auto Scaling",
-      "Savings Plans",
-      "Amazon EC2"
+      "Amazon EC2",
+      "Savings Plans"
     ],
     "difficulty": "medium"
   },

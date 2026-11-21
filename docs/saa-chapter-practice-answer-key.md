@@ -274,7 +274,7 @@ Edge caches serving repeat viewers and sparing the origin — Correct. Edge cach
 
 ## q-saa-chapter-17 (ch09 · objective 2.1)
 
-**Prompt:** Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. Which queue should sit between the API and the workers?
+**Prompt:** Order intake must keep accepting requests when fulfillment workers are slow or briefly unavailable. One worker processes each message, consumers pull at their own pace, and messages wait while workers are down. Which service should sit between the API and the workers?
 
 - A. Amazon SQS **← correct**
 - B. Amazon SNS
@@ -283,10 +283,10 @@ Edge caches serving repeat viewers and sparing the origin — Correct. Edge cach
 
 **Explanation:**
 
-Amazon SQS — Correct. SQS holds each order until a worker receives it, so a slow worker does not stop intake.
-Amazon SNS — Incorrect. SNS pushes a message to subscribers. It does not keep a backlog for a worker that is briefly down.
-Amazon EventBridge — Incorrect. EventBridge routes events. It is not the queue that stores work until a consumer is ready.
-Amazon Kinesis Data Streams — Incorrect. Kinesis retains a stream of records. The order intake here is a job queue, which is SQS.
+Amazon SQS — Correct. One worker takes each message, consumers pull when they are ready, and the message waits while a worker is down.
+Amazon SNS — Incorrect. SNS pushes a message to subscribers. It does not hold the message for one worker to pull at its own pace.
+Amazon EventBridge — Incorrect. EventBridge routes an event to targets. It does not leave the message waiting for a worker that pulls it.
+Amazon Kinesis Data Streams — Incorrect. Each consumer application can read the same record. This intake needs one worker to process each message.
 
 
 ## q-saa-chapter-18 (ch09 · objective 3.5)
@@ -495,7 +495,7 @@ gp3 volumes sized for capacity, with throughput set to demand — Correct. gp3 i
 
 ## q-saa-chapter-30 (ch02 · objective 4.2)
 
-**Prompt:** A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers. Which approach fits?
+**Prompt:** A stateless image-processing fleet can tolerate interruptions and already runs behind an Auto Scaling group. Leadership wants lower compute cost than steady On-Demand for the burst workers, and the burst work must keep running when Spot capacity is gone. Which approach fits?
 
 - A. A Compute Savings Plan that covers the On-Demand fallback and not the burst
 - B. One On-Demand instance sized for the peak, with Auto Scaling turned off
@@ -506,8 +506,8 @@ gp3 volumes sized for capacity, with throughput set to demand — Correct. gp3 i
 
 A Compute Savings Plan that covers the On-Demand fallback and not the burst — Incorrect. A Savings Plan on the fallback does not lower the price of the burst tasks that can be interrupted.
 One On-Demand instance sized for the peak, with Auto Scaling turned off — Incorrect. One large On-Demand instance priced for the peak is the steady cost the team is trying to beat.
-Spot capacity for the burst tasks, with an On-Demand fallback — Correct. Spot is the cheaper burst capacity, and an On-Demand fallback remains when Spot is not available.
-Spot capacity for the burst tasks that stops when the Spot pool is empty — Incorrect. Spot with no fallback stops the burst work when the pool is empty.
+Spot capacity for the burst tasks, with an On-Demand fallback — Correct. Spot is the cheaper burst capacity, and the On-Demand fallback keeps the burst work running when Spot is gone.
+Spot capacity for the burst tasks that stops when the Spot pool is empty — Incorrect. The burst work must keep running when Spot is gone. Spot with no fallback stops that work when the pool is empty.
 
 
 ## q-saa-chapter-31 (ch03 · objective 1.2)
