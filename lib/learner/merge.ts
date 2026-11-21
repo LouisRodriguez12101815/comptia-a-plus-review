@@ -1,4 +1,5 @@
 import type { ClfAssessmentSnapshot, MockAttempt, Progress, QuizAttempt } from "@/lib/progress";
+import { mergeMatchMisses } from "@/lib/study/memory-match";
 import type { StoredSchedule } from "@/lib/study/schedule";
 
 const reviewedAt = (s: StoredSchedule | undefined) => {
@@ -43,7 +44,8 @@ function mergeMemoryGames(local: Progress["memoryGames"], remote: Progress["memo
     if (Number.isFinite(other) && other >= 0) bestMs[id] = other;
   }
   const lastMixDay = [left.lastMixDay, right.lastMixDay].filter((day): day is string => typeof day === "string" && day.length > 0).sort().at(-1);
-  return { streak: Math.max(left.streak, right.streak), bestMs, ...(lastMixDay ? { lastMixDay } : {}) };
+  const misses = mergeMatchMisses(left.misses, right.misses);
+  return { streak: Math.max(left.streak, right.streak), bestMs, ...(lastMixDay ? { lastMixDay } : {}), ...(misses.length ? { misses } : {}) };
 }
 
 function mergeDrillPractice(local: Progress["drillPractice"], remote: Progress["drillPractice"]) {

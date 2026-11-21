@@ -11,6 +11,9 @@ export type FactClass = {
   purpose: string;
   task: string;
   docsUrl: string;
+  /** False when the class is newer than the SAA-C03 exam guide. Omitted means in scope. */
+  inScope?: boolean;
+  note?: string;
 };
 
 export type FactNumber = {
@@ -209,6 +212,7 @@ export function serviceFactItems(facts: ServiceFact[] = serviceFacts): DrillItem
       });
     }
     for (const entry of fact.classes ?? []) {
+      if (entry.inScope === false) continue;
       items.push({
         id: `${fact.id}-class-${entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
         objective: entry.task,
