@@ -461,7 +461,17 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
       )}
       <button
         type="button"
-        onClick={() => reportContent(`Question ${current.id}: ${current.prompt}`, "Wrong answer key")}
+        onClick={() => {
+          const selectedIndexes = revealed
+            ? (Array.isArray(answers[current.id]) ? answers[current.id] as number[] : answers[current.id] === undefined ? [] : [answers[current.id] as number])
+            : picked;
+          reportContent(`Question ${current.id}: ${current.prompt}`, "Wrong answer key", {
+            id: current.id,
+            choiceOrder: current.choices,
+            selected: selectedIndexes.map((index) => current.choices[index]).filter((choice) => Boolean(choice)),
+            keyed: correctIndices(current).map((index) => current.choices[index]),
+          });
+        }}
         className="block min-h-11 text-left text-xs text-slate-400 underline decoration-dotted underline-offset-4 hover:text-amber-200"
       >
         {t("disputeQuestion")}

@@ -7,8 +7,13 @@ import { trackForPath } from "../lib/tracks.ts";
 import { drillDecks } from "../lib/practice/drills.ts";
 import {
   applyKey,
+  checkAnswer,
+  choose,
   concentrationPairs,
   finishRound,
+  finishWithButtons,
+  pressNext,
+  retryMissed,
   GAME_IDS,
   gameCatalogItems,
   nextStreak,
@@ -31,6 +36,53 @@ test("game items carry a real task, a docs URL, and an explanation", () => {
     assert.equal(card?.retired, undefined, item.cardId);
     assert.equal(card?.taskId, item.taskId, item.id);
   }
+});
+
+test("each game finishes a round from buttons and from the keyboard", () => {
+  for (const game of GAME_IDS) {
+    const board = game === "concentration" ? "D4" : "all";
+    const clicked = finishWithButtons(startGame(game, "saa", "D4", board));
+    assert.equal(clicked.phase, "done", game);
+    assert.ok(clicked.log.length > 0, game);
+    if (game !== "concentration") assert.equal(clicked.log.length, clicked.steps.length, game);
+    const typed = finishRound(startGame(game, "saa", "D4", board));
+    assert.equal(typed.phase, "done", game);
+  }
+});
+
+test("retry missed serves only the missed items and every result is listed", () => {
+  let round = startGame("lightning", "buttons");
+  const wrong = round.steps[0].choices.find((choice) => choice.key !== round.steps[0].answerKey);
+  round = checkAnswer(choose(round, wrong.key));
+  assert.equal(round.phase, "feedback");
+  assert.equal(round.log.length, 1);
+  round = finishWithButtons(pressNext(round));
+  assert.equal(round.phase, "done");
+  assert.equal(round.log.length, round.steps.length);
+  assert.equal(round.misses.length, 1);
+  const retry = retryMissed(round);
+  assert.equal(retry.steps.length, 1);
+  assert.equal(retry.steps[0].cardId, round.misses[0]);
+  assert.equal(retry.log.length, 0);
+});
+
+test("no SAA game choice is only a task id, and daily mix is learner-facing", () => {
+  const taskOnly = /^\d\.\d+$/;
+  for (const game of GAME_IDS) {
+    if (game === "concentration") continue;
+    for (const step of startGame(game, "labels", "D4").steps) {
+      for (const choice of step.choices) assert.equal(taskOnly.test(choice.label.trim()), false, `${game} ${choice.label}`);
+    }
+  }
+  const sorter = startGame("sorter", "labels");
+  assert.match(sorter.steps[0].choices[0].label, /^\d\.\d · .+/);
+  assert.match(sorter.steps[0].explanation, /[1-4]\.0 /);
+  const daily = startGame("daily", "mix", "D1");
+  assert.equal(daily.steps.length, 10);
+  const kinds = new Set(daily.steps.map((step) => step.id.split("-")[0]));
+  for (const kind of ["recall", "keyword", "odd", "lightning", "fact"]) assert.equal(kinds.has(kind), true, kind);
+  const weak = daily.steps.filter((step) => saaDomainFromTask(step.taskId) === "D1").length;
+  assert.ok(weak >= 5, `expected the mix to lean on D1, got ${weak}`);
 });
 
 test("each game finishes a round from the keyboard", () => {

@@ -36,6 +36,31 @@ test('issue body neutralises mentions, issue refs and HTML', () => {
   assert.ok(issueTitle(r).startsWith('[Content dispute] Factual error:'));
 });
 
+test('question reports include id, order, selected and keyed choices, and no personal fields', () => {
+  const r = validateReport({
+    ...good,
+    question: {
+      id: 'q-as1201-30',
+      choiceOrder: ['Telnet', 'SSH', 'SNMPv1', 'HTTPS'],
+      selected: ['SSH', 'HTTPS'],
+      keyed: ['SSH', 'HTTPS'],
+      email: 'learner@example.com',
+      name: 'A Learner',
+    },
+  });
+  assert.equal(r.ok, true);
+  assert.equal(r.report.question.id, 'q-as1201-30');
+  assert.deepEqual(r.report.question.choiceOrder, ['Telnet', 'SSH', 'SNMPv1', 'HTTPS']);
+  const body = issueBody(r.report, 'https://site.example');
+  assert.match(body, /Question id:\*\* q-as1201-30/);
+  assert.match(body, /1\. Telnet/);
+  assert.match(body, /Selected choices:\*\* SSH · HTTPS/);
+  assert.match(body, /Keyed choices:\*\* SSH · HTTPS/);
+  assert.equal(body.includes('learner@example.com'), false);
+  assert.equal(body.includes('A Learner'), false);
+  assert.equal(validateReport(good).report.question, undefined);
+});
+
 test('fallback URL targets the issue form with prefilled fields', () => {
   const url = new URL(githubIssueUrl(good, 'https://site.example', 'owner/repo'));
   assert.equal(url.pathname, '/owner/repo/issues/new');

@@ -40,6 +40,10 @@ export function FactDrill({
   const [choices, setChoices] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [answer, setAnswer] = useState<Answer | null>(null);
+  const [pending, setPending] = useState("");
+  const [history, setHistory] = useState<Answer[]>([]);
+  const [lookback, setLookback] = useState<number | null>(null);
+  const [missedOnly, setMissedOnly] = useState(false);
   const [round, setRound] = useState<DrillSession>(() => startSession(initialKind, 0));
   const [now, setNow] = useState(0);
   const [emptyMissed, setEmptyMissed] = useState(false);
@@ -69,6 +73,7 @@ export function FactDrill({
     setQueue(nextQueue);
     setChoices(nextQueue[0]?.select ? [] : nextQueue[0] ? choicesFor(deck, nextMode, nextQueue[0]) : []);
     setSelected([]);
+    setPending("");
   }
 
   function restart(nextModeId: string, nextKind: SessionKind, at: number) {
@@ -79,6 +84,10 @@ export function FactDrill({
     setKind(nextKind);
     setStarted(true);
     setAnswer(null);
+    setPending("");
+    setHistory([]);
+    setLookback(null);
+    setMissedOnly(false);
     setRound(startSession(nextKind, at));
     setNow(at);
     setEmptyMissed(nextKind === "missed" && pool.length === 0);
@@ -92,14 +101,21 @@ export function FactDrill({
     setRound(next);
     setNow(at);
     setAnswer({ item, picked, correct });
+    setHistory((items) => [...items, { item, picked, correct }]);
+    setPending("");
     recordDrillOutcome(deck.id, item.id, correct, next.bestStreak);
     recordDrillScore(deck.id, next.score);
   }
 
-  function pick(choice: string) {
-    if (!current || current.select) return;
+  function selectChoice(choice: string) {
+    if (!current || current.select || answer) return;
+    setPending(choice);
+  }
+
+  function checkChoice() {
+    if (!current || current.select || !pending) return;
     const extras = current.also?.[mode.to] ?? [];
-    grade(current, choice === current.fields[mode.to] || extras.includes(choice), choice);
+    grade(current, pending === current.fields[mode.to] || extras.includes(pending), pending);
   }
 
   function toggle(text: string) {
@@ -132,6 +148,7 @@ export function FactDrill({
     const at = Math.min(3, rest.length);
     show(answer.correct ? rest : [...rest.slice(0, at), head, ...rest.slice(at)]);
     setAnswer(null);
+    setLookback(null);
   }
 
   const others = drillDecks.filter((other) => other.id !== deck.id);
@@ -164,22 +181,56 @@ export function FactDrill({
       <button type="button" onClick={() => restart(mode.id, kind, Date.now())} className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950">{t("start")}</button>
     </section>}
 
-    {started && current && !round.finished && <Question
+    {started && !finished && lookback !== null && history[lookback] ? <section className="space-y-3 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+      <p className="text-sm text-slate-400">{t("itemProgress", { current: lookback + 1, total: history.length })}</p>
+      <p className="text-xl font-semibold text-white">{history[lookback].item.fields[mode.from]}</p>
+      <p className="text-sm text-slate-200">{t("yourAnswer", { answer: history[lookback].picked })}</p>
+      <p className="text-sm text-cyan-100">{history[lookback].item.detail}</p>
+      <div className="sticky bottom-0 flex flex-wrap gap-2 bg-slate-900 py-2">
+        <button type="button" className="min-h-11 rounded-xl border border-slate-600 px-4 text-slate-100" disabled={lookback === 0} onClick={() => setLookback((value) => (value ?? 1) - 1)}>{t("backItem")}</button>
+        <button type="button" autoFocus className="min-h-11 rounded-xl bg-cyan-300 px-4 font-semibold text-slate-950" onClick={() => setLookback((value) => value !== null && value + 1 < history.length ? value + 1 : null)}>{t("next")}</button>
+      </div>
+    </section> : null}
+
+    {started && current && !round.finished && lookback === null && <Question
       mode={mode}
       item={current}
       choices={choices}
       selected={selected}
+      pending={pending}
       answer={answer}
+      position={answer ? round.attempts : round.attempts + 1}
+      totalItems={Math.max(1, round.attempts + queue.length - (answer ? 1 : 0))}
+      score={round.correct}
       ask={d(`${textId}.modes.${mode.id}.ask`)}
-      onPick={pick}
+      onPick={selectChoice}
       onToggle={toggle}
       onSubmit={submitSelect}
+      onCheck={checkChoice}
+      onBack={() => setLookback(history.length - 1)}
+      canBack={history.length > 0 && !(answer && history.length === 1)}
       onNext={next}
     />}
 
     {finished && <section className="space-y-3 rounded-2xl border border-teal-300/40 bg-slate-900 p-5">
       <h2 className="text-2xl font-semibold">{t("doneTitle")}</h2>
       <p>{emptyMissed ? t("noneMissed") : t("doneBody", { correct: round.correct, attempts: round.attempts, total: kind === "missed" ? savedMisses.size : total })}</p>
+      <label className="flex min-h-11 items-center gap-2 text-sm text-slate-200">
+        <input type="checkbox" checked={missedOnly} onChange={(event) => setMissedOnly(event.target.checked)} />
+        {t("missedOnly")}
+      </label>
+      <ol className="space-y-3">
+        {history.filter((item) => !missedOnly || !item.correct).map((item, index) => (
+          <li key={`${item.item.id}-${index}`} className="rounded-xl border border-slate-700 p-3">
+            <p className="font-medium text-white">{item.item.fields[mode.from]}</p>
+            <p className="text-sm text-slate-200">{t("yourAnswer", { answer: item.picked })}</p>
+            <p className="text-sm text-cyan-100">{t("correctAnswer", { answer: item.item.select ? item.item.select.filter((choice) => choice.correct).map((choice) => choice.text).join("; ") : item.item.fields[mode.to] })}</p>
+            <p className="mt-1 text-sm text-slate-300">{item.item.detail}</p>
+            {item.item.docsUrl ? <a href={item.item.docsUrl} className="inline-flex min-h-11 items-center text-sm text-cyan-200 underline">{t("docs")}</a> : null}
+          </li>
+        ))}
+      </ol>
+      {deck.exam === "saa-c03" ? <Link href={deck.objective.includes(",") || deck.objective.includes("–") ? "/flashcards?exam=saa-c03&topic=due" : `/flashcards?exam=saa-c03&task=${deck.objective}&topic=due`} className="inline-flex min-h-11 items-center text-cyan-200 underline">{t("reviewCards")}</Link> : null}
       {kind === "speed" && <p>{t("speedDone", { score: round.score })}</p>}
       {kind === "survival" && <p>{t("survivalDone", { streak: round.bestStreak })}</p>}
       <div className="flex flex-wrap gap-3">
@@ -214,22 +265,36 @@ function Question({
   item,
   choices,
   selected,
+  pending,
   answer,
+  position,
+  totalItems,
+  score,
   ask,
   onPick,
   onToggle,
   onSubmit,
+  onCheck,
+  onBack,
+  canBack,
   onNext,
 }: {
   mode: DrillMode;
   item: DrillItem;
   choices: string[];
   selected: string[];
+  pending: string;
   answer: Answer | null;
+  position: number;
+  totalItems: number;
+  score: number;
   ask: string;
   onPick: (choice: string) => void;
   onToggle: (text: string) => void;
   onSubmit: () => void;
+  onCheck: () => void;
+  onBack: () => void;
+  canBack: boolean;
   onNext: () => void;
 }) {
   const t = useTranslations("factDrill");
@@ -238,6 +303,10 @@ function Question({
   const keyed = item.select?.filter((choice) => choice.correct).map((choice) => choice.text) ?? [];
 
   return <section className="space-y-4 rounded-2xl border border-cyan-300/30 bg-slate-900 p-5">
+    <p className="text-sm text-slate-300">{t("itemProgress", { current: position, total: totalItems, score })}</p>
+    <div role="progressbar" aria-valuemin={0} aria-valuemax={totalItems} aria-valuenow={Math.max(0, position - 1)} className="h-2 overflow-hidden rounded-full bg-slate-800">
+      <div className="h-full bg-cyan-300" style={{ width: `${Math.min(100, (100 * Math.max(0, position - 1)) / totalItems)}%` }} />
+    </div>
     <p className="text-sm text-cyan-100">{ask}</p>
     <p className={`font-mono font-bold text-white ${prompt.length > 24 ? "text-xl" : "text-4xl"}`}>{prompt}</p>
     {item.select ? <fieldset className="space-y-3">
@@ -267,17 +336,21 @@ function Question({
     </fieldset> : <div className="grid gap-3 sm:grid-cols-2">
       {choices.map((choice) => {
         const isAnswer = choice === item.fields[mode.to] || (item.also?.[mode.to] ?? []).includes(choice);
-        const isPicked = answer?.picked === choice;
-        const state = !answer ? "border-slate-600 bg-slate-950 hover:border-cyan-300" : isAnswer ? "border-emerald-400 bg-emerald-950" : isPicked ? "border-rose-400 bg-rose-950" : "border-slate-700 bg-slate-950 opacity-60";
-        return <button key={choice} type="button" disabled={!!answer} onClick={() => onPick(choice)} className={`min-h-14 rounded-xl border p-3 text-left ${choice.length > 24 ? "text-sm" : "font-mono text-lg"} ${state}`}>{choice}{answer && isAnswer ? " ✓" : answer && isPicked ? " ✗" : ""}</button>;
+        const isPicked = answer?.picked === choice || (!answer && pending === choice);
+        const state = !answer ? (pending === choice ? "border-cyan-300 bg-slate-950" : "border-slate-600 bg-slate-950 hover:border-cyan-300") : isAnswer ? "border-emerald-400 bg-emerald-950" : isPicked ? "border-rose-400 bg-rose-950" : "border-slate-700 bg-slate-950 opacity-60";
+        return <button key={choice} type="button" aria-pressed={pending === choice} disabled={!!answer} onClick={() => onPick(choice)} className={`min-h-14 rounded-xl border p-3 text-left ${choice.length > 24 ? "text-sm" : "font-mono text-lg"} ${state}`}>{choice}{answer && isAnswer ? " ✓" : answer && isPicked ? " ✗" : ""}</button>;
       })}
     </div>}
+    {!answer && !item.select ? <button type="button" disabled={!pending} onClick={onCheck} className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950 disabled:opacity-50">{t("checkAnswer")}</button> : null}
     {answer && <div role="status" className="space-y-2 rounded-xl border border-slate-700 bg-slate-950 p-4">
       <p className="font-semibold">{answer.correct ? t("right") : t("wrong", { answer: item.select ? keyed.join("; ") : [item.fields[mode.to], ...(item.also?.[mode.to] ?? [])].join(" or ") })}</p>
       <p className="text-sm text-slate-200">{answer.item.detail}</p>
       <p className="text-sm text-cyan-100">{answer.item.hook}</p>
       {answer.item.docsUrl && <a href={answer.item.docsUrl} className="inline-flex min-h-11 items-center text-sm text-cyan-200 underline">{t("docs")}</a>}
-      <button type="button" onClick={onNext} autoFocus className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950">{t("next")}</button>
+      <div className="sticky bottom-0 flex flex-wrap gap-2 bg-slate-950 py-2">
+        <button type="button" disabled={!canBack} onClick={onBack} className="min-h-11 rounded-xl border border-slate-600 px-4 text-slate-100 disabled:opacity-40">{t("backItem")}</button>
+        <button type="button" onClick={onNext} autoFocus className="min-h-11 rounded-xl bg-cyan-300 px-5 py-2 font-semibold text-slate-950">{t("next")}</button>
+      </div>
     </div>}
   </section>;
 }
