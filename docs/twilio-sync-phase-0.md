@@ -1,8 +1,8 @@
-# Twilio sync, phase 0
+# Twilio sync, phase 0 (revised)
 
-Design only. No application code in this change. The public site stays local-only for everyone except one enrolled owner, on at most 10 devices. Budget for this work is $1000. Nothing here is deployed.
+Design only. No application code in this change. Phase 0 starts from the learner sync that is already in production. It does not add a second Sync service or a `STUDY_SYNC_*` env set.
 
-Checked 21 November 2026.
+Checked 21 November 2026. The account and billing reads in sections b and c did not run: repository `.env.local` is absent, so no Twilio credential was loaded and no Usage Record was requested.
 
 ## Pricing that can be quoted
 
@@ -14,290 +14,146 @@ The last Twilio page that states the Sync rates in the brief is the 21 May 2017 
 - capped at $0.01 per endpoint per day
 - $10 per 1,000,000 explicit reads or writes
 
-Those three numbers are the last published rates, not a 2026 price page. The connection and action arithmetic below uses them and says so. The 200 free endpoint-hours per month, the 10,000 free actions per month, and "storage included" were **not** on that 2017 post and were **not** on the October 2026 hub. They stay the brief's starting facts. The budget below does not subtract them.
+Those three numbers are the last published rates, not a 2026 price page. The 200 free endpoint-hours per month, the 10,000 free actions per month, and "storage included" were not on that post and were not on the October 2026 hub. Do not subtract them until a Usage Record shows a free tier. Fanout to subscribers is neither a read nor a write: https://www.twilio.com/docs/sync/limits
 
-Fanout to subscribers is neither a read nor a write: https://www.twilio.com/docs/sync/limits
+Verify, current as of October 2026: https://www.twilio.com/en-us/verify/pricing
 
-Other prices below come from pages that were live on 21 November 2026. Each section names the page and the "current as of" date printed on it.
-
-## a. Isolation
-
-Use a new Twilio subaccount for this study sync. Do not put it on the Civic Path account, and do not reuse the account behind the existing `TWILIO_ACCOUNT_SID` values. Those variables already serve learner progress (`lib/learner/twilio.ts`) and multiplayer rooms (`lib/game/room-store.ts`). Usage triggers on the new subaccount watch that subaccount only. The trigger API is per account SID: https://www.twilio.com/docs/usage/api/usage-trigger
-
-Vercel environment variables, **Production only**, never `NEXT_PUBLIC_`, never sent to the browser:
-
-| Variable | Holds |
-| --- | --- |
-| `STUDY_SYNC_ACCOUNT_SID` | Subaccount SID (`AC…`) |
-| `STUDY_SYNC_API_KEY_SID` | API key created inside that subaccount (`SK…`) |
-| `STUDY_SYNC_API_KEY_SECRET` | That key's secret |
-| `STUDY_SYNC_SERVICE_SID` | This app's Sync service (`IS…`) |
-| `STUDY_SYNC_VERIFY_SERVICE_SID` | Verify service used for enrollment (`VA…`) |
-| `STUDY_SYNC_AUTH_TOKEN` | Subaccount auth token, webhook signature only |
-| `STUDY_SYNC_OWNER_PHONE` | The one phone allowed to enroll |
-
-The browser receives a short-lived Sync JWT and nothing else. If any of these variables is missing, the study-sync routes stay off and the site keeps using `localStorage`.
-
-## b. Data model
-
-One Sync service. Object names are fixed. Identity on the token is the single string `study-owner` (256-character identity limit). The phone number is not a Sync key and is not written into items.
-
-Limits, from https://www.twilio.com/docs/sync/limits (read 21 November 2026):
-
-- Document, List item, and Map item payloads: 16 KiB of JSON, UTF-8.
-- A List or Map holds at most 1,000,000 items.
-- Unique names: 320 characters. Identity: 256 characters.
-- Default page size 50. `PageSize` up to 100.
-- Writes and reads: up to 20 per second per object, with a 10-second burst window. Payloads of 10 KiB or more drop to 2 writes per second. The limit is on the List or Map as a whole, so a sitting must not fire dozens of parallel writes at one List.
-- TTL is an integer from 0 to 31,536,000 seconds. These objects use TTL 0. They do not expire.
-
-Paging, from https://www.twilio.com/docs/sync/api/list-resource : pass `PageSize` and follow `meta.next_page_url` (`Page` and `PageToken` are already filled in) until `next_page_url` is null. REST base in that page's examples is `https://sync.twilio.com/v1`. The same page size applies to Map items (limits page). A full scan of a million-item List is 10,000 reads at page size 100. Clients and the notebook keep a high-water item index and read only new pages.
-
-| Object | Unique name | Key | What is stored |
-| --- | --- | --- | --- |
-| List | `attempts` | item index | One item per answer event. Fields: `attempt_id`, `exam`, `question_id`, `task`, `domain`, `correct`, `confidence`, `miss_reason`, `seconds`, `mode`, `sitting_id`, `answered_at`. No answer text, no selected choice, no prompt. |
-| Map | `mistakes` | question id | The `MistakeRow` in `lib/saa-mistake-log.ts`: `id`, `prompt`, `task`, `domain`, `timesMissed`, `correctSinceLastMiss`, `lastResult`, `lastConfidence`, `missReason`, `lastSeen`, `status`, `kind`, `wasMisconception`, `masteredAt`. `wasMisconception` stays true after a sure-but-wrong. `masteredAt` is the local-date mastery timestamp from that module. This map is a cache. It is rewritten from attempts, not merged field by field. |
-| Map | `cardSchedule` | card id | `StoredSchedule` from `lib/study/schedule.ts` (FSRS card with ISO `due` and `last_review`), plus `updated_at` and `device_id`. |
-| Map | `games` | game id | Best score and streak already stored on `Progress` in `lib/progress.ts`: `memoryGames` (`lastMixDay`, `streak`, `bestMs`) and `drillPractice` (`missedIds`, `bestStreak`, per-deck `bestScore` and `bestStreak`). One small item per game id, with `updated_at` and `device_id`. |
-| Document | `settings` | — | Opt-in flag, study focus, and the device high-water marks that are not per device. Must stay under 16 KiB. |
-| Map | `devices` | device id | `label`, `enrolled_at`, `last_seen`, `revoked_at`. No phone number. |
-
-`MistakeRow.prompt` is question text. Reject a write that serializes to 16 KiB or more and keep the local copy. Attempt items are a handful of fields and sit far under that cap.
-
-At the site's published SAA-C03 length of 65 questions (`lib/saa-test-skills.ts`), two full mocks a week is about 6,760 attempt items a year. The million-item cap is not the planning limit. The 16 KiB item cap and the 20 writes/second list cap are.
-
-## c. Local-first sync
-
-`localStorage` key `comptia-a-plus-review-progress-v1` (`lib/progress.ts`) remains the copy that works with no network. A failed token request, a kill switch, or a full write cap leaves that copy in place. The public learner sync in `app/api/learner/sync` is a different map and is not reused.
-
-Push after:
-
-- a quiz or mock sitting finishes (`QuizRunner`, `ExamTest`)
-- a flashcard review is graded
-- a game round records a best score or streak
-
-Push sends new attempt items and the changed schedule, game, and settings keys. It does not send the mistakes map as source data.
-
-Merge on load:
-
-1. Read attempt items after the device's high-water index. Dedupe by `attempt_id`. The same id is one event. A replay is a no-op. If the same id arrives with a different body, keep the item with the earlier Sync `date_created` and surface it in the conflict log.
-2. For `cardSchedule`, `games`, `settings`, and `devices`, last write wins. Compare the Sync item's `date_updated`. Tie-break by `device_id` in lexicographic order so the result is stable.
-3. Rebuild every `mistakes` row by running the merged attempts through the rules in `lib/saa-mistake-log.ts` (local calendar dates, sticky `wasMisconception`, a later miss reopening a mastered row). Do not merge `timesMissed`, `status`, or `masteredAt` field by field.
-
-### Conflict test plan
-
-1. Two devices offline each append different `attempt_id`s, then both push. The List contains both. Neither sitting is dropped.
-2. The same `attempt_id` pushed twice leaves one item.
-3. The same `attempt_id` pushed with two bodies keeps the earlier `date_created`.
-4. Two devices update the same card schedule. The later `date_updated` is the stored card. Equal timestamps keep the lexicographic `device_id`.
-5. Device A masters a question. Device B, offline, records a later miss on that question, then syncs. The rebuilt mistake row is Active, and Misconception only when that later miss was sure-but-wrong. `wasMisconception` stays true. A field-wise merge that left the row Mastered fails this test.
-6. Airplane mode during a sitting still writes `localStorage`. The push retries after the network returns. A 429 or a refused token does not clear local progress.
-7. Clock skew: a device whose `updated_at` is ahead does not win over Sync `date_updated`, because the winner is the server timestamp.
-
-## d. Auth and the 10-device cap
-
-Enrollment is Twilio Verify OTP to `STUDY_SYNC_OWNER_PHONE` only. Any other number gets the same not-enrolled response, with no signal about why.
-
-Verify pricing, current as of October 2026: https://www.twilio.com/en-us/verify/pricing
-
-- SMS channel: $0.05 per successful verification + $0.0083 per SMS (US).
+- SMS: $0.05 per successful verification + $0.0083 per SMS (US).
 - A failed, expired, or unfinished verification does not get the $0.05 fee. The SMS attempt can still be billed.
 
-The Verify page says a verification-only use of 10DLC can go through Verify instead of a separate A2P campaign: https://www.twilio.com/docs/messaging/compliance/a2p-10dlc
+This revision does not reprice voice, SMS drills, or weekly email. Those stay later optional work. The connection math from the 2017 cap is unchanged: 10 devices always connected is 10 × $0.01 × 30 = $3.00 per 30-day month, and 10 × $0.01 × 365 = $36.50 per year, if those rates are still what Twilio bills. Section c is what would confirm that. It was not run.
 
-After a successful check, the server creates a `devices` item if fewer than 10 devices have `revoked_at` null. The 11th is refused. Revoking a device on the settings page frees a slot. A revoked device cannot mint a token.
+## a. What already exists
 
-The token route mints a Sync access token only when all of these hold: study-sync env is present, the kill switch is off, the device is enrolled and not revoked, and today's write counter is under the cap. The grant is a `SyncGrant` whose `serviceSid` is `STUDY_SYNC_SERVICE_SID`. Identity is `study-owner`. TTL is 3600 seconds. Access tokens max out at 24 hours, and the SDK guidance is not to go under 30 minutes: https://www.twilio.com/docs/iam/access-tokens and https://www.twilio.com/docs/sync/sdks-best-practices
+One Sync map per allowlisted phone. The map name is `learner-` plus the first 40 hex characters of HMAC-SHA256(`learner:` + E.164, `LEARNER_SESSION_SECRET`). The phone number is not stored. The browser holds an HttpOnly `learner_session` cookie for 30 days (`lib/learner/session.ts`). The cookie carries the learner id and the last 4 digits of the phone.
 
-The client refreshes on `tokenAboutToExpire`. The JWT is the thing that can spend the budget, so the route that mints it is the gate.
+`lib/learner/twilio.ts` builds the client from `TWILIO_ACCOUNT_SID`, `TWILIO_API_KEY_SID`, `TWILIO_API_KEY_SECRET`, `TWILIO_SYNC_SERVICE_SID`, and `TWILIO_VERIFY_SERVICE_SID`. `learnerConfig` returns null unless those values match, the session secret is at least 32 characters, and `LEARNER_ALLOWED_PHONES` has at least one number. When config is null, `GET /api/learner/session` reports `configured: false` and `LearnerSync` renders nothing. The site stays on `localStorage`.
 
-Rate limits on our routes, per UTC hour:
+The same `TWILIO_*` account and Sync service also back Outage Ops rooms (`lib/game/room-store.ts`). `scripts/setup-twilio-sync.mjs` creates one Sync service named "Outage Ops" and one daily Usage Trigger: `totalprice`, trigger by price, value `5`, recurring daily, callback `POST /api/game/usage-trigger`.
 
-- Verify start: 3 per owner phone
-- Verify check: 8 per owner phone
-- Token: 12 per enrolled device
+### Routes
 
-Over the limit, respond 429 and leave the browser on `localStorage`.
+| Route | Role |
+| --- | --- |
+| `app/api/learner/start` | Verify SMS only if the number is on `LEARNER_ALLOWED_PHONES`. Any other number gets `{ ok: true }` and no SMS. Rate limits: 5 starts / 10 min per IP, 3 / 10 min per phone. |
+| `app/api/learner/verify` | Checks the OTP. A number that is not allowed gets `wrong_code`. On success, sets the session cookie. |
+| `app/api/learner/session` | `{ configured, signedIn, last4 }`. |
+| `app/api/learner/signout` | Clears the cookie. Does not touch Sync. |
+| `app/api/learner/sync` | Merges this browser's `Progress` into the learner map and returns the merged copy. |
+| `app/api/learner/telemetry` | Separate study events, max 200, not the progress document. POST body cap 8,000 bytes. |
+| `app/api/learner/delete` | Deletes the whole learner map, then signs out. |
 
-Settings UI, owner only: list device label, last seen, and a revoke button. Also the opt-in toggle, "Delete all synced data", and the existing CSV export.
+`app/components/LearnerSync.tsx` syncs on sign-in, then 8 seconds after local progress stops changing. `lib/learner/sync.ts` writes the server snapshot back into `localStorage` only when the request succeeds. A failed request leaves the local copy alone.
 
-## e. Cost model against $1000
+`scripts/export-learner-activity.mjs` is the private read-only reader for that map. It is not the scorecard CSV. The scorecard button "Export my SAA attempts (CSV)" (`#246`) downloads `saa-attempts.csv` from the browser that is open.
 
-Sync figures use the 21 May 2017 rates, because the requested 2026 pricing URL 404'd. Verify figures use the October 2026 Verify page.
+### DailyUsageGuard
 
-### Worst case: 10 devices connected all month
+`DailyUsageGuard` in `lib/game/room-store.ts` reads the Sync document `outage-ops-usage-YYYY-MM-DD`. If `MULTIPLAYER_PAUSED` is set, it throws 423. Learner sync and Verify start both call `assertActive()` before they talk to Twilio (`app/api/learner/sync/route.ts`, `app/api/learner/start/route.ts`). The webhook in `lib/game/usage-webhook.ts` accepts only a signed `totalprice` / `price` callback and latches that document when the amount is at least $5. There is no email. The latch is for that UTC day, not a monthly study-budget switch. A $5 Outage Ops day also stops learner saves and new OTP texts.
 
-10 endpoints × $0.01/day × 30 days = **$3.00** per 30-day month.
+### Progress fields that sync
 
-10 × $0.01 × 365 = **$36.50** per year.
+`saveRemote` (`lib/learner/store.ts`) merges with `mergeProgress` (`lib/learner/merge.ts`), then stores the JSON as a `progress-head` plus chunk items.
 
-Without the daily cap, 10 × 24 × 30 × $0.0025 = $18.00 for a 30-day month. The cap is what binds.
+Kept by `mergeProgress`:
 
-The write cap below, if hit every day: 2,000 writes × 30 × ($10 / 1,000,000) = **$0.60** per 30-day month, or 2,000 × 365 × $0.00001 = **$7.30** per year. Reads are extra and small if clients page from a high-water index. A hostile full scan of 1,000,000 items at 100 per page is 10,000 reads, which is $0.10.
+| Field | Rule |
+| --- | --- |
+| `studyFocus` | Local wins. |
+| `knownCards`, `unknownCards` | Per card, the side with the newer schedule review wins. Local wins a tie. |
+| `schedules` | FSRS `StoredSchedule`. Newest `last_review` wins. Local wins a tie. |
+| `quizAttempts` | Union, cap 40. Identity is `` `${at}:${topicId}` ``, not a question attempt id. |
+| `mockAttempts` | Union, cap 30. Identity is `` `${at}:${exam}` ``. |
+| `clfAssessmentSnapshots` | Union, cap 20, by snapshot id. |
 
-Verify, if all 10 devices enroll once with one successful US SMS each: 10 × ($0.05 + $0.0083) = **$0.583**. If they all re-verify every month: about **$7.00** per year.
+Those quiz and mock objects are the whole sitting. When they were recorded with the `#246` fields, the union keeps them: `confidenceByQuestion`, `sureIds`, `unsureIds`, `guessedIds`, `luckyIds`, `missReasons`, `secondsByQuestion`, `sittingId`, `mode`, `wrongChoices`, `selectedChoices` (quizzes), `questionIds`, `objectiveByQuestion` (mocks). Older sittings simply lack the optional fields. `parseProgress` in `lib/progress.ts` accepts them.
 
-Worst case that this design will actually allow, using the last published Sync rates plus October 2026 Verify:
+Dropped by `mergeProgress`, because the returned object never copies them:
 
-| | Month (30 days) | Year |
-| --- | ---: | ---: |
-| 10 devices, daily connection cap | $3.00 | $36.50 |
-| Writes at the 2,000/day cap | $0.60 | $7.30 |
-| 10 successful SMS verifications every month | $0.58 | $7.00 |
-| Total | $4.18 | $50.80 |
+- `memoryGames` (`lastMixDay`, `streak`, `bestMs`)
+- `drillPractice` (`missedIds`, `bestStreak`, per-deck bests)
 
-$1000 / $50.80 is about 19 years at that ceiling. The expected case is the connection cap plus a few cents of actions, about **$37** in a year if the 2017 cap is still the billed rate. The free-tier units in the brief are not required for that conclusion. Before 9b-1 ships, read one Usage Record on the empty subaccount and confirm Sync still bills as endpoint-hours and actions. If the 2026 bill is different, stop and reprice. Do not guess a replacement rate.
+A successful sync writes that stripped object back to `localStorage`. Game bests and drill streaks on the device can disappear on the next signed-in save. They are not in the remote snapshot either, so `scripts/export-learner-activity.mjs` cannot see them.
 
-### Expected actions
+The `#252` mistake log is not a stored field. `saaMistakeLog` in `lib/saa-mistake-log.ts` rebuilds `MistakeRow` (including `wasMisconception` and local-date `masteredAt`) from quiz and mock sittings. `SaaMistakeLog.tsx` does that in the browser. The inputs that sync are the attempt fields above, and only the sittings that survive the 40/30 caps. There is no per-question `attempt_id` list.
 
-$10 / 1,000,000 = $0.00001 per explicit read or write. Counts below are design counts from this repo, not Twilio prices.
+Telemetry events (`lib/learner/telemetry.ts`) are a second stream on the same map: quiz started, question answered, remediation opened, quiz completed. They do not carry confidence, miss reason, seconds, or answer text. The exporter treats telemetry, progress, and history as separate evidence and does not invent a shared attempt id.
 
-| Event | Writes | Action cost |
-| --- | ---: | ---: |
-| Topic quiz, 15 questions (`QuizRunner` cap) plus one settings touch | 16 | $0.00016 |
-| Mini mock, 20 questions (`SAA_MINI_QUESTIONS`) plus one settings touch | 21 | $0.00021 |
-| Full mock, 65 questions (published SAA-C03 length) plus one settings touch | 66 | $0.00066 |
-| Card session, 20 reviews (assumption) | 20 | $0.00020 |
-| Game round that updates a best and a streak | 2 | $0.00002 |
+### Size
 
-One busy study month, one person: 20 topic quizzes, 4 minis, 2 full mocks, 30 card sessions, 30 game rounds, and 10 devices × 30 days × 3 page reads.
+| Limit | Where | Value |
+| --- | --- | --- |
+| Sync POST body | `app/api/learner/sync/route.ts` `MAX_BYTES` | 400,000 bytes. Larger bodies return 413 `too_large` before a merge. |
+| Telemetry POST body | `app/api/learner/telemetry/route.ts` | 8,000 bytes. |
+| Sync item | `makeSnapshot` in `lib/learner/progress-snapshot.mjs` | Each chunk is wrapped as `{ s }` and must be at most 16 KiB, matching https://www.twilio.com/docs/sync/limits |
+| Chunk string | `CHUNK` | 12,000 characters, so the JSON wrapper stays under 16 KiB unless escaping blows it up. The byte check still rejects an oversized chunk. |
+| Chunk count | `MAX_CHUNKS` | 40. Past that, `saveRemote` throws `too_large`. |
+| Stored progress ceiling | 40 × 12,000 characters | 480,000 characters of raw JSON, split across items. The route still refuses a single upload over 400,000 bytes. |
 
-Writes: 20×16 + 4×21 + 2×66 + 30×20 + 30×2 = 1,196. Reads: 900. Total 2,096 actions = **$0.021**. Ten devices all doing that same study is still about $0.21 of actions, plus the $3.00 connection cap.
+Paging of map items is `pageSize: 100` followed to the end (`lib/learner/twilio.ts`). The exporter does the same and refuses non-GET.
 
-## f. Guardrails
+## b. Which account
 
-Create three Usage Triggers on the **subaccount**, `UsageCategory=totalprice`, `TriggerBy=price`, `Recurring=monthly`, `TriggerValue` 10, 25, and 50. Each fires at most once per monthly interval, and usage data can lag the trigger check: https://www.twilio.com/docs/usage/api/usage-trigger
+Not determined.
 
-The callback is a signed webhook, same checks as `lib/game/usage-webhook.ts` (content type, size, Twilio signature, account SID, trigger SID, `TriggerBy=price`, `UsageCategory=totalprice`), but it uses `STUDY_SYNC_*` and rejects the Civic Path account SID. On a valid fire it latches a `kill-switch` Document and sends one email to the owner. The trigger API itself has a `CallbackUrl`, not an email field, so the email is ours: Twilio Email at $0.0013 per email (October 2026 hub). Three fires in a month cost $0.0039. The latch stays until the owner clears it. While latched, the token route mints nothing. The site keeps working from `localStorage`.
+`.env.local` is not in this workspace (`ENOENT` on 21 November 2026). `TWILIO_ACCOUNT_SID` was not read. No account fetch ran, so there is no last-4, no friendly name, no parent SID, and no statement that this is or is not the Civic Path account.
 
-Daily write cap, enforced in the token route: 2,000 accepted item writes per UTC day. At the cap the route returns 429 and does not mint, even if the dollar triggers have not fired. The counter increments when a push is accepted and resets at the next UTC midnight.
+## c. Billing check
 
-$10 is already far above the expected ~$3 month. The trigger is there so a bug cannot spend the $1000.
+Not run. No Usage Records were requested, for the same missing `.env.local`. An empty local file is not evidence that Sync is free, unused, or still billed at the 2017 rates. The next read, once the file is present, should list the last 30 days of categories whose names contain `sync` or `verify`, with the `count` and `price` the API returns, and print only the account SID's last 4 characters plus `friendly_name`, `owner_account_sid` last 4, and whether `owner_account_sid` differs from the account SID.
 
-## g. Optional add-ons
+## d. Gaps
 
-Not part of 9b. Each price is from a page fetched on 21 November 2026. None of these are required for sync.
+| Requirement | Today |
+| --- | --- |
+| Max 10 devices, list and revoke | No device record. Every browser that verifies an allowlisted phone shares one map. Sign-out clears that browser's cookie only. Delete removes the entire map. An 11th browser is accepted. |
+| Usage Triggers at $10, $25, and $50 per month, email, and a study kill switch | One daily $5 `totalprice` trigger exists for Outage Ops. It pauses multiplayer, learner sync, and new OTP texts for that UTC day. It does not email. It is not $10 / $25 / $50 and it is not monthly. |
+| Owner-only | Yes. `LEARNER_ALLOWED_PHONES` is the allowlist. Other numbers are not texted and cannot start a session. The public site stays local when sync is unconfigured or the visitor is signed out. |
+| Local-first | Yes for quiz progress: `localStorage` key `comptia-a-plus-review-progress-v1` is the offline copy, and a failed sync does not clear it. Push is "8 seconds after any local change," not a named hook on sitting / card / game. Game and drill fields are then stripped by merge, so local-first does not hold for those fields once a sync succeeds. |
+| Mistake log rebuilt from merged attempts | The page already rebuilds from the attempts it has. Sync does not store `MistakeRow`. Caps of 40 quizzes and 30 mocks drop older sittings, so a rebuild after sync can forget a miss that only the dropped sitting contained. |
+| Conflict tests | `mergeProgress` is tested for attempt union and schedule timestamps. There is no test that `memoryGames` or `drillPractice` survive, no 11th-device test, and no test that `saaMistakeLog` on the merged sittings reopens a mastered row after a later sure-but-wrong. |
 
-### Voice drill (9c)
+Attempt identity is sitting time plus topic or exam. Two different quizzes in the same millisecond on the same topic collapse to one object. That is not dedupe-by-`attempt_id`.
 
-Hands-free only: `<Gather input="speech">`. https://www.twilio.com/docs/voice/twiml/gather points pricing at Programmable Voice.
+## e. Recommendation
 
-US voice pricing, current as of October 2026: https://www.twilio.com/en-us/voice/pricing/us
+Extend this sync. Do not stand up a parallel subaccount, Sync service, or Verify service while the production account is still unread. The owner already has one map, Verify, the allowlist, the session cookie, the exporter, and the mistake log derived from the sittings in that map. A second stack would split the data the exporter reads from the data the site writes.
 
-- Make a US call: $0.0140 per minute
-- Local number: $1.15 per month
-- Gather speech recognition, default "Twilio Picks" provider: $0.02 per use
-- Basic text-to-speech: Free
+Stay on the current account only if section b shows it is the owner's account and not Civic Path. The code changes in section j are the same either way. The env-var swap is the only part that waits on that answer.
 
-Design assumption, stated so the minutes are not a hidden guess: one outbound call, 5 questions, one Gather each, 4 minutes, then the call hangs up. A hard stop at 5 minutes belongs in the TwiML so a stuck call cannot run all day.
+### If the account is Civic Path
 
-Per day: 4 × $0.0140 + 5 × $0.02 = $0.156. Per 30-day month: $4.68 plus $1.15 for the number = **$5.83**. Per year: 365 × $0.156 + 12 × $1.15 = **$70.74**.
+This run could not show that. If the follow-up read says the friendly name or the parent is Civic Path, move the learner map and leave Outage Ops where it is.
 
-### Daily SMS drill (9d)
+1. Export, read-only. `scripts/export-learner-activity.mjs` is a sanitized activity report. It is not a restore file: it drops seconds, selected choices are answer indexes, and it never writes `memoryGames` or `drillPractice`. Before the swap, also copy the verified `progress-head` JSON (the raw progress string the exporter already decodes) into gitignored `tmp/`. Do not commit it.
+2. Create the owner's own subaccount, one Sync service, one Verify service, and an API key. Put those in Vercel Production only. Do not point Outage Ops at them.
+3. Import that one progress snapshot into `learner-<same hmac>` on the new service. Dry-run the item count and the progress SHA-256 first. One write, then a GET to confirm the hash.
+4. Swap `TWILIO_ACCOUNT_SID`, `TWILIO_API_KEY_SID`, `TWILIO_API_KEY_SECRET`, `TWILIO_SYNC_SERVICE_SID`, and `TWILIO_VERIFY_SERVICE_SID` for the learner deployment. Keep `LEARNER_SESSION_SECRET` and `LEARNER_ALLOWED_PHONES` so the map name and the cookie still match. If Outage Ops must keep the Civic Path account, learner and multiplayer can no longer share one SID. That split is part of the swap, not a later surprise.
+5. Rollback is swapping those five variables back. Do not delete the Civic Path learner map until a read-only export of the new map matches the `tmp/` snapshot. The $5 daily trigger stays on the account that still hosts Outage Ops.
 
-Five questions, the owner replies A–D. That is 5 outbound segments and 5 inbound segments per day, one segment each if the copy stays inside 160 characters.
+## f. Build plan
 
-US SMS pricing, current as of November 2026: https://www.twilio.com/en-us/sms/pricing/us
+Still no code in this PR.
 
-- Long code and toll-free, outbound and inbound SMS: $0.0083 per segment
-- Failed-message processing fee: $0.001, only when status is Failed
-- Long-code lease: $1.15 per month. Toll-free lease: $2.15 per month
-- Carrier fees are extra and depend on the carrier. Long-code outbound on that page runs from $0.0035 (AT&T) to $0.005 (Verizon and US Cellular). Long-code inbound runs up to $0.0035 (AT&T). Verizon's inbound cell on that table is blank. Toll-free carrier rows are in the same bands.
+### 9b-1 — fix the merge, then cap devices
 
-Twilio segment fees for 10 messages × 30 days × $0.0083 = **$2.49** per month. Upper published carrier add-on used here, not an average: $0.005 outbound and $0.0035 inbound × 5 × 30 = **$1.275**. Messaging high month ≈ **$3.77**, plus the number.
+About 3 days. Files: `lib/learner/merge.ts`, `lib/learner/sync.ts`, `lib/learner/session.ts`, `app/api/learner/verify/route.ts`, `app/api/learner/signout/route.ts`, a small device list on the existing learner panel, `tests/learner-sync.test.mjs`.
 
-A2P 10DLC, from https://help.twilio.com/articles/1260803965530-A2P-10DLC-Campaign-Registration-Guide and https://help.twilio.com/articles/11587910480155-A2P-10DLC-Campaign-Vetting-FAQ (fetched 21 November 2026; the guide records the 1 August 2025 TCR fee change):
+- Carry `memoryGames` and `drillPractice` through `mergeProgress`. Newest write wins, using a timestamp already on the value or the progress save time. Add a regression test that a successful sync does not drop them.
+- On Verify, register a device id in the learner map. Refuse the 11th non-revoked device. The panel lists devices and revokes one. Revoke frees a slot. Sign-out of one browser does not delete the map.
+- Conflict tests: union of two offline sittings; collapse only when the sitting key matches; `saaMistakeLog` on the merged sittings reopens a mastered question after a later sure-but-wrong and keeps `wasMisconception`; a 429 or 502 does not clear `localStorage`.
 
-- Required for application SMS from a US 10DLC number. Toll-free is outside that system.
-- Sole proprietor brand: $4.50 once. Low Volume Standard brand: $4.50 once. Standard brand: $46 once, which includes secondary vetting of $41.50.
-- Campaign vetting: $15 once, non-refundable if vetting fails.
-- Monthly campaign fee: Sole prop $2, low-volume mixed $1.50, standard $10.
-- Lead time: up to 5 business days for standard use cases. The FAQ says to contact Twilio if vetting is still in progress after 10 days.
-- Year-1 sole-prop registration: $4.50 + $15 + 12 × $2 = $43.50, plus the long-code lease 12 × $1.15 = $13.80, plus messaging. A high year-1 total is about **$103** if every month is the $3.77 messaging case.
+### 9b-2 — study budget switch
 
-Toll-free, from https://help.twilio.com/articles/360038172934-Best-Practices-for-Using-Toll-Free-SMS-and-MMS-in-the-US-and-Canada :
+About 2 days. Files: `lib/game/usage-webhook.ts` or a sibling that does not reuse the $5 Outage Ops latch, `app/api/learner/sync/route.ts`, `app/api/learner/start/route.ts`, tests.
 
-- Verification is required. Unverified toll-free numbers have been blocked since 31 January 2024.
-- Twilio offers that verification at no charge. The article says about 3–5 business days.
-- No brand fee and no $15 campaign fee. Number is $2.15 per month ($25.80 per year). Messaging carrier fees still apply.
-- A high year-1 total is about **$71** (12 × $2.15 + 12 × $3.77).
+- Three monthly `totalprice` triggers at $10, $25, and $50 on the learner account only.
+- Signed webhook latches "stop learner sync and stop new OTP." Local quizzes keep saving to `localStorage`.
+- The webhook sends one email to the owner. The trigger API has a callback URL, not an email field. Twilio Email is $0.0013 per email on the October 2026 hub.
+- Do not let the Outage Ops $5 daily pause be the study kill switch, and do not let a study latch pause multiplayer unless both products are still on the same account after section e.
 
-For one person and five questions a day, toll-free is the cheaper path and the shorter registration. 10DLC is the path only if we insist on a local 10-digit number. Enrollment OTP stays on Verify and does not need either registration.
+### 9b-3 — account move, only if section b says Civic Path
 
-### Weekly email (9e)
+About 1 day plus the Twilio console setup. A read-only snapshot command, one import, the env swap, and the rollback check in section e. No second design.
 
-One email a week: weakest tasks, misconceptions, lucky guesses, the accuracy trend, and the next 10 questions to review. No answer text.
-
-October 2026 hub, https://www.twilio.com/en-us/pricing :
-
-- Twilio Email: $0.0013 per email. 52 × $0.0013 = **$0.07** per year.
-- Twilio SendGrid Email API: 100 emails/day free. Paid plans start at $19.95 per month.
-
-Use Twilio Email or the SendGrid free tier. Do not buy the $19.95 plan for one weekly message.
-
-## h. Capstone tie-in
-
-`capstone/saa_flow.ipynb` keeps the committed synthetic CSV as the default. That file is not learner data. This design does not edit the notebook.
-
-A later capstone change, after attempts actually sync, adds an optional path:
-
-- Read the subaccount SID, API key, and Sync service SID from Colab secrets. Never commit them and never print them.
-- `GET https://sync.twilio.com/v1/Services/{ServiceSid}/Lists/attempts/Items`, following `next_page_url`.
-- Load the items into SQLite.
-- Run four queries: weakest tasks, misconception rate by domain, weekly accuracy trend, lucky-guess rate (correct answers whose `confidence` is `guess`).
-
-The synthetic fixture remains what a fresh clone runs.
-
-## i. Privacy
-
-- Opt-in is off until the owner turns it on. Off means no token request.
-- "Delete all synced data" removes the `attempts` List, the four Maps, and the `settings` Document for this service. It does not wipe `localStorage` unless the owner also clears the browser.
-- CSV export already exists on the scorecard: "Export my SAA attempts (CSV)" downloads `saa-attempts.csv` (`messages/en.json`, `app/components/Scorecard.tsx`, shipped in #246). Export reads the local copy and does not require Sync.
-
-The public site never enrolls a visitor. There is one allowed phone.
-
-## j. Build plan
-
-No code in this PR. Suggested order:
-
-### 9b-1 — sync core, device cap, kill switch
-
-About 3 days.
-
-- `lib/study-sync/config.ts` — read `STUDY_SYNC_*`, fail closed, refuse the Civic Path account SID if it is ever copied into these variables
-- `lib/study-sync/token.ts` — SyncGrant, 3600s TTL, identity `study-owner`
-- `lib/study-sync/devices.ts` — enroll, list, revoke, cap at 10
-- `lib/study-sync/kill-switch.ts` — latch document and daily write counter
-- `app/api/study-sync/verify/route.ts`
-- `app/api/study-sync/token/route.ts`
-- `app/api/study-sync/devices/route.ts`
-- `app/api/study-sync/usage-trigger/route.ts`
-- Owner settings section (device list, revoke, opt-in, delete)
-- Tests for the cap, the 11th device, rate limits, a bad signature, and the latch
-
-Does not sync attempts yet. A successful token is enough to prove enrollment.
-
-### 9b-2 — mistakes, cards, games
-
-About 4 days.
-
-- Push and merge in `lib/progress.ts`, called from `QuizRunner`, `ExamTest`, card review, and the game-round save
-- Attempts List writer, schedule Map, games Map, settings Document
-- Mistake rebuild through `lib/saa-mistake-log.ts`
-- The conflict tests in section c
-
-### 9c — voice
-
-About 2 days, plus the $1.15 number. TwiML route, `<Gather input="speech">`, 5-minute hangup. No Sync token in the voice webhook.
-
-### 9d — SMS
-
-About 2 days of code, plus 3–5 business days of toll-free verification before the first real message. Inbound webhook, five-question session, A–D replies. Toll-free unless we explicitly choose 10DLC and its fees.
-
-### 9e — weekly email
-
-About 2 days. A weekly job reads synced attempts, writes the five sections in section g, and sends one Twilio Email. It does nothing while the kill switch is latched.
-
-## Queue after this design
-
-Not started here: 10 study analytics dashboard, then 7c verified facts, then 8 capstone on real attempts, then the SiteHeader hydration fix.
+Queue after this design is approved, not started here: those 9b pull requests, then the study analytics dashboard reading this same synced progress, then 7c verified facts, then 8 capstone on real attempts using the exporter's data as the source, then the SiteHeader hydration fix.
