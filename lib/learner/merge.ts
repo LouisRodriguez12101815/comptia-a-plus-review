@@ -6,10 +6,28 @@ const reviewedAt = (s: StoredSchedule | undefined) => {
   return Number.isNaN(t) ? 0 : t;
 };
 
-function unionAttempts<T extends { at: number }>(a: T[], b: T[], key: (x: T) => string, max: number): T[] {
+function unionAttempts<T extends { at: number }>(a: T[], b: T[], key: (x: T) => string, max: number, keep?: (primary: T, secondary: T) => T): T[] {
   const seen = new Map<string, T>();
-  for (const item of [...a, ...b]) if (!seen.has(key(item))) seen.set(key(item), item);
+  for (const item of [...a, ...b]) {
+    const id = key(item);
+    const previous = seen.get(id);
+    if (!previous) seen.set(id, item);
+    else if (keep) seen.set(id, keep(previous, item));
+  }
   return [...seen.values()].sort((x, y) => y.at - x.at).slice(0, max);
+}
+
+/** Local seconds win for a question. Seconds that exist only on the other copy are kept. */
+function keepSeconds<T extends { secondsByQuestion?: Record<string, number> }>(primary: T, secondary: T): T {
+  const seconds: Record<string, number> = {};
+  for (const source of [secondary.secondsByQuestion, primary.secondsByQuestion]) {
+    if (!source) continue;
+    for (const [id, value] of Object.entries(source)) {
+      if (typeof value === "number" && Number.isFinite(value) && value >= 0) seconds[id] = value;
+    }
+  }
+  if (!Object.keys(seconds).length) return primary;
+  return { ...primary, secondsByQuestion: seconds };
 }
 
 /** Missed drill cues kept from a sync. Local ids are kept first, then remote ids, until this cap. */
@@ -61,6 +79,7 @@ function mergeDrillPractice(local: Progress["drillPractice"], remote: Progress["
  * except by the existing caps (40 quizzes, 30 mock exams, 200 missed drill cues).
  * Best scores and streaks take the max. A best time is the lower millisecond count.
  * `lastMixDay` takes the later date. `local` wins schedule ties.
+ * A shared sitting keeps per-question seconds from either copy; local seconds win when both recorded one.
  */
 export function mergeProgress(local: Progress, remote: Progress): Progress {
   const schedules: Record<string, StoredSchedule> = { ...remote.schedules };
@@ -86,8 +105,8 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     knownCards,
     unknownCards,
     schedules,
-    quizAttempts: unionAttempts<QuizAttempt>(local.quizAttempts, remote.quizAttempts, (q) => `${q.at}:${q.topicId}`, 40),
-    mockAttempts: unionAttempts<MockAttempt>(local.mockAttempts, remote.mockAttempts, (m) => `${m.at}:${m.exam}`, 30),
+    quizAttempts: unionAttempts<QuizAttempt>(local.quizAttempts, remote.quizAttempts, (q) => `${q.at}:${q.topicId}`, 40, keepSeconds),
+    mockAttempts: unionAttempts<MockAttempt>(local.mockAttempts, remote.mockAttempts, (m) => `${m.at}:${m.exam}`, 30, keepSeconds),
     ...((local.clfAssessmentSnapshots?.length || remote.clfAssessmentSnapshots?.length) ? { clfAssessmentSnapshots: unionAttempts<ClfAssessmentSnapshot>(local.clfAssessmentSnapshots ?? [], remote.clfAssessmentSnapshots ?? [], (snapshot) => snapshot.id, 20) } : {}),
     ...(memoryGames ? { memoryGames } : {}),
     ...(drillPractice ? { drillPractice } : {}),

@@ -83,9 +83,20 @@ test('sensitive arbitrary fields and raw provider objects are never serialized',
 test('missing optional values stay absent; aggregate-only attempts are not converted into answers', () => {
   const report = collect([...events([event()]), ...progressItems({ quizAttempts: [{ total: 10, correct: 3, missedIds: [], at: NOW - DAY }] })]);
   const row = report.activity[0];
-  for (const field of ['selectedAnswer', 'responseDurationMs', 'confidence', 'deviceId', 'attemptNumber', 'reviewCount']) assert.equal(field in row, false);
+  for (const field of ['selectedAnswer', 'responseDurationMs', 'seconds', 'confidence', 'deviceId', 'attemptNumber', 'reviewCount']) assert.equal(field in row, false);
   assert.equal(report.gaps.aggregateOnlyAttempts, 1);
   assert.equal(analyzeActivity(report).questions[0].attempts, 1);
+});
+
+test('recorded quiz and mock seconds survive export and invalid times stay absent', () => {
+  const quiz = { topicId: 'net', at: NOW - DAY, total: 2, correct: 1, questionIds: ['q0', 'q1'], missedIds: ['q0'], secondsByQuestion: { q0: 181, q1: 'slow', missing: -1 } };
+  const mock = { exam: N10, at: NOW - 2 * DAY, total: 1, correct: 1, questionIds: ['q2'], correctIds: ['q2'], missedIds: [], secondsByQuestion: { q2: 20 } };
+  const bare = sitting('q3', 1, NOW - 3 * DAY);
+  const report = collect(progressItems({ quizAttempts: [quiz, bare], mockAttempts: [mock] }));
+  assert.equal(report.activity.find(row => row.questionId === 'q0').seconds, 181);
+  assert.equal('seconds' in report.activity.find(row => row.questionId === 'q1'), false);
+  assert.equal(report.activity.find(row => row.questionId === 'q2').seconds, 20);
+  assert.equal('seconds' in report.activity.find(row => row.questionId === 'q3'), false);
 });
 
 test('timed-out mocks export only explicitly visited questions and never infer unvisited outcomes', () => {

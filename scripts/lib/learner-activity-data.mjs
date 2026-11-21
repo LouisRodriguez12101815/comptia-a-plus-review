@@ -16,7 +16,7 @@ const unique = values => [...new Set(values)];
 export const ACTIVITY_FIELDS = [
   'timestamp', 'eventType', 'questionId', 'examId', 'certification', 'topicId', 'objectiveId',
   'sourceContext', 'sourceHash', 'selectedAnswer', 'correctAnswer', 'isCorrect', 'missCount',
-  'resourceType', 'questionCount', 'correctCount', 'missedCount', 'confidence', 'scoringEvidence',
+  'resourceType', 'questionCount', 'correctCount', 'missedCount', 'confidence', 'scoringEvidence', 'seconds',
 ];
 
 export function bankIndex(content) {
@@ -168,8 +168,11 @@ export function collectActivity(items, content, { days = 7, asOf, exam } = {}) {
         const pick = selectedIndex(attempt.selectedChoices?.[id] ?? attempt.wrongChoices?.[id], q);
         const sure = ids(attempt.sureIds) && attempt.sureIds.includes(id), guess = ids(attempt.guessedIds) && attempt.guessedIds.includes(id);
         const confidence = sure === guess ? undefined : sure ? 'sure' : 'guess';
+        const seconds = attempt.secondsByQuestion?.[id];
+        const recordedSeconds = typeof seconds === 'number' && Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
         add(attempt.at, { ...meta, eventType: 'question_answered', sourceContext: `${kind}-progress`, isCorrect: !missed.includes(id),
-          ...(pick !== undefined ? { selectedAnswer: pick } : {}), ...(confidence ? { confidence } : {}) });
+          ...(pick !== undefined ? { selectedAnswer: pick } : {}), ...(confidence ? { confidence } : {}),
+          ...(recordedSeconds !== undefined ? { seconds: recordedSeconds } : {}) });
       }
     }
   }
@@ -213,7 +216,7 @@ export function collectActivity(items, content, { days = 7, asOf, exam } = {}) {
   const sanitized = activity.map(row => Object.fromEntries(ACTIVITY_FIELDS.filter(k => row[k] !== undefined).map(k => [k, row[k]])));
   return { window: { days, start: new Date(start).toISOString(), end: new Date(asOf).toISOString() }, activity: sanitized, gaps,
     limitations: ['retained-history-not-a-complete-time-window', 'session-source-hashes-are-not-device-identities',
-      'no-cross-stream-attempt-id', 'no-duration-or-question-review-count-in-current-server-schema', 'current-bank-answer-key-not-historical-regrading'],
+      'no-cross-stream-attempt-id', 'duration-only-when-the-sitting-recorded-seconds', 'no-question-review-count', 'current-bank-answer-key-not-historical-regrading'],
     evidencePolicy: 'one stream per question containing its latest result; ties prefer telemetry, then completed quiz/mock progress, then history; supplemental copies do not add attempts',
     bankPolicy: 'repository-authored, schema-validated questions; no independent per-question verification flag exists' };
 }

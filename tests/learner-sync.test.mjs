@@ -31,6 +31,21 @@ test('merging with an empty copy changes nothing', () => {
   assert.deepEqual(mergeProgress(empty(), a), { ...a });
 });
 
+test('a shared sitting keeps seconds from either copy and local seconds win', () => {
+  const localQuiz = { ...quiz(5), secondsByQuestion: { q1: 10, qBad: -3 } };
+  const remoteQuiz = { ...quiz(5), secondsByQuestion: { q1: 99, q2: 200 } };
+  const remoteOnly = { ...quiz(4) };
+  const localMock = { exam: 'saa-c03', correct: 1, total: 1, percent: 100, domains: [], multiCorrect: 0, multiTotal: 0, missedIds: [], at: 8 };
+  const remoteMock = { ...localMock, secondsByQuestion: { q9: 190 } };
+  const merged = mergeProgress(
+    { ...empty(), quizAttempts: [localQuiz, remoteOnly], mockAttempts: [localMock] },
+    { ...empty(), quizAttempts: [remoteQuiz], mockAttempts: [remoteMock] },
+  );
+  assert.deepEqual(merged.quizAttempts.find((item) => item.at === 5).secondsByQuestion, { q1: 10, q2: 200 });
+  assert.equal(merged.quizAttempts.find((item) => item.at === 4).secondsByQuestion, undefined);
+  assert.deepEqual(merged.mockAttempts[0].secondsByQuestion, { q9: 190 });
+});
+
 test('attempt caps hold', () => {
   const many = Array.from({ length: 60 }, (_, i) => quiz(i + 1, 'x'));
   assert.equal(mergeProgress({ ...empty(), quizAttempts: many }, empty()).quizAttempts.length, 40);

@@ -28,7 +28,7 @@ const content = {
 const at = Date.parse("2026-11-20T15:00:00.000Z");
 const items = [{
   key: "progress",
-  data: { s: JSON.stringify({ quizAttempts: [{ topicId: "t1", exam: "saa-c03", correct: 1, total: 2, questionIds: ["q-sure", "q-lucky"], missedIds: ["q-sure"], sureIds: ["q-sure"], guessedIds: ["q-lucky"], at }], mockAttempts: [] }) },
+  data: { s: JSON.stringify({ quizAttempts: [{ topicId: "t1", exam: "saa-c03", correct: 1, total: 2, questionIds: ["q-sure", "q-lucky"], missedIds: ["q-sure"], sureIds: ["q-sure"], guessedIds: ["q-lucky"], secondsByQuestion: { "q-sure": 200, "q-lucky": 40 }, at }], mockAttempts: [] }) },
 }];
 
 before(() => {
@@ -63,7 +63,18 @@ test("owner report and diagnostics stay private", async () => {
   assert.equal(summary.sureButWrong[0].questionId, "q-sure");
   assert.equal(summary.luckyGuesses[0].questionId, "q-lucky");
   assert.match(summary.sureButWrong[0].prompt, /What stays/);
-  assert.equal(summary.pacing.recorded, false);
+  assert.equal(summary.pacing.recorded, true);
+  assert.equal(summary.sittings[0].medianSeconds, 120);
+  assert.equal(summary.sittings[0].slowCount, 1);
+  assert.match(summary.markdown, /median 120s, 1 slower than 3 min/);
+  const untimed = summarizeItems([{
+    key: "progress",
+    data: { s: JSON.stringify({ quizAttempts: [{ topicId: "t1", exam: "saa-c03", correct: 1, total: 1, questionIds: ["q-lucky"], missedIds: [], at }], mockAttempts: [] }) },
+  }], content, { exam: "saa-c03", days: 30, asOf: Date.parse("2026-11-21T12:00:00.000Z") });
+  assert.equal(untimed.pacing.recorded, false);
+  assert.equal(untimed.sittings[0].medianSeconds, null);
+  assert.equal(untimed.sittings[0].slowCount, null);
+  assert.match(untimed.markdown, /pacing not recorded/);
   assert.equal(summary.domains[0].title, "Design secure architectures");
   assert.ok(summary.followups.every((path) => path.startsWith("/quiz?")));
   for (const forbidden of ["SECRET_ANSWER_TEXT", "SECRET_EXPLANATION", phone, "learner-", "correctAnswer", "selectedAnswer", fullSid, secretValue]) {
@@ -84,6 +95,8 @@ test("owner report and diagnostics stay private", async () => {
   const body = await ok.json();
   const bodyText = JSON.stringify(body);
   assert.equal(body.sureButWrong[0].questionId, "q-sure");
+  assert.equal(body.sittings[0].medianSeconds, 120);
+  assert.equal(body.sittings[0].slowCount, 1);
   for (const forbidden of ["SECRET_ANSWER_TEXT", "SECRET_EXPLANATION", phone, "learner-", "correctAnswer", fullSid, secretValue]) {
     assert.equal(bodyText.includes(forbidden), false, forbidden);
   }

@@ -1,6 +1,7 @@
 /** Learner-facing summary. Built only from the exporter's analysis output. Never copies answer keys. */
 
 const PROMPT_LIMIT = 140;
+const SLOW_SECONDS = 180;
 
 type ActivityRow = {
   timestamp?: string;
@@ -12,6 +13,7 @@ type ActivityRow = {
   isCorrect?: boolean;
   confidence?: string;
   scoringEvidence?: boolean;
+  seconds?: number;
 };
 
 type ObjectiveRow = { examId: string; objectiveId: string; attempts: number; correct: number; incorrect: number };
@@ -21,20 +23,26 @@ export type OwnerSummary = {
   exam: string;
   days: number;
   window: { start: string; end: string };
-  sittings: { at: string; correct: number; total: number }[];
+  sittings: { at: string; correct: number; total: number; medianSeconds: number | null; slowCount: number | null }[];
   overall: { correct: number; total: number; accuracy: number | null };
   domains: { id: string; title: string; correct: number; total: number; accuracy: number | null }[];
   weakestTasks: { id: string; title: string; correct: number; attempts: number; accuracy: number | null }[];
   mostMissed: { questionId: string; prompt: string; incorrect: number; attempts: number }[];
   luckyGuesses: { questionId: string; prompt: string }[];
   sureButWrong: { questionId: string; prompt: string }[];
-  pacing: { recorded: false; note: string };
+  pacing: { recorded: boolean; note: string };
   followups: string[];
   csv: string;
   markdown: string;
 };
 
 const accuracy = (correct: number, total: number) => (total > 0 ? Math.round((correct / total) * 1000) / 1000 : null);
+
+function median(values: number[]) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
 
 function shortPrompt(prompt: string | undefined) {
   const text = (prompt ?? "").replace(/\s+/g, " ").trim();
@@ -60,15 +68,22 @@ export function ownerSummary(input: {
   followups: string[];
 }): OwnerSummary {
   const scoring = input.activity.filter((row) => row.scoringEvidence === true && row.eventType === "question_answered" && typeof row.isCorrect === "boolean");
-  const sittingsMap = new Map<string, { at: string; correct: number; total: number }>();
+  const sittingsMap = new Map<string, { at: string; correct: number; total: number; seconds: number[] }>();
   for (const row of scoring) {
     const at = row.timestamp ?? "";
-    const sitting = sittingsMap.get(at) ?? { at, correct: 0, total: 0 };
+    const sitting = sittingsMap.get(at) ?? { at, correct: 0, total: 0, seconds: [] };
     sitting.total += 1;
     if (row.isCorrect) sitting.correct += 1;
+    if (typeof row.seconds === "number") sitting.seconds.push(row.seconds);
     sittingsMap.set(at, sitting);
   }
-  const sittings = [...sittingsMap.values()].sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  const sittings = [...sittingsMap.values()].sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0)).map((sitting) => ({
+    at: sitting.at,
+    correct: sitting.correct,
+    total: sitting.total,
+    medianSeconds: sitting.seconds.length ? median(sitting.seconds) : null,
+    slowCount: sitting.seconds.length ? sitting.seconds.filter((seconds) => seconds > SLOW_SECONDS).length : null,
+  }));
   const correct = sittings.reduce((sum, sitting) => sum + sitting.correct, 0);
   const total = sittings.reduce((sum, sitting) => sum + sitting.total, 0);
 
@@ -126,7 +141,7 @@ export function ownerSummary(input: {
     mostMissed,
     luckyGuesses: listed("guess", true),
     sureButWrong: listed("sure", false),
-    pacing: { recorded: false, note: "Synced history has no per-question seconds, so this report does not show pacing." },
+    pacing: pacingOf(sittings),
     followups,
     csv: "",
     markdown: "",
@@ -134,6 +149,13 @@ export function ownerSummary(input: {
   summary.csv = summaryCsv(scoring);
   summary.markdown = summaryMarkdown(summary);
   return summary;
+}
+
+function pacingOf(sittings: OwnerSummary["sittings"]): OwnerSummary["pacing"] {
+  const recorded = sittings.filter((sitting) => sitting.medianSeconds !== null).length;
+  if (!recorded) return { recorded: false, note: "No sitting in this window recorded per-question seconds." };
+  if (recorded === sittings.length) return { recorded: true, note: "Each sitting lists its median seconds and how many questions took longer than 3 minutes." };
+  return { recorded: true, note: "Sittings without per-question seconds are marked not recorded. The others list a median and how many questions took longer than 3 minutes." };
 }
 
 function summaryCsv(rows: ActivityRow[]) {
@@ -149,7 +171,7 @@ function pct(value: number | null) {
 function summaryMarkdown(summary: OwnerSummary) {
   const list = (rows: string[]) => (rows.length ? rows.map((row) => `- ${row}`).join("\n") : "- None in retained evidence.");
   return `# ${summary.exam} activity\n\nWindow: ${summary.window.start} — ${summary.window.end}\n\n`
-    + `## Sittings\n\n${list(summary.sittings.map((sitting) => `${sitting.at}: ${sitting.correct}/${sitting.total}`))}\n\n`
+    + `## Sittings\n\n${list(summary.sittings.map((sitting) => `${sitting.at}: ${sitting.correct}/${sitting.total}${sitting.medianSeconds === null ? " — pacing not recorded" : ` — median ${sitting.medianSeconds}s, ${sitting.slowCount} slower than 3 min`}`))}\n\n`
     + `## Overall\n\n${summary.overall.correct}/${summary.overall.total} (${pct(summary.overall.accuracy)})\n\n`
     + `## Domains\n\n${list(summary.domains.map((domain) => `${domain.title}: ${domain.correct}/${domain.total} (${pct(domain.accuracy)})`))}\n\n`
     + `## Weakest tasks\n\n${list(summary.weakestTasks.map((task) => `${task.id} ${task.title}: ${task.correct}/${task.attempts} (${pct(task.accuracy)})`))}\n\n`

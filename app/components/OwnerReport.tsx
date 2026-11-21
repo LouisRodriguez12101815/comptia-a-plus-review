@@ -106,7 +106,14 @@ export function OwnerReport() {
               <section>
                 <h2 className="text-lg font-semibold text-white">{t("sittings")}</h2>
                 <ul className="mt-2 space-y-1 text-sm text-slate-200">
-                  {report.sittings.map((sitting) => <li key={sitting.at}>{sitting.at}: {sitting.correct}/{sitting.total}</li>)}
+                  {report.sittings.map((sitting) => (
+                    <li key={sitting.at}>
+                      {sitting.at}: {sitting.correct}/{sitting.total}
+                      {sitting.medianSeconds === null
+                        ? ` — ${t("notRecorded")}`
+                        : ` — ${t("medianSlow", { seconds: sitting.medianSeconds, slow: sitting.slowCount ?? 0 })}`}
+                    </li>
+                  ))}
                 </ul>
               </section>
               <section>
