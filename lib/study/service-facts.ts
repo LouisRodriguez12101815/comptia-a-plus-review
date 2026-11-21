@@ -45,7 +45,7 @@ export type FactCostProfile = {
   anchor?: {
     amount: string;
     asOf: "2026-11";
-    region: "us-east-1";
+    region: "us-east-1" | "not named on page";
     url: string;
   };
 };

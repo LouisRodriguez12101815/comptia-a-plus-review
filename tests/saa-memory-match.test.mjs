@@ -54,6 +54,12 @@ test("cost pairs use the anchor when one was stored, and the band otherwise", ()
   assert.match(s3.right, /GB-month and requests, by storage class/);
   const route53 = anchored.find((pair) => pair.id === "route53-cost-anchor");
   assert.match(route53.right, /\$0\.50 per hosted zone/);
+  assert.match(route53.right, /not named on page/);
+  const fargate = anchored.find((pair) => pair.id === "fargate-cost-anchor");
+  assert.match(fargate.right, /\$0\.000011244 per vCPU-second/);
+  assert.match(fargate.right, /us-east-1/);
+  const vpn = costs.find((pair) => pair.id === "site-to-site-vpn-cost-band");
+  assert.equal(vpn.right, "$ · VPN connection-hour and traffic");
   const iam = costs.find((pair) => pair.id === "iam-cost-band");
   assert.equal(iam.right, "n/a · n/a");
   const coreCosts = filterMatchPairs(costs, { domain: "", task: "", tier: "core", field: "cost" });
