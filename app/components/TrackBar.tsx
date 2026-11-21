@@ -1,6 +1,8 @@
 "use client";
 
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { usePathname } from "@/i18n/navigation";
 import { StatusIcon, ToolIcon } from "@/app/components/icons";
@@ -9,7 +11,7 @@ import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { isHubPath, toolStatuses, trackForPath } from "@/lib/tracks";
 
 function isActive(toolId: string, pathname: string): boolean {
-  if (toolId === "game") return pathname.startsWith("/game") || pathname.startsWith("/practice-games") || pathname.startsWith("/aws-saa/games");
+  if (toolId === "game") return pathname.startsWith("/game") || pathname.startsWith("/practice-games") || pathname.startsWith("/aws-saa/games") || pathname.startsWith("/aws-saa/drills");
   if (toolId === "labs") return pathname.startsWith("/labs");
   if (toolId === "visuals") return pathname.endsWith("/visuals") || pathname.startsWith("/network-plus");
   return pathname.startsWith(`/${toolId}`);
@@ -19,14 +21,14 @@ function isActive(toolId: string, pathname: string): boolean {
  * Shown on the tool pages (notes, visuals, flashcards, quizzes, labs, game, Network+ chapters)
  * so a learner can move between tools without going back to the landing page.
  */
-export function TrackBar() {
+function TrackBarView({ exam }: { exam: string | null }) {
   const t = useTranslations("tracks");
   const journey = useTranslations("navigationJourney");
   const pathname = usePathname();
   const [focus] = useStudyFocus();
 
   if (pathname === "/" || pathname === "/coverage" || isHubPath(pathname)) return null;
-  const track = trackForPath(pathname, focus);
+  const track = trackForPath(pathname, focus, exam);
   if (!track) return null;
   const tools = toolStatuses(track);
 
@@ -90,5 +92,18 @@ export function TrackBar() {
         </nav>
       </div>
     </section>
+  );
+}
+
+function TrackBarExam() {
+  const exam = useSearchParams().get("exam");
+  return <TrackBarView exam={exam} />;
+}
+
+export function TrackBar() {
+  return (
+    <Suspense fallback={<TrackBarView exam={null} />}>
+      <TrackBarExam />
+    </Suspense>
   );
 }

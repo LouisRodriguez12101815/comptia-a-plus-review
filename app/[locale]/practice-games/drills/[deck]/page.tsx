@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FactDrill } from "@/app/components/practice/FactDrill";
 import { drillDecks, getDeck } from "@/lib/practice/drills";
+import { sessionKind } from "@/lib/practice/drill-session";
 
 // Ports keeps its original /practice-games/port-drill URL.
 export function generateStaticParams() {
@@ -17,9 +18,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/practice
   return { title: `${t(`${deck.id}.title`)} | Certification Review`, description: t(`${deck.id}.cardBody`) };
 }
 
-export default async function DrillPage({ params }: PageProps<"/[locale]/practice-games/drills/[deck]">) {
+export default async function DrillPage({
+  params,
+  searchParams,
+}: PageProps<"/[locale]/practice-games/drills/[deck]">) {
   const { locale, deck: id } = await params;
   setRequestLocale(locale);
   if (!getDeck(id)) notFound();
-  return <FactDrill deckId={id} />;
+  const query = (await searchParams) as { session?: string; mode?: string };
+  return <FactDrill deckId={id} session={sessionKind(query.session)} mode={query.mode} />;
 }

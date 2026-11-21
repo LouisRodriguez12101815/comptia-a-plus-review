@@ -1,4 +1,5 @@
 import { getFlashcards, getQuestions, getTopics, labs } from "@/lib/content";
+import { GAME_IDS } from "@/lib/study/game-ids";
 import { visualCounts } from "@/lib/visuals";
 import type { ExamCode, StudyFocus, Topic } from "@/lib/types";
 
@@ -204,12 +205,14 @@ export function isHubPath(pathname: string): boolean {
 }
 
 /** Which track a page belongs to, using the URL first and the saved exam focus second. */
-export function trackForPath(pathname: string, focus: StudyFocus): Track | undefined {
+export function trackForPath(pathname: string, focus: StudyFocus, exam?: string | null): Track | undefined {
   const direct = tracks.find(
     (track) => pathname === track.href || pathname.startsWith(`${track.href}/`),
   );
   if (direct) return direct;
-  if (pathname === "/flashcards/cheat-sheet" || pathname.startsWith("/flashcards/cheat-sheet/")) return getTrack("aws-saa");
+  if (pathname === "/flashcards/cheat-sheet" || pathname.startsWith("/flashcards/cheat-sheet/")) {
+    return getTrack(exam === "clf-c02" ? "aws-clf" : "aws-saa");
+  }
   if (pathname.startsWith("/practice-games/component-match")) return getTrack("core1");
   if (pathname.startsWith("/practice-games/subnet-architect")) return getTrack("networking");
   if (pathname.startsWith("/subnet-sources")) return getTrack("networking");
@@ -289,7 +292,7 @@ export function toolStatuses(track: Track): ToolStatus[] {
         };
       case "game":
         if (track.id === "aws-saa") {
-          return { ...base, href: "/aws-saa/games", state: "ready", chip: { key: "games", count: 9 } };
+          return { ...base, href: "/aws-saa/games", state: "ready", chip: { key: "games", count: GAME_IDS.length } };
         }
         return { ...base, state: "shared", chip: { key: "allTracks" } };
     }

@@ -69,6 +69,18 @@
       "daily": { "title": "Mezcla diaria", "blurb": "Diez pistas, con más peso en el dominio más débil, y una racha." }
     }
   },
+  "saaDrills": {
+    "title": "Ejercicios SAA",
+    "intro": "Mazos de pistas, inverso, contrarreloj de 60 segundos, supervivencia con tres vidas, fallos guardados, cuáles dos, la afirmación falsa y pares que se confunden.",
+    "weakest": "Jugar mi dominio más débil",
+    "weakestHint": "Abre la ronda jefe de {domain}. Sin respuestas puntuadas, es el dominio 1.",
+    "practice": "Práctica",
+    "reverse": "Inverso",
+    "speed": "Contrarreloj",
+    "survival": "Supervivencia",
+    "missed": "Pistas falladas",
+    "bossTitle": "Ronda jefe del dominio"
+  },
   "exams": {
     "220-1201": {
       "shortLabel": "Core 1",
@@ -214,7 +226,10 @@
     "sheetCards": "Tarjetas",
     "sheetPairs": "Comparaciones",
     "sheetEmpty": "No hay nada etiquetado para este dominio.",
-    "sheetUntagged": "Las tarjetas sin tarea siguen en el mazo y no entran en esta hoja."
+    "sheetUntagged": "Las tarjetas sin tarea siguen en el mazo y no entran en esta hoja.",
+    "sheetTitleClf": "Hoja CLF",
+    "sheetExamSaa": "SAA-C03",
+    "sheetExamClf": "CLF-C02"
   },
   "sectionBlocks": {
     "codeExample": "Ejemplo de código",
@@ -1607,7 +1622,21 @@
     "otherDrills": "Otros ejercicios de memoria",
     "start": "Empezar",
     "ready": "{count} preguntas en modo {mode}. Elige un modo arriba o empieza ya.",
-    "matchLink": "Prueba el juego de emparejar"
+    "matchLink": "Prueba el juego de emparejar",
+    "backDrills": "Volver a los ejercicios SAA",
+    "practice": "Práctica",
+    "speed": "Contrarreloj",
+    "survival": "Supervivencia",
+    "missed": "Pistas falladas",
+    "sessionLabel": "Tipo de ronda",
+    "lives": "Vidas {lives}",
+    "speedStatus": "{seconds}s · combo ×{combo} · {score} puntos",
+    "selectNeed": "Elige {count}",
+    "selectSubmit": "Comprobar",
+    "docs": "Documentación de AWS",
+    "noneMissed": "No hay pistas falladas guardadas en este mazo.",
+    "speedDone": "Puntuación {score}.",
+    "survivalDone": "Mejor racha de esta ronda: {streak}."
   },
   "drillDecks": {
     "ports": {
@@ -2618,6 +2647,10 @@
         "scenarioToAnswer": {
           "label": "Escenario → Respuesta",
           "ask": "¿Qué servicio o función AWS encaja mejor?"
+        },
+        "answerToScenario": {
+          "label": "Respuesta → Escenario",
+          "ask": "¿Qué escenario corresponde a esta respuesta?"
         }
       },
       "fields": {
@@ -2955,6 +2988,10 @@
         "cueToAnswer": {
           "label": "Pista → Respuesta",
           "ask": "¿Qué decisión de arquitectura implica esta pista?"
+        },
+        "answerToCue": {
+          "label": "Respuesta → Pista",
+          "ask": "¿Qué pista corresponde a esta respuesta?"
         }
       },
       "fields": {
@@ -2974,6 +3011,10 @@
         "cueToAnswer": {
           "label": "Pista → Respuesta",
           "ask": "¿Qué decisión de arquitectura implica esta pista?"
+        },
+        "answerToCue": {
+          "label": "Respuesta → Pista",
+          "ask": "¿Qué pista corresponde a esta respuesta?"
         }
       },
       "fields": {
@@ -2993,6 +3034,10 @@
         "cueToAnswer": {
           "label": "Pista → Respuesta",
           "ask": "¿Qué decisión de arquitectura implica esta pista?"
+        },
+        "answerToCue": {
+          "label": "Respuesta → Pista",
+          "ask": "¿Qué pista corresponde a esta respuesta?"
         }
       },
       "fields": {
@@ -3012,6 +3057,10 @@
         "cueToAnswer": {
           "label": "Pista → Respuesta",
           "ask": "¿Qué decisión de arquitectura implica esta pista?"
+        },
+        "answerToCue": {
+          "label": "Respuesta → Pista",
+          "ask": "¿Qué pista corresponde a esta respuesta?"
         }
       },
       "fields": {
@@ -3021,6 +3070,45 @@
       "tables": {
         "cues": "Pistas"
       }
+    },
+    "aws-saa-which-two": {
+      "title": "Cuáles dos",
+      "topic": "Cuáles dos",
+      "intro": "Elige las dos afirmaciones que son verdaderas.",
+      "cardBody": "Seis pares comprobados en cada dominio SAA.",
+      "modes": { "whichTwo": { "label": "Cuáles dos", "ask": "¿Qué dos afirmaciones son correctas?" } },
+      "fields": { "prompt": "Enunciado", "answer": "Respuesta" },
+      "tables": { "checks": "Comprobaciones" }
+    },
+    "aws-saa-spot-wrong": {
+      "title": "Encuentra la afirmación falsa",
+      "topic": "Encuentra la afirmación falsa",
+      "intro": "Encuentra la única afirmación que no se sostiene.",
+      "cardBody": "Seis afirmaciones en cada dominio SAA, una de ellas falsa.",
+      "modes": { "spotWrong": { "label": "Afirmación falsa", "ask": "¿Qué afirmación es falsa?" } },
+      "fields": { "prompt": "Enunciado", "answer": "Respuesta" },
+      "tables": { "checks": "Comprobaciones" }
+    },
+    "aws-saa-confusion-pairs": {
+      "title": "Pares que se confunden",
+      "topic": "Pares que se confunden",
+      "intro": "Distingue los lados de una confusión habitual.",
+      "cardBody": "Los pares de comparación SAA, en las dos direcciones.",
+      "modes": {
+        "leftToRight": { "label": "Izquierda → Derecha", "ask": "¿Qué lado corresponde a este?" },
+        "rightToLeft": { "label": "Derecha → Izquierda", "ask": "¿Qué lado corresponde a este?" }
+      },
+      "fields": { "left": "Izquierda", "right": "Derecha" },
+      "tables": { "pairs": "Pares" }
+    },
+    "aws-saa-domain-boss": {
+      "title": "Ronda jefe del dominio",
+      "topic": "Ronda jefe del dominio",
+      "intro": "Una ronda mezclada de un dominio SAA.",
+      "cardBody": "Pistas de los mazos de ese dominio.",
+      "modes": { "promptToAnswer": { "label": "Pista → Respuesta", "ask": "¿Qué decisión de arquitectura implica esta pista?" } },
+      "fields": { "prompt": "Pista", "answer": "Respuesta" },
+      "tables": { "cues": "Pistas" }
     },
     "c2-assessment-os": {
       "title": "Repaso de evaluación: Operating systems and tools",

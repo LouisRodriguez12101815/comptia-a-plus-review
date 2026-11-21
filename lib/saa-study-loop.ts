@@ -115,6 +115,17 @@ export function saaDomainSummary(
     .sort((a, b) => a.percent - b.percent || a.id.localeCompare(b.id));
 }
 
+/** Lowest domain percent. With no scored answers, Domain 1. */
+export function weakestSaaDomain(
+  attempts: AnsweredAttempt[],
+  questions: Question[],
+  domains: { id: string; title: string }[],
+): "D1" | "D2" | "D3" | "D4" {
+  const row = saaDomainSummary(attempts, questions, domains)[0];
+  const domain = row ? `D${row.id[0]}` : "D1";
+  return domain === "D2" || domain === "D3" || domain === "D4" ? domain : "D1";
+}
+
 export function nextSaaQuestionIds(
   attempts: AnsweredAttempt[],
   questions: Question[],
