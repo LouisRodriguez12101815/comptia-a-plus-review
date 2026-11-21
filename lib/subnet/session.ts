@@ -1,6 +1,7 @@
 import { subnetData } from "@/lib/subnet/catalog";
 import { calculate, cidr } from "@/lib/subnet/ipv4";
 import { designGrade, designReason, detectiveGrade, detectiveSteps, orderGrade, type Feedback } from "@/lib/subnet/grading";
+import { shuffle } from "@/lib/practice/session";
 import type { Allocation, DesignMission } from "@/lib/subnet/types";
 export type Answers=Record<string,string>;
 export type Run={version:number;activity:"detective"|"architect";mode:"guided"|"challenge";id:string;receipts:Record<string,{attempts:Answers[];hintUsed:boolean}>;draft:Answers};
@@ -8,6 +9,10 @@ export function newRun(activity:Run['activity'],mode:Run['mode'],id:string):Run{
 export const getExercise=(run:Run)=>[...subnetData.exercises,subnetData.transferExercise].find(e=>e.id===run.id)!;
 export const getMission=(run:Run)=>subnetData.missions.find(m=>m.id===run.id)!;
 export const getConcept=(run:Run)=>subnetData.concepts[Math.max(0,subnetData.exercises.findIndex(e=>e.id===run.id))%subnetData.concepts.length];
+/** Display order only. Grading still matches the choice id, so this cannot change the key. */
+export function displayChoices<T extends {id:string}>(choices: readonly T[], random: () => number = Math.random): T[] {
+  return shuffle(choices, random);
+}
 export function stages(run:Run){return [...(run.activity==='detective'?detectiveSteps.map(s=>s.id):['order','prefixes','allocation','reason']),'concept'];}
 export function allocations(answers:Answers):Record<string,Allocation>{return Object.fromEntries(Object.keys(answers).filter(k=>k.endsWith('.cidr')).map(k=>{const id=k.slice(0,-5);return [id,{cidr:answers[k],gateway:answers[id+'.gateway']??'',peer:answers[id+'.peer']??''}];}));}
 export function grade(run:Run,stage:string,answers:Answers):{ok:boolean;errors:Feedback[]}{
