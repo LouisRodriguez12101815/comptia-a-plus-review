@@ -75,7 +75,7 @@
         "freeTierReason": "There is no separate service charge to put on a free-tier line.",
         "docsUrl": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
       },
-      "acronymReason": "The name contains IAM, which is the account identity service. Identity Center is the published product name and is not an expansion of those initials.",
+      "acronymReason": "The name contains IAM, which is the account identity service. Identity Center is the published product name and is not an expansion of those initials. The what-is page says that on July 26, 2022, AWS Single Sign-On was renamed to AWS IAM Identity Center.",
       "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
     {
@@ -152,12 +152,49 @@
       "cost": {
         "band": "$",
         "dimension": "customer managed key-month and requests",
-        "reason": "Compared with a dedicated HSM, a customer managed key is the lower tier. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/kms/pricing/"
+        "reason": "Compared with a dedicated HSM, a customer managed key is the lower tier. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "20,000 requests per month, calculated across all Regions where the service is available. Creation and storage of AWS managed and AWS owned keys are not charged.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/kms/pricing/",
+        "anchor": {
+          "amount": "$1 per month, prorated hourly, for each KMS key you create. The Key storage section states this rate. The Region selector on the page was US East (N. Virginia) for key usage.",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/kms/pricing/"
+        }
       },
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Customer managed key",
+          "purpose": "A KMS key you create and manage. The key-storage price applies.",
+          "task": "1.3",
+          "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        },
+        {
+          "name": "AWS managed key",
+          "purpose": "A legacy key type. The concepts page says new AWS services stopped creating these in 2021 and use an AWS owned key by default.",
+          "task": "1.3",
+          "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        },
+        {
+          "name": "AWS owned key",
+          "purpose": "A KMS key an AWS service owns and manages for use in multiple accounts. It is not in your account.",
+          "task": "1.3",
+          "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        },
+        {
+          "name": "Symmetric encryption KMS key",
+          "purpose": "The key type integrated AWS services use to encrypt data they store. Those services do not encrypt with asymmetric KMS keys.",
+          "task": "1.3",
+          "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html"
+        },
+        {
+          "name": "Asymmetric KMS key",
+          "purpose": "A public and private key pair. The private key is created in AWS KMS and never leaves AWS KMS unencrypted.",
+          "task": "1.3",
+          "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html"
+        }
+      ]
     },
     {
       "id": "secrets",
@@ -192,10 +229,16 @@
       "cost": {
         "band": "$",
         "dimension": "secret-month and API requests",
-        "reason": "A secret is the cheap control next to the database it protects. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/secrets-manager/pricing/"
+        "reason": "A secret is the cheap control next to the database it protects. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "Starting July 15, 2025, new AWS customers receive up to $200 in AWS Free Tier credits that can apply to eligible services, including Secrets Manager.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/secrets-manager/pricing/",
+        "anchor": {
+          "amount": "$0.40 per secret per month. The pricing page states this rate and does not name a Region.",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/secrets-manager/pricing/"
+        }
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
       "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
@@ -318,7 +361,20 @@
         "docsUrl": "https://aws.amazon.com/shield/pricing/"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Shield Standard",
+          "purpose": "DDoS protection provided automatically and at no extra charge when you use AWS.",
+          "task": "1.2",
+          "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html"
+        },
+        {
+          "name": "Shield Advanced",
+          "purpose": "The paid subscription for a higher level of protection against attacks.",
+          "task": "1.2",
+          "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html"
+        }
+      ]
     },
     {
       "id": "guardduty",
@@ -564,10 +620,16 @@
       "cost": {
         "band": "n/a",
         "dimension": "n/a",
-        "reason": "A VPC, subnet, and route table have no charge. NAT gateways, traffic, and some endpoints are billed separately, and no dollar figure was copied.",
+        "reason": "A VPC, subnet, and route table have no charge. The us-east-1 anchor is the NAT Gateway rate from the VPC pricing page.",
         "freeTier": "n/a",
         "freeTierReason": "There is no separate service charge to put on a free-tier line.",
-        "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+        "docsUrl": "https://aws.amazon.com/vpc/pricing/",
+        "anchor": {
+          "amount": "NAT Gateway: $0.045 per hour and $0.045 per GB processed",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/vpc/pricing/"
+        }
       },
       "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
     },
@@ -610,7 +672,62 @@
         "docsUrl": "https://aws.amazon.com/route53/pricing/"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Simple routing",
+          "purpose": "Use for a single resource that performs a given function for the domain.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "Weighted routing",
+          "purpose": "Route traffic to multiple resources in proportions you specify.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "Latency routing",
+          "purpose": "Route traffic to the Region that provides the best latency.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "Failover routing",
+          "purpose": "Configure active-passive failover.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "Geolocation routing",
+          "purpose": "Route traffic based on the location of your users.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "Geoproximity routing",
+          "purpose": "Route traffic based on the location of your resources, and optionally shift traffic between locations.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "Multivalue answer routing",
+          "purpose": "Respond to DNS queries with up to eight healthy records selected at random.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "IP-based routing",
+          "purpose": "Route traffic based on the location of your users and the IP addresses the traffic originates from.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        },
+        {
+          "name": "AZ-affinity routing",
+          "purpose": "Route traffic to resources in the same Availability Zone, Zone Group, or Region that the query comes from.",
+          "task": "2.2",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        }
+      ]
     },
     {
       "id": "cloudfront",
@@ -645,10 +762,16 @@
       "cost": {
         "band": "$$",
         "dimension": "data transferred and requests, by price class",
-        "reason": "The edge cache is the mid-tier delivery option next to serving from the origin Region. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/cloudfront/pricing/"
+        "reason": "The edge cache is the mid-tier delivery option next to serving from the origin Region. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "Always Free Tier includes 1 TB of data transfer out to the internet per month and 10,000,000 HTTP or HTTPS requests per month.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/",
+        "anchor": {
+          "amount": "Data transfer out to the internet, United States, Mexico, and Canada (the page's group that includes us-east-1 viewers): next 9 TB $0.085 per GB",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+        }
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
       "classes": [
@@ -812,7 +935,20 @@
         "docsUrl": "https://aws.amazon.com/directconnect/pricing/"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Direct Connect dedicated connection",
+          "purpose": "A connection you create at a Direct Connect location. The dedicated-connection page lists port speeds of 1 Gbps, 10 Gbps, 100 Gbps, and 400 Gbps.",
+          "task": "3.4",
+          "docsUrl": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/dedicated_connection.html"
+        },
+        {
+          "name": "Direct Connect hosted connection",
+          "purpose": "A connection an AWS Direct Connect Partner creates. You accept it before you can use it.",
+          "task": "3.4",
+          "docsUrl": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/hosted_connection.html"
+        }
+      ]
     },
     {
       "id": "site-to-site-vpn",
@@ -852,8 +988,10 @@
         "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
         "docsUrl": "https://aws.amazon.com/vpn/pricing/"
       },
-      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service.",
+      "acronym": "VPN",
+      "expansion": "virtual private network",
+      "acronymNote": "The AWS glossary entry titles this AWS Virtual Private Network and says that entry covers AWS Client VPN and AWS Site-to-Site VPN."
     },
     {
       "id": "transit-gateway",
@@ -925,10 +1063,16 @@
       "cost": {
         "band": "$",
         "dimension": "endpoint hours and data processed",
-        "reason": "An interface endpoint is a small hourly charge for a private path. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "reason": "An interface endpoint is a small hourly charge for a private path. The us-east-1 anchor is the rate read from that pricing page.",
         "freeTier": "n/a",
         "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/privatelink/pricing/"
+        "docsUrl": "https://aws.amazon.com/privatelink/pricing/",
+        "anchor": {
+          "amount": "Interface endpoint: $0.01 per VPC endpoint per Availability Zone-hour",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/privatelink/pricing/"
+        }
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
       "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
@@ -1124,10 +1268,16 @@
       "cost": {
         "band": "$$",
         "dimension": "instance-hour by family and purchase option",
-        "reason": "On-Demand is the middle compute tier: more flexible than a commitment, more expensive than Spot. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/ec2/pricing/on-demand/"
+        "reason": "On-Demand is the middle compute tier: more flexible than a commitment, more expensive than Spot. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "100 GB of data transfer out to the internet each month, aggregated across AWS services and Regions except China and GovCloud.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/ec2/pricing/on-demand/",
+        "anchor": {
+          "amount": "Linux t3.micro On-Demand: $0.0104 per hour. Data transfer out from Amazon EC2 to the internet: first 10 TB per month $0.09 per GB.",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/ec2/pricing/on-demand/"
+        }
       }
     },
     {
@@ -1222,10 +1372,16 @@
       "cost": {
         "band": "$",
         "dimension": "requests and GB-seconds",
-        "reason": "Lambda is the pay-per-invocation tier next to an instance that runs all month. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/lambda/pricing/"
+        "reason": "Lambda is the pay-per-invocation tier next to an instance that runs all month. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "The free tier includes one million requests and 400,000 GB-seconds per month.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/lambda/pricing/",
+        "anchor": {
+          "amount": "x86 architecture, first 6 billion GB-seconds per month: $0.0000166667 per GB-second; requests: $0.20 per 1 million",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/lambda/pricing/"
+        }
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
       "classes": [
@@ -1322,7 +1478,26 @@
         "freeTierReason": "There is no separate service charge to put on a free-tier line.",
         "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
       },
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "ECS on EC2",
+          "purpose": "EC2 capacity for large workloads that must be price optimized. You manage the instances.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch-type-ec2.html"
+        },
+        {
+          "name": "ECS on Fargate",
+          "purpose": "Run containers without managing servers or clusters of EC2 instances.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        },
+        {
+          "name": "ECS on External",
+          "purpose": "Register an external instance, such as an on-premises server or VM, with Amazon ECS Anywhere.",
+          "task": "3.2",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch-type-external.html"
+        }
+      ]
     },
     {
       "id": "eks",
@@ -1450,10 +1625,16 @@
       "cost": {
         "band": "$",
         "dimension": "GB-month and requests, by storage class",
-        "reason": "Standard storage is the low end of the storage price next to a database or a volume. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/s3/pricing/"
+        "reason": "Standard storage is the low end of the storage price next to a database or a volume. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "As of July 15, 2025, new AWS customers receive up to $200 in AWS Free Tier credits that can apply to eligible services, including Amazon S3. The pricing page does not list a separate always-free S3 GB allowance.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/s3/pricing/",
+        "anchor": {
+          "amount": "S3 Standard storage, first 50 TB per month: $0.023 per GB",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/s3/pricing/"
+        }
       }
     },
     {
@@ -1508,10 +1689,16 @@
       "cost": {
         "band": "$",
         "dimension": "GB-month plus a retrieval tier",
-        "reason": "Archive storage is cheaper to keep than Standard and can cost more to read. No us-east-1 list price was read from a pricing page, so none is stored.",
+        "reason": "Archive storage is cheaper to keep than Standard and can cost more to read. The us-east-1 anchor is the rate read from that pricing page.",
         "freeTier": "n/a",
         "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/s3/glacier/pricing/"
+        "docsUrl": "https://aws.amazon.com/s3/pricing/",
+        "anchor": {
+          "amount": "S3 Glacier Deep Archive, all storage per month: $0.00099 per GB",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/s3/pricing/"
+        }
       },
       "acronymReason": "S3 in the name is Amazon Simple Storage Service, expanded on the S3 record. Glacier is not a separate initialism.",
       "classes": [
@@ -1633,10 +1820,16 @@
       "cost": {
         "band": "$$",
         "dimension": "GB-month plus provisioned IOPS or throughput",
-        "reason": "A volume costs more than object storage and less than a replicated database. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/ebs/pricing/"
+        "reason": "A volume costs more than object storage and less than a replicated database. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "AWS Free Tier includes 30 GB of storage, 2 million I/Os, and 1 GB of snapshot storage with Amazon EBS.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/ebs/pricing/",
+        "anchor": {
+          "amount": "gp3 storage: $0.08 per GB-month",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/ebs/pricing/"
+        }
       }
     },
     {
@@ -1734,10 +1927,16 @@
       "cost": {
         "band": "$$",
         "dimension": "GB-month by storage class, plus throughput mode",
-        "reason": "Shared file storage sits above S3 and below a high-IOPS volume for a single instance. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/efs/pricing/"
+        "reason": "Shared file storage sits above S3 and below a high-IOPS volume for a single instance. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "New AWS customers receive 5 GB of EFS Standard storage with a Regional file system for 12 months.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/efs/pricing/",
+        "anchor": {
+          "amount": "Regional (Multi-AZ) with Elastic Throughput, Standard/SSD storage: $0.30 per GB-month",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/efs/pricing/"
+        }
       }
     },
     {
@@ -1843,7 +2042,38 @@
         "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "S3 File Gateway",
+          "purpose": "On-premises file share backed by objects in Amazon S3.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html"
+        },
+        {
+          "name": "FSx File Gateway",
+          "purpose": "On-premises access to in-cloud Amazon FSx for Windows File Server shares.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html"
+        },
+        {
+          "name": "Volume Gateway cached",
+          "purpose": "Store the volume data in Amazon S3 and keep a local copy of frequently accessed subsets.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/vgw/WhatIsStorageGateway.html"
+        },
+        {
+          "name": "Volume Gateway stored",
+          "purpose": "Keep the full dataset on premises for low-latency access and back it up asynchronously.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/vgw/WhatIsStorageGateway.html"
+        },
+        {
+          "name": "Tape Gateway",
+          "purpose": "Tape-based virtual tape archive.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html"
+        }
+      ]
     },
     {
       "id": "backup",
@@ -2072,10 +2302,16 @@
       "cost": {
         "band": "$$",
         "dimension": "on-demand request units or provisioned capacity, plus storage",
-        "reason": "You pay for reads and writes, not for an instance you sized. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/dynamodb/pricing/"
+        "reason": "You pay for reads and writes, not for an instance you sized. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "Each month, per Region, per payer account, on provisioned capacity and the Standard table class: 25 WCUs, 25 RCUs, 25 GB of data storage, and 2.5 million DynamoDB Streams read requests.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/dynamodb/pricing/",
+        "anchor": {
+          "amount": "On-demand example for a DynamoDB Standard table in US East (N. Virginia): $0.6250 per million writes and $0.125 per million reads",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/dynamodb/pricing/"
+        }
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store."
     },
@@ -2178,7 +2414,20 @@
         "docsUrl": "https://aws.amazon.com/redshift/pricing/"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Redshift provisioned RA3",
+          "purpose": "A provisioned node type with managed storage. The clusters page recommends RA3 or RG based on performance, data size, and growth.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html"
+        },
+        {
+          "name": "Redshift Serverless",
+          "purpose": "Automatically provisions data warehouse capacity and scales the underlying resources.",
+          "task": "3.3",
+          "docsUrl": "https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-whatis.html"
+        }
+      ]
     },
     {
       "id": "sqs",
@@ -2227,10 +2476,16 @@
       "cost": {
         "band": "$",
         "dimension": "requests, and FIFO is priced higher than standard",
-        "reason": "A queue is a tiny per-request charge next to the workers that pull it. No us-east-1 list price was read from a pricing page, so none is stored.",
-        "freeTier": "n/a",
-        "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
-        "docsUrl": "https://aws.amazon.com/sqs/pricing/"
+        "reason": "A queue is a tiny per-request charge next to the workers that pull it. The us-east-1 anchor is the rate read from that pricing page.",
+        "freeTier": "The first 1 million requests each month are free.",
+        "freeTierReason": "Read from the pricing page.",
+        "docsUrl": "https://aws.amazon.com/sqs/pricing/",
+        "anchor": {
+          "amount": "Standard queue, from 1 million to 100 billion requests per month: $0.40 per million requests",
+          "asOf": "2026-11",
+          "region": "us-east-1",
+          "url": "https://aws.amazon.com/sqs/pricing/"
+        }
       }
     },
     {
@@ -2388,7 +2643,32 @@
         "docsUrl": "https://aws.amazon.com/kinesis/data-streams/pricing/"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Kinesis Data Streams on-demand",
+          "purpose": "On-demand Standard: no capacity planning. Kinesis Data Streams manages the shards.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+        },
+        {
+          "name": "Kinesis Data Streams on-demand Advantage",
+          "purpose": "Account-level on-demand mode. The sizing page says ingest, retrieval, and extended retention are at least 60% lower than On-demand Standard, and there is no fixed charge per stream.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+        },
+        {
+          "name": "Kinesis Data Streams provisioned",
+          "purpose": "You specify the number of shards. Stream capacity is the sum of those shards.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+        },
+        {
+          "name": "Amazon Data Firehose",
+          "purpose": "Managed delivery of real-time streaming data to destinations such as S3, Redshift, and OpenSearch.",
+          "task": "3.5",
+          "docsUrl": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        }
+      ]
     },
     {
       "id": "athena",
@@ -2792,7 +3072,32 @@
         "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
       },
       "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classes": [
+        {
+          "name": "Compute Savings Plans",
+          "purpose": "Apply to EC2 regardless of family, size, Region, operating system, or tenancy, and also to Fargate and Lambda.",
+          "task": "4.2",
+          "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+        },
+        {
+          "name": "EC2 Instance Savings Plans",
+          "purpose": "Commit to one instance family in one Region. Usage can change size inside that family.",
+          "task": "4.2",
+          "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+        },
+        {
+          "name": "Database Savings Plans",
+          "purpose": "Apply across listed AWS database services, including Aurora, RDS, DynamoDB, and ElastiCache.",
+          "task": "4.2",
+          "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+        },
+        {
+          "name": "SageMaker AI Savings Plans",
+          "purpose": "Apply to SageMaker AI instance usage regardless of family, size, Region, or component.",
+          "task": "4.2",
+          "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+        }
+      ]
     },
     {
       "id": "data-exchange",
@@ -3150,8 +3455,10 @@
         "freeTierReason": "There is no separate service charge to put on a free-tier line.",
         "docsUrl": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
       },
-      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service.",
+      "acronym": "CUR",
+      "expansion": "AWS Cost and Usage Reports",
+      "acronymNote": "The reports page writes AWS Cost and Usage Reports (AWS CUR)."
     },
     {
       "id": "cost-explorer",
@@ -3727,8 +4034,45 @@
         "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
         "docsUrl": "https://aws.amazon.com/api-gateway/pricing/"
       },
-      "acronymReason": "API is a general term in Amazon API Gateway. The product name is not an initialism of its own.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "acronymReason": "The API Gateway welcome page and the AWS glossary entry for API Gateway do not spell out application programming interface, so that expansion is not stored.",
+      "classes": [
+        {
+          "name": "REST API",
+          "purpose": "An API Gateway API type for HTTP-based REST APIs.",
+          "task": "2.1",
+          "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+        },
+        {
+          "name": "HTTP API",
+          "purpose": "An API Gateway API type listed with REST and WebSocket on the welcome page.",
+          "task": "2.1",
+          "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+        },
+        {
+          "name": "WebSocket API",
+          "purpose": "An API Gateway API type for WebSocket APIs.",
+          "task": "2.1",
+          "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+        },
+        {
+          "name": "Edge-optimized endpoint",
+          "purpose": "A REST API endpoint that typically routes requests to the nearest CloudFront point of presence. It is the default REST endpoint type.",
+          "task": "2.1",
+          "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html"
+        },
+        {
+          "name": "Regional endpoint",
+          "purpose": "A REST API endpoint intended for clients in the same Region.",
+          "task": "2.1",
+          "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html"
+        },
+        {
+          "name": "Private endpoint",
+          "purpose": "A REST API endpoint that can be reached only from your VPC through an interface VPC endpoint.",
+          "task": "2.1",
+          "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html"
+        }
+      ]
     },
     {
       "id": "device-farm",
@@ -4592,8 +4936,10 @@
         "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
         "docsUrl": "https://aws.amazon.com/vpn/pricing/"
       },
-      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service.",
+      "acronym": "VPN",
+      "expansion": "virtual private network",
+      "acronymNote": "The AWS glossary entry titles this AWS Virtual Private Network and says that entry covers AWS Client VPN and AWS Site-to-Site VPN."
     },
     {
       "id": "artifact",
@@ -4656,8 +5002,10 @@
         "freeTierReason": "A free-tier amount was not copied because it was not read from the current pricing page.",
         "docsUrl": "https://aws.amazon.com/cloudhsm/pricing/"
       },
-      "acronymReason": "The published name is not an initialism, so there is no expansion to store.",
-      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service."
+      "classesNote": "No exam storage class, engine, purchase option, or device tier is the decision for this service.",
+      "acronym": "HSM",
+      "expansion": "hardware security module",
+      "acronymNote": "The CloudHSM introduction says a hardware security module (HSM) is the device that processes cryptographic operations."
     },
     {
       "id": "detective",

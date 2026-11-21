@@ -36,6 +36,9 @@ const CONFIRMED_ACRONYMS = new Map([
   ["WAF", "web application firewall"],
   ["CLI", "AWS Command Line Interface"],
   ["EMR", "Amazon Elastic MapReduce"],
+  ["VPN", "virtual private network"],
+  ["HSM", "hardware security module"],
+  ["CUR", "AWS Cost and Usage Reports"],
 ]);
 
 function norm(value) {
@@ -80,11 +83,13 @@ test("core records carry the full base set and peripheral records stay short", (
       assert.equal(fact.tasks.length, 1, fact.id);
       assert.equal(fact.useWhen.length, 1, fact.id);
       assert.equal(fact.lightning, undefined, fact.id);
-      assert.equal(fact.classes, undefined, fact.id);
       assert.equal(fact.numbers, undefined, fact.id);
       assert.equal(fact.costs, undefined, fact.id);
       const allowed = ["category", "definition", "use-0", "not-for", "keyword", "cost-band"];
       if (fact.acronym) allowed.push("acronym");
+      for (const entry of fact.classes ?? []) {
+        allowed.push(`class-${entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
+      }
       assert.deepEqual(kinds.slice().sort(), allowed.sort(), fact.id);
       continue;
     }
@@ -109,13 +114,27 @@ test("core records carry the full base set and peripheral records stay short", (
 
 test("acronym expansions are only the ones confirmed on the current page", () => {
   const stored = serviceFacts.filter((fact) => fact.acronym || fact.expansion);
-  assert.equal(stored.length, CONFIRMED_ACRONYMS.size);
+  assert.equal(new Set(stored.map((fact) => fact.acronym)).size, CONFIRMED_ACRONYMS.size);
+  const expansionOwners = new Map();
   for (const fact of stored) {
     assert.equal(CONFIRMED_ACRONYMS.get(fact.acronym), fact.expansion, fact.id);
+    const owner = expansionOwners.get(fact.expansion);
+    if (owner) assert.equal(owner, fact.acronym, fact.id);
+    expansionOwners.set(fact.expansion, fact.acronym);
   }
-  assert.equal(new Set(stored.map((fact) => fact.expansion)).size, stored.length);
   assert.equal(serviceFacts.find((fact) => fact.id === "emr").acronym, "EMR");
   assert.match(serviceFacts.find((fact) => fact.id === "emr").acronymNote, /previously called/i);
+  assert.equal(serviceFacts.find((fact) => fact.id === "ec2").expansion, "Amazon Elastic Compute Cloud");
+  assert.equal(serviceFacts.find((fact) => fact.id === "s3").expansion, "Amazon Simple Storage Service");
+  for (const id of ["site-to-site-vpn", "client-vpn"]) {
+    const fact = serviceFacts.find((entry) => entry.id === id);
+    assert.equal(fact.acronym, "VPN");
+    assert.match(fact.acronymNote, /Virtual Private Network/);
+  }
+  assert.equal(serviceFacts.find((fact) => fact.id === "cloudhsm").acronym, "HSM");
+  assert.equal(serviceFacts.find((fact) => fact.id === "cur").acronym, "CUR");
+  assert.match(serviceFacts.find((fact) => fact.id === "identity-center").acronymReason, /Single Sign-On/);
+  assert.equal(serviceFacts.find((fact) => fact.id === "api-gateway").acronym, undefined);
   assert.equal(serviceFacts.find((fact) => fact.id === "systems-manager").acronym, undefined);
   assert.match(serviceFacts.find((fact) => fact.id === "systems-manager").acronymReason, /SSM/);
   assert.equal(serviceFacts.find((fact) => fact.name === "Elastic Load Balancing").acronym, undefined);
@@ -244,10 +263,39 @@ test("every record has the memory-match fields, or n/a with a reason", () => {
     ["lambda", ["Lambda function memory", "Lambda function timeout"]],
     ["snow", ["Snowball Edge", "Snowcone"]],
     ["cloudfront", ["Price Class All", "Price Class 200", "Price Class 100"]],
+    ["route53", ["Simple routing", "Weighted routing", "Latency routing", "Failover routing", "Geolocation routing", "Geoproximity routing", "Multivalue answer routing", "IP-based routing"]],
+    ["storage-gateway", ["S3 File Gateway", "FSx File Gateway", "Volume Gateway cached", "Volume Gateway stored", "Tape Gateway"]],
+    ["savings-plans", ["Compute Savings Plans", "EC2 Instance Savings Plans", "SageMaker AI Savings Plans"]],
+    ["kms", ["Customer managed key", "AWS managed key", "AWS owned key", "Symmetric encryption KMS key", "Asymmetric KMS key"]],
+    ["shield", ["Shield Standard", "Shield Advanced"]],
+    ["kinesis", ["Kinesis Data Streams on-demand", "Kinesis Data Streams provisioned", "Amazon Data Firehose"]],
+    ["api-gateway", ["REST API", "HTTP API", "WebSocket API", "Edge-optimized endpoint", "Regional endpoint", "Private endpoint"]],
+    ["direct-connect", ["Direct Connect dedicated connection", "Direct Connect hosted connection"]],
+    ["ecs", ["ECS on EC2", "ECS on Fargate", "ECS on External"]],
+    ["redshift", ["Redshift provisioned RA3", "Redshift Serverless"]],
   ]);
   for (const [id, names] of named) {
     const have = new Set(serviceFacts.find((fact) => fact.id === id).classes.map((entry) => entry.name));
     for (const name of names) assert.equal(have.has(name), true, `${id} ${name}`);
+  }
+  const anchors = new Map([
+    ["s3", "0.023"],
+    ["vpc", "0.045"],
+    ["ec2", "0.0104"],
+    ["lambda", "0.0000166667"],
+    ["ebs", "0.08"],
+    ["efs", "0.30"],
+    ["dynamodb", "0.6250"],
+    ["sqs", "0.40"],
+    ["cloudfront", "0.085"],
+    ["s3-glacier", "0.00099"],
+    ["privatelink", "0.01"],
+    ["secrets", "0.40"],
+    ["kms", "$1"],
+  ]);
+  for (const [id, needle] of anchors) {
+    const amount = serviceFacts.find((fact) => fact.id === id).cost.anchor.amount;
+    assert.equal(amount.includes(needle), true, `${id} ${amount}`);
   }
   for (const name of ["S3 Standard", "gp3", "io2 Block Express", "st1", "sc1", "DynamoDB on-demand", "DynamoDB provisioned", "SQS standard", "SQS FIFO"]) {
     assert.equal(serviceFacts.some((fact) => fact.classes?.some((entry) => entry.name === name)), true, name);
