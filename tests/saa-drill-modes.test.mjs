@@ -101,6 +101,66 @@ test("the five SAA decks are 15 items and the thin tasks get the planned floor",
   for (const item of added) assert.ok(item.docsUrl.startsWith("https://docs.aws.amazon.com/"), item.id);
 });
 
+const topicDecks = {
+  "aws-saa-database": { "3.3": 8, "4.3": 7 },
+  "aws-saa-storage": { "3.1": 8, "4.1": 7 },
+  "aws-saa-migration": { "3.5": 10, "3.1": 5 },
+  "aws-saa-serverless": { "2.1": 8, "3.2": 7 },
+  "aws-saa-monitoring": { "1.1": 8, "1.2": 7 },
+  "aws-saa-encryption": { "1.3": 15 },
+  "aws-saa-networking": { "3.4": 8, "4.4": 7 },
+  "aws-saa-scaling": { "2.2": 10, "2.1": 5 },
+};
+const saaTasks = new Set(objectives.exams.find((exam) => exam.code === "saa-c03").domains.flatMap((domain) => domain.objectives.map((objective) => objective.id)));
+
+test("the eight new SAA decks have 15 unique items and new cues", () => {
+  const fronts = new Set(flashcards.map((card) => card.front));
+  const existingCues = new Set();
+  for (const deck of drillDecks) {
+    if (topicDecks[deck.id]) continue;
+    for (const item of deck.items) {
+      for (const key of ["cue", "scenario", "prompt"]) {
+        if (item.fields[key]) existingCues.add(item.fields[key]);
+      }
+    }
+  }
+  for (const [id, tasks] of Object.entries(topicDecks)) {
+    const deck = drillDecks.find((item) => item.id === id);
+    assert.equal(deck.items.length, 15, id);
+    const counts = {};
+    const cues = [];
+    const answers = [];
+    for (const item of deck.items) {
+      assert.ok(saaTasks.has(item.objective), `${id}/${item.id} ${item.objective}`);
+      counts[item.objective] = (counts[item.objective] ?? 0) + 1;
+      assert.ok(item.docsUrl.startsWith("https://docs.aws.amazon.com/"), item.id);
+      assert.equal(existingCues.has(item.fields.cue), false, item.fields.cue);
+      assert.equal(fronts.has(item.fields.cue), false, item.fields.cue);
+      cues.push(item.fields.cue);
+      answers.push(item.fields.answer);
+    }
+    assert.deepEqual(counts, tasks, id);
+    assert.equal(new Set(cues).size, cues.length, `${id} cues`);
+    assert.equal(new Set(answers).size, answers.length, `${id} answers`);
+    for (const cue of cues) existingCues.add(cue);
+  }
+  const database = drillDecks.find((deck) => deck.id === "aws-saa-database");
+  assert.match(database.items.find((item) => item.id === "stop-idle").detail, /storage and backups are still billed/);
+  const monitoring = drillDecks.find((deck) => deck.id === "aws-saa-monitoring");
+  assert.equal(monitoring.items.some((item) => item.fields.answer === "AWS Network Firewall"), true);
+  assert.equal(monitoring.items.some((item) => item.fields.answer === "Session Manager with no inbound port"), true);
+  const scaling = drillDecks.find((deck) => deck.id === "aws-saa-scaling");
+  assert.equal(scaling.items.some((item) => item.fields.answer === "Cross-zone load balancing"), true);
+  assert.equal(scaling.items.some((item) => item.fields.answer === "Multi-AZ is the RDS failover path"), false);
+  const networking = drillDecks.find((deck) => deck.id === "aws-saa-networking");
+  const networkAnswers = networking.items.map((item) => item.fields.answer);
+  assert.equal(networkAnswers.includes("NAT gateway in each Availability Zone"), true);
+  assert.equal(networkAnswers.includes("VPC peering"), true);
+  assert.equal(networkAnswers.includes("Leave the function outside a VPC"), true);
+  assert.equal(networkAnswers.includes("S3 Transfer Acceleration for the distant uploads"), true);
+  assert.equal(new Set(networkAnswers).size, networkAnswers.length);
+});
+
 test("which TWO and spot-the-wrong have one defensible set in each domain", () => {
   for (const [id, correctCount] of [["aws-saa-which-two", 2], ["aws-saa-spot-wrong", 1]]) {
     const deck = drillDecks.find((item) => item.id === id);
