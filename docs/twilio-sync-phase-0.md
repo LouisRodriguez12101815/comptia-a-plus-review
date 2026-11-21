@@ -2,7 +2,7 @@
 
 Design only. No application code in this change. Phase 0 starts from the learner sync that is already in production. It does not add a second Sync service or a `STUDY_SYNC_*` env set.
 
-Checked 21 November 2026. The account and billing reads in sections b and c did not run: repository `.env.local` is absent, so no Twilio credential was loaded and no Usage Record was requested.
+Checked 21 November 2026. Sections b and c are **pending Step 2 diagnostics**. Every Twilio and learner variable on Vercel is sensitive, so `vercel env pull` cannot produce a working `.env.local`. Do not ask for one. The account name, the last 4 characters of the account SID, the parent, and the last 30 days of sync and verify Usage Records will be read on the server, behind the existing owner sign-in, and shown on `/account/report`. Nothing secret is printed here.
 
 ## Pricing that can be quoted
 
@@ -94,13 +94,15 @@ Paging of map items is `pageSize: 100` followed to the end (`lib/learner/twilio.
 
 ## b. Which account
 
-Not determined.
+**Pending Step 2 diagnostics.**
 
-`.env.local` is not in this workspace (`ENOENT` on 21 November 2026). `TWILIO_ACCOUNT_SID` was not read. No account fetch ran, so there is no last-4, no friendly name, no parent SID, and no statement that this is or is not the Civic Path account.
+No account fetch has run. There is no last-4, no friendly name, no parent name, and no statement that this is or is not the Civic Path account. Step 2 reads those on the server for a signed-in allowlisted owner and returns only the friendly name, the last 4 characters of the account SID, whether it is a subaccount, and the parent's friendly name.
 
 ## c. Billing check
 
-Not run. No Usage Records were requested, for the same missing `.env.local`. An empty local file is not evidence that Sync is free, unused, or still billed at the 2017 rates. The next read, once the file is present, should list the last 30 days of categories whose names contain `sync` or `verify`, with the `count` and `price` the API returns, and print only the account SID's last 4 characters plus `friendly_name`, `owner_account_sid` last 4, and whether `owner_account_sid` differs from the account SID.
+**Pending Step 2 diagnostics.**
+
+No Usage Records have been requested. That is not evidence that Sync is free, unused, or still billed at the 2017 rates. Step 2 lists the last 30 days of categories whose names contain `sync` or `verify`, with the category, count, usage, and price the API returns. The response does not include a full SID, token, or secret.
 
 ## d. Gaps
 
@@ -135,11 +137,15 @@ This run could not show that. If the follow-up read says the friendly name or th
 
 Still no code in this PR.
 
-### 9b-1 — fix the merge, then cap devices
+### 9b-0 — owner report, diagnostics, and the merge fix
 
-About 3 days. Files: `lib/learner/merge.ts`, `lib/learner/sync.ts`, `lib/learner/session.ts`, `app/api/learner/verify/route.ts`, `app/api/learner/signout/route.ts`, a small device list on the existing learner panel, `tests/learner-sync.test.mjs`.
+This is the Step 2 pull request, after this design is on main. Owner sign-in only. It serves the activity summary and the account/billing lines that sections b and c are waiting on, and it carries `memoryGames` and `drillPractice` through `mergeProgress` (best scores and streaks take the max, `lastMixDay` takes the latest, missed ids are a capped union). It does not add a device cap or a new Usage Trigger.
 
-- Carry `memoryGames` and `drillPractice` through `mergeProgress`. Newest write wins, using a timestamp already on the value or the progress save time. Add a regression test that a successful sync does not drop them.
+### 9b-1 — device cap, after the account line is known
+
+About 2 days. Files: `lib/learner/session.ts`, `app/api/learner/verify/route.ts`, `app/api/learner/signout/route.ts`, a device list on the learner panel, tests. If Step 2 says the account is Civic Path, move to the owner's own account before this.
+
+- The merge fix itself lands in 9b-0. Do not repeat it here.
 - On Verify, register a device id in the learner map. Refuse the 11th non-revoked device. The panel lists devices and revokes one. Revoke frees a slot. Sign-out of one browser does not delete the map.
 - Conflict tests: union of two offline sittings; collapse only when the sitting key matches; `saaMistakeLog` on the merged sittings reopens a mastered question after a later sure-but-wrong and keeps `wasMisconception`; a 429 or 502 does not clear `localStorage`.
 
@@ -156,4 +162,4 @@ About 2 days. Files: `lib/game/usage-webhook.ts` or a sibling that does not reus
 
 About 1 day plus the Twilio console setup. A read-only snapshot command, one import, the env swap, and the rollback check in section e. No second design.
 
-Queue after this design is approved, not started here: those 9b pull requests, then the study analytics dashboard reading this same synced progress, then 7c verified facts, then 8 capstone on real attempts using the exporter's data as the source, then the SiteHeader hydration fix.
+Queue after this design is on main, not started in this pull request: 9b-0 (the owner report and the pending diagnostics), then the study-engine design, then 11a, 11b, and 11c, then 9b-1 device cap and the email usage triggers once the account line is known (move off Civic Path first if that is the name), then the study analytics dashboard, 11d, 7c verified facts, 8 capstone on the exporter's data, and the SiteHeader hydration fix.
