@@ -4,7 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { LearnerSync } from "@/app/components/LearnerSync";
 import type { PublicDiagnostics } from "@/lib/learner/diagnostics";
+import type { HealthRow } from "@/lib/learner/health";
 import type { OwnerSummary } from "@/lib/learner/owner-summary";
+import { sectionResult, type SectionBody } from "@/lib/learner/section-result";
 
 const exams = ["saa-c03", "clf-c02"] as const;
 const button = "inline-flex min-h-11 items-center rounded-lg border border-slate-600 px-3 py-2 text-sm font-medium text-slate-100 hover:border-teal-400 disabled:opacity-50";
@@ -29,28 +31,70 @@ export function OwnerReport() {
   const [phase, setPhase] = useState<"loading" | "off" | "out" | "in">("loading");
   const [report, setReport] = useState<OwnerSummary | null>(null);
   const [diagnostics, setDiagnostics] = useState<PublicDiagnostics | null>(null);
-  const [error, setError] = useState("");
+  const [checks, setChecks] = useState<HealthRow[] | null>(null);
+  const [reportError, setReportError] = useState("");
+  const [diagnosticsError, setDiagnosticsError] = useState("");
+  const [healthError, setHealthError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const explain = useCallback((status: number, data: SectionBody) => {
+    const result = sectionResult(status, data);
+    if ("signedOut" in result) return "";
+    if ("ok" in result && result.ok) return "";
+    if (result.key === "forbidden") return t("forbidden");
+    if (result.key === "rateLimited") return t("rateLimited");
+    if (result.key === "paused") return t("paused");
+    if (result.key === "unavailable") return t("sectionUnavailable", { call: result.call, code: result.code ?? "none" });
+    return t("sectionUnavailable", { call: "request", code: "none" });
+  }, [t]);
+
+  const loadReport = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/learner/report?exam=${exam}&days=${days}`, { cache: "no-store" });
+      const data = (await res.json().catch(() => ({}))) as OwnerSummary & SectionBody;
+      if ("signedOut" in sectionResult(res.status, data)) { setPhase("out"); setReport(null); return; }
+      if (!res.ok) { setReport(null); setReportError(explain(res.status, data)); return; }
+      setReportError("");
+      setReport(data);
+    } catch {
+      setReport(null);
+      setReportError(t("sectionUnavailable", { call: "sync list", code: "none" }));
+    }
+  }, [days, exam, explain, t]);
+
+  const loadDiagnostics = useCallback(async () => {
+    try {
+      const res = await fetch("/api/learner/diagnostics", { cache: "no-store" });
+      const data = (await res.json().catch(() => ({}))) as PublicDiagnostics & SectionBody;
+      if ("signedOut" in sectionResult(res.status, data)) { setPhase("out"); setDiagnostics(null); return; }
+      if (!res.ok) { setDiagnostics(null); setDiagnosticsError(explain(res.status, data)); return; }
+      setDiagnosticsError("");
+      setDiagnostics(data);
+    } catch {
+      setDiagnostics(null);
+      setDiagnosticsError(t("sectionUnavailable", { call: "account", code: "none" }));
+    }
+  }, [explain, t]);
+
+  const loadHealth = useCallback(async (write = false) => {
+    try {
+      const res = await fetch(`/api/learner/health${write ? "?write=1" : ""}`, { cache: "no-store" });
+      const data = (await res.json().catch(() => ({}))) as { checks?: HealthRow[]; error?: string };
+      if (data.error === "signed_out" || res.status === 401) { setPhase("out"); setChecks(null); return; }
+      if (data.checks) { setChecks(data.checks); setHealthError(""); return; }
+      setChecks(null);
+      setHealthError(explain(res.status, data));
+    } catch {
+      setChecks(null);
+      setHealthError(t("sectionUnavailable", { call: "request", code: "none" }));
+    }
+  }, [explain, t]);
 
   const load = useCallback(async () => {
     setBusy(true);
-    setError("");
-    try {
-      const [reportRes, diagnosticsRes] = await Promise.all([
-        fetch(`/api/learner/report?exam=${exam}&days=${days}`, { cache: "no-store" }),
-        fetch("/api/learner/diagnostics", { cache: "no-store" }),
-      ]);
-      if (reportRes.status === 401 || diagnosticsRes.status === 401) { setPhase("out"); setReport(null); return; }
-      if (reportRes.status === 423 || diagnosticsRes.status === 423) { setError(t("paused")); return; }
-      if (!reportRes.ok || !diagnosticsRes.ok) { setError(t("unavailable")); return; }
-      setReport((await reportRes.json()) as OwnerSummary);
-      setDiagnostics((await diagnosticsRes.json()) as PublicDiagnostics);
-    } catch {
-      setError(t("unavailable"));
-    } finally {
-      setBusy(false);
-    }
-  }, [days, exam, t]);
+    await Promise.all([loadReport(), loadDiagnostics(), loadHealth(false)]);
+    setBusy(false);
+  }, [loadDiagnostics, loadHealth, loadReport]);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,6 +125,39 @@ export function OwnerReport() {
       )}
       {phase === "in" && (
         <>
+          <section className="space-y-3 rounded-2xl border border-slate-800 p-4" aria-labelledby="connection-check-title">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="connection-check-title" className="text-lg font-semibold text-white">{t("connection")}</h2>
+              <button className={button} type="button" disabled={busy} onClick={() => { setBusy(true); void loadHealth(true).finally(() => setBusy(false)); }}>{t("runWrite")}</button>
+            </div>
+            <p className="text-sm text-slate-300">{t("connectionBody")}</p>
+            {healthError && <p role="alert" className="text-sm text-rose-300">{t("healthError", { message: healthError })}</p>}
+            {checks && (
+              <ul className="space-y-3 text-sm text-slate-200">
+                {checks.map((check) => (
+                  <li key={check.name} className="border-t border-slate-800 pt-2">
+                    <p><span className="font-medium text-white">{check.name}</span> · {check.ok ? t("checkOk") : t("checkFailed")}{check.code != null ? ` · ${check.code}` : ""}{check.status != null ? ` · HTTP ${check.status}` : ""}</p>
+                    <p className="text-slate-300">{check.hint}</p>
+                    {check.friendlyName ? <p>{check.friendlyName}{check.sidLast4 ? ` · ${check.sidLast4}` : ""}</p> : null}
+                    {check.sidLast4 && !check.friendlyName ? <p className="font-mono">{check.sidLast4}</p> : null}
+                    {check.itemCount != null && (
+                      <p>
+                        {t("items")}: {check.itemCount}
+                        {" · "}{t("newest")}: {check.dateUpdated ?? t("noNewest")}
+                        {" · "}{t("quizzes")}: {check.quizAttempts ?? 0}
+                        {" · "}{t("mocks")}: {check.mockAttempts ?? 0}
+                        {" · "}{t("memoryMisses")}: {check.memoryMisses ?? 0}
+                        {" · "}{t("mistakeRows")}: {check.mistakeRows ?? 0}
+                      </p>
+                    )}
+                    {check.steps?.map((step) => (
+                      <p key={step.name} className="text-slate-400">{step.name}: {step.ok ? t("checkOk") : t("checkFailed")}{step.code != null ? ` · ${step.code}` : ""} · {step.hint}</p>
+                    ))}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
           <form className="flex flex-wrap items-end gap-3" onSubmit={(event) => { event.preventDefault(); void load(); }}>
             <label className="text-sm text-slate-200">{t("examLabel")}
               <select className="mt-1 block min-h-11 rounded-lg border border-slate-700 bg-slate-950 px-3 text-slate-100" value={exam} onChange={(event) => setExam(event.target.value as (typeof exams)[number])}>
@@ -94,7 +171,8 @@ export function OwnerReport() {
             <button className={button} type="button" disabled={!report} onClick={() => report && download(`${exam}-activity.csv`, report.csv, "text/csv")}>{t("downloadCsv")}</button>
             <button className={button} type="button" disabled={!report} onClick={() => report && download(`${exam}-summary.md`, report.markdown, "text/markdown")}>{t("downloadMarkdown")}</button>
           </form>
-          {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
+          {reportError && <p role="alert" className="text-sm text-rose-300">{t("reportError", { message: reportError })}</p>}
+          {diagnosticsError && <p role="alert" className="text-sm text-rose-300">{t("diagnosticsError", { message: diagnosticsError })}</p>}
           {report && (
             <div className="space-y-6">
               {report.overall.total === 0 && <p className="text-slate-300">{t("empty")}</p>}
@@ -161,6 +239,9 @@ export function OwnerReport() {
           {diagnostics && (
             <section className="space-y-3 border-t border-slate-800 pt-6">
               <h2 className="text-lg font-semibold text-white">{t("diagnostics")}</h2>
+              {diagnostics.sections?.filter((section) => !section.ok).map((section) => (
+                <p key={section.call} role="alert" className="text-sm text-rose-300">{section.call}: {section.hint}{section.code != null ? ` (${section.code})` : ""}</p>
+              ))}
               <dl className="grid gap-2 text-sm text-slate-200 sm:grid-cols-2">
                 <div><dt className="text-slate-400">{t("account")}</dt><dd>{diagnostics.accountFriendlyName}</dd></div>
                 <div><dt className="text-slate-400">{t("sidLast4")}</dt><dd className="font-mono">{diagnostics.accountSidLast4}</dd></div>

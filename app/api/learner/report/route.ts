@@ -4,6 +4,7 @@ import { readOnlyTwilio } from "@/lib/learner/diagnostics-read";
 import { authorizeOwner } from "@/lib/learner/owner-access";
 import { loadStudyContent, summarizeItems } from "@/lib/learner/owner-report";
 import { twilioLearner, type LearnerConfig } from "@/lib/learner/twilio";
+import { twilioFailure } from "@/lib/learner/twilio-error";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,15 +37,18 @@ export function createReportGet(deps: ReportDeps = {}) {
     const exam = url.searchParams.get("exam");
     const days = Number(url.searchParams.get("days"));
     if (!exam || !EXAMS.has(exam) || !Number.isInteger(days) || days < 7 || days > 365) return json({ error: "bad_request" }, 400);
+    let call = "sync list";
     try {
       await assertActive(c.config);
       const items = await readItems(`learner-${gate.session.id}`, c.config);
+      call = "content";
       const content = await loadContent();
       return json(summarizeItems(items, content, { exam, days, asOf: at }));
     } catch (error) {
       if (error instanceof RoomError && error.status === 423) return json({ error: "paused" }, 423);
-      console.error("learner/report failed", (error as { status?: number })?.status ?? "unknown");
-      return json({ error: "unavailable" }, 502);
+      const failure = twilioFailure(error);
+      console.error("learner/report", call, failure.code ?? "none");
+      return json({ error: "unavailable", reason: { call, code: failure.code, status: failure.status } }, 502);
     }
   };
 }

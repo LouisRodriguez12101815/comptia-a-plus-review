@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getProgressSnapshot, subscribeProgress } from "@/lib/progress";
+import { LEARNER_SESSION_EVENT } from "@/lib/learner/flush";
 import { syncLearnerProgress } from "@/lib/learner/sync";
 
 type Phase = "loading" | "hidden" | "out" | "code" | "in";
@@ -33,7 +33,6 @@ export function LearnerSync({ compact = false }: { compact?: boolean }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const lastSynced = useRef("");
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const errorText = useCallback((data: Record<string, unknown>, status: number) => {
     const key = String(data.error ?? "");
@@ -69,22 +68,21 @@ export function LearnerSync({ compact = false }: { compact?: boolean }) {
         const data = (await res.json()) as { configured?: boolean; signedIn?: boolean; last4?: string };
         if (cancelled) return;
         if (!data.configured) return setPhase("hidden");
-        if (data.signedIn) { setLast4(data.last4 ?? ""); setPhase("in"); await sync(true); }
+        if (data.signedIn) { setLast4(data.last4 ?? ""); setPhase("in"); }
         else setPhase("out");
       } catch { if (!cancelled) setPhase("hidden"); }
     })();
     return () => { cancelled = true; };
   }, [sync]);
 
-  // Save a few seconds after the learner stops changing things.
   useEffect(() => {
-    if (phase !== "in") return;
-    return subscribeProgress(() => {
-      if (JSON.stringify(getProgressSnapshot()) === lastSynced.current) return;
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => { void sync(true); }, 8000);
-    });
-  }, [phase, sync]);
+    const onSaved = (event: Event) => {
+      const savedAt = Number((event as CustomEvent).detail);
+      if (Number.isFinite(savedAt)) setMessage(t("saved", { time: new Date(savedAt).toLocaleTimeString() }));
+    };
+    window.addEventListener("learner-saved", onSaved);
+    return () => window.removeEventListener("learner-saved", onSaved);
+  }, [t]);
 
   if (phase === "loading" || phase === "hidden") return null;
 
@@ -112,7 +110,9 @@ export function LearnerSync({ compact = false }: { compact?: boolean }) {
         <form className="mt-4 grid max-w-sm gap-3" onSubmit={(e) => { e.preventDefault(); void run(async () => {
           const res = await post("verify", { phone, code });
           if (!res.ok) return setError(errorText(res.data, res.status));
-          setLast4(String(res.data.last4 ?? "")); setCode(""); setPhase("in"); await sync();
+          setLast4(String(res.data.last4 ?? "")); setCode(""); setPhase("in");
+          window.dispatchEvent(new Event(LEARNER_SESSION_EVENT));
+          await sync();
         }); }}>
           <label className="text-sm text-slate-200">{t("codeLabel")}
             <input className={`${input} mt-1`} inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} required />
@@ -127,7 +127,7 @@ export function LearnerSync({ compact = false }: { compact?: boolean }) {
       {phase === "in" && (
         <div className="mt-4 flex flex-wrap gap-2">
           <button className={button} disabled={busy} onClick={() => void run(async () => { await sync(); })}>{t("syncNow")}</button>
-          <button className={button} disabled={busy} onClick={() => void run(async () => { await post("signout"); setPhase("out"); })}>{t("signOut")}</button>
+          <button className={button} disabled={busy} onClick={() => void run(async () => { await post("signout"); setPhase("out"); window.dispatchEvent(new Event(LEARNER_SESSION_EVENT)); })}>{t("signOut")}</button>
           <button className={button} disabled={busy} onClick={() => { if (window.confirm(t("deleteConfirm"))) void run(async () => {
             const res = await post("delete");
             if (res.ok) { setPhase("out"); setMessage(t("deleted")); } else setError(errorText(res.data, res.status));
