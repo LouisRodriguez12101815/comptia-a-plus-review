@@ -52,6 +52,10 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
   }
 
   const authenticatedViewerId = snapshot?.viewerId;
+  const latestText = useRef({ t, tc });
+  useEffect(() => {
+    latestText.current = { t, tc };
+  }, [t, tc]);
 
   useEffect(() => {
     if (!code || !authenticatedViewerId) return;
@@ -62,8 +66,18 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
     let document: import("twilio-sync").SyncDocument | undefined;
     let syncConnected = false;
 
+    function errorText(cause: unknown, fallback: string) {
+      const translate = latestText.current.tc;
+      if (cause instanceof RoomApiError && cause.messageKey) return translate(cause.messageKey);
+      return cause instanceof Error ? cause.message : fallback;
+    }
+    function httpStatusText(cause: RoomApiError) {
+      const translate = latestText.current.t;
+      return cause.httpStatus ? translate("statusHttp", { code: cause.httpStatus }) : cause.status === 0 ? translate("statusNetwork") : translate("statusInvalid");
+    }
     function failure(cause: unknown, channel: "api" | "sync" = "api") {
       if (stopped) return;
+      const translate = latestText.current.t;
       if (cause instanceof RoomApiError && [401, 404, 410, 423].includes(cause.status)) {
         stopped = true;
         reconciler.stop();
@@ -77,10 +91,10 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
         syncConnected = false;
         setSyncStatus("retrying");
         reconciler.request();
-        const tokenStatus = cause instanceof RoomApiError ? t("tokenRequest", { status: httpStatusText(cause) }) : t("syncSubscriptionFailed");
-        setSyncError(t("syncInterrupted", { detail: tokenStatus }));
+        const tokenStatus = cause instanceof RoomApiError ? translate("tokenRequest", { status: httpStatusText(cause) }) : translate("syncSubscriptionFailed");
+        setSyncError(translate("syncInterrupted", { detail: tokenStatus }));
         console.info("outage_ops_sync_status", { event: "failed", httpStatus: cause instanceof RoomApiError ? cause.httpStatus ?? null : null, reason: cause instanceof RoomApiError ? cause.reason ?? "request_rejected" : "subscription_failure" });
-      } else setConnectionError(cause instanceof RoomApiError ? errorText(cause, "") : t("connectionInterrupted"));
+      } else setConnectionError(cause instanceof RoomApiError ? errorText(cause, "") : translate("connectionInterrupted"));
     }
 
     async function refresh() {
@@ -117,7 +131,7 @@ export function MultiplayerRoom({ mode, onBack }: { mode: "create" | "join"; onB
           if (stopped) return;
           syncConnected = state === "connected";
           if (syncConnected) { setSyncStatus("connected"); setSyncError(null); reconciler.request(); }
-          else { setSyncStatus("retrying"); reconciler.request(); setSyncError(t("syncReconnecting")); }
+          else { setSyncStatus("retrying"); reconciler.request(); setSyncError(latestText.current.t("syncReconnecting")); }
         });
         document = await client.document({ id: credentials.document, mode: "open_existing" });
         if (stopped) { document.close(); return; }

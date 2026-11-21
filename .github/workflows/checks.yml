@@ -14,14 +14,14 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Lint
-        run: npm run lint
-      - name: Typecheck
-        run: npm run typecheck
-      - name: Content check (answer keys, objectives, visuals)
-        run: npm run check:content
-      - name: Tests
-        run: npm test
+      - run: npm run lint
+      - run: npx next typegen
+      - run: npm run typecheck
+      - run: npm run test:saa-tags
+      - run: npm run test:saa-curriculum
+      - run: npm run test:exam
+      - run: npm run check:content
+      - run: npm test

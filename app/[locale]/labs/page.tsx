@@ -33,12 +33,15 @@ export default async function LabsIndexPage({ params }: PageProps<"/[locale]/lab
               className="block overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-teal-400"
             >
               {lab.image ? (
-                <img
-                  src={lab.image}
-                  alt={lab.imageAlt ?? ""}
-                  className="h-52 w-full object-cover bg-white"
-                  style={{ objectPosition: lab.imagePosition ?? "left center" }}
-                />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Topology art includes SVG and keeps its own aspect ratio. */}
+                  <img
+                    src={lab.image}
+                    alt={lab.imageAlt ?? ""}
+                    className="h-52 w-full object-cover bg-white"
+                    style={{ objectPosition: lab.imagePosition ?? "left center" }}
+                  />
+                </>
               ) : null}
               <div className="p-4">
                 <p className="text-xs uppercase tracking-wide text-teal-300">

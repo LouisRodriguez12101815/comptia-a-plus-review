@@ -78,7 +78,7 @@ test("SAA inventory stages are counted from the specified base and both explicit
       encoding: "utf8",
       maxBuffer: 16 * 1024 * 1024,
     }));
-  } catch (error) {
+  } catch {
     // Shallow clones may not contain the freeze commit; fetch just that blob when possible.
     execFileSync("git", ["fetch", "--depth=1", "origin", baseCommit], { stdio: "ignore" });
     baseQuestions = JSON.parse(execFileSync("git", ["show", `${baseCommit}:content/questions.json`], {
