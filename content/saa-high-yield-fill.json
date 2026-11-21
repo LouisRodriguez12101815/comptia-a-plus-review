@@ -535,15 +535,15 @@
       "examCodes": [
         "saa-c03"
       ],
-      "prompt": "Readers in a second Region must query Aurora locally, and that second Region must be able to become the writer if the first Region is unavailable. Which Aurora feature is this? The study pair pair-aurora-global-replica compares the neighboring choice.",
+      "prompt": "Readers in a second Region must query Aurora locally. Replication must not use the engine's replica process, and the second Region must be promotable to writer in about a minute. Which Aurora feature is this?",
       "choices": [
-        "An Aurora snapshot copy",
-        "Aurora Serverless v2",
-        "Aurora Global Database",
-        "An Aurora cross-Region read replica"
-      ],
+      "An Aurora snapshot copy",
+      "Aurora Serverless v2",
+      "Aurora Global Database",
+      "An Aurora cross-Region read replica"
+    ],
       "answer": 2,
-      "explanation": "Option: An Aurora snapshot copy — Incorrect: A snapshot copy is a point in time. Readers in the second Region do not get a live secondary from it.\nOption: Aurora Serverless v2 — Incorrect: Serverless v2 changes capacity in the Region where the cluster runs. It does not add the second Region.\nOption: Aurora Global Database — Correct: Global Database keeps a secondary Region that serves local reads and can be promoted if the first Region is unavailable. See pair-aurora-global-replica for the replica contrast.\nOption: An Aurora cross-Region read replica — Incorrect: A cross-Region read replica is a separate replica cluster with engine replication lag. The storage-layer secondary for this scenario is Global Database.",
+      "explanation": "Option: An Aurora snapshot copy — Incorrect: A snapshot copy is a point in time. Readers in the second Region do not get ongoing local reads from it.\nOption: Aurora Serverless v2 — Incorrect: Serverless v2 changes capacity in the Region where the cluster runs. It does not add local reads in a second Region.\nOption: Aurora Global Database — Correct: Global Database serves local reads in a second Region, replicates without the database engine's replica process, and that Region can be promoted to writer in about a minute. An unplanned promotion is typically a few minutes, and a planned switchover on qualifying engines is typically well under a minute.\nOption: An Aurora cross-Region read replica — Incorrect: A cross-Region read replica uses the database engine's replica process. It is a separate replica cluster, so it misses the replication requirement.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -552,11 +552,14 @@
       },
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html",
+        "https://docs.aws.amazon.com/prescriptive-guidance/latest/aurora-replication-options/compare-solutions.html",
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
       ],
+      "changedNote": "Older comparison pages say under a minute. The Aurora user guide says an unplanned promotion is typically a few minutes, and a planned switchover on qualifying engines is typically well under a minute.",
       "services": [
-        "Amazon Aurora"
-      ],
+      "Amazon Aurora"
+    ],
       "difficulty": "medium",
       "audit": {
         "taskId": "2.2",
@@ -970,7 +973,7 @@
         "saa-c03"
       ],
       "front": "Readers in another Region, and a promotion path",
-      "back": "With Aurora Global Database, readers in a secondary Region query locally, and that secondary can be promoted if the writer Region is unavailable. Compare the neighboring choice in pair-aurora-global-replica.",
+      "back": "With Aurora Global Database, readers in a secondary Region query locally. Replication does not use the database engine's replica process, and that Region can be promoted to writer in about a minute.",
       "weak": false,
       "taskId": "2.2",
       "services": [

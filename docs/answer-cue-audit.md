@@ -2,11 +2,11 @@
 
 Single-answer question items only for the length rates (questions.json, the high-yield fill, and qualifier twins). Game items are in the CSV and are not in these rates. A key is longest when it is strictly longer than every other choice. Strongly length-biased means that and at least 1.3 times the mean wrong-choice length. Chance for a four-choice item to be the unique longest is 25%.
 
-Enforced now: none. Targets: key-is-longest ≤ 35.0% and strongly length-biased ≤ 10.0%. SAA and CLF stay warn-only until their rewrite batches. CompTIA stays warn-only against those targets. Self-disqualifying distractors and non-parallel choices are warn-only: a wrong choice that names the opposite of a stem requirement (Linux against Windows, single-AZ against multi-AZ, Regional against global, at rest against in transit, and the related pairs), or a bare key beside qualified distractors, or the reverse.
+Enforced now: saa-c03. Targets for an enforced exam: key-is-longest ≤ 35.0%, strongly length-biased ≤ 10.0%, self-disqualifying 0, and choices not parallel 0. CLF and CompTIA stay warn-only against those four targets. Self-disqualifying means a wrong choice names the opposite of a stem requirement. Not parallel means a bare key beside qualified distractors, or the reverse.
 
 | Exam | Single-answer | Key longest | Strongly biased | Key at A | Stem-word | Absolute words only on wrong choices | All/none of the above | Only complete key | Near-duplicate choices | Self-disqualifying distractor | Choices not parallel |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| saa-c03 | 344 | 42 (12.2%) | 0 (0.0%) | 112 | 90 | 78 | 0 | 5 | 0 | 0 | 0 |
+| saa-c03 | 344 | 43 (12.5%) | 0 (0.0%) | 112 | 61 | 77 | 0 | 5 | 0 | 0 | 0 |
 | clf-c02 | 373 | 162 (43.4%) | 146 (39.1%) | 192 | 74 | 117 | 0 | 8 | 1 | 25 | 25 |
 | comptia | 230 | 146 (63.5%) | 134 (58.3%) | 55 | 78 | 56 | 0 | 15 | 1 | 10 | 33 |
 | 220-1201 | 39 | 35 (89.7%) | 35 (89.7%) | 9 | 16 | 14 | 0 | 4 | 0 | 3 | 2 |
@@ -14,4 +14,53 @@ Enforced now: none. Targets: key-is-longest ≤ 35.0% and strongly length-biased
 | n10-009 | 21 | 10 (47.6%) | 3 (14.3%) | 5 | 7 | 6 | 0 | 0 | 0 | 3 | 2 |
 
 The full per-item CSV is written to ignored `tmp/answer-cue-audit.csv` when the audit runs. Authored key position is reported here and does not affect display: quiz, timed test, twin, topic, mini-mock, mistake-log retest, drills, choice games, subnet concept and reason, and the optional IPv6 review shuffle choices when the sitting is shown.
+
+## SAA warn-only checks
+
+These checks are SAA only and do not fail the build. Keyword echo is an AWS-specific or technical question term in the key and in no distractor. Generic nouns (location, customer, average, storage, data, application, user, cost) do not count, nor do stopwords or a term that appears in every choice. A true-conditional pattern is a wrong choice that starts with the key and adds when, if, after, unless, only, or while. That pattern still needs a human truth check. A category word only the key matches is a named category such as queue, file system, certificate, load balancer, placement group, or purchase option when no distractor belongs to it. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.
+
+Key-is-longest: 43 (12.5%). Key-is-shortest: 71 (20.6%). Shortest target band: 15.0%–35.0%.
+
+### Keyword echo
+
+Count: 34.
+
+- q-saa-core-15: subnet
+- q-saa-core-20: global
+- q-saa-core-32: database
+- q-saa-core-37: latency
+- q-saa-arch-13: restore
+- q-saa-arch-24: global
+- q-saa-arch-28: throughput
+- q-saa-arch-39: snapshots
+- q-aws-review-saa-c03-1-3: compliance
+- q-aws-review-saa-c03-3-4: global
+
+### True conditional distractor
+
+Count: 0.
+
+
+### Category word only the key matches
+
+Count: 3.
+
+- q-aws-found-15: file system
+- q-aws-found-26: queue
+- q-saa-core-10: file system
+
+### Odd-one-out opening
+
+Count: 0.
+
+
+### Key is shortest
+
+Count: 71 (20.6% of 344).
+
+- q-aws-found-02: key length 31
+- q-aws-found-03: key length 13
+- q-aws-found-05: key length 48
+- q-aws-found-06: key length 16
+- q-aws-found-07: key length 8
 

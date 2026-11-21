@@ -19721,10 +19721,10 @@
         "Use one larger EC2 instance in the Region",
         "Use multiple Availability Zones",
         "Use a single subnet for the application",
-        "Use one edge location for the users"
+        "Use a second subnet in the same Availability Zone"
       ],
       "answer": 1,
-      "explanation": "Use one larger EC2 instance in the Region — Incorrect. A larger instance in one place still stops when that location fails.\nUse multiple Availability Zones — Correct. Placing the workload in more than one Availability Zone is the starting design when one location in the Region can fail.\nUse a single subnet for the application — Incorrect. A single subnet stays in one Availability Zone, so it does not remove that location as a failure point.\nUse one edge location for the users — Incorrect. An edge location shortens the path for distant users. It does not keep the regional workload up when one location fails.",
+      "explanation": "Use one larger EC2 instance in the Region — Incorrect. A larger instance is still one machine in one location. It does not survive loss of that location.\nUse multiple Availability Zones — Correct. Multiple Availability Zones keep the workload in separate locations inside the Region.\nUse a single subnet for the application — Incorrect. A single subnet is one network segment. It does not place the workload in a second location.\nUse a second subnet in the same Availability Zone — Incorrect. A second subnet in the same Availability Zone is still in the location that failed.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain3.html",
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
@@ -19776,13 +19776,13 @@
       "topicId": "aws-foundation-cloud-global",
       "prompt": "Which statement best distinguishes scalability from elasticity?",
       "choices": [
-        "Scalability and elasticity are two names for disaster recovery",
+        "Elasticity is planned growth; scalability matches short-term demand",
         "Scalability is the ability to add capacity over time",
-        "Elasticity is a feature of storage capacity",
+        "Scalability and elasticity are two names for the same capacity change",
         "Scalability is growth; elasticity matches demand"
       ],
       "answer": 3,
-      "explanation": "Scalability and elasticity are two names for disaster recovery — Incorrect. Scalability and elasticity are related, but they are not two names for disaster recovery.\nScalability is the ability to add capacity over time — Incorrect. Adding capacity over time describes scalability. It leaves out elasticity.\nElasticity is a feature of storage capacity — Incorrect. Elasticity is not limited to storage. Compute and other capacity can change with demand too.\nScalability is growth; elasticity matches demand — Correct. Scalability is the capacity to grow. Elasticity is matching capacity to demand as the load changes.",
+      "explanation": "Elasticity is planned growth; scalability matches short-term demand — Incorrect. This swaps the two ideas. Scalability is the growth path, and elasticity is the match to demand.\nScalability is the ability to add capacity over time — Incorrect. Adding capacity over time describes scalability. It does not say what elasticity does.\nScalability and elasticity are two names for the same capacity change — Incorrect. The two words are not synonyms. One is growth and the other is matching demand.\nScalability is growth; elasticity matches demand — Correct. Scalability is the ability to grow, and elasticity is matching capacity to demand.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html",
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
