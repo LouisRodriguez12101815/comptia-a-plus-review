@@ -287,13 +287,13 @@
       ],
       "prompt": "A bucket policy was edited to allow public reads, and the account still must refuse that exposure. Which control stops the public policy even though the policy text allows it?",
       "choices": [
-        "A presigned URL on one object",
-        "An S3 access point for a single application",
+        "A presigned URL for public access",
+        "An S3 access point",
         "S3 Transfer Acceleration",
         "S3 Block Public Access"
       ],
       "answer": 3,
-      "explanation": "Option: A presigned URL on one object — Incorrect: A presigned URL grants one signed action. It does not override a bucket policy that was opened to the public.\nOption: An S3 access point for a single application — Incorrect: An access point adds its own policy for one entry to the bucket. It is not the account-wide block on public access.\nOption: S3 Transfer Acceleration — Incorrect: Transfer Acceleration changes the network path for uploads. It does not reject a public bucket policy.\nOption: S3 Block Public Access — Correct: Block Public Access can reject public ACLs and public bucket policies even when those policies would otherwise allow the public read.",
+      "explanation": "Option: A presigned URL for public access — Incorrect: A presigned URL grants one signed action. It does not override a bucket policy that allows public reads, even if someone describes it as public access.\nOption: An S3 access point — Incorrect: An access point adds a policy for one entry to the bucket. It is not the block on public bucket policies.\nOption: S3 Transfer Acceleration — Incorrect: Transfer Acceleration changes the upload path. It does not reject a public bucket policy.\nOption: S3 Block Public Access — Correct: Block Public Access can reject a public bucket policy even when the policy text allows the public read.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -323,12 +323,12 @@
       "prompt": "A vendor must upload one object into a private bucket with the HTTP client they already have. They must not receive an IAM user, and the bucket must stay private. Which grant fits that one upload?",
       "choices": [
         "A presigned URL for the upload",
-        "S3 Block Public Access removed for the day",
-        "An IAM access key emailed to the vendor",
-        "A public-read ACL on the object"
+        "An S3 access point for the vendor",
+        "An IAM role for the vendor upload",
+        "S3 Transfer Acceleration for the upload"
       ],
       "answer": 0,
-      "explanation": "Option: A presigned URL for the upload — Correct: The presigned URL carries permission for that upload and expires. The vendor does not need an IAM user, and the bucket can stay private.\nOption: S3 Block Public Access removed for the day — Incorrect: Removing the block opens a public path. The request is for one vendor upload, not a public bucket.\nOption: An IAM access key emailed to the vendor — Incorrect: An access key is a long-lived credential. The upload does not require handing one out.\nOption: A public-read ACL on the object — Incorrect: A public ACL exposes the object. It does not give the vendor a private upload.",
+      "explanation": "Option: A presigned URL for the upload — Correct: The presigned URL carries permission for that one upload and expires. The vendor does not need an IAM user, and the bucket stays private.\nOption: An S3 access point for the vendor — Incorrect: An access point is another hostname and policy for the bucket. It does not by itself grant this one HTTP upload.\nOption: An IAM role for the vendor upload — Incorrect: An IAM role still needs credentials the vendor can use. The request is for one upload without handing out an identity.\nOption: S3 Transfer Acceleration for the upload — Incorrect: Transfer Acceleration speeds an upload that is already allowed. It does not grant the upload.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -502,13 +502,13 @@
       ],
       "prompt": "An Aurora cluster's load rises and falls through the day. The team wants the database capacity to follow that load instead of staying on one fixed instance size. Which Aurora choice matches?",
       "choices": [
-        "A cross-Region read replica that is never promoted",
+        "Aurora provisioned capacity",
         "Aurora Serverless v2",
-        "A single-AZ instance that is stopped overnight",
-        "An Aurora clone used as the production writer"
+        "Aurora Global Database",
+        "An Aurora clone"
       ],
       "answer": 1,
-      "explanation": "Option: A cross-Region read replica that is never promoted — Incorrect: A read replica serves reads in another Region. It does not change the writer capacity as today's load changes.\nOption: Aurora Serverless v2 — Correct: Serverless v2 adjusts Aurora capacity as the load changes, instead of leaving the cluster on one fixed size.\nOption: A single-AZ instance that is stopped overnight — Incorrect: Stopping an instance removes it from service. The request is for capacity that follows the load while the database stays available.\nOption: An Aurora clone used as the production writer — Incorrect: A clone is a copy for another purpose. It is not the capacity setting for the production writer.",
+      "explanation": "Option: Aurora provisioned capacity — Incorrect: Provisioned capacity stays on the instance size you chose. It does not follow the day's load by itself.\nOption: Aurora Serverless v2 — Correct: Serverless v2 raises and lowers Aurora capacity as the load changes.\nOption: Aurora Global Database — Incorrect: Global Database adds a secondary Region. It does not change capacity through the day in this cluster.\nOption: An Aurora clone — Incorrect: A clone is a copy for another purpose. It is not the capacity mode of the production cluster.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -537,13 +537,13 @@
       ],
       "prompt": "Readers in a second Region must query Aurora locally, and that second Region must be able to become the writer if the first Region is unavailable. Which Aurora feature is this? The study pair pair-aurora-global-replica compares the neighboring choice.",
       "choices": [
-        "A manual snapshot copied when someone remembers",
-        "Aurora Serverless v2 in the original Region only",
+        "An Aurora snapshot copy",
+        "Aurora Serverless v2",
         "Aurora Global Database",
-        "An RDS read replica in the same Region"
+        "An Aurora cross-Region read replica"
       ],
       "answer": 2,
-      "explanation": "Option: A manual snapshot copied when someone remembers — Incorrect: A snapshot copy is a point in time you start yourself. Readers in the second Region do not get a live secondary from that habit.\nOption: Aurora Serverless v2 in the original Region only — Incorrect: Serverless v2 changes capacity in the Region where it runs. It does not place a secondary Region that readers query and that can be promoted.\nOption: Aurora Global Database — Correct: The secondary Region serves local reads, and that secondary can be promoted to writer if the first Region is unavailable. See pair-aurora-global-replica for the neighboring replica choice.\nOption: An RDS read replica in the same Region — Incorrect: A same-Region replica does not give the second Region its own readers or a Regional promotion target.",
+      "explanation": "Option: An Aurora snapshot copy — Incorrect: A snapshot copy is a point in time. Readers in the second Region do not get a live secondary from it.\nOption: Aurora Serverless v2 — Incorrect: Serverless v2 changes capacity in the Region where the cluster runs. It does not add the second Region.\nOption: Aurora Global Database — Correct: Global Database keeps a secondary Region that serves local reads and can be promoted if the first Region is unavailable. See pair-aurora-global-replica for the replica contrast.\nOption: An Aurora cross-Region read replica — Incorrect: A cross-Region read replica is a separate replica cluster with engine replication lag. The storage-layer secondary for this scenario is Global Database.",
       "weak": false,
       "objectiveIds": {
         "saa-c03": [
@@ -555,8 +555,7 @@
         "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html"
       ],
       "services": [
-        "Amazon Aurora",
-        "Amazon RDS"
+        "Amazon Aurora"
       ],
       "difficulty": "medium",
       "audit": {

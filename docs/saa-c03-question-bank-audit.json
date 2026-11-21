@@ -5716,24 +5716,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "S3 Glacier Flexible Retrieval, while accounting for the class’s minimum storage duration and retrieval charges.",
+          "choice": "S3 Glacier Flexible Retrieval for archive restores",
           "classification": "correct",
-          "explanation": "Option: S3 Glacier Flexible Retrieval, while accounting for the class’s minimum storage duration and retrieval charges. — Correct: Glacier Flexible Retrieval is an archival tier with retrieval options measured in minutes to hours. It matches the stated access pattern, provided the team accounts for minimum storage duration, retrieval charges, and restore workflow."
+          "explanation": "Option: S3 Glacier Flexible Retrieval for archive restores — Correct: Flexible Retrieval is the archival class to evaluate when retrieval can take hours and lower storage cost is worth the retrieval charges."
         },
         {
-          "choice": "S3 Standard, because it has the lowest storage price for data that is rarely accessed.",
+          "choice": "S3 Standard for data that is rarely retrieved",
           "classification": "incorrect",
-          "explanation": "Option: S3 Standard, because it has the lowest storage price for data that is rarely accessed. — Incorrect: S3 Standard is designed for frequent access and generally has higher storage cost than archival tiers; it is not selected for the stated long-term cold data pattern."
+          "explanation": "Option: S3 Standard for data that is rarely retrieved — Incorrect: S3 Standard is the frequent-access class. It is not the low-cost class for data that is rarely retrieved."
         },
         {
-          "choice": "S3 Express One Zone, because it is designed for long-term archival with hours-long retrieval.",
+          "choice": "S3 Express One Zone for single-zone archival",
           "classification": "incorrect",
-          "explanation": "Option: S3 Express One Zone, because it is designed for long-term archival with hours-long retrieval. — Incorrect: S3 Express One Zone is a high-performance single-AZ storage class, not an archival class."
+          "explanation": "Option: S3 Express One Zone for single-zone archival — Incorrect: Express One Zone is for single-digit millisecond access in one Availability Zone, not hours-long archival retrieval."
         },
         {
-          "choice": "Delete the reports after 60 days, because lifecycle rules cannot retain objects in archival classes.",
+          "choice": "S3 Glacier Instant Retrieval for millisecond reads of old reports",
           "classification": "incorrect",
-          "explanation": "Option: Delete the reports after 60 days, because lifecycle rules cannot retain objects in archival classes. — Incorrect: S3 lifecycle transitions can move eligible objects to archival storage; expiration is a separate lifecycle action."
+          "explanation": "Option: S3 Glacier Instant Retrieval for millisecond reads of old reports — Incorrect: Instant Retrieval keeps millisecond access. It does not match a retrieval time of several hours."
         }
       ],
       "sourceUrls": [
@@ -5755,7 +5755,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "S3 Glacier Flexible Retrieval, while accounting for the class’s minimum storage duration and retrieval charges.",
+            "choice": "S3 Glacier Flexible Retrieval for archive restores",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -5766,7 +5766,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "S3 Standard, because it has the lowest storage price for data that is rarely accessed.",
+            "choice": "S3 Standard for data that is rarely retrieved",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5777,7 +5777,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "S3 Express One Zone, because it is designed for long-term archival with hours-long retrieval.",
+            "choice": "S3 Express One Zone for single-zone archival",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5788,7 +5788,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Delete the reports after 60 days, because lifecycle rules cannot retain objects in archival classes.",
+            "choice": "S3 Glacier Instant Retrieval for millisecond reads of old reports",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5995,24 +5995,24 @@
       "answerIndexOrIndexes": 0,
       "optionExplanationCoverage": [
         {
-          "choice": "Deploy a NAT gateway in each Availability Zone and route each zone’s private subnets to its local gateway, accepting the additional gateway-hour cost.",
+          "choice": "A NAT gateway in each Availability Zone, with that zone routed to its local gateway",
           "classification": "correct",
-          "explanation": "Option: Deploy a NAT gateway in each Availability Zone and route each zone’s private subnets to its local gateway, accepting the additional gateway-hour cost. — Correct: A per-AZ NAT design removes the other zone’s dependency for internet egress and avoids routing the second AZ’s egress through the first AZ’s NAT. It adds per-gateway hourly charges, so compare actual traffic and resilience requirements."
+          "explanation": "Option: A NAT gateway in each Availability Zone, with that zone routed to its local gateway — Correct: Each zone keeps its own NAT gateway and local route, so one zone's failure does not remove the other zone's egress."
         },
         {
-          "choice": "Keep one NAT gateway in one Availability Zone and route both zones through it because this always has the lowest total cost and no availability tradeoff.",
+          "choice": "One NAT gateway in one Availability Zone, with both zones routed to it",
           "classification": "incorrect",
-          "explanation": "Option: Keep one NAT gateway in one Availability Zone and route both zones through it because this always has the lowest total cost and no availability tradeoff. — Incorrect: One shared NAT may reduce fixed gateway count but creates an AZ dependency and can add cross-AZ data transfer for other-AZ workloads; it is not always the lowest total cost."
+          "explanation": "Option: One NAT gateway in one Availability Zone, with both zones routed to it — Incorrect: Both zones depend on one gateway. Loss of that zone takes egress away from the surviving zone."
         },
         {
-          "choice": "Replace NAT gateways with an internet gateway and assign public IPv4 addresses to all application instances.",
+          "choice": "A NAT instance in each Availability Zone, with that zone routed to its local instance",
           "classification": "incorrect",
-          "explanation": "Option: Replace NAT gateways with an internet gateway and assign public IPv4 addresses to all application instances. — Incorrect: Public addresses and an internet gateway change the exposure model and do not meet the private-instance design; internet egress controls still need to be designed."
+          "explanation": "Option: A NAT instance in each Availability Zone, with that zone routed to its local instance — Incorrect: A NAT instance can sit in each zone, and the team then patches and scales that instance. The standard asks for managed zonal NAT gateways."
         },
         {
-          "choice": "Route all traffic through a Transit Gateway; it removes NAT processing charges and guarantees lower cost.",
+          "choice": "A Transit Gateway for internet egress from the private subnets",
           "classification": "incorrect",
-          "explanation": "Option: Route all traffic through a Transit Gateway; it removes NAT processing charges and guarantees lower cost. — Incorrect: Transit Gateway does not replace NAT translation by itself or guarantee lower network cost; it introduces its own attachment and data-processing considerations."
+          "explanation": "Option: A Transit Gateway for internet egress from the private subnets — Incorrect: A Transit Gateway connects networks. It does not replace the zonal NAT gateway for this egress."
         }
       ],
       "sourceUrls": [
@@ -6034,7 +6034,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Deploy a NAT gateway in each Availability Zone and route each zone’s private subnets to its local gateway, accepting the additional gateway-hour cost.",
+            "choice": "A NAT gateway in each Availability Zone, with that zone routed to its local gateway",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6045,7 +6045,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Keep one NAT gateway in one Availability Zone and route both zones through it because this always has the lowest total cost and no availability tradeoff.",
+            "choice": "One NAT gateway in one Availability Zone, with both zones routed to it",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6056,7 +6056,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Replace NAT gateways with an internet gateway and assign public IPv4 addresses to all application instances.",
+            "choice": "A NAT instance in each Availability Zone, with that zone routed to its local instance",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6067,7 +6067,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Route all traffic through a Transit Gateway; it removes NAT processing charges and guarantees lower cost.",
+            "choice": "A Transit Gateway for internet egress from the private subnets",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6139,7 +6139,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Use S3 Intelligent-Tiering and include its per-object monitoring and automation charge in the cost model.",
+            "choice": "S3 Intelligent-Tiering, including its per-object monitoring charge",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6150,7 +6150,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Transition every object to S3 Glacier Flexible Retrieval after 30 days, regardless of access.",
+            "choice": "S3 Glacier Flexible Retrieval for every object after 30 days",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6161,7 +6161,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Keep all objects in S3 Standard because changing access patterns make tiering impossible.",
+            "choice": "S3 Standard for objects whose access pattern keeps changing",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6172,7 +6172,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Move the objects to S3 One Zone-IA and accept retrieval latency and single-AZ storage risk.",
+            "choice": "S3 One Zone-IA, stored in a single Availability Zone",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6534,7 +6534,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Provisioned capacity with Application Auto Scaling policies, validated against observed peaks and required headroom.",
+            "choice": "Provisioned capacity with Application Auto Scaling",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6544,7 +6544,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "On-demand capacity permanently, because it is always less expensive when usage is predictable.",
+            "choice": "On-demand capacity for this steady, predictable workload",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6554,7 +6554,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "A global secondary index for every attribute so DynamoDB can allocate capacity automatically.",
+            "choice": "Provisioned capacity fixed at the forecast peaks",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6564,7 +6564,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Replace DynamoDB with an RDS read replica, preserving the same key-value access pattern.",
+            "choice": "A global secondary index on every attribute",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6629,7 +6629,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Test the DynamoDB Standard-IA table class and compare lower storage charges against its higher request charges for this workload.",
+            "choice": "DynamoDB Standard-IA for the lower storage price",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6639,7 +6639,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "Move all items to DynamoDB Standard because that table class always has the lowest storage price.",
+            "choice": "DynamoDB Standard at the higher storage price",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6649,7 +6649,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Switch from provisioned to on-demand capacity; capacity mode automatically reduces table storage charges.",
+            "choice": "On-demand capacity in place of provisioned capacity",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6659,7 +6659,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Export the records to S3 Glacier Deep Archive and continue querying them with DynamoDB Query at the same latency.",
+            "choice": "A global table that copies the items into a second Region",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6728,7 +6728,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "VPC peering between the required pairs, while including applicable data-transfer charges in the estimate.",
+            "choice": "VPC peering for each required pair",
             "classification": "correct",
             "checked": true,
             "officialSourceUrls": [
@@ -6738,7 +6738,7 @@
           },
           {
             "optionIndex": 1,
-            "choice": "A Transit Gateway with every VPC attached, because it has no hourly or data-processing charges.",
+            "choice": "A Transit Gateway with an attachment in each of the four VPCs",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6748,7 +6748,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "A public NAT gateway in each VPC for private VPC-to-VPC traffic.",
+            "choice": "AWS PrivateLink for each required pair",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -6758,7 +6758,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "AWS Direct Connect between the VPCs, because it removes all inter-VPC transfer charges.",
+            "choice": "A virtual private gateway in each VPC",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -11179,6 +11179,577 @@
           "oldHash": "af62cdb1fcde506256919d3986b5742a27959a2089e5eb03a5d96ba75da3f53b",
           "newHash": "222f08529efea5fcba7711f5fc9b19a31d92c885ef274378785131ff9ce98294",
           "docsUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+          "numbers": ""
+        }
+      ]
+    },
+    {
+      "id": "answer-cue-2b",
+      "description": "Batch 2b-1 of the SAA answer-cue rewrite. The 69 saa-c03 items that were still self-disqualifying or not parallel, plus the paired twin whose shared choices changed. Same-category near misses, parallel choices, and a sourced Correct or Incorrect line on every choice. Shared exam tags and answer indexes are unchanged. Tag fields are excluded from the hashes.",
+      "excludedFields": [
+        "services",
+        "difficulty",
+        "domain"
+      ],
+      "items": [
+        {
+          "id": "q-aws-review-saa-c03-4-2",
+          "reason": "answer-cue 2b",
+          "oldHash": "b7f8c95005d8688112799e2592d27a0eb305121d432b6446b08e8ce278bdc5d2",
+          "newHash": "3b6a46e0b6fc141e1322dba00fdda87ade7c516f48a24721b02e80921765d7dc",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-06",
+          "reason": "answer-cue 2b",
+          "oldHash": "3ad2667031906e9d9fc2291de5c3e7b7f395581d599227d88263ccc0ebabcb3c",
+          "newHash": "f7cc3ba6e73adaf3aff57e1452914c2318ef77eccfd4aa492356d95984bd85ee",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-09",
+          "reason": "answer-cue 2b",
+          "oldHash": "fe4c3246e300d0053b9c237f9b53fa84cc073435b9cf58fe6965671d2ecb9420",
+          "newHash": "010ed8af4c969010bded0940878a436185fc3e37a5d07e37d6b2c56320206773",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-10",
+          "reason": "answer-cue 2b",
+          "oldHash": "fff3b536594b337cb951cff40c9ecc989e1a43c3b5bde9cc53412ab0c6aa5177",
+          "newHash": "748c8b8353c2bbd15afc3607871eda679466a8f7e6b0524170bd517ec3a6c625",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-14",
+          "reason": "answer-cue 2b",
+          "oldHash": "dd4c9f824fc7e2f32914a5973d8b23a95aa938a22180b78e9d0941be9deeb60c",
+          "newHash": "3b45fc141b311bfcae122a31d3bb1bb258f4f6a72a30edc798c8e2181f9ca4a9",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-30",
+          "reason": "answer-cue 2b",
+          "oldHash": "1932e694284c4bafac50d9a6b0de0afead0477c11c2760be62fa8027185f8c4d",
+          "newHash": "eb79caef04cd2e914868ea3c40e598f9b282f676aea7b0b09e770813ffb8fe63",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-34",
+          "reason": "answer-cue 2b",
+          "oldHash": "86d8684fef6247225651e7d32191284e57dc47b7619da820d853b07224c75228",
+          "newHash": "0cf0f228ee2bb3fdffe941c264a02524c45a80bbf335df8659d85447352098e5",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-38",
+          "reason": "answer-cue 2b",
+          "oldHash": "1eb9a31bfeb106d5b121c788cb61fe5e208a31532b26332b741cf1d045ec57ce",
+          "newHash": "af112af37f102d73f914456e7197e0ffa4b4716a373e841de90fc5df9890e094",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-arch-40",
+          "reason": "answer-cue 2b",
+          "oldHash": "e3b1232a6eff0cac8ee4e2f219cd53fb4e14aadf623c06d68c8e470e66993b1a",
+          "newHash": "a9818b356e121546095d5becc191c2cc742eca96b04aeb2450b5133875cc7e9d",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-auditbatch-07",
+          "reason": "answer-cue 2b",
+          "oldHash": "b82cd904be52de5b4d9e5a10c8d00f826b410438c794ceef6d6c4f6ed4fdfeba",
+          "newHash": "6f2a1ec27053420f70fa045d5e4addbe8cd114be0d97a639980383ba7e460570",
+          "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Constraints.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-013",
+          "reason": "answer-cue 2b",
+          "oldHash": "5768eeb5c99d7dc85b61c96e3c3b478596f965b239c0175cb0775012acf28fbe",
+          "newHash": "9ed1b55c395ce0b23ca68cdfaf12849a93bb51581966907953b3f21ff1589bd9",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-bank-016",
+          "reason": "answer-cue 2b",
+          "oldHash": "03f68cf5706d00607350cad3d86a4f4adb89856b2321bfb40b201d4772fbe898",
+          "newHash": "dc10d7aeac9d209f5f687c84d1ff543c52869cd0af7d52ff3b5eafcd4fd0cd75",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-03",
+          "reason": "answer-cue 2b",
+          "oldHash": "b823b30e2a62ca0766df0be5d6aa034fa395b31d146226734a4169a2cfb77e22",
+          "newHash": "a6a2952f11c52713015435327a9383e51dc0c4c6984b1c04026f58d73c60dffc",
+          "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-08",
+          "reason": "answer-cue 2b",
+          "oldHash": "e6b76a3b41af5f8967f5a34fd7a3d051c5acf9ff3c4b822c91fa1339cc1dbf82",
+          "newHash": "b5ef8aea1ccf6fb588307b0be40cb1e19918af357469583df3537001073ceed3",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-13",
+          "reason": "answer-cue 2b",
+          "oldHash": "4872f6c0f7232438b45586b3a5c2065f0d970ef5865916bd069db3feef797853",
+          "newHash": "3343778358f463de929933550ec0b574c0ce44d76a3f0c549a2507317f23ce56",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-14",
+          "reason": "answer-cue 2b",
+          "oldHash": "e9789147e906232bd667c3182f1146172a86557b8deb9a0dc0890ae5f6dd1ad8",
+          "newHash": "e3042ca6a24a9832e4e41fdc0f57b5b67b96d2d2d03d529f2edf1236e573a31e",
+          "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-17",
+          "reason": "answer-cue 2b",
+          "oldHash": "4209fd1c27c58780da6484c032ed2fdd6913f35cbe7458156a06d6de1737679a",
+          "newHash": "9fa0513b6eb6101f4107c4f98ba600cad99d8addae9732970de7a51f75c1b0e2",
+          "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-18",
+          "reason": "answer-cue 2b",
+          "oldHash": "c4342f9aebc7ed0b753e0698e08c017e2a9c992d7e0f0ab84d92fd1b7654cd57",
+          "newHash": "dc600a4b431f7660c5d56c86f416cd0bfce77ee274be1d546df3ede38d2bb397",
+          "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-21",
+          "reason": "answer-cue 2b",
+          "oldHash": "22b6a3c5fdd9ff501552e8f4b1920d5fab16faf9ad74e67cf757c92b0cbd4e2c",
+          "newHash": "7d4c4d25ffe2bd5a309c01452e17c5da2aaf2369d02a9b544d50529db9b8c5a1",
+          "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-chapter-31",
+          "reason": "answer-cue 2b",
+          "oldHash": "208b511dd7ebe972c8b23c6d5e7078ddb3273aea96d7c0efe7b006188dbe5d3e",
+          "newHash": "f63817ab025e91743ccb3736dcd404a960964cb90ef6ea5cab75a34e04d34605",
+          "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-03",
+          "reason": "answer-cue 2b",
+          "oldHash": "0c10b02c4b9d7c97c0e88e060e1342cc8f96ae536595a8c7758ef7bcf3be60b1",
+          "newHash": "2129fb5ccc4b77d7ddb4bd1bef5b4d7721232f1259d800ae057e3cda7c3e64b5",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-07",
+          "reason": "answer-cue 2b",
+          "oldHash": "a0bf5c80068c16a0079500b7180ae09930cbb80d7478e1f37e95c264610329c1",
+          "newHash": "6d0d579537cc968a8ed8528b50d1ffdbdb09f1416df2fd66fc0fbfa3ec9d74ff",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-08",
+          "reason": "answer-cue 2b",
+          "oldHash": "8f62c07667815f54fef3a0ed40440cc6cb9a059bbe7dbc74ef4824ede64a77e2",
+          "newHash": "16837d794e1472c8f3e32ae11941e8b6d62654528647f47e12b4637d9feefc3f",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-18",
+          "reason": "answer-cue 2b",
+          "oldHash": "4fb432fb775c1842803dca682f42d8446d45f2117911c11bcb6ca6f32346603f",
+          "newHash": "ee7535b38c865579c4ec0a8acef62b43068851569c2f7f4f7200190c4aec4aea",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-25",
+          "reason": "answer-cue 2b",
+          "oldHash": "4b596a487f0263da586a19a524963008304f47414e1a756e64cf26a043b887ba",
+          "newHash": "ce66c0db828d0e78ca51d19c27c67d6f2dc0d2b2badafa6c98e1efb583bdaf06",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-27",
+          "reason": "answer-cue 2b",
+          "oldHash": "9d4032921b912fd61868e2f2a8227aca6684edb4dc111eb70e14b52f82004d59",
+          "newHash": "51321552c3f8224894078a4d324741fd7298f8f26f771ccb8e030f08d0f64507",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-core-29",
+          "reason": "answer-cue 2b",
+          "oldHash": "853507c5528329f4d01ecd27e2442df150eb4cb27f6489f285a0217c53714f53",
+          "newHash": "66a65a1a24c4201fee6c677356d89d2800a749d6c6c7ff83345803af0bf3deb7",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-001",
+          "reason": "answer-cue 2b",
+          "oldHash": "26705295213de474117ba3f6d8b520cd22f4877bbdeb226bc7330828ed29caec",
+          "newHash": "b9beceddade9cff260c1112aae4a2ce016d6e7f80b58d6e4de263920ee1ed052",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-005",
+          "reason": "answer-cue 2b",
+          "oldHash": "ba1c6f83f22cda35ded265d1c0530aacff99c5737ede15e5d191d00ad8ba68db",
+          "newHash": "62b355e17534f0e52be72924ad0b97b210423888c88adb56cb02a541b0821145",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-006",
+          "reason": "answer-cue 2b",
+          "oldHash": "50eb1df5a0388c6d6d8a22ae9e32cb3806e37dbd5802d206a4270518896665f3",
+          "newHash": "aa4f63e12dd49b247d775330002260efd132d4a8e2ecc0bc972dbbd91caa2774",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-007",
+          "reason": "answer-cue 2b",
+          "oldHash": "aeb216a83a3a915038c86a79a38851286167fe052387e837aadfcf6d18465eea",
+          "newHash": "fc19d354d388c709b0c563e0aefc84158a5aa94b5492839dc5442d2742da255e",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-011",
+          "reason": "answer-cue 2b",
+          "oldHash": "68036f39e9e08d1f599e6e743d0450c7eb4e8bf7ee8889e7d3695890f2f0ca20",
+          "newHash": "93379769381b65ac7c1c3b2b728f5c6d96f668882032a4bf6e2be4b4d5827bcb",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-costbatch-013",
+          "reason": "answer-cue 2b",
+          "oldHash": "fc6bbd6d7513b62e7f6b9005a2e6f1cfe40511d4f998130a1877ed2e5e1182ee",
+          "newHash": "40865a04afa289ee39974fdf5a4b567e0a23589a7cc54aaac452a063850ae758",
+          "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-04",
+          "reason": "answer-cue 2b",
+          "oldHash": "808ed6c86d92bd46df074042f9e61b4d37788e4d8555e267e7b1cd66c30c9ff9",
+          "newHash": "b9ba4afc86967facd82d5b40abe32f269889b0997174d7485788b949e04a91c2",
+          "docsUrl": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-05",
+          "reason": "answer-cue 2b",
+          "oldHash": "3a9dc3ad4d82d77a78df99bdbb7dfde6c54cf70e5f86f12dc46069712fdd0adf",
+          "newHash": "2a319adf286ccc606454c49843b39c8606d10e750518d3cf401cc1111458d8a0",
+          "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-12",
+          "reason": "answer-cue 2b",
+          "oldHash": "fd9fcaebcf19081a445de4ee5ea1a06a4ef7a8786e6d087030a3d63a7fb9e145",
+          "newHash": "5aad5e6a0ecab0aee7ea272e6f8e7f4d1b3f504a44947102061fc71f72e26909",
+          "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-14",
+          "reason": "answer-cue 2b",
+          "oldHash": "2592ee1d7380b3b45459892a1c6a6bcc28ffcda73aa69ffcf4307c8cacdc7093",
+          "newHash": "978f7291a839b271b69344a54ea142be4efeedd93b21f29832a13b13e1baf1f8",
+          "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-17",
+          "reason": "answer-cue 2b",
+          "oldHash": "df4100e0ba788c2fe1cf8e024325c6ccbd5361d3be2f12c15675378bca102027",
+          "newHash": "a44fd57180aab6bfc05c0afacfc8d4ba03968479ba65baac7796ae7785c0c632",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-25",
+          "reason": "answer-cue 2b",
+          "oldHash": "609c9f8df5b69c595e586d0606ddbedd0834a64a24aa321b8de2dbf0558b7c25",
+          "newHash": "214a559c7e04c167e6f955e5e5c8177385af960f4d7346e14e55566472ab3490",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-26",
+          "reason": "answer-cue 2b",
+          "oldHash": "22f5349f90a7ddf49ac0d2c8487bb2bf0a511e0f0063037abe568e1f50dd3f0f",
+          "newHash": "9b698fe49ff17cdf52a0a9a99933f3d5aba2fbd84c6d219dd045937076f99771",
+          "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-36",
+          "reason": "answer-cue 2b",
+          "oldHash": "9032b3b7ba0149ed0ccade0070581bc4cc870e7cdb458b3985c2d9c6ab58c3f0",
+          "newHash": "4450d64ed838fe954a861c5268c01ac212834d956896c4424fe349f5342e9929",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-40",
+          "reason": "answer-cue 2b",
+          "oldHash": "f1fc647dbfc14a2d48722e090e75725e924ddb70e784d8b9537b09078c85b995",
+          "newHash": "e16b2fb996c4d2a0338cf0a5a8b96d18844c9f071c486394882f69b7dddd4c84",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-42",
+          "reason": "answer-cue 2b",
+          "oldHash": "3362677f5ce68299f5af73e687c59a249805cdd22329bb276d0dc87121a32b22",
+          "newHash": "0b985f74c93986a285a91918a2160145de73e76a5416c364abe64d4fe79799d9",
+          "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-guide-49",
+          "reason": "answer-cue 2b",
+          "oldHash": "78fee7c8f25dad58ee0a594a7bc5b14ecfbc2fcb535dadf26d0e8a1109906b52",
+          "newHash": "078eda71371e2d48bc2a8c1d72f4cd735774abeb889a029d46cc32220fbd22da",
+          "docsUrl": "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-hy-aurora-global-01",
+          "reason": "answer-cue 2b",
+          "oldHash": "be53f5c5474b079f69f511dcdfafb8093db912cf6c8952a9e925de6811b4eacc",
+          "newHash": "21715700492a1935c3e8cc2e4c4bd0a8f260602253eb5ac4b08f27885947d6ca",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-hy-aurora-sv2-01",
+          "reason": "answer-cue 2b",
+          "oldHash": "81622998c91354d78fbcb03ae2440474e5b8af7b70aa45aea80eac84b972e6e4",
+          "newHash": "38cd0ecef8cd285a6d1bd205fbaccc207df83b8fcd0d5b908c00d9f000071e35",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-hy-s3-bpa-01",
+          "reason": "answer-cue 2b",
+          "oldHash": "8cb7fa7c070ddcd0cd72dca4842693a5334fd1ee9d952e6bb913d57ca147d60e",
+          "newHash": "165401135351010df5d3ecfe8e1bcd2d859614a6c8bdd9b4f514be0fb0bcbb0c",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-hy-s3-presign-01",
+          "reason": "answer-cue 2b",
+          "oldHash": "bd71873b90e36a036791b24752afe44f6da78a2086da1f2850902076410fb041",
+          "newHash": "276543e5277157aae63f16d7c77e5df29ef0b4b5850b840e428a79da8cc85d25",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-06",
+          "reason": "answer-cue 2b",
+          "oldHash": "2e66487f820d10f6710478b16964f24ee179a4ebdc24b61059e097146cc5da17",
+          "newHash": "3846e28d7a0ab160bad2f4fdb507826034e4945b0e77dc8974aaa8bc46a6e199",
+          "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-12",
+          "reason": "answer-cue 2b",
+          "oldHash": "4ed87ff092c14ee2ca7259d12d31ef437f780b53970de3404abf4408a8c08a2c",
+          "newHash": "4f4a01a8f3b53b817b883ebe833d81e928acb17b5e2f7cdccc24530f98fa7f3d",
+          "docsUrl": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-14",
+          "reason": "answer-cue 2b",
+          "oldHash": "1d2108b88a38e1140c376cdb8ff594c31ee17bbe837889f7cf2c7efade31d2b0",
+          "newHash": "2cfe5c14aaaeab5ca81eb44c968dc1b357e5c18e0f9977547255c0e023be3931",
+          "docsUrl": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-19",
+          "reason": "answer-cue 2b",
+          "oldHash": "4de04adffe7e8049fb9825e9d8cf2cf675be6079989ebf85f27f396c6cdd2bf4",
+          "newHash": "b2e07a1ca926a2f4d8fcd189cc7aea3364272056baee2c8b59ee646be1619616",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-22",
+          "reason": "answer-cue 2b",
+          "oldHash": "dc572231e09d747707341a0816e09036b3da6a160bcfc3acab5268e975f0eb35",
+          "newHash": "47102d7eb9d841924577a17565abd48f95bde1004df249f1607620021ac3fdfb",
+          "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-25",
+          "reason": "answer-cue 2b",
+          "oldHash": "eceea9f2b90f4f974e47099faed085cd5203b404ebda3e681bd97e8f8294de96",
+          "newHash": "59f6338b504d56ebd5d75a475bba165231bc839efb0814fd902415ae6aa89f92",
+          "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-30",
+          "reason": "answer-cue 2b",
+          "oldHash": "6bc57531ecbb4dfca047c1bddbfab4892170329dd4bbfd485a0a2faa872fc348",
+          "newHash": "d8918281a275168e9a661b86c541f06bc1448fe0c2c172d75c469af5d5d976ad",
+          "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-34",
+          "reason": "answer-cue 2b",
+          "oldHash": "0b44bc4a1e533f89f189874987c9d044ed0fdb0ead097ec8fc1adca316ceef1f",
+          "newHash": "9a751ff5e7560ca4403e31b2ae667f2390fd8074a68551dffeda8204080bcb38",
+          "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-36",
+          "reason": "answer-cue 2b",
+          "oldHash": "12464702767cfe30f0b5eac93b92918547bca094d76755bd9d5b716621f9b802",
+          "newHash": "4e60d5215a3f7ce83a9a0438e4d9b52e914a55df4375c963af73110b2a6f518e",
+          "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-37",
+          "reason": "answer-cue 2b",
+          "oldHash": "180caf451b38ea7a50245d5fc18c159442edcb8ee3a202731a792d1bfea5afe9",
+          "newHash": "d38e45544072c01a8e507b0bf4ff40ae656ebf964c7d8b69aa03830b80ba6174",
+          "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-39",
+          "reason": "answer-cue 2b",
+          "oldHash": "fffca38a71c098db181533c7b4b1a991a7c1a1870e0200d9d473af6d9cf6cdcd",
+          "newHash": "64cd034e5919c33475a9178605a65d097ec661a8aae1e0a156401b07f3ecd17d",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-44",
+          "reason": "answer-cue 2b",
+          "oldHash": "a5691943b25d93bd2768caa9cb1265291d202aa9fa81f2e46d8b2585b948611d",
+          "newHash": "892420e6e3ba343652c7dda979bde297293c77c9d02e0eba5b094ceb97aeca45",
+          "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-46",
+          "reason": "answer-cue 2b",
+          "oldHash": "327fb0496298c559d705db4dbbb7d0568e6fbeb2eb83b1e0458ee733cda5afb4",
+          "newHash": "b33bc5d6f23711dd39409cb957710ab9bc2770103b10dc87b63bf11790837c02",
+          "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-practice-50",
+          "reason": "answer-cue 2b",
+          "oldHash": "68b5c8e70febafdd371d90586613ec7f224e16008ff5fd43cc47a92d29ec363e",
+          "newHash": "122c0a6a18455ad00520e85e7d507513045d4922223bbfba87c1f115dfe31049",
+          "docsUrl": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-03-cost",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "a8674cd97d099fbe9cb32bc98074755ddc926413c10f9cf1ddc61a9810defc7a",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-03-secure",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "94525f9a22ad67edb0f39e531b0efd05156e7525936e39afa6fa6def2c1f599d",
+          "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-05-cost",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "e92060becb342015b6e2f37eb90dc5395f965b45c003f25b7af928870ba3ff1a",
+          "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-05-secure",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "ebb012106acc07378e61a7418045260cbb5f03f96fa819749ec3feb698457b61",
+          "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-06-cost",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "1d0987178642b43f7b225cd4ebebb135b75d693776c65bc7f74cbd605191ec19",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-06-secure",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "f3e368df5804447f92b6cba1d23cf7387138dffbc3e815da1345bc5da670a818",
+          "docsUrl": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-08-cost",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "40e5c8e380425f28341771f8be681e44cc9a34f80bc563b8c61a56e9ba4c952e",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+          "numbers": ""
+        },
+        {
+          "id": "q-saa-twin-08-resilient",
+          "reason": "answer-cue 2b",
+          "oldHash": null,
+          "newHash": "6f8081ffc7973f257e4ab15c7791cbc7b3154a0ec9d5b5e6693cc02d0569c4c4",
+          "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html",
           "numbers": ""
         }
       ]
