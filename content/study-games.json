@@ -127,33 +127,30 @@
       ]
     },
     {
-      "id": "ladder-edge",
-      "taskId": "3.4",
+      "id": "ladder-glacier-flex",
+      "taskId": "4.1",
       "services": [
-        "Amazon CloudFront"
+        "Amazon S3"
       ],
-      "docsUrl": "https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.PriceClass.html",
+      "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html",
       "rungDocs": [
-        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
-        "https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.PriceClass.html",
-        "https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.PriceClass.html",
-        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesGeneral.html"
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
       ],
       "questionIds": [],
-      "cardId": "fc-aws-global-edge",
-      "prompt": "Order these from no CloudFront edge cache toward using every CloudFront edge location.",
-      "explanation": "The CloudFront PriceClass reference lists Price Class 100 as the smallest region set, Price Class 200 as that set plus more regions, and Price Class All as every edge location. An origin with no distribution has no edge cache. No prices.",
+      "cardId": "fc-saa-s3-lifecycle",
+      "prompt": "Order these S3 Glacier Flexible Retrieval options from faster retrieval toward the slower, lower-cost option. Relative speed and relative cost, not a clock time.",
+      "explanation": "The archive retrieval options page lists Expedited, Standard, and Bulk as the three options based on retrieval speed. Expedited is the premium quick option, Standard is the default, and Bulk is the lowest-cost option. Relative, not a price.",
       "order": [
-        "Origin only",
-        "CloudFront Price Class 100",
-        "CloudFront Price Class 200",
-        "CloudFront Price Class All"
+        "Expedited",
+        "Standard",
+        "Bulk"
       ],
       "rungWhy": [
-        "Without a CloudFront distribution, viewers request the origin. The introduction describes the edge cache as what a distribution adds.",
-        "The CloudFront PriceClass reference lists Price Class 100 as the United States, Canada, Europe, and Israel.",
-        "The same reference defines Price Class 200 as Price Class 100 plus further regions.",
-        "Price Class All means every edge location. Distribution settings say serving from all CloudFront Regions is the default."
+        "The retrieval-options page lists the options by retrieval speed as Expedited, Standard, and Bulk. It describes Expedited as the way to quickly access Glacier Flexible Retrieval data, and calls Expedited retrievals a premium feature.",
+        "The same page says Standard is the default option for a request that does not specify the retrieval option. The speed list places it between Expedited and Bulk.",
+        "The page calls Bulk the lowest-cost retrieval option, and says Bulk retrievals are free for objects stored in S3 Glacier Flexible Retrieval."
       ]
     },
     {

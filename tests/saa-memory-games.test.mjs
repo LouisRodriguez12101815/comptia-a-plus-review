@@ -108,6 +108,19 @@ test("the memory games meet the per-game floors and cover every task three times
   const transfer = catalog.ladders.find((item) => item.id === "ladder-transfer");
   assert.match(transfer.rungWhy[0], /same Availability Zone is free/i);
   assert.equal(JSON.stringify(transfer).includes("$"), false);
+  for (const ladder of catalog.ladders) {
+    const urls = [ladder.docsUrl, ...ladder.rungDocs];
+    for (const url of urls) {
+      assert.equal(/docs\.aws\.amazon\.com\/cdk\//i.test(url), false, `${ladder.id} ${url}`);
+    }
+  }
+  assert.equal(catalog.ladders.some((item) => item.id === "ladder-edge"), false);
+  const glacier = catalog.ladders.find((item) => item.id === "ladder-glacier-flex");
+  assert.equal(glacier.taskId, "4.1");
+  assert.deepEqual(glacier.order, ["Expedited", "Standard", "Bulk"]);
+  assert.match(glacier.docsUrl, /restoring-objects-retrieval-options\.html$/);
+  assert.equal(/\b\d+\s*[-–]\s*\d+\s*(minute|hour)/i.test(JSON.stringify(glacier)), false);
+  assert.equal(JSON.stringify(glacier).includes("$"), false);
   for (const item of catalog.lightning) {
     assert.match(item.docsUrl, /^https:\/\//, item.id);
     if (item.answer === false) {
