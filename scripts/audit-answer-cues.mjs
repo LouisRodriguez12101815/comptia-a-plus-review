@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { qualifierTwins } from "../content/saa-qualifier-twins.ts";
 import {
-  COMPTIA_EXAMS, ENFORCED_EXAMS, LONGEST_MAX, SHORTEST_MAX, SHORTEST_MIN, STRONG_MAX,
+  COMPTIA_EXAMS, ECHO_MAX, ENFORCED_EXAMS, LONGEST_MAX, SHORTEST_MAX, SHORTEST_MIN, STRONG_MAX,
   analyzeItem, itemFailures, rateFailures, summarize,
 } from "./lib/answer-cues.mjs";
 
@@ -64,9 +64,9 @@ function saaWarnSection(rows, summary) {
   const odd = examples(saa, (item) => item.oddOneOut, (item) => item.oddOneOut);
   const shortest = examples(saa, (item) => item.strictlyShortest, (item) => `key length ${item.keyLength}`);
   return [
-    "## SAA warn-only checks",
+    "## SAA cue counts",
     "",
-    "These checks are SAA only and do not fail the build. Keyword echo is an AWS-specific or technical question term in the key and in no distractor. Generic nouns (location, customer, average, storage, data, application, user, cost) do not count, nor do stopwords or a term that appears in every choice. A true-conditional pattern is a wrong choice that starts with the key and adds when, if, after, unless, only, or while. That pattern still needs a human truth check. A category word only the key matches is a named category such as queue, file system, certificate, load balancer, placement group, or purchase option when no distractor belongs to it. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.",
+    `These five checks are enforced for saa-c03 and stay warn-only for every other exam. True conditional distractor must be 0. Category word only the key matches must be 0. Odd-one-out opening must be 0. Keyword echo must stay at or under ${ECHO_MAX} (ratchet down later, never up). Key-is-shortest must stay inside ${pct(SHORTEST_MIN)}–${pct(SHORTEST_MAX)}. Keyword echo is an AWS-specific or technical question term in the key and in no distractor. Generic nouns (location, customer, average, storage, data, application, user, cost) do not count, nor do stopwords or a term that appears in every choice. A true-conditional pattern is a wrong choice that starts with the key and adds when, if, after, unless, only, or while. That pattern still needs a human truth check. A category word only the key matches is a named category such as queue, file system, certificate, load balancer, placement group, or purchase option when no distractor belongs to it. Odd-one-out opening means every distractor shares its first three words and the key does not. Key-is-shortest uses the same strict comparison as key-is-longest.`,
     "",
     `Key-is-longest: ${row.longest} (${pct(row.longestRate)}). Key-is-shortest: ${row.shortest} (${pct(row.shortestRate)}). Shortest target band: ${pct(SHORTEST_MIN)}–${pct(SHORTEST_MAX)}.`,
     "",
@@ -110,7 +110,7 @@ function markdown(summary, rows) {
     "",
     "Single-answer question items only for the length rates (questions.json, the high-yield fill, and qualifier twins). Game items are in the CSV and are not in these rates. A key is longest when it is strictly longer than every other choice. Strongly length-biased means that and at least 1.3 times the mean wrong-choice length. Chance for a four-choice item to be the unique longest is 25%.",
     "",
-    `Enforced now: ${ENFORCED_EXAMS.join(", ") || "none"}. Targets for an enforced exam: key-is-longest ≤ ${pct(LONGEST_MAX)}, strongly length-biased ≤ ${pct(STRONG_MAX)}, self-disqualifying 0, and choices not parallel 0. CLF and CompTIA stay warn-only against those four targets. Self-disqualifying means a wrong choice names the opposite of a stem requirement. Not parallel means a bare key beside qualified distractors, or the reverse.`,
+    `Enforced now: ${ENFORCED_EXAMS.join(", ") || "none"}. Targets for an enforced exam: key-is-longest ≤ ${pct(LONGEST_MAX)}, strongly length-biased ≤ ${pct(STRONG_MAX)}, self-disqualifying 0, choices not parallel 0, true conditional distractor 0, category word only the key matches 0, odd-one-out opening 0, keyword echo ≤ ${ECHO_MAX}, and key-is-shortest inside ${pct(SHORTEST_MIN)}–${pct(SHORTEST_MAX)}. CLF and CompTIA stay warn-only against the first four targets. Self-disqualifying means a wrong choice names the opposite of a stem requirement. Not parallel means a bare key beside qualified distractors, or the reverse.`,
     "",
     "| Exam | Single-answer | Key longest | Strongly biased | Key at A | Stem-word | Absolute words only on wrong choices | All/none of the above | Only complete key | Near-duplicate choices | Self-disqualifying distractor | Choices not parallel |",
     "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
@@ -198,7 +198,7 @@ if (!check) {
   const saa = summary["saa-c03"];
   if (saa) {
     const band = saa.shortestRate < SHORTEST_MIN || saa.shortestRate > SHORTEST_MAX ? " outside 15–35%" : " inside 15–35%";
-    console.log(`saa-c03 warn-only: keyword echo ${saa.keywordEcho}, true conditional distractor ${saa.trueConditional}, category word only the key matches ${saa.categoryOnlyKey}, odd-one-out opening ${saa.oddOneOut}, key-is-shortest ${pct(saa.shortestRate)} (${saa.shortest}/${saa.single})${band}. Key-is-longest is ${pct(saa.longestRate)}.`);
+    console.log(`saa-c03 enforced: keyword echo ${saa.keywordEcho} (max ${ECHO_MAX}), true conditional distractor ${saa.trueConditional}, category word only the key matches ${saa.categoryOnlyKey}, odd-one-out opening ${saa.oddOneOut}, key-is-shortest ${pct(saa.shortestRate)} (${saa.shortest}/${saa.single})${band}. Key-is-longest is ${pct(saa.longestRate)}.`);
   }
   if (failures.length) {
     console.error(failures.join("\n"));

@@ -34,6 +34,8 @@ export const LONGEST_MAX = 0.35;
 export const STRONG_MAX = 0.1;
 export const SHORTEST_MIN = 0.15;
 export const SHORTEST_MAX = 0.35;
+/** Current saa-c03 keyword-echo count. Ratchet down later. Never raise it. */
+export const ECHO_MAX = 34;
 export const COMPTIA_EXAMS = ["220-1201", "220-1202", "n10-009"];
 
 export function choiceLength(text) {
@@ -315,6 +317,11 @@ export function rateFailures(summary, enforced = ENFORCED_EXAMS) {
     if (row.strongRate > STRONG_MAX) failures.push(`${exam}: strongly length-biased ${(row.strongRate * 100).toFixed(1)}% (${row.strong}/${row.single}) exceeds 10%`);
     if (row.selfDisqualifying > 0) failures.push(`${exam}: self-disqualifying ${row.selfDisqualifying} exceeds 0`);
     if (row.notParallel > 0) failures.push(`${exam}: choices not parallel ${row.notParallel} exceeds 0`);
+    if (row.trueConditional > 0) failures.push(`${exam}: true conditional distractor ${row.trueConditional} exceeds 0`);
+    if (row.categoryOnlyKey > 0) failures.push(`${exam}: category word only the key matches ${row.categoryOnlyKey} exceeds 0`);
+    if (row.oddOneOut > 0) failures.push(`${exam}: odd-one-out opening ${row.oddOneOut} exceeds 0`);
+    if (row.keywordEcho > ECHO_MAX) failures.push(`${exam}: keyword echo ${row.keywordEcho} exceeds ${ECHO_MAX}`);
+    if (row.shortestRate < SHORTEST_MIN || row.shortestRate > SHORTEST_MAX) failures.push(`${exam}: key-is-shortest ${(row.shortestRate * 100).toFixed(1)}% (${row.shortest}/${row.single}) is outside 15–35%`);
   }
   return failures;
 }
