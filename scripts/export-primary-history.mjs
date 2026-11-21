@@ -4,11 +4,11 @@ import { createHmac } from 'node:crypto';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { parseEnv } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import twilio from 'twilio';
 import { decodeSnapshot, PROGRESS_HEAD, progressHead, snapshotKeys } from '../lib/learner/progress-snapshot.mjs';
 
-const ROOT = fileURLToPath(new URL('../', import.meta.url));
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const HELP = `Usage: node scripts/export-primary-history.mjs
 Reads credentials only from repository .env.local (Node 22.6+).
 Required: TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET,
