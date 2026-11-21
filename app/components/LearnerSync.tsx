@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getProgressSnapshot, subscribeProgress } from "@/lib/progress";
 import { syncLearnerProgress } from "@/lib/learner/sync";
@@ -134,6 +135,7 @@ export function LearnerSync({ compact = false }: { compact?: boolean }) {
         </div>
       )}
 
+      {(phase === "out" || phase === "in") && <p className="mt-3 text-sm"><Link href="/account/report" className="text-teal-300 underline">{t("report")}</Link></p>}
       <p role="status" className="mt-3 text-sm text-teal-300">{message}</p>
       {error && <p role="alert" className="mt-3 text-sm text-rose-300">{error}</p>}
     </section>

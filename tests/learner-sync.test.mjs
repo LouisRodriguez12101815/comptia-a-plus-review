@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mergeProgress } from '../lib/learner/merge.ts';
+import { DRILL_MISSED_CAP, mergeProgress } from '../lib/learner/merge.ts';
 import { learnerId, normalizePhone, readSession, signSession, cookieValue } from '../lib/learner/session.ts';
 import { splitChunks } from '../lib/learner/store.ts';
 import { createSyncMapItemIdempotently, learnerConfig } from '../lib/learner/twilio.ts';
@@ -31,9 +31,50 @@ test('merging with an empty copy changes nothing', () => {
   assert.deepEqual(mergeProgress(empty(), a), { ...a });
 });
 
+test('a shared sitting keeps seconds from either copy and local seconds win', () => {
+  const localQuiz = { ...quiz(5), secondsByQuestion: { q1: 10, qBad: -3 } };
+  const remoteQuiz = { ...quiz(5), secondsByQuestion: { q1: 99, q2: 200 } };
+  const remoteOnly = { ...quiz(4) };
+  const localMock = { exam: 'saa-c03', correct: 1, total: 1, percent: 100, domains: [], multiCorrect: 0, multiTotal: 0, missedIds: [], at: 8 };
+  const remoteMock = { ...localMock, secondsByQuestion: { q9: 190 } };
+  const merged = mergeProgress(
+    { ...empty(), quizAttempts: [localQuiz, remoteOnly], mockAttempts: [localMock] },
+    { ...empty(), quizAttempts: [remoteQuiz], mockAttempts: [remoteMock] },
+  );
+  assert.deepEqual(merged.quizAttempts.find((item) => item.at === 5).secondsByQuestion, { q1: 10, q2: 200 });
+  assert.equal(merged.quizAttempts.find((item) => item.at === 4).secondsByQuestion, undefined);
+  assert.deepEqual(merged.mockAttempts[0].secondsByQuestion, { q9: 190 });
+});
+
 test('attempt caps hold', () => {
   const many = Array.from({ length: 60 }, (_, i) => quiz(i + 1, 'x'));
   assert.equal(mergeProgress({ ...empty(), quizAttempts: many }, empty()).quizAttempts.length, 40);
+});
+
+test('games and drills survive a merge by max score, latest day, and capped misses', () => {
+  const missedIds = Array.from({ length: DRILL_MISSED_CAP }, (_, i) => `ports/item-${i}`);
+  const local = { ...empty(), memoryGames: { streak: 3, lastMixDay: '2026-11-01', bestMs: { all: 40000, sorter: 9000 } }, drillPractice: { missedIds, bestStreak: 4, decks: { ports: { bestScore: 12, bestStreak: 4 } } } };
+  const remote = { ...empty(), memoryGames: { streak: 9, lastMixDay: '2026-11-20', bestMs: { all: 25000, lightning: 7000 } }, drillPractice: { missedIds: ['wifi/wpa3'], bestStreak: 2, decks: { ports: { bestScore: 8, bestStreak: 11 }, wifi: { bestScore: 5, bestStreak: 2 } } } };
+  const merged = mergeProgress(local, remote);
+  assert.equal(merged.memoryGames.streak, 9);
+  assert.equal(merged.memoryGames.lastMixDay, '2026-11-20');
+  assert.equal(merged.memoryGames.bestMs.all, 25000);
+  assert.equal(merged.memoryGames.bestMs.sorter, 9000);
+  assert.equal(merged.memoryGames.bestMs.lightning, 7000);
+  assert.equal(merged.drillPractice.bestStreak, 4);
+  assert.equal(merged.drillPractice.decks.ports.bestScore, 12);
+  assert.equal(merged.drillPractice.decks.ports.bestStreak, 11);
+  assert.equal(merged.drillPractice.decks.wifi.bestScore, 5);
+  assert.ok(merged.drillPractice.missedIds.includes('ports/item-0'));
+  assert.equal(merged.drillPractice.missedIds.includes('wifi/wpa3'), false);
+  assert.equal(merged.drillPractice.missedIds.length, DRILL_MISSED_CAP);
+  const typical = Buffer.byteLength(JSON.stringify({
+    memoryGames: { streak: 4, lastMixDay: '2026-11-21', bestMs: { all: 42000, sorter: 9000, lightning: 7000 } },
+    drillPractice: { missedIds: ['ports/ssh', 'wifi/wpa3'], bestStreak: 6, decks: { ports: { bestScore: 12, bestStreak: 6 } } },
+  }));
+  const worst = Buffer.byteLength(JSON.stringify({ memoryGames: merged.memoryGames, drillPractice: merged.drillPractice }));
+  assert.ok(typical < 400, `typical ${typical}`);
+  assert.ok(worst < 16_000, `worst ${worst}`);
 });
 
 test('phone numbers normalise and ids never contain the number', () => {
