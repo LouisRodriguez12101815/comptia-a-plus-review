@@ -3,11 +3,17 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { drillHref, getDeck, itemsForMode, shuffle, type DrillItem } from "@/lib/practice/drills";
+import { ServiceFactMatch } from "@/app/components/practice/ServiceFactMatch";
 
 // Spot It-style pair matching: four items per round, tap a left card then its right-hand match.
 const ROUND = 4;
 
 export function MatchGame({ deckId }: { deckId: string }) {
+  if (deckId === "aws-saa-service-facts") return <ServiceFactMatch />;
+  return <LegacyMatch deckId={deckId} />;
+}
+
+function LegacyMatch({ deckId }: { deckId: string }) {
   const t = useTranslations("matchGame");
   const d = useTranslations("drillDecks") as unknown as (key: string) => string;
   const deck = getDeck(deckId)!;

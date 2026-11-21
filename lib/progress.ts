@@ -1,5 +1,6 @@
 import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "@/lib/exams";
 import type { StudyFocus } from "@/lib/types";
+import { rememberMatchMiss, type MemoryMiss } from "@/lib/study/memory-match";
 import { isKnownGrade, reviewCard, type ReviewGrade, type StoredSchedule } from "@/lib/study/schedule";
 
 export type QuizAttempt = {
@@ -98,8 +99,8 @@ export type Progress = {
   clfAssessmentSnapshots?: ClfAssessmentSnapshot[];
   /** FSRS schedule per flashcard id (see lib/study/schedule.ts). */
   schedules: Record<string, StoredSchedule>;
-  /** SAA game streak and best times. Optional so older saves still load. */
-  memoryGames?: { lastMixDay?: string; streak: number; bestMs: Record<string, number> };
+  /** SAA game streak, best times, and memory-match misses. Optional so older saves still load. */
+  memoryGames?: { lastMixDay?: string; streak: number; bestMs: Record<string, number>; misses?: MemoryMiss[] };
   /** Missed drill cues and the best survival or speed streak. Optional so older saves still load. */
   drillPractice?: {
     missedIds: string[];
@@ -321,6 +322,14 @@ function parseDrillPractice(value: unknown): { value?: Progress["drillPractice"]
   };
 }
 
+function parseMatchMiss(entry: unknown): MemoryMiss | undefined {
+  if (!isRecord(entry) || typeof entry.id !== "string" || entry.id.length === 0) return undefined;
+  if (typeof entry.task !== "string" || !/^\d\.\d$/.test(entry.task)) return undefined;
+  if (typeof entry.prompt !== "string" || entry.prompt.length === 0) return undefined;
+  if (!Number.isFinite(entry.at) || !Number.isInteger(entry.times) || (entry.times as number) < 1) return undefined;
+  return { id: entry.id, task: entry.task, prompt: entry.prompt, at: entry.at as number, times: entry.times as number };
+}
+
 function parseMemoryGames(value: unknown): { value?: Progress["memoryGames"]; repaired: boolean } {
   if (value === undefined) return { repaired: false };
   if (!isRecord(value)) return { repaired: true };
@@ -332,9 +341,23 @@ function parseMemoryGames(value: unknown): { value?: Progress["memoryGames"]; re
       if (typeof ms === "number" && Number.isFinite(ms) && ms >= 0) bestMs[key] = ms;
     }
   }
+  let misses: MemoryMiss[] | undefined;
+  let missesRepaired = false;
+  if (value.misses !== undefined) {
+    if (!Array.isArray(value.misses)) missesRepaired = true;
+    else {
+      const parsed = value.misses.flatMap((entry) => {
+        const miss = parseMatchMiss(entry);
+        if (!miss) missesRepaired = true;
+        return miss ? [miss] : [];
+      }).slice(0, 200);
+      if (parsed.length !== value.misses.length) missesRepaired = true;
+      if (parsed.length > 0) misses = parsed;
+    }
+  }
   return {
-    value: { streak, bestMs, ...(lastMixDay ? { lastMixDay } : {}) },
-    repaired: !Number.isInteger(value.streak) || (value.streak as number) < 0 || (value.bestMs !== undefined && !isRecord(value.bestMs)) || (value.lastMixDay !== undefined && typeof value.lastMixDay !== "string"),
+    value: { streak, bestMs, ...(lastMixDay ? { lastMixDay } : {}), ...(misses ? { misses } : {}) },
+    repaired: missesRepaired || !Number.isInteger(value.streak) || (value.streak as number) < 0 || (value.bestMs !== undefined && !isRecord(value.bestMs)) || (value.lastMixDay !== undefined && typeof value.lastMixDay !== "string"),
   };
 }
 
@@ -588,6 +611,28 @@ export function setMissReason(sittingId: string, questionId: string, reason: str
     quizAttempts: current.quizAttempts.map(apply),
     mockAttempts: current.mockAttempts.map(apply),
   };
+  saveProgress(next);
+  return next;
+}
+
+/** A wrong memory-match pair: keep it on the synced game record and schedule it again in FSRS. */
+export function progressAfterMatchMiss(current: Progress, miss: { id: string; task: string; prompt: string }, now: Date = new Date()): Progress {
+  const games = current.memoryGames ?? { streak: 0, bestMs: {} };
+  const misses = rememberMatchMiss(games.misses, miss, now.getTime());
+  const schedules = {
+    ...current.schedules,
+    [miss.id]: reviewCard(current.schedules[miss.id], "again", now),
+  };
+  return {
+    ...current,
+    schedules,
+    ...markedCounts(current, miss.id, false),
+    memoryGames: { ...games, misses },
+  };
+}
+
+export function recordMatchMiss(miss: { id: string; task: string; prompt: string }, now: Date = new Date()) {
+  const next = progressAfterMatchMiss(loadProgress(), miss, now);
   saveProgress(next);
   return next;
 }

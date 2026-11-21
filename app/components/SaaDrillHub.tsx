@@ -51,6 +51,7 @@ export function SaaDrillHub() {
               <p className="mt-1 text-sm text-slate-400">{d(`${deck.id}.cardBody`)}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link href={`/practice-games/drills/${deck.id}`} className="inline-flex min-h-11 items-center rounded-xl border border-slate-600 px-4 text-sm text-cyan-100">{t("practice")}</Link>
+                {deck.id === "aws-saa-service-facts" && <Link href={`/practice-games/match/${deck.id}`} className="inline-flex min-h-11 items-center rounded-xl border border-slate-600 px-4 text-sm text-cyan-100">{t("match")}</Link>}
                 {reverse && <Link href={`/practice-games/drills/${deck.id}?mode=${reverse.id}`} className="inline-flex min-h-11 items-center rounded-xl border border-slate-600 px-4 text-sm text-cyan-100">{t("reverse")}</Link>}
                 <Link href={`/practice-games/drills/${deck.id}?session=speed`} className="inline-flex min-h-11 items-center rounded-xl border border-slate-600 px-4 text-sm text-cyan-100">{t("speed")}</Link>
                 <Link href={`/practice-games/drills/${deck.id}?session=survival`} className="inline-flex min-h-11 items-center rounded-xl border border-slate-600 px-4 text-sm text-cyan-100">{t("survival")}</Link>

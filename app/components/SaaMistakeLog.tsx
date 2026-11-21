@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { questions } from "@/lib/content";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
+import { questionsFromMemoryMisses, sittingsFromMemoryMisses } from "@/lib/study/memory-match";
 import {
   filterMistakeRows,
   mistakeCardHref,
@@ -31,11 +32,15 @@ export function SaaMistakeLog() {
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
   const [now] = useState(() => Date.now());
   const [filter, setFilter] = useState<MistakeFilter>({ domain: "", task: "", status: "", reason: "" });
+  const misses = progress.memoryGames?.misses;
   const attempts = useMemo(
-    () => [...progress.quizAttempts, ...progress.mockAttempts],
-    [progress.quizAttempts, progress.mockAttempts],
+    () => [...progress.quizAttempts, ...progress.mockAttempts, ...sittingsFromMemoryMisses(misses)],
+    [progress.quizAttempts, progress.mockAttempts, misses],
   );
-  const rows = useMemo(() => saaMistakeLog(attempts, questions), [attempts]);
+  const rows = useMemo(
+    () => saaMistakeLog(attempts, [...questions, ...questionsFromMemoryMisses(misses)]),
+    [attempts, misses],
+  );
   const summary = useMemo(() => mistakeSummary(rows, now), [rows, now]);
   const visible = useMemo(() => filterMistakeRows(rows, filter), [rows, filter]);
   const retestIds = useMemo(() => mistakeRetestIds(visible, saaRotationHistory(progress)), [visible, progress]);
