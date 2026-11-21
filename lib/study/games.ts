@@ -149,17 +149,20 @@ function shownExplanation(item: Tagged, labels: string[] = []): string {
 }
 
 function choiceSteps(items: Tagged[], labels: string[]): Step[] {
-  return items.map((item) => ({
-    id: item.id,
-    prompt: item.prompt,
-    choices: (labels.length > 0 ? labels : item.choices ?? []).map((label, index) => ({ key: String(index + 1), label })),
-    answerKey: String(Number(item.answer) + 1),
-    explanation: shownExplanation(item, labels.length > 0 ? labels : item.choices ?? []),
-    cardId: item.cardId,
-    taskId: item.taskId,
-    docsUrl: item.docsUrl,
-    questionIds: item.questionIds ?? [],
-  }));
+  return items.map((item) => {
+    const source = labels.length > 0 ? labels : item.choices ?? [];
+    return withChoices({
+      id: item.id,
+      prompt: item.prompt,
+      labels: source,
+      correct: source[Number(item.answer)] ?? "",
+      explanation: shownExplanation(item, source),
+      cardId: item.cardId,
+      taskId: item.taskId,
+      docsUrl: item.docsUrl,
+      questionIds: item.questionIds ?? [],
+    });
+  });
 }
 
 function sorterSteps(seed: string): Step[] {
@@ -171,11 +174,11 @@ function sorterSteps(seed: string): Step[] {
     if (card && !picked.some((item) => item.taskId === card.taskId)) picked.push(card);
   }
   const tasks = picked.map((card) => card.taskId as string);
-  return picked.map((card) => ({
+  return picked.map((card) => withChoices({
     id: `sorter-${card.id}`,
     prompt: card.front,
-    choices: tasks.map((task, index) => ({ key: String(index + 1), label: taskChoiceLabel(task) })),
-    answerKey: String(tasks.indexOf(card.taskId as string) + 1),
+    labels: tasks.map((task) => taskChoiceLabel(task)),
+    correct: taskChoiceLabel(card.taskId as string),
     explanation: `${domainLabel(card.taskId as string)}. ${card.back}`,
     cardId: card.id,
     taskId: card.taskId as string,
@@ -187,10 +190,7 @@ function lightningSteps(): Step[] {
   return (catalog.lightning as Tagged[]).map((item) => ({
     id: item.id,
     prompt: item.prompt,
-    choices: [
-      { key: "t", label: "True" },
-      { key: "f", label: "False" },
-    ],
+    choices: seededOrder(2, item.id).map((index) => (index === 0 ? { key: "t", label: "True" } : { key: "f", label: "False" })),
     answerKey: item.answer === true ? "t" : "f",
     explanation: shownExplanation(item),
     cardId: item.cardId,

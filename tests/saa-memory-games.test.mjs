@@ -74,6 +74,9 @@ test("no SAA game choice is only a task id, and daily mix is learner-facing", ()
       for (const choice of step.choices) assert.equal(taskOnly.test(choice.label.trim()), false, `${game} ${choice.label}`);
     }
   }
+  const builder = startGame("builder", "labels");
+  assert.ok(builder.steps.some((step) => step.answerKey !== "1"), "builder choices are shuffled, so the key is not always shown first");
+  assert.equal(startGame("builder", "labels").steps[0].answerKey, builder.steps[0].answerKey);
   const sorter = startGame("sorter", "labels");
   assert.match(sorter.steps[0].choices[0].label, /^\d\.\d · .+/);
   assert.match(sorter.steps[0].explanation, /[1-4]\.0 /);

@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+/** Measure test-wise answer cues. `--check` enforces the landed exam gates and edited-item rule. */
+import { execFileSync } from "node:child_process";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { qualifierTwins } from "../content/saa-qualifier-twins.ts";
+import {
+  COMPTIA_EXAMS, ENFORCED_EXAMS, LONGEST_MAX, STRONG_MAX,
+  analyzeItem, itemFailures, rateFailures, summarize,
+} from "./lib/answer-cues.mjs";
+
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const check = process.argv.includes("--check");
+
+async function readJson(path) {
+  return JSON.parse(await readFile(resolve(ROOT, path), "utf8"));
+}
+
+function item(source, record, exams, lengthGate = true) {
+  return { ...record, source, exams, lengthGate };
+}
+
+function gameItems(catalog) {
+  const groups = ["keywords", "odd", "builder", "pillars", "lightning"];
+  const rows = [];
+  for (const group of groups) {
+    for (const record of catalog[group] ?? []) {
+      if (!Array.isArray(record.choices) && typeof record.answer !== "boolean") continue;
+      const choices = Array.isArray(record.choices) ? record.choices : ["True", "False"];
+      const answer = typeof record.answer === "boolean" ? (record.answer ? 0 : 1) : record.answer;
+      rows.push(item(`study-games.json:${group}`, { ...record, choices, answer }, ["saa-c03"], false));
+    }
+  }
+  return rows;
+}
+
+export async function loadCueItems() {
+  const questions = await readJson("content/questions.json");
+  const fill = await readJson("content/saa-high-yield-fill.json");
+  const games = await readJson("content/study-games.json");
+  return [
+    ...questions.map((record) => item("questions.json", record, record.examCodes ?? [])),
+    ...(fill.questions ?? []).map((record) => item("saa-high-yield-fill.json", record, record.examCodes ?? [])),
+    ...qualifierTwins.map((record) => item("saa-qualifier-twins.ts", record, record.examCodes ?? ["saa-c03"])),
+    ...gameItems(games),
+  ];
+}
+
+function pct(rate) {
+  return `${(rate * 100).toFixed(1)}%`;
+}
+
+function markdown(summary) {
+  const exams = ["saa-c03", "clf-c02", "comptia", ...COMPTIA_EXAMS];
+  const lines = [
+    "# Answer-cue audit",
+    "",
+    "Single-answer question items only for the length rates (questions.json, the high-yield fill, and qualifier twins). Game items are in the CSV and are not in these rates. A key is longest when it is strictly longer than every other choice. Strongly length-biased means that and at least 1.3 times the mean wrong-choice length. Chance for a four-choice item to be the unique longest is 25%.",
+    "",
+    `Enforced now: ${ENFORCED_EXAMS.join(", ") || "none"}. Targets: key-is-longest ≤ ${pct(LONGEST_MAX)} and strongly length-biased ≤ ${pct(STRONG_MAX)}. SAA and CLF stay warn-only until their rewrite batches. CompTIA stays warn-only against those targets.`,
+    "",
+    "| Exam | Single-answer | Key longest | Strongly biased | Key at A | Stem-word | Absolute words only on wrong choices | All/none of the above | Only complete key | Near-duplicate choices |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+  ];
+  for (const exam of exams) {
+    const row = summary[exam];
+    if (!row) continue;
+    lines.push(`| ${exam} | ${row.single} | ${row.longest} (${pct(row.longestRate)}) | ${row.strong} (${pct(row.strongRate)}) | ${row.positions.A ?? 0} | ${row.stemWord} | ${row.absoluteWords} | ${row.allNone} | ${row.onlyComplete} | ${row.nearDuplicate} |`);
+  }
+  lines.push("", "The full per-item CSV is written to ignored `tmp/answer-cue-audit.csv` when the audit runs. Authored key position is reported here and does not affect display: quiz, timed test, twin, topic, mini-mock, mistake-log retest, drills, and choice games shuffle choices when the sitting is shown.", "");
+  return `${lines.join("\n")}\n`;
+}
+
+function csv(rows) {
+  const header = ["exam", "id", "source", "single", "keyLetter", "keyLength", "lengthRank", "ratio", "strictlyLongest", "stronglyBiased", "stemWord", "absoluteWords", "allNone", "onlyComplete", "nearDuplicate"];
+  const cell = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+  const lines = [header.join(",")];
+  for (const row of rows) {
+    for (const exam of row.exams.length ? row.exams : ["unassigned"]) {
+      lines.push([exam, row.id, row.source, row.single, row.keyLetter, row.keyLength, row.lengthRank, row.ratio === null ? "" : row.ratio.toFixed(3), row.strictlyLongest, row.stronglyBiased, row.stemWord ?? "", row.absoluteWords.join(" "), row.allNone, row.onlyComplete, row.nearDuplicate].map(cell).join(","));
+    }
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+function baseRef() {
+  if (process.env.GITHUB_BASE_REF) return `origin/${process.env.GITHUB_BASE_REF}`;
+  return "origin/main";
+}
+
+function show(ref, path) {
+  try { return execFileSync("git", ["show", `${ref}:${path}`], { cwd: ROOT, encoding: "utf8" }); }
+  catch { return null; }
+}
+
+function recordsIn(value, path) {
+  if (path.endsWith("questions.json")) return value;
+  if (path.endsWith("saa-high-yield-fill.json")) return value.questions ?? [];
+  return ["keywords", "odd", "builder", "pillars", "lightning"].flatMap((group) => value[group] ?? []);
+}
+
+async function changedIds(ref) {
+  const ids = new Set();
+  const files = ["content/questions.json", "content/saa-high-yield-fill.json", "content/study-games.json"];
+  for (const path of files) {
+    const before = show(ref, path);
+    if (before === null) continue;
+    const previous = JSON.parse(before);
+    const current = JSON.parse(await readFile(resolve(ROOT, path), "utf8"));
+    const prior = new Map(recordsIn(previous, path).map((record) => [record.id, JSON.stringify([record.choices, record.answer, record.prompt])]));
+    for (const record of recordsIn(current, path)) {
+      const fingerprint = JSON.stringify([record.choices, record.answer, record.prompt]);
+      if (prior.get(record.id) !== fingerprint) ids.add(record.id);
+    }
+  }
+  const twinDiff = execFileSync("git", ["diff", "--name-only", ref, "HEAD", "--", "content/saa-qualifier-twins.ts"], { cwd: ROOT, encoding: "utf8" });
+  if (twinDiff.trim()) {
+    for (const twin of qualifierTwins) ids.add(twin.id);
+  }
+  return ids;
+}
+
+const items = await loadCueItems();
+const rows = items.map(analyzeItem);
+const summary = summarize(rows);
+const report = markdown(summary);
+if (!check) {
+  await mkdir(resolve(ROOT, "tmp"), { recursive: true });
+  await writeFile(resolve(ROOT, "tmp/answer-cue-audit.csv"), csv(rows));
+  await writeFile(resolve(ROOT, "tmp/answer-cue-audit.md"), report);
+  await writeFile(resolve(ROOT, "docs/answer-cue-audit.md"), report);
+  console.log(report);
+} else {
+  const failures = [
+    ...rateFailures(summary),
+    ...itemFailures(rows, await changedIds(baseRef()), new Map((await readJson("content/answer-cue-exceptions.json")).map((row) => [row.id, row.reason]))),
+  ];
+  for (const exam of ["saa-c03", "clf-c02", "comptia"]) {
+    const row = summary[exam];
+    if (!row || ENFORCED_EXAMS.includes(exam)) continue;
+    console.log(`${exam} warn-only: key-is-longest ${pct(row.longestRate)} (target ≤ 35%), strongly biased ${pct(row.strongRate)} (target ≤ 10%).`);
+  }
+  if (failures.length) {
+    console.error(failures.join("\n"));
+    process.exit(1);
+  }
+}
