@@ -43,6 +43,30 @@ test("length rank, strong bias, and the other cues are measured without treating
   assert.deepEqual(itemFailures([row], new Set(["q-long"]), new Map([["q-long", "documented"]])), []);
 });
 
+test("a distractor that contradicts the stem, or a bare key beside qualified distractors, is reported", () => {
+  const windows = analyzeItem({
+    id: "q-win", exams: ["saa-c03"], source: "questions.json", answer: 2,
+    prompt: "Managed Windows file system?",
+    choices: ["Amazon FSx for Lustre scratch files", "Amazon EFS for Linux NFS shares", "Amazon FSx for Windows File Server", "S3 File Gateway SMB to object storage"],
+  });
+  assert.ok(windows.selfDisqualifying.some((hit) => hit.label === "windows"));
+  assert.ok(windows.selfDisqualifying.some((hit) => hit.label === "file"));
+  assert.equal(windows.notParallel, true);
+  const parallel = analyzeItem({
+    id: "q-plain", exams: ["saa-c03"], source: "questions.json", answer: 2,
+    prompt: "Managed Windows file system?",
+    choices: ["Amazon FSx for Lustre", "Amazon EFS", "Amazon FSx for Windows File Server", "Amazon S3 File Gateway"],
+  });
+  assert.deepEqual(parallel.selfDisqualifying, []);
+  assert.equal(parallel.notParallel, false);
+  const qualifiedKey = analyzeItem({
+    id: "q-long-key", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which control fits?",
+    choices: ["Deny the request when transport is insecure for this bucket policy", "SQS", "SNS", "WAF"],
+  });
+  assert.equal(qualifiedKey.notParallel, true);
+});
+
 test("equalizing a strong cue uses the existing explanation and keeps the key", () => {
   const edited = equalizeStrongCue(longKey);
   assert.ok(edited);

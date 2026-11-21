@@ -82,6 +82,7 @@ export function analyzeItem(item) {
   const complete = (choice) => choice.trim().split(/\s+/).length >= 6 && VERB.test(choice);
   const onlyComplete = single && complete(key) && wrong.every((choice) => !complete(choice));
   const duplicates = nearDuplicateChoices(choices);
+  const shape = choiceShapeCues(item);
   return {
     id: item.id,
     source: item.source,
@@ -103,7 +104,77 @@ export function analyzeItem(item) {
     allNone,
     onlyComplete,
     nearDuplicate: duplicates.length > 0,
+    selfDisqualifying: shape.selfDisqualifying,
+    notParallel: shape.notParallel,
   };
+}
+
+const PRODUCT_PREFIX = /^(?:amazon |aws )?(?:fsx for (?:windows file server|lustre|netapp ontap|openzfs)|s3 file gateway|elastic file system|efs|elasticache for (?:redis|memcached|valkey))\b/i;
+const PURPOSE = /\b(for|with|via|using|without|instead|because|while|when|into|from|through|over|than|that|which|until|leaving|expecting|before|after|during|on|so)\b/i;
+const GIVEAWAY = /\b(instead of|rather than|with the expectation|on the view that|expecting|expect)\b|\b(?:and|with|but) no\b|\bbecause\b/i;
+const VERBISH = /\b(is|are|was|were|keep|keeps|replace|replaces|use|uses|run|runs|send|sends|move|moves|turn|turns|add|adds|allow|allows|deny|denies|delete|deletes|copy|copies|launch|patch|edit|store|stores|create|creates|put|puts|serve|serves|scale|scales|measure|grant|make|makes|leave|leaves|stop|stops|share|shares|rotate|wait|waits|disable|disables|drop|drops|publish|remove|removes|spread|require|requires|raise|raises|release|releases|treat|treats|attach|attaches|inspect|filter|filters|invoke|invokes|deploy|open)\b/i;
+
+/** Stem requirement paired with the term that contradicts it inside a wrong choice. */
+const OPPOSITES = [
+  { id: "windows", stem: /\bwindows\b/i, other: /\b(?:linux|nfs)\b/i },
+  { id: "linux", stem: /\blinux\b/i, other: /\b(?:windows|smb|cifs|ntfs)\b/i },
+  { id: "multi-az", stem: /\bmulti[-\s]?az\b|\bmultiple availability zones\b|\baz outage\b|\bsurvive an availability zone\b/i, other: /\bsingle[-\s]?az\b|\bsingle availability zone\b|\bone availability zone\b/i },
+  { id: "single-az", stem: /\bsingle[-\s]?az\b|\bone availability zone\b|\ba single availability zone\b/i, other: /\bmulti[-\s]?az\b|\bmultiple availability zones\b/i },
+  { id: "global", stem: /\bglobal\b/i, other: /\bregional\b/i },
+  { id: "regional", stem: /\bregional\b/i, other: /\bglobal\b/i },
+  { id: "in-transit", stem: /\bin transit\b/i, other: /\bat rest\b/i },
+  { id: "at-rest", stem: /\bat rest\b/i, other: /\bin transit\b/i },
+  { id: "private", stem: /\bprivate\b|\bwithout public\b|\bno public\b|\bnot public\b/i, other: /\bpublic\b/i, mask: /\b(?:without|no|not)\s+public\b/gi },
+  { id: "keep-multi-az", stem: /\b(?:retain|retaining|keeping|keep)\b[^.]{0,80}\bmulti-az\b/i, other: /\breplace multi-az\b|\bturn off multi-az\b/i },
+  { id: "already-measured", stem: /\b(?:has|have) measured\b/i, other: /\bbefore measuring\b/i },
+  { id: "public", stem: /\bpublic\b/i, other: /\bprivate\b/i, skipWhen: /\bprivate\b|\bwithout public\b|\bno public\b|\bnot public\b/i },
+  { id: "https", stem: /\bhttps\b|\btls\b|\bencrypted in transit\b/i, other: /\bhttp\b(?!s)/i },
+  { id: "durable", stem: /\bdurable\b|\bdurability\b|\bmust survive\b/i, other: /\bscratch\b|\bephemeral\b|\btemporary\b/i },
+  { id: "scratch", stem: /\bscratch\b|\btemporary\b|\blose its data\b/i, other: /\bdurable\b|\bpersistent\b/i },
+  { id: "sync", stem: /\bsynchronous\b/i, other: /\basynchronous\b/i },
+  { id: "async", stem: /\basynchronous\b/i, other: /\bsynchronous\b/i },
+  { id: "file", stem: /\bfile (?:system|share|server)\b|\bwindows file\b/i, other: /\bobject storage\b/i },
+  { id: "object", stem: /\bobject (?:storage|blobs|data)\b/i, other: /\bfile (?:system|share)\b/i },
+  { id: "strong", stem: /\bstrong consistency\b|\bstrongly consistent\b/i, other: /\beventual consistency\b|\beventually consistent\b/i },
+  { id: "eventual", stem: /\beventual consistency\b|\beventually consistent\b/i, other: /\bstrong consistency\b|\bstrongly consistent\b/i },
+];
+
+function hasQualifier(choice) {
+  const text = String(choice ?? "").trim().replace(/\s+/g, " ");
+  if (GIVEAWAY.test(text)) return true;
+  if (PRODUCT_PREFIX.test(text)) return text.replace(PRODUCT_PREFIX, "").trim().length > 0;
+  return PURPOSE.test(text);
+}
+
+function bareName(choice) {
+  const text = String(choice ?? "").trim().replace(/\s+/g, " ");
+  if (PRODUCT_PREFIX.test(text) && !text.replace(PRODUCT_PREFIX, "").trim()) return true;
+  const words = text.split(" ").filter(Boolean);
+  if (words.length > 6) return false;
+  if (hasQualifier(text) || VERBISH.test(text)) return false;
+  return true;
+}
+
+/** Wrong-choice contradictions and bare-vs-qualified mismatch. Multi-answer items are not scored. */
+export function choiceShapeCues(item) {
+  const choices = (item.choices ?? []).map((choice) => String(choice));
+  if (!isSingleAnswer(item)) return { selfDisqualifying: [], notParallel: false };
+  const prompt = String(item.prompt ?? "");
+  const wrong = choices.filter((_, index) => index !== item.answer);
+  const selfDisqualifying = [];
+  for (const choice of wrong) {
+    if (GIVEAWAY.test(choice)) selfDisqualifying.push({ choice, label: "giveaway" });
+    for (const rule of OPPOSITES) {
+      if (rule.skipWhen?.test(prompt)) continue;
+      const stemForOther = rule.mask ? prompt.replace(rule.mask, " ") : prompt;
+      if (!rule.stem.test(prompt) || rule.other.test(stemForOther)) continue;
+      if (rule.other.test(choice) && !rule.stem.test(choice)) selfDisqualifying.push({ choice, label: rule.id });
+    }
+  }
+  const keyBare = bareName(choices[item.answer]);
+  const wrongBare = wrong.filter(bareName).length;
+  const notParallel = wrong.length >= 2 && ((keyBare && wrong.length - wrongBare >= 2) || (!keyBare && wrongBare === wrong.length));
+  return { selfDisqualifying, notParallel };
 }
 
 export function examBuckets(exams) {
@@ -141,6 +212,8 @@ export function summarize(rows) {
       allNone: bucket.filter((row) => row.allNone).length,
       onlyComplete: bucket.filter((row) => row.onlyComplete).length,
       nearDuplicate: bucket.filter((row) => row.nearDuplicate).length,
+      selfDisqualifying: single.filter((row) => row.selfDisqualifying.length > 0).length,
+      notParallel: single.filter((row) => row.notParallel).length,
     };
   }
   return result;
