@@ -2,14 +2,14 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { qualifierTwins } from "../content/saa-qualifier-twins.ts";
-import { questionsForLength } from "../lib/exam-test.mjs";
+import { buildExamPool, draftTest, mulberry32, questionsForLength } from "../lib/exam-test.mjs";
 import { drillDecks } from "../lib/practice/drills.ts";
 import { parseProgress } from "../lib/progress.ts";
-import { questions } from "../lib/content.ts";
+import { questions, topics } from "../lib/content.ts";
 import {
   CSV_COLUMNS, SAA_CLUSTERS, SAA_MINI_SECONDS, SAA_PACE_SECONDS, deckCardFacts, isLuckyGuess, isSlowAnswer,
-  miniMockQuota, mostCommonMissReason, orderedTwinIds, questionsInCluster, reasonTools, saaAttemptCsv,
-  saaReviewMisses, selectTopicQuiz,
+  miniMockQuota, mostCommonMissReason, orderedTwinIds, questionsInCluster, reasonTools, rotatePracticeIds,
+  saaAttemptCsv, saaReviewMisses, saaRotationHistory, selectTopicQuiz,
 } from "../lib/saa-test-skills.ts";
 
 const objectives = JSON.parse(readFileSync(new URL("../content/objectives.json", import.meta.url), "utf8"));
@@ -125,6 +125,75 @@ test("the CSV is client data with one row per answered SAA question", () => {
   assert.deepEqual(lines[0].split(","), [...CSV_COLUMNS]);
   assert.equal(lines.length, 2);
   assert.match(lines[1], /learner-1,saa-c03,4\.0,4\.1,q-saa-twin-01-cost,true,181,unsure,,sit-1,twin,/);
+});
+
+test("a topic quiz drawn twice with history returns a different set when the cluster has more than 15", () => {
+  const cluster = SAA_CLUSTERS.find((item) => questionsInCluster(item.id, questions).length > 15);
+  assert.ok(cluster, "expected a cluster larger than one sitting");
+  const first = selectTopicQuiz(cluster.id, questions, { history: [], rng: mulberry32(1) });
+  const second = selectTopicQuiz(cluster.id, questions, { history: first, rng: mulberry32(1) });
+  assert.equal(first.length, 15);
+  assert.equal(second.length, 15);
+  assert.notDeepEqual([...first].sort(), [...second].sort());
+  const due = first[0];
+  const withDue = selectTopicQuiz(cluster.id, questions, { history: first, dueIds: [due], rng: mulberry32(2) });
+  assert.equal(withDue[0], due);
+});
+
+test("twin and mini order follow the same fresh-first rotation", () => {
+  const ids = orderedTwinIds(qualifierTwins);
+  const seen = ids[0];
+  const rotated = rotatePracticeIds(ids, { history: [seen], rng: mulberry32(2) });
+  assert.notEqual(rotated[0], seen);
+  assert.deepEqual([...rotated].sort(), [...ids].sort());
+  const due = ids[5];
+  assert.equal(rotatePracticeIds(ids, { history: ids, dueIds: [due], rng: mulberry32(3) })[0], due);
+});
+
+test("SAA history is every mode, oldest first, and a topic question is not first in the next mock", () => {
+  const history = saaRotationHistory({
+    quizAttempts: [
+      { exam: "saa-c03", at: 30, questionIds: ["q-topic"], mode: "topic" },
+      { exam: "saa-c03", at: 10, questionIds: ["q-quiz"], mode: "quiz" },
+      { exam: "n10-009", at: 5, questionIds: ["other"] },
+      { exam: "saa-c03", at: 15, questionIds: ["q-twin"], mode: "twin" },
+    ],
+    mockAttempts: [
+      { exam: "saa-c03", at: 40, questionIds: ["q-mock"], mode: "mock" },
+      { exam: "saa-c03", at: 20, questionIds: ["q-mini"], mode: "mini" },
+    ],
+  });
+  assert.deepEqual(history, ["q-quiz", "q-twin", "q-mini", "q-topic", "q-mock"]);
+
+  const pool = buildExamPool({ objectives, questions, topics, examCode: "saa-c03" });
+  const seen = pool.domains[0].objectives.flatMap((objective) => objective.questionIds)[0];
+  const draft = draftTest(pool, 20, mulberry32(4), { history: [seen] });
+  assert.equal(draft.length, 20);
+  assert.equal(draft.some((pick) => pick.questionId === seen), false);
+  assert.notEqual(draft[0].questionId, seen);
+});
+
+test("the missed list is sure-but-wrong, then other wrong, then lucky guesses", () => {
+  const ids = questions.filter((question) => question.examCodes?.includes("saa-c03")).map((question) => question.id).sort();
+  const [sure, wrong, lucky, mastered] = ids;
+  const rows = saaReviewMisses([{
+    exam: "saa-c03",
+    at: 1,
+    questionIds: [sure, wrong, lucky, mastered],
+    missedIds: [sure, wrong],
+    luckyIds: [lucky],
+    sureIds: [sure],
+  }, {
+    exam: "saa-c03",
+    at: 2,
+    questionIds: [mastered],
+    missedIds: [],
+    luckyIds: [],
+  }], questions);
+  assert.deepEqual(rows.map((row) => row.id), [sure, wrong, lucky]);
+  assert.equal(rows[0].lucky, false);
+  assert.equal(rows[2].lucky, true);
+  assert.equal(rows.some((row) => row.id === mastered), false);
 });
 
 test("every SAA drill deck can show a count, its modes, and a saved best", () => {

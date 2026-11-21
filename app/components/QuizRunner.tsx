@@ -9,10 +9,11 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuestions } from "@/lib/content";
 import { conceptVideos } from "@/lib/concept-videos";
-import { assessmentVersion, freshFirstIds, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
+import { assessmentVersion, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
 import { qualifierTwins } from "@/content/saa-qualifier-twins";
 import { getProgressSnapshot, questionHistory, rateCard, recordQuiz, setMissReason } from "@/lib/progress";
-import { isLuckyGuess, orderedTwinIds, type AttemptMode, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
+import { isLuckyGuess, orderedTwinIds, rotatePracticeIds, saaRotationHistory, type AttemptMode, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
+import { dueReviews } from "@/lib/weakness";
 import { answerLabel, correctIndices, isCorrectPick, mapAuthoredAnswersToDisplayed } from "@/lib/quiz-feedback";
 import { selectInlineRemediation } from "@/lib/inline-remediation";
 import { rankMissedQuestions } from "@/lib/weak-areas";
@@ -93,9 +94,15 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
   }
 
   function start() {
-    // Questions not seen in earlier quizzes or tests come first, then the ones seen longest ago.
+    // Unseen questions come first. SAA modes share one history, and due misses lead a topic or twin sitting.
     const byId = new Map(pool.map((q) => [q.id, q]));
-    const order = freshFirstIds(pool.map((q) => q.id), questionHistory(getProgressSnapshot()));
+    const snapshot = getProgressSnapshot();
+    const saaSitting = attemptMode === "topic" || attemptMode === "twin" || (pool.length > 0 && pool.every((question) => question.examCodes?.includes("saa-c03")));
+    const history = saaSitting ? saaRotationHistory(snapshot) : questionHistory(snapshot);
+    const dueIds = attemptMode === "topic" || attemptMode === "twin"
+      ? dueReviews([...snapshot.quizAttempts, ...snapshot.mockAttempts], "saa-c03", Date.now()).map((item) => item.questionId)
+      : [];
+    const order = rotatePracticeIds(pool.map((q) => q.id), { history, dueIds });
     displayedOrders.current = {};
     const cap = attemptMode === "twin" ? order.length : Math.min(15, order.length);
     startedAt.current = Date.now();

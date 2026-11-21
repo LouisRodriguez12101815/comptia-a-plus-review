@@ -59,3 +59,51 @@ test("next questions come from the weakest tasks, misses before unseen", () => {
   const unseen12 = task12.filter((id) => !missed12.includes(id));
   assert.deepEqual(next.slice(3, 3 + Math.min(7, unseen12.length)), unseen12.slice(0, 7));
 });
+
+test("next questions are sure-but-wrong, other wrong, lucky guesses, then unseen", () => {
+  const ids = task("1.2").map((question) => question.id).sort();
+  const [sure, wrong, lucky, unseen] = ids;
+  const attempt = {
+    exam: "saa-c03",
+    at: 1,
+    questionIds: [sure, wrong, lucky],
+    missedIds: [sure, wrong],
+    wrongChoices: { [sure]: 0, [wrong]: 1 },
+    luckyIds: [lucky],
+    sureIds: [sure],
+    confidenceByQuestion: { [sure]: "sure", [lucky]: "guess" },
+  };
+  const next = nextSaaQuestionIds([attempt], questions, domains);
+  assert.deepEqual(next.slice(0, 4), [sure, wrong, lucky, unseen]);
+});
+
+test("the domain percent counts only answered questions and a lucky guess stays correct", () => {
+  const ids = task("1.2").map((question) => question.id).sort();
+  const [lucky, unanswered] = ids;
+  const sitting = {
+    exam: "saa-c03",
+    at: 4,
+    questionIds: [lucky, unanswered],
+    missedIds: [unanswered],
+    luckyIds: [lucky],
+    confidenceByQuestion: { [lucky]: "guess" },
+  };
+  const [domain] = saaDomainSummary([sitting], questions, domains);
+  assert.equal(domain.answered, 1);
+  assert.equal(domain.correct, 1);
+  assert.equal(domain.percent, 100);
+
+  const wrong = ids[2];
+  const mixed = {
+    exam: "saa-c03",
+    at: 5,
+    questionIds: [wrong, lucky, unanswered],
+    missedIds: [wrong, unanswered],
+    wrongChoices: { [wrong]: 0 },
+    luckyIds: [lucky],
+  };
+  const [mixedDomain] = saaDomainSummary([mixed], questions, domains);
+  assert.equal(mixedDomain.answered, 2);
+  assert.equal(mixedDomain.correct, 1);
+  assert.equal(mixedDomain.percent, 50);
+});

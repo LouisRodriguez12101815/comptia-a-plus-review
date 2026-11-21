@@ -9,7 +9,7 @@ import type { ExamCode } from "@/lib/types";
 import { controlledQuestionIds, questionIdsFromParam } from "@/lib/controlled-question-pool";
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
-import { SAA_CLUSTERS, selectTopicQuiz } from "@/lib/saa-test-skills";
+import { SAA_CLUSTERS, questionsInCluster } from "@/lib/saa-test-skills";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/quiz">) {
   const { locale } = await params;
@@ -33,7 +33,7 @@ export default async function QuizPage({
   const questionIds = twinMode
     ? undefined
     : cluster
-      ? selectTopicQuiz(cluster, allQuestions)
+      ? questionsInCluster(cluster, allQuestions).map((question) => question.id)
       : questionIdsParam
         ? controlledQuestionIds(questionIdsFromParam(questionIdsParam), allQuestions, allTopics, isStudyFocus(examParam) ? examParam : "all")
         : undefined;

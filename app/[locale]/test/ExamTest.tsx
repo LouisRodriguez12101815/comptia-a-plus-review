@@ -15,7 +15,7 @@ import {
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { cardsForQuestion } from "@/lib/study/memory";
 import { getProgressSnapshot, getServerProgressSnapshot, rateCard, recordMock, recordQuiz, setMissReason, subscribeProgress, type MockAttempt } from "@/lib/progress";
-import { isLuckyGuess, isSlowAnswer, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
+import { isLuckyGuess, isSlowAnswer, saaRotationHistory, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
 import { dueReviews, objectiveStats, weakestObjectives } from "@/lib/weakness";
 import { evaluateReadiness } from "@/lib/readiness";
 import { confusionFor, pairFromKey } from "@/lib/confusions";
@@ -388,12 +388,17 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   function start(kind: RunKind = mode, objectiveIds: string[] = focusIds) {
     completed.current = false;
     // Earlier sittings for this exam, oldest first, so unseen questions come up first.
-    const history = getProgressSnapshot().mockAttempts
-      .filter((attempt) => attempt.exam === exam)
-      .reverse()
-      .flatMap((attempt) => attempt.questionIds ?? []);
+    // SAA quizzes, topic drills, twins, mini-mocks, and full mocks share one history.
+    const snapshot = getProgressSnapshot();
+    const history = exam === "saa-c03"
+      ? saaRotationHistory(snapshot)
+      : snapshot.mockAttempts
+        .filter((attempt) => attempt.exam === exam)
+        .reverse()
+        .flatMap((attempt) => attempt.questionIds ?? []);
     // Missed questions whose 1-day or 3-day review is due go in first.
-    const due = kind === "drill" ? [] : dueReviews(getProgressSnapshot().mockAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
+    const dueAttempts = exam === "saa-c03" ? [...snapshot.quizAttempts, ...snapshot.mockAttempts] : snapshot.mockAttempts;
+    const due = kind === "drill" ? [] : dueReviews(dueAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
     const priority = due.map((d) => d.questionId);
     const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
     const draft = kind === "drill"

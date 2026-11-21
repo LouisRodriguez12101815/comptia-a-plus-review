@@ -1,4 +1,4 @@
-import { allocateByWeight } from "@/lib/exam-test.mjs";
+import { allocateByWeight, freshFirstIds } from "@/lib/exam-test.mjs";
 import type { Question } from "@/lib/types";
 import { qualifierTwins, type QualifierTwin } from "@/content/saa-qualifier-twins";
 
@@ -104,12 +104,51 @@ export function questionsInCluster(clusterId: string, questions: Question[]): Qu
   });
 }
 
-/** Up to 15 questions from one high-yield cluster, in a stable id order. */
-export function selectTopicQuiz(clusterId: string, questions: Question[], limit = SAA_TOPIC_QUESTIONS): string[] {
-  return questionsInCluster(clusterId, questions)
-    .map((question) => question.id)
-    .sort()
-    .slice(0, limit);
+export type RotationOptions = {
+  /** Question ids from older sittings to newer ones. */
+  history?: string[];
+  /** Due misses in this pool. They lead the sitting. */
+  dueIds?: string[];
+  limit?: number;
+  rng?: () => number;
+};
+
+/**
+ * Due misses first, then questions never shown, then the ones shown longest ago.
+ * The remainder is shuffled so two empty-history draws are not the same sequence.
+ */
+export function rotatePracticeIds(ids: string[], options: RotationOptions = {}): string[] {
+  const unique = [...new Set(ids)];
+  const allowed = new Set(unique);
+  const due: string[] = [];
+  for (const id of options.dueIds ?? []) {
+    if (allowed.has(id) && !due.includes(id)) due.push(id);
+  }
+  const dueSet = new Set(due);
+  const rest = freshFirstIds(
+    unique.filter((id) => !dueSet.has(id)),
+    options.history ?? [],
+    options.rng ?? Math.random,
+  );
+  const ordered = [...due, ...rest];
+  const limit = options.limit ?? ordered.length;
+  return ordered.slice(0, limit);
+}
+
+/** Up to 15 questions from one high-yield cluster, unseen and overdue misses first. */
+export function selectTopicQuiz(clusterId: string, questions: Question[], options: RotationOptions = {}): string[] {
+  return rotatePracticeIds(
+    questionsInCluster(clusterId, questions).map((question) => question.id),
+    { ...options, limit: options.limit ?? SAA_TOPIC_QUESTIONS },
+  );
+}
+
+/** Every SAA sitting, oldest first, so a question seen in any mode waits its turn. */
+export function saaRotationHistory(progress: { quizAttempts?: CsvAttempt[]; mockAttempts?: CsvAttempt[] }): string[] {
+  return [...(progress.quizAttempts ?? []), ...(progress.mockAttempts ?? [])]
+    .filter((attempt) => attempt.exam === "saa-c03")
+    .sort((a, b) => a.at - b.at)
+    .flatMap((attempt) => attempt.questionIds ?? []);
 }
 
 export function orderedTwinIds(twins: QualifierTwin[]): string[] {
@@ -209,26 +248,57 @@ export function deckCardFacts(
 
 export type ReviewMiss = { id: string; misses: number; lucky: boolean };
 
-/** Wrong answers and lucky guesses, so a correct unsure or guess still shows up for review. */
-export function saaReviewMisses(attempts: { exam?: string; questionIds?: string[]; missedIds?: string[]; luckyIds?: string[] }[], questions: Question[] = []): ReviewMiss[] {
+type ReviewAttempt = {
+  exam?: string;
+  at?: number;
+  questionIds?: string[];
+  missedIds?: string[];
+  luckyIds?: string[];
+  sureIds?: string[];
+  confidenceByQuestion?: Record<string, string>;
+};
+
+function sureMiss(attempt: ReviewAttempt, id: string): boolean {
+  return attempt.confidenceByQuestion?.[id] === "sure" || (attempt.sureIds?.includes(id) ?? false);
+}
+
+/**
+ * Review items in weak-point order: sure-but-wrong, then other wrong answers,
+ * then lucky guesses. A later correct answer that was marked sure drops off.
+ */
+export function saaReviewMisses(attempts: ReviewAttempt[], questions: Question[] = []): ReviewMiss[] {
   const saa = new Set([...questions.filter((question) => question.examCodes?.includes("saa-c03")).map((question) => question.id), ...qualifierTwins.map((question) => question.id)]);
-  const wrong = new Map<string, number>();
-  const lucky = new Map<string, number>();
-  for (const attempt of attempts) {
+  const rows = new Map<string, ReviewMiss & { rank: number }>();
+  const ordered = attempts
+    .map((attempt, index) => ({ attempt, index }))
+    .sort((a, b) => (a.attempt.at ?? 0) - (b.attempt.at ?? 0) || a.index - b.index);
+  for (const { attempt } of ordered) {
     if (attempt.exam !== undefined && attempt.exam !== "saa-c03") continue;
     const shown = new Set(attempt.questionIds ?? []);
-    for (const id of attempt.missedIds ?? []) {
-      if (!saa.has(id) || (shown.size > 0 && !shown.has(id))) continue;
-      wrong.set(id, (wrong.get(id) ?? 0) + 1);
+    const inScope = (id: string) => saa.has(id) && (shown.size === 0 || shown.has(id));
+    const missed = new Set(attempt.missedIds ?? []);
+    const lucky = new Set(attempt.luckyIds ?? []);
+    for (const id of missed) {
+      if (!inScope(id)) continue;
+      const current = rows.get(id) ?? { id, misses: 0, lucky: false, rank: 1 };
+      current.misses += 1;
+      current.lucky = false;
+      current.rank = sureMiss(attempt, id) ? 0 : 1;
+      rows.set(id, current);
     }
-    for (const id of attempt.luckyIds ?? []) {
-      if (!saa.has(id) || wrong.has(id)) continue;
-      lucky.set(id, (lucky.get(id) ?? 0) + 1);
+    for (const id of lucky) {
+      if (!inScope(id)) continue;
+      const current = rows.get(id) ?? { id, misses: 0, lucky: true, rank: 2 };
+      current.lucky = true;
+      current.rank = 2;
+      rows.set(id, current);
+    }
+    for (const id of shown) {
+      if (!inScope(id) || missed.has(id) || lucky.has(id)) continue;
+      rows.delete(id);
     }
   }
-  const rows: ReviewMiss[] = [
-    ...[...wrong].map(([id, misses]) => ({ id, misses, lucky: false })),
-    ...[...lucky].map(([id, misses]) => ({ id, misses, lucky: true })),
-  ];
-  return rows.sort((a, b) => b.misses - a.misses || Number(a.lucky) - Number(b.lucky) || a.id.localeCompare(b.id));
+  return [...rows.values()]
+    .sort((a, b) => a.rank - b.rank || b.misses - a.misses || a.id.localeCompare(b.id))
+    .map(({ id, misses, lucky }) => ({ id, misses, lucky }));
 }
