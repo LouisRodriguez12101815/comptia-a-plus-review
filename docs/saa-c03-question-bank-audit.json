@@ -4995,7 +4995,7 @@
       "answerIndexOrIndexes": 1,
       "optionExplanationCoverage": [
         {
-          "choice": "Grant s3:GetObject in the bucket policy and treat that permission as enough to decrypt the SSE-KMS object",
+          "choice": "Grant s3:GetObject to the partner role in the bucket policy and leave the key policy unchanged",
           "classification": "incorrect",
           "explanation": "Option: Grant s3:GetObject in the bucket policy; S3 object permission alone is sufficient to decrypt SSE-KMS data cross-account. — Incorrect: S3 authorization is necessary, but an SSE-KMS object also requires authorization to use the KMS key; S3 permission alone does not decrypt it."
         },
@@ -5010,7 +5010,7 @@
           "explanation": "Option: Share the AWS-managed aws/s3 key with the partner account by adding a key policy statement. — Incorrect: AWS-managed KMS keys cannot have their key policies edited to grant cross-account use; cross-account S3 access should use a customer-managed key."
         },
         {
-          "choice": "Make the bucket public and expect the KMS key to name the partner",
+          "choice": "Make the bucket public and add the partner to the key policy",
           "classification": "incorrect",
           "explanation": "Option: Make the bucket public and rely on the KMS key to identify the intended partner. — Incorrect: A public bucket policy would expose object access too broadly and does not grant KMS decrypt permission to the specific partner."
         }
@@ -5034,7 +5034,7 @@
         "optionExplanationsChecked": [
           {
             "optionIndex": 0,
-            "choice": "Grant s3:GetObject in the bucket policy and treat that permission as enough to decrypt the SSE-KMS object",
+            "choice": "Grant s3:GetObject to the partner role in the bucket policy and leave the key policy unchanged",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5067,7 +5067,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Make the bucket public and expect the KMS key to name the partner",
+            "choice": "Make the bucket public and add the partner to the key policy",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5376,7 +5376,7 @@
           "explanation": "Option: Put an S3 gateway endpoint between the application and database. — Incorrect: An S3 gateway endpoint only provides a route to S3; it has no role in database connection recovery."
         },
         {
-          "choice": "Replace Multi-AZ RDS with one EC2 database",
+          "choice": "An EC2 database for the application",
           "classification": "incorrect",
           "explanation": "Option: Replace the database with an EC2 instance in one Availability Zone. — Incorrect: A single-AZ self-managed database removes the existing managed Multi-AZ failover protection and adds operational work."
         }
@@ -5433,7 +5433,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Replace Multi-AZ RDS with one EC2 database",
+            "choice": "An EC2 database for the application",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5912,12 +5912,12 @@
           "explanation": "Option: Add a database read replica but send every request to both the primary and replica. — Incorrect: A read replica can add read capacity, but sending every request to both databases doubles work and does not reuse repeated results."
         },
         {
-          "choice": "Turn off database backups to cut the read bill",
+          "choice": "Turn database backups off on the catalog database",
           "classification": "incorrect",
           "explanation": "Option: Disable database backups so fewer reads are billed. — Incorrect: Backups are a recovery control and are not a direct way to reduce query-read demand; removing them creates a data-protection gap."
         },
         {
-          "choice": "Move to a larger instance before measuring a cache",
+          "choice": "Move the catalog database to a larger instance class",
           "classification": "incorrect",
           "explanation": "Option: Move the catalog to a larger database instance before measuring whether repeated reads can be served from a cache. — Incorrect: A larger instance may be needed if measured capacity remains insufficient, but it does not address repeated identical reads as directly and should be compared after measuring the cache opportunity."
         }
@@ -5963,7 +5963,7 @@
           },
           {
             "optionIndex": 2,
-            "choice": "Turn off database backups to cut the read bill",
+            "choice": "Turn database backups off on the catalog database",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -5974,7 +5974,7 @@
           },
           {
             "optionIndex": 3,
-            "choice": "Move to a larger instance before measuring a cache",
+            "choice": "Move the catalog database to a larger instance class",
             "classification": "incorrect",
             "checked": true,
             "officialSourceUrls": [
@@ -10091,7 +10091,7 @@
     },
     {
       "id": "answer-length-cue",
-      "description": "Batch 1 of the SAA answer-length rewrite. Off-category distractors were replaced with same-category near misses, or padded keys were trimmed, and each choice has a sourced Correct or Incorrect line. Two shared CLF records were left unchanged. Tag fields are excluded from the hashes.",
+      "description": "Batch 1 of the SAA answer-length rewrite. Off-category distractors were replaced with same-category near misses, or padded keys were trimmed, and each choice has a sourced Correct or Incorrect line. A follow-up pass removed self-disqualifying descriptors and made those choices parallel. Two shared CLF records were left unchanged. Tag fields are excluded from the hashes.",
       "excludedFields": [
         "services",
         "difficulty",
@@ -10102,7 +10102,7 @@
           "id": "q-saa-guide-39",
           "reason": "answer-length cue",
           "oldHash": "8a069df06f72a8203606296b30cac781bf2f0bc90d470011f797cad10f8f4a23",
-          "newHash": "872d69b3e37381aec166bfffcd31bb51c4769b314cc622577b2a0ab6af44450e",
+          "newHash": "1e73a266a6db051d5b64e433505b0024ae384092166ae406a8bfa305de4e9ce4",
           "docsUrl": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
           "numbers": ""
         },
@@ -10118,7 +10118,7 @@
           "id": "q-saa-practice-42",
           "reason": "answer-length cue",
           "oldHash": "172adaf058c90a942eb2c22a7e6189a2e27688514318498e06eeb31ab1135f86",
-          "newHash": "723aa7bf90796fbc3016e5b32676df66b23da0912bc202c78afe6170c660751c",
+          "newHash": "204b1a8af2c6c05541369cef803d502450314897514bb368c007054506e9d5f1",
           "docsUrl": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
           "numbers": ""
         },
@@ -10142,7 +10142,7 @@
           "id": "q-saa-chapter-23",
           "reason": "answer-length cue",
           "oldHash": "b026eae20047f512c1a0f304bd2cfab15620ddfa8cdb2352f0adb1417a753565",
-          "newHash": "66022b4728e625c07d00c1ceb1eb21d1a4faf75df7c9aa2edd063202af71fd6f",
+          "newHash": "ef324ad690c16568bbddba7c223bb32a8729a7b3b4372f9c7c1401688ecf98d8",
           "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html",
           "numbers": ""
         },
@@ -10190,7 +10190,7 @@
           "id": "q-saa-guide-08",
           "reason": "answer-length cue",
           "oldHash": "6e37ef6aef5e98591108ef2e71a10de96b9ca71b782ea6b38d811f4ef56d0698",
-          "newHash": "e0161d45ab72404469d9f80be1481b714f82ee03f9f2384e21e1938f97b34d0f",
+          "newHash": "3a0a84e71d88676b76ee1fd62f6555ef5cb2858762238ffb74ba9a910f6d7b3d",
           "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html",
           "numbers": ""
         },
@@ -10198,7 +10198,7 @@
           "id": "q-saa-guide-02",
           "reason": "answer-length cue",
           "oldHash": "e0e3052b730a99548e7804e63728805618d2f33b13248db663a480804c2f3cfd",
-          "newHash": "e19c3e5ea86a8947f7c56cb06c1291009fdb5bf62f627a8cb9066139790484ad",
+          "newHash": "8fe744fe97b4186572808a9f6a9671454d4ee07580d61f6c1ef4a7e862ecf69c",
           "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html",
           "numbers": ""
         },
@@ -10206,7 +10206,7 @@
           "id": "q-saa-guide-06",
           "reason": "answer-length cue",
           "oldHash": "454bd73984bd4ea15b4bb24d2b545533adc866a7cb118009c8602cdc6be0e495",
-          "newHash": "9ca65058bfb2d4c210a9ce581dafcdc3a6e0c255a428ce5c4443d99984c93d3c",
+          "newHash": "76e4b69f656e2431e4bc1db0c6c1a28442a6eb18844a2cc35190295b8270af7d",
           "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
           "numbers": ""
         },
@@ -10214,7 +10214,7 @@
           "id": "q-saa-chapter-06",
           "reason": "answer-length cue",
           "oldHash": "31c4d8cd725928522479a5deda01f990c02ae920f2f874b329efd4885f164a48",
-          "newHash": "76ebe10a4d4e60ec1bf6625343d8d0aa559bc59cd01c50311508dfce9bf2a9c6",
+          "newHash": "017dfd02f72b07593f2bd9eec3a97d6578e1ca54da58b26865f75cbb6100f55d",
           "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
           "numbers": ""
         },
@@ -10230,7 +10230,7 @@
           "id": "q-saa-core-05",
           "reason": "answer-length cue",
           "oldHash": "fdc9c0b5470943649c2bfe2c5a7591e2fcf08f558936107e8da70c81875a8a80",
-          "newHash": "13a117c5a3731589703d98a575a15fc548f910860832908bea4558f37f01d5fa",
+          "newHash": "d5c19f543e20f87692a1a22c0e1e95bc95a2667f3f462530a4f859c032230b32",
           "docsUrl": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html",
           "numbers": ""
         },
@@ -10238,7 +10238,7 @@
           "id": "q-saa-guide-10",
           "reason": "answer-length cue",
           "oldHash": "7181c08d94587d13f690717bdde9ecc66299d603fc95011a802cb6b70c5cc0e1",
-          "newHash": "20996d678713d3708ab31b61a51bdffed302be28e0fc12261e5f8dd69a07b214",
+          "newHash": "25936f17e671c0293aa9a0c754c5dcc4041b2845a9691bc5d13591865dbe5277",
           "docsUrl": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
           "numbers": ""
         },
@@ -10278,7 +10278,7 @@
           "id": "q-aws-review-saa-c03-3-2",
           "reason": "answer-length cue",
           "oldHash": "fbb8d3f555b0dbf08ec04205c55ee03cffdd6e38728db25877fa68c5cf64622f",
-          "newHash": "859bd2d7be0602cb40d2ac60ddcaad9de46d1497eb2d45f866d4d429bb8fac9e",
+          "newHash": "ace03835165177c76b2c9050c48fe8850655e26e9eee90286856e8772a34af31",
           "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html",
           "numbers": ""
         },
@@ -10286,7 +10286,7 @@
           "id": "q-saa-guide-51",
           "reason": "answer-length cue",
           "oldHash": "3471b269b56eb83fb201f7fe3d7cfed2c35884793476a8fd7c9375aa167772e9",
-          "newHash": "e8862b7ba62ff443dff31a8b8b105305b80cbdc920503a94c42d02083e457c6f",
+          "newHash": "738a77042087a3f713938188ce9ebbdd46aaff306ab927f1fbf74988ac4c070e",
           "docsUrl": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
           "numbers": ""
         },
@@ -10302,7 +10302,7 @@
           "id": "q-saa-hy-opensearch-01",
           "reason": "answer-length cue",
           "oldHash": "443c4d847f84ca1109769576f8e9ad03f8d1a74aa4fa40eab3f8e19fe798076a",
-          "newHash": "f9bf67db54b273a6767be54c9fd8c334d1cc5fd99b1452c0a3ab6ad8d54c4e7d",
+          "newHash": "ecd9ed91c13b7ba761ca523b0e7c714b51c9de08d8dcbaa2fdae12d37fcc4e4b",
           "docsUrl": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
           "numbers": ""
         },
@@ -10310,7 +10310,7 @@
           "id": "q-saa-auditbatch-03",
           "reason": "answer-length cue",
           "oldHash": "79abef0135c00b0fa98db1b358f0c319f5920629cfc5ae127d771d5471906dde",
-          "newHash": "ded08b4580ca260f014917a947cf92ec12a039cac04e8182b76a3283f71703b3",
+          "newHash": "337738b801d984cd8fe81459f4c24d215bd9feca57e2f107705dc277cd66d083",
           "docsUrl": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html",
           "numbers": ""
         },
@@ -10318,7 +10318,7 @@
           "id": "q-saa-core-02",
           "reason": "answer-length cue",
           "oldHash": "1ac24e791791401365c57e3edda16b0d5144035805bd99b133d54e88cc757ca7",
-          "newHash": "6f2def76e43f51db1abb4cde5b8c85c21029cf6e8781111d6713da1fc3e534ef",
+          "newHash": "b764e6798611c654497a8f66bcd0c86f4b5576d58d17053b557952802da46cee",
           "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html",
           "numbers": ""
         },
@@ -10334,7 +10334,7 @@
           "id": "q-saa-core-33",
           "reason": "answer-length cue",
           "oldHash": "01309707a071382e8a36689dc9731244ddcb9a1ac85560a92ad45e3dac6af692",
-          "newHash": "34c32c4796680d25986b3f3b13a848dc3756d797c34584324f4bfc2bd7c6b566",
+          "newHash": "38bd50a9bab9646253780ac8be377b2e84efddb1db704db87aca8b358d7e3a4c",
           "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
           "numbers": ""
         },
@@ -10358,7 +10358,7 @@
           "id": "q-saa-practice-10",
           "reason": "answer-length cue",
           "oldHash": "baf282b3034038ea0ae27a89b4c97ee504e36a2ccc270c53bdfebea0ca805524",
-          "newHash": "5e5ebdb4041bff0acdd542452dcf6cace239656ef031a4ae124860dbceee0e4a",
+          "newHash": "4fa0a7852bdd5d0fed396e9828b4adc79fe04dae21baf36c9b2f151c26d96ebb",
           "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html",
           "numbers": ""
         },
@@ -10366,7 +10366,7 @@
           "id": "q-saa-guide-09",
           "reason": "answer-length cue",
           "oldHash": "8bc2d65528a874e55b3aa577bea768a94db2dd2d74a0873d31a3e66f436d116d",
-          "newHash": "8d55e9bd4319f37d1904e90b05c052db8a73d7b9111f4c4b31674824d8d92bbb",
+          "newHash": "4417e9cd0e8a239a558566614a8da100b1d2efabe6cc3dff9a2ed5ec689f3525",
           "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
           "numbers": ""
         },
@@ -10390,7 +10390,7 @@
           "id": "q-saa-bank-005",
           "reason": "answer-length cue",
           "oldHash": "73ec1610e9005581b726fbaac0284ee8d8be708d5d5053c37ac15be21f42002a",
-          "newHash": "f469203a2665f0509cac326c8ae5553520705918e4dfb802240d31a422407e73",
+          "newHash": "17fab74eea8bd1c1b275d5fc6c73cac499b053ede73b955a13a8f81e77dc8556",
           "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
           "numbers": ""
         },
@@ -10398,7 +10398,7 @@
           "id": "q-saa-chapter-28",
           "reason": "answer-length cue",
           "oldHash": "be416c20ad030caa95ae717096060ebb9de88e09d8eacff0cb84334b2d8c554a",
-          "newHash": "a639b86a12c236b125566e163929edb15a81066089fb14a0d7580b4b51c33fb4",
+          "newHash": "23bed84678802df16f33df3008f16b1c6cb8244203be60de1efd40b4d1c276b4",
           "docsUrl": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
           "numbers": ""
         },
@@ -10406,7 +10406,7 @@
           "id": "q-saa-core-13",
           "reason": "answer-length cue",
           "oldHash": "3462f7430e134cc78109f77a053cc850a2c00e76d8e80c3d432a54fa6cc741fc",
-          "newHash": "7a77630cd19d4f3ef3e0d52a8c2cb4f906ccff03e305b2195eb0c282256e44b4",
+          "newHash": "7226f22f8aab584af57a5d03cd4d6edc7588b90d81c0eb48aa418ee8e412e022",
           "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html",
           "numbers": ""
         },
@@ -10414,7 +10414,7 @@
           "id": "q-saa-core-30",
           "reason": "answer-length cue",
           "oldHash": "b7776410f6d54f270fc1ca81f7f94e00908f0ced661bb5e2402588f1bfb758dc",
-          "newHash": "98b9309bf8076babb41e3a5183e2acfb8b6a81d38a5b25cfbf0ae36a72f56a3a",
+          "newHash": "5763ffc4749c7d82022bbeb951136a20064c49e3c7322dc8afd4e9723f907d17",
           "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
           "numbers": ""
         },
@@ -10422,7 +10422,7 @@
           "id": "q-saa-gap-storage-autoscaling-01",
           "reason": "answer-length cue",
           "oldHash": "7a18c39c98daed06db01d8ad704de858b71723124b3cab05d6d78d2ed9680e7b",
-          "newHash": "ad9772715664cf5b4fb3e8ffc23c9955933e6ef1510a6d09b6f6aad0558e6d5f",
+          "newHash": "45337c1cff0e93d33cdde73dc8c277e0e63dcae9d6389f80149bf53aa848e139",
           "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html",
           "numbers": ""
         },
@@ -10462,7 +10462,7 @@
           "id": "q-saa-guide-28",
           "reason": "answer-length cue",
           "oldHash": "1cbaef645eb26fe4418185a1d8b1414d57098a03fbeabeea57de993776600249",
-          "newHash": "9065c54238f3b61c82f3757fd45cccccf44b57099cfb2b7887a54f6bf83c56ec",
+          "newHash": "38c4301d8e1fc53eddd719af327df5604f17befa50e529c07ba6ca6c31069a25",
           "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html",
           "numbers": ""
         },
@@ -10470,7 +10470,7 @@
           "id": "q-saa-practice-09",
           "reason": "answer-length cue",
           "oldHash": "b8cd822f45765e5510b6cdf6670485dde25ecb7f1b81af51ff8737a719c116e2",
-          "newHash": "608208828f8ad64506f0263cf016a1e399099b47d5dcd3f2bf989fcadaed25a9",
+          "newHash": "ca8fc45f5609c769d4e9f58aa7e8c622aefe508f3df4052aa9db529d3362da2b",
           "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html",
           "numbers": ""
         },
@@ -10486,7 +10486,7 @@
           "id": "q-saa-core-35",
           "reason": "answer-length cue",
           "oldHash": "00f39a9b6c4ef239a47c6e12cf140a30749f289f14564abbea2bf50fc7d01e02",
-          "newHash": "872f6ba963b61fad4abccd32ee7575e37cd273e391f2de14ba5f90511081b7b8",
+          "newHash": "524a9d2b8f5d7fc86651fb05a9ed7437803acd52fa1b16161338f4b52d1f4cb6",
           "docsUrl": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html",
           "numbers": ""
         },
@@ -10502,7 +10502,7 @@
           "id": "q-saa-bank-009",
           "reason": "answer-length cue",
           "oldHash": "11e95ae0e1cac3494bf07876e8ad6a712b54821e68267024f6998226ebc5ccbe",
-          "newHash": "97159a5093214cecebd0cdb325115e1adfb5b084986f9a57a25e11c67c88df58",
+          "newHash": "ab8ca2cd99dbeddaa81e910da4c29e905e0d3c8db5c022d4665f13c0568675ad",
           "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
           "numbers": ""
         },
@@ -10510,7 +10510,7 @@
           "id": "q-saa-bank-015",
           "reason": "answer-length cue",
           "oldHash": "4145a3c3ea55846792804d165e39eecb3acc688242b0221d69b0844a863e15c1",
-          "newHash": "4fda2e985d73ddf337f39864fa6873e63b9fde9953ba169b29553002a12ba515",
+          "newHash": "3775f8d66fadd897908e626d271ebc16952dd616e090731b2fc65d5ee02987d5",
           "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
           "numbers": ""
         },
@@ -10534,7 +10534,7 @@
           "id": "q-saa-hy-quicksight-01",
           "reason": "answer-length cue",
           "oldHash": "268c3bb3ea72f9eae6cb9febefee5526fe0da795a56487743627bd405a9312e7",
-          "newHash": "9200509cc7b50b707fe5bdb0e6398a7e90f228327fa908a2f340e2035ebaba9e",
+          "newHash": "dad21d4dd065d0ec9433fd1e0552c12ebe56c30e05e1371fa85d12385574c413",
           "docsUrl": "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
           "numbers": ""
         },
@@ -10542,7 +10542,7 @@
           "id": "q-saa-gap-containers-01",
           "reason": "answer-length cue",
           "oldHash": "0449438c7c533513c5b571a5529acf7f65a5f0a2c350650d2b548b5ff36bcc01",
-          "newHash": "e6c0b9d553314af3270f8ce1943d89b475b72455af94f1992582abde4ed43901",
+          "newHash": "71e28484670a7bba33735e1ca953805b0e623eac612f8e8cec379a3c9b3547f8",
           "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
           "numbers": ""
         },
@@ -10558,7 +10558,7 @@
           "id": "q-saa-practice-20",
           "reason": "answer-length cue",
           "oldHash": "a591db308067273e0356354281107d941d4e63fbf19f85053b2963ea606c1d27",
-          "newHash": "69777886c7002cbbb5d9857572b47804993d51e465216c7717448c1af04ce0a0",
+          "newHash": "7047f2b50f2ed42c195af298d3d1437a7d8058e4652371f739409812148b7598",
           "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
           "numbers": ""
         },
@@ -10566,7 +10566,7 @@
           "id": "q-saa-auditbatch-06",
           "reason": "answer-length cue",
           "oldHash": "d9336e1e1e13775426dd2ba93f5a84437453063fd464240b850810cab36ead58",
-          "newHash": "d2bcbac46446c4c6b657e546bd7a45280c2d474566bdea98fe0bdcc1d7f6dbb9",
+          "newHash": "b78cd72ece27ed5dd9076fbe9f44218fe5912f8794ddf1491ca4c700156d4be3",
           "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html",
           "numbers": ""
         },
@@ -10590,7 +10590,7 @@
           "id": "q-saa-practice-53",
           "reason": "answer-length cue",
           "oldHash": "6d4ea0de351495fc9041ba30b3445946289f2c43ec499537fd3681381925446d",
-          "newHash": "e73f332046e8bc52301c9e2eed9c57b0e50b4e748d850d0d1a1a6d579f9db3cf",
+          "newHash": "42232ba183c94f444461e091bedf812fd8592a9a886c36314268c2b26bbd5194",
           "docsUrl": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
           "numbers": ""
         },
@@ -10606,7 +10606,7 @@
           "id": "q-saa-practice-48",
           "reason": "answer-length cue",
           "oldHash": "03953d813f3538756c9b463f473ee01903c90173f5e3b25fd7c6d38ca7c253e8",
-          "newHash": "8da2b03537a0db22c08473a64ebd19b31ecdd0b1f10040262b5f3fb6c26f1a67",
+          "newHash": "1340484c7e94fe1cc9d084ee86a0b5b867efb1f9d2f0ab37d2a4644953faaaf1",
           "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
           "numbers": ""
         },
@@ -10614,7 +10614,7 @@
           "id": "q-saa-practice-02",
           "reason": "answer-length cue",
           "oldHash": "963108fb1ac64246dbf5278a757e0934bfd8e432b50083cc88e7a69fedae7a6f",
-          "newHash": "95934ab6f4c5abe592995d43de9a7c031fad8d1edf176c49078ca60b6e0a54c8",
+          "newHash": "558287de60e62f04a03595f03796e75219d043e26ecdd52b09019573eefb8812",
           "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html",
           "numbers": ""
         }

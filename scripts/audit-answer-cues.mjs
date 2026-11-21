@@ -58,27 +58,27 @@ function markdown(summary) {
     "",
     "Single-answer question items only for the length rates (questions.json, the high-yield fill, and qualifier twins). Game items are in the CSV and are not in these rates. A key is longest when it is strictly longer than every other choice. Strongly length-biased means that and at least 1.3 times the mean wrong-choice length. Chance for a four-choice item to be the unique longest is 25%.",
     "",
-    `Enforced now: ${ENFORCED_EXAMS.join(", ") || "none"}. Targets: key-is-longest ≤ ${pct(LONGEST_MAX)} and strongly length-biased ≤ ${pct(STRONG_MAX)}. SAA and CLF stay warn-only until their rewrite batches. CompTIA stays warn-only against those targets.`,
+    `Enforced now: ${ENFORCED_EXAMS.join(", ") || "none"}. Targets: key-is-longest ≤ ${pct(LONGEST_MAX)} and strongly length-biased ≤ ${pct(STRONG_MAX)}. SAA and CLF stay warn-only until their rewrite batches. CompTIA stays warn-only against those targets. Self-disqualifying distractors and non-parallel choices are warn-only: a wrong choice that names the opposite of a stem requirement (Linux against Windows, single-AZ against multi-AZ, Regional against global, at rest against in transit, and the related pairs), or a bare key beside qualified distractors, or the reverse.`,
     "",
-    "| Exam | Single-answer | Key longest | Strongly biased | Key at A | Stem-word | Absolute words only on wrong choices | All/none of the above | Only complete key | Near-duplicate choices |",
-    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    "| Exam | Single-answer | Key longest | Strongly biased | Key at A | Stem-word | Absolute words only on wrong choices | All/none of the above | Only complete key | Near-duplicate choices | Self-disqualifying distractor | Choices not parallel |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
   ];
   for (const exam of exams) {
     const row = summary[exam];
     if (!row) continue;
-    lines.push(`| ${exam} | ${row.single} | ${row.longest} (${pct(row.longestRate)}) | ${row.strong} (${pct(row.strongRate)}) | ${row.positions.A ?? 0} | ${row.stemWord} | ${row.absoluteWords} | ${row.allNone} | ${row.onlyComplete} | ${row.nearDuplicate} |`);
+    lines.push(`| ${exam} | ${row.single} | ${row.longest} (${pct(row.longestRate)}) | ${row.strong} (${pct(row.strongRate)}) | ${row.positions.A ?? 0} | ${row.stemWord} | ${row.absoluteWords} | ${row.allNone} | ${row.onlyComplete} | ${row.nearDuplicate} | ${row.selfDisqualifying} | ${row.notParallel} |`);
   }
   lines.push("", "The full per-item CSV is written to ignored `tmp/answer-cue-audit.csv` when the audit runs. Authored key position is reported here and does not affect display: quiz, timed test, twin, topic, mini-mock, mistake-log retest, drills, choice games, subnet concept and reason, and the optional IPv6 review shuffle choices when the sitting is shown.", "");
   return `${lines.join("\n")}\n`;
 }
 
 function csv(rows) {
-  const header = ["exam", "id", "source", "single", "keyLetter", "keyLength", "lengthRank", "ratio", "strictlyLongest", "stronglyBiased", "stemWord", "absoluteWords", "allNone", "onlyComplete", "nearDuplicate"];
+  const header = ["exam", "id", "source", "single", "keyLetter", "keyLength", "lengthRank", "ratio", "strictlyLongest", "stronglyBiased", "stemWord", "absoluteWords", "allNone", "onlyComplete", "nearDuplicate", "selfDisqualifying", "notParallel"];
   const cell = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
   const lines = [header.join(",")];
   for (const row of rows) {
     for (const exam of row.exams.length ? row.exams : ["unassigned"]) {
-      lines.push([exam, row.id, row.source, row.single, row.keyLetter, row.keyLength, row.lengthRank, row.ratio === null ? "" : row.ratio.toFixed(3), row.strictlyLongest, row.stronglyBiased, row.stemWord ?? "", row.absoluteWords.join(" "), row.allNone, row.onlyComplete, row.nearDuplicate].map(cell).join(","));
+      lines.push([exam, row.id, row.source, row.single, row.keyLetter, row.keyLength, row.lengthRank, row.ratio === null ? "" : row.ratio.toFixed(3), row.strictlyLongest, row.stronglyBiased, row.stemWord ?? "", row.absoluteWords.join(" "), row.allNone, row.onlyComplete, row.nearDuplicate, row.selfDisqualifying.map((hit) => hit.label).join(" "), row.notParallel].map(cell).join(","));
     }
   }
   return `${lines.join("\n")}\n`;
@@ -139,7 +139,7 @@ if (!check) {
   for (const exam of ["saa-c03", "clf-c02", "comptia"]) {
     const row = summary[exam];
     if (!row || ENFORCED_EXAMS.includes(exam)) continue;
-    console.log(`${exam} warn-only: key-is-longest ${pct(row.longestRate)} (target ≤ 35%), strongly biased ${pct(row.strongRate)} (target ≤ 10%).`);
+    console.log(`${exam} warn-only: key-is-longest ${pct(row.longestRate)} (target ≤ 35%), strongly biased ${pct(row.strongRate)} (target ≤ 10%), self-disqualifying descriptors ${row.selfDisqualifying}, choices not parallel ${row.notParallel}.`);
   }
   if (failures.length) {
     console.error(failures.join("\n"));
