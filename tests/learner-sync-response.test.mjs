@@ -1,6 +1,7 @@
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import { syncLearnerProgress } from "../lib/learner/sync.ts";
+import { enqueueLearnerSave } from "../lib/learner/sync-queue.ts";
 import { getProgressSnapshot, parseProgress, recordQuiz, saveProgress, subscribeProgress } from "../lib/progress.ts";
 
 const empty = () => parseProgress(null).progress;
@@ -138,6 +139,43 @@ test("a legitimate newer server review still applies over an older local review"
   assert.equal(getProgressSnapshot().schedules.reviewed.last_review, newer);
   assert.equal(getProgressSnapshot().knownCards.reviewed, true);
   assert.equal(getProgressSnapshot().unknownCards.reviewed, undefined);
+});
+
+test("a revision conflict is retried once and a second conflict is returned", async () => {
+  let calls = 0;
+  const exhausted = await syncLearnerProgress(async () => {
+    calls += 1;
+    return { ok: false, status: 409, data: { error: "retry" } };
+  }, acknowledge);
+  assert.equal(calls, 2);
+  assert.equal(exhausted.status, 409);
+  calls = 0;
+  const recovered = await syncLearnerProgress(async (local) => {
+    calls += 1;
+    if (calls === 1) return { ok: false, status: 409, data: { error: "retry" } };
+    return successful(local);
+  }, acknowledge);
+  assert.equal(calls, 2);
+  assert.equal(recovered.ok, true);
+});
+
+test("one sync stays in flight and only the latest waiting snapshot is sent", async () => {
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const sent = [];
+  const run = (label) => () => {
+    sent.push(label);
+    return sent.length === 1 ? gate.then(() => label) : Promise.resolve(label);
+  };
+  const first = enqueueLearnerSave(run("a"));
+  const second = enqueueLearnerSave(run("b"));
+  const third = enqueueLearnerSave(run("c"));
+  assert.deepEqual(sent, ["a"]);
+  release();
+  assert.equal(await first, "a");
+  assert.equal(await second, "c");
+  assert.equal(await third, "c");
+  assert.deepEqual(sent, ["a", "c"]);
 });
 
 test("rejected requests and transport failure leave current state intact; retry sends latest state", async () => {

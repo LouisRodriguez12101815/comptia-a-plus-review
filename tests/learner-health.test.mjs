@@ -1,6 +1,6 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
-import { createHealthGet } from "../lib/learner/health-route.ts";
+import { createHealthGet, createHealthWrite } from "../lib/learner/health-route.ts";
 import { HEALTH_PROBE_MAP, probeHealthMap } from "../lib/learner/health-twilio.ts";
 import { createDiagnosticsGet } from "../app/api/learner/diagnostics/route.ts";
 import { createReportGet } from "../app/api/learner/report/route.ts";
@@ -76,10 +76,10 @@ function fakeClient(fail = {}) {
   };
 }
 
-function call(path, id = ownerId) {
+function call(path, id = ownerId, method = "GET") {
   const headers = { origin: "https://example.test" };
   if (id) headers.cookie = `learner_session=${signSession({ id, last4: "0199", exp: Date.now() + 3_600_000 }, secret)}`;
-  return new Request(`https://example.test${path}`, { headers });
+  return new Request(`https://example.test${path}`, { method, headers });
 }
 
 before(() => {
@@ -155,15 +155,16 @@ test("each Twilio check can fail without leaking the provider message", async ()
   }
 });
 
-test("the write probe runs only with write=1 and stays off the learner map", async () => {
+test("the write probe runs only on POST /api/learner/health/write and stays off the learner map", async () => {
   const idle = fakeClient();
   const health = createHealthGet({ client: idle });
   await health(call("/api/learner/health"));
+  await health(call("/api/learner/health?write=1"));
   assert.equal(idle.calls.includes("probe"), false);
 
   const writing = fakeClient();
-  const probe = createHealthGet({ client: writing, now: () => 100 });
-  const body = await (await probe(call("/api/learner/health?write=1"))).json();
+  const probe = createHealthWrite({ client: writing, now: () => 100 });
+  const body = await (await probe(call("/api/learner/health/write", ownerId, "POST"))).json();
   const row = body.checks.find((item) => item.name === "sync write");
   assert.equal(row.ok, true);
   assert.deepEqual(row.steps.map((step) => step.name), ["write", "read", "delete"]);
@@ -174,7 +175,7 @@ test("the write probe runs only with write=1 and stays off the learner map", asy
   const broken = fakeClient();
   broken.probe = async () => [{ name: "write", ok: false, code: 20500, status: 500, hint: "The probe write failed." }];
   logs.length = 0;
-  const failed = await (await createHealthGet({ client: broken })(call("/api/learner/health?write=1"))).json();
+  const failed = await (await createHealthWrite({ client: broken })(call("/api/learner/health/write", ownerId, "POST"))).json();
   const write = failed.checks.find((item) => item.name === "sync write");
   assert.equal(write.ok, false);
   assert.equal(write.code, 20500);

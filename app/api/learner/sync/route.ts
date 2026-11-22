@@ -1,6 +1,6 @@
-import { RoomError } from "@/lib/game/room-service";
 import { json, limits, needConfig, sameOrigin, sessionOf } from "@/lib/learner/api";
 import { saveRemote } from "@/lib/learner/store";
+import { syncFailureResponse } from "@/lib/learner/sync-failure";
 import { twilioLearner } from "@/lib/learner/twilio";
 import { parseProgress } from "@/lib/progress";
 export const runtime = "nodejs";
@@ -26,9 +26,6 @@ export async function POST(request: Request) {
     const merged = await saveRemote(map, local);
     return json({ ok: true, progress: merged, savedAt: Date.now() });
   } catch (e) {
-    if (e instanceof RoomError && e.status === 423) return json({ error: "paused" }, 423);
-    if ((e as Error)?.message === "too_large") return json({ error: "too_large" }, 413);
-    console.error("learner/sync failed", (e as { status?: number })?.status ?? "unknown");
-    return json({ error: "unavailable" }, 502);
+    return syncFailureResponse(e);
   }
 }

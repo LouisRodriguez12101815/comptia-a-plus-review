@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DRILL_MISSED_CAP, mergeProgress } from '../lib/learner/merge.ts';
 import { learnerId, normalizePhone, readSession, signSession, cookieValue } from '../lib/learner/session.ts';
+import { syncFailureResponse } from '../lib/learner/sync-failure.ts';
+import { RoomError } from '../lib/game/room-service.ts';
 import { splitChunks } from '../lib/learner/store.ts';
 import { createSyncMapItemIdempotently, learnerConfig } from '../lib/learner/twilio.ts';
 
@@ -135,6 +137,19 @@ test('concurrent deterministic migration item creates are idempotent', async () 
   release();
   await Promise.all([first, second]);
   assert.deepEqual(item, { questionId: 'q-legacy-0' });
+});
+
+test('a sync revision conflict asks the client to retry instead of failing closed', async () => {
+  const conflict = await syncFailureResponse(new Error('progress_conflict'));
+  assert.equal(conflict.status, 409);
+  assert.deepEqual(await conflict.json(), { error: 'retry' });
+  const stale = await syncFailureResponse(Object.assign(new Error('stale'), { status: 412 }));
+  assert.equal(stale.status, 409);
+  const paused = await syncFailureResponse(new RoomError(423, 'paused'));
+  assert.equal(paused.status, 423);
+  const legacy = await syncFailureResponse(new Error('invalid_legacy_progress'));
+  assert.equal(legacy.status, 502);
+  assert.deepEqual(await legacy.json(), { error: 'unavailable' });
 });
 
 test('deterministic migration item creation does not hide unexpected provider errors', async () => {

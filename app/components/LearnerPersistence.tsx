@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { LEARNER_SESSION_EVENT } from "@/lib/learner/flush";
 import { bindLearnerPersistence } from "@/lib/learner/persistence";
 import { syncLearnerProgress } from "@/lib/learner/sync";
+import { enqueueLearnerSave } from "@/lib/learner/sync-queue";
 import { getProgressSnapshot, subscribeProgress, type Progress } from "@/lib/progress";
 
 async function postSync(local: Progress, keepalive: boolean) {
@@ -35,12 +36,13 @@ export function LearnerPersistence() {
         const data = (await res.json()) as { configured?: boolean; signedIn?: boolean };
         if (cancelled || !data.configured || !data.signedIn) return;
         const save = (mode: "debounced" | "now") => {
-          void syncLearnerProgress(
+          void enqueueLearnerSave(() => syncLearnerProgress(
             (local) => postSync(local, mode === "now"),
             (serialized) => { lastSynced.current = serialized; },
           ).then((result) => {
             if (result.ok) window.dispatchEvent(new CustomEvent("learner-saved", { detail: result.data.savedAt }));
-          });
+            return result;
+          }));
         };
         unbind = bindLearnerPersistence({
           signedIn: true,

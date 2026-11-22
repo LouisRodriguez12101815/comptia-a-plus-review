@@ -78,7 +78,7 @@ export function OwnerReport() {
 
   const loadHealth = useCallback(async (write = false) => {
     try {
-      const res = await fetch(`/api/learner/health${write ? "?write=1" : ""}`, { cache: "no-store" });
+      const res = await fetch(write ? "/api/learner/health/write" : "/api/learner/health", { method: write ? "POST" : "GET", cache: "no-store" });
       const data = (await res.json().catch(() => ({}))) as { checks?: HealthRow[]; error?: string };
       if (data.error === "signed_out" || res.status === 401) { setPhase("out"); setChecks(null); return; }
       if (data.checks) { setChecks(data.checks); setHealthError(""); return; }

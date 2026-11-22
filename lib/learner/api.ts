@@ -8,14 +8,34 @@ export const json = (body: unknown, status = 200, headers: Record<string, string
 export const ipOf = (request: Request) => (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
 export const isSecure = (request: Request) => (request.headers.get("x-forwarded-proto") ?? new URL(request.url).protocol.replace(":", "")) === "https";
 
-/** Same-origin writes only. */
-export function sameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
+function siteOrigin(request: Request): string {
   const url = new URL(request.url);
   const host = request.headers.get("x-forwarded-host") ?? url.host;
   const proto = request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
-  return origin === `${proto}://${host}`;
+  return `${proto}://${host}`;
+}
+
+/**
+ * Browsers send Origin on POST and on cross-origin GET, but not on same-origin GET.
+ * A present Origin must match. Without it, Sec-Fetch-Site: same-origin is enough.
+ * Older browsers omit that header too: a GET may then use a matching Referer.
+ * POST never falls back to Referer.
+ */
+export function sameOrigin(request: Request): boolean {
+  const expected = siteOrigin(request);
+  const origin = request.headers.get("origin");
+  const site = request.headers.get("sec-fetch-site")?.toLowerCase() ?? "";
+  if (site && site !== "same-origin") return false;
+  if (origin) return origin === expected;
+  if (site === "same-origin") return true;
+  if (request.method !== "GET") return false;
+  const referer = request.headers.get("referer");
+  if (!referer) return false;
+  try {
+    return new URL(referer).origin === expected;
+  } catch {
+    return false;
+  }
 }
 
 // Per-instance limits, like /api/report. The daily spend latch and Twilio Verify's own limits back these up.
