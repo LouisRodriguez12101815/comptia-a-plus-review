@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateReport, issueBody, issueTitle, githubIssueUrl, quote, createRateLimiter } from '../lib/report/issue.ts';
+import { formatSectionDetails } from '../lib/report/details.ts';
 
 const good = { category: 'Factual error', page: '/notes/n10-tcpip', pageTitle: 'TCP/IP', item: 'SNMP uses TCP 161', claim: 'SNMP uses UDP 161 and 162 per N10-009 1.4.', source: 'N10-009 1.4', reporter: '' };
 
@@ -76,6 +77,38 @@ test('rate limiter allows max per window then resets', () => {
   assert.equal(allow('a', 20), false);
   assert.equal(allow('b', 20), true);
   assert.equal(allow('a', 2000), true);
+});
+
+test('attached report details keep the codes and drop SIDs, phone numbers, and secrets', () => {
+  const sid = `AC${'a'.repeat(32)}`;
+  const phone = '+13055550123';
+  const secret = 'secret-value-not-for-output';
+  const details = formatSectionDetails({
+    section: 'Study report',
+    status: 502,
+    error: 'unavailable',
+    reason: { call: `sync list ${sid} ${phone} ${secret}`, code: 20404, status: 404 },
+  });
+  const r = validateReport({
+    ...good,
+    page: '/account/report',
+    item: 'Error',
+    claim: 'Error shown on this page',
+    source: 'Error',
+    details: `${details}\n${sid} ${phone} ${secret}`,
+  });
+  assert.equal(r.ok, true);
+  const body = issueBody(r.report, 'https://site.example');
+  assert.match(body, /### Attached report details/);
+  assert.match(body, /Study report/);
+  assert.match(body, /error: unavailable/);
+  assert.match(body, /twilio: 20404/);
+  assert.match(body, /http: 404/);
+  assert.equal(body.includes(sid), false);
+  assert.equal(body.includes(phone), false);
+  assert.equal(body.includes('3055550123'), false);
+  assert.equal(body.includes(secret), false);
+  assert.equal(body.includes('secret-value'), false);
 });
 
 test('Class 10: every problem is collected, not just the first', () => {
