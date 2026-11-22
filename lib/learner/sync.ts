@@ -13,7 +13,10 @@ export async function syncLearnerProgress(
   acknowledge: (serializedProgress: string) => void,
 ): Promise<ProgressSyncResponse> {
   const local = getProgressSnapshot();
-  const response = await send(local);
+  let response = await send(local);
+  if (!response.ok && response.status === 409 && response.data.error === "retry") {
+    response = await send(getProgressSnapshot());
+  }
   if (!response.ok) return response;
   const remote = response.data.progress as Progress;
   // Only the returned snapshot is acknowledged; locally added work still needs syncing.

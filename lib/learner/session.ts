@@ -41,6 +41,7 @@ export function cookieValue(header: string | null, name: string): string | undef
   return undefined;
 }
 
+/** HttpOnly and SameSite=Lax. Secure is set only for HTTPS, which is how the live site issues it. */
 export function sessionCookie(token: string, secure: boolean): string {
   return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_DAYS * 86400}${secure ? "; Secure" : ""}`;
 }

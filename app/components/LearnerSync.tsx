@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LEARNER_SESSION_EVENT } from "@/lib/learner/flush";
 import { syncLearnerProgress } from "@/lib/learner/sync";
+import { enqueueLearnerSave } from "@/lib/learner/sync-queue";
 
 type Phase = "loading" | "hidden" | "out" | "code" | "in";
 const input = "w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 focus:border-teal-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400";
@@ -46,10 +47,10 @@ export function LearnerSync({ compact = false }: { compact?: boolean }) {
   }, [t]);
 
   const sync = useCallback(async (quiet = false) => {
-    const res = await syncLearnerProgress(
+    const res = await enqueueLearnerSave(() => syncLearnerProgress(
       (local) => post("sync", JSON.stringify(local)),
       (serialized) => { lastSynced.current = serialized; },
-    );
+    ));
     if (!res.ok) {
       if (res.status === 401) setPhase("out");
       if (!quiet || res.status === 401) setError(errorText(res.data, res.status));

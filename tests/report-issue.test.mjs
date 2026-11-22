@@ -111,6 +111,80 @@ test('attached report details keep the codes and drop SIDs, phone numbers, and s
   assert.equal(body.includes('secret-value'), false);
 });
 
+test('attached report details omit Twilio friendly names and keep the last four, counts, and dates', () => {
+  const account = 'Civic Path Lab';
+  const parent = 'Parent Holding Co';
+  const service = 'Outage Ops Sync';
+  const fullSid = `AC${'a'.repeat(28)}ab12`;
+  const details = formatSectionDetails({
+    section: 'Diagnostics',
+    status: 200,
+    sections: [{ call: 'account', ok: false, code: 20003, status: 401 }],
+    sidLast4: 'ab12',
+    usageStart: '2026-10-22T00:00:00.000Z',
+    usageEnd: '2026-11-21T00:00:00.000Z',
+    usage: [
+      { category: 'sync-storage', count: '3', usage: '12', price: '0.40' },
+      { category: account, count: '1', usage: '2', price: '0.10' },
+    ],
+    accountFriendlyName: account,
+    parentFriendlyName: parent,
+    syncServiceFriendlyName: service,
+  });
+  const health = formatSectionDetails({
+    section: 'Connection check',
+    status: 200,
+    checks: [{
+      name: 'account',
+      ok: false,
+      code: 20003,
+      status: 401,
+      friendlyName: account,
+      sidLast4: fullSid,
+      itemCount: 4,
+      dateUpdated: '2026-11-21T12:00:00.000Z',
+      quizAttempts: 2,
+      mockAttempts: 1,
+      memoryMisses: 3,
+      mistakeRows: 1,
+    }, {
+      name: 'sync service',
+      ok: true,
+      code: null,
+      status: null,
+      friendlyName: service,
+    }],
+  });
+  const r = validateReport({
+    ...good,
+    page: '/account/report',
+    item: 'Error',
+    claim: 'Error shown on this page',
+    source: 'Error',
+    details: `${details}\n\n${health}`,
+  });
+  assert.equal(r.ok, true);
+  const body = issueBody(r.report, 'https://site.example');
+  assert.match(body, /### Attached report details/);
+  assert.match(body, /Diagnostics/);
+  assert.match(body, /error: failed/);
+  assert.match(body, /call: account/);
+  assert.match(body, /twilio: 20003/);
+  assert.match(body, /http: 401/);
+  assert.match(body, /sid: ab12/);
+  assert.match(body, /usage start: 2026-10-22T00:00:00.000Z/);
+  assert.match(body, /usage end: 2026-11-21T00:00:00.000Z/);
+  assert.match(body, /sync-storage: count 3, usage 12, price 0.40/);
+  assert.match(body, /usage: count 1, usage 2, price 0.10/);
+  assert.match(body, /items: 4/);
+  assert.match(body, /quizzes: 2/);
+  assert.match(body, /updated: 2026-11-21T12:00:00.000Z/);
+  assert.equal(body.includes(account), false);
+  assert.equal(body.includes(parent), false);
+  assert.equal(body.includes(service), false);
+  assert.equal(body.includes(fullSid), false);
+});
+
 test('Class 10: every problem is collected, not just the first', () => {
   const r = validateReport({ ...good, category: 'Spam', item: 'x', claim: 'wrong' });
   assert.equal(r.ok, false);

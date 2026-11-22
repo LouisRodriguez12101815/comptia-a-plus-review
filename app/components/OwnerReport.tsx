@@ -103,7 +103,17 @@ export function OwnerReport() {
     try {
       const res = await fetch("/api/learner/diagnostics", { cache: "no-store" });
       const data = (await res.json().catch(() => ({}))) as PublicDiagnostics & SectionBody;
-      setDiagnosticsCopy(formatSectionDetails({ section: "Diagnostics", status: res.status, error: data.error, reason: data.reason, sections: res.ok ? data.sections : undefined }));
+      setDiagnosticsCopy(formatSectionDetails({
+        section: "Diagnostics",
+        status: res.status,
+        error: data.error,
+        reason: data.reason,
+        sections: res.ok ? data.sections : undefined,
+        sidLast4: data.accountSidLast4,
+        usageStart: data.usageStart,
+        usageEnd: data.usageEnd,
+        usage: data.usage,
+      }));
       if ("signedOut" in sectionResult(res.status, data)) { setPhase("out"); setDiagnostics(null); return; }
       if (!res.ok) { setDiagnostics(null); setDiagnosticsError(explain(res.status, data)); return; }
       setDiagnosticsError("");
@@ -117,7 +127,7 @@ export function OwnerReport() {
 
   const loadHealth = useCallback(async (write = false) => {
     try {
-      const res = await fetch(`/api/learner/health${write ? "?write=1" : ""}`, { cache: "no-store" });
+      const res = await fetch(write ? "/api/learner/health/write" : "/api/learner/health", { method: write ? "POST" : "GET", cache: "no-store" });
       const data = (await res.json().catch(() => ({}))) as { checks?: HealthRow[]; error?: string; reason?: SectionBody["reason"] };
       setHealthCopy(formatSectionDetails({ section: "Connection check", status: res.status, error: data.error, reason: data.reason, checks: data.checks }));
       if (data.error === "signed_out" || res.status === 401) { setPhase("out"); setChecks(null); return; }
