@@ -49,6 +49,13 @@ test("the checker still catches seeded mistakes", () => {
     assert.ok(checks.has("answer-pin"), "a valid-looking but wrong answer key should be caught");
     assert.ok(checks.has("computed"), "a wrong subnet worked example should be caught");
     assert.ok(checks.has("internal-id"), "an internal study-pair id in an SAA question should be caught");
+    saa.choices[saa.answer] = "Amazon Timestream for LiveAnalytics";
+    facts.facts.push({ id: "bad-liveanalytics", topics: ["aws-saa-cost-optimized"], statement: "Choose Timestream for LiveAnalytics for new sensor workloads" });
+    fs.writeFileSync(qPath, JSON.stringify(questions));
+    fs.writeFileSync(fPath, JSON.stringify(facts));
+    const live = run(dir, "--json");
+    const liveChecks = new Set(JSON.parse(live.stdout).findings.map((f) => f.check));
+    assert.ok(liveChecks.has("timestream-liveanalytics"), "a Timestream for LiveAnalytics recommendation should be caught");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

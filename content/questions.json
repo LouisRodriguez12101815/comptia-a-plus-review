@@ -50513,7 +50513,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Two years of order history already sit in Amazon S3 as Parquet. Hourly dashboards must use a columnar analytics database, must not connect to the OLTP database, and must not scan those files again on every query. The OLTP database is Amazon RDS for SQL Server and must keep serving transactions. Which service should run the dashboards?",
+    "prompt": "Two years of order history already sit in Amazon S3 as Parquet. Hourly dashboards must use a columnar analytics database, must not connect to the OLTP database, and must not scan those files again on every query. The OLTP database must keep serving transactions. Which service should run the dashboards?",
     "choices": [
       "Amazon Redshift for the hourly dashboards",
       "Amazon Athena for the hourly dashboards",
@@ -50521,7 +50521,7 @@
       "Aurora zero-ETL for the hourly dashboards"
     ],
     "answer": 0,
-    "explanation": "Amazon Redshift for the hourly dashboards — Correct. SAA-C03 task 4.3 moves wide historical aggregates to a columnar warehouse. Redshift loads the Parquet into that warehouse, so the dashboards do not connect to SQL Server and do not rescan the files for every hourly run. https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html\nAmazon Athena for the hourly dashboards — Incorrect. Athena federated query can read a relational source, including through a connector. That path still opens a connection to the OLTP database, which this requirement forbids. Querying the Parquet in place would also scan the files on each query. https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html\nAn RDS read replica for the hourly dashboards — Incorrect. A SQL Server read replica is still the relational engine. It does not query the Parquet in S3 and does not give the dashboards a columnar warehouse. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nAurora zero-ETL for the hourly dashboards — Incorrect. Aurora zero-ETL integration with Redshift replicates a supported source database into Redshift. RDS for SQL Server is not one of those sources, and this two-year history is already Parquet in S3. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html",
+    "explanation": "Amazon Redshift for the hourly dashboards — Correct. SAA-C03 task 4.3 moves wide historical aggregates to a columnar warehouse. Redshift loads the Parquet into that warehouse, so the dashboards do not connect to the OLTP database and do not rescan the files for every hourly run. https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html\nAmazon Athena for the hourly dashboards — Incorrect. Athena queries the Parquet in place in S3 and does not load it into a warehouse. Each hourly dashboard would scan those files again, which this requirement forbids. https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html\nAn RDS read replica for the hourly dashboards — Incorrect. An RDS read replica is still the relational OLTP engine. It does not query the Parquet in S3 and does not give the dashboards a columnar warehouse. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nAurora zero-ETL for the hourly dashboards — Incorrect. Zero-ETL keeps a replication path from the source database. The dashboards must not connect to the OLTP database, and this history is already Parquet in S3. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50531,16 +50531,16 @@
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
       "https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html",
-      "https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html",
+      "https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html",
       "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
       "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html"
     ],
     "format": "single",
     "services": [
       "Amazon S3",
-      "Amazon RDS",
       "Amazon Redshift",
       "Amazon Athena",
+      "Amazon RDS",
       "Amazon Aurora"
     ],
     "difficulty": "medium"
@@ -50551,15 +50551,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Sensors write one reading each second. Queries need built-in SQL time-window functions. Recent readings must stay in memory storage, and older readings must move to magnetic storage automatically. The application must not manage table partitions. A larger relational writer priced for peak ingest is not acceptable. Which database fits?",
+    "prompt": "A cart stores one item per customer id and does not join rows. Traffic is idle for most of each hour, then spikes for a few minutes to about 8,000 reads and writes per second. The spike size is not known in advance. Read and write capacity must not be billed during the idle minutes. Which database configuration fits?",
     "choices": [
-      "Amazon RDS for PostgreSQL for these readings",
-      "Amazon Timestream for LiveAnalytics",
-      "Amazon DynamoDB for these readings",
-      "Amazon OpenSearch Service for these readings"
+      "Amazon DynamoDB provisioned capacity with auto scaling for this cart",
+      "Amazon DynamoDB on-demand capacity for this cart",
+      "Amazon Aurora Serverless v2 for this cart",
+      "Amazon RDS provisioned instance for this cart"
     ],
     "answer": 1,
-    "explanation": "Amazon RDS for PostgreSQL for these readings — Incorrect. RDS for PostgreSQL keeps the readings on a relational writer. Peak ingest is what the team is refusing to pay for, and it does not move older readings from memory storage to magnetic storage. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html\nAmazon Timestream for LiveAnalytics — Correct. SAA-C03 task 4.3 matches this access pattern to a time-series database. Timestream for LiveAnalytics runs SQL, including time-window functions, and moves data from its memory store to its magnetic store on a retention schedule. https://docs.aws.amazon.com/timestream/latest/developerguide/storage.html\nAmazon DynamoDB for these readings — Incorrect. DynamoDB can store a timestamp in a sort key, but the application designs the partitions. Items do not move from a memory store to magnetic storage, and its API is not Timestream SQL time-window functions. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html\nAmazon OpenSearch Service for these readings — Incorrect. OpenSearch Service indexes documents for search. It is not the SQL time-window store with automatic memory-to-magnetic retention. https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+    "explanation": "Amazon DynamoDB provisioned capacity with auto scaling for this cart — Incorrect. Provisioned capacity is billed while the table is idle, and auto scaling adds units only after utilization rises. The spike size is also not known in advance. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html\nAmazon DynamoDB on-demand capacity for this cart — Correct. SAA-C03 task 4.3 uses on-demand when a key-value workload is idle most of the time and the spike size is unknown. On-demand bills the requests, not provisioned capacity during the idle minutes, and it reads one item by key. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html\nAmazon Aurora Serverless v2 for this cart — Incorrect. Aurora Serverless v2 needs a maximum capacity set before the workload. This spike size is not known in advance, so that ceiling cannot be chosen from the stated traffic. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html\nAmazon RDS provisioned instance for this cart — Incorrect. A provisioned RDS instance is billed for the hours it runs, including the idle minutes, and its size has to be chosen before the unknown spike. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50568,17 +50568,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html",
-      "https://docs.aws.amazon.com/timestream/latest/developerguide/storage.html",
-      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html",
-      "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html"
     ],
     "format": "single",
     "services": [
-      "Amazon RDS",
-      "Amazon Timestream",
       "Amazon DynamoDB",
-      "Amazon OpenSearch Service"
+      "Amazon Aurora",
+      "Amazon RDS"
     ],
     "difficulty": "medium"
   },
@@ -50658,7 +50657,7 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A logger writes about 20 million records a day to Amazon S3. Each record is about 2 KB. The request line, not the gigabyte price, is most of the bill. Readers never fetch one record by its own object key. Which change addresses that request line?",
+    "prompt": "A logger writes about 20 million records a day to Amazon S3. Each record is about 2 KB. The request line, not the gigabyte price, is most of the bill. Readers never fetch one record by its own object key. The records must remain available after one Availability Zone is lost. Which change addresses that request line?",
     "choices": [
       "An application buffer ahead of S3 PutObject",
       "Write each record to S3 Express One Zone",
@@ -50666,7 +50665,7 @@
       "Send each record with its own S3 multipart upload"
     ],
     "answer": 0,
-    "explanation": "An application buffer ahead of S3 PutObject — Correct. SAA-C03 task 4.1 compares a batch of uploads with one request per object when request charges dominate. The buffer packs many records into one PutObject, so the request count falls. Individual object keys are not required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html\nWrite each record to S3 Express One Zone — Incorrect. S3 Express One Zone changes latency and the request price of a directory bucket. It still takes a request for each object, so 20 million records a day keep the request line. https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-one-zone.html\nApply S3 Intelligent-Tiering to each record — Incorrect. Intelligent-Tiering monitors eligible objects and does not monitor objects smaller than 128 KB. It does not reduce the number of PutObject calls, and these 2 KB records stay in the Frequent Access tier. https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html\nSend each record with its own S3 multipart upload — Incorrect. Multipart upload is for large objects, with a 5 MB minimum part size except for the last part. Using it for each 2 KB record adds upload overhead and does not cut the object count. https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html",
+    "explanation": "An application buffer ahead of S3 PutObject — Correct. SAA-C03 task 4.1 compares a batch of uploads with one request per object when request charges dominate. The buffer packs many records into one PutObject, so the request count falls. Individual object keys are not required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html\nWrite each record to S3 Express One Zone — Incorrect. S3 Express One Zone keeps objects in one Availability Zone, so the loss of that zone takes the records with it. It also still takes a request for each object. https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-one-zone.html\nApply S3 Intelligent-Tiering to each record — Incorrect. Intelligent-Tiering monitors eligible objects and does not monitor objects smaller than 128 KB. It does not reduce the number of PutObject calls, and these 2 KB records stay in the Frequent Access tier. https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html\nSend each record with its own S3 multipart upload — Incorrect. Multipart upload is for large objects, with a 5 MB minimum part size except for the last part. Using it for each 2 KB record adds upload overhead and does not cut the object count. https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [

@@ -332,6 +332,29 @@ for (const record of [...questions, ...highYieldQuestions, ...qualifierTwins]) {
   }
 }
 
+/* ---------- do not recommend Timestream for LiveAnalytics ---------- */
+const LIVE_ANALYTICS = /Timestream for LiveAnalytics/i;
+const LIVE_ANALYTICS_NEGATED = /\b(?:not|never|avoid|without|instead of|rather than|do not|don't|closed to|no longer)\b[^.?\n]{0,80}Timestream for LiveAnalytics/i;
+const recommendsLiveAnalytics = (text) => typeof text === "string" && LIVE_ANALYTICS.test(text) && !LIVE_ANALYTICS_NEGATED.test(text);
+for (const record of [...questions, ...highYieldQuestions, ...qualifierTwins]) {
+  if (!record.examCodes?.includes("saa-c03") || !recommendsLiveAnalytics(record.choices?.[record.answer])) continue;
+  add("error", "timestream-liveanalytics", `question:${record.id}`, "SAA answer key recommends Timestream for LiveAnalytics, which closed to new customers on 2025-06-20");
+}
+for (const [id, text] of Object.entries(factsFile.answerKeys ?? {})) {
+  if (!recommendsLiveAnalytics(text)) continue;
+  add("error", "timestream-liveanalytics", `answerKeys:${id}`, "pinned SAA answer key recommends Timestream for LiveAnalytics");
+}
+for (const fact of factsFile.facts ?? []) {
+  if (!recommendsLiveAnalytics(fact.statement)) continue;
+  add("error", "timestream-liveanalytics", `fact:${fact.id}`, "fact recommends Timestream for LiveAnalytics");
+}
+for (const record of readJson("content/saa-service-facts.json").records ?? []) {
+  for (const text of [record.definition, record.notFor, ...(record.useWhen ?? []), record.lightning?.correction]) {
+    if (!recommendsLiveAnalytics(text)) continue;
+    add("error", "timestream-liveanalytics", `service-fact:${record.id}`, "service fact recommends Timestream for LiveAnalytics");
+  }
+}
+
 /* ---------- report ---------- */
 const errors = findings.filter((f) => f.level === "error");
 const warns = findings.filter((f) => f.level === "warn");
