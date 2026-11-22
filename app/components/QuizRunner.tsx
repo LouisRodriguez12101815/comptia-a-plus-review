@@ -11,7 +11,7 @@ import { getFlashcards, getQuestions, getTopic, getTopics, questions as allQuest
 import { conceptVideos } from "@/lib/concept-videos";
 import { assessmentVersion, shuffleChoiceOrder } from "@/lib/exam-test.mjs";
 import { qualifierTwins } from "@/content/saa-qualifier-twins";
-import { getProgressSnapshot, questionHistory, rateCard, recordQuiz, setMissReason } from "@/lib/progress";
+import { answerOffsets, getProgressSnapshot, questionHistory, rateCard, recordQuiz, setMissReason } from "@/lib/progress";
 import { isLuckyGuess, orderedTwinIds, rotatePracticeIds, saaRotationHistory, type AttemptMode, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
 import { dueReviews } from "@/lib/weakness";
 import { answerLabel, correctIndices, isCorrectPick, mapAuthoredAnswersToDisplayed } from "@/lib/quiz-feedback";
@@ -47,6 +47,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
   const [secondsByQuestion, setSecondsByQuestion] = useState<Record<string, number>>({});
   const [sittingId, setSittingId] = useState("");
   const startedAt = useRef(0);
+  const answeredAt = useRef<Record<string, number>>({});
 
   const idKey = questionIds ? questionIds.join("|") : null;
   const pool = useMemo(() => {
@@ -106,6 +107,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
     displayedOrders.current = {};
     const cap = attemptMode === "twin" ? order.length : Math.min(15, order.length);
     startedAt.current = Date.now();
+    answeredAt.current = {};
     setSittingId(crypto.randomUUID());
     setConfidence({});
     setMissReasons({});
@@ -163,6 +165,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
         missCount: correctAnswer ? undefined : priorMisses + 1,
       });
     }
+    answeredAt.current[current.id] = Date.now();
     setSecondsByQuestion((prev) => ({ ...prev, [current.id]: (prev[current.id] ?? 0) + Math.max(0, Math.round((Date.now() - startedAt.current) / 1000)) }));
     setAnswers({ ...answers, [current.id]: answer });
   }
@@ -178,6 +181,8 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
       : undefined;
     const luckyIds = quiz.filter((question) => isLuckyGuess(confidence[question.id], isCorrectPick(question, answers[question.id]))).map((question) => question.id);
     const saaSitting = exam === "saa-c03" || attemptMode === "twin" || attemptMode === "topic";
+    const started = startedAt.current;
+    const offsets = started > 0 ? answerOffsets(started, answeredAt.current, Date.now()) : undefined;
     recordQuiz({
       exam: saaSitting ? "saa-c03" : exam,
       bankVersion,
@@ -193,6 +198,8 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
       guessedIds: Object.keys(confidence).filter((id) => confidence[id] === "guess"),
       missReasons,
       secondsByQuestion,
+      ...(started > 0 ? { startedAt: started } : {}),
+      ...(offsets ? { answeredAt: offsets } : {}),
       sittingId,
       mode: attemptMode,
       wrongChoices: wrongChoicesForQuiz(quiz, answers, displayedOrders.current),

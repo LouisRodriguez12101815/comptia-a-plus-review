@@ -2,6 +2,9 @@ import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import { saveRemote } from "../lib/learner/store.ts";
 import { syncLearnerProgress } from "../lib/learner/sync.ts";
+import { mergeProgress } from "../lib/learner/merge.ts";
+import { makeSnapshot } from "../lib/learner/progress-snapshot.mjs";
+import { summarizeItems } from "../lib/learner/owner-report.ts";
 import { LEARNER_SAVE_DELAY_MS, bindLearnerPersistence } from "../lib/learner/persistence.ts";
 import { localDayKey, saaMistakeLog } from "../lib/saa-mistake-log.ts";
 import { getProgressSnapshot, parseProgress, recordMatchMiss, recordMock, recordQuiz, saveProgress, subscribeProgress } from "../lib/progress.ts";
@@ -146,4 +149,104 @@ test("finish flushes immediately, other edits wait 8 seconds, and pagehide flush
   assert.deepEqual(signedOutCalls, []);
   unbind();
   unbindEdit();
+});
+
+const captureContent = {
+  questions: [{ id: "q-1", topicId: "t1", prompt: "Which control stays?", choices: ["one", "two"], answer: 0, explanation: "Because.", examCodes: ["saa-c03"], objectiveIds: { "saa-c03": ["1.1"] } }],
+  topics: [{ id: "t1", title: "Storage", examCodes: ["saa-c03"] }],
+  objectives: { exams: [{ code: "saa-c03", name: "Solutions Architect", domains: [{ id: "1", title: "Design secure architectures", objectives: [{ id: "1.1", title: "Design secure access" }] }] }] },
+  concepts: { concepts: [] },
+};
+
+test("timestamps survive local save, the sync payload, mergeProgress, and the report", async (t) => {
+  t.mock.method(Date, "now", () => at);
+  const started = at - 60_000;
+  recordQuiz({
+    topicId: "quiz-1", exam: "saa-c03", correct: 0, total: 1, questionIds: ["q-1"], missedIds: ["q-1"],
+    startedAt: started, answeredAt: { "q-1": 15_000 },
+  });
+  recordMock({
+    exam: "saa-c03", full: false, correct: 1, total: 1, percent: 100, domains: [{ id: "1", title: "Design", correct: 1, total: 1 }],
+    multiCorrect: 0, multiTotal: 0, missedIds: [], questionIds: ["q-1"], correctIds: ["q-1"],
+    startedAt: started, answeredAt: { "q-1": 20_000 },
+  });
+  const saved = parseProgress(JSON.stringify(getProgressSnapshot()));
+  assert.deepEqual(saved.problems, []);
+  assert.equal(saved.progress.quizAttempts[0].startedAt, started);
+  assert.deepEqual(saved.progress.quizAttempts[0].answeredAt, { "q-1": 15_000 });
+  assert.equal(saved.progress.quizAttempts[0].at, at);
+  assert.equal(saved.progress.mockAttempts[0].startedAt, started);
+  assert.deepEqual(saved.progress.mockAttempts[0].answeredAt, { "q-1": 20_000 });
+
+  const remoteOnly = parseProgress(JSON.stringify({
+    ...empty(),
+    quizAttempts: [{ topicId: "remote", exam: "saa-c03", correct: 1, total: 1, questionIds: ["q-1"], missedIds: [], startedAt: started, answeredAt: { "q-1": 5_000 }, at: at - 1 }],
+  })).progress;
+  const merged = mergeProgress(empty(), remoteOnly);
+  assert.equal(merged.quizAttempts[0].startedAt, started);
+  assert.deepEqual(merged.quizAttempts[0].answeredAt, { "q-1": 5_000 });
+  const localWins = mergeProgress(saved.progress, {
+    ...remoteOnly,
+    quizAttempts: [{ ...saved.progress.quizAttempts[0], startedAt: started - 10, answeredAt: { "q-1": 1 } }],
+  });
+  assert.equal(localWins.quizAttempts.find((item) => item.topicId === "quiz-1").startedAt, started);
+  assert.deepEqual(localWins.quizAttempts.find((item) => item.topicId === "quiz-1").answeredAt, { "q-1": 15_000 });
+
+  const raw = JSON.stringify(saved.progress);
+  const snap = makeSnapshot(raw);
+  assert.ok(snap.chunks.length <= 40);
+  const syncedAt = "2026-11-21T03:30:12.000Z";
+  const summary = summarizeItems([
+    { key: "progress", data: { s: raw }, dateUpdated: syncedAt },
+  ], captureContent, { exam: "saa-c03", days: 30, asOf: at + 86_400_000 });
+  const quiz = summary.captures.find((row) => row.kind === "quiz");
+  const mock = summary.captures.find((row) => row.kind === "mock");
+  assert.equal(quiz.startedAt, started);
+  assert.equal(quiz.finishedAt, at);
+  assert.equal(quiz.syncedAt, syncedAt);
+  assert.equal(quiz.delayMs, 12_000);
+  assert.equal(mock.delayMs, 12_000);
+  assert.match(summary.markdown, /delay 12s/);
+  assert.match(summary.markdown, /synced 2026-11-21T03:30:12.000Z/);
+
+  const legacy = summarizeItems([{
+    key: "progress",
+    data: { s: JSON.stringify({ quizAttempts: [{ topicId: "old", exam: "saa-c03", correct: 1, total: 1, questionIds: ["q-1"], missedIds: [], at }], mockAttempts: [] }) },
+  }], captureContent, { exam: "saa-c03", days: 30, asOf: at + 86_400_000 });
+  assert.equal(legacy.captures[0].startedAt, null);
+  assert.equal(legacy.captures[0].finishedAt, at);
+  assert.equal(legacy.captures[0].syncedAt, null);
+  assert.match(legacy.markdown, /start not recorded/);
+  assert.match(legacy.markdown, /not synced yet/);
+});
+
+test("answer offsets fit the existing snapshot cap and stay smaller than absolute times", () => {
+  const questions = Array.from({ length: 65 }, (_, index) => `q-${index}`);
+  const startedAt = 1_700_000_000_000;
+  const offsets = Object.fromEntries(questions.map((id, index) => [id, index * 1000]));
+  const absolute = Object.fromEntries(questions.map((id, index) => [id, startedAt + index * 1000]));
+  const attempt = (at) => ({
+    topicId: `t-${at}`, exam: "saa-c03", correct: 1, total: 65, questionIds: questions, missedIds: questions.slice(1),
+    startedAt, answeredAt: offsets, at,
+  });
+  const mock = (at) => ({
+    exam: "saa-c03", full: true, correct: 1, total: 65, percent: 2, domains: [{ id: "1", title: "Design", correct: 1, total: 65 }],
+    multiCorrect: 0, multiTotal: 0, questionIds: questions, missedIds: questions.slice(1), correctIds: ["q-0"],
+    startedAt, answeredAt: offsets, at,
+  });
+  const progress = {
+    ...empty(),
+    quizAttempts: Array.from({ length: 40 }, (_, index) => attempt(startedAt + 120_000 + index)),
+    mockAttempts: Array.from({ length: 30 }, (_, index) => mock(startedAt + 200_000 + index)),
+  };
+  const raw = JSON.stringify(progress);
+  const withAbsolute = JSON.stringify({
+    ...progress,
+    quizAttempts: progress.quizAttempts.map((item) => ({ ...item, answeredAt: absolute })),
+    mockAttempts: progress.mockAttempts.map((item) => ({ ...item, answeredAt: absolute })),
+  });
+  assert.ok(raw.length < withAbsolute.length);
+  const snap = makeSnapshot(raw);
+  assert.ok(snap.chunks.length >= 1);
+  assert.ok(snap.chunks.length <= 40);
 });

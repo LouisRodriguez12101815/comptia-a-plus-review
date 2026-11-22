@@ -89,8 +89,9 @@ export function SaaMemoryGame({ game, board = "all" }: { game: GameId; board?: s
       questionIds: ids,
       missedIds: ids,
       mode: "drill",
+      startedAt,
     });
-  }, [round, game]);
+  }, [round, game, startedAt]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

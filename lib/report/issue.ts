@@ -3,6 +3,8 @@
  * Pure functions so tests can run them without a server (see tests/report-issue.test.mjs).
  */
 
+import { scrubSecrets } from "@/lib/report/details";
+
 export const DEFAULT_REPO = "LouisRodriguez12101815/comptia-a-plus-review";
 export const ISSUE_TEMPLATE = "content-dispute.yml";
 export const DISPUTE_LABEL = "content-dispute";
@@ -35,9 +37,11 @@ export type DisputeReport = {
   source: string;
   reporter: string;
   question?: QuestionReport;
+  /** Copy-details text from the activity report. Scrubbed before it is stored. */
+  details?: string;
 };
 
-export const limits = { page: 300, pageTitle: 200, item: 600, claim: 4000, source: 1000, reporter: 80 } as const;
+export const limits = { page: 300, pageTitle: 200, item: 600, claim: 4000, source: 1000, reporter: 80, details: 2000 } as const;
 
 export type ValidationResult = { ok: true; report: DisputeReport } | { ok: false; error: string; errors: string[] };
 
@@ -92,6 +96,7 @@ export function validateReport(input: unknown): ValidationResult {
       source: clean(raw.source, limits.source),
       reporter: clean(raw.reporter, limits.reporter),
       question: cleanQuestion(raw.question),
+      details: scrubSecrets(clean(raw.details, limits.details)) || undefined,
     },
   };
 }
@@ -134,6 +139,13 @@ export function issueBody(r: DisputeReport, siteOrigin: string): string {
     "### Source or reference",
     quote(r.source),
     "",
+    ...(r.details
+      ? [
+          "### Attached report details",
+          quote(r.details),
+          "",
+        ]
+      : []),
     ...(r.question
       ? [
           "### Question record",

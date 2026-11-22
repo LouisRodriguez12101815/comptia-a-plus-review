@@ -29,6 +29,10 @@ export type QuizAttempt = {
   /** Why a wrong answer was missed. Absent when the learner skipped the tap. */
   missReasons?: Record<string, string>;
   secondsByQuestion?: Record<string, number>;
+  /** When the sitting started, in milliseconds. Absent on records saved before this field. */
+  startedAt?: number;
+  /** Milliseconds after startedAt when each question was answered. Offsets stay smaller than absolute times in the sync payload. */
+  answeredAt?: Record<string, number>;
   sittingId?: string;
   /** quiz, topic, or twin. Timed tests also write a mock row. */
   mode?: string;
@@ -66,6 +70,10 @@ export type MockAttempt = {
   confidenceByQuestion?: Record<string, "sure" | "unsure" | "guess">;
   missReasons?: Record<string, string>;
   secondsByQuestion?: Record<string, number>;
+  /** When the sitting started, in milliseconds. Absent on records saved before this field. */
+  startedAt?: number;
+  /** Milliseconds after startedAt when each question was answered. */
+  answeredAt?: Record<string, number>;
   sittingId?: string;
   /** mock or mini. */
   mode?: string;
@@ -219,6 +227,43 @@ function optionalSeconds(value: unknown): { value?: Record<string, number>; bad:
   return { value: Object.keys(kept).length ? kept : undefined, bad };
 }
 
+const ANSWER_OFFSET_LIMIT = 7 * 86_400_000;
+
+/** Store answer times as milliseconds after the start. Absolute timestamps are converted when they fall inside the sitting. */
+export function answerOffsets(startedAt: number, marks: Record<string, number>, finishedAt: number): Record<string, number> | undefined {
+  const span = finishedAt - startedAt;
+  if (!Number.isInteger(startedAt) || startedAt < 0 || span < 0) return undefined;
+  const kept: Record<string, number> = {};
+  for (const [id, mark] of Object.entries(marks)) {
+    if (!id || typeof mark !== "number" || !Number.isFinite(mark)) continue;
+    const offset = mark >= startedAt ? Math.round(mark - startedAt) : Math.round(mark);
+    if (Number.isInteger(offset) && offset >= 0 && offset <= span && offset <= ANSWER_OFFSET_LIMIT) kept[id] = offset;
+  }
+  return Object.keys(kept).length ? kept : undefined;
+}
+
+function optionalStarted(value: unknown, finished: number): { value?: number; bad: boolean } {
+  if (value === undefined) return { bad: false };
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > finished) return { bad: true };
+  return { value, bad: false };
+}
+
+function optionalAnsweredAt(value: unknown, startedAt: number | undefined, finished: number): { value?: Record<string, number>; bad: boolean } {
+  if (value === undefined) return { bad: false };
+  if (!isRecord(value) || startedAt === undefined) return { bad: true };
+  const span = finished - startedAt;
+  const kept: Record<string, number> = {};
+  let bad = false;
+  for (const [id, mark] of Object.entries(value)) {
+    if (!id || typeof mark !== "number" || !Number.isFinite(mark)) { bad = true; continue; }
+    const offset = mark >= 1_000_000_000_000 ? Math.round(mark - startedAt) : Math.round(mark);
+    if (!Number.isInteger(offset) || offset < 0 || offset > span || offset > ANSWER_OFFSET_LIMIT) { bad = true; continue; }
+    kept[id] = offset;
+  }
+  if (Object.keys(kept).length !== Object.keys(value).length) bad = true;
+  return { value: Object.keys(kept).length ? kept : undefined, bad };
+}
+
 function applyAttemptExtras<T extends QuizAttempt | MockAttempt>(attempt: T): { attempt: T; repaired: boolean } {
   const input = attempt as T & Record<string, unknown>;
   let repaired = false;
@@ -229,7 +274,9 @@ function applyAttemptExtras<T extends QuizAttempt | MockAttempt>(attempt: T): { 
   const confidence = optionalConfidence(input.confidenceByQuestion);
   const reasons = optionalReasons(input.missReasons);
   const seconds = optionalSeconds(input.secondsByQuestion);
-  repaired = lucky.bad || sure.bad || unsure.bad || guessed.bad || confidence.bad || reasons.bad || seconds.bad;
+  const started = optionalStarted(input.startedAt, attempt.at);
+  const answers = optionalAnsweredAt(input.answeredAt, started.value, attempt.at);
+  repaired = lucky.bad || sure.bad || unsure.bad || guessed.bad || confidence.bad || reasons.bad || seconds.bad || started.bad || answers.bad;
   if (input.sittingId !== undefined && typeof input.sittingId !== "string") repaired = true;
   if (input.mode !== undefined && (typeof input.mode !== "string" || !ATTEMPT_MODES.has(input.mode))) repaired = true;
   const next = { ...attempt };
@@ -247,6 +294,10 @@ function applyAttemptExtras<T extends QuizAttempt | MockAttempt>(attempt: T): { 
   else delete next.missReasons;
   if (seconds.value) next.secondsByQuestion = seconds.value;
   else delete next.secondsByQuestion;
+  if (started.value !== undefined) next.startedAt = started.value;
+  else delete next.startedAt;
+  if (answers.value) next.answeredAt = answers.value;
+  else delete next.answeredAt;
   if (typeof input.sittingId === "string") next.sittingId = input.sittingId;
   else delete next.sittingId;
   if (typeof input.mode === "string" && ATTEMPT_MODES.has(input.mode)) next.mode = input.mode;

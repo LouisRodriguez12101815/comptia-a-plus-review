@@ -14,7 +14,7 @@ import {
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import { cardsForQuestion } from "@/lib/study/memory";
-import { getProgressSnapshot, getServerProgressSnapshot, rateCard, recordMock, recordQuiz, setMissReason, subscribeProgress, type MockAttempt } from "@/lib/progress";
+import { answerOffsets, getProgressSnapshot, getServerProgressSnapshot, rateCard, recordMock, recordQuiz, setMissReason, subscribeProgress, type MockAttempt } from "@/lib/progress";
 import { isLuckyGuess, isSlowAnswer, saaRotationHistory, type ConfidenceLevel, type MissReason } from "@/lib/saa-test-skills";
 import { dueReviews, objectiveStats, weakestObjectives } from "@/lib/weakness";
 import { evaluateReadiness } from "@/lib/readiness";
@@ -204,6 +204,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const deadline = useRef(0);
   const completed = useRef(false);
   const startedAt = useRef(0);
+  const answeredAt = useRef<Record<string, number>>({});
   const selectedRef = useRef<number[]>([]);
   const responsesRef = useRef<Record<string, TestResponse>>({});
   const visited = useRef(new Set<string>());
@@ -277,6 +278,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     setScoredPicks(finalPicks);
     const bankVersion = assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id]));
     const visitedIds = finalPicks.map((pick) => pick.questionId).filter(id => visited.current.has(id));
+    const started = startedAt.current;
+    const offsets = started > 0 ? answerOffsets(started, answeredAt.current, Date.now()) : undefined;
+    const times = started > 0 ? { startedAt: started, ...(offsets ? { answeredAt: offsets } : {}) } : {};
     // The mock is saved first so its seen-share does not count the quiz row this sitting also writes.
     const next = recordMock({
       exam,
@@ -306,6 +310,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         const answer = finalResponses[id]?.answer;
         return typeof answer === "number" && !Array.isArray(questionsById[id].answer) ? [[id, answer]] : [];
       })),
+      ...times,
     });
     recordQuiz({
       exam,
@@ -315,6 +320,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       total: finalPicks.length,
       questionIds: visitedIds,
       missedIds: missed,
+      ...times,
     });
     if (exam === "saa-c03") {
       const lucky = finalPicks.map((p) => p.questionId).filter((id) => isLuckyGuess(confidenceRef.current[id], isCorrect(questionsById[id], finalResponses[id]?.answer)));
@@ -381,6 +387,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       const answer = next.length === 0 ? undefined : multi ? next : next[0];
       const updated = { ...responsesRef.current, [current.id]: { answer, timedOut: false, seconds: responsesRef.current[current.id]?.seconds ?? 0 } };
       responsesRef.current = updated;
+      if (answer === undefined) delete answeredAt.current[current.id];
+      else answeredAt.current[current.id] = Date.now();
       setResponses(updated);
     }
   }, [current, choose, feedbackVisible, immediatePractice, multi]);
@@ -444,6 +452,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const timed = exam === "saa-c03" && lengthId === "mini" ? 40 * 60 : sessionDurationSeconds(exam, draft.length);
     beginQuestion(immediatePractice ? 0 : timed);
     responsesRef.current = {};
+    answeredAt.current = {};
     visited.current = new Set(draft.slice(0, 1).map(p => p.questionId));
     setOrders(Object.fromEntries(draft.map(p => [p.questionId, shuffleChoiceOrder(questionsById[p.questionId])])));
     setFlags([]);

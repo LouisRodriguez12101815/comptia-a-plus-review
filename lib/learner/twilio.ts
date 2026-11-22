@@ -85,13 +85,13 @@ export function twilioLearner(config: LearnerConfig, client = twilio(config.keyS
         try {
           page = await syncCall("documents.fetch", () => collection.page({ pageSize: 100 }), [404]);
         } catch (e) { if (status(e) === 404) return []; throw e; }
-        const items = page.instances.map((i) => ({ key: i.key, data: i.data }));
+        const items = page.instances.map((i) => ({ key: i.key, data: i.data, dateUpdated: i.dateUpdated ? new Date(i.dateUpdated).toISOString() : null }));
         // Orphan snapshots can outnumber retained telemetry. Read every page;
         // only an initially absent map is empty, never an interrupted listing.
         while (page.nextPageUrl) {
           const next = page.nextPageUrl;
           page = await syncCall("documents.fetch", () => collection.getPage(next));
-          items.push(...page.instances.map((i) => ({ key: i.key, data: i.data })));
+          items.push(...page.instances.map((i) => ({ key: i.key, data: i.data, dateUpdated: i.dateUpdated ? new Date(i.dateUpdated).toISOString() : null })));
         }
         return items;
       },
