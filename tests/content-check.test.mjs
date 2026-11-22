@@ -56,6 +56,16 @@ test("the checker still catches seeded mistakes", () => {
     const live = run(dir, "--json");
     const liveChecks = new Set(JSON.parse(live.stdout).findings.map((f) => f.check));
     assert.ok(liveChecks.has("timestream-liveanalytics"), "a Timestream for LiveAnalytics recommendation should be caught");
+    assert.ok(liveChecks.has("timestream-recommendation"), "Timestream without InfluxDB should be caught");
+    saa.choices[saa.answer] = "Amazon Timestream with a memory tier and a magnetic tier";
+    fs.writeFileSync(qPath, JSON.stringify(questions));
+    const tiers = run(dir, "--json");
+    const tierChecks = new Set(JSON.parse(tiers.stdout).findings.filter((finding) => finding.where === `question:${saa.id}`).map((finding) => finding.check));
+    assert.ok(tierChecks.has("timestream-recommendation"), "the q-saa-costbatch-010 Timestream wording should be caught");
+    saa.choices[saa.answer] = "Amazon Timestream for InfluxDB for this catalog";
+    fs.writeFileSync(qPath, JSON.stringify(questions));
+    const influx = JSON.parse(run(dir, "--json").stdout).findings.filter((finding) => finding.where === `question:${saa.id}` && finding.check === "timestream-recommendation");
+    assert.equal(influx.length, 0);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

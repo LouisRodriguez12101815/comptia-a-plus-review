@@ -50830,5 +50830,41 @@
       "Amazon FSx"
     ],
     "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-14",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An Amazon RDS for PostgreSQL catalog is the system of record. About 95 percent of its statements are SELECT queries that join products, prices, and inventory. Those reads can be a few seconds behind the writer. The writer stays one RDS for PostgreSQL instance, sized for its writes rather than for that read traffic. Which addition takes those SELECT queries?",
+    "choices": [
+      "An Amazon RDS Multi-AZ DB instance standby for the catalog queries",
+      "An Amazon RDS read replica for the catalog queries",
+      "An Amazon ElastiCache node for the catalog queries",
+      "An Amazon Aurora reader for the catalog queries"
+    ],
+    "answer": 1,
+    "explanation": "An Amazon RDS Multi-AZ DB instance standby for the catalog queries — Incorrect. A Multi-AZ DB instance standby is not a read endpoint. Those SELECT queries still run on the writer, so the writer stays sized for the read traffic. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html\nAn Amazon RDS read replica for the catalog queries — Correct. SAA-C03 task 4.3 sends the read traffic to a replica when the writer should stay sized for its writes. An RDS read replica accepts the SELECT joins, and asynchronous replication fits reads that can be a few seconds behind. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nAn Amazon ElastiCache node for the catalog queries — Incorrect. ElastiCache is an in-memory cache. It does not run these PostgreSQL joins against the catalog tables. https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html\nAn Amazon Aurora reader for the catalog queries — Incorrect. An Aurora reader belongs to an Aurora cluster. This writer has to stay one RDS for PostgreSQL instance. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+    ],
+    "format": "single",
+    "services": [
+      "Amazon RDS",
+      "Amazon ElastiCache",
+      "Amazon Aurora"
+    ],
+    "difficulty": "medium"
   }
 ]

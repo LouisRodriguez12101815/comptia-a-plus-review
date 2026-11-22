@@ -13,12 +13,16 @@ const audit = read("docs/saa-c03-question-bank-audit.json");
 const saa = questions.filter((question) => question.examCodes?.includes("saa-c03"));
 
 function assertSaaAuditCoverage(bank, reviewed) {
-  const selected = bank.filter((question) => question.examCodes?.includes("saa-c03"));
-  const ids = reviewed.questionMappings.map((row) => row.questionId);
+  const excluded = new Set((reviewed.exclusions ?? []).map((row) => row.questionId));
+  for (const row of reviewed.exclusions ?? []) {
+    if (!row.questionId || !row.reason || row.reason.length < 40) throw new Error(`${row.questionId}: exclusion reason missing`);
+  }
+  const selected = bank.filter((question) => question.examCodes?.includes("saa-c03") && !excluded.has(question.id));
+  const ids = reviewed.questionMappings.map((row) => row.questionId).filter((id) => !excluded.has(id));
   const idSet = new Set(ids);
   if (idSet.size !== ids.length) throw new Error("duplicate audit mappings");
   const missing = selected.filter((question) => !idSet.has(question.id)).map((question) => question.id);
-  if (reviewed.questionMappings.length !== selected.length || missing.length > 0) {
+  if (ids.length !== selected.length || missing.length > 0) {
     throw new Error(`SAA questions missing an audit mapping: ${missing.join(", ") || "count mismatch"}`);
   }
   for (const question of selected) {
@@ -159,13 +163,16 @@ test("SAA inventory stages are counted from the specified base and both explicit
   assert.equal(liveStage.commit, null);
   assert.deepEqual(liveStage.addedIds, [
     "q-saa-g1a-01", "q-saa-g1a-02", "q-saa-g1a-03", "q-saa-g1a-04", "q-saa-g1a-05", "q-saa-g1a-06",
-    "q-saa-g1a-07", "q-saa-g1a-08", "q-saa-g1a-09", "q-saa-g1a-10", "q-saa-g1a-11", "q-saa-g1a-12", "q-saa-g1a-13",
+    "q-saa-g1a-07", "q-saa-g1a-08", "q-saa-g1a-09", "q-saa-g1a-10", "q-saa-g1a-11",     "q-saa-g1a-12", "q-saa-g1a-13", "q-saa-g1a-14",
   ]);
-  assert.deepEqual(count(questions), { saaQuestionCount: 332, uniqueIdCount: 332, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
-  assert.equal(liveStage.byTask["4.3"], 20);
+  assert.deepEqual(count(questions), { saaQuestionCount: 333, uniqueIdCount: 333, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
+  assert.equal(liveStage.byTask["4.3"], 21);
+  assert.equal(liveStage.served.byTask["4.3"], 20);
+  assert.deepEqual(audit.exclusions, read("content/saa-audit-exclusions.json").exclusions);
+  assert.equal(servedQuestions.some((question) => question.id === "q-saa-costbatch-010"), false);
   assert.equal(liveStage.byTask["4.1"], 20);
   assert.equal(liveStage.byTask["3.1"], 20);
-  assert.equal(liveStage.formats.singleAnswer, 321);
+  assert.equal(liveStage.formats.singleAnswer, 322);
   assert.equal(audit.baseline.commit, baseCommit);
 });
 

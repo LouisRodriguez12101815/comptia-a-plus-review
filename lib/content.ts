@@ -4,6 +4,7 @@ import { serviceFactCards } from "@/lib/study/service-facts";
 import labsJson from "@/content/labs.json";
 import networkPlusTopicsJson from "@/content/topics-network-plus.json";
 import questionsJson from "@/content/questions.json";
+import auditExclusions from "@/content/saa-audit-exclusions.json";
 import topicsJson from "@/content/topics.json";
 import { examMatches } from "@/lib/exams";
 import { withDerivedSaaDomain } from "@/lib/saa-tags";
@@ -22,7 +23,10 @@ export const topics = [
   ...(networkPlusTopicsJson as Topic[]),
 ];
 export const flashcards = [...(flashcardsJson as Flashcard[]), ...(highYieldFill.cards as Flashcard[]), ...serviceFactCards()];
-export const questions = [...(questionsJson as Question[]), ...(highYieldFill.questions as Question[])].map(withDerivedSaaDomain);
+const excludedFromScoredPool = new Set(auditExclusions.exclusions.map((row) => row.questionId));
+export const questions = [...(questionsJson as Question[]), ...(highYieldFill.questions as Question[])]
+  .map(withDerivedSaaDomain)
+  .filter((question) => !excludedFromScoredPool.has(question.id));
 export const labs = labsJson as Lab[];
 
 export const conceptOrder: Concept[] = [

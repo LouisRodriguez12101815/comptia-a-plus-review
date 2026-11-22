@@ -1,5 +1,11 @@
 {
   "schemaVersion": 1,
+  "exclusions": [
+    {
+      "questionId": "q-saa-costbatch-010",
+      "reason": "Keys Amazon Timestream with a memory tier and a magnetic tier. That is Timestream for LiveAnalytics, which closed to new customers on 2025-06-20 and is not on the SAA-C03 v1.1 in-scope list."
+    }
+  ],
   "reviewDate": "2026-11-20",
   "reviewedCommitBeforeEdits": "1f7bed30009be12ecbc5bd4dca97c51d207aff6e",
   "officialScope": {
@@ -4590,6 +4596,17 @@
       "skillId": "3.1-S02",
       "skill": "Determining storage services that can scale to accommodate future needs",
       "primaryDecision": "Browsers fetch images by key, nothing is mounted, and nobody resizes a volume each quarter. Which storage service fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-14",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S03",
+      "skill": "Determining cost-effective AWS database services with appropriate use cases (for example, DynamoDB compared with Amazon RDS, serverless)",
+      "primaryDecision": "A PostgreSQL catalog stays one RDS writer sized for its writes. SELECT joins can be a few seconds behind. Which addition takes that read traffic?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     }
@@ -9666,16 +9683,17 @@
         "q-saa-g1a-10",
         "q-saa-g1a-11",
         "q-saa-g1a-12",
-        "q-saa-g1a-13"
+        "q-saa-g1a-13",
+        "q-saa-g1a-14"
       ],
-      "description": "Thirteen single-answer questions for thin tasks: task 4.3 from 12 to 20, task 4.1 from 16 to 20, and task 3.1 from 19 to 20. content/questions.json moves from 319 to 332. The served pool, including the high-yield fill, moves from 335 to 348. Earlier count stages stay unchanged.",
-      "saaQuestionCount": 332,
-      "uniqueIdCount": 332,
+      "description": "Fourteen single-answer questions for thin tasks. content/questions.json moves from 319 to 333. q-saa-costbatch-010 stays in the file and is listed in exclusions, so the scored pool, including the high-yield fill, stays at 348. Scored task 4.3 stays at 20. Earlier count stages stay unchanged.",
+      "saaQuestionCount": 333,
+      "uniqueIdCount": 333,
       "byDomain": {
         "1.0": 80,
         "2.0": 63,
         "3.0": 107,
-        "4.0": 82
+        "4.0": 83
       },
       "byTask": {
         "1.1": 27,
@@ -9690,11 +9708,11 @@
         "3.5": 21,
         "4.1": 20,
         "4.2": 21,
-        "4.3": 20,
+        "4.3": 21,
         "4.4": 21
       },
       "formats": {
-        "singleAnswer": 321,
+        "singleAnswer": 322,
         "multipleResponse": 11
       },
       "served": {
