@@ -50367,21 +50367,21 @@
     ],
     "difficulty": "medium"
   },
-  {
+      {
     "id": "q-saa-g1a-01",
     "topicId": "aws-saa-cost-optimized",
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A relational database must be restorable to a recent minute for two weeks. Stored recovery data is the charge that keeps growing. What should the team evaluate first?",
+    "prompt": "An Amazon RDS for PostgreSQL database must be restorable to any second during the past 14 days. Allocated database storage stays near 500 GB. The backup-storage charge is the line that keeps growing, and no recovery objective uses a second Region. Which configuration meets that restore window?",
     "choices": [
-      "Delete the recovery history and keep one manual copy from last year",
-      "Keep the two-week restore window and review what that history stores",
-      "Treat the failover copy as the recovery data and remove the other copies",
-      "Put the recovery files on the host disk and drop the managed copies"
+      "Amazon RDS automated backups",
+      "An Amazon RDS manual snapshot",
+      "RDS cross-Region automated backup replication",
+      "AWS Backup vault lock in compliance mode"
     ],
-    "answer": 1,
-    "explanation": "Keep the two-week restore window and review what that history stores. SAA-C03 task 4.3 prices backup retention against the recovery window the workload still needs. Deleting that history, or treating the failover copy as the backup, removes a restore path the requirement still uses.",
+    "answer": 0,
+    "explanation": "Amazon RDS automated backups — Correct. SAA-C03 task 4.3 keeps the retention that the restore window needs. Automated backups store the logs that restore the database to a second inside that window, and backup storage beyond allocated database storage is the charge to review. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html\nAn Amazon RDS manual snapshot — Incorrect. A manual snapshot is one restore point and stays until someone deletes it. It does not restore the database to an arbitrary second across the 14 days. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html\nRDS cross-Region automated backup replication — Incorrect. Cross-Region replication copies automated backups into another Region and adds backup storage there. This workload has no recovery objective in that Region. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html\nAWS Backup vault lock in compliance mode — Incorrect. A compliance-mode vault lock makes recovery points immutable until the lock retention ends. It does not create the second-by-second restore window. https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50390,10 +50390,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html"
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html",
+      "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon RDS",
+      "AWS Backup"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50402,15 +50408,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A second place holds a copy of database recovery data, but no recovery goal uses that place. The copy is the new charge. What fits the requirement?",
+    "prompt": "Amazon RDS automated backups already provide a 14-day point-in-time restore for this database. A further backup copy was turned on later, and no RPO or RTO uses that copy. The 14-day window must stay. Which change removes the extra backup-storage charge?",
     "choices": [
-      "Shorten the primary restore window below the stated requirement",
-      "Move the primary database onto a smaller host before checking the copy",
-      "Stop copying recovery data into the place that nobody restores from",
-      "Switch the database to a key-value store to avoid paying for the copy"
+      "Shorten automated backup retention to one day",
+      "Turn off RDS cross-Region automated backup replication",
+      "Delete automated backups and keep one manual snapshot",
+      "Turn on AWS Backup vault lock in compliance mode"
     ],
-    "answer": 2,
-    "explanation": "Stop copying recovery data into the place that nobody restores from. SAA-C03 task 4.3 treats an extra backup copy as spend that a recovery goal has to justify. Moving the primary host does not remove a copy that no plan will restore.",
+    "answer": 1,
+    "explanation": "Shorten automated backup retention to one day — Incorrect. One-day retention breaks the 14-day point-in-time window the application still requires. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html\nTurn off RDS cross-Region automated backup replication — Correct. SAA-C03 task 4.3 drops a backup copy that no recovery objective uses. Cross-Region automated backup replication is that extra copy, and the local 14-day automated backups remain. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html\nDelete automated backups and keep one manual snapshot — Incorrect. Removing automated backups leaves a single snapshot and ends point-in-time restore inside the 14 days. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html\nTurn on AWS Backup vault lock in compliance mode — Incorrect. Compliance-mode vault lock prevents deleting recovery points until its retention ends. It does not stop the extra copy or its storage charge. https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50419,10 +50425,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html"
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html",
+      "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon RDS",
+      "AWS Backup"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50431,15 +50443,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An application depends on features that exist in one relational engine and not in the cheaper engine on the price list. What should the team do?",
+    "prompt": "An orders application depends on PostgreSQL data types and foreign keys. It has one writer, it does not need extra readers, and the team wants the lower hourly price among engines that keep those PostgreSQL features. Which engine fits?",
     "choices": [
-      "Stay on the engine that already runs the features the application uses",
-      "Move to the cheaper engine and let those application features stop working",
-      "Replace the relational engine with an in-memory cache of recent rows",
-      "Replace the relational engine with a warehouse used for wide scans"
+      "Amazon RDS for MySQL",
+      "Amazon Aurora MySQL-Compatible Edition",
+      "Amazon RDS for PostgreSQL",
+      "Amazon Aurora PostgreSQL-Compatible Edition"
     ],
-    "answer": 0,
-    "explanation": "Stay on the engine that already runs the features the application uses. SAA-C03 task 4.3 says a lower instance price is not a reason to pick an incompatible engine. A cache or a warehouse does not keep those relational features.",
+    "answer": 2,
+    "explanation": "Amazon RDS for MySQL — Incorrect. RDS for MySQL does not provide the PostgreSQL data types this application already uses. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html\nAmazon Aurora MySQL-Compatible Edition — Incorrect. Aurora MySQL-Compatible Edition is a MySQL engine. It does not keep the PostgreSQL types. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMySQL.html\nAmazon RDS for PostgreSQL — Correct. SAA-C03 task 4.3 stays on the compatible engine. RDS for PostgreSQL keeps the types and foreign keys at a single-instance price, without Aurora storage or extra readers. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html\nAmazon Aurora PostgreSQL-Compatible Edition — Incorrect. Aurora PostgreSQL can run the types, but an Aurora cluster adds its own storage architecture and price. This workload has no extra readers and asks for the lower PostgreSQL-compatible price. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50448,10 +50460,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraMySQL.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon RDS",
+      "Amazon Aurora"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50460,15 +50478,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Both common open relational engines can run this application's ordinary statements. The team already operates one of them. The hourly price gap is small. What is the sensible pick?",
+    "prompt": "Ordinary joins and transactions run on both MySQL and PostgreSQL. On-call runbooks, parameter groups, and backups are for PostgreSQL. MySQL is about 5 percent cheaper per hour. The team will not buy a commercial database license and will not move to a different database storage architecture. Which engine should they run?",
     "choices": [
-      "The engine with the lower hourly price, even if nobody has operated it",
-      "An analytics warehouse, in case wide table scans show up later",
-      "A key-value store, since these statements do not join rows today",
-      "The open engine the team already knows how to operate each day"
+      "Amazon RDS for MySQL",
+      "Amazon Aurora PostgreSQL-Compatible Edition",
+      "Amazon RDS for Oracle with license included",
+      "Amazon RDS for PostgreSQL"
     ],
     "answer": 3,
-    "explanation": "The open engine the team already knows how to operate each day. SAA-C03 task 4.3 compares engines such as MySQL and PostgreSQL on compatibility and operations when both can run the statements. A small hourly gap does not force a data-model change.",
+    "explanation": "Amazon RDS for MySQL — Incorrect. MySQL can run the ordinary SQL, but the on-call runbooks and parameter groups are for PostgreSQL. A 5 percent hourly gap does not justify an engine the team does not operate. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html\nAmazon Aurora PostgreSQL-Compatible Edition — Incorrect. Aurora PostgreSQL uses the Aurora storage architecture. The team ruled out a move to a different database storage architecture. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.html\nAmazon RDS for Oracle with license included — Incorrect. Oracle with license included adds a commercial license and a different engine. The team will not buy that license. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Oracle.html\nAmazon RDS for PostgreSQL — Correct. SAA-C03 task 4.3 keeps the open engine the team already operates when both engines can run the SQL and the hourly gap is small. RDS for PostgreSQL matches the existing runbooks and DB-instance model. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50477,10 +50495,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Oracle.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon RDS",
+      "Amazon Aurora"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50489,15 +50513,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Analysts scan wide historical tables and compute aggregates. The transactional system is sized large mostly to serve those scans. What lowers database cost without dropping the transactions?",
+    "prompt": "Two years of order history already sit in Amazon S3 as Parquet. Hourly dashboards must use a columnar analytics database, must not connect to the OLTP database, and must not scan those files again on every query. The OLTP database is Amazon RDS for SQL Server and must keep serving transactions. Which service should run the dashboards?",
     "choices": [
-      "Make the transactional host larger so the wide scans finish sooner",
-      "Cache scan results in memory and delete the historical tables",
-      "Move the scans to Amazon Redshift and keep the transactions",
-      "Query those tables with Amazon Athena without exporting them"
+      "Amazon Redshift for the hourly dashboards",
+      "Amazon Athena for the hourly dashboards",
+      "An RDS read replica for the hourly dashboards",
+      "Aurora zero-ETL for the hourly dashboards"
     ],
-    "answer": 2,
-    "explanation": "Move the scans to Amazon Redshift and keep the transactions. SAA-C03 task 4.3 uses a columnar warehouse for wide historical aggregates so the transactional store is not sized for those scans. Querying the live tables from Athena still runs those scans against the transactional system.",
+    "answer": 0,
+    "explanation": "Amazon Redshift for the hourly dashboards — Correct. SAA-C03 task 4.3 moves wide historical aggregates to a columnar warehouse. Redshift loads the Parquet into that warehouse, so the dashboards do not connect to SQL Server and do not rescan the files for every hourly run. https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html\nAmazon Athena for the hourly dashboards — Incorrect. Athena federated query can read a relational source, including through a connector. That path still opens a connection to the OLTP database, which this requirement forbids. Querying the Parquet in place would also scan the files on each query. https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html\nAn RDS read replica for the hourly dashboards — Incorrect. A SQL Server read replica is still the relational engine. It does not query the Parquet in S3 and does not give the dashboards a columnar warehouse. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nAurora zero-ETL for the hourly dashboards — Incorrect. Aurora zero-ETL integration with Redshift replicates a supported source database into Redshift. RDS for SQL Server is not one of those sources, and this two-year history is already Parquet in S3. https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50506,10 +50530,19 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/redshift/latest/dg/c_redshift_system_overview.html"
+      "https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html",
+      "https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html"
     ],
     "format": "single",
-    "services": ["Amazon Redshift","Amazon Athena"],
+    "services": [
+      "Amazon S3",
+      "Amazon RDS",
+      "Amazon Redshift",
+      "Amazon Athena",
+      "Amazon Aurora"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50518,15 +50551,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Readings arrive in order and are queried with SQL over a time window. Older readings must move from hot storage to cheaper storage without the application managing partitions. A general row store is priced for peak ingest. What fits this access pattern at lower operational cost?",
+    "prompt": "Sensors write one reading each second. Queries need built-in SQL time-window functions. Recent readings must stay in memory storage, and older readings must move to magnetic storage automatically. The application must not manage table partitions. A larger relational writer priced for peak ingest is not acceptable. Which database fits?",
     "choices": [
-      "Amazon Timestream, with recent readings hot and older ones cheaper",
-      "A larger general row store that keeps every reading on the writer",
-      "Amazon DynamoDB with the reading time used as the sort key",
-      "An in-memory cache used as the durable copy of every reading"
+      "Amazon RDS for PostgreSQL for these readings",
+      "Amazon Timestream for LiveAnalytics",
+      "Amazon DynamoDB for these readings",
+      "Amazon OpenSearch Service for these readings"
     ],
-    "answer": 0,
-    "explanation": "Amazon Timestream, with recent readings hot and older ones cheaper. SAA-C03 task 4.3 matches SQL time-window queries, with automatic hot-to-cheaper movement, to a time-series store instead of a general row store sized for peak ingest. DynamoDB can order values with a sort key, but the application manages partitions and the items do not move to cheaper storage on their own.",
+    "answer": 1,
+    "explanation": "Amazon RDS for PostgreSQL for these readings — Incorrect. RDS for PostgreSQL keeps the readings on a relational writer. Peak ingest is what the team is refusing to pay for, and it does not move older readings from memory storage to magnetic storage. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html\nAmazon Timestream for LiveAnalytics — Correct. SAA-C03 task 4.3 matches this access pattern to a time-series database. Timestream for LiveAnalytics runs SQL, including time-window functions, and moves data from its memory store to its magnetic store on a retention schedule. https://docs.aws.amazon.com/timestream/latest/developerguide/storage.html\nAmazon DynamoDB for these readings — Incorrect. DynamoDB can store a timestamp in a sort key, but the application designs the partitions. Items do not move from a memory store to magnetic storage, and its API is not Timestream SQL time-window functions. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html\nAmazon OpenSearch Service for these readings — Incorrect. OpenSearch Service indexes documents for search. It is not the SQL time-window store with automatic memory-to-magnetic retention. https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50535,10 +50568,18 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html"
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html",
+      "https://docs.aws.amazon.com/timestream/latest/developerguide/storage.html",
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html",
+      "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
     ],
     "format": "single",
-    "services": ["Amazon Timestream","Amazon DynamoDB"],
+    "services": [
+      "Amazon RDS",
+      "Amazon Timestream",
+      "Amazon DynamoDB",
+      "Amazon OpenSearch Service"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50547,15 +50588,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A database must move to a different engine. The source has to keep serving writes until cutover, and the team must prove the new engine accepts the schema and the queries. What belongs in the plan?",
+    "prompt": "An on-premises Oracle database must move to Amazon RDS for PostgreSQL. Oracle must keep accepting writes until a cutover of at most 30 minutes. Before cutover, the team must prove the application's SQL runs on PostgreSQL. Which plan fits?",
     "choices": [
-      "A one-time file export during a long outage, skipping the query check",
-      "Replication plus schema conversion, with a query check before cutover",
-      "A server rehost that copies the host and leaves the engine unchanged",
-      "A cache in front of the old engine while the new engine waits unused"
+      "Oracle Data Pump export during a multi-hour outage",
+      "AWS DMS full load and change data capture",
+      "AWS DMS plus the AWS Schema Conversion Tool",
+      "AWS Application Migration Service for the Oracle server"
     ],
-    "answer": 1,
-    "explanation": "Replication plus schema conversion, with a query check before cutover. SAA-C03 task 4.3 treats a move between engines as schema and query validation, not only a copy of rows. A server rehost leaves the old engine in place.",
+    "answer": 2,
+    "explanation": "Oracle Data Pump export during a multi-hour outage — Incorrect. Data Pump is a point-in-time export. A multi-hour outage misses the 30-minute cutover, and the dump does not keep up with writes that continue until cutover or convert the SQL to PostgreSQL. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Procedural.Importing.DataPump.html\nAWS DMS full load and change data capture — Incorrect. AWS DMS can full-load and capture changes, but a DMS task does not convert an Oracle schema and Oracle SQL into PostgreSQL. The engines are different. https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html\nAWS DMS plus the AWS Schema Conversion Tool — Correct. SAA-C03 task 4.3 treats a different target engine as schema and SQL conversion plus replication. The Schema Conversion Tool converts and assesses the Oracle schema and SQL, and DMS full load with change data capture keeps Oracle writable until the short cutover. https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html\nAWS Application Migration Service for the Oracle server — Incorrect. Application Migration Service rehosts the server. The Oracle engine on that server stays Oracle, so the PostgreSQL target and the SQL check are not done. https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50564,11 +50605,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html",
-      "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Procedural.Importing.DataPump.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html",
+      "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon RDS",
+      "AWS Database Migration Service"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50577,15 +50623,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "The source and the target use the same relational engine. The team wants a short cutover while the source keeps serving writes. Someone proposes a full schema-conversion project. What is appropriate?",
+    "prompt": "Amazon RDS for PostgreSQL must be copied to another Amazon RDS for PostgreSQL instance in the same Region. The major version is the same. The source must keep accepting writes until a cutover shorter than 30 minutes. Which plan fits?",
     "choices": [
-      "Convert the schema as if the engines differed, then load a flat export",
-      "Rehost the whole server and skip a database migration plan",
-      "Move the tables into a key-value store during the short cutover",
-      "Replicate to the same engine and cut over without schema conversion"
+      "AWS Schema Conversion Tool project, then a dump and load",
+      "AWS Application Migration Service for the database server",
+      "pg_dump and pg_restore during a multi-hour outage",
+      "AWS DMS full load and change data capture"
     ],
     "answer": 3,
-    "explanation": "Replicate to the same engine and cut over without schema conversion. SAA-C03 task 4.3 uses schema conversion when the engines differ. The same engine can be replicated while the source still takes writes. A key-value move is a different database.",
+    "explanation": "AWS Schema Conversion Tool project, then a dump and load — Incorrect. The engines already match, so a schema-conversion project is the heterogeneous path. A later dump and load also misses the short cutover. https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html\nAWS Application Migration Service for the database server — Incorrect. Application Migration Service rehosts a server. It is not the replication plan between two RDS for PostgreSQL instances. https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html\npg_dump and pg_restore during a multi-hour outage — Incorrect. pg_dump and pg_restore need a long quiet window. Writes that continue until a 30-minute cutover are not in that dump. https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html\nAWS DMS full load and change data capture — Correct. SAA-C03 task 4.3 uses replication without schema conversion when the engine stays the same. AWS DMS full load and change data capture copies PostgreSQL to PostgreSQL and applies changes until the short cutover. https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.PostgreSQL.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50594,10 +50640,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html"
+      "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html",
+      "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.PostgreSQL.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon RDS",
+      "AWS Database Migration Service"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50606,15 +50658,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Millions of tiny files are each sent as a separate request. Request charges dominate the bill. The files can be combined before they are stored. What should the team change?",
+    "prompt": "A logger writes about 20 million records a day to Amazon S3. Each record is about 2 KB. The request line, not the gigabyte price, is most of the bill. Readers never fetch one record by its own object key. Which change addresses that request line?",
     "choices": [
-      "Combine the files into fewer uploads so the request count falls",
-      "Transition each tiny file to an archive class on the day it arrives",
-      "Bill the readers for requests and leave the upload pattern unchanged",
-      "Move the files onto a block volume attached to a single host"
+      "An application buffer ahead of S3 PutObject",
+      "Write each record to S3 Express One Zone",
+      "Apply S3 Intelligent-Tiering to each record",
+      "Send each record with its own S3 multipart upload"
     ],
     "answer": 0,
-    "explanation": "Combine the files into fewer uploads so the request count falls. SAA-C03 task 4.1 compares a batch of uploads with one request per object when request charges dominate. An archive transition does not reduce how many upload requests are made.",
+    "explanation": "An application buffer ahead of S3 PutObject — Correct. SAA-C03 task 4.1 compares a batch of uploads with one request per object when request charges dominate. The buffer packs many records into one PutObject, so the request count falls. Individual object keys are not required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html\nWrite each record to S3 Express One Zone — Incorrect. S3 Express One Zone changes latency and the request price of a directory bucket. It still takes a request for each object, so 20 million records a day keep the request line. https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-one-zone.html\nApply S3 Intelligent-Tiering to each record — Incorrect. Intelligent-Tiering monitors eligible objects and does not monitor objects smaller than 128 KB. It does not reduce the number of PutObject calls, and these 2 KB records stay in the Frequent Access tier. https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html\nSend each record with its own S3 multipart upload — Incorrect. Multipart upload is for large objects, with a 5 MB minimum part size except for the last part. Using it for each 2 KB record adds upload overhead and does not cut the object count. https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50623,10 +50675,15 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-one-zone.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon S3"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50635,15 +50692,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A new design must copy daily changes from an on-premises share into cloud storage. The network link can carry the changes. What is the fitting transfer approach?",
+    "prompt": "About 200 GB of new and changed files must be copied every day from an on-premises NFS server into Amazon S3. A 1 Gbps link can carry that daily change. Applications keep writing to the NFS server. The account has never used a Snow device. Which transfer service fits?",
     "choices": [
-      "Order a physical appliance for a customer new to that appliance",
-      "Rehost the share server and treat the rehost as the data transfer",
-      "Use a managed online transfer that keeps up with the daily changes",
-      "Send the bytes through a translation device and call that the product"
+      "AWS Snowball Edge",
+      "AWS DataSync",
+      "AWS Storage Gateway file gateway",
+      "AWS Transfer Family"
     ],
-    "answer": 2,
-    "explanation": "Use a managed online transfer that keeps up with the daily changes. SAA-C03 task 4.1 compares DataSync-style online transfer with scale, bandwidth, and change rate. A physical appliance is not the default for a new customer, and rehosting the server is not the transfer.",
+    "answer": 1,
+    "explanation": "AWS Snowball Edge — Incorrect. Snowball Edge is a shippable appliance for transfers the network cannot carry in time. A 1 Gbps link can carry 200 GB a day, and this account has no existing Snow device to order against. https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html\nAWS DataSync — Correct. SAA-C03 task 4.1 picks the online transfer that matches the bandwidth and the daily change rate. DataSync copies changed NFS data to S3 on a schedule while applications keep writing to the NFS server. https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html\nAWS Storage Gateway file gateway — Incorrect. A file gateway presents a file share whose data is stored in S3. It replaces the access path. It is not the daily copy from the NFS server that applications still write to. https://docs.aws.amazon.com/filegateway/latest/files3/WhatIsStorageGateway.html\nAWS Transfer Family — Incorrect. Transfer Family provides SFTP, FTPS, FTP, and AS2 endpoints. It does not run a scheduled copy of an existing NFS server into S3. https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50652,10 +50709,19 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+      "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html",
+      "https://docs.aws.amazon.com/filegateway/latest/files3/WhatIsStorageGateway.html",
+      "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html"
     ],
     "format": "single",
-    "services": ["AWS DataSync"],
+    "services": [
+      "Amazon S3",
+      "AWS Snow Family",
+      "AWS DataSync",
+      "AWS Storage Gateway",
+      "AWS Transfer Family"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50664,15 +50730,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A department will retire its share after one copy of the files lands in cloud storage. Ongoing sync is not required. What kind of move is this?",
+    "prompt": "Forty terabytes on an on-premises SMB server must be copied once into Amazon S3. After the copy is checked, the server will be shut down. Ongoing synchronization is not required. A 10 Gbps link can finish the copy over a weekend. Which service should perform the copy?",
     "choices": [
-      "A server rehost, since the files happen to sit on a server today",
-      "A storage transfer into the cloud copy, followed by retiring the share",
-      "A database replication job whose source is the file share",
-      "A content cache in front of the share, leaving the share in place"
+      "AWS Application Migration Service",
+      "AWS Database Migration Service",
+      "AWS DataSync",
+      "AWS Storage Gateway file gateway"
     ],
-    "answer": 1,
-    "explanation": "A storage transfer into the cloud copy, followed by retiring the share. SAA-C03 task 4.1 selects a storage migration when files move into storage and the share is retired. A server rehost and a database job solve different moves, and a cache leaves the share in place.",
+    "answer": 2,
+    "explanation": "AWS Application Migration Service — Incorrect. Application Migration Service rehosts a server. The files would still live on a server volume, which is not a copy into S3 followed by shutting that server down. https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html\nAWS Database Migration Service — Incorrect. AWS DMS replicates databases. An SMB file server is not a database source, and DMS does not land those files in S3 as this copy. https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html\nAWS DataSync — Correct. SAA-C03 task 4.1 selects a storage transfer when files move into S3 and the source is then retired. A DataSync task can copy the SMB data once over the 10 Gbps link, and no continuing sync is required after the server is shut down. https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html\nAWS Storage Gateway file gateway — Incorrect. A file gateway keeps a file interface in front of S3. That leaves a share in the path after the requirement says to shut the server down and stop synchronizing. https://docs.aws.amazon.com/filegateway/latest/files3/WhatIsStorageGateway.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50681,10 +50747,18 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
-      "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+      "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html",
+      "https://docs.aws.amazon.com/filegateway/latest/files3/WhatIsStorageGateway.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon S3",
+      "AWS DataSync",
+      "AWS Storage Gateway",
+      "AWS Database Migration Service"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50693,15 +50767,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Older copies and unfinished uploads remain after current objects are replaced. The team wants those leftovers to expire on a schedule. What should they configure?",
+    "prompt": "Versioning is enabled on an Amazon S3 bucket. Noncurrent versions and incomplete multipart uploads are still billed 30 days after they are no longer needed. Current versions must remain readable. Which feature removes that leftover storage on a schedule?",
     "choices": [
-      "A rule that expires current objects the day after they are written",
-      "A monitoring class that moves objects when somebody reads them",
-      "A reader-pays setting so readers pay the cost of the leftovers",
-      "A lifecycle rule that expires old copies and unfinished uploads"
+      "S3 Intelligent-Tiering",
+      "S3 Requester Pays",
+      "S3 Object Lock in compliance mode",
+      "An S3 Lifecycle configuration"
     ],
     "answer": 3,
-    "explanation": "A lifecycle rule that expires old copies and unfinished uploads. SAA-C03 task 4.1 calls out noncurrent versions and multipart leftovers as their own lifecycle choices. Expiring current objects, access monitoring, and reader-pays do not schedule those leftovers away.",
+    "explanation": "S3 Intelligent-Tiering — Incorrect. Intelligent-Tiering moves eligible objects among access tiers when access changes. It does not expire noncurrent versions or abort incomplete multipart uploads after 30 days. https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html\nS3 Requester Pays — Incorrect. Requester Pays changes who is billed for eligible requests and transfer. It does not delete noncurrent versions or incomplete multipart uploads. https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html\nS3 Object Lock in compliance mode — Incorrect. Object Lock compliance mode prevents a protected version from being deleted until its retention ends. It keeps leftover versions rather than removing them. https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html\nAn S3 Lifecycle configuration — Correct. SAA-C03 task 4.1 expires noncurrent versions and incomplete multipart uploads on their own schedule. An S3 Lifecycle configuration can set NoncurrentVersionExpiration and AbortIncompleteMultipartUpload while current versions stay. https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50710,10 +50784,15 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon S3"
+    ],
     "difficulty": "medium"
   },
   {
@@ -50722,15 +50801,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A dataset will keep growing for years, and many clients will read it at once. The team does not want to resize one disk every quarter. Which storage direction fits that growth?",
+    "prompt": "Product images are fetched by key by many browsers at the same time. No client mounts the storage. The stored bytes will grow for five years, and operators will not change a volume size on a quarterly schedule. Which storage service fits that growth?",
     "choices": [
-      "One block volume that an operator enlarges by hand each quarter",
-      "A temporary disk on the host that disappears when the host stops",
-      "Object storage that grows as objects are added for many readers",
-      "A memory cache that stores a copy of the growing dataset for readers"
+      "Amazon S3 Standard for this dataset",
+      "Amazon EFS for this dataset",
+      "Amazon EBS gp3 for this dataset",
+      "Amazon FSx for Windows for this dataset"
     ],
-    "answer": 2,
-    "explanation": "Object storage that grows as objects are added for many readers. SAA-C03 task 3.1 uses object storage when capacity must grow with the data and many clients read it together. A hand-resized volume and a temporary disk do not provide that growth.",
+    "answer": 0,
+    "explanation": "Amazon S3 Standard for this dataset — Correct. SAA-C03 task 3.1 uses object storage when clients fetch objects by key and capacity must grow with the data. S3 Standard accepts more objects without a volume resize, and browsers do not mount it. https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html\nAmazon EFS for this dataset — Incorrect. EFS grows without a quarterly volume resize, but clients mount it as a shared file system. These browsers fetch images by key and do not mount storage. https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html\nAmazon EBS gp3 for this dataset — Incorrect. EBS gp3 is a block volume whose size is changed with a volume modification. That is the quarterly resize the operators will not do, and a volume is not fetched by key by many browsers. https://docs.aws.amazon.com/ebs/latest/userguide/modify-volume-ebs.html\nAmazon FSx for Windows for this dataset — Incorrect. FSx for Windows File Server is a mounted Windows file system with provisioned capacity. Browsers are not mounting a file share, and growth is not an unmounted key lookup. https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50739,10 +50818,18 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
-      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+      "https://docs.aws.amazon.com/ebs/latest/userguide/modify-volume-ebs.html",
+      "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
     ],
     "format": "single",
-    "services": [],
+    "services": [
+      "Amazon S3",
+      "Amazon EFS",
+      "Amazon EBS",
+      "Amazon FSx"
+    ],
     "difficulty": "medium"
   }
 ]

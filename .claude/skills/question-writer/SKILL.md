@@ -41,3 +41,13 @@ Read [the workflow contract](../../WORKFLOW.md) first.
 - Distractors plausible and distinct.
 - No dependence on position or wording cues.
 - The explanation teaches the mechanism, not only the letter.
+
+## SAA-C03 G-1 and G-2
+
+Use these rules for every later G-1 and G-2 batch, and for any rewrite of those items.
+
+- Scenario stems name concrete requirements: RPO/RTO, retention, size, bandwidth, ongoing versus one-time, and same versus different engine.
+- Every choice names a real AWS service or feature from the same category. A wrong choice is a real option a candidate might pick because it misses one stated requirement.
+- Do not use a strawman that anyone can reject without knowing AWS, and do not hide the service behind a paraphrase such as "a second place" or "a managed online transfer."
+- Only the key meets every requirement. Say why each distractor fails in its own explanation line, with an AWS docs URL.
+- Before pushing, check each item: if a reader who knows no AWS service can pick the key from the wording alone, rewrite it.

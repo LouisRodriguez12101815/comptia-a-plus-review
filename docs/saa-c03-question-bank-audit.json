@@ -4457,7 +4457,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S01",
       "skill": "Designing appropriate backup and retention policies (for example, snapshot frequency)",
-      "primaryDecision": "A two-week point-in-time restore is required and backup storage is the growing charge. What should be reviewed before the retention window is shortened?",
+      "primaryDecision": "A 14-day point-in-time restore is required and backup storage is the growing charge. Which RDS backup configuration meets that window?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4468,7 +4468,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S01",
       "skill": "Designing appropriate backup and retention policies (for example, snapshot frequency)",
-      "primaryDecision": "Recovery data is copied to a second place that no recovery goal uses. Which change removes that cost?",
+      "primaryDecision": "Automated backups already cover 14 days, and an extra backup copy has no RPO or RTO. Which change removes that copy?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4479,7 +4479,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S02",
       "skill": "Determining an appropriate database engine (for example, MySQL compared with PostgreSQL)",
-      "primaryDecision": "The cheaper relational engine lacks features the application already uses. Which engine should stay?",
+      "primaryDecision": "PostgreSQL types must stay, with one writer and the lower compatible hourly price. Which engine fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4490,7 +4490,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S02",
       "skill": "Determining an appropriate database engine (for example, MySQL compared with PostgreSQL)",
-      "primaryDecision": "Both open relational engines can run the statements, and the team already operates one. Which pick fits?",
+      "primaryDecision": "MySQL is slightly cheaper, but the team operates PostgreSQL and will not change storage architecture. Which engine fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4501,7 +4501,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S04",
       "skill": "Determining cost-effective AWS database types (for example, time series format, columnar format)",
-      "primaryDecision": "Wide historical scans are sizing the transactional database. Where should those scans go?",
+      "primaryDecision": "Parquet history must feed hourly dashboards on a columnar warehouse, with no connection to SQL Server. Which service runs them?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4512,7 +4512,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S04",
       "skill": "Determining cost-effective AWS database types (for example, time series format, columnar format)",
-      "primaryDecision": "Readings are queried by time window and do not need joins. Which store fits that pattern?",
+      "primaryDecision": "Readings need SQL time-window functions and automatic memory-to-magnetic storage. Which database fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4523,7 +4523,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S05",
       "skill": "Migrating database schemas and data to different locations and/or different database engines",
-      "primaryDecision": "The database is moving to a different engine and must keep serving writes until cutover. What belongs in the plan?",
+      "primaryDecision": "Oracle must move to PostgreSQL, keep accepting writes, and pass a SQL check before a 30-minute cutover. Which plan fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4534,7 +4534,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.3-S05",
       "skill": "Migrating database schemas and data to different locations and/or different database engines",
-      "primaryDecision": "Source and target use the same engine, and the source must keep serving writes. Is a schema conversion required?",
+      "primaryDecision": "PostgreSQL is copied to PostgreSQL and must stay writable until a 30-minute cutover. Which plan fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4545,7 +4545,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.1-S01",
       "skill": "Designing appropriate storage strategies (for example, batch uploads to Amazon S3 compared with individual uploads)",
-      "primaryDecision": "Tiny files are each uploaded as a separate request and request charges dominate. What change cuts that charge?",
+      "primaryDecision": "Twenty million 2 KB records a day make the S3 request line the bill. Which change addresses it?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4556,7 +4556,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.1-S03",
       "skill": "Determining the lowest cost method of transferring data for a workload to AWS storage",
-      "primaryDecision": "Daily changes must move from an on-premises share over an adequate network link. Which transfer fits?",
+      "primaryDecision": "200 GB of daily NFS changes fit on a 1 Gbps link, and applications keep writing locally. Which transfer fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4567,7 +4567,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.1-S07",
       "skill": "Selecting the appropriate service for data migration to storage services",
-      "primaryDecision": "Files will be copied once into cloud storage and the share will be retired. What kind of move is that?",
+      "primaryDecision": "40 TB is copied once into S3 over a weekend, then the SMB server is shut down. Which service does the copy?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4578,7 +4578,7 @@
       "topicId": "aws-saa-cost-optimized",
       "skillId": "4.1-S09",
       "skill": "Selecting the correct data lifecycle for storage",
-      "primaryDecision": "Old object copies and unfinished uploads should expire on a schedule. Which configuration does that?",
+      "primaryDecision": "Noncurrent versions and incomplete multipart uploads should expire after 30 days. Which S3 feature does that?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4589,7 +4589,7 @@
       "topicId": "aws-saa-high-performing",
       "skillId": "3.1-S02",
       "skill": "Determining storage services that can scale to accommodate future needs",
-      "primaryDecision": "A growing dataset will be read by many clients, and the team will not resize one disk each quarter. Which storage direction fits?",
+      "primaryDecision": "Browsers fetch images by key, nothing is mounted, and nobody resizes a volume each quarter. Which storage service fits?",
       "stretch": false,
       "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     }
