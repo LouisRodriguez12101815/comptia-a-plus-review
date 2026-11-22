@@ -50366,5 +50366,383 @@
       "Amazon ElastiCache"
     ],
     "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-01",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A relational database must be restorable to a recent minute for two weeks. Stored recovery data is the charge that keeps growing. What should the team evaluate first?",
+    "choices": [
+      "Delete the recovery history and keep one manual copy from last year",
+      "Keep the two-week restore window and review what that history stores",
+      "Treat the failover copy as the recovery data and remove the other copies",
+      "Put the recovery files on the host disk and drop the managed copies"
+    ],
+    "answer": 1,
+    "explanation": "Keep the two-week restore window and review what that history stores. SAA-C03 task 4.3 prices backup retention against the recovery window the workload still needs. Deleting that history, or treating the failover copy as the backup, removes a restore path the requirement still uses.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-02",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A second place holds a copy of database recovery data, but no recovery goal uses that place. The copy is the new charge. What fits the requirement?",
+    "choices": [
+      "Shorten the primary restore window below the stated requirement",
+      "Move the primary database onto a smaller host before checking the copy",
+      "Stop copying recovery data into the place that nobody restores from",
+      "Switch the database to a key-value store to avoid paying for the copy"
+    ],
+    "answer": 2,
+    "explanation": "Stop copying recovery data into the place that nobody restores from. SAA-C03 task 4.3 treats an extra backup copy as spend that a recovery goal has to justify. Moving the primary host does not remove a copy that no plan will restore.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-03",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "An application depends on features that exist in one relational engine and not in the cheaper engine on the price list. What should the team do?",
+    "choices": [
+      "Stay on the engine that already runs the features the application uses",
+      "Move to the cheaper engine and let those application features stop working",
+      "Replace the relational engine with an in-memory cache of recent rows",
+      "Replace the relational engine with a warehouse used for wide scans"
+    ],
+    "answer": 0,
+    "explanation": "Stay on the engine that already runs the features the application uses. SAA-C03 task 4.3 says a lower instance price is not a reason to pick an incompatible engine. A cache or a warehouse does not keep those relational features.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-04",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Both common open relational engines can run this application's ordinary statements. The team already operates one of them. The hourly price gap is small. What is the sensible pick?",
+    "choices": [
+      "The engine with the lower hourly price, even if nobody has operated it",
+      "An analytics warehouse, in case wide table scans show up later",
+      "A key-value store, since these statements do not join rows today",
+      "The open engine the team already knows how to operate each day"
+    ],
+    "answer": 3,
+    "explanation": "The open engine the team already knows how to operate each day. SAA-C03 task 4.3 compares engines such as MySQL and PostgreSQL on compatibility and operations when both can run the statements. A small hourly gap does not force a data-model change.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-05",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Analysts scan wide historical tables and compute aggregates. The transactional system is sized large mostly to serve those scans. What lowers database cost without dropping the transactions?",
+    "choices": [
+      "Make the transactional host larger so the wide scans finish sooner",
+      "Cache scan results in memory and delete the historical tables",
+      "Move the scans to Amazon Redshift and keep the transactions",
+      "Query those tables with Amazon Athena without exporting them"
+    ],
+    "answer": 2,
+    "explanation": "Move the scans to Amazon Redshift and keep the transactions. SAA-C03 task 4.3 uses a columnar warehouse for wide historical aggregates so the transactional store is not sized for those scans. Querying the live tables from Athena still runs those scans against the transactional system.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/redshift/latest/dg/c_redshift_system_overview.html"
+    ],
+    "format": "single",
+    "services": ["Amazon Redshift","Amazon Athena"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-06",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Readings arrive in order and are queried with SQL over a time window. Older readings must move from hot storage to cheaper storage without the application managing partitions. A general row store is priced for peak ingest. What fits this access pattern at lower operational cost?",
+    "choices": [
+      "Amazon Timestream, with recent readings hot and older ones cheaper",
+      "A larger general row store that keeps every reading on the writer",
+      "Amazon DynamoDB with the reading time used as the sort key",
+      "An in-memory cache used as the durable copy of every reading"
+    ],
+    "answer": 0,
+    "explanation": "Amazon Timestream, with recent readings hot and older ones cheaper. SAA-C03 task 4.3 matches SQL time-window queries, with automatic hot-to-cheaper movement, to a time-series store instead of a general row store sized for peak ingest. DynamoDB can order values with a sort key, but the application manages partitions and the items do not move to cheaper storage on their own.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html"
+    ],
+    "format": "single",
+    "services": ["Amazon Timestream","Amazon DynamoDB"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-07",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A database must move to a different engine. The source has to keep serving writes until cutover, and the team must prove the new engine accepts the schema and the queries. What belongs in the plan?",
+    "choices": [
+      "A one-time file export during a long outage, skipping the query check",
+      "Replication plus schema conversion, with a query check before cutover",
+      "A server rehost that copies the host and leaves the engine unchanged",
+      "A cache in front of the old engine while the new engine waits unused"
+    ],
+    "answer": 1,
+    "explanation": "Replication plus schema conversion, with a query check before cutover. SAA-C03 task 4.3 treats a move between engines as schema and query validation, not only a copy of rows. A server rehost leaves the old engine in place.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html",
+      "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-08",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "The source and the target use the same relational engine. The team wants a short cutover while the source keeps serving writes. Someone proposes a full schema-conversion project. What is appropriate?",
+    "choices": [
+      "Convert the schema as if the engines differed, then load a flat export",
+      "Rehost the whole server and skip a database migration plan",
+      "Move the tables into a key-value store during the short cutover",
+      "Replicate to the same engine and cut over without schema conversion"
+    ],
+    "answer": 3,
+    "explanation": "Replicate to the same engine and cut over without schema conversion. SAA-C03 task 4.3 uses schema conversion when the engines differ. The same engine can be replicated while the source still takes writes. A key-value move is a different database.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.3"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-09",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Millions of tiny files are each sent as a separate request. Request charges dominate the bill. The files can be combined before they are stored. What should the team change?",
+    "choices": [
+      "Combine the files into fewer uploads so the request count falls",
+      "Transition each tiny file to an archive class on the day it arrives",
+      "Bill the readers for requests and leave the upload pattern unchanged",
+      "Move the files onto a block volume attached to a single host"
+    ],
+    "answer": 0,
+    "explanation": "Combine the files into fewer uploads so the request count falls. SAA-C03 task 4.1 compares a batch of uploads with one request per object when request charges dominate. An archive transition does not reduce how many upload requests are made.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-10",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A new design must copy daily changes from an on-premises share into cloud storage. The network link can carry the changes. What is the fitting transfer approach?",
+    "choices": [
+      "Order a physical appliance for a customer new to that appliance",
+      "Rehost the share server and treat the rehost as the data transfer",
+      "Use a managed online transfer that keeps up with the daily changes",
+      "Send the bytes through a translation device and call that the product"
+    ],
+    "answer": 2,
+    "explanation": "Use a managed online transfer that keeps up with the daily changes. SAA-C03 task 4.1 compares DataSync-style online transfer with scale, bandwidth, and change rate. A physical appliance is not the default for a new customer, and rehosting the server is not the transfer.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    ],
+    "format": "single",
+    "services": ["AWS DataSync"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-11",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A department will retire its share after one copy of the files lands in cloud storage. Ongoing sync is not required. What kind of move is this?",
+    "choices": [
+      "A server rehost, since the files happen to sit on a server today",
+      "A storage transfer into the cloud copy, followed by retiring the share",
+      "A database replication job whose source is the file share",
+      "A content cache in front of the share, leaving the share in place"
+    ],
+    "answer": 1,
+    "explanation": "A storage transfer into the cloud copy, followed by retiring the share. SAA-C03 task 4.1 selects a storage migration when files move into storage and the share is retired. A server rehost and a database job solve different moves, and a cache leaves the share in place.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-12",
+    "topicId": "aws-saa-cost-optimized",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "Older copies and unfinished uploads remain after current objects are replaced. The team wants those leftovers to expire on a schedule. What should they configure?",
+    "choices": [
+      "A rule that expires current objects the day after they are written",
+      "A monitoring class that moves objects when somebody reads them",
+      "A reader-pays setting so readers pay the cost of the leftovers",
+      "A lifecycle rule that expires old copies and unfinished uploads"
+    ],
+    "answer": 3,
+    "explanation": "A lifecycle rule that expires old copies and unfinished uploads. SAA-C03 task 4.1 calls out noncurrent versions and multipart leftovers as their own lifecycle choices. Expiring current objects, access monitoring, and reader-pays do not schedule those leftovers away.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "4.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
+  },
+  {
+    "id": "q-saa-g1a-13",
+    "topicId": "aws-saa-high-performing",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "prompt": "A dataset will keep growing for years, and many clients will read it at once. The team does not want to resize one disk every quarter. Which storage direction fits that growth?",
+    "choices": [
+      "One block volume that an operator enlarges by hand each quarter",
+      "A temporary disk on the host that disappears when the host stops",
+      "Object storage that grows as objects are added for many readers",
+      "A memory cache that stores a copy of the growing dataset for readers"
+    ],
+    "answer": 2,
+    "explanation": "Object storage that grows as objects are added for many readers. SAA-C03 task 3.1 uses object storage when capacity must grow with the data and many clients read it together. A hand-resized volume and a temporary disk do not provide that growth.",
+    "weak": false,
+    "objectiveIds": {
+      "saa-c03": [
+        "3.1"
+      ]
+    },
+    "sourceUrls": [
+      "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    ],
+    "format": "single",
+    "services": [],
+    "difficulty": "medium"
   }
 ]

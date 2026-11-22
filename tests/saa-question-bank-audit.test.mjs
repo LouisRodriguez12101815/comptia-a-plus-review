@@ -143,11 +143,29 @@ test("SAA inventory stages are counted from the specified base and both explicit
     assert.deepEqual(count(snapshot), { saaQuestionCount: stage.saaQuestionCount, uniqueIdCount: stage.uniqueIdCount, byDomain: stage.byDomain, byTask: stage.byTask });
     assert.deepEqual(stage.formats, countFormats(snapshot));
   }
-  const liveStage = audit.countStages.find((stage) => stage.stage === "after-explanation-rewrite");
+  const rewrite = audit.countStages.find((stage) => stage.stage === "after-explanation-rewrite");
+  assert.equal(rewrite.commit, null);
+  assert.equal(rewrite.saaQuestionCount, 319);
+  assert.equal(rewrite.byTask["4.3"], 12);
+  assert.equal(rewrite.byTask["4.1"], 16);
+  assert.equal(rewrite.byTask["3.1"], 19);
+  assert.equal(rewrite.byTask["4.4"], 21);
+  const frozen = JSON.parse(execFileSync("git", ["show", "b10c6a7a8a767a0eb42565631828e3154b50bc90:content/questions.json"], {
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  }));
+  assert.deepEqual(count(frozen), { saaQuestionCount: 319, uniqueIdCount: 319, byDomain: rewrite.byDomain, byTask: rewrite.byTask });
+  const liveStage = audit.countStages.find((stage) => stage.stage === "after-g1-batch-1");
   assert.equal(liveStage.commit, null);
-  assert.deepEqual(count(questions), { saaQuestionCount: 319, uniqueIdCount: 319, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
-  assert.equal(liveStage.byTask["4.3"], 12);
-  assert.equal(liveStage.byTask["4.4"], 21);
+  assert.deepEqual(liveStage.addedIds, [
+    "q-saa-g1a-01", "q-saa-g1a-02", "q-saa-g1a-03", "q-saa-g1a-04", "q-saa-g1a-05", "q-saa-g1a-06",
+    "q-saa-g1a-07", "q-saa-g1a-08", "q-saa-g1a-09", "q-saa-g1a-10", "q-saa-g1a-11", "q-saa-g1a-12", "q-saa-g1a-13",
+  ]);
+  assert.deepEqual(count(questions), { saaQuestionCount: 332, uniqueIdCount: 332, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
+  assert.equal(liveStage.byTask["4.3"], 20);
+  assert.equal(liveStage.byTask["4.1"], 20);
+  assert.equal(liveStage.byTask["3.1"], 20);
+  assert.equal(liveStage.formats.singleAnswer, 321);
   assert.equal(audit.baseline.commit, baseCommit);
 });
 
@@ -219,6 +237,8 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
       for (let index = 1; index < chain.length; index += 1) {
         assert.equal(chain[index].oldHash, chain[index - 1].newHash, `${question.id}: stage ${index} does not cite the previous hash`);
       }
+    } else if (question.id.startsWith("q-saa-g1a-")) {
+      assert.equal(liveHashes.has(question.id), false, `${question.id}: new id already in the 314 stage`);
     } else {
       assert.equal(digest, liveHashes.get(question.id), `${question.id}: live preservation hash`);
     }
@@ -345,16 +365,17 @@ test("the high-yield fill is stage 319 to 335 and every id is in the saa-c03 moc
     byDomain[`${task[0]}.0`] += 1;
     byTask[task] += 1;
   }
+  const g1 = audit.countStages.find((item) => item.stage === "after-g1-batch-1");
   assert.deepEqual({
     saaQuestionCount: servedSaa.length,
     uniqueIdCount: new Set(servedSaa.map((question) => question.id)).size,
     byDomain,
     byTask,
   }, {
-    saaQuestionCount: stage.saaQuestionCount,
-    uniqueIdCount: stage.uniqueIdCount,
-    byDomain: stage.byDomain,
-    byTask: stage.byTask,
+    saaQuestionCount: g1.served.saaQuestionCount,
+    uniqueIdCount: g1.served.uniqueIdCount,
+    byDomain: g1.served.byDomain,
+    byTask: g1.served.byTask,
   });
   const hashStage = audit.hashStages.find((item) => item.id === "high-yield-fill-exclude-study-tags");
   assert.equal(hashStage.rewritesBaseline, false);
