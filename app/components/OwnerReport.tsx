@@ -103,7 +103,17 @@ export function OwnerReport() {
     try {
       const res = await fetch("/api/learner/diagnostics", { cache: "no-store" });
       const data = (await res.json().catch(() => ({}))) as PublicDiagnostics & SectionBody;
-      setDiagnosticsCopy(formatSectionDetails({ section: "Diagnostics", status: res.status, error: data.error, reason: data.reason, sections: res.ok ? data.sections : undefined }));
+      setDiagnosticsCopy(formatSectionDetails({
+        section: "Diagnostics",
+        status: res.status,
+        error: data.error,
+        reason: data.reason,
+        sections: res.ok ? data.sections : undefined,
+        sidLast4: data.accountSidLast4,
+        usageStart: data.usageStart,
+        usageEnd: data.usageEnd,
+        usage: data.usage,
+      }));
       if ("signedOut" in sectionResult(res.status, data)) { setPhase("out"); setDiagnostics(null); return; }
       if (!res.ok) { setDiagnostics(null); setDiagnosticsError(explain(res.status, data)); return; }
       setDiagnosticsError("");
