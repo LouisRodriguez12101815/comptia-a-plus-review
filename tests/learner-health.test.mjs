@@ -206,6 +206,33 @@ test("a missing session or a bad config does not call Twilio", async () => {
   }
 });
 
+test("account 70004 is an expected Standard key limit", async () => {
+  logs.length = 0;
+  const client = fakeClient({ account: { status: 403, code: 70004 } });
+  const body = await (await createHealthGet({ client })(call("/api/learner/health"))).json();
+  const account = body.checks.find((row) => row.name === "account");
+  assert.equal(account.ok, true);
+  assert.equal(account.code, 70004);
+  assert.equal(account.hint, "Standard API key cannot read the account record; not an error");
+  assert.equal(logs.some((line) => line.startsWith("learner/health")), false);
+  assertClean(JSON.stringify(body));
+
+  const seen = [];
+  const diagnosticsClient = {
+    api: { v2010: { accounts: () => ({ fetch: async () => { seen.push("account"); throw Object.assign(new Error(leak), { status: 403, code: 70004 }); } }) } },
+    sync: { v1: { services: () => ({ fetch: async () => { seen.push("sync"); return { friendlyName: "Study Sync" }; } }) } },
+    usage: { records: { list: async () => { seen.push("usage"); return []; } } },
+  };
+  const { learnerConfig } = await import("../lib/learner/twilio.ts");
+  const diagnostics = await readPublicDiagnostics(learnerConfig(), Date.parse("2026-11-21T00:00:00.000Z"), diagnosticsClient);
+  const section = diagnostics.sections.find((row) => row.call === "account");
+  assert.equal(section.ok, true);
+  assert.equal(section.code, 70004);
+  assert.equal(section.hint, "Standard API key cannot read the account record; not an error");
+  assert.equal(logs.some((line) => line.includes("70004")), false);
+  assertClean(JSON.stringify(diagnostics));
+});
+
 test("diagnostics skips account and usage when the key cannot call them", async () => {
   logs.length = 0;
   const seen = [];

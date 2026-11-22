@@ -19,8 +19,20 @@ function unionAttempts<T extends { at: number }>(a: T[], b: T[], key: (x: T) => 
   return [...seen.values()].sort((x, y) => y.at - x.at).slice(0, max);
 }
 
-/** Local seconds, start time, and answer offsets win. A value recorded on only one copy is kept. */
-function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; seenShare?: number; startedAt?: number; answeredAt?: Record<string, number> }>(primary: T, secondary: T): T {
+function earlierSeen(primary?: string, secondary?: string): string | undefined {
+  const valid = (value?: string) => {
+    if (!value) return undefined;
+    const parsed = new Date(value);
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString() === value ? value : undefined;
+  };
+  const left = valid(primary);
+  const right = valid(secondary);
+  if (left && right) return left <= right ? left : right;
+  return left ?? right;
+}
+
+/** Local seconds, start time, and answer offsets win. A value recorded on only one copy is kept. The earlier server stamp wins. */
+function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; seenShare?: number; startedAt?: number; answeredAt?: Record<string, number>; serverSeenAt?: string }>(primary: T, secondary: T): T {
   const seconds: Record<string, number> = {};
   for (const source of [secondary.secondsByQuestion, primary.secondsByQuestion]) {
     if (!source) continue;
@@ -41,6 +53,8 @@ function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; see
   const startedAt = primary.startedAt ?? secondary.startedAt;
   if (startedAt !== undefined && next.startedAt === undefined) next = { ...next, startedAt };
   if (Object.keys(answeredAt).length) next = { ...next, answeredAt };
+  const serverSeenAt = earlierSeen(primary.serverSeenAt, secondary.serverSeenAt);
+  if (serverSeenAt !== undefined) next = { ...next, serverSeenAt };
   return next;
 }
 
@@ -90,13 +104,15 @@ function mergeDrillPractice(local: Progress["drillPractice"], remote: Progress["
 
 /**
  * Combine two copies of one learner's progress. The newest review of each card wins,
- * attempts are combined without duplicates, and nothing is ever dropped silently
- * except by the existing caps (40 quizzes, 30 mock exams, 200 missed drill cues).
+ * and attempts are combined without duplicates. This copy keeps the recent window
+ * (40 quizzes, 30 mocks, 20 CLF snapshots, 200 missed drill cues). The server
+ * archives quizzes and mocks outside that window instead of deleting them.
  * Best scores and streaks take the max. A best time is the lower millisecond count.
  * `lastMixDay` takes the later date. `local` wins schedule ties.
  * A shared sitting keeps per-question seconds from either copy; local seconds win when both recorded one.
+ * `serverSeenAt` keeps the earlier stamp.
  */
-export function mergeProgress(local: Progress, remote: Progress): Progress {
+export function mergeProgress(local: Progress, remote: Progress, caps: { quiz: number; mock: number } = { quiz: 40, mock: 30 }): Progress {
   const schedules: Record<string, StoredSchedule> = { ...remote.schedules };
   for (const [id, s] of Object.entries(local.schedules)) {
     if (!schedules[id] || reviewedAt(s) >= reviewedAt(schedules[id])) schedules[id] = s;
@@ -122,8 +138,8 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     unknownCards,
     schedules,
     ...(firstSeen ? { firstSeen } : {}),
-    quizAttempts: unionAttempts<QuizAttempt>(local.quizAttempts, remote.quizAttempts, (q) => `${q.at}:${q.topicId}`, 40, keepSeconds),
-    mockAttempts: unionAttempts<MockAttempt>(local.mockAttempts, remote.mockAttempts, (m) => `${m.at}:${m.exam}`, 30, keepSeconds),
+    quizAttempts: unionAttempts<QuizAttempt>(local.quizAttempts, remote.quizAttempts, (q) => `${q.at}:${q.topicId}`, caps.quiz, keepSeconds),
+    mockAttempts: unionAttempts<MockAttempt>(local.mockAttempts, remote.mockAttempts, (m) => `${m.at}:${m.exam}`, caps.mock, keepSeconds),
     ...((local.clfAssessmentSnapshots?.length || remote.clfAssessmentSnapshots?.length) ? { clfAssessmentSnapshots: unionAttempts<ClfAssessmentSnapshot>(local.clfAssessmentSnapshots ?? [], remote.clfAssessmentSnapshots ?? [], (snapshot) => snapshot.id, 20) } : {}),
     ...(memoryGames ? { memoryGames } : {}),
     ...(drillPractice ? { drillPractice } : {}),

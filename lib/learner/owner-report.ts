@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { firstAttemptSummary, mockSeenByTimestamp } from "@/lib/attempt-metrics";
-import { attemptCaptures, progressSyncedAt } from "@/lib/learner/capture";
+import { attemptCaptures } from "@/lib/learner/capture";
 import { collectActivity, storedProgress } from "../../scripts/lib/learner-activity-data.mjs";
 import { analyzeActivity, buildFollowup } from "../../scripts/lib/learner-activity-plan.mjs";
 import { emptyOwnerSummary, ownerSummary } from "@/lib/learner/owner-summary";
@@ -64,6 +64,6 @@ export function summarizeItems(items: { key: string; data?: unknown; dateUpdated
     followups,
     firstAttempt: firstAttemptSummary(progress, opts.exam, start, end),
     seenBySitting: mockSeenByTimestamp(progress, opts.exam, start, end),
-    captures: attemptCaptures(progress, opts.exam, activity.window, progressSyncedAt(items)),
+    captures: attemptCaptures(progress, opts.exam, activity.window),
   });
 }

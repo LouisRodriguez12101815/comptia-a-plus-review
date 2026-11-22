@@ -3,10 +3,57 @@ import { parseProgress } from "@/lib/progress";
 import { isDeepStrictEqual } from "node:util";
 import { mergeProgress } from "@/lib/learner/merge";
 import { isStudyFocus } from "@/lib/exams";
+import { archivePlans, readArchives, splitRecent } from "./archive.mjs";
 import { CHUNK, MAX_CHUNKS, decodeSnapshot, makeSnapshot, progressHead, PROGRESS_HEAD, snapshotKeys } from "./progress-snapshot.mjs";
 export { CHUNK, MAX_CHUNKS, splitChunks } from "./progress-snapshot.mjs";
 
 const MAX_ATTEMPTS = 5;
+const UNCAPPED = { quiz: Number.POSITIVE_INFINITY, mock: Number.POSITIVE_INFINITY };
+
+class ArchiveRetry extends Error {
+  constructor() { super("archive_retry"); }
+}
+
+function seenKey(kind: "quiz" | "mock", attempt: { at: number; topicId?: string; exam?: string }) {
+  return kind === "quiz" ? `quiz:${attempt.at}:${attempt.topicId}` : `mock:${attempt.at}:${attempt.exam}`;
+}
+
+function rememberSeen(index: Map<string, string>, kind: "quiz" | "mock", attempts: { at: number; serverSeenAt?: string; topicId?: string; exam?: string }[] | undefined) {
+  for (const attempt of attempts ?? []) {
+    const seen = attempt.serverSeenAt;
+    if (typeof seen !== "string" || !Number.isFinite(Date.parse(seen)) || new Date(seen).toISOString() !== seen) continue;
+    const key = seenKey(kind, attempt);
+    const current = index.get(key);
+    if (!current || seen < current) index.set(key, seen);
+  }
+}
+
+function stampProgress(progress: Progress, index: Map<string, string>, now: string): Progress {
+  const stamp = <T extends { at: number; topicId?: string; exam?: string }>(kind: "quiz" | "mock", attempt: T) => ({
+    ...attempt,
+    serverSeenAt: index.get(seenKey(kind, attempt)) ?? now,
+  });
+  return {
+    ...progress,
+    quizAttempts: progress.quizAttempts.map((attempt) => stamp("quiz", attempt)),
+    mockAttempts: progress.mockAttempts.map((attempt) => stamp("mock", attempt)),
+  };
+}
+
+async function writeArchives(map: ProgressMap, items: { key: string; data: unknown }[], older: { quizzes: Progress["quizAttempts"]; mocks: Progress["mockAttempts"] }) {
+  for (const plan of archivePlans(items, older)) {
+    if (plan.replace) {
+      const current = await map.get(plan.key);
+      if (!current || !(await map.replace(plan.key, plan.data, current.revision))) throw new ArchiveRetry();
+    } else {
+      try { await map.create(plan.key, plan.data); }
+      catch (error) {
+        if ((error as { status?: number }).status === 409) throw new ArchiveRetry();
+        throw error;
+      }
+    }
+  }
+}
 
 function validLegacyFields(raw: string): boolean {
   const value = JSON.parse(raw) as Record<string, unknown>;
@@ -99,12 +146,27 @@ async function discard(map: ProgressMap, keys: string[]) {
 }
 
 /** Merge and commit as one retryable operation; never publish a partially written generation. */
-export async function saveRemote(map: ProgressMap, local: Progress): Promise<Progress> {
+export async function saveRemote(map: ProgressMap, local: Progress, now = () => new Date().toISOString()): Promise<Progress> {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const previous = await readSnapshot(map);
-    const merged = previous.progress ? mergeProgress(local, previous.progress) : local;
-    const raw = JSON.stringify(merged);
-    if (previous.head && isDeepStrictEqual(merged, previous.progress)) return merged;
+    const items = await map.list();
+    const merged = previous.progress ? mergeProgress(local, previous.progress, UNCAPPED) : local;
+    const archives = readArchives(items);
+    const seen = new Map<string, string>();
+    rememberSeen(seen, "quiz", previous.progress?.quizAttempts);
+    rememberSeen(seen, "mock", previous.progress?.mockAttempts);
+    rememberSeen(seen, "quiz", archives.quizzes);
+    rememberSeen(seen, "mock", archives.mocks);
+    const stamped = stampProgress(merged, seen, now());
+    const { recent, older } = splitRecent(stamped);
+    try {
+      await writeArchives(map, items, older);
+    } catch (error) {
+      if (error instanceof ArchiveRetry) continue;
+      throw error;
+    }
+    const raw = JSON.stringify(recent);
+    if (previous.head && previous.progress && isDeepStrictEqual(recent, previous.progress)) return recent;
     const { head, chunks } = makeSnapshot(raw);
     const keys = snapshotKeys(head), written: string[] = [];
     try {
@@ -130,7 +192,7 @@ export async function saveRemote(map: ProgressMap, local: Progress): Promise<Pro
     }
     if (!committed) { await discard(map, written); continue; }
     if (previous.head) await discard(map, snapshotKeys(previous.head));
-    return merged;
+    return recent;
   }
   throw new Error("progress_conflict");
 }

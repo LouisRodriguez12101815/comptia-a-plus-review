@@ -179,6 +179,8 @@ export function OwnerReport() {
   const shownCaptures = report
     ? [...report.captures, ...unsyncedCaptures(progressTick >= 0 ? getProgressSnapshot() : getProgressSnapshot(), report.captures, exam, report.window)]
     : [];
+  const accountSection = diagnostics?.sections?.find((section) => section.call === "account");
+  const accountValue = accountSection?.code === 70004 ? `${accountSection.hint} · 70004` : diagnostics?.accountFriendlyName;
 
   return (
     <div className="space-y-8">
@@ -255,9 +257,10 @@ export function OwnerReport() {
                     {shownCaptures.map((capture, index) => {
                       const started = capture.startedAt === null ? t("startNotRecorded") : t("startedAt", { time: new Date(capture.startedAt).toISOString() });
                       const finished = t("finishedAt", { time: new Date(capture.finishedAt).toISOString() });
-                      const synced = capture.syncedAt === null ? t("notSynced") : t("syncedAt", { time: capture.syncedAt });
+                      const synced = capture.sync === "before" ? t("beforeTracking") : capture.syncedAt === null ? t("notSynced") : t("syncedAt", { time: capture.syncedAt });
                       const delay = capture.delayMs === null ? "" : ` · ${t("syncDelay", { seconds: Math.round(capture.delayMs / 1000) })}`;
-                      return <li key={`${capture.kind}:${capture.finishedAt}:${capture.syncedAt ?? "local"}:${index}`}>{capture.kind === "quiz" ? "Quiz" : "Mock"}: {started} · {finished} · {synced}{delay}</li>;
+                      const kind = capture.kind === "sitting" ? "Sitting" : capture.kind === "quiz" ? "Quiz" : "Mock";
+                      return <li key={`${capture.kind}:${capture.sittingId ?? capture.finishedAt}:${capture.syncedAt ?? capture.sync}:${index}`}>{kind}: {started} · {finished} · {synced}{delay}</li>;
                     })}
                   </ul>
                 )}
@@ -340,7 +343,7 @@ export function OwnerReport() {
                 <p key={section.call} role="alert" className="text-sm text-rose-300">{section.call}: {section.hint}{section.code != null ? ` (${section.code})` : ""}</p>
               ))}
               <dl className="grid gap-2 text-sm text-slate-200 sm:grid-cols-2">
-                <div><dt className="text-slate-400">{t("account")}</dt><dd>{diagnostics.accountFriendlyName}</dd></div>
+                <div><dt className="text-slate-400">{t("account")}</dt><dd>{accountValue}</dd></div>
                 <div><dt className="text-slate-400">{t("sidLast4")}</dt><dd className="font-mono">{diagnostics.accountSidLast4}</dd></div>
                 <div><dt className="text-slate-400">{t("subaccount")}</dt><dd>{diagnostics.subaccount ? t("yes") : t("no")}</dd></div>
                 <div><dt className="text-slate-400">{t("parent")}</dt><dd>{diagnostics.parentFriendlyName ?? t("no")}</dd></div>

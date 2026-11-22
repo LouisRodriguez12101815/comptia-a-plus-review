@@ -1,7 +1,7 @@
 import twilio from "twilio";
 import { publicDiagnostics, type DiagnosticSection, type PublicDiagnostics, type UsageRow } from "@/lib/learner/diagnostics";
 import type { LearnerConfig } from "@/lib/learner/twilio";
-import { NEEDS_STRONGER_KEY, needsStrongerKey, twilioFailure } from "@/lib/learner/twilio-error";
+import { NEEDS_STRONGER_KEY, needsStrongerKey, STANDARD_KEY_ACCOUNT, STANDARD_KEY_ACCOUNT_CODE, twilioFailure } from "@/lib/learner/twilio-error";
 
 /** Twilio client that rejects every non-GET before it reaches the network. */
 export function readOnlyTwilio(config: LearnerConfig) {
@@ -20,6 +20,9 @@ export function readOnlyTwilio(config: LearnerConfig) {
 function section(call: DiagnosticSection["call"], error?: unknown): DiagnosticSection {
   if (!error) return { call, ok: true, code: null, status: null, hint: "Fetched." };
   const failure = twilioFailure(error);
+  if (call === "account" && failure.code === STANDARD_KEY_ACCOUNT_CODE) {
+    return { call, ok: true, code: failure.code, status: failure.status, hint: STANDARD_KEY_ACCOUNT };
+  }
   const skipped = (call === "account" || call === "parent" || call === "usage") && needsStrongerKey(failure);
   return {
     call, ok: false, skipped, code: failure.code, status: failure.status,

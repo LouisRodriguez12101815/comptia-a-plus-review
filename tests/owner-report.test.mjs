@@ -69,8 +69,9 @@ test("owner report and diagnostics stay private", async () => {
   assert.equal(summary.captures[0].startedAt, null);
   assert.equal(summary.captures[0].finishedAt, at);
   assert.equal(summary.captures[0].syncedAt, null);
+  assert.equal(summary.captures[0].sync, "before");
   assert.match(summary.markdown, /start not recorded/);
-  assert.match(summary.markdown, /not synced yet/);
+  assert.match(summary.markdown, /before tracking/);
   assert.equal(summary.sureButWrong[0].questionId, "q-sure");
   assert.equal(summary.luckyGuesses[0].questionId, "q-lucky");
   assert.match(summary.sureButWrong[0].prompt, /What stays/);

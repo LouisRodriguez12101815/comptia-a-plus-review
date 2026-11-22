@@ -320,6 +320,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       total: finalPicks.length,
       questionIds: visitedIds,
       missedIds: missed,
+      sittingId,
       ...times,
     });
     if (exam === "saa-c03") {
