@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftFocused, draftTest, freshFirstIds,
+  EXAM_FORMATS, allocateByWeight, approximatePassPercent, buildExamPool, draftFocused, draftTest, freshFirstIds, fullMockSkipsDueReview,
   gradeTest, isCorrect, mulberry32, questionsForLength, secondsPerQuestion,
 } from '../lib/exam-test.mjs';
 import { evaluateReadiness } from '../lib/readiness.ts';
@@ -189,6 +189,9 @@ test('readiness blocks narrow repeated-question exposure', () => {
   }));
   const result = evaluateReadiness(attempts, 'saa-c03', 0, 120);
   assert.equal(result.exposurePercent, 54);
+  assert.equal(result.overallPercent, 80);
+  assert.equal(result.firstAttemptPercent, 0);
+  assert.equal(result.mockSeen.length, 3);
   assert.equal(result.status, 'not-ready');
   assert.ok(result.blockers.some((item) => item.includes('question bank')));
 });
@@ -220,6 +223,26 @@ test('a targeted draft takes about 60% from the chosen objectives and a retest t
   assert.equal(retest.length, 5);
   assert.equal(retest.every((x) => inFocus.has(x.questionId)), true);
   assert.equal(draftFocused(p, 15, mulberry32(3), { objectiveIds: ['9.9'] }).length, 15);
+});
+
+test('a full mock leaves due reviews behind unseen questions', () => {
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'full', kind: 'standard' }), true);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'full', kind: 'targeted' }), true);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'count20', kind: 'standard' }), false);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'quick', kind: 'standard' }), false);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'full', kind: 'retest' }), false);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'full', kind: 'drill' }), false);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'full', kind: 'standard', domainPractice: true }), false);
+  assert.equal(fullMockSkipsDueReview({ lengthId: 'full', kind: 'standard', mixedPractice: true }), false);
+  const p = pool('220-1202');
+  const ids = p.domains.flatMap((d) => d.objectives.flatMap((o) => o.questionIds));
+  const due = [ids[0], ids[40], ids[120]];
+  const withDue = draftTest(p, 15, mulberry32(4), { history: due, priority: due });
+  for (const id of due) assert.equal(withDue.some((pick) => pick.questionId === id), true);
+  const priority = fullMockSkipsDueReview({ lengthId: 'full', kind: 'standard' }) ? [] : due;
+  const full = draftTest(p, 15, mulberry32(4), { history: due, priority });
+  assert.equal(full.length, 15);
+  for (const id of due) assert.equal(full.some((pick) => pick.questionId === id), false);
 });
 
 test('due review questions are taken first, and the rest of the test is still a full weighted draft', () => {

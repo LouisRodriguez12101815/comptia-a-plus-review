@@ -60,6 +60,11 @@ test("owner report and diagnostics stay private", async () => {
   const summaryText = JSON.stringify(summary);
   assert.equal(summary.overall.correct, 1);
   assert.equal(summary.overall.total, 2);
+  assert.equal(summary.firstAttempt.correct, 1);
+  assert.equal(summary.firstAttempt.total, 2);
+  assert.equal(summary.firstAttempt.accuracy, 0.5);
+  assert.equal(summary.sittings[0].seenShare, null);
+  assert.match(summary.markdown, /First-attempt accuracy/);
   assert.equal(summary.sureButWrong[0].questionId, "q-sure");
   assert.equal(summary.luckyGuesses[0].questionId, "q-lucky");
   assert.match(summary.sureButWrong[0].prompt, /What stays/);

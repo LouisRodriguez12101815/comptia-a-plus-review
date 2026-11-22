@@ -28,6 +28,8 @@ export function buildExamPool(input: {
 export function allocateByWeight(domains: PoolDomain[], total: number): Record<string, number>;
 /** Unseen ids first, then the ones seen longest ago. `history` lists ids oldest first. */
 export function freshFirstIds(ids: readonly string[], history?: readonly string[], rng?: () => number): string[];
+/** Full-length mocks, including a targeted full mock, do not reserve due-review seats. */
+export function fullMockSkipsDueReview(input: { lengthId: string; kind: string; domainPractice?: boolean; mixedPractice?: boolean }): boolean;
 /** `history`: question ids from earlier sittings, oldest first. Unseen questions are drawn first. */
 export function draftTest(pool: ExamPool, requested: number, rng?: () => number, options?: { history?: readonly string[]; priority?: readonly string[]; objectiveFor?: Record<string, string> }): TestPick[];
 /** Leans a draft on chosen objectives: `share` of questions from them (0.6 by default, 1 for a retest). */

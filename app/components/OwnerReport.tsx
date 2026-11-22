@@ -182,6 +182,10 @@ export function OwnerReport() {
                 <p className="text-sm text-slate-400">{report.window.start} — {report.window.end}</p>
               </section>
               <section>
+                <h2 className="text-lg font-semibold text-white">{t("firstAttempt")}</h2>
+                <p className="mt-1 text-slate-200">{report.firstAttempt.correct}/{report.firstAttempt.total} ({pct(report.firstAttempt.accuracy)})</p>
+              </section>
+              <section>
                 <h2 className="text-lg font-semibold text-white">{t("sittings")}</h2>
                 <ul className="mt-2 space-y-1 text-sm text-slate-200">
                   {report.sittings.map((sitting) => (
@@ -190,6 +194,7 @@ export function OwnerReport() {
                       {sitting.medianSeconds === null
                         ? ` — ${t("notRecorded")}`
                         : ` — ${t("medianSlow", { seconds: sitting.medianSeconds, slow: sitting.slowCount ?? 0 })}`}
+                      {sitting.seenShare === null ? "" : ` — ${t("alreadySeen", { percent: sitting.seenShare })}`}
                     </li>
                   ))}
                 </ul>

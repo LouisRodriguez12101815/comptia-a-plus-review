@@ -47,7 +47,7 @@ export function bankIndex(content) {
 }
 
 /** Read-only compatibility with immutable generations; never fall back to stale legacy chunks. */
-function storedProgress(items) {
+export function storedProgress(items) {
   const committed = items.find(item => item.key === 'progress-head');
   if (!committed) {
     return items.some(i => i.key === 'progress' || i.key === 'history' || /^progress-\d+$/.test(i.key))
