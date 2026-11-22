@@ -10,6 +10,9 @@ export type ReadinessAttempt = {
   bankVersion?: string;
   at?: number;
   correctIds?: string[];
+  missedIds?: string[];
+  /** Percent of this mock's questions already seen before it started. */
+  seenShare?: number;
   multiQuestionIds?: string[];
 };
 
@@ -22,6 +25,12 @@ export type ReadinessResult = {
   domainFloor: number | null;
   multiPercent: number | null;
   exposurePercent: number | null;
+  /** Pooled accuracy of the recent full mocks, from their domain totals. */
+  overallPercent: number | null;
+  /** First time each question was graded inside the evidence window. */
+  firstAttemptPercent: number | null;
+  /** One row per mock for this exam, newest first when the input is. */
+  mockSeen: { at: number | null; seenShare: number | null }[];
   missingObjectives: number;
   blockers: string[];
   weakDomains: { id: string; title: string; percent: number }[];
@@ -63,6 +72,36 @@ export function evaluateReadiness(
 
   const multiPercent = multiTotal ? Math.round((100 * multiCorrect) / multiTotal) : null;
   const exposurePercent = bankSize > 0 ? Math.round((100 * seenQuestions.size) / bankSize) : null;
+  let pooledCorrect = 0;
+  let pooledTotal = 0;
+  for (const attempt of recent) {
+    for (const domain of attempt.domains) {
+      pooledCorrect += domain.correct;
+      pooledTotal += domain.total;
+    }
+  }
+  const overallPercent = pooledTotal ? Math.round((100 * pooledCorrect) / pooledTotal) : null;
+  const seenBefore = (attempt: ReadinessAttempt) => {
+    if (typeof attempt.seenShare === "number" && Number.isInteger(attempt.seenShare)) return attempt.seenShare;
+    const ids = attempt.questionIds ?? [];
+    if (!ids.length || typeof attempt.at !== "number") return null;
+    const prior = new Set<string>();
+    for (const other of matching) {
+      if (typeof other.at !== "number" || other.at >= attempt.at) continue;
+      for (const id of other.questionIds ?? []) prior.add(id);
+    }
+    const already = ids.filter((id) => prior.has(id)).length;
+    return Math.round((100 * already) / ids.length);
+  };
+  const mockSeen = attempts
+    .filter((attempt) => attempt.exam === exam)
+    .map((attempt) => ({ at: typeof attempt.at === "number" ? attempt.at : null, seenShare: seenBefore(attempt) }));
+  const first = new Map<string, boolean>();
+  for (const a of [...matching].reverse()) for (const id of a.questionIds ?? []) {
+    if (validIds && !validIds.has(id)) continue;
+    if (!first.has(id)) first.set(id, (a.correctIds ?? []).includes(id));
+  }
+  const firstAttemptPercent = first.size ? Math.round((100 * [...first.values()].filter(Boolean).length) / first.size) : null;
   const weakDomains = [...domainTotals.entries()]
     .map(([id, value]) => ({ id, title: value.title, percent: Math.round((100 * value.correct) / value.total) }))
     .filter((domain) => domain.percent < 80)
@@ -80,11 +119,7 @@ export function evaluateReadiness(
     if (recent.some(a => evidence.expectedDomains.some(id => !a.domains.some(d => d.id === id && d.total > 0)))) blockers.push("Include every exam domain in each full mock.");
     const testedMulti = new Set(recent.flatMap(a => a.multiQuestionIds ?? []).filter(id => evidence.multiIds.includes(id)));
     if (testedMulti.size < Math.min(8, evidence.multiIds.length) || testedMulti.size === 0) blockers.push("Build accuracy across distinct multiple-response items, not repeated copies.");
-    // Oldest to newest: evaluate each item's first exposure in the current version/window.
-    const first = new Map<string, boolean>();
-    for (const a of [...matching].reverse()) for (const id of a.questionIds ?? []) {
-      if (validIds?.has(id) && !first.has(id)) first.set(id, (a.correctIds ?? []).includes(id));
-    }
+    // Oldest to newest: the same first-exposure map shown on the readiness view.
     const firstAccuracy = first.size ? 100 * [...first.values()].filter(Boolean).length / first.size : 0;
     if (first.size < Math.ceil(bankSize * 0.8) || firstAccuracy < 80) blockers.push("Reach the practice target on first exposures in this content version; repeat familiarity alone is insufficient.");
   }
@@ -105,6 +140,9 @@ export function evaluateReadiness(
     domainFloor,
     multiPercent,
     exposurePercent,
+    overallPercent,
+    firstAttemptPercent,
+    mockSeen,
     missingObjectives,
     blockers,
     weakDomains,

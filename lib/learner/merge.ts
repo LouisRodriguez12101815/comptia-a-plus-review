@@ -1,3 +1,4 @@
+import { mergeFirstSeen } from "@/lib/attempt-metrics";
 import type { ClfAssessmentSnapshot, MockAttempt, Progress, QuizAttempt } from "@/lib/progress";
 import { mergeMatchMisses } from "@/lib/study/memory-match";
 import type { StoredSchedule } from "@/lib/study/schedule";
@@ -18,8 +19,8 @@ function unionAttempts<T extends { at: number }>(a: T[], b: T[], key: (x: T) => 
   return [...seen.values()].sort((x, y) => y.at - x.at).slice(0, max);
 }
 
-/** Local seconds win for a question. Seconds that exist only on the other copy are kept. */
-function keepSeconds<T extends { secondsByQuestion?: Record<string, number> }>(primary: T, secondary: T): T {
+/** Local seconds win for a question. Seconds that exist only on the other copy are kept. A seen-share recorded on only one copy is kept. */
+function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; seenShare?: number }>(primary: T, secondary: T): T {
   const seconds: Record<string, number> = {};
   for (const source of [secondary.secondsByQuestion, primary.secondsByQuestion]) {
     if (!source) continue;
@@ -27,8 +28,10 @@ function keepSeconds<T extends { secondsByQuestion?: Record<string, number> }>(p
       if (typeof value === "number" && Number.isFinite(value) && value >= 0) seconds[id] = value;
     }
   }
-  if (!Object.keys(seconds).length) return primary;
-  return { ...primary, secondsByQuestion: seconds };
+  const seenShare = primary.seenShare ?? secondary.seenShare;
+  const withSeconds = Object.keys(seconds).length ? { ...primary, secondsByQuestion: seconds } : primary;
+  if (seenShare === undefined || withSeconds.seenShare !== undefined) return withSeconds;
+  return { ...withSeconds, seenShare };
 }
 
 /** Missed drill cues kept from a sync. Local ids are kept first, then remote ids, until this cap. */
@@ -102,11 +105,13 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   }
   const memoryGames = mergeMemoryGames(local.memoryGames, remote.memoryGames);
   const drillPractice = mergeDrillPractice(local.drillPractice, remote.drillPractice);
+  const firstSeen = mergeFirstSeen(local.firstSeen, remote.firstSeen);
   return {
     studyFocus: local.studyFocus,
     knownCards,
     unknownCards,
     schedules,
+    ...(firstSeen ? { firstSeen } : {}),
     quizAttempts: unionAttempts<QuizAttempt>(local.quizAttempts, remote.quizAttempts, (q) => `${q.at}:${q.topicId}`, 40, keepSeconds),
     mockAttempts: unionAttempts<MockAttempt>(local.mockAttempts, remote.mockAttempts, (m) => `${m.at}:${m.exam}`, 30, keepSeconds),
     ...((local.clfAssessmentSnapshots?.length || remote.clfAssessmentSnapshots?.length) ? { clfAssessmentSnapshots: unionAttempts<ClfAssessmentSnapshot>(local.clfAssessmentSnapshots ?? [], remote.clfAssessmentSnapshots ?? [], (snapshot) => snapshot.id, 20) } : {}),

@@ -9,7 +9,7 @@ import { reportContent } from "@/app/components/ReportIssue";
 import { getTopic, questions, topics } from "@/lib/content";
 import {
   EXAM_FORMATS, TEST_LENGTHS, MIXED_PRACTICE_QUESTION_COUNT, allocateByWeight, assessmentVersion, shuffleChoiceOrder, buildExamPool,
-  draftFocused, draftTest, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds,
+  draftFocused, draftTest, fullMockSkipsDueReview, gradeTest, isCorrect, questionsForLength, secondsPerQuestion, sessionDurationSeconds,
   type TestPick, type TestResponse,
 } from "@/lib/exam-test.mjs";
 import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
@@ -175,6 +175,19 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const immediatePractice = isMixedPractice || isDomainPractice;
   const requested = isMixedPractice ? MIXED_PRACTICE_QUESTION_COUNT : isDomainPractice ? 10 : questionsForLength(exam, lengthId);
   const planned = Math.min(requested, sessionPool.totalUnique);
+  const seenQuestionIds = useMemo(() => {
+    const history = exam === "saa-c03"
+      ? saaRotationHistory(progress)
+      : [...progress.mockAttempts].filter((attempt) => attempt.exam === exam).reverse().flatMap((attempt) => attempt.questionIds ?? []);
+    return new Set(history);
+  }, [exam, progress]);
+  const poolExhausted = useMemo(() => {
+    const ids = new Set(sessionPool.domains.flatMap((domain) => domain.objectives.flatMap((objective) => objective.questionIds)));
+    if (ids.size === 0) return false;
+    for (const id of ids) if (!seenQuestionIds.has(id)) return false;
+    return true;
+  }, [seenQuestionIds, sessionPool]);
+  const fullMock = fullMockSkipsDueReview({ lengthId, kind: mode, domainPractice: isDomainPractice, mixedPractice: isMixedPractice });
   const quota = useMemo(() => allocateByWeight(sessionPool.domains, planned), [sessionPool, planned]);
 
   const lengthLabel = (id: string) => {
@@ -262,15 +275,9 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     const multiPicks = finalPicks.filter((p) => Array.isArray(questionsById[p.questionId].answer));
     const multiCorrect = multiPicks.filter((p) => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).length;
     setScoredPicks(finalPicks);
-    recordQuiz({
-      exam,
-      bankVersion: assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
-      topicId: `exam-test:${exam}`,
-      correct: finalPicks.length - missed.length,
-      total: finalPicks.length,
-      questionIds: finalPicks.map((pick) => pick.questionId).filter(id => visited.current.has(id)),
-      missedIds: missed,
-    });
+    const bankVersion = assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id]));
+    const visitedIds = finalPicks.map((pick) => pick.questionId).filter(id => visited.current.has(id));
+    // The mock is saved first so its seen-share does not count the quiz row this sitting also writes.
     const next = recordMock({
       exam,
       full: finalPicks.length === EXAM_FORMATS[exam].maxQuestions,
@@ -280,11 +287,11 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       domains: graded.domains.map((d) => ({ id: d.id, title: d.title, correct: d.correct, total: d.total })),
       multiCorrect,
       multiTotal: multiPicks.length,
-      questionIds: finalPicks.map((pick) => pick.questionId).filter(id => visited.current.has(id)),
+      questionIds: visitedIds,
       objectiveByQuestion: Object.fromEntries(finalPicks.map((pick) => [pick.questionId, pick.objectiveId])),
       correctIds: finalPicks.filter(p => isCorrect(questionsById[p.questionId], finalResponses[p.questionId]?.answer)).map(p => p.questionId),
       multiQuestionIds: multiPicks.filter(p => visited.current.has(p.questionId)).map(p => p.questionId),
-      bankVersion: assessmentVersion(sessionPool.domains.flatMap(d => d.objectives.flatMap(o => o.questionIds)).filter((id, i, ids) => ids.indexOf(id) === i).map(id => questionsById[id])),
+      bankVersion,
       missedIds: missed,
       luckyIds: finalPicks.map((p) => p.questionId).filter((id) => isLuckyGuess(confidenceRef.current[id], isCorrect(questionsById[id], finalResponses[id]?.answer))),
       sureIds: finalPicks.map((p) => p.questionId).filter((id) => visited.current.has(id) && confidenceRef.current[id] === "sure"),
@@ -299,6 +306,15 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         const answer = finalResponses[id]?.answer;
         return typeof answer === "number" && !Array.isArray(questionsById[id].answer) ? [[id, answer]] : [];
       })),
+    });
+    recordQuiz({
+      exam,
+      bankVersion,
+      topicId: `exam-test:${exam}`,
+      correct: finalPicks.length - missed.length,
+      total: finalPicks.length,
+      questionIds: visitedIds,
+      missedIds: missed,
     });
     if (exam === "saa-c03") {
       const lucky = finalPicks.map((p) => p.questionId).filter((id) => isLuckyGuess(confidenceRef.current[id], isCorrect(questionsById[id], finalResponses[id]?.answer)));
@@ -398,7 +414,8 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
         .flatMap((attempt) => attempt.questionIds ?? []);
     // Missed questions whose 1-day or 3-day review is due go in first.
     const dueAttempts = exam === "saa-c03" ? [...snapshot.quizAttempts, ...snapshot.mockAttempts] : snapshot.mockAttempts;
-    const due = kind === "drill" ? [] : dueReviews(dueAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
+    const skipDue = fullMockSkipsDueReview({ lengthId, kind, domainPractice: isDomainPractice, mixedPractice: isMixedPractice });
+    const due = kind === "drill" || skipDue ? [] : dueReviews(dueAttempts, exam, nowMs()).slice(0, DUE_PER_TEST);
     const priority = due.map((d) => d.questionId);
     const objectiveFor = Object.fromEntries(due.flatMap((d) => (d.objectiveId ? [[d.questionId, d.objectiveId]] : [])));
     const draft = kind === "drill"
@@ -573,9 +590,12 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
           </ul>
         </section>
 
+        {poolExhausted && (
+          <p className="rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-100">{t("unseenExhausted")}</p>
+        )}
         {dueCount > 0 && (
           <p className="rounded-xl border border-violet-400/40 bg-violet-400/10 p-3 text-sm text-violet-100">
-            {t("dueLine", { count: dueCount, perTest: Math.min(dueCount, DUE_PER_TEST) })}
+            {fullMock ? t("fullMockDue", { count: dueCount }) : t("dueLine", { count: dueCount, perTest: Math.min(dueCount, DUE_PER_TEST) })}
           </p>
         )}
         <button type="button" onClick={() => start()} disabled={planned === 0} className={primary}>
@@ -601,6 +621,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
               {formatClock(remaining)}
             </p>}
           </div>
+          {poolExhausted && <p className="text-sm text-amber-100">{t("unseenExhausted")}</p>}
           {exam === "saa-c03" && !immediatePractice && <p className="text-xs text-slate-400">{skills("pace")}</p>}
           {!immediatePractice && <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-slate-800">
             <div className={`h-full transition-[width] duration-200 ${warned ? "bg-amber-400" : "bg-teal-400"}`} style={{ width: `${100 * fraction}%` }} />
@@ -888,13 +909,28 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
             </span>
           </div>
           <p className="mt-3 text-sm text-slate-300">{t("readinessHeuristic")}</p>
-          <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {poolExhausted && <p className="mt-3 text-sm text-amber-100">{t("unseenExhausted")}</p>}
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatMini label={t("readinessFullMocks")} value={`${awsReadiness.fullAttempts}/3`} />
             <StatMini label={t("readinessScores")} value={awsReadiness.overallScores.length ? awsReadiness.overallScores.map((score) => `${score}%`).join(" · ") : "—"} />
+            <StatMini label={t("readinessOverall")} value={awsReadiness.overallPercent === null ? "—" : `${awsReadiness.overallPercent}%`} />
+            <StatMini label={t("readinessFirstAttempt")} value={awsReadiness.firstAttemptPercent === null ? "—" : `${awsReadiness.firstAttemptPercent}%`} />
             <StatMini label={t("readinessDomainFloor")} value={awsReadiness.domainFloor === null ? "—" : `${awsReadiness.domainFloor}%`} />
             <StatMini label={t("readinessMulti")} value={awsReadiness.multiPercent === null ? "—" : `${awsReadiness.multiPercent}%`} />
             <StatMini label={t("readinessExposure")} value={awsReadiness.exposurePercent === null ? "—" : `${awsReadiness.exposurePercent}%`} />
           </dl>
+          {awsReadiness.mockSeen.length > 0 && (
+            <ul className="mt-4 space-y-1 text-sm text-slate-200">
+              {awsReadiness.mockSeen.map((row, index) => (
+                <li key={`${row.at ?? "none"}-${index}`}>
+                  {t("readinessSeenShare", {
+                    when: row.at === null ? "—" : new Date(row.at).toISOString(),
+                    share: row.seenShare === null ? "—" : `${row.seenShare}%`,
+                  })}
+                </li>
+              ))}
+            </ul>
+          )}
           {awsReadiness.weakDomains.length > 0 && (
             <div className="mt-4">
               <h3 className="text-sm font-medium text-white">{t("weakDomains")}</h3>

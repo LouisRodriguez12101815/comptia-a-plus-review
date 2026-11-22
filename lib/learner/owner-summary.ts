@@ -23,8 +23,9 @@ export type OwnerSummary = {
   exam: string;
   days: number;
   window: { start: string; end: string };
-  sittings: { at: string; correct: number; total: number; medianSeconds: number | null; slowCount: number | null }[];
+  sittings: { at: string; correct: number; total: number; medianSeconds: number | null; slowCount: number | null; seenShare: number | null }[];
   overall: { correct: number; total: number; accuracy: number | null };
+  firstAttempt: { correct: number; total: number; accuracy: number | null };
   domains: { id: string; title: string; correct: number; total: number; accuracy: number | null }[];
   weakestTasks: { id: string; title: string; correct: number; attempts: number; accuracy: number | null }[];
   mostMissed: { questionId: string; prompt: string; incorrect: number; attempts: number }[];
@@ -66,6 +67,8 @@ export function ownerSummary(input: {
   taskTitles: Map<string, string>;
   domainsByObjective: Map<string, { id: string; title: string }>;
   followups: string[];
+  firstAttempt?: { correct: number; total: number; accuracy: number | null };
+  seenBySitting?: Map<string, number>;
 }): OwnerSummary {
   const scoring = input.activity.filter((row) => row.scoringEvidence === true && row.eventType === "question_answered" && typeof row.isCorrect === "boolean");
   const sittingsMap = new Map<string, { at: string; correct: number; total: number; seconds: number[] }>();
@@ -83,6 +86,7 @@ export function ownerSummary(input: {
     total: sitting.total,
     medianSeconds: sitting.seconds.length ? median(sitting.seconds) : null,
     slowCount: sitting.seconds.length ? sitting.seconds.filter((seconds) => seconds > SLOW_SECONDS).length : null,
+    seenShare: input.seenBySitting?.get(sitting.at) ?? null,
   }));
   const correct = sittings.reduce((sum, sitting) => sum + sitting.correct, 0);
   const total = sittings.reduce((sum, sitting) => sum + sitting.total, 0);
@@ -136,6 +140,7 @@ export function ownerSummary(input: {
     window: input.window,
     sittings,
     overall: { correct, total, accuracy: accuracy(correct, total) },
+    firstAttempt: input.firstAttempt ?? { correct: 0, total: 0, accuracy: null },
     domains,
     weakestTasks,
     mostMissed,
@@ -171,8 +176,9 @@ function pct(value: number | null) {
 function summaryMarkdown(summary: OwnerSummary) {
   const list = (rows: string[]) => (rows.length ? rows.map((row) => `- ${row}`).join("\n") : "- None in retained evidence.");
   return `# ${summary.exam} activity\n\nWindow: ${summary.window.start} — ${summary.window.end}\n\n`
-    + `## Sittings\n\n${list(summary.sittings.map((sitting) => `${sitting.at}: ${sitting.correct}/${sitting.total}${sitting.medianSeconds === null ? " — pacing not recorded" : ` — median ${sitting.medianSeconds}s, ${sitting.slowCount} slower than 3 min`}`))}\n\n`
+    + `## Sittings\n\n${list(summary.sittings.map((sitting) => `${sitting.at}: ${sitting.correct}/${sitting.total}${sitting.medianSeconds === null ? " — pacing not recorded" : ` — median ${sitting.medianSeconds}s, ${sitting.slowCount} slower than 3 min`}${sitting.seenShare === null ? "" : ` — ${sitting.seenShare}% already seen`}`))}\n\n`
     + `## Overall\n\n${summary.overall.correct}/${summary.overall.total} (${pct(summary.overall.accuracy)})\n\n`
+    + `## First-attempt accuracy\n\n${summary.firstAttempt.correct}/${summary.firstAttempt.total} (${pct(summary.firstAttempt.accuracy)})\n\n`
     + `## Domains\n\n${list(summary.domains.map((domain) => `${domain.title}: ${domain.correct}/${domain.total} (${pct(domain.accuracy)})`))}\n\n`
     + `## Weakest tasks\n\n${list(summary.weakestTasks.map((task) => `${task.id} ${task.title}: ${task.correct}/${task.attempts} (${pct(task.accuracy)})`))}\n\n`
     + `## Most-missed questions\n\n${list(summary.mostMissed.map((row) => `${row.questionId}: ${row.prompt} (${row.incorrect} incorrect / ${row.attempts} attempts)`))}\n\n`

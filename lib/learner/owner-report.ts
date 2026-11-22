@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { collectActivity } from "../../scripts/lib/learner-activity-data.mjs";
+import { firstAttemptSummary, mockSeenByTimestamp } from "@/lib/attempt-metrics";
+import { collectActivity, storedProgress } from "../../scripts/lib/learner-activity-data.mjs";
 import { analyzeActivity, buildFollowup } from "../../scripts/lib/learner-activity-plan.mjs";
 import { emptyOwnerSummary, ownerSummary } from "@/lib/learner/owner-summary";
 
@@ -46,6 +47,9 @@ export function summarizeItems(items: { key: string; data?: unknown }[], content
     }
   }
   const followups = (quiz.plans ?? []).flatMap((plan: { learnerQuizPaths?: string[] }) => plan.learnerQuizPaths ?? []);
+  const progress = storedProgress(items);
+  const start = Date.parse(activity.window.start);
+  const end = Date.parse(activity.window.end);
   return ownerSummary({
     exam: opts.exam,
     days: opts.days,
@@ -57,5 +61,7 @@ export function summarizeItems(items: { key: string; data?: unknown }[], content
     taskTitles,
     domainsByObjective,
     followups,
+    firstAttempt: firstAttemptSummary(progress, opts.exam, start, end),
+    seenBySitting: mockSeenByTimestamp(progress, opts.exam, start, end),
   });
 }

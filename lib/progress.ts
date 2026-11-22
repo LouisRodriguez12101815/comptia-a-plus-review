@@ -1,3 +1,4 @@
+import { extendFirstSeen, shareForMock, validSeenShare, type FirstExposure } from "@/lib/attempt-metrics";
 import { DEFAULT_STUDY_FOCUS, isStudyFocus } from "@/lib/exams";
 import type { StudyFocus } from "@/lib/types";
 import { rememberMatchMiss, type MemoryMiss } from "@/lib/study/memory-match";
@@ -70,6 +71,8 @@ export type MockAttempt = {
   mode?: string;
   /** The wrong choice picked (authored index) for each missed single-answer question. */
   wrongChoices?: Record<string, number>;
+  /** Percent of this mock's questions that had already been seen. Computed when the mock is saved. */
+  seenShare?: number;
   missedIds: string[];
   at: number;
 };
@@ -102,6 +105,8 @@ export type Progress = {
   schedules: Record<string, StoredSchedule>;
   /** SAA game streak, best times, and memory-match misses. Optional so older saves still load. */
   memoryGames?: { lastMixDay?: string; streak: number; bestMs: Record<string, number>; misses?: MemoryMiss[] };
+  /** First graded outcome for each exam question. Optional so older saves still load. */
+  firstSeen?: Record<string, FirstExposure>;
   /** Missed drill cues and the best survival or speed streak. Optional so older saves still load. */
   drillPractice?: {
     missedIds: string[];
@@ -362,6 +367,29 @@ function parseMemoryGames(value: unknown): { value?: Progress["memoryGames"]; re
   };
 }
 
+function parseFirstSeen(value: unknown): { value?: Progress["firstSeen"]; repaired: boolean } {
+  if (value === undefined) return { repaired: false };
+  if (!isRecord(value)) return { repaired: true };
+  const kept: Record<string, FirstExposure> = {};
+  let repaired = false;
+  for (const [key, row] of Object.entries(value)) {
+    if (!isRecord(row) || typeof row.exam !== "string" || typeof row.correct !== "boolean" || !Number.isFinite(row.at)) {
+      repaired = true;
+      continue;
+    }
+    const id = key.slice(row.exam.length + 1);
+    if (!id || key !== `${row.exam}:${id}`) {
+      repaired = true;
+      continue;
+    }
+    const at = row.at as number;
+    const previous = kept[key];
+    if (!previous || at < previous.at) kept[key] = { exam: row.exam, correct: row.correct, at };
+  }
+  if (Object.keys(kept).length !== Object.keys(value).length) repaired = true;
+  return { value: Object.keys(kept).length ? kept : undefined, repaired };
+}
+
 function isClfSnapshot(value: unknown): value is ClfAssessmentSnapshot {
   if (!isRecord(value) || typeof value.id !== "string" || (value.kind !== "baseline" && value.kind !== "retest") || (value.baselineId !== undefined && typeof value.baselineId !== "string") || (value.kind === "baseline" && value.baselineId !== undefined) || !Number.isFinite(value.at) || typeof value.bankVersion !== "string" || !isRecord(value.objectives)) return false;
   return Object.values(value.objectives).every((objective) => isRecord(objective) && (objective.accuracy === null || Number.isFinite(objective.accuracy)) && Number.isInteger(objective.distinctQuestions) && typeof objective.evidence === "string" && typeof objective.state === "string" && Array.isArray(objective.questionEvidence) && objective.questionEvidence.every((item) => isRecord(item) && typeof item.questionId === "string" && typeof item.correct === "boolean" && Number.isFinite(item.at)));
@@ -386,14 +414,22 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   const parsedQuizAttempts = attempts.map(parseQuizAttempt);
   const quizAttempts = parsedQuizAttempts.flatMap(({ attempt }) => attempt ? [attempt] : []);
   const rawMockAttempts = Array.isArray(parsed.mockAttempts) ? parsed.mockAttempts : [];
-  const parsedMockAttempts = rawMockAttempts.filter(isMockAttempt).map((attempt) => applyAttemptExtras(attempt));
+  const parsedMockAttempts = rawMockAttempts.filter(isMockAttempt).map((attempt) => {
+    const extras = applyAttemptExtras(attempt);
+    if (attempt.seenShare === undefined) return extras;
+    if (validSeenShare(attempt.seenShare)) return extras;
+    const next = { ...extras.attempt };
+    delete next.seenShare;
+    return { attempt: next, repaired: true };
+  });
   const mockAttempts = parsedMockAttempts.map(({ attempt }) => attempt);
   const rawSnapshots = Array.isArray(parsed.clfAssessmentSnapshots) ? parsed.clfAssessmentSnapshots : [];
   const clfAssessmentSnapshots = rawSnapshots.filter(isClfSnapshot).slice(0, 20);
   const schedules = isRecord(parsed.schedules) ? (parsed.schedules as Record<string, StoredSchedule>) : {};
   const memoryGames = parseMemoryGames(parsed.memoryGames);
   const drillPractice = parseDrillPractice(parsed.drillPractice);
-  const repaired = known.repaired || unknown.repaired || memoryGames.repaired || drillPractice.repaired
+  const firstSeen = parseFirstSeen(parsed.firstSeen);
+  const repaired = known.repaired || unknown.repaired || memoryGames.repaired || drillPractice.repaired || firstSeen.repaired
     || (parsed.quizAttempts !== undefined && !Array.isArray(parsed.quizAttempts))
     || quizAttempts.length !== attempts.length
     || parsedQuizAttempts.some(({ repaired: optionalRepaired }) => optionalRepaired)
@@ -413,6 +449,7 @@ export function parseProgress(raw: string | null): { progress: Progress; problem
   if (clfAssessmentSnapshots.length > 0) progress.clfAssessmentSnapshots = clfAssessmentSnapshots;
   if (memoryGames.value) progress.memoryGames = memoryGames.value;
   if (drillPractice.value) progress.drillPractice = drillPractice.value;
+  if (firstSeen.value) progress.firstSeen = firstSeen.value;
   return {
     progress,
     problems: repaired ? ["repaired"] : [],
@@ -511,10 +548,13 @@ export function markCard(cardId: string, known: boolean) {
 
 export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
   const current = loadProgress();
+  const saved = { ...attempt, at: Date.now() };
+  const firstSeen = extendFirstSeen(current, saved);
   const next = {
     ...current,
+    ...(firstSeen ? { firstSeen } : {}),
     quizAttempts: [
-      { ...attempt, at: Date.now() },
+      saved,
       ...current.quizAttempts,
     ].slice(0, 40),
   };
@@ -523,12 +563,17 @@ export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
   return next;
 }
 
-export function recordMock(attempt: Omit<MockAttempt, "at">) {
+export function recordMock(attempt: Omit<MockAttempt, "at" | "seenShare">) {
   const current = loadProgress();
+  const at = Date.now();
+  const seenShare = shareForMock(current, attempt.exam, attempt.questionIds ?? []);
+  const saved = { ...attempt, at, ...(seenShare === null ? {} : { seenShare }) };
+  const firstSeen = extendFirstSeen(current, saved);
   const next = {
     ...current,
+    ...(firstSeen ? { firstSeen } : {}),
     mockAttempts: [
-      { ...attempt, at: Date.now() },
+      saved,
       ...current.mockAttempts,
     ].slice(0, 30),
   };
