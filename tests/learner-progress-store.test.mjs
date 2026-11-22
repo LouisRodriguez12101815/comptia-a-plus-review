@@ -9,12 +9,23 @@ import { decodeSnapshot, makeSnapshot, PROGRESS_HEAD, snapshotKeys } from '../li
 import { learnerConfig, twilioLearner } from '../lib/learner/twilio.ts';
 import { learnerId, signSession } from '../lib/learner/session.ts';
 import { decodeProgress } from '../scripts/export-primary-history.mjs';
+import { isArchiveKey, readArchives } from '../lib/learner/archive.mjs';
 
 const empty = () => ({ studyFocus: 'n10-009', knownCards: {}, unknownCards: {}, quizAttempts: [], mockAttempts: [], schedules: {} });
 const validSchedule = () => ({ due: '2026-01-01T00:00:00.000Z', last_review: '2025-12-31T00:00:00.000Z', stability: 1, difficulty: 1, elapsed_days: 0, scheduled_days: 1, reps: 1, lapses: 0, state: 2 });
 const withQuiz = (name, at) => ({ ...empty(), quizAttempts: [{ topicId: name, correct: 1, total: 1, questionIds: [name], missedIds: [], at }] });
 const big = (prefix) => ({ ...empty(), knownCards: Object.fromEntries(Array.from({ length: 1800 }, (_, i) => [`${prefix}-${String(i).padStart(4, '0')}`, true])) });
 const ids = progress => progress.quizAttempts.map(q => q.topicId).sort();
+const dropAttempt = attempt => {
+  const copy = { ...attempt };
+  delete copy.serverSeenAt;
+  return copy;
+};
+const dropSeen = progress => ({
+  ...progress,
+  quizAttempts: (progress.quizAttempts ?? []).map(dropAttempt),
+  mockAttempts: (progress.mockAttempts ?? []).map(dropAttempt),
+});
 const upstream = status => Object.assign(new Error('synthetic-provider-error'), { status });
 function deferred() {
   let resolve;
@@ -229,7 +240,7 @@ test('legacy multi-chunk progress migrates without rewriting legacy or other lea
   assert.deepEqual(await loadRemote(map), old);
   await saveRemote(map, withQuiz('after-migration', 10));
   for (const [key, data] of before) assert.deepEqual(map.items.get(key), data);
-  assert.deepEqual(await loadRemote(map), mergeProgress(withQuiz('after-migration', 10), old));
+  assert.deepEqual(dropSeen(await loadRemote(map)), mergeProgress(withQuiz('after-migration', 10), old));
   assert.deepEqual(ids(await loadRemote(map)), ['after-migration']);
   assert.deepEqual(ids(decodeProgress(await map.list())), ['after-migration']);
   // The committed manifest, never a leftover legacy stream, is authoritative.
@@ -284,7 +295,7 @@ test('valid older legacy progress missing newer optional fields still migrates',
   assert.deepEqual(await loadRemote(map), expected);
   const local = withQuiz('current', 2);
   await saveRemote(map, local);
-  assert.deepEqual(await loadRemote(map), mergeProgress(local, expected));
+  assert.deepEqual(dropSeen(await loadRemote(map)), mergeProgress(local, expected));
   assert.deepEqual(map.items.get('progress-0'), { s: raw });
 });
 
@@ -313,12 +324,12 @@ test('a late legacy writer cannot change the committed manifest or mix invisible
   const expected = mergeProgress(modern, legacy);
   // Simulate a request running old deployed code completing after migration.
   await map.set('progress-0', { s: JSON.stringify(withQuiz('late-legacy-save', 3)) });
-  assert.deepEqual(await loadRemote(map), expected);
-  assert.deepEqual(decodeProgress(await map.list()).quizAttempts, expected.quizAttempts);
+  assert.deepEqual(dropSeen(await loadRemote(map)), expected);
+  assert.deepEqual(decodeProgress(await map.list()).quizAttempts.map(dropAttempt), expected.quizAttempts);
   assert.deepEqual(map.items.get(PROGRESS_HEAD), committed);
   const later = withQuiz('modern-after', 4);
   await saveRemote(map, later);
-  assert.deepEqual(await loadRemote(map), mergeProgress(later, expected));
+  assert.deepEqual(dropSeen(await loadRemote(map)), mergeProgress(later, expected));
   assert.ok(!ids(await loadRemote(map)).includes('late-legacy-save'), 'old writers must be drained, not silently merged');
 });
 
@@ -366,7 +377,7 @@ test('real SDK pagination keeps telemetry visible beyond 1,000 mixed items with 
   assert.ok(listed.length > 1000);
   assert.ok(listed.findIndex(item => item.key === 'telemetry-event-visible') > 1000);
   assert.deepEqual(await loadTelemetry(map), [event]);
-  assert.deepEqual(await loadRemote(map), progress);
+  assert.deepEqual(dropSeen(await loadRemote(map)), progress);
   assert.ok(requests.some(request => Number(request.token) > 1000), 'follow later provider pages');
   assert.ok(requests.every(request => request.map === 'learner-isolated'));
   assert.ok(!listed.some(item => item.key === 'telemetry-event-other-learner'));
@@ -404,6 +415,9 @@ test('attempt caps and input idempotency retain existing merge semantics', async
   assert.equal(restored.quizAttempts.length, 40);
   assert.equal(restored.quizAttempts[0].topicId, 'latest');
   assert.equal(ids(restored).filter(id => id === 'latest').length, 1);
+  const archived = readArchives(await map.list());
+  assert.deepEqual(archived.quizzes.map(item => item.topicId), ['q0']);
+  assert.equal(restored.quizAttempts.some(item => item.topicId === 'q0'), false);
 });
 
 test('oversized or heavily escaped chunks are rejected before any writes', async () => {
@@ -511,4 +525,58 @@ test('the actual authenticated sync route merges simultaneous saves and keeps le
     hooks.deregister(); delete globalThis.__atomicProgressTestProvider;
     for (const [key, value] of Object.entries(oldEnv)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
   }
+});
+
+test('attempts past the cap are archived and serverSeenAt stays on the first merge', async () => {
+  const map = fakeMap();
+  const first = '2026-11-22T03:00:00.000Z';
+  const second = '2026-11-22T04:00:00.000Z';
+  const quizzes = Array.from({ length: 41 }, (_, i) => ({ topicId: `q${i}`, correct: 1, total: 1, questionIds: [`q${i}`], missedIds: [], at: i + 1 }));
+  const progress = { ...empty(), quizAttempts: quizzes };
+  let clock = first;
+  await saveRemote(map, progress, () => clock);
+  let archived = readArchives(await map.list());
+  assert.deepEqual(archived.quizzes.map(item => item.topicId), ['q0']);
+  assert.equal(archived.quizzes[0].serverSeenAt, first);
+  const kept = await loadRemote(map);
+  assert.equal(kept.quizAttempts.length, 40);
+  assert.equal(kept.quizAttempts.some(item => item.topicId === 'q0'), false);
+  assert.equal(kept.quizAttempts.every(item => item.serverSeenAt === first), true);
+
+  clock = second;
+  const forged = {
+    ...progress,
+    quizAttempts: progress.quizAttempts.map(item => item.topicId === 'q40' ? { ...item, serverSeenAt: '1999-01-01T00:00:00.000Z' } : item),
+  };
+  await saveRemote(map, forged, () => clock);
+  assert.equal(readArchives(await map.list()).quizzes[0].serverSeenAt, first);
+  const again = await loadRemote(map);
+  assert.equal(again.quizAttempts.find(item => item.topicId === 'q40').serverSeenAt, first);
+  assert.equal(again.quizAttempts.every(item => item.serverSeenAt === first), true);
+
+  const generation = [...map.items.keys()].filter(key => key.startsWith('progress-snapshot-'));
+  const extra = { ...empty(), quizAttempts: [...quizzes, { topicId: 'q41', correct: 1, total: 1, questionIds: ['q41'], missedIds: [], at: 100 }] };
+  await saveRemote(map, extra, () => clock);
+  for (const key of generation) assert.equal(map.items.has(key), false, key);
+  assert.equal(readArchives(await map.list()).quizzes.find(item => item.topicId === 'q0').serverSeenAt, first);
+  assert.equal((await loadRemote(map)).quizAttempts.find(item => item.topicId === 'q40').serverSeenAt, first);
+  assert.equal((await loadRemote(map)).quizAttempts.find(item => item.topicId === 'q41').serverSeenAt, second);
+  assert.ok([...map.items.keys()].some(isArchiveKey));
+  await map.removeAll();
+  assert.equal([...map.items.keys()].some(isArchiveKey), false);
+});
+
+test('archive chunks stay append-only under the snapshot byte limit', async () => {
+  const map = fakeMap();
+  const quiz = (i) => ({ topicId: `fat-${i}`, correct: 1, total: 1, questionIds: ['x'.repeat(1500)], missedIds: [], at: Date.UTC(2026, 10, 1) + i });
+  await saveRemote(map, { ...empty(), quizAttempts: Array.from({ length: 50 }, (_, i) => quiz(i)) }, () => '2026-11-22T03:00:00.000Z');
+  assert.deepEqual([...map.items.keys()].filter(isArchiveKey).sort(), ['archive-2026-11', 'archive-2026-11-2']);
+  const closed = JSON.stringify(map.items.get('archive-2026-11'));
+  assert.equal(readArchives(await map.list()).quizzes.length, 10);
+  await saveRemote(map, { ...empty(), quizAttempts: [...Array.from({ length: 50 }, (_, i) => quiz(i)), quiz(50)] }, () => '2026-11-22T05:00:00.000Z');
+  assert.equal(JSON.stringify(map.items.get('archive-2026-11')), closed);
+  const later = readArchives(await map.list());
+  assert.equal(later.quizzes.length, 11);
+  assert.ok(later.quizzes.some(item => item.topicId === 'fat-0'));
+  assert.equal([...map.items.keys()].includes('archive-2026-11'), true);
 });

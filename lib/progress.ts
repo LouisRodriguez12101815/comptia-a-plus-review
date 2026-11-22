@@ -37,6 +37,8 @@ export type QuizAttempt = {
   /** quiz, topic, or twin. Timed tests also write a mock row. */
   mode?: string;
   at: number;
+  /** Server clock when this attempt was first merged. Absent on attempts saved before tracking. */
+  serverSeenAt?: string;
 };
 
 export type MockDomainResult = {
@@ -83,6 +85,8 @@ export type MockAttempt = {
   seenShare?: number;
   missedIds: string[];
   at: number;
+  /** Server clock when this attempt was first merged. Absent on attempts saved before tracking. */
+  serverSeenAt?: string;
 };
 
 export type ClfAssessmentSnapshot = {
@@ -302,7 +306,17 @@ function applyAttemptExtras<T extends QuizAttempt | MockAttempt>(attempt: T): { 
   else delete next.sittingId;
   if (typeof input.mode === "string" && ATTEMPT_MODES.has(input.mode)) next.mode = input.mode;
   else delete next.mode;
+  const serverSeenAt = validServerSeenAt(input.serverSeenAt);
+  if (input.serverSeenAt !== undefined && serverSeenAt === undefined) repaired = true;
+  if (serverSeenAt) next.serverSeenAt = serverSeenAt;
+  else delete next.serverSeenAt;
   return { attempt: next, repaired };
+}
+
+function validServerSeenAt(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString() === value ? value : undefined;
 }
 
 function parseQuizAttempt(value: unknown): { attempt: QuizAttempt | null; repaired: boolean } {
@@ -607,7 +621,7 @@ export function recordQuiz(attempt: Omit<QuizAttempt, "at">) {
     quizAttempts: [
       saved,
       ...current.quizAttempts,
-    ].slice(0, 40),
+    ],
   };
   saveProgress(next);
   requestLearnerFlush();
@@ -626,7 +640,7 @@ export function recordMock(attempt: Omit<MockAttempt, "at" | "seenShare">) {
     mockAttempts: [
       saved,
       ...current.mockAttempts,
-    ].slice(0, 30),
+    ],
   };
   saveProgress(next);
   requestLearnerFlush();

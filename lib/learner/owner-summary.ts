@@ -1,3 +1,5 @@
+import type { CaptureRow } from "@/lib/learner/capture";
+
 /** Learner-facing summary. Built only from the exporter's analysis output. Never copies answer keys. */
 
 const PROMPT_LIMIT = 140;
@@ -24,7 +26,7 @@ export type OwnerSummary = {
   days: number;
   window: { start: string; end: string };
   sittings: { at: string; correct: number; total: number; medianSeconds: number | null; slowCount: number | null; seenShare: number | null }[];
-  captures: { kind: "quiz" | "mock"; startedAt: number | null; finishedAt: number; syncedAt: string | null; delayMs: number | null }[];
+  captures: CaptureRow[];
   overall: { correct: number; total: number; accuracy: number | null };
   firstAttempt: { correct: number; total: number; accuracy: number | null };
   domains: { id: string; title: string; correct: number; total: number; accuracy: number | null }[];
@@ -181,7 +183,7 @@ function summaryMarkdown(summary: OwnerSummary) {
   return `# ${summary.exam} activity\n\nWindow: ${summary.window.start} — ${summary.window.end}\n\n`
     + `## Synced tests\n\n${list(summary.captures.map((capture) => {
       const started = capture.startedAt === null ? "start not recorded" : new Date(capture.startedAt).toISOString();
-      const synced = capture.syncedAt === null ? "not synced yet" : capture.syncedAt;
+      const synced = capture.sync === "before" ? "before tracking" : capture.syncedAt === null ? "not synced yet" : capture.syncedAt;
       const delay = capture.delayMs === null ? "" : ` delay ${Math.round(capture.delayMs / 1000)}s`;
       return `${capture.kind} started ${started} finished ${new Date(capture.finishedAt).toISOString()} synced ${synced}${delay}`;
     }))}\n\n`

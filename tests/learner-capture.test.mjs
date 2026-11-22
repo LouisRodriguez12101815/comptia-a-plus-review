@@ -196,8 +196,13 @@ test("timestamps survive local save, the sync payload, mergeProgress, and the re
   const snap = makeSnapshot(raw);
   assert.ok(snap.chunks.length <= 40);
   const syncedAt = "2026-11-21T03:30:12.000Z";
+  const withSeen = {
+    ...saved.progress,
+    quizAttempts: saved.progress.quizAttempts.map((item) => ({ ...item, serverSeenAt: syncedAt })),
+    mockAttempts: saved.progress.mockAttempts.map((item) => ({ ...item, serverSeenAt: syncedAt })),
+  };
   const summary = summarizeItems([
-    { key: "progress", data: { s: raw }, dateUpdated: syncedAt },
+    { key: "progress", data: { s: JSON.stringify(withSeen) }, dateUpdated: "1999-01-01T00:00:00.000Z" },
   ], captureContent, { exam: "saa-c03", days: 30, asOf: at + 86_400_000 });
   const quiz = summary.captures.find((row) => row.kind === "quiz");
   const mock = summary.captures.find((row) => row.kind === "mock");
@@ -212,12 +217,40 @@ test("timestamps survive local save, the sync payload, mergeProgress, and the re
   const legacy = summarizeItems([{
     key: "progress",
     data: { s: JSON.stringify({ quizAttempts: [{ topicId: "old", exam: "saa-c03", correct: 1, total: 1, questionIds: ["q-1"], missedIds: [], at }], mockAttempts: [] }) },
+    dateUpdated: syncedAt,
   }], captureContent, { exam: "saa-c03", days: 30, asOf: at + 86_400_000 });
   assert.equal(legacy.captures[0].startedAt, null);
   assert.equal(legacy.captures[0].finishedAt, at);
   assert.equal(legacy.captures[0].syncedAt, null);
+  assert.equal(legacy.captures[0].sync, "before");
   assert.match(legacy.markdown, /start not recorded/);
-  assert.match(legacy.markdown, /not synced yet/);
+  assert.match(legacy.markdown, /before tracking/);
+  assert.doesNotMatch(legacy.markdown, /not synced yet/);
+});
+
+test("a timed test is one sitting row and an archived attempt still counts", () => {
+  const sittingId = "sit-1";
+  const started = at - 60_000;
+  const seen = "2026-11-21T03:31:00.000Z";
+  const olderAt = at - 86_400_000;
+  const summary = summarizeItems([
+    { key: "progress", data: { s: JSON.stringify({
+      quizAttempts: [{ topicId: "t1", exam: "saa-c03", correct: 0, total: 1, questionIds: ["q-1"], missedIds: ["q-1"], startedAt: started, at, sittingId, serverSeenAt: seen }],
+      mockAttempts: [{ exam: "saa-c03", full: false, correct: 0, total: 1, percent: 0, domains: [{ id: "1", title: "Design", correct: 0, total: 1 }], multiCorrect: 0, multiTotal: 0, questionIds: ["q-1"], missedIds: ["q-1"], correctIds: [], startedAt: started, at: at + 5, sittingId, serverSeenAt: seen }],
+    }) } },
+    { key: "archive-2026-11", data: { v: 1, quizzes: [{ topicId: "t1", exam: "saa-c03", correct: 1, total: 1, questionIds: ["q-1"], missedIds: [], at: olderAt, serverSeenAt: "2026-11-20T03:00:00.000Z" }], mocks: [] } },
+  ], captureContent, { exam: "saa-c03", days: 30, asOf: at + 86_400_000 });
+  assert.equal(summary.captures.filter((row) => row.kind === "sitting").length, 1);
+  assert.equal(summary.captures.some((row) => row.kind === "quiz" && row.finishedAt === at), false);
+  assert.equal(summary.captures.some((row) => row.kind === "mock"), false);
+  const sitting = summary.captures.find((row) => row.kind === "sitting");
+  assert.equal(sitting.syncedAt, seen);
+  assert.equal(sitting.sync, "stamped");
+  assert.match(summary.markdown, /sitting /);
+  const archived = summary.captures.find((row) => row.kind === "quiz");
+  assert.equal(archived.finishedAt, olderAt);
+  assert.equal(summary.firstAttempt.correct, 1);
+  assert.equal(summary.firstAttempt.total, 1);
 });
 
 test("answer offsets fit the existing snapshot cap and stay smaller than absolute times", () => {

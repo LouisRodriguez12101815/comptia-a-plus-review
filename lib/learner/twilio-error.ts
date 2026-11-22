@@ -19,6 +19,10 @@ export function twilioFailure(error: unknown): TwilioFailure {
 
 export const NEEDS_STRONGER_KEY = "needs Auth Token or Main key";
 
+/** A Standard API key is rejected with 70004 when it reads the Account resource. */
+export const STANDARD_KEY_ACCOUNT = "Standard API key cannot read the account record; not an error";
+export const STANDARD_KEY_ACCOUNT_CODE = 70004;
+
 /** Account, usage, and trigger routes live under /Accounts. A Standard key is rejected there. */
 export function needsStrongerKey(failure: TwilioFailure): boolean {
   if (failure.status === 401 || failure.status === 403) return true;

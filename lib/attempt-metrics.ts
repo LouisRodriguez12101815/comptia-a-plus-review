@@ -82,7 +82,7 @@ export function extendFirstSeen(progress: ExposureProgress, attempt: ExposureAtt
 }
 
 export function firstAttemptSummary(progress: ExposureProgress, exam: string, start: number, end: number) {
-  const ledger = progress.firstSeen ?? seedFirstSeen(progress);
+  const ledger = mergeFirstSeen(seedFirstSeen(progress), progress.firstSeen) ?? {};
   const rows = Object.values(ledger).filter((row) => row.exam === exam && row.at >= start && row.at <= end);
   const correct = rows.filter((row) => row.correct).length;
   const total = rows.length;

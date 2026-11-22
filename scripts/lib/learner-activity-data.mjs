@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { decodeProgress } from '../export-primary-history.mjs';
+import { attachArchives } from '../../lib/learner/archive.mjs';
 import { parsePersistedStudyEvent } from '../../lib/learner/telemetry.ts';
 import { objectiveTopicMap, questionObjectiveIds } from '../../lib/question-objectives.mjs';
 
@@ -50,8 +51,10 @@ export function bankIndex(content) {
 export function storedProgress(items) {
   const committed = items.find(item => item.key === 'progress-head');
   if (!committed) {
-    return items.some(i => i.key === 'progress' || i.key === 'history' || /^progress-\d+$/.test(i.key))
-      ? decodeProgress(items) : { quizAttempts: [], mockAttempts: [], questionEvents: [] };
+    if (!items.some(i => i.key === 'progress' || i.key === 'history' || /^progress-\d+$/.test(i.key))) {
+      return attachArchives({ quizAttempts: [], mockAttempts: [], questionEvents: [] }, items);
+    }
+    return attachArchives(decodeProgress(items), items);
   }
   const h = committed.data;
   if (!record(h) || h.v !== 1 || typeof h.generation !== 'string'
@@ -65,7 +68,7 @@ export function storedProgress(items) {
   const raw = chunks.join('');
   if (Buffer.byteLength(raw) !== h.bytes || hash(raw) !== h.sha256) throw new Error('history');
   // Reuse the strict legacy decoder on the verified JSON without copying other provider items.
-  return decodeProgress([{ key: 'progress', data: { s: raw } }, ...items.filter(i => i.key === 'history')]);
+  return attachArchives(decodeProgress([{ key: 'progress', data: { s: raw } }, ...items.filter(i => i.key === 'history')]), items);
 }
 
 function telemetry(items, gaps) {
@@ -142,7 +145,9 @@ export function collectActivity(items, content, { days = 7, asOf, exam } = {}) {
       ...Object.fromEntries(['missCount', 'resourceType', 'questionCount', 'correctCount', 'missedCount'].filter(k => event[k] !== undefined).map(k => [k, event[k]])) });
   }
   const progress = storedProgress(items);
-  for (const [kind, attempts] of [['quiz', progress.quizAttempts ?? []], ['mock', progress.mockAttempts ?? []]]) {
+  const mockSittings = new Set((progress.mockAttempts ?? []).filter(a => record(a) && typeof a.sittingId === 'string').map(a => a.sittingId));
+  const quizzes = (progress.quizAttempts ?? []).filter(a => !(record(a) && typeof a.sittingId === 'string' && mockSittings.has(a.sittingId)));
+  for (const [kind, attempts] of [['quiz', quizzes], ['mock', progress.mockAttempts ?? []]]) {
     for (const attempt of attempts) {
       if (!record(attempt)) { gaps.invalidAttempts++; continue; }
       if (!validTime(attempt.at) || attempt.at < start || attempt.at > asOf) { gaps.outsideWindow++; continue; }

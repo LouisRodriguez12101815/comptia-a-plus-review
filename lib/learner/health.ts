@@ -1,8 +1,10 @@
 import { saaMistakeLog } from "@/lib/saa-mistake-log";
 import type { Progress } from "@/lib/progress";
 import { normalizePhone } from "@/lib/learner/session";
+import { attachArchives } from "@/lib/learner/archive.mjs";
 import { loadRemote, type ProgressMap } from "@/lib/learner/store";
-import { NEEDS_STRONGER_KEY, needsStrongerKey, twilioFailure, type TwilioFailure } from "@/lib/learner/twilio-error";
+import { NEEDS_STRONGER_KEY, needsStrongerKey, STANDARD_KEY_ACCOUNT, STANDARD_KEY_ACCOUNT_CODE, twilioFailure, type TwilioFailure } from "@/lib/learner/twilio-error";
+import { DEFAULT_STUDY_FOCUS } from "@/lib/exams";
 
 export type HealthStep = {
   name: string;
@@ -134,7 +136,21 @@ async function readCounts(items: { key: string; data: unknown }[]) {
     async create() { throw new Error("read_only"); },
     async replace() { return false; },
   };
-  return progressCounts(await loadRemote(map));
+  const loaded = await loadRemote(map);
+  const combined = attachArchives(loaded ?? { quizAttempts: [], mockAttempts: [] }, items);
+  const progress = {
+    studyFocus: loaded?.studyFocus ?? DEFAULT_STUDY_FOCUS,
+    knownCards: loaded?.knownCards ?? {},
+    unknownCards: loaded?.unknownCards ?? {},
+    schedules: loaded?.schedules ?? {},
+    quizAttempts: combined.quizAttempts ?? [],
+    mockAttempts: combined.mockAttempts ?? [],
+    ...(loaded?.memoryGames ? { memoryGames: loaded.memoryGames } : {}),
+    ...(loaded?.firstSeen ? { firstSeen: loaded.firstSeen } : {}),
+    ...(loaded?.drillPractice ? { drillPractice: loaded.drillPractice } : {}),
+    ...(loaded?.clfAssessmentSnapshots ? { clfAssessmentSnapshots: loaded.clfAssessmentSnapshots } : {}),
+  };
+  return progressCounts(progress);
 }
 
 export async function runLearnerHealth(input: {
@@ -159,7 +175,9 @@ export async function runLearnerHealth(input: {
     const account = await client.fetchAccount();
     checks.push(row("account", true, null, "Fetched the account.", { friendlyName: account.friendlyName, sidLast4 }));
   } catch (error) {
-    checks.push(denied("account", twilioFailure(error), { friendlyName: null, sidLast4 }));
+    const failure = twilioFailure(error);
+    if (failure.code === STANDARD_KEY_ACCOUNT_CODE) checks.push(row("account", true, failure, STANDARD_KEY_ACCOUNT, { friendlyName: null, sidLast4 }));
+    else checks.push(denied("account", failure, { friendlyName: null, sidLast4 }));
   }
 
   try {
