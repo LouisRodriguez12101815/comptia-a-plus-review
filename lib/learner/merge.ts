@@ -19,8 +19,8 @@ function unionAttempts<T extends { at: number }>(a: T[], b: T[], key: (x: T) => 
   return [...seen.values()].sort((x, y) => y.at - x.at).slice(0, max);
 }
 
-/** Local seconds win for a question. Seconds that exist only on the other copy are kept. A seen-share recorded on only one copy is kept. */
-function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; seenShare?: number }>(primary: T, secondary: T): T {
+/** Local seconds, start time, and answer offsets win. A value recorded on only one copy is kept. */
+function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; seenShare?: number; startedAt?: number; answeredAt?: Record<string, number> }>(primary: T, secondary: T): T {
   const seconds: Record<string, number> = {};
   for (const source of [secondary.secondsByQuestion, primary.secondsByQuestion]) {
     if (!source) continue;
@@ -28,10 +28,20 @@ function keepSeconds<T extends { secondsByQuestion?: Record<string, number>; see
       if (typeof value === "number" && Number.isFinite(value) && value >= 0) seconds[id] = value;
     }
   }
+  const answeredAt: Record<string, number> = {};
+  for (const source of [secondary.answeredAt, primary.answeredAt]) {
+    if (!source) continue;
+    for (const [id, value] of Object.entries(source)) {
+      if (typeof value === "number" && Number.isInteger(value) && value >= 0) answeredAt[id] = value;
+    }
+  }
+  let next: T = Object.keys(seconds).length ? { ...primary, secondsByQuestion: seconds } : primary;
   const seenShare = primary.seenShare ?? secondary.seenShare;
-  const withSeconds = Object.keys(seconds).length ? { ...primary, secondsByQuestion: seconds } : primary;
-  if (seenShare === undefined || withSeconds.seenShare !== undefined) return withSeconds;
-  return { ...withSeconds, seenShare };
+  if (seenShare !== undefined && next.seenShare === undefined) next = { ...next, seenShare };
+  const startedAt = primary.startedAt ?? secondary.startedAt;
+  if (startedAt !== undefined && next.startedAt === undefined) next = { ...next, startedAt };
+  if (Object.keys(answeredAt).length) next = { ...next, answeredAt };
+  return next;
 }
 
 /** Missed drill cues kept from a sync. Local ids are kept first, then remote ids, until this cap. */

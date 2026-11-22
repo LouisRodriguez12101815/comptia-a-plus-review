@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { firstAttemptSummary, mockSeenByTimestamp } from "@/lib/attempt-metrics";
+import { attemptCaptures, progressSyncedAt } from "@/lib/learner/capture";
 import { collectActivity, storedProgress } from "../../scripts/lib/learner-activity-data.mjs";
 import { analyzeActivity, buildFollowup } from "../../scripts/lib/learner-activity-plan.mjs";
 import { emptyOwnerSummary, ownerSummary } from "@/lib/learner/owner-summary";
@@ -30,7 +31,7 @@ export async function loadStudyContent(root = process.cwd()): Promise<StudyConte
 }
 
 /** Runs the existing exporter analysis and returns only the learner-facing summary. */
-export function summarizeItems(items: { key: string; data?: unknown }[], content: StudyContent, opts: { exam: string; days: number; asOf: number }) {
+export function summarizeItems(items: { key: string; data?: unknown; dateUpdated?: string | null }[], content: StudyContent, opts: { exam: string; days: number; asOf: number }) {
   if (!items.length) return emptyOwnerSummary(opts.exam, opts.days, opts.asOf);
   const activity = collectActivity(items, content, opts);
   const analysis = analyzeActivity(activity);
@@ -63,5 +64,6 @@ export function summarizeItems(items: { key: string; data?: unknown }[], content
     followups,
     firstAttempt: firstAttemptSummary(progress, opts.exam, start, end),
     seenBySitting: mockSeenByTimestamp(progress, opts.exam, start, end),
+    captures: attemptCaptures(progress, opts.exam, activity.window, progressSyncedAt(items)),
   });
 }

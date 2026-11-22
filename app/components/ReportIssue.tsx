@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { reportAttachment } from "@/lib/learner/report-attachment";
 import { categories, githubIssueUrl, limits, type Category, type QuestionReport } from "@/lib/report/issue";
 
 /** Open the report form from anywhere: reportContent("Question q-12: ...") */
@@ -77,6 +78,7 @@ export function ReportIssue() {
       question,
       website,
       elapsedMs: Date.now() - openedAt.current,
+      ...(pathname === "/account/report" && reportAttachment() ? { details: reportAttachment() } : {}),
     };
     try {
       const res = await fetch("/api/report", {

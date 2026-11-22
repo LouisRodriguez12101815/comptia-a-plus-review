@@ -33,7 +33,7 @@ function validLegacyFields(raw: string): boolean {
 }
 
 export interface LearnerMap {
-  list(): Promise<{ key: string; data: unknown }[]>;
+  list(): Promise<{ key: string; data: unknown; dateUpdated?: string | null }[]>;
   set(key: string, data: object): Promise<void>;
   remove(key: string): Promise<void>;
   removeAll(): Promise<void>;

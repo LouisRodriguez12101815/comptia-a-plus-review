@@ -24,6 +24,7 @@ export type OwnerSummary = {
   days: number;
   window: { start: string; end: string };
   sittings: { at: string; correct: number; total: number; medianSeconds: number | null; slowCount: number | null; seenShare: number | null }[];
+  captures: { kind: "quiz" | "mock"; startedAt: number | null; finishedAt: number; syncedAt: string | null; delayMs: number | null }[];
   overall: { correct: number; total: number; accuracy: number | null };
   firstAttempt: { correct: number; total: number; accuracy: number | null };
   domains: { id: string; title: string; correct: number; total: number; accuracy: number | null }[];
@@ -69,6 +70,7 @@ export function ownerSummary(input: {
   followups: string[];
   firstAttempt?: { correct: number; total: number; accuracy: number | null };
   seenBySitting?: Map<string, number>;
+  captures?: OwnerSummary["captures"];
 }): OwnerSummary {
   const scoring = input.activity.filter((row) => row.scoringEvidence === true && row.eventType === "question_answered" && typeof row.isCorrect === "boolean");
   const sittingsMap = new Map<string, { at: string; correct: number; total: number; seconds: number[] }>();
@@ -139,6 +141,7 @@ export function ownerSummary(input: {
     days: input.days,
     window: input.window,
     sittings,
+    captures: input.captures ?? [],
     overall: { correct, total, accuracy: accuracy(correct, total) },
     firstAttempt: input.firstAttempt ?? { correct: 0, total: 0, accuracy: null },
     domains,
@@ -176,6 +179,12 @@ function pct(value: number | null) {
 function summaryMarkdown(summary: OwnerSummary) {
   const list = (rows: string[]) => (rows.length ? rows.map((row) => `- ${row}`).join("\n") : "- None in retained evidence.");
   return `# ${summary.exam} activity\n\nWindow: ${summary.window.start} — ${summary.window.end}\n\n`
+    + `## Synced tests\n\n${list(summary.captures.map((capture) => {
+      const started = capture.startedAt === null ? "start not recorded" : new Date(capture.startedAt).toISOString();
+      const synced = capture.syncedAt === null ? "not synced yet" : capture.syncedAt;
+      const delay = capture.delayMs === null ? "" : ` delay ${Math.round(capture.delayMs / 1000)}s`;
+      return `${capture.kind} started ${started} finished ${new Date(capture.finishedAt).toISOString()} synced ${synced}${delay}`;
+    }))}\n\n`
     + `## Sittings\n\n${list(summary.sittings.map((sitting) => `${sitting.at}: ${sitting.correct}/${sitting.total}${sitting.medianSeconds === null ? " — pacing not recorded" : ` — median ${sitting.medianSeconds}s, ${sitting.slowCount} slower than 3 min`}${sitting.seenShare === null ? "" : ` — ${sitting.seenShare}% already seen`}`))}\n\n`
     + `## Overall\n\n${summary.overall.correct}/${summary.overall.total} (${pct(summary.overall.accuracy)})\n\n`
     + `## First-attempt accuracy\n\n${summary.firstAttempt.correct}/${summary.firstAttempt.total} (${pct(summary.firstAttempt.accuracy)})\n\n`
