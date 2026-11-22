@@ -17,25 +17,13 @@ function siteOrigin(request: Request): string {
 
 /**
  * Browsers send Origin on POST and on cross-origin GET, but not on same-origin GET.
- * A present Origin must match. Without it, Sec-Fetch-Site: same-origin is enough.
- * Older browsers omit that header too: a GET may then use a matching Referer.
- * POST never falls back to Referer.
+ * Allow a matching Origin, or a missing Origin with Sec-Fetch-Site: same-origin.
+ * Referer is not a substitute.
  */
 export function sameOrigin(request: Request): boolean {
-  const expected = siteOrigin(request);
   const origin = request.headers.get("origin");
-  const site = request.headers.get("sec-fetch-site")?.toLowerCase() ?? "";
-  if (site && site !== "same-origin") return false;
-  if (origin) return origin === expected;
-  if (site === "same-origin") return true;
-  if (request.method !== "GET") return false;
-  const referer = request.headers.get("referer");
-  if (!referer) return false;
-  try {
-    return new URL(referer).origin === expected;
-  } catch {
-    return false;
-  }
+  if (origin) return origin === siteOrigin(request);
+  return request.headers.get("sec-fetch-site")?.toLowerCase() === "same-origin";
 }
 
 // Per-instance limits, like /api/report. The daily spend latch and Twilio Verify's own limits back these up.

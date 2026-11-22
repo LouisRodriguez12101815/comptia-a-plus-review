@@ -89,6 +89,8 @@ test("the session cookie is HttpOnly and SameSite=Lax, and Secure only on HTTPS"
 test("POST still requires a matching Origin or Sec-Fetch-Site same-origin", () => {
   const url = "https://example.test/api/learner/sync";
   assert.equal(sameOrigin(new Request(url, { method: "POST" })), false);
+  assert.equal(sameOrigin(new Request(url, { method: "GET" })), false);
+  assert.equal(sameOrigin(new Request(url, { method: "GET", headers: { referer: "https://example.test/account/report" } })), false);
   assert.equal(sameOrigin(new Request(url, { method: "POST", headers: { referer: "https://example.test/account/report" } })), false);
   assert.equal(sameOrigin(new Request(url, { method: "POST", headers: { origin: "https://evil.test" } })), false);
   assert.equal(sameOrigin(new Request(url, { method: "POST", headers: { origin: "https://example.test" } })), true);
@@ -98,7 +100,7 @@ test("POST still requires a matching Origin or Sec-Fetch-Site same-origin", () =
 test("owner GETs accept a real browser and reject a missing or cross-site fetch", async () => {
   const cases = [
     [{ "sec-fetch-site": "same-origin" }, 200],
-    [{ referer: "https://example.test/account/report" }, 200],
+    [{ referer: "https://example.test/account/report" }, 403],
     [{ "sec-fetch-site": "cross-site" }, 403],
     [{ origin: "https://evil.test" }, 403],
     [{}, 403],
