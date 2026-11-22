@@ -50,7 +50,7 @@ Keep this file current. When a pull request completes a queue item, update the q
 - #263 Add the service-fact memory match.
 - #264 Record the remaining core us-east-1 cost anchors.
 - #265 Show the Twilio call that blocks the study report.
-- #266 No pull request used this number.
+- #266 GitHub issue: the error report filed from /account/report arrived with an empty body and led to #268's auto-attached details.
 - #267 Record first-attempt accuracy and mock seen-share.
 - #268 Capture timestamps and report diagnostics.
 - #269 Accept same-origin owner reads that omit Origin.
