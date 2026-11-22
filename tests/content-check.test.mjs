@@ -49,6 +49,23 @@ test("the checker still catches seeded mistakes", () => {
     assert.ok(checks.has("answer-pin"), "a valid-looking but wrong answer key should be caught");
     assert.ok(checks.has("computed"), "a wrong subnet worked example should be caught");
     assert.ok(checks.has("internal-id"), "an internal study-pair id in an SAA question should be caught");
+    saa.choices[saa.answer] = "Amazon Timestream for LiveAnalytics";
+    facts.facts.push({ id: "bad-liveanalytics", topics: ["aws-saa-cost-optimized"], statement: "Choose Timestream for LiveAnalytics for new sensor workloads" });
+    fs.writeFileSync(qPath, JSON.stringify(questions));
+    fs.writeFileSync(fPath, JSON.stringify(facts));
+    const live = run(dir, "--json");
+    const liveChecks = new Set(JSON.parse(live.stdout).findings.map((f) => f.check));
+    assert.ok(liveChecks.has("timestream-liveanalytics"), "a Timestream for LiveAnalytics recommendation should be caught");
+    assert.ok(liveChecks.has("timestream-recommendation"), "Timestream without InfluxDB should be caught");
+    saa.choices[saa.answer] = "Amazon Timestream with a memory tier and a magnetic tier";
+    fs.writeFileSync(qPath, JSON.stringify(questions));
+    const tiers = run(dir, "--json");
+    const tierChecks = new Set(JSON.parse(tiers.stdout).findings.filter((finding) => finding.where === `question:${saa.id}`).map((finding) => finding.check));
+    assert.ok(tierChecks.has("timestream-recommendation"), "the q-saa-costbatch-010 Timestream wording should be caught");
+    saa.choices[saa.answer] = "Amazon Timestream for InfluxDB for this catalog";
+    fs.writeFileSync(qPath, JSON.stringify(questions));
+    const influx = JSON.parse(run(dir, "--json").stdout).findings.filter((finding) => finding.where === `question:${saa.id}` && finding.check === "timestream-recommendation");
+    assert.equal(influx.length, 0);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

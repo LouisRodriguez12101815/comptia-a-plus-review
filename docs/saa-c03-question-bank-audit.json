@@ -1,5 +1,11 @@
 {
   "schemaVersion": 1,
+  "exclusions": [
+    {
+      "questionId": "q-saa-costbatch-010",
+      "reason": "Keys Amazon Timestream with a memory tier and a magnetic tier. That is Timestream for LiveAnalytics, which closed to new customers on 2025-06-20 and is not on the SAA-C03 v1.1 in-scope list."
+    }
+  ],
   "reviewDate": "2026-11-20",
   "reviewedCommitBeforeEdits": "1f7bed30009be12ecbc5bd4dca97c51d207aff6e",
   "officialScope": {
@@ -4449,6 +4455,160 @@
       "primaryDecision": "A team wants one schedule that protects several AWS resources, and one place that stores the recovery points those jobs create. Which AWS Backup pieces are those two?",
       "stretch": false,
       "reviewNote": "Mapped to the existing backup durability skill on task 2.2. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-01",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S01",
+      "skill": "Designing appropriate backup and retention policies (for example, snapshot frequency)",
+      "primaryDecision": "A 14-day point-in-time restore is required and backup storage is the growing charge. Which RDS backup configuration meets that window?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-02",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S01",
+      "skill": "Designing appropriate backup and retention policies (for example, snapshot frequency)",
+      "primaryDecision": "Automated backups already cover 14 days, and an extra backup copy has no RPO or RTO. Which change removes that copy?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-03",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S02",
+      "skill": "Determining an appropriate database engine (for example, MySQL compared with PostgreSQL)",
+      "primaryDecision": "PostgreSQL types must stay, with one writer and the lower compatible hourly price. Which engine fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-04",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S02",
+      "skill": "Determining an appropriate database engine (for example, MySQL compared with PostgreSQL)",
+      "primaryDecision": "MySQL is slightly cheaper, but the team operates PostgreSQL and will not change storage architecture. Which engine fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-05",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S04",
+      "skill": "Determining cost-effective AWS database types (for example, time series format, columnar format)",
+      "primaryDecision": "Parquet history must feed hourly dashboards on a columnar warehouse, with no connection to the OLTP database and no rescan of the files. Which service runs them?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-06",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S03",
+      "skill": "Determining cost-effective AWS database services with appropriate use cases (for example, DynamoDB compared with Amazon RDS, serverless)",
+      "primaryDecision": "A key-value cart is idle most of the hour, then spikes to an unknown rate. Capacity must not be billed while idle. Which database configuration fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-07",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S05",
+      "skill": "Migrating database schemas and data to different locations and/or different database engines",
+      "primaryDecision": "Oracle must move to PostgreSQL, keep accepting writes, and pass a SQL check before a 30-minute cutover. Which plan fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-08",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S05",
+      "skill": "Migrating database schemas and data to different locations and/or different database engines",
+      "primaryDecision": "PostgreSQL is copied to PostgreSQL and must stay writable until a 30-minute cutover. Which plan fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-09",
+      "taskId": "4.1",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.1-S01",
+      "skill": "Designing appropriate storage strategies (for example, batch uploads to Amazon S3 compared with individual uploads)",
+      "primaryDecision": "Twenty million 2 KB records a day make the S3 request line the bill, and the records must survive one Availability Zone. Which change addresses it?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-10",
+      "taskId": "4.1",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.1-S03",
+      "skill": "Determining the lowest cost method of transferring data for a workload to AWS storage",
+      "primaryDecision": "200 GB of daily NFS changes fit on a 1 Gbps link, and applications keep writing locally. Which transfer fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-11",
+      "taskId": "4.1",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.1-S07",
+      "skill": "Selecting the appropriate service for data migration to storage services",
+      "primaryDecision": "40 TB is copied once into S3 over a weekend, then the SMB server is shut down. Which service does the copy?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-12",
+      "taskId": "4.1",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.1-S09",
+      "skill": "Selecting the correct data lifecycle for storage",
+      "primaryDecision": "Noncurrent versions and incomplete multipart uploads should expire after 30 days. Which S3 feature does that?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-13",
+      "taskId": "3.1",
+      "domainId": "3.0",
+      "topicId": "aws-saa-high-performing",
+      "skillId": "3.1-S02",
+      "skill": "Determining storage services that can scale to accommodate future needs",
+      "primaryDecision": "Browsers fetch images by key, nothing is mounted, and nobody resizes a volume each quarter. Which storage service fits?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
+    },
+    {
+      "questionId": "q-saa-g1a-14",
+      "taskId": "4.3",
+      "domainId": "4.0",
+      "topicId": "aws-saa-cost-optimized",
+      "skillId": "4.3-S03",
+      "skill": "Determining cost-effective AWS database services with appropriate use cases (for example, DynamoDB compared with Amazon RDS, serverless)",
+      "primaryDecision": "A PostgreSQL catalog stays one RDS writer sized for its writes. SELECT joins can be a few seconds behind. Which addition takes that read traffic?",
+      "stretch": false,
+      "reviewNote": "G-1 batch 1. Mapping is a review aid, not evidence of complete task coverage."
     }
   ],
   "findings": {
@@ -9505,6 +9665,85 @@
       "formats": {
         "singleAnswer": 324,
         "multipleResponse": 11
+      }
+    },
+    {
+      "stage": "after-g1-batch-1",
+      "commit": null,
+      "addedIds": [
+        "q-saa-g1a-01",
+        "q-saa-g1a-02",
+        "q-saa-g1a-03",
+        "q-saa-g1a-04",
+        "q-saa-g1a-05",
+        "q-saa-g1a-06",
+        "q-saa-g1a-07",
+        "q-saa-g1a-08",
+        "q-saa-g1a-09",
+        "q-saa-g1a-10",
+        "q-saa-g1a-11",
+        "q-saa-g1a-12",
+        "q-saa-g1a-13",
+        "q-saa-g1a-14"
+      ],
+      "description": "Fourteen single-answer questions for thin tasks. content/questions.json moves from 319 to 333. q-saa-costbatch-010 stays in the file and is listed in exclusions, so the scored pool, including the high-yield fill, stays at 348. Scored task 4.3 stays at 20. Earlier count stages stay unchanged.",
+      "saaQuestionCount": 333,
+      "uniqueIdCount": 333,
+      "byDomain": {
+        "1.0": 80,
+        "2.0": 63,
+        "3.0": 107,
+        "4.0": 83
+      },
+      "byTask": {
+        "1.1": 27,
+        "1.2": 33,
+        "1.3": 20,
+        "2.1": 25,
+        "2.2": 38,
+        "3.1": 20,
+        "3.2": 23,
+        "3.3": 20,
+        "3.4": 23,
+        "3.5": 21,
+        "4.1": 20,
+        "4.2": 21,
+        "4.3": 21,
+        "4.4": 21
+      },
+      "formats": {
+        "singleAnswer": 322,
+        "multipleResponse": 11
+      },
+      "served": {
+        "saaQuestionCount": 348,
+        "uniqueIdCount": 348,
+        "byDomain": {
+          "1.0": 83,
+          "2.0": 66,
+          "3.0": 117,
+          "4.0": 82
+        },
+        "byTask": {
+          "1.1": 27,
+          "1.2": 33,
+          "1.3": 23,
+          "2.1": 26,
+          "2.2": 40,
+          "3.1": 20,
+          "3.2": 23,
+          "3.3": 23,
+          "3.4": 23,
+          "3.5": 28,
+          "4.1": 20,
+          "4.2": 21,
+          "4.3": 20,
+          "4.4": 21
+        },
+        "formats": {
+          "singleAnswer": 337,
+          "multipleResponse": 11
+        }
       }
     }
   ],

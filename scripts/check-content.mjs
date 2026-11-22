@@ -332,6 +332,48 @@ for (const record of [...questions, ...highYieldQuestions, ...qualifierTwins]) {
   }
 }
 
+/* ---------- do not recommend closed Timestream engines ---------- */
+const excludedFromScoredPool = new Set((readJson("content/saa-audit-exclusions.json").exclusions ?? []).map((row) => row.questionId));
+const TIMESTREAM_NEGATION = /\b(?:not|never|avoid|without|instead of|rather than|do not|don't|closed to|no longer)\b/i;
+const recommendsLiveAnalytics = (text) => {
+  if (typeof text !== "string" || !/Timestream for LiveAnalytics/i.test(text)) return false;
+  return text.split(/(?<=[.?\n])/).some((sentence) => /Timestream for LiveAnalytics/i.test(sentence) && !TIMESTREAM_NEGATION.test(sentence));
+};
+const recommendsTimestream = (text) => {
+  if (typeof text !== "string" || !/\bTimestream\b/i.test(text)) return false;
+  return text.split(/(?<=[.?\n])/).some((sentence) => {
+    if (!/\bTimestream\b/i.test(sentence) || TIMESTREAM_NEGATION.test(sentence)) return false;
+    const memoryMagnetic = /\bmemory\b/i.test(sentence) && /\bmagnetic\b/i.test(sentence);
+    return memoryMagnetic || !/InfluxDB/i.test(sentence);
+  });
+};
+const scoredSaa = (record) => record.examCodes?.includes("saa-c03") && !excludedFromScoredPool.has(record.id);
+for (const record of [...questions, ...highYieldQuestions, ...qualifierTwins]) {
+  if (!scoredSaa(record)) continue;
+  const key = record.choices?.[record.answer];
+  if (recommendsLiveAnalytics(key)) {
+    add("error", "timestream-liveanalytics", `question:${record.id}`, "SAA answer key recommends Timestream for LiveAnalytics, which closed to new customers on 2025-06-20");
+  }
+  if (recommendsTimestream(key)) {
+    add("error", "timestream-recommendation", `question:${record.id}`, "scored SAA answer key recommends Timestream without InfluxDB, or with memory and magnetic tiers");
+  }
+}
+for (const [id, text] of Object.entries(factsFile.answerKeys ?? {})) {
+  if (excludedFromScoredPool.has(id)) continue;
+  if (recommendsLiveAnalytics(text)) add("error", "timestream-liveanalytics", `answerKeys:${id}`, "pinned SAA answer key recommends Timestream for LiveAnalytics");
+  if (recommendsTimestream(text)) add("error", "timestream-recommendation", `answerKeys:${id}`, "pinned SAA answer key recommends Timestream without InfluxDB, or with memory and magnetic tiers");
+}
+for (const fact of factsFile.facts ?? []) {
+  if (recommendsLiveAnalytics(fact.statement)) add("error", "timestream-liveanalytics", `fact:${fact.id}`, "fact recommends Timestream for LiveAnalytics");
+  if (recommendsTimestream(fact.statement)) add("error", "timestream-recommendation", `fact:${fact.id}`, "fact recommends Timestream without InfluxDB, or with memory and magnetic tiers");
+}
+for (const record of readJson("content/saa-service-facts.json").records ?? []) {
+  for (const text of [record.definition, record.notFor, ...(record.useWhen ?? []), record.lightning?.correction]) {
+    if (recommendsLiveAnalytics(text)) add("error", "timestream-liveanalytics", `service-fact:${record.id}`, "service fact recommends Timestream for LiveAnalytics");
+    if (recommendsTimestream(text)) add("error", "timestream-recommendation", `service-fact:${record.id}`, "service fact recommends Timestream without InfluxDB, or with memory and magnetic tiers");
+  }
+}
+
 /* ---------- report ---------- */
 const errors = findings.filter((f) => f.level === "error");
 const warns = findings.filter((f) => f.level === "warn");
