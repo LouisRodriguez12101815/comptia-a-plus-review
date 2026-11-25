@@ -76,7 +76,7 @@ export function resolveSide(side: PairSideSource, pairId: string): ResolvedSide 
     const item = drillItem(side.ref);
     const cue = item?.fields.cue ?? item?.fields.scenario;
     if (!item || !cue || !item.fields.answer) throw new Error(`${pairId}: missing drill item ${side.ref}`);
-    return { label: item.fields.answer, pickWhen: cue, ref: side.ref };
+    return { label: item.fields.answer, pickWhen: side.pickWhen || cue, ref: side.ref };
   }
   if (!side.label || !side.pickWhen) throw new Error(`${pairId}: a side needs a drill ref or its own label and cue`);
   return { label: side.label, pickWhen: side.pickWhen };

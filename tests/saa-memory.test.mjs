@@ -21,7 +21,7 @@ const copiedCues = [
   "Improve global path to regional TCP/UDP endpoints",
   "Real-time streaming records with custom consumers",
   "Managed delivery of streaming data to S3",
-  "Discounted spare capacity for interruption-tolerant batch work",
+  "Discounted spare EC2 capacity for interruption-tolerant batch work",
   "Predictable steady compute commitment",
   "Dedicated private connectivity from on-premises to AWS",
 ];
