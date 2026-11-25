@@ -51806,11 +51806,11 @@
     "choices": [
       "Default bucket encryption left at AES256",
       "A bucket policy allowing PutObject only for AES256",
-      "Client uploads that send SSE-C and an application key",
+      "A bucket policy allowing PutObject only for SSE-KMS",
       "Client-side encryption with a key stored on the host"
     ],
     "answer": 1,
-    "explanation": "Default bucket encryption left at AES256 — Incorrect. An AES256 default, which is SSE-S3, does not deny a request that asks for SSE-KMS, DSSE-KMS, or SSE-C. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy allowing PutObject only for AES256 — Correct. SAA-C03 task 1.3. A bucket policy can deny PutObject unless s3:x-amz-server-side-encryption is AES256. AES256 is SSE-S3, so no customer managed key is required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nClient uploads that send SSE-C and an application key — Incorrect. SSE-C sends a customer-provided key. Those calls are ones the bucket must reject. https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html\nClient-side encryption with a key stored on the host — Incorrect. Client-side encryption leaves a key on the application host. It is not the AES256 header check, and it adds key management the bucket must avoid. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html",
+    "explanation": "Default bucket encryption left at AES256 — Incorrect. An AES256 default, which is SSE-S3, does not deny a request that asks for SSE-KMS, DSSE-KMS, or SSE-C. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy allowing PutObject only for AES256 — Correct. SAA-C03 task 1.3. A bucket policy can deny PutObject unless s3:x-amz-server-side-encryption is AES256. AES256 is SSE-S3, so no customer managed key is required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy allowing PutObject only for SSE-KMS — Incorrect. That policy rejects AES256, which must succeed, and SSE-KMS uses a KMS key. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nClient-side encryption with a key stored on the host — Incorrect. Client-side encryption leaves a key on the application host. It is not the AES256 header check, and it adds key management the bucket must avoid. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
