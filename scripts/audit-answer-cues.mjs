@@ -7,8 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { qualifierTwins } from "../content/saa-qualifier-twins.ts";
 import {
   COMPTIA_EXAMS, ECHO_MAX, ENFORCED_EXAMS, LONGEST_MAX, SHORTEST_MAX, SHORTEST_MIN, STRONG_MAX,
-  analyzeItem, itemFailures, rateFailures, summarize,
+  analyzeItem, itemFailures, labelEchoWords, normalizedLabelSet, rateFailures, summarize,
 } from "./lib/answer-cues.mjs";
+import { resolvedPairs } from "../lib/study/records.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const check = process.argv.includes("--check");
@@ -200,6 +201,20 @@ if (!check) {
     const band = saa.shortestRate < SHORTEST_MIN || saa.shortestRate > SHORTEST_MAX ? " outside 15–35%" : " inside 15–35%";
     console.log(`saa-c03 enforced: keyword echo ${saa.keywordEcho} (max ${ECHO_MAX}), true conditional distractor ${saa.trueConditional}, category word only the key matches ${saa.categoryOnlyKey}, odd-one-out opening ${saa.oddOneOut}, key-is-shortest ${pct(saa.shortestRate)} (${saa.shortest}/${saa.single})${band}. Key-is-longest is ${pct(saa.longestRate)}.`);
   }
+  const pairs = resolvedPairs("saa-c03");
+  const echoes = [];
+  const labelSets = new Map();
+  const duplicateLabels = [];
+  for (const pair of pairs) {
+    for (const hit of labelEchoWords(pair.sides)) echoes.push(`${pair.id} ${hit.label}: ${hit.words.join(", ")}`);
+    const key = normalizedLabelSet(pair.sides.map((side) => side.label));
+    const prior = labelSets.get(key);
+    if (prior) duplicateLabels.push(`${pair.id} repeats the side labels of ${prior}`);
+    else labelSets.set(key, pair.id);
+  }
+  console.log(`label-echo sides: ${echoes.length}`);
+  failures.push(...echoes.map((line) => `label echo: ${line}`));
+  failures.push(...duplicateLabels.map((line) => `duplicate label set: ${line}`));
   if (failures.length) {
     console.error(failures.join("\n"));
     process.exit(1);

@@ -217,7 +217,7 @@
       },
       {
         "label": "Cross-Region read replica",
-        "pickWhen": "Another Region needs its own replica cluster for reads or a promotable copy."
+        "pickWhen": "Another Region needs its own cluster for queries or a promotable copy."
       }
     ]
   },
@@ -262,7 +262,8 @@
     "difference": "Spot uses spare capacity that can be interrupted; Savings Plans discount committed spend across eligible compute; Reserved Instances tie the discount more closely to instance attributes.",
     "sides": [
       {
-        "ref": "aws-saa-service-compare/spot"
+        "ref": "aws-saa-service-compare/spot",
+        "pickWhen": "The workload can stop and restart, and the discount comes from spare capacity."
       },
       {
         "ref": "aws-saa-cost-cues/steady"
@@ -294,7 +295,7 @@
       },
       {
         "label": "Interface endpoint",
-        "pickWhen": "The service needs a private network interface, and the hourly and data charges are an acceptable cost."
+        "pickWhen": "The service needs a private address in the subnet, and the hourly and data charges are an acceptable cost."
       }
     ]
   },
@@ -490,7 +491,7 @@
       },
       {
         "label": "Parameter Store SecureString",
-        "pickWhen": "The application needs a configuration secret and this store is not being asked to rotate a database password."
+        "pickWhen": "The application needs a configuration secret, and password rotation is a separate job."
       }
     ]
   },
@@ -563,7 +564,7 @@
       },
       {
         "label": "Latency routing",
-        "pickWhen": "The user should reach the lowest-latency Region, and you are not naming a primary and a standby."
+        "pickWhen": "The user should reach the Region with the shortest delay, and you are not naming a primary and a standby."
       }
     ]
   },
@@ -784,7 +785,7 @@
       },
       {
         "label": "Provisioned instance",
-        "pickWhen": "The load is steady and you want a fixed instance class."
+        "pickWhen": "The load is steady and you want a fixed size class."
       }
     ]
   },
@@ -810,6 +811,1091 @@
       {
         "label": "S3 gateway endpoint",
         "pickWhen": "Private subnets should reach S3 without NAT data-processing charges."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-01",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS Control Tower",
+      "AWS Organizations"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
+    "questionIds": [],
+    "difference": "Control Tower builds the multi-account setup, the account factory, and the guardrails. Organizations is the account and policy container that sits underneath that setup.",
+    "sides": [
+      {
+        "label": "AWS Control Tower",
+        "pickWhen": "The setup still needs guardrails and a factory for new accounts."
+      },
+      {
+        "label": "AWS Organizations",
+        "pickWhen": "The accounts are already in place, and the work is organization policies."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-02",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "Amazon Cognito"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html",
+    "questionIds": [],
+    "difference": "A user pool is the app's user directory and sign-in. An identity pool trades a trusted identity for temporary AWS credentials.",
+    "sides": [
+      {
+        "label": "Cognito user pool",
+        "pickWhen": "The app needs its own sign-in directory and session tokens."
+      },
+      {
+        "label": "Cognito identity pool",
+        "pickWhen": "A signed-in user needs temporary AWS credentials for a service."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-03",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS Key Management Service",
+      "AWS Identity and Access Management"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html",
+    "questionIds": [],
+    "difference": "A KMS key policy is the resource policy for that key. Identity-based allows in the same account do nothing until the key policy lets the account use IAM.",
+    "sides": [
+      {
+        "label": "KMS key policy",
+        "pickWhen": "The key must name who can use it before other IAM allows apply."
+      },
+      {
+        "label": "IAM identity policy",
+        "pickWhen": "The key policy already enables IAM, and one role needs an allow."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-04",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "Amazon S3",
+      "AWS Identity and Access Management"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-language-overview.html",
+    "questionIds": [],
+    "difference": "A cross-account object read needs an allow on the caller and a bucket statement that names that caller. One of those statements still leaves the other account blocked.",
+    "sides": [
+      {
+        "label": "Bucket policy",
+        "pickWhen": "The caller role already has its own allow, so the bucket must grant that role."
+      },
+      {
+        "label": "Identity policy",
+        "pickWhen": "The bucket already grants the role, so the role policy must allow the read."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-05",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS Resource Access Manager",
+      "AWS Identity and Access Management"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html",
+    "questionIds": [],
+    "difference": "RAM shares a supported resource, such as a subnet or a resolver rule, into another account. An IAM role lets that account call APIs here.",
+    "sides": [
+      {
+        "label": "AWS RAM share",
+        "pickWhen": "Another account should use this subnet or rule inside its own VPC."
+      },
+      {
+        "label": "Cross-account IAM role",
+        "pickWhen": "The other account should call APIs in this account by assuming an identity you grant."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-06",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+    "questionIds": [],
+    "difference": "A NAT gateway is the managed IPv4 egress device for a private subnet. A NAT instance is an EC2 instance you patch, size, and fail over yourself.",
+    "sides": [
+      {
+        "label": "Managed NAT gateway",
+        "pickWhen": "Private subnets need an IPv4 path to the internet that AWS operates."
+      },
+      {
+        "label": "NAT instance",
+        "pickWhen": "The IPv4 egress translator has to be a virtual machine you patch and size."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-07",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS Client VPN",
+      "AWS Site-to-Site VPN"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html",
+    "questionIds": [],
+    "difference": "Client VPN terminates connections from individual users. A site-to-site connection ties a customer gateway on an office network to the VPC.",
+    "sides": [
+      {
+        "label": "Client VPN",
+        "pickWhen": "Individual users on laptops need a VPN into the VPC."
+      },
+      {
+        "label": "Site-to-Site VPN",
+        "pickWhen": "An office network device should have a standing tunnel to the VPC."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-08",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS WAF",
+      "AWS Shield"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html",
+    "questionIds": [],
+    "difference": "WAF applies the HTTP rules you write. Shield is the DDoS protection for the edge. Application-layer match rules still belong in WAF when Shield Advanced is also on.",
+    "sides": [
+      {
+        "label": "AWS WAF",
+        "pickWhen": "HTTP requests need match rules for the paths, addresses, or patterns to block."
+      },
+      {
+        "label": "AWS Shield",
+        "pickWhen": "The workload edge needs protection from a flood of traffic."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-09",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "Amazon GuardDuty",
+      "Amazon Inspector"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html",
+    "questionIds": [],
+    "difference": "GuardDuty watches account, DNS, and flow activity for threats. Inspector scans supported workloads for vulnerable software and reachable ports.",
+    "sides": [
+      {
+        "label": "Amazon GuardDuty",
+        "pickWhen": "The team wants alerts on odd API calls, DNS lookups, or flow patterns."
+      },
+      {
+        "label": "Amazon Inspector",
+        "pickWhen": "The team wants a software and exposure scan of the running workloads."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-10",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS Network Firewall",
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html",
+    "questionIds": [],
+    "difference": "A security group is the stateful filter on one elastic network interface. Network Firewall sits on the VPC path and can match more than the port.",
+    "sides": [
+      {
+        "label": "Interface security group",
+        "pickWhen": "The filter belongs on one machine, by port and source."
+      },
+      {
+        "label": "AWS Network Firewall",
+        "pickWhen": "The VPC needs a path filter that can look past the port number."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-11",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "Amazon Cognito",
+      "AWS Identity and Access Management"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html",
+    "questionIds": [],
+    "difference": "Cognito is the sign-in directory for application customers. IAM users are principals inside the AWS account.",
+    "sides": [
+      {
+        "label": "Amazon Cognito",
+        "pickWhen": "Customers of the application need their own sign-in directory."
+      },
+      {
+        "label": "IAM users",
+        "pickWhen": "The people who need credentials operate this AWS account."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-12",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "AWS Config",
+      "AWS CloudTrail"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
+    "questionIds": [],
+    "difference": "AWS Config records resource configuration and evaluates rules against it. AWS CloudTrail records API activity. A configuration change and the API call that caused it are different records.",
+    "sides": [
+      {
+        "label": "AWS Config",
+        "pickWhen": "The record needed is the resource configuration and the rule result."
+      },
+      {
+        "label": "AWS CloudTrail",
+        "pickWhen": "The record needed is the API caller, the call, and the time."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-13",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "AWS Certificate Manager",
+      "AWS Private CA"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
+    "questionIds": [],
+    "difference": "Browsers already trust a public ACM certificate. A certificate from Private CA is accepted only where that private root is installed.",
+    "sides": [
+      {
+        "label": "Public ACM certificate",
+        "pickWhen": "Browsers on the internet must accept the certificate from a well-known trust store."
+      },
+      {
+        "label": "Private CA certificate",
+        "pickWhen": "Only machines that hold the company root should accept the certificate."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-14",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "Amazon Macie",
+      "Amazon GuardDuty"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html",
+    "questionIds": [],
+    "difference": "Macie classifies objects in S3 for credentials and personal data. GuardDuty raises threat findings from account and network activity.",
+    "sides": [
+      {
+        "label": "Amazon Macie",
+        "pickWhen": "Objects in S3 should be reviewed for credentials or personal data."
+      },
+      {
+        "label": "Amazon GuardDuty",
+        "pickWhen": "The account should get threat findings from activity, logs, and DNS."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-15",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "AWS Key Management Service"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+    "questionIds": [],
+    "difference": "Automatic rotation replaces key material on a period, and the default period is 365 days when you leave it unset. On-demand rotation replaces the material immediately and leaves an existing automatic schedule unchanged. The key id stays put either way, and decrypt uses the material that produced the ciphertext.",
+    "sides": [
+      {
+        "label": "Automatic key rotation",
+        "pickWhen": "This symmetric key should get new material on a repeating period."
+      },
+      {
+        "label": "On-demand key rotation",
+        "pickWhen": "This symmetric key should get new material once, right now."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-16",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "Amazon CloudFront",
+      "AWS Certificate Manager"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
+    "questionIds": [],
+    "difference": "Viewer HTTPS on CloudFront for a custom domain wants the public certificate in us-east-1 (N. Virginia). A load balancer uses a certificate requested beside the application.",
+    "sides": [
+      {
+        "label": "Distribution viewer certificate",
+        "pickWhen": "A custom domain name needs the certificate in us-east-1 (N. Virginia)."
+      },
+      {
+        "label": "ACM certificate in the workload Region",
+        "pickWhen": "The load balancer needs the certificate beside the application."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-17",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SQS",
+      "Amazon MQ"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html",
+    "questionIds": [],
+    "difference": "Amazon SQS is the AWS queue API. Amazon MQ is a managed message broker for applications that already speak AMQP, MQTT, STOMP, OpenWire, or a similar protocol.",
+    "sides": [
+      {
+        "label": "Amazon SQS queue API",
+        "pickWhen": "New code can send and receive without speaking a broker protocol."
+      },
+      {
+        "label": "Amazon MQ",
+        "pickWhen": "Existing code already speaks AMQP, MQTT, or OpenWire."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-18",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SNS",
+      "Amazon EventBridge"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html",
+    "questionIds": [],
+    "difference": "Amazon SNS fans a message out to subscribers of a topic. Amazon EventBridge routes events by rules on an event bus, including events from AWS services and SaaS partners.",
+    "sides": [
+      {
+        "label": "Amazon SNS",
+        "pickWhen": "One published message should reach every subscriber of a topic."
+      },
+      {
+        "label": "Amazon EventBridge",
+        "pickWhen": "Events should match rules on a bus and go to different targets by content."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-19",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "AWS Step Functions",
+      "Amazon SQS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+    "questionIds": [],
+    "difference": "Step Functions runs a workflow with state, retries, and branches. SQS holds messages until a worker takes them. A queue does not remember which step of a workflow has finished.",
+    "sides": [
+      {
+        "label": "AWS Step Functions",
+        "pickWhen": "The work is a workflow with steps, branches, and a place to resume."
+      },
+      {
+        "label": "Amazon SQS",
+        "pickWhen": "Each job stands alone, and a worker can take it when the worker is free."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-20",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SQS",
+      "AWS Lambda"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html",
+    "questionIds": [],
+    "difference": "A dead-letter queue receives messages that failed the source queue's receive limit. A Lambda retry retries the invocation. Those are different failure paths.",
+    "sides": [
+      {
+        "label": "SQS dead-letter queue",
+        "pickWhen": "A message that exhausts its receive limit should be set aside for inspection."
+      },
+      {
+        "label": "Lambda retry",
+        "pickWhen": "A failed function invocation should be attempted again by the function service."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-21",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon EventBridge",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html",
+    "questionIds": [],
+    "difference": "EventBridge Scheduler invokes a target on a schedule you define, without an instance that stays running to watch the clock. A cron job on EC2 needs that instance.",
+    "sides": [
+      {
+        "label": "EventBridge Scheduler",
+        "pickWhen": "A managed schedule should invoke the target."
+      },
+      {
+        "label": "Cron on an EC2 instance",
+        "pickWhen": "The schedule should run on a machine you already operate."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-22",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "AWS Step Functions"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html",
+    "questionIds": [],
+    "difference": "A Standard workflow can run for up to a year, runs each state once unless you add a retry, and keeps an execution history. An Express workflow is for short, high-volume runs of at most five minutes, and its guarantee depends on whether that Express workflow is synchronous or asynchronous.",
+    "sides": [
+      {
+        "label": "Standard workflow",
+        "pickWhen": "The workflow may run for hours or days, and you need its execution history."
+      },
+      {
+        "label": "Express workflow",
+        "pickWhen": "The workflow should finish within five minutes and run at high volume."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-23",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon S3",
+      "Amazon EventBridge"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html",
+    "questionIds": [],
+    "difference": "An S3 event notification sends one bucket's events to a destination you name, such as a queue, topic, or function. EventBridge can receive those events on a bus and route them with rules.",
+    "sides": [
+      {
+        "label": "S3 event notification",
+        "pickWhen": "One bucket should send its events straight to a queue, topic, or function."
+      },
+      {
+        "label": "EventBridge for S3 events",
+        "pickWhen": "Bucket events should land on an event bus and match rules before they reach targets."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-24",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon Aurora",
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+    "questionIds": [],
+    "difference": "Multi-AZ RDS keeps a standby that takes over as the writer. Aurora keeps storage copies across Availability Zones and can add reader endpoints for queries.",
+    "sides": [
+      {
+        "label": "RDS Multi-AZ standby",
+        "pickWhen": "One relational database needs a second copy that can take over as the writer."
+      },
+      {
+        "label": "Aurora with readers",
+        "pickWhen": "Queries should run on extra reader endpoints inside the cluster."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-25",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon DynamoDB",
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html",
+    "questionIds": [],
+    "difference": "A DynamoDB global table is a multi-Region table that accepts writes in more than one Region. An RDS read replica in another Region is a read copy, and writes still go to the source.",
+    "sides": [
+      {
+        "label": "DynamoDB global table",
+        "pickWhen": "Application writes must be accepted in more than one Region."
+      },
+      {
+        "label": "RDS cross-Region read replica",
+        "pickWhen": "Query traffic should move to another Region, with writes left on the source."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-26",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon S3",
+      "AWS Backup"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+    "questionIds": [],
+    "difference": "Replication sends newly written objects to a second bucket. AWS Backup stores recovery points on the plan you define for the resources it supports.",
+    "sides": [
+      {
+        "label": "S3 replication",
+        "pickWhen": "Newly written objects should show up in a second bucket."
+      },
+      {
+        "label": "AWS Backup plan",
+        "pickWhen": "Supported resources need recovery points kept on a schedule you define."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-27",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon EC2",
+      "Amazon EC2 Auto Scaling"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html",
+    "questionIds": [],
+    "difference": "Simplified automatic recovery moves that same instance onto healthy hardware after a failed system status check. An Auto Scaling group restores its desired capacity, which can mean a newly launched instance.",
+    "sides": [
+      {
+        "label": "EC2 automatic recovery",
+        "pickWhen": "This one instance should restart on new hardware when its system check fails."
+      },
+      {
+        "label": "Auto Scaling replacement",
+        "pickWhen": "The group should keep its desired count and can launch a new machine."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-28",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon Route 53",
+      "Elastic Load Balancing"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html",
+    "questionIds": [],
+    "difference": "A failover record changes the address DNS hands out after its health check fails. A load balancer keeps one DNS name and directs new requests toward the healthy targets.",
+    "sides": [
+      {
+        "label": "Route 53 failover",
+        "pickWhen": "DNS should hand callers a different endpoint after a health check fails."
+      },
+      {
+        "label": "Load balancer target health",
+        "pickWhen": "Callers keep one DNS name, and failed targets should get no new requests."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-29",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon EBS",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html",
+    "questionIds": [],
+    "difference": "An EBS snapshot is a backup of a volume. An AMI is a template for launching instances, and it can point at snapshots of the volumes that template needs.",
+    "sides": [
+      {
+        "label": "EBS volume snapshot",
+        "pickWhen": "One disk needs a point-in-time backup of its blocks."
+      },
+      {
+        "label": "AMI",
+        "pickWhen": "A new instance should launch from a saved machine image."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-30",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon EBS",
+      "Amazon EFS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes-multi.html",
+    "questionIds": [],
+    "difference": "Multi-Attach puts one io1 or io2 volume on several Nitro instances that share a zone, and the application has to order the writes. EFS is a file system those instances can mount from different zones.",
+    "sides": [
+      {
+        "label": "EBS Multi-Attach",
+        "pickWhen": "Several Nitro instances inside one zone must share the same io2 volume."
+      },
+      {
+        "label": "Amazon EFS",
+        "pickWhen": "Instances that sit in different zones must mount the same files."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-31",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "AWS DataSync",
+      "AWS Storage Gateway"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html",
+    "questionIds": [],
+    "difference": "DataSync copies data between on-premises storage and AWS, or between AWS storage services, as a transfer task. Storage Gateway presents cloud storage through a file, volume, or tape interface that stays in the data path.",
+    "sides": [
+      {
+        "label": "AWS DataSync",
+        "pickWhen": "The job is a transfer of existing data into AWS or between AWS storage services."
+      },
+      {
+        "label": "AWS Storage Gateway",
+        "pickWhen": "On-premises applications should keep using a file, volume, or tape interface for cloud storage."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-32",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon FSx"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html",
+    "questionIds": [],
+    "difference": "Lustre is the high-throughput file system for compute jobs. The Windows file service speaks SMB and joins Active Directory.",
+    "sides": [
+      {
+        "label": "FSx for Lustre",
+        "pickWhen": "Compute jobs need a high-throughput file system for their working data."
+      },
+      {
+        "label": "FSx for Windows File Server",
+        "pickWhen": "Clients that use SMB need a file system joined to Active Directory."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-33",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "AWS Lambda",
+      "AWS Fargate"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+    "questionIds": [],
+    "difference": "Lambda runs a function for a single invocation and has a maximum runtime. Fargate runs a container for as long as the task should stay up, without you managing the instances.",
+    "sides": [
+      {
+        "label": "Lambda for one invocation",
+        "pickWhen": "The work fits one short call and then the function ends."
+      },
+      {
+        "label": "AWS Fargate",
+        "pickWhen": "The work is a container that should stay up for the life of the task."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-34",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon ECS",
+      "Amazon EKS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+    "questionIds": [],
+    "difference": "ECS runs containers from task definitions on AWS's orchestrator. EKS runs the same kind of container from Kubernetes manifests.",
+    "sides": [
+      {
+        "label": "Amazon ECS",
+        "pickWhen": "The team will deploy the containers with task definitions."
+      },
+      {
+        "label": "Amazon EKS",
+        "pickWhen": "The team will deploy the containers with Kubernetes manifests."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-35",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html",
+    "questionIds": [],
+    "difference": "A cluster group places the instances near each other inside one Availability Zone. A spread group places the instances on separate hardware.",
+    "sides": [
+      {
+        "label": "Cluster placement group",
+        "pickWhen": "These instances should sit close together inside one Availability Zone."
+      },
+      {
+        "label": "Spread placement group",
+        "pickWhen": "These instances should land on separate racks of hardware."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-36",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon ElastiCache"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html",
+    "questionIds": [],
+    "difference": "ElastiCache for Redis supports richer data types, replication, and persistence options. ElastiCache for Memcached is a simple distributed cache with multithreaded nodes and no replication.",
+    "sides": [
+      {
+        "label": "ElastiCache for Redis",
+        "pickWhen": "The cache needs replication, richer data types, or persistence options."
+      },
+      {
+        "label": "ElastiCache for Memcached",
+        "pickWhen": "The cache is a simple key store, and multithreaded nodes matter more than replication."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-37",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon DynamoDB",
+      "Amazon ElastiCache"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html",
+    "questionIds": [],
+    "difference": "DAX is a cache in front of DynamoDB that speaks the DynamoDB API. ElastiCache is a separate cache the application reads and writes itself.",
+    "sides": [
+      {
+        "label": "DynamoDB Accelerator",
+        "pickWhen": "Table reads should be cached through the same calls the table already uses."
+      },
+      {
+        "label": "Amazon ElastiCache",
+        "pickWhen": "The application should read and write a cache through the cache's own API."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-38",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html",
+    "questionIds": [],
+    "difference": "RDS Proxy sits in front of the database and reuses connections for many brief clients. A larger instance class gives the database itself more CPU, memory, and connection room.",
+    "sides": [
+      {
+        "label": "RDS Proxy",
+        "pickWhen": "Many brief clients need a shared pool in front of the database."
+      },
+      {
+        "label": "A larger DB instance",
+        "pickWhen": "The database itself needs more CPU or memory for its queries."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-39",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "AWS Transit Gateway",
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html",
+    "questionIds": [],
+    "difference": "VPC peering is a connection between two VPCs, and it does not transitive-route through a third VPC. A transit gateway is a hub the VPCs attach to, so many VPCs can share one routing point.",
+    "sides": [
+      {
+        "label": "VPC peering",
+        "pickWhen": "Exactly two VPCs need a private path between them."
+      },
+      {
+        "label": "Transit gateway",
+        "pickWhen": "A larger set of VPCs should share one routing hub."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-40",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon CloudFront",
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html",
+    "questionIds": [],
+    "difference": "CloudFront keeps copies of content at edges for viewers. Transfer Acceleration uses the edge network as a faster path for uploads and downloads to one bucket.",
+    "sides": [
+      {
+        "label": "CloudFront edge cache",
+        "pickWhen": "Viewers in many places should get a cached copy from a nearby location."
+      },
+      {
+        "label": "S3 Transfer Acceleration",
+        "pickWhen": "Clients should send and fetch objects through a faster path to one bucket."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-41",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon Kinesis",
+      "Amazon Managed Streaming for Apache Kafka"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html",
+    "questionIds": [],
+    "difference": "Kinesis Data Streams is AWS's own stream, read with the Kinesis API. Amazon MSK is managed Apache Kafka for applications that already produce and consume with Kafka clients.",
+    "sides": [
+      {
+        "label": "Kinesis Data Streams API",
+        "pickWhen": "Producers and consumers will call this stream service directly."
+      },
+      {
+        "label": "Amazon MSK",
+        "pickWhen": "Producers and consumers will keep their Kafka client libraries."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-42",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html",
+    "questionIds": [],
+    "difference": "gp3 is general-purpose SSD storage with a baseline you can raise. io2 is provisioned IOPS SSD for sustained high IOPS. Paying for io2 is not required when gp3's IOPS cover the volume.",
+    "sides": [
+      {
+        "label": "gp3",
+        "pickWhen": "The volume needs general-purpose SSD performance, and the baseline IOPS are enough."
+      },
+      {
+        "label": "io2",
+        "pickWhen": "The volume needs sustained provisioned IOPS above what a general-purpose SSD should carry."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-43",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon EFS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/storage-classes.html",
+    "questionIds": [],
+    "difference": "EFS Standard is for files you read often. EFS Infrequent Access costs less to store and more to read. Lifecycle policy can move files that have not been read.",
+    "sides": [
+      {
+        "label": "EFS Standard",
+        "pickWhen": "These files are read often, and access charges should stay low."
+      },
+      {
+        "label": "EFS Infrequent Access",
+        "pickWhen": "These files are rarely read, and a lower storage price is worth a higher read price."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-44",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "AWS Fargate",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html",
+    "questionIds": [],
+    "difference": "Fargate bills for the task's CPU and memory while it runs, and there is no cluster instance to right-size. EC2 container instances can be cheaper when the instances stay full, and you pay for the instances even when tasks do not fill them.",
+    "sides": [
+      {
+        "label": "AWS Fargate",
+        "pickWhen": "Tasks come and go, and you do not want to pay for idle container instances."
+      },
+      {
+        "label": "EC2 container instances",
+        "pickWhen": "The instances stay busy, and paying for those instances is the lower cost."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-45",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "AWS Budgets",
+      "AWS Cost Explorer"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
+    "questionIds": [],
+    "difference": "Budgets sends a notice when cost or usage crosses a threshold you set. Cost Explorer is the place to inspect past spend and a forecast.",
+    "sides": [
+      {
+        "label": "AWS Budgets",
+        "pickWhen": "Someone should be notified when cost or usage crosses a threshold."
+      },
+      {
+        "label": "AWS Cost Explorer",
+        "pickWhen": "Someone needs to inspect past spend or a forecast."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-46",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html",
+    "questionIds": [],
+    "difference": "On-demand capacity bills for the requests you make and does not ask for a provisioned rate. Provisioned capacity is a rate you set, and it costs less per request when the traffic is steady enough to use what you bought.",
+    "sides": [
+      {
+        "label": "On-demand capacity",
+        "pickWhen": "Traffic is spiky or unknown, and you do not want to set a read and write rate."
+      },
+      {
+        "label": "Provisioned capacity",
+        "pickWhen": "Traffic is steady enough to buy a read and write rate in advance."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-47",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html",
+    "questionIds": [],
+    "difference": "An RDS Reserved Instance discounts a database instance you commit to for a term. On-Demand has no term. The reservation does not change the database engine or the failover design.",
+    "sides": [
+      {
+        "label": "RDS Reserved Instance",
+        "pickWhen": "This database will run for the term, and a commitment should lower its hourly price."
+      },
+      {
+        "label": "RDS On-Demand",
+        "pickWhen": "The database might be stopped or resized before a term would pay off."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-48",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon ElastiCache"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/reserved-nodes.html",
+    "questionIds": [],
+    "difference": "A reserved ElastiCache node discounts a node size you commit to. On-demand nodes have no term. The reservation does not add replication or change the engine.",
+    "sides": [
+      {
+        "label": "Reserved cache node",
+        "pickWhen": "These cache nodes will run for the term, and the discount should follow that size."
+      },
+      {
+        "label": "On-demand cache node",
+        "pickWhen": "The cache node size or lifetime is still changing, and a term is too soon."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-49",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html",
+    "questionIds": [],
+    "difference": "An interface endpoint puts the AWS API on a private network interface and adds an hourly charge plus data processing. Reaching the public endpoint through a NAT gateway also charges for the NAT data, and the traffic uses the public path.",
+    "sides": [
+      {
+        "label": "Interface endpoint",
+        "pickWhen": "This API should stay on a private network address in the subnet, and the hourly charge is acceptable."
+      },
+      {
+        "label": "NAT gateway to the public API",
+        "pickWhen": "Instances already reach the internet through an egress device, and this API can stay on that path."
+      }
+    ]
+  },
+  {
+    "id": "pair-m1-50",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon CloudFront"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html",
+    "questionIds": [],
+    "difference": "A CloudFront price class limits which edge locations can serve the distribution, which can lower the transfer price. Price class All can use every edge. The class does not change the origin.",
+    "sides": [
+      {
+        "label": "A lower CloudFront price class",
+        "pickWhen": "Viewers are in the regions a cheaper price class covers, and the transfer price matters."
+      },
+      {
+        "label": "CloudFront price class All",
+        "pickWhen": "Viewers may be anywhere, and every edge location should stay eligible."
       }
     ]
   }

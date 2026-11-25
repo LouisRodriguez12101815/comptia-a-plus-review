@@ -76,7 +76,7 @@ export function resolveSide(side: PairSideSource, pairId: string): ResolvedSide 
     const item = drillItem(side.ref);
     const cue = item?.fields.cue ?? item?.fields.scenario;
     if (!item || !cue || !item.fields.answer) throw new Error(`${pairId}: missing drill item ${side.ref}`);
-    return { label: item.fields.answer, pickWhen: cue, ref: side.ref };
+    return { label: item.fields.answer, pickWhen: side.pickWhen || cue, ref: side.ref };
   }
   if (!side.label || !side.pickWhen) throw new Error(`${pairId}: a side needs a drill ref or its own label and cue`);
   return { label: side.label, pickWhen: side.pickWhen };
@@ -93,6 +93,59 @@ export function resolvedPairs(exam: ExamCode = "saa-c03", taskId?: string | null
       ...pair,
       sides: pair.sides.map((side) => resolveSide(side, pair.id)),
     }));
+}
+
+/** Match on /flashcards stays one short round. Concentration boards stay capped separately. */
+export const FLASHCARD_MATCH_ROUND = 20;
+
+function shuffleWith<T>(items: T[], seed: number): T[] {
+  const next = [...items];
+  let state = seed >>> 0 || 1;
+  for (let index = next.length - 1; index > 0; index -= 1) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    const swap = state % (index + 1);
+    [next[index], next[swap]] = [next[swap], next[index]];
+  }
+  return next;
+}
+
+/**
+ * Up to 20 pairs for one Match session. Weak tasks are drawn first, then the
+ * round fills round-robin so a task filter and the other tasks still appear.
+ * Fewer than 20 pairs returns every pair. This does not write progress.
+ */
+export function sampleMatchRound<T extends { id: string; taskId: string }>(
+  pairs: T[],
+  weakTaskIds: readonly string[] = [],
+  seed = 1,
+): T[] {
+  if (pairs.length <= FLASHCARD_MATCH_ROUND) return shuffleWith(pairs, seed);
+  const weak = new Set(weakTaskIds);
+  const byTask = new Map<string, T[]>();
+  for (const pair of pairs) {
+    const list = byTask.get(pair.taskId) ?? [];
+    list.push(pair);
+    byTask.set(pair.taskId, list);
+  }
+  const tasks = [...byTask.keys()].sort((left, right) => Number(weak.has(right)) - Number(weak.has(left)) || left.localeCompare(right));
+  const queues = new Map(tasks.map((task) => {
+    let state = seed >>> 0 || 1;
+    for (const char of task) state = (Math.imul(state, 33) + char.charCodeAt(0)) >>> 0;
+    return [task, shuffleWith(byTask.get(task) ?? [], state)] as const;
+  }));
+  const round: T[] = [];
+  while (round.length < FLASHCARD_MATCH_ROUND) {
+    let added = false;
+    for (const task of tasks) {
+      const next = queues.get(task)?.shift();
+      if (!next) continue;
+      round.push(next);
+      added = true;
+      if (round.length === FLASHCARD_MATCH_ROUND) break;
+    }
+    if (!added) break;
+  }
+  return round;
 }
 
 function relatedQuestionIds(card: Flashcard): string[] {

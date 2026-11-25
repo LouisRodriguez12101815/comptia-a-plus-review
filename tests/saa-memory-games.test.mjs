@@ -116,11 +116,11 @@ test("the memory games meet the per-game floors and cover every task three times
   assert.equal(catalog.odd.length, 20);
   assert.equal(catalog.ladders.length, 8);
   assert.equal(catalog.lightning.length, 66);
-  assert.equal(twoSidedPairs().length, 30);
+  assert.equal(twoSidedPairs().length, 80);
   assert.equal(concentrationPairs("D1").length, 8);
   assert.equal(concentrationPairs("D2").length, 8);
-  assert.equal(concentrationPairs("D3").length, 7);
-  assert.equal(concentrationPairs("D4").length, 7);
+  assert.equal(concentrationPairs("D3").length, 8);
+  assert.equal(concentrationPairs("D4").length, 8);
   const gamesByTask = new Map(SAA_TASK_IDS.map((task) => [task, new Set()]));
   const groups = [
     ["builder", catalog.builder],
@@ -246,7 +246,7 @@ test("the memory games meet the per-game floors and cover every task three times
 
 test("concentration uses two-sided pair records and sizes the board from what is available", () => {
   const ids = new Set(twoSidedPairs().map((pair) => pair.id));
-  assert.equal(ids.size, 30);
+  assert.equal(ids.size, 80);
   for (const board of ["all", "D1", "D2", "D3", "D4"]) {
     const pairs = concentrationPairs(board);
     assert.ok(pairs.length > 0 && pairs.length <= 8, board);
@@ -259,8 +259,8 @@ test("concentration uses two-sided pair records and sizes the board from what is
   assert.equal(concentrationPairs("all").length, 8);
   assert.equal(concentrationPairs("D1").length, 8);
   assert.equal(concentrationPairs("D2").length, 8);
-  assert.equal(concentrationPairs("D3").length, 7);
-  assert.equal(concentrationPairs("D4").length, 7);
+  assert.equal(concentrationPairs("D3").length, 8);
+  assert.equal(concentrationPairs("D4").length, 8);
   assert.equal(nextStreak(undefined, 4, "2026-11-20"), 1);
   assert.equal(nextStreak("2026-11-20", 4, "2026-11-20"), 4);
   assert.equal(nextStreak("2026-11-19", 4, "2026-11-20"), 5);

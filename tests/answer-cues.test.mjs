@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyzeItem, countsAsEcho, equalizeStrongCue, itemFailures, LEGACY_STEM_ECHO_IDS, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
+import { analyzeItem, countsAsEcho, equalizeStrongCue, itemFailures, labelEchoWords, LEGACY_STEM_ECHO_IDS, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
 
 const longKey = {
   id: "q-long",
@@ -228,4 +228,29 @@ test("equalizing a strong cue uses the existing explanation and keeps the key", 
   assert.equal(analyzeItem({ ...edited, exams: ["saa-c03"], source: "questions.json" }).stronglyBiased, false);
   assert.match(edited.explanation, new RegExp(`Option: ${edited.choices[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} — Incorrect:`));
   assert.equal(equalizeStrongCue(edited), null);
+});
+
+test("a hint fails when it repeats a word unique to its own label", () => {
+  const examples = [
+    ["gp3", "The volume needs gp3 IOPS", "io2", "The volume needs sustained provisioned IOPS"],
+    ["Amazon ECS", "The team will deploy the containers with ECS task definitions", "Amazon EKS", "The team will deploy the containers with Kubernetes manifests"],
+    ["Kinesis Data Streams API", "Producers and consumers will call the Kinesis API", "Amazon MSK", "Producers and consumers will keep their Kafka client libraries"],
+    ["Managed NAT gateway", "Private subnets need a managed IPv4 path", "NAT instance", "The translator has to be a virtual machine you patch"],
+    ["Amazon SQS queue API", "New code can send and receive with the SQS API", "Amazon MQ", "Existing code already speaks AMQP or MQTT"],
+    ["DynamoDB Accelerator", "Table reads should be cached behind the DynamoDB API", "Amazon ElastiCache", "The application should read and write a cache through the cache's own API"],
+    ["FSx for Windows File Server", "Windows clients need an SMB file system", "FSx for Lustre", "Compute jobs need a high-throughput file system"],
+    ["AWS Backup plan", "Supported resources need recovery points kept by a backup plan", "S3 replication", "Newly written objects should show up in a second bucket"],
+  ];
+  for (const [label, pickWhen, otherLabel, otherHint] of examples) {
+    const hits = labelEchoWords([
+      { label, pickWhen },
+      { label: otherLabel, pickWhen: otherHint },
+    ]);
+    assert.ok(hits.some((hit) => hit.label === label && hit.words.length > 0), pickWhen);
+  }
+  const shared = labelEchoWords([
+    { label: "Bucket policy", pickWhen: "The caller must be named in the policy." },
+    { label: "Identity policy", pickWhen: "The caller must be allowed by the policy." },
+  ]);
+  assert.deepEqual(shared, []);
 });

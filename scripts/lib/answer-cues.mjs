@@ -423,6 +423,37 @@ export function itemFailures(rows, ids, exceptions = new Map()) {
   return failures;
 }
 
+const LABEL_ECHO_STOP = new Set("the and for with that this from into over than then via per not are was has have can should will your their them one two may all any out off its".split(" "));
+
+/** Words of three or more letters, without the small function words that every hint shares. */
+export function hintWords(text) {
+  return [...new Set((String(text ?? "").toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((word) => word.length >= 3 && !LABEL_ECHO_STOP.has(word)))];
+}
+
+/**
+ * A hint fails when it repeats a word from its own label that no other side
+ * uses in its label or hint. Words shared across the pair are allowed.
+ */
+export function labelEchoWords(sides) {
+  const hits = [];
+  for (let index = 0; index < sides.length; index += 1) {
+    const own = new Set(hintWords(sides[index].label));
+    const others = new Set();
+    sides.forEach((side, other) => {
+      if (other === index) return;
+      for (const word of hintWords(`${side.label} ${side.pickWhen}`)) others.add(word);
+    });
+    const words = hintWords(sides[index].pickWhen).filter((word) => own.has(word) && !others.has(word));
+    if (words.length) hits.push({ index, label: sides[index].label, words });
+  }
+  return hits;
+}
+
+/** Order-independent identity of a pair's resolved side labels. */
+export function normalizedLabelSet(labels) {
+  return [...new Set(labels.map((label) => String(label).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()))].sort().join("|");
+}
+
 /** Lengthen the shortest wrong choice using words already in its explanation. Returns null when it cannot. */
 export function equalizeStrongCue(question) {
   if (!isSingleAnswer(question)) return null;
