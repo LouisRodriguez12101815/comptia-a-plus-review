@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { loadCueItems } from "../scripts/audit-answer-cues.mjs";
-import { analyzeItem, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
+import { analyzeItem, LEGACY_STEM_ECHO_IDS, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
 
 function item(id, answer, choices, prompt = "Which option keeps the archive available for this team?") {
   return { id, exams: ["saa-c03"], source: "fixture", prompt, choices, answer };
@@ -99,6 +99,14 @@ test("one fixture fails each SAA answer-cue gate and no other gate", () => {
     assert.equal(failures.length, 1, `${gate}: ${failures.join(" | ")}`);
     assert.match(failures[0], new RegExp(`^saa-c03: ${gate}\\b`), failures[0]);
   }
+});
+
+test("stem copies and deictic keys outside the locked set are counted", async () => {
+  const hits = (await loadCueItems()).map(analyzeItem)
+    .filter((row) => row.exams.includes("saa-c03") && row.single && row.lengthGate && (row.stemEcho || row.deicticEcho))
+    .map((row) => row.id)
+    .sort();
+  assert.deepEqual(hits, [...LEGACY_STEM_ECHO_IDS].sort());
 });
 
 test("the live SAA single-answer set passes the enforced gates", async () => {

@@ -136,6 +136,7 @@ test("SAA inventory stages are counted from the specified base and both explicit
     ["after-practice-guide-batch", "2b10f65dd88c043f7bfd1f840128c71f2249034f", 282, 109],
     ["after-chapter-batch", "6755293c5e86860340b2f44a0a2b8c978b9991b1", 308, 26],
     ["after-chapter-phase-a", "fe7179d4f2cf25aef02782a06785d2a906017d91", 314, 6],
+    ["after-g1-batch-1", "453dd26175e52c18fad35c0eaf4c4648892cefa6", 333, 14],
   ];
   for (const [stageName, commit, expectedCount, addedCount] of later) {
     const stage = audit.countStages.find((item) => item.stage === stageName);
@@ -159,20 +160,27 @@ test("SAA inventory stages are counted from the specified base and both explicit
     maxBuffer: 32 * 1024 * 1024,
   }));
   assert.deepEqual(count(frozen), { saaQuestionCount: 319, uniqueIdCount: 319, byDomain: rewrite.byDomain, byTask: rewrite.byTask });
-  const liveStage = audit.countStages.find((stage) => stage.stage === "after-g1-batch-1");
-  assert.equal(liveStage.commit, null);
-  assert.deepEqual(liveStage.addedIds, [
+  const batchOne = audit.countStages.find((stage) => stage.stage === "after-g1-batch-1");
+  assert.deepEqual(batchOne.addedIds, [
     "q-saa-g1a-01", "q-saa-g1a-02", "q-saa-g1a-03", "q-saa-g1a-04", "q-saa-g1a-05", "q-saa-g1a-06",
-    "q-saa-g1a-07", "q-saa-g1a-08", "q-saa-g1a-09", "q-saa-g1a-10", "q-saa-g1a-11",     "q-saa-g1a-12", "q-saa-g1a-13", "q-saa-g1a-14",
+    "q-saa-g1a-07", "q-saa-g1a-08", "q-saa-g1a-09", "q-saa-g1a-10", "q-saa-g1a-11", "q-saa-g1a-12", "q-saa-g1a-13", "q-saa-g1a-14",
   ]);
-  assert.deepEqual(count(questions), { saaQuestionCount: 333, uniqueIdCount: 333, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
+  const liveStage = audit.countStages.find((stage) => stage.stage === "after-g1-batch-2");
+  assert.equal(liveStage.commit, null);
+  assert.equal(liveStage.addedIds.length, 30);
+  assert.ok(liveStage.addedIds.every((id, index) => id === `q-saa-g1b-${String(index + 1).padStart(2, "0")}`));
+  assert.deepEqual(count(questions), { saaQuestionCount: 363, uniqueIdCount: 363, byDomain: liveStage.byDomain, byTask: liveStage.byTask });
+  assert.equal(liveStage.byTask["1.1"], 40);
+  assert.equal(liveStage.byTask["1.3"], 37);
+  assert.equal(liveStage.served.byTask["1.1"], 40);
+  assert.equal(liveStage.served.byTask["1.3"], 40);
+  assert.equal(liveStage.byTask["3.1"], 20);
+  assert.equal(liveStage.byTask["4.1"], 20);
   assert.equal(liveStage.byTask["4.3"], 21);
   assert.equal(liveStage.served.byTask["4.3"], 20);
   assert.deepEqual(audit.exclusions, read("content/saa-audit-exclusions.json").exclusions);
   assert.equal(servedQuestions.some((question) => question.id === "q-saa-costbatch-010"), false);
-  assert.equal(liveStage.byTask["4.1"], 20);
-  assert.equal(liveStage.byTask["3.1"], 20);
-  assert.equal(liveStage.formats.singleAnswer, 322);
+  assert.equal(liveStage.formats.singleAnswer, 352);
   assert.equal(audit.baseline.commit, baseCommit);
 });
 
@@ -244,7 +252,7 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
       for (let index = 1; index < chain.length; index += 1) {
         assert.equal(chain[index].oldHash, chain[index - 1].newHash, `${question.id}: stage ${index} does not cite the previous hash`);
       }
-    } else if (question.id.startsWith("q-saa-g1a-")) {
+    } else if (question.id.startsWith("q-saa-g1a-") || question.id.startsWith("q-saa-g1b-")) {
       assert.equal(liveHashes.has(question.id), false, `${question.id}: new id already in the 314 stage`);
     } else {
       assert.equal(digest, liveHashes.get(question.id), `${question.id}: live preservation hash`);
@@ -372,7 +380,7 @@ test("the high-yield fill is stage 319 to 335 and every id is in the saa-c03 moc
     byDomain[`${task[0]}.0`] += 1;
     byTask[task] += 1;
   }
-  const g1 = audit.countStages.find((item) => item.stage === "after-g1-batch-1");
+  const g1 = audit.countStages.find((item) => item.stage === "after-g1-batch-2");
   assert.deepEqual({
     saaQuestionCount: servedSaa.length,
     uniqueIdCount: new Set(servedSaa.map((question) => question.id)).size,

@@ -29,9 +29,9 @@ const base = {
 };
 
 test("every SAA question has one legal task and study tags that match the item text", () => {
-  assert.equal(saa.length, 333);
+  assert.equal(saa.length, 363);
   const served = servedQuestions.filter((question) => question.examCodes?.includes("saa-c03"));
-  assert.equal(served.length, 348);
+  assert.equal(served.length, 378);
   for (const question of served) assertSaaQuestionTags(question);
   for (const question of servedQuestions) {
     if (question.examCodes?.includes("saa-c03")) continue;

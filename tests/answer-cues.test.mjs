@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyzeItem, equalizeStrongCue, itemFailures, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
+import { analyzeItem, countsAsEcho, equalizeStrongCue, itemFailures, LEGACY_STEM_ECHO_IDS, rateFailures, summarize } from "../scripts/lib/answer-cues.mjs";
 
 const longKey = {
   id: "q-long",
@@ -131,6 +131,93 @@ test("keyword echo, odd-one-out openings, and a strictly shortest key are measur
 test("the answer-cue gate fixtures are wired into checks", () => {
   const workflow = readFileSync(new URL("../.github/workflows/checks.yml", import.meta.url), "utf8");
   assert.match(workflow, /npm run test:answer-cue-gates/);
+});
+
+test("self-out clauses and stem copies in the key are reported", () => {
+  const refused = analyzeItem({
+    id: "q-refuse", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which change lets the partner read?",
+    choices: [
+      "A bucket policy that names the partner role",
+      "An identity permission for a role the partner will not use",
+      "Rotate imported material on a key this application does not use",
+      "Enable rotation on a key this application does not use",
+    ],
+  });
+  assert.ok(refused.selfDisqualifying.filter((hit) => hit.label === "refuses").length >= 2);
+  const nullAction = analyzeItem({
+    id: "q-null", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "How is the existing database encrypted?",
+    choices: [
+      "Copy a snapshot to an encrypted snapshot and restore it",
+      "Turn on default encryption and restore nothing",
+      "Require TLS and leave the stored files unchanged",
+      "Modify the database and enable storage encryption",
+    ],
+  });
+  assert.ok(nullAction.selfDisqualifying.some((hit) => hit.label === "nothing"));
+  assert.ok(nullAction.selfDisqualifying.some((hit) => hit.label === "unchanged-data"));
+  const omitted = analyzeItem({
+    id: "q-omit", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which design meets the landing zone and the upload rule?",
+    choices: [
+      "AWS Control Tower with a landing zone and account factory",
+      "An SCP in AWS Organizations, without the landing zone",
+      "Default encryption at AES256, without a deny for other headers",
+      "A conformance pack evaluated after the fact",
+    ],
+  });
+  assert.ok(omitted.selfDisqualifying.some((hit) => hit.label === "without-the"));
+  assert.ok(omitted.selfDisqualifying.some((hit) => hit.label === "without-deny"));
+  assert.ok(omitted.selfDisqualifying.some((hit) => hit.label === "after-the-fact"));
+  const hedge = analyzeItem({
+    id: "q-hedge", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which certificate renews, and which assignment grants the job?",
+    choices: [
+      "An ACM certificate on the load balancer",
+      "An imported certificate renewed by hand",
+      "An SCP attached to both accounts that is meant to allow the job",
+      "A second SAML role in each account",
+    ],
+  });
+  assert.ok(hedge.selfDisqualifying.some((hit) => hit.label === "manual-renewal"));
+  assert.ok(hedge.selfDisqualifying.some((hit) => hit.label === "meant-to"));
+  const copied = analyzeItem({
+    id: "q-copy", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "The team must download the provider SOC report and agreement and recover any second in the past 14 days.",
+    choices: [
+      "AWS Artifact for the provider SOC report and agreement, covering at least 14 days",
+      "AWS Config rules for the account",
+      "A weekly on-demand backup",
+      "AWS CloudTrail records of API calls",
+    ],
+  });
+  assert.match(copied.stemEcho, /provider soc report and/);
+  const numbered = analyzeItem({
+    id: "q-days", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Recover the table to any second in the past 14 days.",
+    choices: [
+      "Point-in-time recovery covering at least 14 days",
+      "An on-demand backup captured once each week",
+      "A global table that keeps another live copy",
+      "An export of the table from last night",
+    ],
+  });
+  assert.equal(numbered.stemEcho, "at least 14");
+  const pointed = analyzeItem({
+    id: "q-point", exams: ["saa-c03"], source: "questions.json", answer: 0,
+    prompt: "Which permission names the SAML provider?",
+    choices: [
+      "An IAM role whose trust policy names that SAML provider",
+      "An Amazon Cognito user pool",
+      "An IAM user for each employee",
+      "An SCP for the account",
+    ],
+  });
+  assert.equal(pointed.deicticEcho, "that saml");
+  assert.equal(countsAsEcho(pointed), true);
+  assert.equal(countsAsEcho({ id: "q-saa-guide-10", keywordEcho: null, stemEcho: null, deicticEcho: "this password" }), false);
+  assert.equal(LEGACY_STEM_ECHO_IDS.has("q-copy"), false);
 });
 
 test("equalizing a strong cue uses the existing explanation and keeps the key", () => {
