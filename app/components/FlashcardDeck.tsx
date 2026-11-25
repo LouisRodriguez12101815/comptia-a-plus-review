@@ -16,7 +16,7 @@ import {
 import { SAA_TASK_IDS } from "@/lib/saa-tags";
 import { displayBox, isDue, type ReviewGrade } from "@/lib/study/schedule";
 import { clozeForCard, termMatches } from "@/lib/study/memory";
-import { resolvedPairs } from "@/lib/study/records";
+import { resolvedPairs, sampleMatchRound } from "@/lib/study/records";
 import type { Flashcard, StudyFocus } from "@/lib/types";
 
 const DUE_MODE = "due";
@@ -111,10 +111,26 @@ export function FlashcardDeck({
     () => (activeFocus === "saa-c03" ? resolvedPairs("saa-c03", taskFilter) : []),
     [activeFocus, taskFilter],
   );
+  const weakTaskIds = useMemo(() => {
+    const tasks = new Set<string>();
+    const cardsForWeak = getFlashcards("all", "saa-c03");
+    const catalog = resolvedPairs("saa-c03");
+    for (const [id, schedule] of Object.entries(progress.schedules)) {
+      if (!schedule || (displayBox(schedule) > 1 && !isDue(schedule))) continue;
+      const matchedCard = cardsForWeak.find((item) => item.id === id);
+      if (matchedCard?.taskId) tasks.add(matchedCard.taskId);
+      const pair = catalog.find((item) => item.id === id);
+      if (pair) tasks.add(pair.taskId);
+    }
+    return [...tasks];
+  }, [progress.schedules]);
+  const [matchSeed] = useState(1);
   const currentIndex = cards.length ? index % cards.length : 0;
   const card = cards[currentIndex];
   const roundCards = retryIds ? cards.filter((item) => retryIds.includes(item.id)) : cards;
-  const roundPairs = retryIds ? pairs.filter((item) => retryIds.includes(item.id)) : pairs;
+  const roundPairs = retryIds
+    ? pairs.filter((item) => retryIds.includes(item.id))
+    : sampleMatchRound(pairs, weakTaskIds, matchSeed);
   const roundCard = roundCards.length ? roundCards[index % roundCards.length] : undefined;
   const roundPair = roundPairs.length ? roundPairs[index % roundPairs.length] : undefined;
   const knownCount = cards.filter((item) => progress.knownCards[item.id]).length;
