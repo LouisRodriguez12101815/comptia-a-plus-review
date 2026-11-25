@@ -423,9 +423,9 @@ export function itemFailures(rows, ids, exceptions = new Map()) {
   return failures;
 }
 
-const LABEL_ECHO_STOP = new Set("the and for with that this from into over than then via per not are was has have can should will your their them one two may all any out off its".split(" "));
+const LABEL_ECHO_STOP = new Set("the and for with that this from into over than then via per not are was has have can should will your their them two may all any out off its".split(" "));
 
-/** Words of three or more letters, without the small function words that every hint shares. */
+/** Words of three or more letters, without the small function words that every hint shares. "one" still counts: it can be the word that distinguishes a side. */
 export function hintWords(text) {
   return [...new Set((String(text ?? "").toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((word) => word.length >= 3 && !LABEL_ECHO_STOP.has(word)))];
 }

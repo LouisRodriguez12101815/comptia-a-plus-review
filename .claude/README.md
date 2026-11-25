@@ -10,6 +10,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 2. `chapter-ingest` (skill) turns the source into notes, cards, questions and mappings, using `question-writer` and `notes-clarity-editor`.
 3. `answer-key-verifier` and `learner-simulator` (agents) check the keys and the teaching.
 4. `exam-drill-builder` (with the `drill-target-auditor` agent) adds memory drills for the recall-heavy objectives; `pbq-designer` or a visual skill adds scenario practice, and `ux-a11y-reviewer` and `visual-fact-auditor` (agents) check it.
+5. `confusion-pair-builder` (with the `pair-contrast-auditor` agent) adds Match pairs a candidate would mix up.
 
 ## Skills
 
@@ -33,6 +34,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 | [rubric-audit](skills/rubric-audit/SKILL.md) | Grading how completely the notes and study material cover the official exam objectives, before an exam or after adding notes |
 | [comptia-site-pm](skills/comptia-site-pm/SKILL.md) | Deciding what to build next or reviewing a pull request |
 | [shared-state-regression-tester](skills/shared-state-regression-tester/SKILL.md) | Multiplayer rooms or shared state misbehave |
+| [confusion-pair-builder](skills/confusion-pair-builder/SKILL.md) | Building Match pairs a candidate would mix up, for any certification |
 
 ## Agents
 
@@ -51,3 +53,4 @@ Agents run in their own context and report back. All are report-only; the caller
 | [chapter-fact-reviewer](agents/chapter-fact-reviewer.md) | content-fact-check needs one reviewer per chapter |
 | [sad-reviewer](agents/sad-reviewer.md) | An architecture-document visual was built or changed |
 | [forensic-investigator](agents/forensic-investigator.md) | The forensic persona writes a case file for one concept, grounded in the notes and cited history |
+| [pair-contrast-auditor](agents/pair-contrast-auditor.md) | A Match batch needs a blind read of the hints before it merges |

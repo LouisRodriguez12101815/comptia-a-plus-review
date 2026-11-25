@@ -240,6 +240,7 @@ test("a hint fails when it repeats a word unique to its own label", () => {
     ["DynamoDB Accelerator", "Table reads should be cached behind the DynamoDB API", "Amazon ElastiCache", "The application should read and write a cache through the cache's own API"],
     ["FSx for Windows File Server", "Windows clients need an SMB file system", "FSx for Lustre", "Compute jobs need a high-throughput file system"],
     ["AWS Backup plan", "Supported resources need recovery points kept by a backup plan", "S3 replication", "Newly written objects should show up in a second bucket"],
+    ["Lambda for one invocation", "The work fits one short call and then the function ends.", "AWS Fargate", "The work is a container that should stay up for the life of the task."],
   ];
   for (const [label, pickWhen, otherLabel, otherHint] of examples) {
     const hits = labelEchoWords([
@@ -253,4 +254,9 @@ test("a hint fails when it repeats a word unique to its own label", () => {
     { label: "Identity policy", pickWhen: "The caller must be allowed by the policy." },
   ]);
   assert.deepEqual(shared, []);
+  const one = labelEchoWords([
+    { label: "Lambda for one invocation", pickWhen: "The work fits one short call and then the function ends." },
+    { label: "AWS Fargate", pickWhen: "The work is a container that should stay up for the life of the task." },
+  ]);
+  assert.deepEqual(one.map((hit) => hit.words), [["one"]]);
 });
