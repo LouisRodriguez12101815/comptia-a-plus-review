@@ -51163,10 +51163,10 @@
       "Service control policies in AWS Organizations",
       "IAM Identity Center permission sets for the workforce",
       "An AWS Config conformance pack for the member accounts",
-      "AWS Control Tower with a landing zone and account factory"
+      "AWS Control Tower including the account factory"
     ],
     "answer": 3,
-    "explanation": "Service control policies in AWS Organizations — Incorrect. An SCP can be a preventive control later. It does not provide a landing zone or account vending. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM Identity Center permission sets for the workforce — Incorrect. IAM Identity Center assigns workforce access. It does not vend accounts or protect the organization trail. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html\nAn AWS Config conformance pack for the member accounts — Incorrect. A conformance pack evaluates configuration. It does not vend accounts or provide a landing zone. https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html\nAWS Control Tower with a landing zone and account factory — Correct. SAA-C03 task 1.1. AWS Control Tower supplies the landing zone, account factory, and preventive controls for the organization trail. https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
+    "explanation": "Service control policies in AWS Organizations — Incorrect. An SCP can be a preventive control later. It does not provide a landing zone or account vending. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM Identity Center permission sets for the workforce — Incorrect. IAM Identity Center assigns workforce access. It does not vend accounts or protect the organization trail. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html\nAn AWS Config conformance pack for the member accounts — Incorrect. A conformance pack evaluates configuration. It does not vend accounts or provide a landing zone. https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html\nAWS Control Tower including the account factory — Correct. SAA-C03 task 1.1. AWS Control Tower supplies the landing zone, account factory, and preventive controls for the organization trail. https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51805,12 +51805,12 @@
     "prompt": "PutObject calls that request SSE-KMS, DSSE-KMS, or SSE-C must fail. Calls that request AES256 must succeed. The bucket must not use a customer managed key. Which control enforces the header?",
     "choices": [
       "Default bucket encryption left at AES256",
-      "A bucket policy allowing PutObject only for AES256",
-      "A bucket policy allowing PutObject only for SSE-KMS",
-      "Client-side encryption with a key stored on the host"
+      "A bucket policy that denies PutObject unless the header is AES256",
+      "A bucket policy that allows PutObject when the header is AES256",
+      "A bucket policy that denies PutObject only when the header is missing"
     ],
     "answer": 1,
-    "explanation": "Default bucket encryption left at AES256 — Incorrect. An AES256 default, which is SSE-S3, does not deny a request that asks for SSE-KMS, DSSE-KMS, or SSE-C. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy allowing PutObject only for AES256 — Correct. SAA-C03 task 1.3. A bucket policy can deny PutObject unless s3:x-amz-server-side-encryption is AES256. AES256 is SSE-S3, so no customer managed key is required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy allowing PutObject only for SSE-KMS — Incorrect. That policy rejects AES256, which must succeed, and SSE-KMS uses a KMS key. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nClient-side encryption with a key stored on the host — Incorrect. Client-side encryption leaves a key on the application host. It is not the AES256 header check, and it adds key management the bucket must avoid. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html",
+    "explanation": "Default bucket encryption left at AES256 — Incorrect. An AES256 default, which is SSE-S3, does not deny a request that asks for SSE-KMS, DSSE-KMS, or SSE-C. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy that denies PutObject unless the header is AES256 — Correct. SAA-C03 task 1.3. A bucket policy can deny s3:PutObject unless s3:x-amz-server-side-encryption is AES256. AES256 is SSE-S3, so no customer managed key is required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy that allows PutObject when the header is AES256 — Incorrect. An Allow does not restrict other uploads. A request that sends SSE-KMS, DSSE-KMS, or SSE-C is still allowed. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html\nA bucket policy that denies PutObject only when the header is missing — Incorrect. A deny that matches only a missing header still accepts SSE-KMS, DSSE-KMS, and SSE-C, because those requests send a header. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51820,14 +51820,14 @@
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html",
-      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html",
-      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html"
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
     ],
     "format": "single",
     "difficulty": "medium",
     "services": [
       "AWS Key Management Service",
-      "Amazon S3"
+      "Amazon S3",
+      "AWS Identity and Access Management"
     ]
   },
   {
@@ -51872,13 +51872,13 @@
     ],
     "prompt": "A symmetric customer managed key uses material that AWS KMS generated. The application must keep the same key id, and older ciphertext must still decrypt. Rotation should follow the default schedule. Which action meets all three?",
     "choices": [
-      "Create a new symmetric customer managed key and change the key id",
-      "Import replacement key material into another customer managed key",
-      "Enable automatic rotation on an asymmetric KMS key",
+      "Perform one on-demand rotation of this key now",
+      "Set a 180-day automatic rotation period on this key",
+      "Repeat an on-demand rotation of this key each year",
       "Enable automatic rotation on the symmetric key"
     ],
     "answer": 3,
-    "explanation": "Create a new symmetric customer managed key and change the key id — Incorrect. A new key has a new key id. The application would have to change the id it keeps. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nImport replacement key material into another customer managed key — Incorrect. Imported key material is a different rotation path, and automatic rotation is for material that AWS KMS generated. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on an asymmetric KMS key — Incorrect. Automatic rotation is not available for an asymmetric key. The key in use is a symmetric encryption key. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on the symmetric key — Correct. SAA-C03 task 1.3. Automatic rotation on a symmetric key whose material AWS KMS generated keeps the same key id, still decrypts older ciphertext, and uses a default period of 365 days when no custom period is set. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+    "explanation": "Perform one on-demand rotation of this key now — Incorrect. On-demand rotation keeps this key id and still decrypts older ciphertext, but it is one rotation, not the default automatic schedule. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nSet a 180-day automatic rotation period on this key — Incorrect. 180 days is a custom RotationPeriodInDays. When that value is omitted, the period is 365 days. https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKeyRotation.html\nRepeat an on-demand rotation of this key each year — Incorrect. A yearly on-demand call is a manual schedule. It does not enable the default automatic period. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on the symmetric key — Correct. SAA-C03 task 1.3. Automatic rotation on this symmetric key, with no custom period, uses 365 days, keeps the same key id, and still decrypts older ciphertext. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51887,7 +51887,8 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
-      "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html"
+      "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+      "https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKeyRotation.html"
     ],
     "format": "single",
     "difficulty": "medium",
