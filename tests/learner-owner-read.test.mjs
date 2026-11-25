@@ -1,7 +1,7 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
-import { createDiagnosticsGet } from "../app/api/learner/diagnostics/route.ts";
-import { createReportGet } from "../app/api/learner/report/route.ts";
+import { createDiagnosticsGet } from "../lib/learner/diagnostics-route.ts";
+import { createReportGet } from "../lib/learner/report-route.ts";
 import { sameOrigin } from "../lib/learner/api.ts";
 import { createHealthGet } from "../lib/learner/health-route.ts";
 import { learnerId, sessionCookie, signSession } from "../lib/learner/session.ts";
