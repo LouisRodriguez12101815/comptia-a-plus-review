@@ -28,12 +28,14 @@ These skills are the ones used to add and maintain the site's study content. The
 | [exam-visual-designer](../../.agents/skills/exam-visual-designer/SKILL.md) | Pick word-heavy visuals with `npm run audit:visuals`, verify the facts they teach, and redraw them as source-backed SVG figures with a checked fact block. |
 | [hardware-diagram-designer](../../.agents/skills/hardware-diagram-designer/SKILL.md) | Build interactive motherboard and hardware diagrams that drill the seven Core 1 hardware question types (identify, pick the slot, compatibility, power, firmware setting, symptom, install order). |
 | [comptia-site-pm](../../.agents/skills/comptia-site-pm/SKILL.md) | Follow AGENTS.md for content priorities; use currently verified audit findings for UI work and scope-aware PR review. |
+| [confusion-pair-builder](../../.agents/skills/confusion-pair-builder/SKILL.md) | Build Match pairs a candidate would mix up. Parameters are the exam, decks, weights, target, batch size, and sources. |
 
 ### Agents
 
 | Agent | Used by | Responsibility |
 | --- | --- | --- |
 | [chapter-fact-reviewer](../../.agents/agents/chapter-fact-reviewer.md) | content-fact-check | Report-only, one-per-chapter reviewer that classifies claims as ERROR, UNSUPPORTED, CONFLICT or BACKGROUND. Never edits the repo. |
+| [pair-contrast-auditor](../../.agents/agents/pair-contrast-auditor.md) | confusion-pair-builder | Report-only. Reads Match hints blind and returns AGREE, FLAG, or DISAGREE. Never edits the repo. |
 
 ## Workflow contract
 
@@ -89,6 +91,10 @@ Use $exam-visual-designer to redraw public/visuals/core1-ch3-connectors.html. Li
 
 ```text
 Use $network-diagram-designer to review the Follow the Packet diagrams against their sources and explicit IPv4/Ethernet/ARP/NAT assumptions. Propose structured data, readable mobile labels and text equivalents without revealing future answers. Do not modify code yet.
+```
+
+```text
+Use $confusion-pair-builder to plan the next Match batch. Pass the exam code, deck ids, domain weights, target count, and batch size. Report the plan and the sources. Do not modify content yet.
 ```
 
 These example prompts request inspection and inline reports. Apply the workflow contract above; they do not authorize repository edits or shipping.
