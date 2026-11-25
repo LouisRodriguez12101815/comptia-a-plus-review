@@ -174,6 +174,10 @@ test("SAA inventory stages are counted from the specified base and both explicit
   assert.equal(liveStage.byTask["1.3"], 37);
   assert.equal(liveStage.served.byTask["1.1"], 40);
   assert.equal(liveStage.served.byTask["1.3"], 40);
+  assert.equal(liveStage.byTask["3.1"], 20);
+  assert.equal(liveStage.byTask["4.1"], 20);
+  assert.equal(liveStage.byTask["4.3"], 21);
+  assert.equal(liveStage.served.byTask["4.3"], 20);
   assert.deepEqual(audit.exclusions, read("content/saa-audit-exclusions.json").exclusions);
   assert.equal(servedQuestions.some((question) => question.id === "q-saa-costbatch-010"), false);
   assert.equal(liveStage.formats.singleAnswer, 352);

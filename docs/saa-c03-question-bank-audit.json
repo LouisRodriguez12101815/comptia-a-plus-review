@@ -4617,7 +4617,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S05",
         "skill": "Determining the appropriate use of resource policies for AWS services",
-        "primaryDecision": "The caller in account B already has an identity allow, ACLs are off, and the caller will not assume a role in account A. Which resource statement lets that caller read?",
+        "primaryDecision": "Cross-account S3 read uses a bucket policy when the caller already has an identity allow and ACLs are off.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4628,7 +4628,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S05",
         "skill": "Determining the appropriate use of resource policies for AWS services",
-        "primaryDecision": "S3 never starts the function. The execution role can already read the bucket. Which permission lets S3 invoke the function?",
+        "primaryDecision": "S3 can invoke Lambda only when the function resource policy allows the service.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4639,7 +4639,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S05",
         "skill": "Determining the appropriate use of resource policies for AWS services",
-        "primaryDecision": "Identity allows exist, the key policy names neither the account nor the role, and each role must not be copied into the key policy. Which statement makes identity allows work?",
+        "primaryDecision": "A KMS key policy must let the account use IAM before identity allows take effect.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4650,7 +4650,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S05",
         "skill": "Determining the appropriate use of resource policies for AWS services",
-        "primaryDecision": "The producer identity allow exists, the queue permission document is empty, and the caller uses the SQS API. Which queue statement lets the producer send?",
+        "primaryDecision": "A cross-account SQS send needs a queue policy when the producer already has an identity allow.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4659,9 +4659,9 @@
         "taskId": "1.1",
         "domainId": "1.0",
         "topicId": "aws-saa-secure-architectures",
-        "skillId": "1.1-S02",
-        "skill": "Designing a flexible authorization model that includes IAM users, groups, roles, and policies",
-        "primaryDecision": "The bucket policy already allows the role, ACLs are off, and the role identity permissions omit s3:GetObject. Which change lets the role read?",
+        "skillId": "1.1-S03",
+        "skill": "Designing a role-based access control strategy (for example, AWS STS, role switching, cross-account access)",
+        "primaryDecision": "A session policy limits one AssumeRole session while the role's standing permissions stay for other jobs.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4672,7 +4672,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S01",
         "skill": "Applying AWS security best practices to IAM users and root users (for example, multi-factor authentication [MFA])",
-        "primaryDecision": "Root access keys are still active, daily work uses roles, root sign-in must remain, and the second factor stays. Which change removes the long-lived root keys?",
+        "primaryDecision": "Delete active root access keys when roles cover daily work and root sign-in remains.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4683,7 +4683,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S01",
         "skill": "Applying AWS security best practices to IAM users and root users (for example, multi-factor authentication [MFA])",
-        "primaryDecision": "Privileged calls need a second factor, and the user must still enroll that factor. Which permission draws that line?",
+        "primaryDecision": "An identity policy can require MFA for privileged actions while enrollment stays allowed.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4694,7 +4694,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S02",
         "skill": "Designing a flexible authorization model that includes IAM users, groups, roles, and policies",
-        "primaryDecision": "One job spans several services. Adding or removing a person must be a membership change, not a new attachment. Which design does that?",
+        "primaryDecision": "An IAM group is the membership list for one shared job permission.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4705,7 +4705,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S04",
         "skill": "Designing a security strategy for multiple AWS accounts (for example, AWS Control Tower, service control policies [SCPs])",
-        "primaryDecision": "No organization yet. They need a landing zone, account vending, and preventive controls so members cannot stop the organization trail. Which service fits all three?",
+        "primaryDecision": "Control Tower supplies the landing zone, account factory, and preventive controls.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4716,7 +4716,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S04",
         "skill": "Designing a security strategy for multiple AWS accounts (for example, AWS Control Tower, service control policies [SCPs])",
-        "primaryDecision": "Organizations policy administration should move to a member account. Which setup does that without granting through an SCP?",
+        "primaryDecision": "A delegated administrator moves Organizations policy management to a member account.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4727,7 +4727,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S06",
         "skill": "Determining when to federate a directory service with IAM roles",
-        "primaryDecision": "An IAM SAML provider already exists. Workforce console and CLI access must use that provider, with no second user directory. Which addition completes it?",
+        "primaryDecision": "An existing IAM SAML provider is used through a role trust.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4738,7 +4738,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S06",
         "skill": "Determining when to federate a directory service with IAM roles",
-        "primaryDecision": "One group assignment must grant the job in two accounts. A hand-built role in each account is not acceptable. Which design does that?",
+        "primaryDecision": "IAM Identity Center permission sets assign one workforce group in more than one account.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4749,7 +4749,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.1-S05",
         "skill": "Determining the appropriate use of resource policies for AWS services",
-        "primaryDecision": "The partner will not accept a role trust in the bucket account, ACLs are off, and the partner role can be named as a principal. Which bucket statement lets the partner read?",
+        "primaryDecision": "A cross-account ECR pull needs a repository policy when the other account already has identity allows.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4760,7 +4760,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S01",
         "skill": "Aligning AWS technologies to meet compliance requirements",
-        "primaryDecision": "The team must download the provider SOC report and agreement, not their own API log or findings. Which service supplies the provider documents?",
+        "primaryDecision": "AWS Artifact is where provider compliance reports and agreements are downloaded.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4771,7 +4771,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S01",
         "skill": "Aligning AWS technologies to meet compliance requirements",
-        "primaryDecision": "They already run Config, want a git-managed rules template deployed for Config to evaluate, and will not turn on a different findings product. Which feature is that template?",
+        "primaryDecision": "A Config conformance pack is the rules template Config evaluates.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4782,7 +4782,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S01",
         "skill": "Aligning AWS technologies to meet compliance requirements",
-        "primaryDecision": "Management events from every member account and the management account must land in one trail. Which trail does that?",
+        "primaryDecision": "An organization trail records management events for the whole organization.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4793,7 +4793,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S01",
         "skill": "Aligning AWS technologies to meet compliance requirements",
-        "primaryDecision": "Each GetObject must record the IAM role ARN. A management-event trail already exists. Which addition records those object calls?",
+        "primaryDecision": "CloudTrail data events record object-level reads such as GetObject.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4804,7 +4804,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S03",
         "skill": "Encrypting data in transit (for example, AWS Certificate Manager [ACM] using TLS)",
-        "primaryDecision": "Browsers must trust the ALB certificate with no extra root, and renewal must not depend on replacing an imported file. Which certificate setup does that?",
+        "primaryDecision": "An ACM certificate on an ALB renews while DNS validation stays, and browsers trust it.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4815,7 +4815,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S03",
         "skill": "Encrypting data in transit (for example, AWS Certificate Manager [ACM] using TLS)",
-        "primaryDecision": "Clients call the S3 API directly. Non-TLS requests must fail and TLS requests must succeed. Which control draws that line?",
+        "primaryDecision": "A bucket policy can deny S3 requests when aws:SecureTransport is false.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4826,7 +4826,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S03",
         "skill": "Encrypting data in transit (for example, AWS Certificate Manager [ACM] using TLS)",
-        "primaryDecision": "The NLB must present a certificate that ACM renews, with no imported-file replacement. Which listener does that?",
+        "primaryDecision": "rds.force_ssl requires TLS on connections to RDS for PostgreSQL when the parameter is off.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4837,7 +4837,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S04",
         "skill": "Implementing access policies for encryption keys",
-        "primaryDecision": "The app role may decrypt and generate data keys, and must not administer the key. Which permission split does that?",
+        "primaryDecision": "A key policy can allow use for the app role and administration for a different role.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4848,7 +4848,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S04",
         "skill": "Implementing access policies for encryption keys",
-        "primaryDecision": "The partner must decrypt with the existing key, the security role can already create grants, and this job must not edit the key permission or make the partner an administrator. Which authorization fits?",
+        "primaryDecision": "A decrypt grant can allow one job and can be retired without a key-policy edit.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4859,7 +4859,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S04",
         "skill": "Implementing access policies for encryption keys",
-        "primaryDecision": "Account B has kms:Decrypt on its role, the key allows account A to delegate and does not name account B, and the error is kms:Decrypt. Which change authorizes the decrypt?",
+        "primaryDecision": "A key policy condition can require the encryption context on decrypt.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4870,7 +4870,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S05",
         "skill": "Implementing data backups and replications",
-        "primaryDecision": "Recover the table to any second in the past 14 days, with no extra live copy. Which feature meets that window?",
+        "primaryDecision": "DynamoDB point-in-time recovery restores any second inside a 1-to-35-day window.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4881,7 +4881,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S05",
         "skill": "Implementing data backups and replications",
-        "primaryDecision": "A restorable RDS copy must exist in a second Region, a 24-hour recovery point is enough, and a second instance must not run. Which feature meets that?",
+        "primaryDecision": "RDS cross-Region automated backup replication copies backups without a second running instance.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4892,7 +4892,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S05",
         "skill": "Implementing data backups and replications",
-        "primaryDecision": "Objects must appear in another Region, and a source delete must not add a delete marker in the destination. Which replication setting does that?",
+        "primaryDecision": "S3 cross-Region replication can leave delete-marker replication off.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4903,7 +4903,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S02",
         "skill": "Encrypting data at rest (for example, AWS KMS)",
-        "primaryDecision": "Uploads that ask for SSE-KMS, DSSE-KMS, or SSE-C must fail, AES256 must succeed, and they do not want a customer managed key. Which control enforces that?",
+        "primaryDecision": "A bucket policy can reject PutObject unless the encryption header is AES256.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4914,7 +4914,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S02",
         "skill": "Encrypting data at rest (for example, AWS KMS)",
-        "primaryDecision": "An existing unencrypted RDS database must be encrypted by a replacement restore, with no second environment left running. Which path does that?",
+        "primaryDecision": "An existing unencrypted RDS database is encrypted by copying a snapshot with encryption and restoring it.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4925,7 +4925,7 @@
         "topicId": "aws-saa-secure-architectures",
         "skillId": "1.3-S07",
         "skill": "Rotating encryption keys and renewing certificates",
-        "primaryDecision": "A symmetric customer managed key with AWS KMS material must keep its key id, decrypt older ciphertext, and rotate on the default schedule. Which action does that?",
+        "primaryDecision": "Automatic rotation applies to a symmetric customer managed key whose material AWS KMS generated.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     },
@@ -4934,9 +4934,9 @@
         "taskId": "1.3",
         "domainId": "1.0",
         "topicId": "aws-saa-secure-architectures",
-        "skillId": "1.3-S07",
-        "skill": "Rotating encryption keys and renewing certificates",
-        "primaryDecision": "An ACM-issued certificate cannot finish managed renewal because the DNS validation record is gone. They must not import a file or switch issuers. Which fix restores renewal?",
+        "skillId": "1.3-S03",
+        "skill": "Encrypting data in transit (for example, AWS Certificate Manager [ACM] using TLS)",
+        "primaryDecision": "CloudFront uses an ACM certificate requested in us-east-1 for an alternate domain name.",
         "stretch": false,
         "reviewNote": "G-1 batch 2. Mapping is a review aid, not evidence of complete task coverage."
     }

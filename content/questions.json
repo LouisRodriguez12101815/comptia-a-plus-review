@@ -50867,21 +50867,21 @@
     ],
     "difficulty": "medium"
   },
-  {
+          {
     "id": "q-saa-g1b-01",
     "topicId": "aws-saa-secure-architectures",
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A role in account B is already allowed s3:GetObject on a bucket in account A by the permissions attached to that role. Object Ownership on that bucket is Bucket owner enforced. The role must read objects and will not assume a different role in account A. Which addition lets that role read?",
+    "prompt": "A role in account B already has an identity allow for s3:GetObject on a bucket in account A. Object Ownership on the bucket is Bucket owner enforced. Which addition lets the role read objects?",
     "choices": [
-      "An S3 bucket ACL grant for the account B role",
-      "An S3 bucket policy that allows the account B role",
-      "A permissions boundary that allows the account B role",
-      "An SCP on account B that allows the account B role"
+      "An S3 ACL grant on the bucket for the account B role",
+      "An S3 bucket policy allow for the account B role",
+      "A permissions boundary allow for the account B role",
+      "An Organizations SCP allow for the account B role"
     ],
     "answer": 1,
-    "explanation": "An S3 bucket ACL grant for the account B role — Incorrect. Bucket owner enforced disables ACLs, so an ACL grant is not a working permission on this bucket. SAA-C03 task 1.1. https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html\nAn S3 bucket policy that allows the account B role — Correct. SAA-C03 task 1.1. The role already has an identity allow and will not assume a role in account A. A bucket policy is the resource statement that names that role. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nA permissions boundary that allows the account B role — Incorrect. A permissions boundary sets the maximum for a principal. It does not grant a cross-account read that the bucket has not allowed. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn SCP on account B that allows the account B role — Incorrect. An SCP does not grant permissions. It cannot add the allow that account A never put on the bucket. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+    "explanation": "An S3 ACL grant on the bucket for the account B role — Incorrect. Bucket owner enforced disables ACLs, so an ACL grant is not a working permission. https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html\nAn S3 bucket policy allow for the account B role — Correct. SAA-C03 task 1.1. The role already has an identity allow. The bucket policy is the resource statement that names the role. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nA permissions boundary allow for the account B role — Incorrect. A permissions boundary sets a maximum. It does not grant a cross-account read. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn Organizations SCP allow for the account B role — Incorrect. An SCP does not grant a read the bucket policy never allowed. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50909,15 +50909,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An S3 event notification is aimed at a Lambda function. The function execution role can already read the bucket. The invocation fails before the function runs. Which permission lets S3 start the function?",
+    "prompt": "An S3 event notification targets a Lambda function. The execution role can already read the bucket. The call is denied before the function starts. Which permission lets S3 start the function?",
     "choices": [
-      "A wider execution role that includes lambda:InvokeFunction",
-      "A bucket policy that lets the function role read the bucket",
-      "A function resource policy that lets S3 invoke the function",
-      "An SCP that allows lambda:InvokeFunction for the account"
+      "Add lambda:InvokeFunction on the function execution role",
+      "Add s3:GetObject for the function role on the bucket",
+      "Allow s3.amazonaws.com on the function resource policy",
+      "Allow lambda:InvokeFunction in an account SCP"
     ],
     "answer": 2,
-    "explanation": "A wider execution role that includes lambda:InvokeFunction — Incorrect. The execution role is used after the function starts. S3 is denied before the function runs, so a wider execution role does not authorize the invoke. https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html\nA bucket policy that lets the function role read the bucket — Incorrect. The function can already read the bucket. Another read allow does not let S3 call the function. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nA function resource policy that lets S3 invoke the function — Correct. SAA-C03 task 1.1. S3 invokes the function only when the function resource policy allows s3.amazonaws.com to call lambda:InvokeFunction. https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html\nAn SCP that allows lambda:InvokeFunction for the account — Incorrect. An SCP does not grant lambda:InvokeFunction to S3. The invoke permission belongs on the function resource policy. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+    "explanation": "Add lambda:InvokeFunction on the function execution role — Incorrect. The execution role applies after the function starts. It does not authorize the caller that starts it. https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html\nAdd s3:GetObject for the function role on the bucket — Incorrect. The function can already read the bucket. Another read allow does not let S3 start it. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nAllow s3.amazonaws.com on the function resource policy — Correct. SAA-C03 task 1.1. S3 starts a function when the function resource policy allows s3.amazonaws.com to call lambda:InvokeFunction. https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html\nAllow lambda:InvokeFunction in an account SCP — Incorrect. An SCP does not grant S3 permission to start the function. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50945,15 +50945,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A role in the same account has kms:Decrypt in its identity permissions, and decrypt still fails. The key policy names neither the account nor the role. The team wants identity permissions to cover every role, and they do not want each role copied into the key policy. Which change does that?",
+    "prompt": "A role in the same account has kms:Decrypt in its identity policy, and decrypt fails. The key policy does not name the account. Later roles should be covered by identity policies too. Which change makes the identity allows effective?",
     "choices": [
-      "A key policy statement that names this one role",
-      "A permissions boundary policy that allows kms:Decrypt",
-      "An SCP allow policy for kms:Decrypt on the account",
-      "A key policy that lets the account use identity permissions"
+      "A key policy statement that names one application role",
+      "A permissions boundary that allows kms:Decrypt",
+      "An SCP allow statement for kms:Decrypt",
+      "A key policy statement enabling IAM for the account"
     ],
     "answer": 3,
-    "explanation": "A key policy statement that names this one role — Incorrect. Naming this one role can allow that role, and it misses the requirement that identity permissions cover every role without copying each role into the key policy. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nA permissions boundary policy that allows kms:Decrypt — Incorrect. A permissions boundary does not grant kms:Decrypt. It cannot make an identity allow take effect. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn SCP allow policy for kms:Decrypt on the account — Incorrect. An SCP does not grant kms:Decrypt. Without the account statement, identity allows on the key stay ineffective. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nA key policy that lets the account use identity permissions — Correct. SAA-C03 task 1.1. A key policy statement for the account lets the account use identity permissions. Without that statement, identity allows on the key do not take effect. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html",
+    "explanation": "A key policy statement that names one application role — Incorrect. Naming one role can allow that role. Later roles would each need their own statement. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nA permissions boundary that allows kms:Decrypt — Incorrect. A permissions boundary does not grant kms:Decrypt or turn an identity allow on. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn SCP allow statement for kms:Decrypt — Incorrect. An SCP does not grant kms:Decrypt. Identity allows stay ineffective until the key policy names the account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nA key policy statement enabling IAM for the account — Correct. SAA-C03 task 1.1. A key policy statement for the account lets identity policies allow key use. Later roles are covered by those policies. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -50980,15 +50980,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A producer role in account B may call sqs:SendMessage according to its own permissions. The queue in account A has an empty permission document. The producer calls the SQS API and will not switch to a different broker. Which addition lets the producer send?",
+    "prompt": "A producer role in account B already has an identity allow for sqs:SendMessage. The queue in account A has an empty permission document. The producer calls the SQS API. Which addition lets the producer send?",
     "choices": [
-      "An identity permission in the queue account for a local user",
-      "An SQS queue permission that allows the producer role",
-      "A permissions boundary on the producer for this queue",
-      "An Amazon MQ permission that allows this queue"
+      "An identity allow in the queue account for a local IAM user",
+      "An SQS queue policy allow for the producer role",
+      "A permissions boundary on the producer for SendMessage",
+      "An Amazon MQ permission for the producer role"
     ],
     "answer": 1,
-    "explanation": "An identity permission in the queue account for a local user — Incorrect. An identity permission in account A is not attached to the producer role in account B. The local user is not the caller. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html\nAn SQS queue permission that allows the producer role — Correct. SAA-C03 task 1.1. The producer already has an identity allow. The queue permission is the resource statement that names that role for sqs:SendMessage. https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-overview-of-managing-access.html\nA permissions boundary on the producer for this queue — Incorrect. A permissions boundary does not grant SendMessage. The empty queue document is what still blocks the producer. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn Amazon MQ permission that allows this queue — Incorrect. Amazon MQ is a different broker. The producer calls the SQS API, so an MQ permission does not authorize this queue. https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-broker-architecture.html",
+    "explanation": "An identity allow in the queue account for a local IAM user — Incorrect. An identity allow in account A is not attached to the producer role in account B. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html\nAn SQS queue policy allow for the producer role — Correct. SAA-C03 task 1.1. The producer already has an identity allow. The queue policy is the resource statement that names the role for sqs:SendMessage. https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-overview-of-managing-access.html\nA permissions boundary on the producer for SendMessage — Incorrect. A permissions boundary does not grant SendMessage. The empty queue document still blocks the producer. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn Amazon MQ permission for the producer role — Incorrect. Amazon MQ is a different broker. The producer calls the SQS API. https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-broker-architecture.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51006,8 +51006,8 @@
     "difficulty": "medium",
     "services": [
       "Amazon SQS",
-      "Amazon MQ",
-      "AWS Identity and Access Management"
+      "AWS Identity and Access Management",
+      "Amazon MQ"
     ]
   },
   {
@@ -51016,15 +51016,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "The bucket policy in account A already allows a role in account B to call s3:GetObject. Object Ownership is Bucket owner enforced. Calls still fail because the permissions on that role do not allow s3:GetObject. Which change lets the role read?",
+    "prompt": "One shared role can read several buckets. A single AssumeRole call must be limited to one bucket, and other jobs must keep the role's standing permissions. Which control limits the call?",
     "choices": [
-      "A second bucket policy statement for the same role",
-      "An SCP allow for s3:GetObject on account B",
-      "An identity permission on the role for s3:GetObject",
-      "A bucket ACL grant for the role in account B"
+      "An SCP that allows s3:GetObject for only one bucket",
+      "A permissions boundary that allows only one bucket",
+      "A session policy passed to AssumeRole for one bucket",
+      "A bucket ACL that denies the role on the other buckets"
     ],
     "answer": 2,
-    "explanation": "A second bucket policy statement for the same role — Incorrect. The bucket policy already allows the role. Another statement on the bucket does not fix the missing allow on the role. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nAn SCP allow for s3:GetObject on account B — Incorrect. An SCP does not grant s3:GetObject. The role still needs its own allow. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nAn identity permission on the role for s3:GetObject — Correct. SAA-C03 task 1.1. Cross-account access needs an allow on the caller as well as the bucket policy. This role does not yet allow s3:GetObject. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html\nA bucket ACL grant for the role in account B — Incorrect. Bucket owner enforced disables ACLs, and the bucket policy is already the resource allow. The missing allow is on the role. https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html",
+    "explanation": "An SCP that allows s3:GetObject for only one bucket — Incorrect. An SCP does not grant GetObject, and it would apply beyond one AssumeRole call. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nA permissions boundary that allows only one bucket — Incorrect. A permissions boundary changes the maximum for every use of the role, including the other jobs. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nA session policy passed to AssumeRole for one bucket — Correct. SAA-C03 task 1.1. A session policy limits the permissions of the temporary session. The role's standing permissions remain for other jobs. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session\nA bucket ACL that denies the role on the other buckets — Incorrect. An ACL deny on the other buckets would block every caller that relies on those ACLs, not one session. https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51033,16 +51033,16 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
-      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html",
       "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
-      "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
-      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html"
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#policies_session",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html"
     ],
     "format": "single",
     "difficulty": "medium",
     "services": [
-      "Amazon S3",
       "AWS Organizations",
+      "Amazon S3",
       "AWS Identity and Access Management"
     ]
   },
@@ -51052,15 +51052,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A standalone account still has active access keys on the root user. Daily administration already uses IAM roles, and a second factor is already enrolled for root sign-in. The root user must remain able to sign in for rare account tasks. Which change removes the long-lived root keys?",
+    "prompt": "Root access keys are still active. Daily administration already uses IAM roles. Root sign-in must remain available, and the enrolled second factor stays. Which change removes the long-lived root keys?",
     "choices": [
-      "Create an IAM administrator and leave the root keys in place",
+      "Create an IAM administrator and keep the root access keys",
       "Rotate the root access keys and keep them for automation",
-      "Remove the second factor and leave the root access keys",
-      "Delete the active access keys that belong to the root user"
+      "Remove the enrolled second factor and keep the root keys",
+      "Delete the active access keys on the root user"
     ],
     "answer": 3,
-    "explanation": "Create an IAM administrator and leave the root keys in place — Incorrect. A new administrator does not delete the root access keys. Those keys remain usable. https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html\nRotate the root access keys and keep them for automation — Incorrect. Rotating the keys and keeping them for automation leaves long-lived root keys in use. Daily work already uses roles. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html\nRemove the second factor and leave the root access keys — Incorrect. Removing the second factor weakens root sign-in and leaves the access keys in place. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html\nDelete the active access keys that belong to the root user — Correct. SAA-C03 task 1.1. Delete the root access keys when roles cover daily administration. The root user can still sign in, and the enrolled second factor stays. https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+    "explanation": "Create an IAM administrator and keep the root access keys — Incorrect. A new administrator does not delete the root access keys. Those keys remain usable. https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html\nRotate the root access keys and keep them for automation — Incorrect. Rotation leaves long-lived root keys in use. Daily work already uses roles. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html\nRemove the enrolled second factor and keep the root keys — Incorrect. Removing the second factor weakens root sign-in and leaves the access keys in place. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html\nDelete the active access keys on the root user — Correct. SAA-C03 task 1.1. Delete the root access keys when roles cover daily administration. Root sign-in and the enrolled second factor remain. https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51085,15 +51085,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An IAM user must pass a second factor before calling privileged actions, and must still be able to call the APIs that enroll that factor. Which control draws that line?",
+    "prompt": "Privileged IAM actions must require a second factor. The same user still needs to enroll a factor. Which permission draws the line?",
     "choices": [
-      "An SCP that denies every IAM action for users in the account",
-      "An identity permission that requires a second factor for privileged actions",
-      "A root-user second factor, leaving this IAM user unchanged",
-      "A permissions boundary that denies iam:CreateUser for this user"
+      "An SCP that denies every IAM action in the account",
+      "An identity policy requiring MFA for privileged actions",
+      "A second factor enrolled only on the root user",
+      "A permissions boundary that denies iam:CreateUser"
     ],
     "answer": 1,
-    "explanation": "An SCP that denies every IAM action for users in the account — Incorrect. An SCP that denies every IAM action also blocks the enrollment APIs. It is not limited to privileged actions. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nAn identity permission that requires a second factor for privileged actions — Correct. SAA-C03 task 1.1. An identity permission can deny the privileged actions unless aws:MultiFactorAuthPresent is true, and leave the MFA-device APIs allowed. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html\nA root-user second factor, leaving this IAM user unchanged — Incorrect. A second factor on the root user does not apply when this IAM user calls privileged actions. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html\nA permissions boundary that denies iam:CreateUser for this user — Incorrect. Denying iam:CreateUser does not require a second factor, and it blocks a different action from the one the user must still call. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+    "explanation": "An SCP that denies every IAM action in the account — Incorrect. A deny of every IAM action also blocks the enrollment APIs. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nAn identity policy requiring MFA for privileged actions — Correct. SAA-C03 task 1.1. An identity policy can deny privileged actions unless aws:MultiFactorAuthPresent is true and still allow the MFA-device APIs. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html\nA second factor enrolled only on the root user — Incorrect. A second factor on the root user does not apply when an IAM user calls privileged actions. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html\nA permissions boundary that denies iam:CreateUser — Incorrect. Denying iam:CreateUser does not require a second factor, and it blocks a different action. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51120,15 +51120,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Several IAM users share one job that spans more than one service. Adding or removing a person must be a change to one membership list, not a new permission attachment. Which design does that?",
+    "prompt": "Several people share one job across S3, SQS, and Lambda. Adding or removing a person must be a membership change. Which design does so?",
     "choices": [
-      "The same inline permission copied onto each IAM user",
-      "One customer managed permission attached to each IAM user",
-      "An IAM group that holds the job permission and the users",
-      "An SCP that allows the job for every IAM user in the account"
+      "The same inline policy copied onto each IAM user",
+      "One customer managed policy attached to each IAM user",
+      "An IAM group holding the job policy and the users",
+      "An SCP that allows the job for every IAM user"
     ],
     "answer": 2,
-    "explanation": "The same inline permission copied onto each IAM user — Incorrect. An inline copy on each user is a separate document. Adding a person is a new attachment, and one edit does not update the copies. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html\nOne customer managed permission attached to each IAM user — Incorrect. One customer managed permission is a single document, and adding a person is still a new attachment. The requirement asks for a membership change. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html\nAn IAM group that holds the job permission and the users — Correct. SAA-C03 task 1.1. An IAM group holds the job permission once. Adding or removing a person is a change to that group membership list. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html\nAn SCP that allows the job for every IAM user in the account — Incorrect. An SCP does not grant the job, and it is not a membership list for the people who share the job. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+    "explanation": "The same inline policy copied onto each IAM user — Incorrect. Each inline copy is a separate document. Adding a person creates another attachment. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html\nOne customer managed policy attached to each IAM user — Incorrect. One managed policy is a single document, and adding a person is still another attachment. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html\nAn IAM group holding the job policy and the users — Correct. SAA-C03 task 1.1. An IAM group holds the job policy once. Adding or removing a person changes the group membership list. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html\nAn SCP that allows the job for every IAM user — Incorrect. An SCP does not grant the job, and it is not a membership list for the people who share it. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51145,6 +51145,9 @@
     "format": "single",
     "difficulty": "medium",
     "services": [
+      "Amazon S3",
+      "Amazon SQS",
+      "AWS Lambda",
       "AWS Identity and Access Management",
       "AWS Organizations"
     ]
@@ -51155,15 +51158,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A new company has no organization yet. It wants a managed landing zone, account vending, and preventive controls so member accounts cannot stop the organization trail. Which service fits all three?",
+    "prompt": "A company has no organization yet. It needs a landing zone, account vending, and preventive controls that stop a member account from disabling the organization trail. Which service meets those needs?",
     "choices": [
-      "An SCP in AWS Organizations, without the landing zone",
-      "IAM Identity Center permission sets for workforce access",
-      "An AWS Config conformance pack evaluated after the fact",
-      "AWS Control Tower with its landing zone and account factory"
+      "Service control policies in AWS Organizations",
+      "IAM Identity Center permission sets for the workforce",
+      "An AWS Config conformance pack for the member accounts",
+      "AWS Control Tower with a landing zone and account factory"
     ],
     "answer": 3,
-    "explanation": "An SCP in AWS Organizations, without the landing zone — Incorrect. An SCP can be a preventive control later, and it does not provide the landing zone or account vending the company asked for. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM Identity Center permission sets for workforce access — Incorrect. IAM Identity Center assigns workforce access. It does not vend accounts or stop a member account from changing the trail. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html\nAn AWS Config conformance pack evaluated after the fact — Incorrect. A conformance pack evaluates configuration after the fact. It does not vend accounts or provide the landing zone. https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html\nAWS Control Tower with its landing zone and account factory — Correct. SAA-C03 task 1.1. AWS Control Tower supplies the landing zone, account factory, and preventive controls for the organization trail. https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
+    "explanation": "Service control policies in AWS Organizations — Incorrect. An SCP can be a preventive control later. It does not provide a landing zone or account vending. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM Identity Center permission sets for the workforce — Incorrect. IAM Identity Center assigns workforce access. It does not vend accounts or protect the organization trail. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html\nAn AWS Config conformance pack for the member accounts — Incorrect. A conformance pack evaluates configuration. It does not vend accounts or provide a landing zone. https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html\nAWS Control Tower with a landing zone and account factory — Correct. SAA-C03 task 1.1. AWS Control Tower supplies the landing zone, account factory, and preventive controls for the organization trail. https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51192,15 +51195,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Organization policy administration should be done from a member security account. The management account should not be the daily place for that work. Which setup moves the administration?",
+    "prompt": "Organizations policy administration should move from the management account to one member account. Which setup does so?",
     "choices": [
-      "Keep using an IAM role in the management account for daily work",
-      "A delegated administrator in the member account for Organizations policy management",
-      "An SCP that allows organization policy edits in member accounts",
-      "IAM users created in every member account for local administration"
+      "An IAM role kept in the management account for daily policy work",
+      "A delegated administrator for Organizations policy management",
+      "An SCP that allows policy edits in every member account",
+      "IAM users in every member account for local administration"
     ],
     "answer": 1,
-    "explanation": "Keep using an IAM role in the management account for daily work — Incorrect. An IAM role in the management account leaves daily policy administration in the management account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nA delegated administrator in the member account for Organizations policy management — Correct. SAA-C03 task 1.1. A delegated administrator lets a member account perform Organizations policy actions that otherwise stay with the management account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_delegate_policies.html\nAn SCP that allows organization policy edits in member accounts — Incorrect. An SCP does not grant policy-administration permissions, and it does not delegate those actions to a member account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM users created in every member account for local administration — Incorrect. IAM users in every member account do not receive the Organizations policy actions that start in the management account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_delegate_policies.html",
+    "explanation": "An IAM role kept in the management account for daily policy work — Incorrect. An IAM role in the management account leaves daily policy administration there. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nA delegated administrator for Organizations policy management — Correct. SAA-C03 task 1.1. A delegated administrator lets a member account perform Organizations policy actions that otherwise stay with the management account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_delegate_policies.html\nAn SCP that allows policy edits in every member account — Incorrect. An SCP does not grant policy administration and does not delegate it to one member account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM users in every member account for local administration — Incorrect. IAM users in member accounts do not receive the Organizations policy actions that start in the management account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_delegate_policies.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51213,7 +51216,7 @@
       "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_delegate_policies.html"
     ],
     "format": "single",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "services": [
       "AWS Identity and Access Management",
       "AWS Organizations"
@@ -51225,15 +51228,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "One account already has an IAM SAML provider for the company identity provider. Workforce users need console and CLI access through that existing provider, and the company will not add a second user directory. Which addition completes the access?",
+    "prompt": "An IAM SAML provider is already in the account. Employees need console access and CLI access through the provider. Which addition completes the setup?",
     "choices": [
       "An Amazon Cognito user pool for the same employees",
-      "An IAM user for each employee, with long-lived access keys",
-      "An IAM role whose trust policy names that SAML provider",
-      "IAM Identity Center as a new directory in front of the users"
+      "An IAM user and a long-lived access key for each employee",
+      "An IAM role whose trust policy names the SAML provider",
+      "IAM Identity Center with a separate directory for the employees"
     ],
     "answer": 2,
-    "explanation": "An Amazon Cognito user pool for the same employees — Incorrect. A Cognito user pool is another user directory. It does not use the IAM SAML provider that already exists. https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html\nAn IAM user for each employee, with long-lived access keys — Incorrect. An IAM user with long-lived access keys does not send the employee through the existing SAML provider. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html\nAn IAM role whose trust policy names that SAML provider — Correct. SAA-C03 task 1.1. The SAML provider is already in IAM. A role whose trust names that provider is how those users get console and CLI access. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html\nIAM Identity Center as a new directory in front of the users — Incorrect. IAM Identity Center would add a directory in front of the users. The requirement is to use the existing IAM SAML provider and not add a second directory. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+    "explanation": "An Amazon Cognito user pool for the same employees — Incorrect. A Cognito user pool is another user directory. It does not use the IAM SAML provider already in the account. https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html\nAn IAM user and a long-lived access key for each employee — Incorrect. An IAM user with a long-lived access key does not send the employee through the SAML provider. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html\nAn IAM role whose trust policy names the SAML provider — Correct. SAA-C03 task 1.1. A role whose trust names the existing SAML provider is how those users get console access and CLI access. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html\nIAM Identity Center with a separate directory for the employees — Incorrect. IAM Identity Center would add a directory. The account already has the SAML provider to use. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51261,15 +51264,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Two accounts must follow one workforce directory. Adding a person to one group must grant that person's job in both accounts. A separate role built by hand in each account is not acceptable. Which design meets that?",
+    "prompt": "One workforce group must receive the same job in two accounts from one assignment. Which design does so?",
     "choices": [
-      "A separate SAML role created by hand in each account",
+      "A separate SAML role created in each of the two accounts",
       "An Amazon Cognito user pool shared by both accounts",
-      "An SCP attached to both accounts that is meant to allow the job",
-      "IAM Identity Center permission sets for that group in both accounts"
+      "An SCP attached to both accounts for the shared job",
+      "IAM Identity Center permission sets in both accounts"
     ],
     "answer": 3,
-    "explanation": "A separate SAML role created by hand in each account — Incorrect. A separate SAML role in each account is the hand-built per-account role the requirement rejects. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html\nAn Amazon Cognito user pool shared by both accounts — Incorrect. A Cognito user pool is an application directory. It is not the workforce directory, and it does not assign the job in both accounts. https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html\nAn SCP attached to both accounts that is meant to allow the job — Incorrect. An SCP does not grant the job to the group in either account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM Identity Center permission sets for that group in both accounts — Correct. SAA-C03 task 1.1. IAM Identity Center permission sets assigned to the group cover both accounts from one workforce directory. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+    "explanation": "A separate SAML role created in each of the two accounts — Incorrect. A separate SAML role in each account is a per-account role, not one assignment for the group. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html\nAn Amazon Cognito user pool shared by both accounts — Incorrect. A Cognito user pool is an application directory. It does not assign the workforce job in both accounts. https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html\nAn SCP attached to both accounts for the shared job — Incorrect. An SCP does not grant the job to the group in either account. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html\nIAM Identity Center permission sets in both accounts — Correct. SAA-C03 task 1.1. IAM Identity Center permission sets assigned to the group cover both accounts from one workforce directory. https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51284,7 +51287,7 @@
       "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
     ],
     "format": "single",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "services": [
       "Amazon Cognito",
       "AWS Organizations",
@@ -51298,15 +51301,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A partner role must read a bucket, and the partner will not accept a role trust in the bucket account. Object Ownership is Bucket owner enforced. The partner role can already be named on a resource statement. Which permission on the bucket account lets the partner read?",
+    "prompt": "A build role in account B must pull images from a private ECR repository in account A. The role already has identity allows for the pull APIs and for ecr:GetAuthorizationToken. Pulls are still denied. Which addition allows the pull?",
     "choices": [
-      "An S3 bucket policy that names the partner role on the bucket",
-      "An IAM role in the bucket account for the partner to assume",
-      "A permissions boundary on the partner role for this bucket",
-      "An SCP in the partner account that allows s3:GetObject"
+      "An ECR repository policy that allows the build role",
+      "An S3 bucket policy that allows the build role to read",
+      "A permissions boundary that allows the build role to pull",
+      "An SCP in account B that allows the ECR pull APIs"
     ],
     "answer": 0,
-    "explanation": "An S3 bucket policy that names the partner role on the bucket — Correct. SAA-C03 task 1.1. A bucket policy can name the partner role as principal. Bucket owner enforced turns ACLs off, and the partner will not accept a role trust in the bucket account. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nAn IAM role in the bucket account for the partner to assume — Incorrect. An IAM role in the bucket account requires the role trust the partner will not accept. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html\nA permissions boundary on the partner role for this bucket — Incorrect. A permissions boundary does not grant a read on the bucket. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn SCP in the partner account that allows s3:GetObject — Incorrect. An SCP in the partner account does not grant access to the bucket, and it does not name the partner on the bucket. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+    "explanation": "An ECR repository policy that allows the build role — Correct. SAA-C03 task 1.1. A repository policy can allow another account to pull. Identity allows in account B do not by themselves authorize the repository in account A. https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html\nAn S3 bucket policy that allows the build role to read — Incorrect. An S3 bucket policy does not authorize ecr:BatchGetImage or ecr:GetDownloadUrlForLayer. https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html\nA permissions boundary that allows the build role to pull — Incorrect. A permissions boundary does not grant the pull on the repository in account A. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn SCP in account B that allows the ECR pull APIs — Incorrect. An SCP does not grant the pull, and it does not authorize the repository in account A. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51315,17 +51318,18 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
+      "https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html",
-      "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html",
       "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
       "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
     ],
     "format": "single",
     "difficulty": "medium",
     "services": [
+      "Amazon ECR",
       "Amazon S3",
-      "AWS Identity and Access Management",
-      "AWS Organizations"
+      "AWS Organizations",
+      "AWS Identity and Access Management"
     ]
   },
   {
@@ -51334,15 +51338,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Before a customer audit, the team must download the provider SOC report and review the agreement in the console. They need the provider documents, not a log of their own API calls. Which service supplies those documents?",
+    "prompt": "A team must download AWS compliance reports and the customer agreement. Which service provides those documents?",
     "choices": [
       "AWS Config rules aimed at the team's own resources",
-      "AWS Artifact for the provider SOC report and agreement",
+      "AWS Artifact for the provider reports and the agreement",
       "AWS CloudTrail records of the team's own API calls",
-      "AWS Security Hub findings from the team's own accounts"
+      "AWS Security Hub findings from the team's accounts"
     ],
     "answer": 1,
-    "explanation": "AWS Config rules aimed at the team's own resources — Incorrect. AWS Config evaluates the team own configuration. It does not download the provider SOC report or the agreement. https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html\nAWS Artifact for the provider SOC report and agreement — Correct. SAA-C03 task 1.3. AWS Artifact is where you download AWS compliance reports and review agreements. https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html\nAWS CloudTrail records of the team's own API calls — Incorrect. CloudTrail records the team own API calls. It is not the provider SOC report. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html\nAWS Security Hub findings from the team's own accounts — Incorrect. Security Hub aggregates findings from the team accounts. It does not supply the provider agreement. https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html",
+    "explanation": "AWS Config rules aimed at the team's own resources — Incorrect. AWS Config evaluates the team's own configuration. It does not supply the provider reports or the agreement. https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html\nAWS Artifact for the provider reports and the agreement — Correct. SAA-C03 task 1.3. AWS Artifact is where you download AWS compliance reports and review agreements. https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html\nAWS CloudTrail records of the team's own API calls — Incorrect. CloudTrail records the team's own API calls. It is not the provider compliance report. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html\nAWS Security Hub findings from the team's accounts — Incorrect. Security Hub aggregates findings from the team's accounts. It does not supply the provider agreement. https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51357,7 +51361,7 @@
       "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
     ],
     "format": "single",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "services": [
       "AWS Config",
       "AWS Artifact",
@@ -51371,15 +51375,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "The team already runs AWS Config. They want one rules template they keep in git and deploy so Config evaluates it in every account and Region. They will not turn on a different findings product. Which feature is that template?",
+    "prompt": "The account already runs AWS Config. The team keeps a rules template in a repository and wants Config to evaluate the deployed template. Which feature is the template?",
     "choices": [
       "Amazon GuardDuty findings for the account",
-      "A CloudTrail organization trail that records management events",
-      "An AWS Config conformance pack deployed from their template",
-      "AWS Security Hub standards for those accounts"
+      "A CloudTrail organization trail of management events",
+      "An AWS Config conformance pack built from the template",
+      "AWS Security Hub standards enabled for the accounts"
     ],
     "answer": 2,
-    "explanation": "Amazon GuardDuty findings for the account — Incorrect. GuardDuty reports threat findings. It is not a Config rules template stored in git. https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html\nA CloudTrail organization trail that records management events — Incorrect. An organization trail records management events. It does not evaluate a rules template. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html\nAn AWS Config conformance pack deployed from their template — Correct. SAA-C03 task 1.3. A conformance pack is the Config template the team can keep in git and deploy so Config evaluates those rules. https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html\nAWS Security Hub standards for those accounts — Incorrect. Security Hub is a different findings product, and the team will not turn one on. It is not their Config template. https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html",
+    "explanation": "Amazon GuardDuty findings for the account — Incorrect. GuardDuty reports threat findings. It is not a Config rules template stored in a repository. https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html\nA CloudTrail organization trail of management events — Incorrect. An organization trail records management events. It does not evaluate a rules template. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html\nAn AWS Config conformance pack built from the template — Correct. SAA-C03 task 1.3. A conformance pack is the Config template the team can keep in a repository and deploy for Config to evaluate. https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html\nAWS Security Hub standards enabled for the accounts — Incorrect. Security Hub standards are a findings product. They are not the team's Config template. https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51408,15 +51412,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An auditor wants management events from every member account and the management account, in one trail, delivered to a bucket the security account owns. Which trail does that?",
+    "prompt": "Management events from every member account and from the management account must land in one trail. Which trail does so?",
     "choices": [
-      "A CloudTrail trail for management events in the management account",
-      "A CloudTrail trail for management events in one member account",
-      "An AWS Config aggregator of configuration from those accounts",
-      "A CloudTrail organization trail for the whole organization"
+      "A CloudTrail trail limited to the management account",
+      "A CloudTrail trail limited to one member account",
+      "An AWS Config aggregator of configuration items",
+      "A CloudTrail organization trail across the organization"
     ],
     "answer": 3,
-    "explanation": "A CloudTrail trail for management events in the management account — Incorrect. A trail in the management account does not record management events from the member accounts. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html\nA CloudTrail trail for management events in one member account — Incorrect. A trail in one member account misses the other member accounts and the management account. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html\nAn AWS Config aggregator of configuration from those accounts — Incorrect. A Config aggregator collects configuration. It is not the management-event trail. https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html\nA CloudTrail organization trail for the whole organization — Correct. SAA-C03 task 1.3. An organization trail records management events across the member accounts and the management account in one trail. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html",
+    "explanation": "A CloudTrail trail limited to the management account — Incorrect. A trail in the management account does not record management events from the member accounts. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html\nA CloudTrail trail limited to one member account — Incorrect. A trail in one member account misses the other member accounts and the management account. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html\nAn AWS Config aggregator of configuration items — Incorrect. A Config aggregator collects configuration. It is not the management-event trail. https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html\nA CloudTrail organization trail across the organization — Correct. SAA-C03 task 1.3. An organization trail records management events across the member accounts and the management account in one trail. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51442,15 +51446,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "For one bucket, each GetObject must record the IAM role ARN of the caller. A trail that records management events already exists and must stay. Which addition records those object calls?",
+    "prompt": "Each GetObject on one bucket must record the IAM principal. A trail that records management events is already logging. Which addition records the object calls?",
     "choices": [
-      "The existing management-event trail, left unchanged",
-      "CloudTrail data events for object calls on that bucket",
+      "The current management-event trail for the account",
+      "CloudTrail data events for object calls on the bucket",
       "VPC flow logs for the subnet that holds the application",
       "AWS Config history for the bucket configuration"
     ],
     "answer": 1,
-    "explanation": "The existing management-event trail, left unchanged — Incorrect. GetObject is an object-level call. A trail that records management events does not record it. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html\nCloudTrail data events for object calls on that bucket — Correct. SAA-C03 task 1.3. CloudTrail data events record object-level calls such as GetObject, including the IAM principal, and the management-event trail can stay. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html\nVPC flow logs for the subnet that holds the application — Incorrect. VPC flow logs show network traffic. They do not record the IAM role ARN on GetObject. https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html\nAWS Config history for the bucket configuration — Incorrect. Config history records configuration changes. It does not record each GetObject call. https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
+    "explanation": "The current management-event trail for the account — Incorrect. GetObject is an object-level call. A trail that records management events does not record it. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html\nCloudTrail data events for object calls on the bucket — Correct. SAA-C03 task 1.3. CloudTrail data events record object-level calls such as GetObject, including the IAM principal. The management-event trail can stay. https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html\nVPC flow logs for the subnet that holds the application — Incorrect. VPC flow logs show network traffic. They do not record the IAM principal on GetObject. https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html\nAWS Config history for the bucket configuration — Incorrect. Config history records configuration changes. It does not record each GetObject call. https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51479,15 +51483,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Browsers must trust the certificate on the Application Load Balancer without installing an extra root. Renewal must happen without a person replacing a certificate file. DNS validation is available. Which certificate setup does that?",
+    "prompt": "Browsers must trust the certificate on an Application Load Balancer, with no extra root installed. Renewal must continue after the first year. Which certificate setup meets both?",
     "choices": [
       "An imported certificate on the Application Load Balancer",
       "A Private CA certificate on the Application Load Balancer",
-      "ACM certificate on the Application Load Balancer, DNS validation kept",
-      "A certificate file kept in Secrets Manager for the application"
+      "An ACM certificate on the Application Load Balancer",
+      "A certificate file stored in Secrets Manager for the app"
     ],
     "answer": 2,
-    "explanation": "An imported certificate on the Application Load Balancer — Incorrect. An imported certificate is not eligible for ACM managed renewal. Someone still replaces the file. https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html\nA Private CA certificate on the Application Load Balancer — Incorrect. A Private CA certificate is not trusted by browsers unless they install that extra root. https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html\nACM certificate on the Application Load Balancer, DNS validation kept — Correct. SAA-C03 task 1.3. A certificate requested in ACM and attached to the listener renews when DNS validation stays in place. Browsers trust it without an extra root. https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html\nA certificate file kept in Secrets Manager for the application — Incorrect. The Application Load Balancer listener does not take its certificate from Secrets Manager. https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+    "explanation": "An imported certificate on the Application Load Balancer — Incorrect. An imported certificate is not eligible for ACM managed renewal. Someone replaces the certificate file. https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html\nA Private CA certificate on the Application Load Balancer — Incorrect. A Private CA certificate is not trusted by browsers unless they install an extra root. https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html\nAn ACM certificate on the Application Load Balancer — Correct. SAA-C03 task 1.3. A certificate requested in ACM and attached to the listener renews while DNS validation stays in place. Browsers trust it with no extra root. https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html\nA certificate file stored in Secrets Manager for the app — Incorrect. The Application Load Balancer listener does not take its certificate from Secrets Manager. https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51515,15 +51519,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Clients call the S3 API directly. Any request that does not use TLS must fail, and any request that uses TLS must still succeed. Which control draws that line?",
+    "prompt": "Clients call the S3 API directly. Requests that omit TLS must fail, and requests that use TLS must succeed. Which control draws the line?",
     "choices": [
       "Default encryption with a customer managed key on the bucket",
       "A CloudFront distribution that accepts TLS from viewers",
       "An ACM certificate on an Application Load Balancer",
-      "A bucket policy that denies a request when SecureTransport is false"
+      "A bucket policy deny when SecureTransport is false"
     ],
     "answer": 3,
-    "explanation": "Default encryption with a customer managed key on the bucket — Incorrect. Default encryption changes how stored objects are encrypted. It does not reject a direct S3 request that omits TLS. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html\nA CloudFront distribution that accepts TLS from viewers — Incorrect. CloudFront can accept TLS from viewers, and clients that call the S3 API directly never pass through that distribution. https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html\nAn ACM certificate on an Application Load Balancer — Incorrect. An ACM certificate on an Application Load Balancer does not control requests that call the S3 API directly. https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html\nA bucket policy that denies a request when SecureTransport is false — Correct. SAA-C03 task 1.3. A bucket policy can deny a request when aws:SecureTransport is false and still allow a request that uses TLS. https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html",
+    "explanation": "Default encryption with a customer managed key on the bucket — Incorrect. Default encryption changes how stored objects are encrypted. It does not reject a direct S3 request that omits TLS. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html\nA CloudFront distribution that accepts TLS from viewers — Incorrect. Clients that call the S3 API directly do not pass through the distribution. https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html\nAn ACM certificate on an Application Load Balancer — Incorrect. An ACM certificate on an Application Load Balancer does not control requests that call the S3 API directly. https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html\nA bucket policy deny when SecureTransport is false — Correct. SAA-C03 task 1.3. A bucket policy can deny a request when aws:SecureTransport is false and still allow a request that uses TLS. https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51552,15 +51556,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A Network Load Balancer fronts a TCP service. Clients must validate a certificate that ACM renews, on this balancer, without a person replacing a certificate file. Which listener does that?",
+    "prompt": "An Amazon RDS for PostgreSQL database already encrypts stored data with a customer managed key. Connections that omit TLS still succeed, and the parameter that requires SSL is off. Which change rejects those connections?",
     "choices": [
-      "A TCP listener on this same Network Load Balancer",
-      "An ACM certificate on a TLS listener of this Network Load Balancer",
-      "An imported certificate renewed by hand on this Network Load Balancer",
-      "An HTTPS listener on a different Application Load Balancer"
+      "Copy a snapshot of the database to an encrypted snapshot",
+      "Set rds.force_ssl to 1 in a custom parameter group",
+      "A security group rule that allows only TCP port 443",
+      "An ACM certificate on an Application Load Balancer"
     ],
     "answer": 1,
-    "explanation": "A TCP listener on this same Network Load Balancer — Incorrect. A TCP listener does not present a certificate, so clients cannot validate one on this balancer. https://docs.aws.amazon.com/elasticloadbalancing/latest/network/create-tls-listener.html\nAn ACM certificate on a TLS listener of this Network Load Balancer — Correct. SAA-C03 task 1.3. A TLS listener on this Network Load Balancer can use an ACM certificate, and ACM renews a certificate it issued. https://docs.aws.amazon.com/elasticloadbalancing/latest/network/create-tls-listener.html\nAn imported certificate renewed by hand on this Network Load Balancer — Incorrect. An imported certificate on the TLS listener is not eligible for ACM managed renewal. A person still replaces the file. https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html\nAn HTTPS listener on a different Application Load Balancer — Incorrect. An HTTPS listener on a different Application Load Balancer does not front this Network Load Balancer service. https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html",
+    "explanation": "Copy a snapshot of the database to an encrypted snapshot — Incorrect. Storage is already encrypted. Another encrypted snapshot does not reject a connection that omits TLS. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html\nSet rds.force_ssl to 1 in a custom parameter group — Correct. SAA-C03 task 1.3. On RDS for PostgreSQL, rds.force_ssl set to 1 rejects connections that are not using SSL. A custom parameter group is required when the instance uses the default group, and the instance must be rebooted. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Concepts.General.SSL.html\nA security group rule that allows only TCP port 443 — Incorrect. PostgreSQL clients use the database port. Closing every port except 443 does not turn on SSL for the database protocol. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html\nAn ACM certificate on an Application Load Balancer — Incorrect. An Application Load Balancer certificate does not control the connection from the client to the database endpoint. https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51569,15 +51573,18 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
-      "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/create-tls-listener.html",
-      "https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Concepts.General.SSL.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html",
       "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html"
     ],
     "format": "single",
     "difficulty": "medium",
     "services": [
-      "Elastic Load Balancing",
-      "AWS Certificate Manager"
+      "Amazon RDS",
+      "Amazon VPC",
+      "AWS Certificate Manager",
+      "Elastic Load Balancing"
     ]
   },
   {
@@ -51586,15 +51593,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An application role must decrypt and generate data keys. It must not disable the key or change who can use it. A security role performs that administration. Which key permission split does that?",
+    "prompt": "An application role may decrypt and generate data keys. Key administration belongs to a security role. Which permission split meets both?",
     "choices": [
-      "A key permission that gives the application role every KMS action",
-      "A permissions boundary that denies decrypt for the application role",
-      "KMS key policy with use for the app role and admin for the security role",
-      "An SCP that denies key administration for every role in the account"
+      "A key policy that gives the application role every KMS action",
+      "A permissions boundary that denies decrypt for the app role",
+      "Key use for the app role and admin for the security role",
+      "An SCP that denies key administration for every role"
     ],
     "answer": 2,
-    "explanation": "A key permission that gives the application role every KMS action — Incorrect. Every KMS action includes disabling the key and changing the key permission. The application role must not have that administration. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nA permissions boundary that denies decrypt for the application role — Incorrect. A boundary that denies decrypt stops the application role from doing the work it must do. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nKMS key policy with use for the app role and admin for the security role — Correct. SAA-C03 task 1.3. The key permission can allow the application role to decrypt and generate data keys, and allow the security role to administer the key. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nAn SCP that denies key administration for every role in the account — Incorrect. An SCP that denies key administration for every role also blocks the security role that must perform that administration. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+    "explanation": "A key policy that gives the application role every KMS action — Incorrect. Every KMS action includes disabling the key and changing the key policy. Administration belongs to the security role. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nA permissions boundary that denies decrypt for the app role — Incorrect. A boundary that denies decrypt stops the application role from doing the work it must do. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nKey use for the app role and admin for the security role — Correct. SAA-C03 task 1.3. The key policy can allow the application role to decrypt and generate data keys, and allow the security role to administer the key. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nAn SCP that denies key administration for every role — Incorrect. An SCP that denies key administration for every role also blocks the security role. https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51621,15 +51628,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A partner in another account must decrypt with an existing key for one job. The security role can already create grants. This job must not require a key permission edit, and the partner must not administer the key. Which authorization fits?",
+    "prompt": "A partner must decrypt with the existing customer managed key for one job. The security role can already create grants. The partner must not become a key administrator. Which authorization fits?",
     "choices": [
-      "An identity permission in the partner account, leaving the key unchanged",
-      "A key permission edit that makes the partner a key administrator",
-      "A new customer managed key that the partner owns for this job",
-      "A decrypt grant for the partner that the security role can retire"
+      "An identity policy only in the partner account",
+      "A key policy change that adds the partner as a key administrator",
+      "A new customer managed key owned by the partner account",
+      "A decrypt grant for the partner, with the security role as retirer"
     ],
     "answer": 3,
-    "explanation": "An identity permission in the partner account, leaving the key unchanged — Incorrect. An identity permission in the partner account does not, by itself, allow decrypt on a key that has not authorized that partner. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html\nA key permission edit that makes the partner a key administrator — Incorrect. Making the partner a key administrator edits the key permission and gives administration the partner must not have. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nA new customer managed key that the partner owns for this job — Incorrect. A new key owned by the partner is not the existing key this job must use. https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html\nA decrypt grant for the partner that the security role can retire — Correct. SAA-C03 task 1.3. A grant can allow decrypt for the job, the security role can already create it, and retiring the grant removes that access without a key permission edit. https://docs.aws.amazon.com/kms/latest/developerguide/grants.html",
+    "explanation": "An identity policy only in the partner account — Incorrect. An identity policy in the partner account does not allow decrypt on a key that has not authorized the partner. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html\nA key policy change that adds the partner as a key administrator — Incorrect. Making the partner a key administrator edits the key policy and gives administration the partner must not have. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html\nA new customer managed key owned by the partner account — Incorrect. A new key owned by the partner is not the existing key the job must use. https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html\nA decrypt grant for the partner, with the security role as retirer — Correct. SAA-C03 task 1.3. A grant can allow decrypt for the job. The security role can create it and can retire it, which removes the access, with no key-policy edit. https://docs.aws.amazon.com/kms/latest/developerguide/grants.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51655,15 +51662,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A role in account B has kms:Decrypt in its own permissions. The key in account A allows account A to delegate through identity permissions, and it does not name account B. S3 already allows the role to request the object, and the error names kms:Decrypt. Which change authorizes the decrypt?",
+    "prompt": "Objects were encrypted under a symmetric encryption KMS key with an encryption context. Decrypt calls that omit the context must fail, and calls that include it must succeed. The role can already call kms:Decrypt. Which change enforces the context?",
     "choices": [
-      "An identity permission in account A for a role the partner will not use",
-      "A key permission that allows the account B role to decrypt",
-      "Automatic rotation on the key in account A",
-      "An S3 bucket permission that allows GetObject and does not name the key"
+      "Automatic rotation on the symmetric encryption KMS key",
+      "A key policy condition requiring the encryption context",
+      "A permissions boundary that denies kms:Decrypt for the role",
+      "An S3 default encryption setting of SSE-KMS"
     ],
     "answer": 1,
-    "explanation": "An identity permission in account A for a role the partner will not use — Incorrect. An identity permission in account A is not attached to the role in account B. That role is the caller. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html\nA key permission that allows the account B role to decrypt — Correct. SAA-C03 task 1.3. The key policy must name the account B role before that role can decrypt. The identity allow in account B is already present. https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html\nAutomatic rotation on the key in account A — Incorrect. Automatic rotation changes key material on a schedule. It does not authorize account B. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nAn S3 bucket permission that allows GetObject and does not name the key — Incorrect. S3 already allows the object request. The error is kms:Decrypt, so another GetObject statement does not authorize the key. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
+    "explanation": "Automatic rotation on the symmetric encryption KMS key — Incorrect. Automatic rotation changes key material on a schedule. It does not require an encryption context on decrypt. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nA key policy condition requiring the encryption context — Correct. SAA-C03 task 1.3. A key policy can allow kms:Decrypt only when kms:EncryptionContext matches the context stored with the ciphertext. Encryption context is for symmetric encryption keys. https://docs.aws.amazon.com/kms/latest/developerguide/encrypt_context.html\nA permissions boundary that denies kms:Decrypt for the role — Incorrect. A boundary that denies decrypt also blocks the calls that include the context. https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html\nAn S3 default encryption setting of SSE-KMS — Incorrect. Default encryption applies to new uploads. It does not require the encryption context on kms:Decrypt. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51672,9 +51679,9 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
-      "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html",
-      "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
       "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+      "https://docs.aws.amazon.com/kms/latest/developerguide/encrypt_context.html",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
       "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
     ],
     "format": "single",
@@ -51691,15 +51698,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A DynamoDB table must be recoverable to any chosen second during the past 14 days. The team does not need another live copy of the table. Which feature meets that recovery window?",
+    "prompt": "A DynamoDB table must be recoverable to any chosen second during the past two weeks. Which feature meets the recovery window?",
     "choices": [
       "An on-demand backup captured once each week",
-      "A global table that keeps another live copy",
-      "Point-in-time recovery covering at least 14 days",
-      "An export of the table to S3 from last night"
+      "A global table that keeps a replica in a second Region",
+      "Point-in-time recovery for the table",
+      "A nightly export of the table into an S3 bucket"
     ],
     "answer": 2,
-    "explanation": "An on-demand backup captured once each week — Incorrect. An on-demand backup is one restore point from the time it was captured. It is not any second across 14 days. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BackupRestore.html\nA global table that keeps another live copy — Incorrect. A global table is another live copy. It is not a 14-day, per-second recovery window, and the team does not need that copy. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html\nPoint-in-time recovery covering at least 14 days — Correct. SAA-C03 task 1.3. Point-in-time recovery can restore the table to a chosen second inside a recovery period of 1 to 35 days. Fourteen days fits in that window. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery.html\nAn export of the table to S3 from last night — Incorrect. A nightly export is one copy from last night. It is not any second during the 14 days. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DataExport.html",
+    "explanation": "An on-demand backup captured once each week — Incorrect. An on-demand backup is one restore point from the time it was captured. It is not any second across two weeks. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/BackupRestore.html\nA global table that keeps a replica in a second Region — Incorrect. A global table is another live copy. It is not a per-second recovery window. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html\nPoint-in-time recovery for the table — Correct. SAA-C03 task 1.3. Point-in-time recovery can restore the table to a chosen second inside a recovery period of 1 to 35 days. Two weeks fits in the window. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery.html\nA nightly export of the table into an S3 bucket — Incorrect. A nightly export is one copy from last night. It is not any second during the two weeks. https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DataExport.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51726,15 +51733,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An RDS database needs a restorable copy in a second Region. A 24-hour recovery point is enough. The team will not run a second database instance. Which feature meets that?",
+    "prompt": "A restorable copy of an Amazon RDS database must exist in a second Region within about one day. A second database instance must not be left running. Which feature meets both?",
     "choices": [
-      "A cross-Region read replica that keeps running for the database",
-      "A manual snapshot that stays in the source Region",
+      "A cross-Region read replica that stays running",
+      "A manual snapshot kept in the source Region",
       "AWS Backup vault lock applied in the source Region",
-      "Cross-Region automated backup replication for the database"
+      "Cross-Region automated backup replication for RDS"
     ],
     "answer": 3,
-    "explanation": "A cross-Region read replica that keeps running for the database — Incorrect. A cross-Region read replica is a second database instance. The team will not run one. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nA manual snapshot that stays in the source Region — Incorrect. A manual snapshot kept in the source Region does not put a restorable copy in the second Region. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html\nAWS Backup vault lock applied in the source Region — Incorrect. Vault lock makes recovery points harder to delete in that vault. It does not copy the database to the second Region. https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html\nCross-Region automated backup replication for the database — Correct. SAA-C03 task 1.3. Cross-Region automated backup replication copies the backups into the second Region and does not run a second database instance. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html",
+    "explanation": "A cross-Region read replica that stays running — Incorrect. A cross-Region read replica is a second database instance. The design must not leave one running. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\nA manual snapshot kept in the source Region — Incorrect. A manual snapshot kept in the source Region does not put a restorable copy in the second Region. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html\nAWS Backup vault lock applied in the source Region — Incorrect. Vault lock makes recovery points harder to delete in the vault. It does not copy the database to the second Region. https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html\nCross-Region automated backup replication for RDS — Correct. SAA-C03 task 1.3. Cross-Region automated backup replication copies the automated backups into the second Region and does not run a second database instance. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51761,15 +51768,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Objects written to a source S3 bucket must appear in a bucket in another Region. A delete in the source must not add a delete marker in the destination bucket. Which replication setting does that?",
+    "prompt": "New objects in an Amazon S3 bucket must appear in a bucket in another Region. A delete in the source bucket must not add a delete marker in the destination. Which replication setting meets both?",
     "choices": [
-      "S3 Cross-Region replication that leaves delete-marker replication off",
-      "S3 Same-Region replication into another bucket in the source Region",
-      "S3 versioning on the source bucket without a replication rule",
-      "An S3 lifecycle expiration for current versions in the source Region"
+      "Cross-Region replication with delete-marker replication off",
+      "Same-Region replication into another bucket in the source Region",
+      "Versioning on the source bucket alone",
+      "Lifecycle expiration of current versions in the source Region"
     ],
     "answer": 0,
-    "explanation": "S3 Cross-Region replication that leaves delete-marker replication off — Correct. SAA-C03 task 1.3. Cross-Region replication copies objects to the other Region, and delete-marker replication can be turned off so a source delete marker is not copied. https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-add-config.html\nS3 Same-Region replication into another bucket in the source Region — Incorrect. Same-Region replication stays in the source Region. It misses the bucket in the other Region. https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html\nS3 versioning on the source bucket without a replication rule — Incorrect. Versioning keeps versions in the source bucket. It does not copy objects to the other Region. https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html\nAn S3 lifecycle expiration for current versions in the source Region — Incorrect. A lifecycle expiration removes current versions in the source Region. It does not copy them, and it does not protect the destination from a delete marker. https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
+    "explanation": "Cross-Region replication with delete-marker replication off — Correct. SAA-C03 task 1.3. Cross-Region replication copies objects to the other Region. Delete-marker replication can be turned off so a source delete marker is not copied. https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-add-config.html\nSame-Region replication into another bucket in the source Region — Incorrect. Same-Region replication stays in the source Region. The destination bucket is in another Region. https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html\nVersioning on the source bucket alone — Incorrect. Versioning keeps versions in the source bucket. It does not copy objects to the other Region. https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html\nLifecycle expiration of current versions in the source Region — Incorrect. A lifecycle expiration removes current versions in the source Region. It does not copy them to the other Region. https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51795,15 +51802,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "Application uploads set an encryption header. A request that asks for SSE-KMS, DSSE-KMS, or SSE-C must fail. A request that asks for AES256 must succeed. The team does not want a customer managed key. Which control enforces that?",
+    "prompt": "PutObject calls that request SSE-KMS, DSSE-KMS, or SSE-C must fail. Calls that request AES256 must succeed. The bucket must not use a customer managed key. Which control enforces the header?",
     "choices": [
-      "Default bucket encryption left at AES256, without a deny for other headers",
-      "A bucket policy that denies PutObject unless the header is AES256",
-      "Client uploads that send SSE-C and a key from the application",
-      "Client-side encryption with a key that stays on the application host"
+      "Default bucket encryption left at AES256",
+      "A bucket policy allowing PutObject only for AES256",
+      "Client uploads that send SSE-C and an application key",
+      "Client-side encryption with a key stored on the host"
     ],
     "answer": 1,
-    "explanation": "Default bucket encryption left at AES256, without a deny for other headers — Incorrect. Leaving the default at AES256 does not deny a request that asks for SSE-KMS, DSSE-KMS, or SSE-C. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy that denies PutObject unless the header is AES256 — Correct. SAA-C03 task 1.3. A bucket policy can deny PutObject unless s3:x-amz-server-side-encryption is AES256. New uploads already default to SSE-S3, and this deny rejects the other modes. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nClient uploads that send SSE-C and a key from the application — Incorrect. SSE-C sends a customer-provided key and is one of the modes the request must reject. https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html\nClient-side encryption with a key that stays on the application host — Incorrect. Client-side encryption leaves a key on the application host, which is the key management the team does not want, and it is not the header check. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html",
+    "explanation": "Default bucket encryption left at AES256 — Incorrect. An AES256 default, which is SSE-S3, does not deny a request that asks for SSE-KMS, DSSE-KMS, or SSE-C. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nA bucket policy allowing PutObject only for AES256 — Correct. SAA-C03 task 1.3. A bucket policy can deny PutObject unless s3:x-amz-server-side-encryption is AES256. AES256 is SSE-S3, so no customer managed key is required. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html\nClient uploads that send SSE-C and an application key — Incorrect. SSE-C sends a customer-provided key. Those calls are ones the bucket must reject. https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html\nClient-side encryption with a key stored on the host — Incorrect. Client-side encryption leaves a key on the application host. It is not the AES256 header check, and it adds key management the bucket must avoid. https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51829,15 +51836,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An existing RDS database stores its files without encryption. A maintenance window can restore a replacement database. The team will not run a second database environment beside the original. Which path encrypts the stored files?",
+    "prompt": "An existing unencrypted Amazon RDS database must be replaced by an encrypted database. Which path does so?",
     "choices": [
-      "Modify the existing database and turn encryption on in place",
-      "Turn on default EBS encryption and restore nothing on the existing database",
-      "Copy a snapshot of the database to an encrypted snapshot and restore that copy",
-      "Require SSL on the database endpoint and leave the stored files unchanged"
+      "Modify the database and turn storage encryption on",
+      "Turn on default EBS encryption for new volumes",
+      "Copy the snapshot with encryption and restore it",
+      "Require SSL on the database endpoint"
     ],
     "answer": 2,
-    "explanation": "Modify the existing database and turn encryption on in place — Incorrect. You can encrypt an RDS database when you create it, not by modifying an existing unencrypted database. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html\nTurn on default EBS encryption and restore nothing on the existing database — Incorrect. Default EBS encryption applies to new volumes. Restoring nothing leaves this database stored without encryption. https://docs.aws.amazon.com/ebs/latest/userguide/encryption-by-default.html\nCopy a snapshot of the database to an encrypted snapshot and restore that copy — Correct. SAA-C03 task 1.3. Copy the snapshot with encryption enabled and restore the encrypted copy. That replacement is the encrypted database, and a second environment is not left running beside the original. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html\nRequire SSL on the database endpoint and leave the stored files unchanged — Incorrect. SSL protects the connection to the endpoint. It leaves the stored database files unchanged. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html",
+    "explanation": "Modify the database and turn storage encryption on — Incorrect. You can encrypt an RDS database when you create it. Modifying an existing unencrypted database does not encrypt it. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html\nTurn on default EBS encryption for new volumes — Incorrect. Default EBS encryption applies to new volumes. The existing database stays unencrypted until it is restored from an encrypted snapshot. https://docs.aws.amazon.com/ebs/latest/userguide/encryption-by-default.html\nCopy the snapshot with encryption and restore it — Correct. SAA-C03 task 1.3. Copy the snapshot with encryption enabled and restore it. The restored database is encrypted. An existing unencrypted database is not encrypted by a later modify. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html\nRequire SSL on the database endpoint — Incorrect. SSL protects the connection. It leaves the stored database files unencrypted. https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51851,7 +51858,7 @@
       "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html"
     ],
     "format": "single",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "services": [
       "Amazon RDS",
       "Amazon EBS"
@@ -51863,15 +51870,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "A symmetric customer managed key uses material that AWS KMS generated. The application must keep this key id. Older ciphertext must still decrypt. The team wants rotation on the default schedule. Which action does that?",
+    "prompt": "A symmetric customer managed key uses material that AWS KMS generated. The application must keep the same key id, and older ciphertext must still decrypt. Rotation should follow the default schedule. Which action meets all three?",
     "choices": [
-      "Create a new key and point the application at the new key id",
-      "Rotate imported key material on a key this application does not use",
-      "Enable automatic rotation on an asymmetric key the application does not use",
-      "Enable automatic rotation on this symmetric customer managed key"
+      "Create a new symmetric customer managed key and change the key id",
+      "Import replacement key material into another customer managed key",
+      "Enable automatic rotation on an asymmetric KMS key",
+      "Enable automatic rotation on the symmetric key"
     ],
     "answer": 3,
-    "explanation": "Create a new key and point the application at the new key id — Incorrect. A new key has a new key id. The application would have to change the id it keeps. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nRotate imported key material on a key this application does not use — Incorrect. Imported key material is a different key, and automatic rotation is for key material that AWS KMS generated. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on an asymmetric key the application does not use — Incorrect. Automatic rotation is not available for an asymmetric key, and this application does not use that key. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on this symmetric customer managed key — Correct. SAA-C03 task 1.3. Automatic rotation on this symmetric key keeps the same key id, still decrypts older ciphertext, and uses a default period of 365 days when no custom period is set. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+    "explanation": "Create a new symmetric customer managed key and change the key id — Incorrect. A new key has a new key id. The application would have to change the id it keeps. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nImport replacement key material into another customer managed key — Incorrect. Imported key material is a different rotation path, and automatic rotation is for material that AWS KMS generated. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on an asymmetric KMS key — Incorrect. Automatic rotation is not available for an asymmetric key. The key in use is a symmetric encryption key. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html\nEnable automatic rotation on the symmetric key — Correct. SAA-C03 task 1.3. Automatic rotation on a symmetric key whose material AWS KMS generated keeps the same key id, still decrypts older ciphertext, and uses a default period of 365 days when no custom period is set. https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51894,15 +51901,15 @@
     "examCodes": [
       "saa-c03"
     ],
-    "prompt": "An ACM certificate requested in ACM is attached to a listener and is due for renewal. The DNS validation record was removed, so managed renewal cannot finish. The team must not switch issuers or replace the certificate with an imported file. Which fix restores managed renewal?",
+    "prompt": "A CloudFront distribution needs a certificate for an alternate domain name. Browsers must trust it with no extra root installed. Which certificate can the distribution use?",
     "choices": [
-      "Put the DNS validation record back so this ACM certificate can renew in place",
-      "Import a replacement certificate file and attach that new certificate",
-      "Issue a Private CA certificate and move the listener to that certificate",
-      "Store the certificate in Secrets Manager and rotate that secret on a schedule"
+      "An ACM public certificate requested in us-east-1",
+      "An ACM public certificate requested in eu-west-1",
+      "An ACM certificate requested in us-west-2",
+      "A Private CA certificate requested in us-east-1"
     ],
     "answer": 0,
-    "explanation": "Put the DNS validation record back so this ACM certificate can renew in place — Correct. SAA-C03 task 1.3. ACM managed renewal for a DNS-validated certificate needs the validation record in place. Putting that record back lets this certificate renew. https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html\nImport a replacement certificate file and attach that new certificate — Incorrect. Importing a replacement file is the imported-certificate path the team must not use, and imported certificates are not eligible for managed renewal. https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html\nIssue a Private CA certificate and move the listener to that certificate — Incorrect. A Private CA certificate switches issuers. The team must not switch issuers. https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html\nStore the certificate in Secrets Manager and rotate that secret on a schedule — Incorrect. Secrets Manager rotation does not renew the ACM certificate that is already attached to the listener. https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+    "explanation": "An ACM public certificate requested in us-east-1 — Correct. SAA-C03 task 1.3. To use an ACM certificate between viewers and CloudFront, request it in us-east-1. A public ACM certificate is trusted with no extra root. https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html\nAn ACM public certificate requested in eu-west-1 — Incorrect. CloudFront does not use an ACM certificate requested in eu-west-1 for viewer HTTPS. The certificate has to be in us-east-1. https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html\nAn ACM certificate requested in us-west-2 — Incorrect. An ACM certificate in us-west-2 is the same kind of certificate in another Region. CloudFront still requires us-east-1 for viewer HTTPS. https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html\nA Private CA certificate requested in us-east-1 — Incorrect. A Private CA certificate requires browsers to install an extra root. The Region alone does not make it publicly trusted. https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html",
     "weak": false,
     "objectiveIds": {
       "saa-c03": [
@@ -51911,16 +51918,14 @@
     },
     "sourceUrls": [
       "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html",
-      "https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html",
-      "https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html",
-      "https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html",
-      "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+      "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
+      "https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html"
     ],
     "format": "single",
     "difficulty": "medium",
     "services": [
-      "AWS Certificate Manager",
-      "AWS Secrets Manager"
+      "Amazon CloudFront",
+      "AWS Certificate Manager"
     ]
   }
 ]

@@ -92,6 +92,88 @@ function isTechnicalTerm(word) {
   return TECHNICAL_TERMS.has(word) || /[0-9]/.test(word) || word.includes("-");
 }
 
+/**
+ * Pre-existing stem copies and deictic keys. Preservation hashes lock these
+ * questions. The echo count ignores them and fails if any other item matches.
+ */
+export const LEGACY_STEM_ECHO_IDS = new Set([
+  "q-saa-bank-005",
+  "q-saa-bank-012",
+  "q-saa-chapter-09",
+  "q-saa-costbatch-009",
+  "q-saa-guide-10",
+  "q-saa-practice-02",
+  "q-saa-practice-54",
+  "q-saa-twin-09-ops",
+  "q-saa-twin-10-secure",
+]);
+
+const RELATIVE_AFTER_DEICTIC = new Set(`
+is are was were be been being belong belongs leave leaves keep keeps let lets make makes do does did
+has have had can could will would should must skip skips enable enables require requires hold holds
+allow allows name names cover covers record records reject rejects limit limits grant grants deny denies
+copy copies restore restores rotate rotates import imports evaluate evaluates provide provides supply supplies
+create creates delete deletes turn turns set sets add adds use uses stay stays come comes need needs
+mean means call calls start starts run runs send sends read reads write writes accept accepts raise raises
+`.split(/\s+/).filter(Boolean));
+
+/** A wrong choice that states its own failure. */
+const SELF_OUT = [
+  { id: "refuses", re: /\b(?:will not|won't)\b|\b(?:does not|doesn't|do not|don't) use\b/i },
+  { id: "nothing", re: /\bnothing\b/i },
+  { id: "unchanged-data", re: /\b(?:files|file|data|objects|volumes|snapshots) unchanged\b/i },
+  { id: "without-the", re: /\bwithout the\b/i },
+  { id: "without-deny", re: /\bwithout a deny\b/i },
+  { id: "after-the-fact", re: /\bafter the fact\b/i },
+  { id: "meant-to", re: /\bmeant to\b/i },
+  { id: "manual-renewal", re: /\brenew\w* by hand\b/i },
+];
+
+function contentWords(text) {
+  return norm(text).split(" ").filter(Boolean);
+}
+
+/** A 4-or-more-word stem phrase, or "at least N", that appears in the key and in no distractor. */
+export function copiedStemPhrase(prompt, choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
+  const key = norm(choices[keyIndex]);
+  const wrong = choices.filter((_, index) => index !== keyIndex).map((choice) => norm(choice));
+  const stem = contentWords(prompt);
+  for (let size = Math.min(8, stem.length); size >= 4; size -= 1) {
+    for (let start = 0; start + size <= stem.length; start += 1) {
+      const phrase = stem.slice(start, start + size);
+      if (phrase.every((word) => STOP.has(word))) continue;
+      const text = phrase.join(" ");
+      if (key.includes(text) && wrong.every((choice) => !choice.includes(text))) return text;
+    }
+  }
+  const atLeast = key.match(/\bat least (\d+)\b/);
+  if (atLeast && contentWords(prompt).includes(atLeast[1]) && wrong.every((choice) => !choice.includes(atLeast[1]))) {
+    return `at least ${atLeast[1]}`;
+  }
+  return null;
+}
+
+/** "this/that/these/those" plus a noun in the key when no distractor uses that same pointer. */
+export function deicticKeyReference(choices, keyIndex) {
+  if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
+  const key = norm(choices[keyIndex]);
+  const wrong = choices.filter((_, index) => index !== keyIndex).map((choice) => norm(choice));
+  const found = [];
+  const pattern = /\b(this|that|these|those) ([a-z0-9-]+)/g;
+  for (let match = pattern.exec(key); match; match = pattern.exec(key)) {
+    if (RELATIVE_AFTER_DEICTIC.has(match[2])) continue;
+    found.push(`${match[1]} ${match[2]}`);
+  }
+  return found.find((phrase) => wrong.every((choice) => !choice.includes(phrase))) ?? null;
+}
+
+export function countsAsEcho(row) {
+  if (row.keywordEcho) return true;
+  if (!row.stemEcho && !row.deicticEcho) return false;
+  return !LEGACY_STEM_ECHO_IDS.has(row.id);
+}
+
 /** A distinctive AWS or technical stem term that appears in the key and in no distractor. */
 export function keywordEchoTerm(prompt, choices, keyIndex) {
   if (!Number.isInteger(keyIndex) || keyIndex < 0 || keyIndex >= choices.length) return null;
@@ -179,6 +261,8 @@ export function analyzeItem(item) {
     stronglyBiased,
     stemWord,
     keywordEcho: keywordEchoTerm(item.prompt, choices, keyIndex),
+    stemEcho: copiedStemPhrase(item.prompt, choices, keyIndex),
+    deicticEcho: deicticKeyReference(choices, keyIndex),
     trueConditional: trueConditionalDistractor(choices, keyIndex),
     categoryOnlyKey: categoryOnlyKey(item.prompt, choices, keyIndex),
     oddOneOut: oddOneOutOpening(choices, keyIndex),
@@ -246,6 +330,9 @@ export function choiceShapeCues(item) {
   const selfDisqualifying = [];
   for (const choice of wrong) {
     if (GIVEAWAY.test(choice)) selfDisqualifying.push({ choice, label: "giveaway" });
+    for (const rule of SELF_OUT) {
+      if (rule.re.test(choice)) selfDisqualifying.push({ choice, label: rule.id });
+    }
     for (const rule of OPPOSITES) {
       if (rule.skipWhen?.test(prompt)) continue;
       const stemForOther = rule.mask ? prompt.replace(rule.mask, " ") : prompt;
@@ -299,7 +386,7 @@ export function summarize(rows) {
       nearDuplicate: bucket.filter((row) => row.nearDuplicate).length,
       selfDisqualifying: single.filter((row) => row.selfDisqualifying.length > 0).length,
       notParallel: single.filter((row) => row.notParallel).length,
-      keywordEcho: single.filter((row) => row.keywordEcho).length,
+      keywordEcho: single.filter((row) => countsAsEcho(row)).length,
       trueConditional: single.filter((row) => row.trueConditional).length,
       categoryOnlyKey: single.filter((row) => row.categoryOnlyKey).length,
       oddOneOut: single.filter((row) => row.oddOneOut).length,
