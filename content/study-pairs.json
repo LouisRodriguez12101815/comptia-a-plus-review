@@ -217,7 +217,7 @@
       },
       {
         "label": "Cross-Region read replica",
-        "pickWhen": "Another Region needs its own replica cluster for reads or a promotable copy."
+        "pickWhen": "Another Region needs its own cluster for queries or a promotable copy."
       }
     ]
   },
@@ -294,7 +294,7 @@
       },
       {
         "label": "Interface endpoint",
-        "pickWhen": "The service needs a private network interface, and the hourly and data charges are an acceptable cost."
+        "pickWhen": "The service needs a private address in the subnet, and the hourly and data charges are an acceptable cost."
       }
     ]
   },
@@ -490,7 +490,7 @@
       },
       {
         "label": "Parameter Store SecureString",
-        "pickWhen": "The application needs a configuration secret and this store is not being asked to rotate a database password."
+        "pickWhen": "The application needs a configuration secret, and password rotation is a separate job."
       }
     ]
   },
@@ -563,7 +563,7 @@
       },
       {
         "label": "Latency routing",
-        "pickWhen": "The user should reach the lowest-latency Region, and you are not naming a primary and a standby."
+        "pickWhen": "The user should reach the Region with the shortest delay, and you are not naming a primary and a standby."
       }
     ]
   },
@@ -784,7 +784,7 @@
       },
       {
         "label": "Provisioned instance",
-        "pickWhen": "The load is steady and you want a fixed instance class."
+        "pickWhen": "The load is steady and you want a fixed size class."
       }
     ]
   },
@@ -918,7 +918,7 @@
       },
       {
         "label": "Cross-account IAM role",
-        "pickWhen": "The other account should call APIs in this account as an assumed role."
+        "pickWhen": "The other account should call APIs in this account by assuming an identity you grant."
       }
     ]
   },
@@ -927,8 +927,7 @@
     "exam": "saa-c03",
     "taskId": "1.2",
     "services": [
-      "Amazon VPC",
-      "Amazon EC2"
+      "Amazon VPC"
     ],
     "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
     "questionIds": [],
@@ -936,11 +935,11 @@
     "sides": [
       {
         "label": "Managed NAT gateway",
-        "pickWhen": "Private subnets need a managed IPv4 path to the internet."
+        "pickWhen": "Private subnets need an IPv4 path to the internet that AWS operates."
       },
       {
         "label": "NAT instance",
-        "pickWhen": "The IPv4 egress translator has to be an EC2 instance you operate."
+        "pickWhen": "The IPv4 egress translator has to be a virtual machine you patch and size."
       }
     ]
   },
@@ -1024,11 +1023,11 @@
     "sides": [
       {
         "label": "Interface security group",
-        "pickWhen": "The filter belongs on one instance or interface, by port and source."
+        "pickWhen": "The filter belongs on one machine, by port and source."
       },
       {
         "label": "AWS Network Firewall",
-        "pickWhen": "The VPC needs a managed firewall on the traffic path, not only an interface rule."
+        "pickWhen": "The VPC needs a path filter that can look past the port number."
       }
     ]
   },
@@ -1090,7 +1089,7 @@
     "sides": [
       {
         "label": "Public ACM certificate",
-        "pickWhen": "Public browsers must accept the certificate from a public trust store."
+        "pickWhen": "Browsers on the internet must accept the certificate from a well-known trust store."
       },
       {
         "label": "Private CA certificate",
@@ -1151,15 +1150,15 @@
     ],
     "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html",
     "questionIds": [],
-    "difference": "Viewer HTTPS on CloudFront for a custom domain wants the public certificate in North Virginia. A load balancer in the app Region uses a certificate requested in that same Region.",
+    "difference": "Viewer HTTPS on CloudFront for a custom domain wants the public certificate in us-east-1 (N. Virginia). A load balancer uses a certificate requested beside the application.",
     "sides": [
       {
-        "label": "ACM certificate in us-east-1",
-        "pickWhen": "CloudFront viewer HTTPS for a custom domain needs the certificate in North Virginia."
+        "label": "Distribution viewer certificate",
+        "pickWhen": "A custom domain name needs the certificate in us-east-1 (N. Virginia)."
       },
       {
         "label": "ACM certificate in the workload Region",
-        "pickWhen": "The load balancer needs the certificate in the same Region as the application."
+        "pickWhen": "The load balancer needs the certificate beside the application."
       }
     ]
   },
@@ -1177,7 +1176,7 @@
     "sides": [
       {
         "label": "Amazon SQS queue API",
-        "pickWhen": "New code can send and receive with the SQS API."
+        "pickWhen": "New code can send and receive without speaking a broker protocol."
       },
       {
         "label": "Amazon MQ",
@@ -1269,7 +1268,7 @@
       },
       {
         "label": "Cron on an EC2 instance",
-        "pickWhen": "The schedule should run on an instance you already operate."
+        "pickWhen": "The schedule should run on a machine you already operate."
       }
     ]
   },
@@ -1330,7 +1329,7 @@
     "sides": [
       {
         "label": "RDS Multi-AZ standby",
-        "pickWhen": "One relational database needs a standby that can take over as the writer."
+        "pickWhen": "One relational database needs a second copy that can take over as the writer."
       },
       {
         "label": "Aurora with readers",
@@ -1356,7 +1355,7 @@
       },
       {
         "label": "RDS cross-Region read replica",
-        "pickWhen": "Read traffic should move to another Region, with writes left on the source."
+        "pickWhen": "Query traffic should move to another Region, with writes left on the source."
       }
     ]
   },
@@ -1378,7 +1377,7 @@
       },
       {
         "label": "AWS Backup plan",
-        "pickWhen": "Supported resources need recovery points kept by a backup plan."
+        "pickWhen": "Supported resources need recovery points kept on a schedule you define."
       }
     ]
   },
@@ -1400,7 +1399,7 @@
       },
       {
         "label": "Auto Scaling replacement",
-        "pickWhen": "The group should keep its desired count and can launch a replacement instance."
+        "pickWhen": "The group should keep its desired count and can launch a new machine."
       }
     ]
   },
@@ -1440,7 +1439,7 @@
     "sides": [
       {
         "label": "EBS volume snapshot",
-        "pickWhen": "One volume needs a point-in-time backup of its blocks."
+        "pickWhen": "One disk needs a point-in-time backup of its blocks."
       },
       {
         "label": "AMI",
@@ -1462,7 +1461,7 @@
     "sides": [
       {
         "label": "EBS Multi-Attach",
-        "pickWhen": "Several Nitro instances inside one zone must attach the same io2 volume."
+        "pickWhen": "Several Nitro instances inside one zone must share the same io2 volume."
       },
       {
         "label": "Amazon EFS",
@@ -1509,7 +1508,7 @@
       },
       {
         "label": "FSx for Windows File Server",
-        "pickWhen": "Windows clients need an SMB file system joined to Active Directory."
+        "pickWhen": "Clients that use SMB need a file system joined to Active Directory."
       }
     ]
   },
@@ -1527,7 +1526,7 @@
     "sides": [
       {
         "label": "Lambda for one invocation",
-        "pickWhen": "The work fits one short invocation and then the function ends."
+        "pickWhen": "The work fits one short call and then the function ends."
       },
       {
         "label": "AWS Fargate",
@@ -1549,7 +1548,7 @@
     "sides": [
       {
         "label": "Amazon ECS",
-        "pickWhen": "The team will deploy the containers with ECS task definitions."
+        "pickWhen": "The team will deploy the containers with task definitions."
       },
       {
         "label": "Amazon EKS",
@@ -1613,7 +1612,7 @@
     "sides": [
       {
         "label": "DynamoDB Accelerator",
-        "pickWhen": "Table reads should be cached behind the DynamoDB API."
+        "pickWhen": "Table reads should be cached through the same calls the table already uses."
       },
       {
         "label": "Amazon ElastiCache",
@@ -1678,7 +1677,7 @@
     "sides": [
       {
         "label": "CloudFront edge cache",
-        "pickWhen": "Viewers in many places should get a cached copy from a nearby edge."
+        "pickWhen": "Viewers in many places should get a cached copy from a nearby location."
       },
       {
         "label": "S3 Transfer Acceleration",
@@ -1700,7 +1699,7 @@
     "sides": [
       {
         "label": "Kinesis Data Streams API",
-        "pickWhen": "Producers and consumers will call the Kinesis API."
+        "pickWhen": "Producers and consumers will call this stream service directly."
       },
       {
         "label": "Amazon MSK",
@@ -1721,7 +1720,7 @@
     "sides": [
       {
         "label": "gp3",
-        "pickWhen": "The volume needs general-purpose SSD performance and gp3 IOPS are enough."
+        "pickWhen": "The volume needs general-purpose SSD performance, and the baseline IOPS are enough."
       },
       {
         "label": "io2",
@@ -1828,7 +1827,7 @@
     "sides": [
       {
         "label": "RDS Reserved Instance",
-        "pickWhen": "This database will run for the term, and a commitment should lower its instance price."
+        "pickWhen": "This database will run for the term, and a commitment should lower its hourly price."
       },
       {
         "label": "RDS On-Demand",
@@ -1870,11 +1869,11 @@
     "sides": [
       {
         "label": "Interface endpoint",
-        "pickWhen": "This API should stay on a private network interface, and the endpoint's hourly charge is acceptable."
+        "pickWhen": "This API should stay on a private network address in the subnet, and the hourly charge is acceptable."
       },
       {
         "label": "NAT gateway to the public API",
-        "pickWhen": "Instances already use a NAT for the internet, and this API can stay on that public path."
+        "pickWhen": "Instances already reach the internet through an egress device, and this API can stay on that path."
       }
     ]
   },

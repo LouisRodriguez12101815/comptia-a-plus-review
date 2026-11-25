@@ -5,6 +5,7 @@ import { flashcards, questions as servedQuestions, topics } from "../lib/content
 import { drillItem, pairSourcesFor, resolvedPairs, sampleMatchRound, studyRecord, studyRecords } from "../lib/study/records.ts";
 import { cardsForQuestion, clozeForCard, termMatches } from "../lib/study/memory.ts";
 import { displayBox, reviewCard } from "../lib/study/schedule.ts";
+import { labelEchoWords, normalizedLabelSet } from "../scripts/lib/answer-cues.mjs";
 import { dueReviews } from "../lib/weakness.ts";
 
 const objectives = JSON.parse(readFileSync(new URL("../content/objectives.json", import.meta.url), "utf8"));
@@ -20,7 +21,7 @@ const copiedCues = [
   "Improve global path to regional TCP/UDP endpoints",
   "Real-time streaming records with custom consumers",
   "Managed delivery of streaming data to S3",
-  "Discounted spare EC2 capacity for interruption-tolerant batch work",
+  "Discounted spare capacity for interruption-tolerant batch work",
   "Predictable steady compute commitment",
   "Dedicated private connectivity from on-premises to AWS",
 ];
@@ -62,23 +63,21 @@ test("comparison pairs link existing drill items and add only the six missing co
   assert.equal(drillItem("aws-saa-service-compare/directconnect").fields.answer, "AWS Direct Connect");
 });
 
-test("a task cannot repeat a service set, including match batch 1", () => {
-  const pairs = pairSourcesFor("saa-c03");
-  const legacy = new Set(["pair-s3-ia-one-zone", "pair-standard-ia", "pair-lifecycle-tiering"]);
+test("resolved side labels are unique across the catalog", () => {
+  const pairs = resolvedPairs("saa-c03");
   const seen = new Map();
   for (const pair of pairs) {
-    const key = `${pair.taskId}|${[...pair.services].sort().join("|")}`;
+    const key = normalizedLabelSet(pair.sides.map((side) => side.label));
     const prior = seen.get(key);
-    if (prior && !(legacy.has(prior) && legacy.has(pair.id))) {
-      assert.fail(`${pair.id} repeats the service set of ${prior}`);
-    }
-    if (!seen.has(key)) seen.set(key, pair.id);
-    for (const side of resolvedPairs("saa-c03").find((item) => item.id === pair.id).sides) {
+    assert.equal(prior, undefined, `${pair.id} repeats the side labels of ${prior}`);
+    seen.set(key, pair.id);
+    for (const side of pair.sides) {
       assert.ok(side.label.length > 0, pair.id);
       assert.ok(side.pickWhen.length > 0, pair.id);
     }
   }
-  assert.equal(pairs.filter((pair) => pair.id.startsWith("pair-m1-")).length, 50);
+  assert.equal(pairSourcesFor("saa-c03").filter((pair) => pair.id.startsWith("pair-m1-")).length, 50);
+  assert.deepEqual(pairSourcesFor("saa-c03").find((pair) => pair.id === "pair-m1-06").services, ["Amazon VPC"]);
 });
 
 test("a flashcard match round stays at 20 and prefers weak tasks", () => {
@@ -120,7 +119,10 @@ test("match batch 1 cues stay parallel and are not copied from questions", () =>
     for (const text of [pair.difference, ...pair.sides.map((side) => side.pickWhen)]) {
       for (const gram of grams(text, 6)) assert.equal(bank.has(gram), false, `${pair.id} ${gram}`);
     }
+    assert.deepEqual(labelEchoWords(pair.sides), [], pair.id);
   }
+  const catalogEchoes = resolvedPairs("saa-c03").flatMap((pair) => labelEchoWords(pair.sides).map((hit) => pair.id + " " + hit.label));
+  assert.deepEqual(catalogEchoes, []);
 });
 
 test("one study record per id, with card, pair, and game-item variants", () => {

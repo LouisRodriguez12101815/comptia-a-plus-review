@@ -1734,7 +1734,7 @@ const awsSaaServiceCompare: DrillDeck = {
     {
       "id": "spot",
       "fields": {
-        "scenario": "Discounted spare EC2 capacity for interruption-tolerant batch work",
+        "scenario": "Discounted spare capacity for interruption-tolerant batch work",
         "answer": "EC2 Spot Instances"
       },
       "detail": "Compare restart overhead, spare capacity and total cost; Spot is not an unconditional lowest-cost guarantee.",
