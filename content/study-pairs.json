@@ -1898,5 +1898,1085 @@
         "pickWhen": "Viewers may be anywhere, and every edge location should stay eligible."
       }
     ]
+  },
+  {
+    "id": "pair-m2-01",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS IAM Identity Center",
+      "AWS IAM"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html",
+    "questionIds": [],
+    "difference": "A permission set is a template of IAM policies. Assigning it makes Identity Center create and manage the matching role in each target account. A customer-managed role is one you create and maintain yourself.",
+    "sides": [
+      {
+        "label": "Identity Center permission set",
+        "pickWhen": "Workforce access for several accounts should come from a central template that provisions the matching roles."
+      },
+      {
+        "label": "Customer-managed IAM role",
+        "pickWhen": "Access in a single account should be an identity you create and maintain there yourself."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-02",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS IAM"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html",
+    "questionIds": [],
+    "difference": "A service-linked role is predefined and owned by the AWS service, and an administrator can view it but not edit its permissions. A service role is a role an administrator creates, edits, and deletes for a service to assume.",
+    "sides": [
+      {
+        "label": "Service-linked role",
+        "pickWhen": "The owning AWS service should receive a predefined role whose permissions that service defines."
+      },
+      {
+        "label": "Service role",
+        "pickWhen": "An administrator should create, edit, and delete the role a service assumes."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-03",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS IAM"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html",
+    "questionIds": [],
+    "difference": "A session policy is passed when a temporary session is created, and that session's permissions are the intersection of the identity-based policies and the session policy. A permissions boundary is a managed policy on the user or role that caps what the identity-based policies can grant.",
+    "sides": [
+      {
+        "label": "Session policy",
+        "pickWhen": "The extra ceiling should apply only to the temporary credentials created for this call."
+      },
+      {
+        "label": "Permissions boundary",
+        "pickWhen": "The ceiling should be attached to the user or role and cap every request that identity makes."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-04",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "AWS IAM"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html",
+    "questionIds": [],
+    "difference": "Access Analyzer external access findings identify resources shared with an external entity. Last accessed information shows which services an identity has used so unused access can be removed.",
+    "sides": [
+      {
+        "label": "IAM Access Analyzer",
+        "pickWhen": "The team needs findings for resources shared outside the account or the organization."
+      },
+      {
+        "label": "IAM last accessed information",
+        "pickWhen": "The team needs to see which services an identity has actually used."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-05",
+    "exam": "saa-c03",
+    "taskId": "1.1",
+    "services": [
+      "Amazon VPC",
+      "AWS IAM"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html",
+    "questionIds": [],
+    "difference": "An endpoint policy is a resource-based policy on a VPC endpoint that controls which principals can use that endpoint to reach a service. An identity-based policy is attached to the caller. The endpoint policy does not replace the caller's own allow.",
+    "sides": [
+      {
+        "label": "VPC endpoint policy",
+        "pickWhen": "The restriction should follow whoever calls through this private entry point."
+      },
+      {
+        "label": "Identity-based policy",
+        "pickWhen": "The restriction should follow the caller, wherever that caller invokes the service."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-06",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS Systems Manager",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html",
+    "questionIds": [
+      "q-saa-core-05"
+    ],
+    "difference": "Session Manager gives a shell on managed nodes without opening inbound ports, keeping a jump box, or handing out SSH keys. A bastion is an instance people sign in to first.",
+    "sides": [
+      {
+        "label": "Systems Manager Session Manager",
+        "pickWhen": "Operators need a shell on private instances, and inbound management ports should stay closed."
+      },
+      {
+        "label": "EC2 bastion host",
+        "pickWhen": "Operators will sign in to a jump box on a public subnet and then reach the private instances."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-07",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS Shield"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html",
+    "questionIds": [],
+    "difference": "Applications on AWS get automatic protection at no additional cost against common volumetric floods such as UDP reflection and SYN floods. Shield Advanced is the managed DDoS service that adds detection, mitigation, and response.",
+    "sides": [
+      {
+        "label": "AWS Shield Standard",
+        "pickWhen": "Common volumetric floods, such as UDP reflection and SYN floods, should use the protection already included."
+      },
+      {
+        "label": "AWS Shield Advanced",
+        "pickWhen": "The application needs the managed DDoS service that adds detection, mitigation, and response."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-08",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS WAF",
+      "AWS Network Firewall"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html",
+    "questionIds": [],
+    "difference": "WAF inspects HTTP and HTTPS requests in front of resources such as CloudFront, API Gateway, and an Application Load Balancer. Network Firewall is a stateful firewall and intrusion prevention service for traffic at the VPC edge and between subnets.",
+    "sides": [
+      {
+        "label": "AWS Network Firewall",
+        "pickWhen": "Traffic at the VPC edge, or between subnets, needs inspection beyond web requests."
+      },
+      {
+        "label": "AWS WAF",
+        "pickWhen": "HTTP requests to a public site should be filtered for patterns such as injection."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-09",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "Amazon GuardDuty",
+      "AWS Security Hub"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html",
+    "questionIds": [],
+    "difference": "GuardDuty is a threat detection service that continuously monitors logs and other AWS data sources. Security Hub CSPM produces its own control findings and also receives findings from GuardDuty, Inspector, Macie, and supported partner products.",
+    "sides": [
+      {
+        "label": "AWS Security Hub",
+        "pickWhen": "Findings from several detectors should land in one place, next to best-practice checks."
+      },
+      {
+        "label": "GuardDuty threat detection",
+        "pickWhen": "The account needs continuous analysis of logs for suspicious activity such as odd API calls."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-10",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "AWS Firewall Manager",
+      "AWS WAF"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/fms-chapter.html",
+    "questionIds": [],
+    "difference": "Firewall Manager applies protections such as WAF, Shield Advanced, security groups, network ACLs, and Network Firewall across accounts in an organization, including accounts you add later. A web ACL is the rule set you attach to one protected resource.",
+    "sides": [
+      {
+        "label": "AWS Firewall Manager",
+        "pickWhen": "The same protections should be applied across many accounts, including accounts added later."
+      },
+      {
+        "label": "A web ACL on one resource",
+        "pickWhen": "The HTTP filter should be attached directly to a single public entry."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-11",
+    "exam": "saa-c03",
+    "taskId": "1.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html",
+    "questionIds": [],
+    "difference": "IMDSv2 is the session-oriented way to read instance metadata. IMDSv1 is the request/response way. An instance can be set to accept only the session-oriented calls.",
+    "sides": [
+      {
+        "label": "IMDSv2",
+        "pickWhen": "Metadata reads should use the session-oriented method."
+      },
+      {
+        "label": "IMDSv1",
+        "pickWhen": "Metadata reads should use the request/response method."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-12",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html",
+    "questionIds": [],
+    "difference": "With SSE-C, you send your own encryption key with the request and S3 uses that key as it writes and reads the object. SSE-KMS encrypts with an AWS KMS key, and the key policy should allow only the principals that need that key.",
+    "sides": [
+      {
+        "label": "SSE-C",
+        "pickWhen": "The caller should send its own encryption key with each request."
+      },
+      {
+        "label": "SSE-KMS",
+        "pickWhen": "Objects should be encrypted with a key whose key policy limits the principals."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-13",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html",
+    "questionIds": [],
+    "difference": "In compliance mode, no user, including the root user, can overwrite or delete the locked version, and the retention mode cannot be changed or shortened. In governance mode, users with special permission can change the lock or delete the object.",
+    "sides": [
+      {
+        "label": "S3 Object Lock compliance mode",
+        "pickWhen": "The lock must hold through the retention date for every user, including the account root."
+      },
+      {
+        "label": "S3 Object Lock governance mode",
+        "pickWhen": "Most users should be blocked, while a few people with a special permission may change the lock."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-14",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "AWS KMS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html",
+    "questionIds": [],
+    "difference": "Related multi-Region keys share the same key ID and key material in Regions you choose, and each copy works on its own. You create the primary and replicate it. A single-Region key stays in the Region where you created it.",
+    "sides": [
+      {
+        "label": "Multi-Region KMS key",
+        "pickWhen": "The same key ID and key material should be available in more than one Region."
+      },
+      {
+        "label": "Single-Region KMS key",
+        "pickWhen": "The key should stay in the Region where it was created."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-15",
+    "exam": "saa-c03",
+    "taskId": "1.3",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html",
+    "questionIds": [],
+    "difference": "Versioning keeps object versions in the bucket. MFA delete is optional on top of versioning: only the bucket owner can turn it on, and removing a version or changing the versioning state then requires two forms of authentication.",
+    "sides": [
+      {
+        "label": "S3 versioning",
+        "pickWhen": "Overwrites and removals should leave earlier copies of the object in the bucket."
+      },
+      {
+        "label": "S3 MFA delete",
+        "pickWhen": "Removing a version, or changing the versioning state, must include a second factor from the bucket owner."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-16",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SQS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html",
+    "questionIds": [],
+    "difference": "Short polling is a ReceiveMessage call whose wait time is 0, so the call returns without waiting for a message. Long polling lets the call wait and return a message as soon as one is available.",
+    "sides": [
+      {
+        "label": "SQS long polling",
+        "pickWhen": "The receive call should wait so a record can be returned as soon as it arrives."
+      },
+      {
+        "label": "SQS short polling",
+        "pickWhen": "The receive call should use a wait time of zero and come back at once."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-17",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SQS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+    "questionIds": [],
+    "difference": "While a message is being processed, the visibility timeout keeps it from being retrieved by another consumer. If it is not deleted in time, it becomes visible again. Retention is how long the queue keeps a message that is still there, four days by default and up to 14 days.",
+    "sides": [
+      {
+        "label": "Visibility timeout",
+        "pickWhen": "A consumer is working on a received item, and other consumers should leave it alone until that window ends."
+      },
+      {
+        "label": "Message retention period",
+        "pickWhen": "An unprocessed item should stay in the queue for days before it ages out."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-18",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "AWS Lambda",
+      "Amazon SQS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-retain-records.html",
+    "questionIds": [],
+    "difference": "Lambda can send a record of an asynchronous invocation to a destination. Failed attempts, after processing is exhausted, can go to one destination, and successful attempts to another. An SQS dead-letter queue receives a queue message after consumers have received it maxReceiveCount times.",
+    "sides": [
+      {
+        "label": "Lambda on-failure destination",
+        "pickWhen": "After async retries are exhausted, the invoke record should be sent to a chosen service."
+      },
+      {
+        "label": "SQS max-receive dead-letter queue",
+        "pickWhen": "An item should move aside after consumers have taken it too many times."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-19",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon EventBridge"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html",
+    "questionIds": [],
+    "difference": "EventBridge Scheduler creates recurring cron or rate schedules and one-time invocations, with flexible time windows. A scheduled rule on an event bus is the older way to run on a clock.",
+    "sides": [
+      {
+        "label": "EventBridge scheduled rule",
+        "pickWhen": "The timing should remain an entry on the event bus, the older clock-based option."
+      },
+      {
+        "label": "EventBridge Scheduler",
+        "pickWhen": "A one-time call, or a clock run with a flexible window, should be managed centrally."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-20",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SNS",
+      "Amazon EventBridge"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html",
+    "questionIds": [],
+    "difference": "An SNS subscriber receives every published message unless the subscription has a filter policy. An EventBridge rule uses an event pattern, and matching events are sent to the rule's targets.",
+    "sides": [
+      {
+        "label": "SNS subscription filter",
+        "pickWhen": "Each subscriber should receive only the notices that match its own attributes."
+      },
+      {
+        "label": "EventBridge event pattern",
+        "pickWhen": "A bus should invoke targets only when the incoming record matches a shape you define."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-21",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon API Gateway",
+      "Elastic Load Balancing"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html",
+    "questionIds": [],
+    "difference": "API Gateway creates, publishes, maintains, monitors, and secures REST, HTTP, and WebSocket APIs. The other entry registers EC2 instances or IP addresses and spreads HTTP requests across them.",
+    "sides": [
+      {
+        "label": "Amazon API Gateway",
+        "pickWhen": "Clients need a managed interface for REST or HTTP calls, including publishing and request controls."
+      },
+      {
+        "label": "Application Load Balancer",
+        "pickWhen": "HTTP requests should be spread across EC2 instances or IP addresses in the VPC."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-22",
+    "exam": "saa-c03",
+    "taskId": "2.1",
+    "services": [
+      "Amazon SQS",
+      "AWS Step Functions"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-queue-parameters.html",
+    "questionIds": [],
+    "difference": "SQS delivery delay holds a new message before any consumer can receive it. A Step Functions Wait state pauses the state machine until a relative number of seconds passes or an absolute timestamp is reached, then continues.",
+    "sides": [
+      {
+        "label": "SQS delivery delay",
+        "pickWhen": "A newly added queue item should stay hidden from consumers for a while."
+      },
+      {
+        "label": "Step Functions Wait state",
+        "pickWhen": "A workflow should pause until a time you set, then continue."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-23",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [],
+    "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+    "questionIds": [
+      "q-saa-arch-14"
+    ],
+    "difference": "Pilot light keeps data replication and core infrastructure on in the recovery Region, while application servers are loaded but switched off until a test or a disaster. Warm standby is a scaled-down but fully functional copy that is already running.",
+    "sides": [
+      {
+        "label": "Pilot light",
+        "pickWhen": "Core data services stay on in the other Region, and the application servers stay switched off until recovery."
+      },
+      {
+        "label": "Warm standby",
+        "pickWhen": "A scaled-down but fully functional copy should already be running in the other Region."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-24",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [],
+    "docsUrl": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+    "questionIds": [],
+    "difference": "In active/active, users can use the workload in any Region where it is deployed. In active/passive, the recovery site starts serving users when a failover event is triggered.",
+    "sides": [
+      {
+        "label": "Active-active",
+        "pickWhen": "Users should be able to use the workload in every Region where it is deployed."
+      },
+      {
+        "label": "Active-passive",
+        "pickWhen": "Users should reach the recovery Region only after a failover event."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-25",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+    "questionIds": [],
+    "difference": "One option places object copies in another bucket in this Region. The other places those copies in another Region. Both copy asynchronously, and the buckets may belong to one account or to two.",
+    "sides": [
+      {
+        "label": "S3 same-Region replication",
+        "pickWhen": "Object copies should land in another bucket in this Region."
+      },
+      {
+        "label": "S3 cross-Region replication",
+        "pickWhen": "Object copies should land in a bucket in a different Region."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-26",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon Route 53"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html",
+    "questionIds": [],
+    "difference": "Geolocation routing sends users to the resource you mapped to their location, such as a continent or a country. Geoproximity routing sends users to the closest resource, and a bias grows or shrinks the area that resource draws from.",
+    "sides": [
+      {
+        "label": "Geolocation routing",
+        "pickWhen": "Users in a chosen place, such as a continent, should be sent to the resource you mapped there."
+      },
+      {
+        "label": "Geoproximity routing",
+        "pickWhen": "Users should reach the closest resource, and a bias can grow or shrink that resource's area."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-27",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+    "questionIds": [],
+    "difference": "A Multi-AZ DB instance has one standby that supports failover and does not serve reads. A Multi-AZ DB cluster has standby instances that support failover and can also serve read traffic.",
+    "sides": [
+      {
+        "label": "Multi-AZ DB instance",
+        "pickWhen": "Failover capacity should sit aside from reads, with queries staying on the primary."
+      },
+      {
+        "label": "Multi-AZ DB cluster",
+        "pickWhen": "The extra database copies should accept read queries and also take over if the primary fails."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-28",
+    "exam": "saa-c03",
+    "taskId": "2.2",
+    "services": [
+      "Amazon Route 53"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html",
+    "questionIds": [],
+    "difference": "Weights split traffic across resources by the ratios you set, including while you test a new version. The health-based option keeps users on the primary while that endpoint is healthy and moves them when it is unhealthy.",
+    "sides": [
+      {
+        "label": "Weighted routing",
+        "pickWhen": "Several resources should receive traffic at the same time, split by the ratios you set."
+      },
+      {
+        "label": "Failover routing",
+        "pickWhen": "Traffic should stay on the healthy primary and move when that primary becomes unhealthy."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-29",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon EC2",
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html",
+    "questionIds": [
+      "q-saa-core-06"
+    ],
+    "difference": "Instance store is temporary block storage on disks physically attached to the host, suited to buffers, caches, and scratch data. EBS general-purpose SSD volumes are attached volumes for transactional workloads such as databases and interactive apps.",
+    "sides": [
+      {
+        "label": "Instance store volume",
+        "pickWhen": "Scratch data, caches, or buffers can use temporary disks physically attached to the host."
+      },
+      {
+        "label": "Amazon EBS volume",
+        "pickWhen": "A transactional workload needs an attached SSD volume, such as a database disk."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-30",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "AWS Storage Gateway"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html",
+    "questionIds": [],
+    "difference": "S3 File Gateway presents NFS or SMB, and the files are stored as objects in S3. Volume Gateway presents iSCSI volumes. Cached volumes keep the data in S3 and retain a local copy of frequently used blocks.",
+    "sides": [
+      {
+        "label": "S3 File Gateway",
+        "pickWhen": "On-premises clients should use NFS or SMB, with the files stored as objects."
+      },
+      {
+        "label": "Volume Gateway",
+        "pickWhen": "On-premises servers should use iSCSI, with data in object storage and a local cache of hot blocks."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-31",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html",
+    "questionIds": [],
+    "difference": "One option is a physical server fully set aside for you, with visibility, placement control, and host affinity. The other keeps the guest on hardware set aside for this account and isolated from other accounts, without letting you pick the server.",
+    "sides": [
+      {
+        "label": "EC2 Dedicated Host",
+        "pickWhen": "The guest should run on a physical server you can place and keep affinity with."
+      },
+      {
+        "label": "EC2 Dedicated Instance",
+        "pickWhen": "The guest should sit on hardware reserved for this account, without choosing the physical server."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-32",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "AWS Lambda"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html",
+    "questionIds": [],
+    "difference": "Reserved concurrency sets the maximum and minimum number of concurrent executions for a function, and other functions cannot use that allocation. Provisioned concurrency is the separate control whose logs report initialization duration before the invocation.",
+    "sides": [
+      {
+        "label": "Reserved concurrency",
+        "pickWhen": "This function needs a floor and a ceiling on concurrent runs that other functions cannot borrow."
+      },
+      {
+        "label": "Provisioned concurrency",
+        "pickWhen": "Environments should already be initialized so startup work happens before the request."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-33",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon DocumentDB",
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html",
+    "questionIds": [],
+    "difference": "DocumentDB is a managed database that runs MongoDB-compatible application code, drivers, and tools. DynamoDB stores items by partition key and retrieves them with that key and any sort key or index.",
+    "sides": [
+      {
+        "label": "Amazon DocumentDB",
+        "pickWhen": "The application should keep using MongoDB drivers and the same query tools."
+      },
+      {
+        "label": "Amazon DynamoDB",
+        "pickWhen": "Items should be stored and fetched by a partition key at any scale."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-34",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html",
+    "questionIds": [
+      "q-saa-bank-012"
+    ],
+    "difference": "A global secondary index can use a key schema that differs from the base table, including a different partition key. A local secondary index keeps an alternate sort key for the table's partition key value.",
+    "sides": [
+      {
+        "label": "DynamoDB global secondary index",
+        "pickWhen": "Queries need a different partition key than the table uses."
+      },
+      {
+        "label": "DynamoDB local secondary index",
+        "pickWhen": "Queries use the table's partition key and a different sort key."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-35",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon VPC",
+      "AWS PrivateLink"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+    "questionIds": [
+      "q-saa-core-16"
+    ],
+    "difference": "A peering connection routes traffic between two VPCs using private IPv4 or IPv6 addresses. PrivateLink connects a VPC privately to a service as if that service were in the VPC.",
+    "sides": [
+      {
+        "label": "AWS PrivateLink",
+        "pickWhen": "Consumers should call one service privately, as if that service were inside their own network."
+      },
+      {
+        "label": "VPC peering",
+        "pickWhen": "Instances in two networks should reach each other by private address."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-36",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "AWS Global Accelerator",
+      "Amazon Route 53"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
+    "questionIds": [],
+    "difference": "One option offers addresses that stay the same, advertised from the edge, and improves the path to regional endpoints. The DNS option answers from the Region with the lowest delay to the user.",
+    "sides": [
+      {
+        "label": "AWS Global Accelerator",
+        "pickWhen": "Clients should use static anycast addresses and enter over the edge network."
+      },
+      {
+        "label": "Route 53 latency routing",
+        "pickWhen": "DNS should answer from the Region with the lowest delay between the user and AWS."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-37",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon Kinesis Video Streams",
+      "Amazon Kinesis Data Streams"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/what-is-kinesis-video.html",
+    "questionIds": [],
+    "difference": "Kinesis Video Streams ingests live video from devices. Kinesis Data Streams collects and processes large streams of data records in real time for consumers you build.",
+    "sides": [
+      {
+        "label": "Kinesis Video Streams",
+        "pickWhen": "Devices should stream live footage into the cloud for playback or analysis."
+      },
+      {
+        "label": "Amazon Kinesis Data Streams",
+        "pickWhen": "Producers should send records for custom consumers to process in real time."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-38",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "AWS Glue"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/glue/latest/dg/components-key-concepts.html",
+    "questionIds": [],
+    "difference": "A crawler connects to a data source, infers the schema, and writes table metadata to the Data Catalog. An ETL job runs the Spark logic that extracts, transforms, and loads the data.",
+    "sides": [
+      {
+        "label": "AWS Glue crawler",
+        "pickWhen": "A source should be scanned so its schema lands in the catalog."
+      },
+      {
+        "label": "AWS Glue ETL job",
+        "pickWhen": "A Spark script should extract, transform, and load records into a target."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-39",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon EMR",
+      "AWS Glue"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html",
+    "questionIds": [],
+    "difference": "EMR is a managed cluster for frameworks such as Hadoop and Spark, and you choose the cluster capacity. Glue is a serverless data integration service for discovering, preparing, and moving data, including running jobs.",
+    "sides": [
+      {
+        "label": "AWS Glue",
+        "pickWhen": "The transform should run as a serverless integration for Spark-style processing."
+      },
+      {
+        "label": "Amazon EMR",
+        "pickWhen": "Hadoop or Spark should run on a cluster the team sizes."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-40",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "AWS Transfer Family",
+      "AWS DataSync"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html",
+    "questionIds": [],
+    "difference": "Transfer Family is the managed service for SFTP, AS2, FTPS, FTP, and browser uploads into and out of AWS storage, and existing clients can keep their authentication. DataSync moves file or object data at high speed to, from, and between AWS storage, including from NFS, SMB, and HDFS.",
+    "sides": [
+      {
+        "label": "AWS Transfer Family",
+        "pickWhen": "Partners should keep using SFTP, FTPS, FTP, or AS2 clients and land files in AWS storage."
+      },
+      {
+        "label": "AWS DataSync",
+        "pickWhen": "Large file sets should move at high speed from NFS, SMB, or HDFS, or between AWS storage services."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-41",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html",
+    "questionIds": [],
+    "difference": "S3 Glacier Flexible Retrieval restores in minutes to 12 hours. S3 Glacier Deep Archive restores in 9 to 48 hours. You pick the class by how often you read the data and how fast the restore must finish.",
+    "sides": [
+      {
+        "label": "S3 Glacier Flexible Retrieval",
+        "pickWhen": "A restore that finishes in minutes, or within 12 hours, fits this archive."
+      },
+      {
+        "label": "S3 Glacier Deep Archive",
+        "pickWhen": "A restore window of 9 to 48 hours fits this colder archive."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-42",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html",
+    "questionIds": [],
+    "difference": "gp2 volumes burst above baseline by spending I/O credits, up to 3,000 IOPS for smaller volumes. gp3 volumes cost 20 percent less per GiB than gp2 and are designed to deliver their provisioned performance.",
+    "sides": [
+      {
+        "label": "gp2 volume",
+        "pickWhen": "The general-purpose SSD should burst above its baseline by spending I/O credits."
+      },
+      {
+        "label": "gp3 volume",
+        "pickWhen": "The general-purpose SSD should cost less per GiB and deliver the performance you provision."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-43",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "AWS Savings Plans",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+    "questionIds": [
+      "q-saa-practice-46"
+    ],
+    "difference": "The flexible compute commitment follows usage across families, sizes, Regions, operating systems, and tenancy, and it also follows Fargate and Lambda. The page compares that price with the uncommitted rate.",
+    "sides": [
+      {
+        "label": "Compute Savings Plan",
+        "pickWhen": "Steady usage can shift across instance families, Regions, Fargate, or Lambda, and a spend commitment is acceptable."
+      },
+      {
+        "label": "On-Demand compute",
+        "pickWhen": "Usage should be billed at the uncommitted price and can stop when the work stops."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-44",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-types.html",
+    "questionIds": [],
+    "difference": "A Standard Reserved Instance has the larger discount, and you cannot exchange it. A Convertible Reserved Instance can be exchanged, with a smaller discount.",
+    "sides": [
+      {
+        "label": "Standard Reserved Instance",
+        "pickWhen": "The larger discount fits, and this reservation stays as purchased."
+      },
+      {
+        "label": "Convertible Reserved Instance",
+        "pickWhen": "The reservation should be exchangeable for a different configuration later."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-45",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "Elastic Load Balancing"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html",
+    "questionIds": [],
+    "difference": "One entry places firewall and intrusion-detection appliances in the path and scales those appliances. The other entry spreads TCP, UDP, and TLS flows across registered targets.",
+    "sides": [
+      {
+        "label": "Network Load Balancer",
+        "pickWhen": "TCP or UDP clients need a stable entry that spreads load across the targets."
+      },
+      {
+        "label": "Gateway Load Balancer",
+        "pickWhen": "Traffic should pass through virtual firewall or inspection appliances that scale with demand."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-46",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/reserved-capacity.html",
+    "questionIds": [
+      "q-saa-core-25"
+    ],
+    "difference": "Reserved capacity is a commitment to a minimum amount of provisioned throughput on Standard-class tables. On-demand mode is pay-per-request, and you do not set a read or write throughput figure ahead of time.",
+    "sides": [
+      {
+        "label": "DynamoDB reserved capacity",
+        "pickWhen": "Provisioned throughput on the Standard table class should be covered by a commitment to a minimum amount."
+      },
+      {
+        "label": "DynamoDB on-demand mode",
+        "pickWhen": "Reads and writes should be pay-per-request, and nobody sets a throughput figure in advance."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-47",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "AWS Savings Plans",
+      "Amazon Aurora",
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+    "questionIds": [],
+    "difference": "Database Savings Plans cover AWS database services and can reduce Aurora and RDS cost, while still letting you use those database services. Paying as you go has no term commitment.",
+    "sides": [
+      {
+        "label": "Database Savings Plan",
+        "pickWhen": "A commitment should cover Aurora and RDS, and the database choice can still change."
+      },
+      {
+        "label": "Uncommitted database price",
+        "pickWhen": "The bill should follow actual database use, and there is no term commitment."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-48",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html",
+    "questionIds": [],
+    "difference": "Transfer Acceleration sends uploads to a CloudFront edge location and then to S3 over an optimized path. Additional data transfer charges can apply. Clients close to the bucket's Region can send objects to that Region directly.",
+    "sides": [
+      {
+        "label": "S3 Transfer Acceleration",
+        "pickWhen": "Distant clients should send objects through an edge location, and the added charge is acceptable."
+      },
+      {
+        "label": "Regional S3 upload",
+        "pickWhen": "Clients close to the bucket's Region should send objects straight to that Region."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-49",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+    "questionIds": [],
+    "difference": "A NAT gateway lets private-subnet instances open outbound connections. Unsolicited inbound connections stay blocked. Cost-conscious designs compare one shared egress device with a separate egress device in every zone.",
+    "sides": [
+      {
+        "label": "Shared NAT gateway",
+        "pickWhen": "Private subnets can send outbound traffic through the same device, which keeps the egress footprint small."
+      },
+      {
+        "label": "NAT gateway per Availability Zone",
+        "pickWhen": "Private subnets in separate locations keep an outbound path of their own, so one location's loss leaves the others connected."
+      }
+    ]
+  },
+  {
+    "id": "pair-m2-50",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "AWS Site-to-Site VPN"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+    "questionIds": [],
+    "difference": "The cost-optimized networking task asks you to choose bandwidth as one VPN connection or as several, and to compare that choice with Direct Connect speed. One connection is the smaller commitment. Additional connections add throughput or a second path.",
+    "sides": [
+      {
+        "label": "A single Site-to-Site VPN",
+        "pickWhen": "The hybrid link's volume fits one encrypted connection into the VPC."
+      },
+      {
+        "label": "Multiple Site-to-Site VPNs",
+        "pickWhen": "The hybrid link needs extra encrypted connections for throughput or for a second path."
+      }
+    ]
   }
 ]

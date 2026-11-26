@@ -116,7 +116,8 @@ test("the memory games meet the per-game floors and cover every task three times
   assert.equal(catalog.odd.length, 20);
   assert.equal(catalog.ladders.length, 8);
   assert.equal(catalog.lightning.length, 66);
-  assert.equal(twoSidedPairs().length, 80);
+  // Match batch 2 adds 50 two-sided pairs. 80 original two-sided pairs remain, so the board source is 130.
+  assert.equal(twoSidedPairs().length, 130);
   assert.equal(concentrationPairs("D1").length, 8);
   assert.equal(concentrationPairs("D2").length, 8);
   assert.equal(concentrationPairs("D3").length, 8);
@@ -246,7 +247,8 @@ test("the memory games meet the per-game floors and cover every task three times
 
 test("concentration uses two-sided pair records and sizes the board from what is available", () => {
   const ids = new Set(twoSidedPairs().map((pair) => pair.id));
-  assert.equal(ids.size, 80);
+  // Match batch 2.
+  assert.equal(ids.size, 130);
   for (const board of ["all", "D1", "D2", "D3", "D4"]) {
     const pairs = concentrationPairs(board);
     assert.ok(pairs.length > 0 && pairs.length <= 8, board);
