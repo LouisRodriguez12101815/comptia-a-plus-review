@@ -132,7 +132,8 @@ test("one study record per id, with card, pair, and game-item variants", () => {
   const records = studyRecords();
   const ids = records.map((record) => record.id);
   assert.equal(new Set(ids).size, ids.length);
-  assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 150);
+  // 16 scenario-cue cards sit on top of the previous SAA deck.
+  assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 166);
   // Match batch 2 brings the pair catalog to 133.
   assert.equal(records.filter((record) => record.kind === "pair").length, 133);
   assert.equal(records.some((record) => record.id === "fc-saa-nat-gw"), false);

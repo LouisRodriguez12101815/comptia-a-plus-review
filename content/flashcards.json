@@ -9249,5 +9249,181 @@
     "front": "AWS-managed versus customer-managed IAM policy",
     "back": "AWS manages updates to AWS-managed policies; a customer controls a customer-managed policy and can reuse it across identities. Inline policies attach to one identity.",
     "weak": false
+  },
+  {
+    "id": "fc-saa-cue-shield-advanced",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Large DDoS against a public load balancer",
+    "back": "Protect that load balancer with Shield Advanced. GuardDuty detects threats. Inspector assesses vulnerabilities. Shield Standard is the automatic baseline.",
+    "weak": false,
+    "taskId": "1.2",
+    "services": ["Elastic Load Balancing", "AWS Shield", "Amazon GuardDuty", "Amazon Inspector"],
+    "docsUrl": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-protections-by-resource-type.html"
+  },
+  {
+    "id": "fc-saa-cue-sqs-visibility",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "SQS visibility timeout for a Lambda event source",
+    "back": "Set the SQS visibility timeout to at least six times the Lambda function timeout. When a batching window is set, add MaximumBatchingWindowInSeconds. Delivery is still at least once, so an email send must be safe to repeat.",
+    "weak": false,
+    "taskId": "2.1",
+    "services": ["Amazon SQS", "AWS Lambda"],
+    "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html"
+  },
+  {
+    "id": "fc-saa-cue-config-tags",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Find resources missing required tags",
+    "back": "Use the AWS Config required-tags rule. Cost Explorer groups spend. It does not evaluate tag compliance.",
+    "weak": false,
+    "taskId": "1.2",
+    "services": ["AWS Config", "AWS Cost Explorer"],
+    "docsUrl": "https://docs.aws.amazon.com/config/latest/developerguide/required-tags.html"
+  },
+  {
+    "id": "fc-saa-cue-macie-remediate",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Macie finding versus automatic removal",
+    "back": "Macie discovers sensitive data in S3. SNS notifies people. EventBridge can route the finding to Lambda when the object must be quarantined.",
+    "weak": false,
+    "taskId": "1.3",
+    "services": ["Amazon Macie", "Amazon S3", "Amazon SNS", "Amazon EventBridge", "AWS Lambda"],
+    "docsUrl": "https://docs.aws.amazon.com/macie/latest/user/findings-monitor-events-eventbridge.html"
+  },
+  {
+    "id": "fc-saa-cue-acm-expiry",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Alert before an ACM certificate expires",
+    "back": "ACM publishes an approaching-expiration event. Match it in EventBridge and send the notification from there.",
+    "weak": false,
+    "taskId": "1.3",
+    "services": ["AWS Certificate Manager", "Amazon EventBridge"],
+    "docsUrl": "https://docs.aws.amazon.com/acm/latest/userguide/supported-events.html"
+  },
+  {
+    "id": "fc-saa-cue-object-lock",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Accidental delete versus a retention hold",
+    "back": "S3 Versioning plus MFA Delete supports recovery and slows a permanent delete. Object Lock is the retention control when a version must not be changed or deleted.",
+    "weak": false,
+    "taskId": "1.3",
+    "services": ["Amazon S3"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+  },
+  {
+    "id": "fc-saa-cue-sg-source",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Database access only from the application tier",
+    "back": "Allow the database port from the application security group. Security groups do not have deny rules, and subnets in the same VPC do not need peering.",
+    "weak": false,
+    "taskId": "1.2",
+    "services": ["Amazon VPC"],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"
+  },
+  {
+    "id": "fc-saa-cue-rds-iops",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Slow RDS inserts blamed on storage",
+    "back": "Move the RDS storage to Provisioned IOPS SSD. A larger memory class or a read replica does not fix storage IOPS on the writer.",
+    "weak": false,
+    "taskId": "3.3",
+    "services": ["Amazon RDS"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html"
+  },
+  {
+    "id": "fc-saa-cue-aurora-reads",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Unpredictable database reads with high availability",
+    "back": "Use Aurora replicas with Auto Scaling and a reader endpoint. A cache does not replace the transactional database.",
+    "weak": false,
+    "taskId": "3.3",
+    "services": ["Amazon Aurora", "AWS Auto Scaling"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html"
+  },
+  {
+    "id": "fc-saa-cue-cloudfront-origin",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Faster reads while the site stays on its current server",
+    "back": "Put CloudFront in front of the server that must stay where it is, and set that server as a custom origin. Moving the site to another Region, or changing only DNS, leaves the pages on that one server.",
+    "weak": false,
+    "taskId": "3.4",
+    "services": ["Amazon CloudFront"],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+  },
+  {
+    "id": "fc-saa-cue-fsr",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "New EBS volumes at full performance immediately",
+    "back": "Enable Fast Snapshot Restore on the EBS snapshot, then create the new volumes from it. Sharing the production volume is not a separate copy.",
+    "weak": false,
+    "taskId": "3.1",
+    "services": ["Amazon EBS"],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html"
+  },
+  {
+    "id": "fc-saa-cue-datasync",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Recurring files from an on-premises SAN to S3",
+    "back": "Use DataSync for the files. Use Direct Connect when the path must be private. DMS moves databases, not general files on a SAN.",
+    "weak": false,
+    "taskId": "3.5",
+    "services": ["Amazon S3", "AWS DataSync", "AWS Direct Connect", "AWS Database Migration Service"],
+    "docsUrl": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+  },
+  {
+    "id": "fc-saa-cue-phi",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "PHI inside scanned reports",
+    "back": "Textract reads the text out of the document or image. Comprehend Medical finds the protected health information in that text. Rekognition labels pictures and video, which is a different job.",
+    "weak": false,
+    "taskId": "3.5",
+    "services": ["Amazon Textract", "Amazon Comprehend", "Amazon Rekognition"],
+    "docsUrl": "https://docs.aws.amazon.com/comprehend-medical/latest/dev/comprehendmedical-welcome.html"
+  },
+  {
+    "id": "fc-saa-cue-fsx-windows",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Windows file share that joins Active Directory",
+    "back": "FSx for Windows File Server speaks SMB and joins Microsoft Active Directory. EFS is the NFS file system for Linux clients.",
+    "weak": false,
+    "taskId": "3.1",
+    "services": ["Amazon FSx", "Amazon EFS"],
+    "docsUrl": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+  },
+  {
+    "id": "fc-saa-cue-regional-cert",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Certificate Region for a Regional API custom domain",
+    "back": "Request the ACM certificate in the same Region as the API Gateway API. An edge-optimized custom domain is the case that uses a certificate in us-east-1.",
+    "weak": false,
+    "taskId": "3.4",
+    "services": ["AWS Certificate Manager", "Amazon API Gateway"],
+    "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-specify-certificate-for-custom-domain-name.html"
+  },
+  {
+    "id": "fc-saa-cue-firehose-archive",
+    "topicId": "aws-saa-scenario-cues",
+    "examCodes": ["saa-c03"],
+    "front": "Keep a stream of alerts, then archive older objects",
+    "back": "Data Firehose delivers the records into S3. A lifecycle rule can move those objects to a colder class after the number of days you set. A message queue is a work buffer, not that archive.",
+    "weak": false,
+    "taskId": "3.5",
+    "services": ["Amazon Kinesis", "Amazon S3"],
+    "docsUrl": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
   }
 ]

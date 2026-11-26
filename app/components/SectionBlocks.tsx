@@ -31,7 +31,7 @@ export async function SectionBlocks({ blocks }: { blocks: Block[] }) {
           return (
             <p
               key={index}
-              className={`rounded-xl border px-4 py-3 text-sm leading-relaxed ${colors[block.kind]}`}
+              className={`break-words rounded-xl border px-4 py-3 text-sm leading-relaxed ${colors[block.kind]}`}
             >
               {block.text}
             </p>
