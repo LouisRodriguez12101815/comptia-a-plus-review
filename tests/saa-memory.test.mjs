@@ -28,12 +28,12 @@ const copiedCues = [
 
 test("comparison pairs link existing drill items and add only the six missing contrasts", () => {
   const pairs = pairSourcesFor("saa-c03");
-  // Match batch 1 adds 50 contrasts. 33 original pairs remain, so the catalog is 83.
-  assert.equal(pairs.length, 83);
+  // Match batch 1 adds 50 contrasts. Match batch 2 adds 50 more. 33 original pairs remain, so the catalog is 133.
+  assert.equal(pairs.length, 133);
   const linked = pairs.filter((pair) => !pair.difference);
   const written = pairs.filter((pair) => pair.difference);
   assert.equal(linked.length, 5);
-  assert.equal(written.length, 78);
+  assert.equal(written.length, 128);
   for (const id of ["pair-boundary-scp", "pair-role-user", "pair-nat-gateway-endpoint"]) {
     assert.ok(written.some((pair) => pair.id === id), id);
   }
@@ -41,7 +41,8 @@ test("comparison pairs link existing drill items and add only the six missing co
   for (const pair of pairs) {
     assert.ok(pair.docsUrl.startsWith("https://"), pair.id);
     assert.ok(Array.isArray(pair.questionIds), pair.id);
-    if (!pair.id.startsWith("pair-m1-")) assert.ok(pair.questionIds.length >= 2, pair.id);
+    // Match batch 1 and match batch 2 may leave questionIds empty when no question tests that exact distinction.
+    if (!pair.id.startsWith("pair-m1-") && !pair.id.startsWith("pair-m2-")) assert.ok(pair.questionIds.length >= 2, pair.id);
     assert.ok(pair.sides.length >= 2, pair.id);
     for (const id of pair.questionIds) {
       const question = servedQuestions.find((item) => item.id === id);
@@ -77,6 +78,8 @@ test("resolved side labels are unique across the catalog", () => {
     }
   }
   assert.equal(pairSourcesFor("saa-c03").filter((pair) => pair.id.startsWith("pair-m1-")).length, 50);
+  // Match batch 2.
+  assert.equal(pairSourcesFor("saa-c03").filter((pair) => pair.id.startsWith("pair-m2-")).length, 50);
   assert.deepEqual(pairSourcesFor("saa-c03").find((pair) => pair.id === "pair-m1-06").services, ["Amazon VPC"]);
 });
 
@@ -96,7 +99,7 @@ test("a flashcard match round stays at 20 and prefers weak tasks", () => {
   assert.equal(round.filter((pair) => pair.taskId === "4.3").length >= 1, true);
 });
 
-test("match batch 1 cues stay parallel and are not copied from questions", () => {
+test("match batch 1 and match batch 2 cues stay parallel and are not copied from questions", () => {
   const questions = JSON.parse(readFileSync(new URL("../content/questions.json", import.meta.url), "utf8"));
   const grams = (text, size) => {
     const words = String(text).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().split(/\s+/).filter(Boolean);
@@ -110,7 +113,7 @@ test("match batch 1 cues stay parallel and are not copied from questions", () =>
     for (const gram of grams(blob, 6)) bank.add(gram);
   }
   const giveaway = /\b(instead of|rather than|because)\b|\b(?:and|with|but) no\b|\bdoes not\b|\bis not\b/i;
-  for (const pair of pairSourcesFor("saa-c03").filter((item) => item.id.startsWith("pair-m1-"))) {
+  for (const pair of pairSourcesFor("saa-c03").filter((item) => item.id.startsWith("pair-m1-") || item.id.startsWith("pair-m2-"))) {
     const lengths = pair.sides.map((side) => side.pickWhen.length);
     const shortest = Math.min(...lengths);
     const longest = Math.max(...lengths);
@@ -130,7 +133,8 @@ test("one study record per id, with card, pair, and game-item variants", () => {
   const ids = records.map((record) => record.id);
   assert.equal(new Set(ids).size, ids.length);
   assert.equal(records.filter((record) => record.kind === "card" && record.exam === "saa-c03").length, 150);
-  assert.equal(records.filter((record) => record.kind === "pair").length, 83);
+  // Match batch 2 brings the pair catalog to 133.
+  assert.equal(records.filter((record) => record.kind === "pair").length, 133);
   assert.equal(records.some((record) => record.id === "fc-saa-nat-gw"), false);
   assert.ok(records.some((record) => record.kind === "game-item" && record.id === "aws-saa-service-compare/spot"));
   const card = studyRecord("fc-aws-iam-role");
