@@ -63,8 +63,9 @@ test("a stored domain that disagrees with the task fails", () => {
 
 test("every SAA card has one task or null, services from its own text, and a docs URL when tagged", () => {
   const active = saaCards.filter((card) => !card.retired);
-  assert.equal(saaCards.length, 124);
-  assert.equal(active.length, 120);
+  // Scenario-cue cards from the SAA quiz study guide.
+  assert.equal(saaCards.length, 140);
+  assert.equal(active.length, 136);
   assert.deepEqual(saaCards.filter((card) => card.retired).map((card) => card.id).sort(), [
     "fc-saa-arch-perf-kds",
     "fc-saa-arch-secure-boundary",
@@ -85,7 +86,7 @@ test("every SAA card has one task or null, services from its own text, and a doc
   assert.equal(counts["4.2"], 6);
   assert.equal(counts["4.3"], 6);
   assert.equal(counts["4.4"], 6);
-  assert.equal(Object.values(counts).reduce((sum, count) => sum + count, 0), 120);
+  assert.equal(Object.values(counts).reduce((sum, count) => sum + count, 0), 136);
   const fronts = new Map();
   for (const card of active) {
     const front = card.front.trim().toLowerCase();

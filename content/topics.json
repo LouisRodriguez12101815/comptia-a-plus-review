@@ -8701,6 +8701,201 @@
     ]
   },
   {
+    "id": "aws-saa-scenario-cues",
+    "group": "aws",
+    "concept": "cloud",
+    "examCodes": [
+      "saa-c03"
+    ],
+    "title": "SAA scenario cues",
+    "chapter": "SAA-C03 · Scenarios",
+    "summary": "Service-selection cues for common SAA scenarios: name the bottleneck, then pick the service that changes that bottleneck.",
+    "sections": [
+      {
+        "id": "how-to-use",
+        "title": "Read the constraint before the service list",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A familiar service can still be the wrong answer when it solves a different problem. Name the constraint in the stem first: large DDoS, storage IOPS, untagged resources, global reads, bursty writes, or objects that must not change. Then reject every choice that addresses a neighboring constraint."
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Queues and event sources commonly deliver at least once. A timeout or a deduplication window does not make an email or a database write exactly once. Make the work idempotent when a duplicate side effect matters."
+          }
+        ]
+      },
+      {
+        "id": "secure-cues",
+        "title": "Security and data-protection cues",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Stem cue", "Choose", "Nearby miss"],
+            "rows": [
+              ["Public app, large DDoS, load balancer", "AWS Shield Advanced on that load balancer", "GuardDuty finds threats. Inspector finds vulnerabilities. Shield Standard is the automatic baseline."],
+              ["Resources must carry required tags, least effort", "AWS Config required-tags rule", "Cost Explorer reports spend. A scheduled script is custom work Config already does."],
+              ["Find PII already stored in S3", "Amazon Macie", "Inspector scans workloads, not object contents."],
+              ["Alert before an ACM certificate expires", "EventBridge rule on the ACM approaching-expiration event, then notify", "ACM is not where you attach a daily custom alert rule."],
+              ["Recover from an accidental overwrite, and slow a permanent delete", "S3 Versioning plus MFA Delete", "Default encryption protects confidentiality. A lifecycle rule can delete data."],
+              ["Objects must not be changed or deleted for a retention period", "S3 Object Lock, which requires versioning", "A read-only ACL or a read-only mount is not retention."],
+              ["Only these private instances may reach the database", "Database security group allows the application security group", "Security groups have allow rules only. Subnets in one VPC do not need peering."]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "warning",
+            "text": "Macie plus an SNS message tells an administrator that PII was found. That is an alert, not automatic removal. Route the Macie finding through EventBridge to Lambda or Step Functions when the requirement is to quarantine or delete the object."
+          }
+        ]
+      },
+      {
+        "id": "decouple-cues",
+        "title": "Queues, events, and retries",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "SQS hides a received message for the visibility timeout. If that timer ends while work is still running, another consumer can receive the same message. For a Lambda event source, set the queue visibility timeout to at least six times the function timeout. When a batching window is set, add MaximumBatchingWindowInSeconds to that figure. Lambda still invokes at least once, so a function that sends email must be safe to run again for the same message."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Checked against Creating and configuring an Amazon SQS event source mapping: https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html"
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Long polling reduces empty receives. It does not keep an in-flight message hidden.",
+              "A FIFO deduplication id covers a send window. It does not make a later email or database write exactly once.",
+              "Deleting the message before the work succeeds drops it if the work then fails.",
+              "Variable jobs: put the work on SQS and scale workers from queue depth. A clock schedule fits predictable time, not a variable backlog.",
+              "Bursts into a database: put SQS between the intake function and the writer so the writer can run at a controlled rate. SNS fan-out does not hold a backlog the writer drains.",
+              "A file upload that needs one simple transform: S3 event notification, a queue if you want a buffer, Lambda, and DynamoDB for the result. A cluster or a second database is extra operations."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "performance-cues",
+        "title": "Performance and delivery cues",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Bottleneck named in the stem", "Change that bottleneck", "Does not fix it"],
+            "rows": [
+              ["RDS inserts are slow because of storage", "Provisioned IOPS SSD", "A larger memory class, a burstable CPU class, or a read replica"],
+              ["Unpredictable read load, and the database must stay highly available", "Aurora replicas with Auto Scaling", "A single-AZ instance, Redshift, or a cache in place of the database"],
+              ["Huge daily peaks, millisecond reads, little operations work", "CloudFront for static files, API Gateway and Lambda for the API, DynamoDB for orders", "Orders stored only in S3, or a cluster you must run"],
+              ["Global users, static site in S3, lower latency", "CloudFront in front of the bucket", "A bucket in every Region, or Transfer Acceleration for ordinary page reads"],
+              ["Site must stay on premises; improve load time now", "CloudFront with that server as a custom origin", "Moving the site to another US Region, or DNS alone"],
+              ["Large uploads from many distant sites into one bucket", "S3 Transfer Acceleration and multipart upload", "A daily appliance, or a server that copies snapshots"],
+              ["New EBS volumes must deliver full performance immediately", "Fast Snapshot Restore on the snapshot, then create the volumes", "Sharing the production volume, or instance store"],
+              ["Regional API Gateway custom domain and HTTPS", "ACM certificate in the API's Region, then a DNS record to the regional target", "A certificate only in us-east-1, which is the edge-optimized case"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "movement-cues",
+        "title": "Movement, files, and ingestion",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": ["Need", "Fit", "Mismatch"],
+            "rows": [
+              ["Private subnet reads S3 in the same Region without NAT processing charges", "S3 gateway VPC endpoint, restricted by policy", "API Gateway, or an endpoint policy on a NAT gateway"],
+              ["Recurring files from an on-premises SAN into S3 over a private path", "AWS DataSync over Direct Connect", "Database Migration Service, which moves databases"],
+              ["Windows shared storage for SharePoint, with Active Directory", "FSx for Windows File Server joined to Active Directory", "EFS, which is NFS, or S3 presented as a Windows volume"],
+              ["About 1 TB of alerts a day, keep recent data, archive after two weeks, little infrastructure", "Data Firehose into S3, then a lifecycle transition", "A queue retained for 14 days, which is not an archive"],
+              ["Text and PHI from scanned PDF and JPEG reports", "Textract extracts the document text; Comprehend Medical identifies the PHI", "Rekognition for document OCR, or a model you train first"]
+            ]
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Direct Connect is the network path. DataSync is the transfer. CloudTrail records API calls. Config records whether the resource configuration still matches the rule."
+          }
+        ]
+      },
+      {
+        "id": "s3-gateway-path",
+        "title": "S3 from a private subnet",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A gateway endpoint for S3 is a route-table target. Traffic from the VPC to S3 in the same Region can use it without an internet gateway or a NAT device, and the gateway endpoint itself has no additional charge. An interface endpoint is the path when the traffic comes from on-premises, from a peered VPC in another Region, or through a transit gateway, and that endpoint has an additional charge. A NAT gateway is general outbound internet access. It still processes S3 traffic, and it still charges for that processing, when the route does not point at the gateway endpoint."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Checked against Gateway endpoints for Amazon S3: https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+          }
+        ]
+      },
+      {
+        "id": "phi-in-documents",
+        "title": "Text and health information in scanned reports",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Textract reads text and form fields out of documents and images. Comprehend Medical reads clinical text and can return protected health information among the entities it detects. Use both when the file is a scan and the thing you need is the health information inside the words. Rekognition labels what is in a picture or a video. It is not the document reader for this job."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Checked against What is Amazon Textract? and What is Amazon Comprehend Medical?: https://docs.aws.amazon.com/textract/latest/dg/what-is.html and https://docs.aws.amazon.com/comprehend-medical/latest/dev/comprehendmedical-welcome.html"
+          }
+        ]
+      },
+      {
+        "id": "windows-file-share",
+        "title": "Windows shared files and Active Directory",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "FSx for Windows File Server is a managed Windows file server. Clients reach it with SMB, and users are authenticated with Microsoft Active Directory. EFS is the shared file system you mount from Linux with NFS. It is not the SMB share those Windows clients are asking for."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Checked against What is FSx for Windows File Server? and What is Amazon Elastic File System?: https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html and https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+          }
+        ]
+      },
+      {
+        "id": "regional-api-certificate",
+        "title": "Certificate for a Regional API name",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A Regional API Gateway custom domain needs an ACM certificate in the same Region as the API, and the certificate must cover that name. An edge-optimized custom domain is the case that needs the certificate in us-east-1. The DNS record then points the name at the custom-domain target, not back at itself."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Checked against Get certificates ready in AWS Certificate Manager: https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-specify-certificate-for-custom-domain-name.html"
+          }
+        ]
+      },
+      {
+        "id": "stream-then-archive",
+        "title": "Deliver a stream, then age it into the archive",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Data Firehose can deliver a stream of records into an S3 bucket. An S3 lifecycle rule can then transition those objects after the number of days you set, such as 14, into a colder storage class. The recent objects stay in the bucket for analysis. A queue that expires messages is a work buffer, not that archive."
+          },
+          {
+            "type": "callout",
+            "kind": "tip",
+            "text": "Checked against What is Amazon Data Firehose? and Managing the lifecycle of objects: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html and https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "core2-assessment-os",
     "group": "core2",
     "concept": "operating-systems",
