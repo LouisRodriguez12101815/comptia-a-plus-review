@@ -2295,11 +2295,11 @@
     ],
     "docsUrl": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html",
     "questionIds": [],
-    "difference": "EventBridge Scheduler creates recurring cron or rate schedules and one-time invocations, with flexible time windows. A scheduled rule on an event bus is the older way to run on a clock.",
+    "difference": "EventBridge Scheduler creates recurring cron or rate schedules and one-time invocations, with flexible time windows. A scheduled rule runs on a clock as a rule on the event bus, beside that bus's other rules and targets.",
     "sides": [
       {
         "label": "EventBridge scheduled rule",
-        "pickWhen": "The timing should remain an entry on the event bus, the older clock-based option."
+        "pickWhen": "The schedule should sit with the other rules and targets on the same event bus."
       },
       {
         "label": "EventBridge Scheduler",
@@ -2963,19 +2963,20 @@
     "exam": "saa-c03",
     "taskId": "4.4",
     "services": [
+      "AWS Direct Connect",
       "AWS Site-to-Site VPN"
     ],
-    "docsUrl": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html",
+    "docsUrl": "https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-route-priority.html",
     "questionIds": [],
-    "difference": "The cost-optimized networking task asks you to choose bandwidth as one VPN connection or as several, and to compare that choice with Direct Connect speed. One connection is the smaller commitment. Additional connections add throughput or a second path.",
+    "difference": "For the same prefix, a virtual private gateway prefers BGP routes from Direct Connect over Site-to-Site VPN routes. The VPN path is the lower-priority route. Stopping at the dedicated circuit leaves no second path when that route is gone.",
     "sides": [
       {
-        "label": "A single Site-to-Site VPN",
-        "pickWhen": "The hybrid link's volume fits one encrypted connection into the VPC."
+        "label": "Direct Connect only",
+        "pickWhen": "One private circuit covers the volume, so a second connection is extra cost to run."
       },
       {
-        "label": "Multiple Site-to-Site VPNs",
-        "pickWhen": "The hybrid link needs extra encrypted connections for throughput or for a second path."
+        "label": "Direct Connect plus VPN backup",
+        "pickWhen": "The private circuit stays preferred, and an encrypted internet path takes over if that circuit is down."
       }
     ]
   }
