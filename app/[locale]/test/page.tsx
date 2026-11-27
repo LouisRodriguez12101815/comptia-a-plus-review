@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import visuals from "@/content/track-visuals.json";
 import { ExamTest, type LabLink } from "./ExamTest";
+import { resolveExamParam } from "@/lib/exam-route";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/test">): Promise<Metadata> {
   const { locale } = await params;
@@ -21,7 +22,9 @@ export default async function TestPage({ params, searchParams }: PageProps<"/[lo
   setRequestLocale(locale);
   const t = await getTranslations("testPage");
   const { exam, focus, drill, pair, practice, domain, length } = await searchParams;
-  const initialExam = examCodes.includes(exam as ExamCode) ? (exam as ExamCode) : undefined;
+  const resolution = resolveExamParam(exam, true);
+  const initialExam = resolution.kind === "valid" && examCodes.includes(resolution.focus as ExamCode) ? resolution.focus as ExamCode : undefined;
+  if (resolution.kind === "invalid") return <div className="space-y-4"><h1 className="text-3xl font-semibold text-white">{t("unavailableTitle")}</h1><p className="text-slate-300">{t("unavailableBody")}</p><Link href="/certifications" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{t("availableTracks")}</Link></div>;
   // ?focus=2.3,3.4 starts a test on those objectives (from the scorecard).
   const initialFocus = (typeof focus === "string" ? focus.split(",") : []).filter((id) => /^\d+\.\d+$/.test(id)).slice(0, 10);
   // ?drill=id,id&pair=group:a>b runs a short test on one look-alike pair (from the scorecard).

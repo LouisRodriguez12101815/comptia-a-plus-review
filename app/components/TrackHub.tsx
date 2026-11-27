@@ -190,7 +190,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           {t("studyTools")}
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {tools.map((tool) => {
+          {tools.filter((tool) => !emptyTrack || tool.state === "ready").map((tool) => {
             const inner = (
               <>
                 <div className="flex items-center justify-between gap-3">

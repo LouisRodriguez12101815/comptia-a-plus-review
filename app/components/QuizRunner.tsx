@@ -25,12 +25,14 @@ import { wrongChoicesForQuiz } from "@/lib/quiz-answer-history";
 import { visualItemsForTopic } from "@/lib/visuals";
 import type { Question, StudyFocus } from "@/lib/types";
 
-export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptMode = "quiz" }: { initialTopic: string; questionIds?: string[]; scoped?: boolean; attemptMode?: AttemptMode }) {
+export function QuizRunner({ initialTopic, initialFocus, questionIds, scoped = false, attemptMode = "quiz" }: { initialTopic: string; initialFocus?: StudyFocus; questionIds?: string[]; scoped?: boolean; attemptMode?: AttemptMode }) {
   const t = useTranslations("quizRunner");
   const skills = useTranslations("saaTestSkills");
   const remediationT = useTranslations("weakAreas.remediation");
   const addressingT = useTranslations("weakAreas.addressingRemediation");
-  const [focus, setFocus] = useStudyFocus();
+  const [savedFocus, setFocus] = useStudyFocus();
+  const [selectedFocus, setSelectedFocus] = useState(initialFocus);
+  const focus = selectedFocus ?? savedFocus;
   const [topicId, setTopicId] = useState(initialTopic);
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
@@ -90,6 +92,7 @@ export function QuizRunner({ initialTopic, questionIds, scoped = false, attemptM
     : remediationT(`${section}.${key}` as never);
 
   function changeFocus(nextFocus: StudyFocus) {
+    setSelectedFocus(nextFocus);
     setFocus(nextFocus);
     setTopicId("all");
   }

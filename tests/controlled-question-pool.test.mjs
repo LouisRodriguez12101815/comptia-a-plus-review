@@ -32,3 +32,13 @@ test("an N10 controlled pool excludes an unrelated certification question", () =
     ["n10-q1", "aws-q1"],
   );
 });
+import { resolveExamParam } from "../lib/exam-route.ts";
+
+test("exam route parameters reject unsupported and repeated values without selecting another exam", () => {
+  assert.deepEqual(resolveExamParam(undefined, true), { kind: "absent" });
+  assert.deepEqual(resolveExamParam("clf-c02", true), { kind: "valid", focus: "clf-c02" });
+  assert.deepEqual(resolveExamParam("sy0-701", true), { kind: "invalid" });
+  assert.deepEqual(resolveExamParam(["clf-c02", "220-1201"], true), { kind: "invalid" });
+  assert.deepEqual(resolveExamParam("az-104"), { kind: "valid", focus: "az-104" });
+  assert.deepEqual(resolveExamParam("no-such-exam"), { kind: "invalid" });
+});

@@ -10,6 +10,8 @@ import { controlledQuestionIds, questionIdsFromParam } from "@/lib/controlled-qu
 import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
 import { SAA_CLUSTERS, questionsInCluster } from "@/lib/saa-test-skills";
+import { resolveExamParam } from "@/lib/exam-route";
+import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/quiz">) {
   const { locale } = await params;
@@ -25,6 +27,10 @@ export default async function QuizPage({
   setRequestLocale(locale);
   const t = await getTranslations("quizPage");
   const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam, cluster: clusterParam, mode: modeParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string | string[]; exam?: string; cluster?: string; mode?: string };
+  const examResolution = resolveExamParam(examParam);
+  if (examResolution.kind === "invalid") return <div className="space-y-4"><h1 className="text-3xl font-semibold text-white">{t("unavailableTitle")}</h1><p className="text-slate-300">{t("unavailableBody")}</p><Link href="/certifications" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{t("availableTracks")}</Link></div>;
+  const initialFocus = examResolution.kind === "valid" ? examResolution.focus : undefined;
+  const quizKey = JSON.stringify([topic, domainParam, conceptParam, questionIdsParam, examParam, clusterParam, modeParam]);
   const concept = getConcept(conceptParam);
   const domainExam: ExamCode | undefined = examParam === "saa-c03" ? "saa-c03" : examParam === "n10-009" || examParam === undefined ? "n10-009" : undefined;
   const domain = domainExam ? getDomainQuiz(domainParam, domainExam) : undefined;
@@ -55,15 +61,15 @@ export default async function QuizPage({
       {domain && domainExam ? <EnsureTopicFocus codes={[domainExam]} preferred={domainExam} /> : null}
       {concept ? <EnsureTopicFocus codes={["n10-009"]} preferred="n10-009" /> : null}
       {twinMode ? (
-        <QuizRunner initialTopic="all" scoped attemptMode="twin" />
+        <QuizRunner key={quizKey} initialTopic="all" initialFocus={initialFocus} scoped attemptMode="twin" />
       ) : questionIds && questionIds.length > 0 ? (
-        <QuizRunner initialTopic={topic ?? "all"} questionIds={questionIds} scoped attemptMode={attemptMode} />
+        <QuizRunner key={quizKey} initialTopic={topic ?? "all"} initialFocus={initialFocus} questionIds={questionIds} scoped attemptMode={attemptMode} />
       ) : concept ? (
-        <QuizRunner initialTopic="all" questionIds={concept.questionIds} scoped />
+        <QuizRunner key={quizKey} initialTopic="all" initialFocus={initialFocus} questionIds={concept.questionIds} scoped />
       ) : domain ? (
-        <QuizRunner initialTopic="all" questionIds={domain.questionIds} scoped />
+        <QuizRunner key={quizKey} initialTopic="all" initialFocus={initialFocus} questionIds={domain.questionIds} scoped />
       ) : (
-        <QuizRunner initialTopic={topic ?? "all"} />
+        <QuizRunner key={quizKey} initialTopic={topic ?? "all"} initialFocus={initialFocus} />
       )}
     </div>
   );
