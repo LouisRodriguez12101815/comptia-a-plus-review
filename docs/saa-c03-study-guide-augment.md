@@ -36,6 +36,14 @@ The 50 new pairs cite the vendor pages linked from each pair. Those pages were c
 
 On 2026-11-26 the Snowball Edge page said that device is no longer available to new customers, so that contrast was replaced with Transfer Family versus DataSync. The Transfer Family, DataSync, API Gateway, Application Load Balancer, and domain 4 pages were opened again that day.
 
+## Match batch 3, checked 2026-11-26
+
+The same local textbook was on hand. Contents headings only, from Chapters 2, 3, 4, 5, 8, 9, and 13: EC2 placement groups and instance pricing, EBS and instance store, S3 lifecycle and Glacier, EFS, FSx, Storage Gateway, NAT gateway and NAT instance, PrivateLink, peering, Transit Gateway, Direct Connect, RDS read replicas and Multi-AZ, Aurora, DynamoDB throughput, Route 53 routing and CloudFront, Kinesis, Glue, Athena, Lake Formation, Budgets, Reserved Instances, and Spot. No sentences, review questions, or answers were copied. SHA-256 and page count are unchanged: 477 pages, `de7456e3fd3f1e0ea24870ae6a8e73615baaf2199ae62a0a15e35fadadbd70fb`.
+
+The exam-guide PDF was opened again: Version 1.0, 17 pages, SHA-256 `78e9aa30bd67653603a8a782aeeca1619a7576916fe9bb0588db49429e31033c`. It still says AWS Single Sign-On (AWS SSO). The live domain 3 and domain 4 pages, checked 2026-11-26, keep the same task titles, 3.1 through 4.4, and the same weights, 24 and 20. They do not use the PDF's SSO name on those two pages.
+
+Each new pair cites the vendor page linked on that pair. Those pages were checked on 2026-11-26. No dollar prices were copied into the hints. The Aurora storage page states the 25 percent I/O share used in the difference for I/O-Optimized versus Standard. The snapshot archive page states the 75 percent storage reduction and the 90-day horizon. Snowball and Timestream were not used.
+
 ## Artifacts
 - `q-saa-guide-01` … in `content/questions.json`
 - `content/saa-practice-set.json` → `guideAugmentIds`

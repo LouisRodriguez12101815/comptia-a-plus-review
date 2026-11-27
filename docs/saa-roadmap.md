@@ -56,3 +56,5 @@ Keep this file current. When a pull request completes a queue item, update the q
 - #269 Accept same-origin owner reads that omit Origin.
 - #270 Bring thin SAA tasks 4.3, 4.1, and 3.1 up to 20.
 - #271 Keep history past the sync caps and stamp each test.
+- #277 Add 50 SAA match pairs for the thinner tasks, then revise the scheduled-rule hint and the Direct Connect backup pair.
+- #278 Add SAA scenario cues for the study-guide cases.
