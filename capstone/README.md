@@ -8,6 +8,8 @@ A below-cutoff score is a **review signal**. Recommendations require human revie
 
 ## What's included
 
+- [Synthetic review-support classifier](review_classifier_README.md): a separate offline classification exercise with learner-group splits, validation-selected threshold, held-out baseline comparisons, and no real learner data.
+
 - `analysis_walkthrough.ipynb`: executable Colab/Jupyter walkthrough with saved outputs.
 - `capstone_analysis.py`: reusable pandas analysis, explicit mock fallback, validation, and actual LangGraph review graph.
 - `fixtures/practice_records.csv`: deterministic eight-row teaching fixture, with one nonnumeric and one blank score.

@@ -59,6 +59,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">{paths("checksLimits")}</p>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-300">{paths("guideOverview")}</p>
         <Link href="/assessment-workflow" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-indigo-400 px-5 py-2 font-semibold text-slate-950 hover:bg-indigo-300">{paths("assessmentLink")} →</Link>
+        <Link href="/classification-example" className="ml-0 mt-4 inline-flex min-h-11 items-center rounded-full border border-indigo-300 px-5 py-2 font-semibold text-indigo-100 sm:ml-3">{paths("classificationLink")} →</Link>
         {locale !== "en" && <p className="text-sm text-slate-400">{paths("englishNotice")}</p>}
       </section>
 

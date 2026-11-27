@@ -19,6 +19,7 @@ export default async function AssessmentWorkflowPage({ params }: PageProps<"/[lo
   const t = await getTranslations({ locale, namespace: "assessmentWorkflowPage" });
 
   const journey = await getTranslations("navigationJourney");
+  const paths = await getTranslations("projectPaths");
   return <GuideBody
     guide={guide as GuideContent}
     locale={locale}
@@ -29,6 +30,7 @@ export default async function AssessmentWorkflowPage({ params }: PageProps<"/[lo
       <Link href="/methodology" className="inline-flex min-h-11 items-center">{journey("methodology")}</Link>
       <Link href="/certifications" className="inline-flex min-h-11 items-center">{journey("example")}</Link>
       <Link href="/coverage" className="inline-flex min-h-11 items-center">{t("backToCoverage")}</Link>
+      <Link href="/classification-example" className="inline-flex min-h-11 items-center">{paths("classificationLink")}</Link>
     </nav>}
   />;
 }
