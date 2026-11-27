@@ -1,5 +1,7 @@
 import objectives from "@/content/objectives.json";
-import { getQuestions } from "@/lib/content";
+import { getQuestions, questions, topics } from "@/lib/content";
+import { buildExamPool } from "@/lib/exam-test.mjs";
+import type { CoverageMatrix } from "@/lib/objective-coverage.mjs";
 import type { ExamCode } from "@/lib/types";
 
 export const DOMAIN_QUIZ_EXAM = "n10-009";
@@ -11,6 +13,16 @@ const DOMAIN_QUIZ_EXAMS = new Set<ExamCode>(["n10-009", "saa-c03"]);
 /** Domain practice for Network+ by default. Pass saa-c03 for the SAA domains. */
 export function domainQuizzes(exam: ExamCode = DOMAIN_QUIZ_EXAM): DomainQuiz[] {
   if (!DOMAIN_QUIZ_EXAMS.has(exam)) return [];
+  if (exam === "saa-c03") {
+    // Match the mock exam's objective pools, including the same eligibility rules.
+    const pool = buildExamPool({ objectives: objectives as CoverageMatrix, questions, topics, examCode: exam });
+    return pool.domains.map(({ id, title, weight, objectives: tasks }) => ({
+      id,
+      title,
+      weight,
+      questionIds: [...new Set(tasks.flatMap((task) => task.questionIds))],
+    }));
+  }
   const definition = objectives.exams.find((item) => item.code === exam);
   return (definition?.domains ?? []).map((domain) => {
     const topicIds = new Set(domain.objectives.flatMap((objective) => objective.topics));
