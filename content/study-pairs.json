@@ -2979,5 +2979,1066 @@
         "pickWhen": "The private circuit stays preferred, and an encrypted internet path takes over if that circuit is down."
       }
     ]
+  },
+{
+    "id": "pair-m3-01",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html",
+    "questionIds": [],
+    "difference": "HDD volumes are for large streaming transfers, where throughput is the limit. General Purpose SSD volumes are for transactional work made of small reads and writes, where IOPS is the limit.",
+    "sides": [
+      {
+        "label": "Throughput Optimized HDD",
+        "pickWhen": "Large sequential transfers should stay on the magnetic volume built for that access pattern."
+      },
+      {
+        "label": "General Purpose SSD",
+        "pickWhen": "Small random reads and writes need the solid-state volume with steady IOPS."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-02",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon EFS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/efs/latest/ug/performance.html",
+    "questionIds": [],
+    "difference": "Elastic throughput scales with the workload, and you pay for the data read or written. Provisioned throughput is a transfer rate you set, and you are charged for the amount you enable.",
+    "sides": [
+      {
+        "label": "EFS elastic throughput",
+        "pickWhen": "The file system should raise and lower its transfer rate with a spiky load."
+      },
+      {
+        "label": "EFS provisioned throughput",
+        "pickWhen": "The file system needs a transfer rate you set ahead of the load."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-03",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html",
+    "questionIds": [],
+    "difference": "Fast Snapshot Restore makes volumes created from a snapshot deliver full performance immediately. Without it, the volume fills blocks as they are first read.",
+    "sides": [
+      {
+        "label": "Fast Snapshot Restore",
+        "pickWhen": "Volumes created from this copy must run at full speed on the first read."
+      },
+      {
+        "label": "A plain EBS snapshot",
+        "pickWhen": "The first reads can fill in slowly, which is enough for a backup copy."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-04",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+    "questionIds": [],
+    "difference": "Express One Zone stores data inside a single Availability Zone and targets the lowest object latency. The Standard class is built to survive loss of a location in the Region.",
+    "sides": [
+      {
+        "label": "S3 Express One Zone",
+        "pickWhen": "Objects stay in a single location and the application needs the lowest object latency."
+      },
+      {
+        "label": "S3 Standard storage",
+        "pickWhen": "Objects must remain available if a location in the Region is lost."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-05",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html",
+    "questionIds": [],
+    "difference": "Multipart upload sends a large object as pieces, and a failed piece can be sent again. A single operation sends the whole object in one request.",
+    "sides": [
+      {
+        "label": "S3 multipart upload",
+        "pickWhen": "A large object should go up in pieces that can retry on their own."
+      },
+      {
+        "label": "S3 single-part upload",
+        "pickWhen": "The object is small enough to send in one request."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-06",
+    "exam": "saa-c03",
+    "taskId": "3.1",
+    "services": [
+      "AWS Storage Gateway"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html",
+    "questionIds": [],
+    "difference": "Cached volumes keep a working set on the appliance and store the volume data in Amazon S3. Stored volumes keep the dataset on the appliance and back it up to Amazon S3 asynchronously.",
+    "sides": [
+      {
+        "label": "Cached volume gateway",
+        "pickWhen": "Recent files stay on the appliance, and the full copy lives in S3."
+      },
+      {
+        "label": "Stored volume gateway",
+        "pickWhen": "The whole dataset stays on the appliance, with async copies sent to S3."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-07",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html",
+    "questionIds": [],
+    "difference": "Partition placement spreads members so they avoid sharing a rack. Cluster placement packs members together to cut latency between them.",
+    "sides": [
+      {
+        "label": "Partition placement group",
+        "pickWhen": "Instances should be split across racks so a rack failure leaves other groups running."
+      },
+      {
+        "label": "Cluster placement in a rack",
+        "pickWhen": "Instances should sit close together for the lowest latency between them."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-08",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html",
+    "questionIds": [],
+    "difference": "Target tracking holds a metric near a chosen value by changing capacity. Step scaling applies the increments you define when a metric crosses a bound.",
+    "sides": [
+      {
+        "label": "Target tracking scaling",
+        "pickWhen": "Capacity should follow a metric toward a number you choose."
+      },
+      {
+        "label": "Step scaling policy",
+        "pickWhen": "Capacity should jump by an amount you set when a metric crosses a bound."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-09",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html",
+    "questionIds": [],
+    "difference": "An ELB check removes a member the load balancer marks unhealthy. An EC2 check removes a member whose status check has failed.",
+    "sides": [
+      {
+        "label": "ELB health for the group",
+        "pickWhen": "Replace a member when the traffic distribution marks it failed."
+      },
+      {
+        "label": "Instance status for the group",
+        "pickWhen": "Replace a member when the hypervisor reports the machine has failed."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-10",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-predictive-scaling.html",
+    "questionIds": [],
+    "difference": "Predictive scaling uses past load to add capacity before a repeating pattern. Target tracking changes capacity after the metric leaves the value you set.",
+    "sides": [
+      {
+        "label": "Predictive scaling policy",
+        "pickWhen": "Add capacity before a repeating daily pattern arrives."
+      },
+      {
+        "label": "Reactive tracking policy",
+        "pickWhen": "Change size after the metric has already moved away from the goal."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-11",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html",
+    "questionIds": [],
+    "difference": "A warm pool keeps initialized instances stopped so a scale-out can start them. Without a warm pool, the group launches instances when demand grows.",
+    "sides": [
+      {
+        "label": "ASG warm pool",
+        "pickWhen": "Stopped copies should be ready so a scale-out skips a full boot."
+      },
+      {
+        "label": "ASG cold launch",
+        "pickWhen": "New machines should boot only when the group actually grows."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-12",
+    "exam": "saa-c03",
+    "taskId": "3.2",
+    "services": [
+      "AWS Lambda"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html",
+    "questionIds": [],
+    "difference": "Lambda assigns CPU in proportion to the function memory setting. Reserved concurrency is a cap on how many copies of the function run at once.",
+    "sides": [
+      {
+        "label": "Higher function memory",
+        "pickWhen": "A single invocation needs extra CPU, and the size setting is what raises CPU."
+      },
+      {
+        "label": "A higher concurrency cap",
+        "pickWhen": "Many copies must be allowed to run at the same time, up to a limit you choose."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-13",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon Aurora"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html",
+    "questionIds": [],
+    "difference": "The reader endpoint spreads connections across Aurora replicas. The writer endpoint sends connections to the primary instance.",
+    "sides": [
+      {
+        "label": "Aurora reader endpoint",
+        "pickWhen": "Queries should land on the copies that serve reads."
+      },
+      {
+        "label": "Aurora writer endpoint",
+        "pickWhen": "Inserts and updates must land on the primary."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-14",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon MemoryDB",
+      "Amazon ElastiCache"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/memorydb/latest/devguide/what-is-memorydb.html",
+    "questionIds": [],
+    "difference": "MemoryDB keeps a durable transaction log so writes survive a restart. ElastiCache is a cache that can be rebuilt from the database.",
+    "sides": [
+      {
+        "label": "Amazon MemoryDB",
+        "pickWhen": "The in-memory store must keep a durable log so writes survive a restart."
+      },
+      {
+        "label": "ElastiCache as a cache",
+        "pickWhen": "A temporary copy can be rebuilt from the database after it is emptied."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-15",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+    "questionIds": [],
+    "difference": "A read replica can serve queries and may lag behind the writer. A Multi-AZ standby is there to take over as the writer and is not a general query target.",
+    "sides": [
+      {
+        "label": "RDS read replica",
+        "pickWhen": "Extra copies should serve queries and can lag behind the writer."
+      },
+      {
+        "label": "RDS standby copy",
+        "pickWhen": "A second machine should take over as the writer when the first fails."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-16",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html",
+    "questionIds": [],
+    "difference": "Storage autoscaling grows the allocated disk after free space falls, and it stops at a maximum you set. A fixed allocation stays at the size chosen at creation.",
+    "sides": [
+      {
+        "label": "RDS storage autoscaling",
+        "pickWhen": "Allocated disk should grow when free space gets low, up to a ceiling."
+      },
+      {
+        "label": "A fixed storage allocation",
+        "pickWhen": "Allocated disk should stay at the amount chosen when it was created."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-17",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon ElastiCache"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Replication.Redis-RedisCluster.html",
+    "questionIds": [],
+    "difference": "Cluster mode enabled partitions the data across as many as 500 shards. Cluster mode disabled always keeps one shard, and that shard can include read replicas.",
+    "sides": [
+      {
+        "label": "Redis cluster mode",
+        "pickWhen": "The dataset should be partitioned so it can grow across many shards."
+      },
+      {
+        "label": "Single-shard Redis",
+        "pickWhen": "The dataset fits in one primary group, and partitioning it is extra moving parts."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-18",
+    "exam": "saa-c03",
+    "taskId": "3.3",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html",
+    "questionIds": [],
+    "difference": "A strongly consistent read returns the latest successful write. An eventually consistent read may return a slightly earlier value and consumes fewer read capacity units.",
+    "sides": [
+      {
+        "label": "Strongly consistent read",
+        "pickWhen": "The call must return the latest successful write."
+      },
+      {
+        "label": "Eventually consistent read",
+        "pickWhen": "The call can return a slightly stale copy and uses less read capacity."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-19",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon CloudFront",
+      "AWS Lambda"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions.html",
+    "questionIds": [],
+    "difference": "CloudFront Functions run short JavaScript for viewer-request changes. Lambda@Edge runs a Lambda function at the edge when the code needs a broader runtime or network access.",
+    "sides": [
+      {
+        "label": "CloudFront Functions",
+        "pickWhen": "A short viewer-request change should run close to the viewer."
+      },
+      {
+        "label": "Lambda at the edge",
+        "pickWhen": "The code near the viewer needs a fuller runtime or network calls."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-20",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon Route 53"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html",
+    "questionIds": [],
+    "difference": "An alias record can point at selected AWS resources, including the zone apex. A CNAME points at another hostname and cannot be placed at the zone apex.",
+    "sides": [
+      {
+        "label": "Route 53 alias record",
+        "pickWhen": "The name should point at an AWS resource, including the apex of the zone."
+      },
+      {
+        "label": "Route 53 CNAME record",
+        "pickWhen": "The name should point at another hostname outside the apex of the zone."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-21",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon API Gateway"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html",
+    "questionIds": [],
+    "difference": "An edge-optimized endpoint sends callers to a nearby CloudFront point of presence, which helps when clients are spread across geographies. A Regional endpoint is for clients in the same Region and reduces connection overhead there.",
+    "sides": [
+      {
+        "label": "Edge-optimized API endpoint",
+        "pickWhen": "Callers are spread across many places, so requests should enter at a nearby point of presence."
+      },
+      {
+        "label": "Regional API endpoint",
+        "pickWhen": "Callers are in the same Region as the API, so a nearer point of presence is unused."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-22",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon Route 53"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html",
+    "questionIds": [],
+    "difference": "Geolocation routing chooses a record from the caller's location. Weighted routing sends a proportion of queries to each record at the same time.",
+    "sides": [
+      {
+        "label": "Geolocation by caller",
+        "pickWhen": "The DNS answer should depend on where the person is."
+      },
+      {
+        "label": "Weighted share of queries",
+        "pickWhen": "The DNS answer should send a chosen fraction of lookups to each target."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-23",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon API Gateway"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html",
+    "questionIds": [],
+    "difference": "HTTP APIs are aimed at lower latency and a smaller feature set. REST APIs add API keys, usage plans, and request validation.",
+    "sides": [
+      {
+        "label": "API Gateway HTTP API",
+        "pickWhen": "The front door needs lower latency and a smaller feature set."
+      },
+      {
+        "label": "API Gateway REST API",
+        "pickWhen": "The front door needs usage plans, API keys, or request validation."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-24",
+    "exam": "saa-c03",
+    "taskId": "3.4",
+    "services": [
+      "Amazon Route 53"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html",
+    "questionIds": [],
+    "difference": "A private hosted zone resolves names inside the VPCs you associate. A public hosted zone resolves names on the internet.",
+    "sides": [
+      {
+        "label": "Private hosted zone",
+        "pickWhen": "Names should resolve only inside the VPCs you associate."
+      },
+      {
+        "label": "Public hosted zone",
+        "pickWhen": "Names should resolve for callers on the internet."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-25",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon SQS",
+      "Amazon Kinesis"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html",
+    "questionIds": [],
+    "difference": "SQS hands a message to a consumer, and the consumer deletes it after the work succeeds. Kinesis Data Streams keeps records so more than one consumer can read them and read them again.",
+    "sides": [
+      {
+        "label": "SQS work queue",
+        "pickWhen": "Each job should be taken by one consumer and removed after success."
+      },
+      {
+        "label": "Kinesis replay stream",
+        "pickWhen": "Several consumers should read the same records and move back over them."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-26",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon Athena",
+      "Amazon Redshift"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html",
+    "questionIds": [],
+    "difference": "Athena runs SQL over data in S3 and does not require a cluster you manage. Redshift is a data warehouse you size for repeated analytical queries.",
+    "sides": [
+      {
+        "label": "Amazon Athena",
+        "pickWhen": "SQL should run over files in S3 without a cluster you operate."
+      },
+      {
+        "label": "Amazon Redshift",
+        "pickWhen": "SQL should run on a warehouse you size for frequent queries."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-27",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "AWS Glue"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/databrew/latest/dg/what-is.html",
+    "questionIds": [],
+    "difference": "Glue DataBrew prepares data with visual steps. A Glue ETL job runs a script you provide.",
+    "sides": [
+      {
+        "label": "Glue DataBrew",
+        "pickWhen": "Analysts should clean data with visual steps on a console."
+      },
+      {
+        "label": "Glue code job",
+        "pickWhen": "The transform should be a script that runs on a schedule you control."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-28",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon MSK"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/msk/latest/developerguide/serverless.html",
+    "questionIds": [],
+    "difference": "A provisioned MSK cluster is brokers you choose and size. MSK Serverless scales capacity without broker sizing.",
+    "sides": [
+      {
+        "label": "MSK provisioned cluster",
+        "pickWhen": "You choose how many brokers to run and how large each one is."
+      },
+      {
+        "label": "MSK serverless cluster",
+        "pickWhen": "Capacity should grow and shrink without broker sizing."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-29",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "Amazon AppFlow",
+      "AWS DataSync"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html",
+    "questionIds": [],
+    "difference": "AppFlow moves records between SaaS applications and AWS. DataSync copies file-system data to and from AWS storage.",
+    "sides": [
+      {
+        "label": "Amazon AppFlow",
+        "pickWhen": "SaaS applications should send records into AWS on a schedule or an event."
+      },
+      {
+        "label": "DataSync file movement",
+        "pickWhen": "Network storage should copy datasets into S3 or another storage system."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-30",
+    "exam": "saa-c03",
+    "taskId": "3.5",
+    "services": [
+      "AWS Lake Formation",
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html",
+    "questionIds": [],
+    "difference": "Lake Formation grants access to databases, tables, and columns in the catalog. A bucket policy allows or denies S3 actions on the bucket.",
+    "sides": [
+      {
+        "label": "Lake Formation grants",
+        "pickWhen": "Table-level permissions should control who can query the catalog."
+      },
+      {
+        "label": "Bucket policy only",
+        "pickWhen": "Access should stay on the object store's own rules."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-31",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+    "questionIds": [],
+    "difference": "S3 Glacier Instant Retrieval returns rarely accessed archive objects in milliseconds. S3 Glacier Flexible Retrieval is for archives you restore, with retrieval times from minutes to hours.",
+    "sides": [
+      {
+        "label": "Glacier Instant Retrieval",
+        "pickWhen": "Rarely read archive objects must still return in milliseconds."
+      },
+      {
+        "label": "Glacier Flexible Retrieval",
+        "pickWhen": "Archive objects can wait minutes or hours while a restore runs."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-32",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html",
+    "questionIds": [],
+    "difference": "Cold HDD is for sequential data that is accessed infrequently, where the lowest storage cost matters. Throughput Optimized HDD is for sequential data that is accessed often, with a higher throughput ceiling.",
+    "sides": [
+      {
+        "label": "Cold HDD volume",
+        "pickWhen": "Sequential data is scanned rarely, so the lowest storage cost matters."
+      },
+      {
+        "label": "Busy sequential HDD",
+        "pickWhen": "Sequential data is scanned often and needs the higher throughput ceiling."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-33",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html",
+    "questionIds": [],
+    "difference": "Unfinished multipart parts keep incurring storage charges until the upload is completed or stopped. A lifecycle rule can abort those uploads after a number of days.",
+    "sides": [
+      {
+        "label": "Lifecycle abort of partial uploads",
+        "pickWhen": "A rule should delete unfinished pieces after a set number of days."
+      },
+      {
+        "label": "Manual stop of partial uploads",
+        "pickWhen": "The application should finish or cancel each upload itself."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-34",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon EBS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive.html",
+    "questionIds": [],
+    "difference": "The archive tier is for snapshots you will store 90 days or longer and rarely restore, at up to 75 percent lower storage cost. The standard tier keeps incremental snapshots ready to use.",
+    "sides": [
+      {
+        "label": "Snapshot archive tier",
+        "pickWhen": "A copy you rarely restore can move to the long-term tier."
+      },
+      {
+        "label": "Snapshot standard tier",
+        "pickWhen": "A copy you may restore soon should stay ready to use."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-35",
+    "exam": "saa-c03",
+    "taskId": "4.1",
+    "services": [
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+    "questionIds": [],
+    "difference": "Intelligent-Tiering moves objects as access changes and charges a monitoring fee, with no retrieval fee. Standard-IA charges a retrieval fee and fits infrequent access you already expect.",
+    "sides": [
+      {
+        "label": "Intelligent-Tiering for shifting access",
+        "pickWhen": "The pattern changes, so objects should move when they go quiet."
+      },
+      {
+        "label": "Standard-IA for predictable rare reads",
+        "pickWhen": "Retrievals follow an infrequent pattern, and a fee on each retrieval is acceptable."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-36",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "AWS Savings Plans",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html",
+    "questionIds": [],
+    "difference": "An EC2 Instance Savings Plan discounts a chosen instance family in one Region. A Compute Savings Plan follows usage across families, sizes, Regions, and also covers Fargate and Lambda.",
+    "sides": [
+      {
+        "label": "EC2 Instance Savings Plan",
+        "pickWhen": "The discount should stay on a chosen family in one Region."
+      },
+      {
+        "label": "Compute Savings Plan span",
+        "pickWhen": "The discount should follow usage across families, sizes, and services."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-37",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html",
+    "questionIds": [],
+    "difference": "T instances earn CPU credits below a baseline and spend them when they burst. M instances provide CPU without a credit balance.",
+    "sides": [
+      {
+        "label": "Burstable T family",
+        "pickWhen": "CPU is quiet most of the time and can draw a balance of credits."
+      },
+      {
+        "label": "Steady M family",
+        "pickWhen": "CPU stays busy and needs a constant share of the processor."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-38",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html",
+    "questionIds": [],
+    "difference": "Hibernation writes RAM to the root volume so the instance resumes its processes. Stopping the instance drops RAM, and the next start boots again.",
+    "sides": [
+      {
+        "label": "EC2 hibernation",
+        "pickWhen": "The memory contents should be saved so the process resumes after the pause."
+      },
+      {
+        "label": "EC2 stop then start",
+        "pickWhen": "The machine can boot fresh after the pause, with memory starting empty."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-39",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+    "questionIds": [],
+    "difference": "A scheduled action changes group capacity at times you set. Holding peak capacity keeps the busy-hour size in place all day.",
+    "sides": [
+      {
+        "label": "Scheduled scaling action",
+        "pickWhen": "Busy hours are known, so the group should grow and shrink on the clock."
+      },
+      {
+        "label": "Peak capacity held all day",
+        "pickWhen": "The group should stay at the busy-hour size through the whole period."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-40",
+    "exam": "saa-c03",
+    "taskId": "4.2",
+    "services": [
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html",
+    "questionIds": [],
+    "difference": "A Dedicated Host gives you visibility of the physical server so socket-based licenses can be bound to it. Shared tenancy places instances on hardware that other customers also use.",
+    "sides": [
+      {
+        "label": "Dedicated Host for licenses",
+        "pickWhen": "Per-socket software should bind to a physical server you can see."
+      },
+      {
+        "label": "Shared tenancy hardware",
+        "pickWhen": "The software can run on multi-tenant machines with other customers."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-41",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon Aurora"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html",
+    "questionIds": [],
+    "difference": "Aurora I/O-Optimized has higher instance and storage rates and no charge for read or write I/O. It can cost less when I/O is 25 percent or more of Aurora spend. Aurora Standard charges per million I/O requests and is typically the lower bill when I/O is under 25 percent.",
+    "sides": [
+      {
+        "label": "Aurora I/O-Optimized",
+        "pickWhen": "I/O is a large share of the bill, so a higher storage rate with I/O included fits."
+      },
+      {
+        "label": "Aurora Standard config",
+        "pickWhen": "I/O is a modest share of the bill, so a per-million request charge fits."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-42",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html",
+    "questionIds": [],
+    "difference": "DynamoDB Standard-IA is for tables where storage is the dominant cost, such as infrequently read data. DynamoDB Standard is priced for tables whose requests are a larger share of the bill. Each class prices storage and requests differently.",
+    "sides": [
+      {
+        "label": "DynamoDB Standard-IA table",
+        "pickWhen": "The table holds data that is rarely read, and storage is the dominant cost."
+      },
+      {
+        "label": "DynamoDB Standard table",
+        "pickWhen": "The table is read and written often enough that storage is a smaller share of the bill."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-43",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon DynamoDB"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html",
+    "questionIds": [],
+    "difference": "TTL removes an item after the expiry timestamp stored on that item. Without TTL, items remain until the application deletes them.",
+    "sides": [
+      {
+        "label": "DynamoDB TTL expiry",
+        "pickWhen": "Rows should disappear after a timestamp stored on them."
+      },
+      {
+        "label": "Items kept until deleted",
+        "pickWhen": "Rows should remain for as long as the application chooses to remove them."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-44",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon RDS"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html",
+    "questionIds": [],
+    "difference": "Automated backups allow point-in-time restore within the retention window. Manual snapshots are copies you take and keep until you delete them.",
+    "sides": [
+      {
+        "label": "Automated RDS backups",
+        "pickWhen": "Point-in-time restore inside a retention window should be available."
+      },
+      {
+        "label": "Operator-taken RDS copies",
+        "pickWhen": "The snapshots a person takes should be the ones that are kept."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-45",
+    "exam": "saa-c03",
+    "taskId": "4.3",
+    "services": [
+      "Amazon Aurora",
+      "Amazon ElastiCache"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html",
+    "questionIds": [],
+    "difference": "An Aurora reader is another database instance in the cluster that serves queries. A cache serves repeated results from memory so the database receives fewer of those calls.",
+    "sides": [
+      {
+        "label": "Aurora reader for queries",
+        "pickWhen": "Read volume should be served by another copy in the cluster."
+      },
+      {
+        "label": "Memory cache in front of Aurora",
+        "pickWhen": "Repeated results should be served from a fast store so the database sees fewer calls."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-46",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html",
+    "questionIds": [],
+    "difference": "A NAT instance is an EC2 instance you patch and size, billed as that instance. A NAT gateway is managed by AWS and billed by how many you run, how long they run, and the data you send through them.",
+    "sides": [
+      {
+        "label": "Self-managed NAT machine",
+        "pickWhen": "Low volume can run on a computer you patch and size yourself."
+      },
+      {
+        "label": "Managed NAT service",
+        "pickWhen": "Outbound traffic should use a managed path billed by time and by data processed."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-47",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon VPC"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html",
+    "questionIds": [],
+    "difference": "Creating a VPC peering connection has no charge, and it joins two VPCs. It does not forward traffic onward to a third VPC. A transit gateway is the hub when many VPCs must reach one another.",
+    "sides": [
+      {
+        "label": "Peering between two VPCs",
+        "pickWhen": "A pair of networks should connect directly, and creating that link has no charge."
+      },
+      {
+        "label": "A transit hub for VPCs",
+        "pickWhen": "A group of networks should each attach once to a central router."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-48",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon VPC",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-share-billing.html",
+    "questionIds": [],
+    "difference": "Data transfer inside the same Availability Zone is free. Data transfer between Availability Zones in the Region is charged.",
+    "sides": [
+      {
+        "label": "Same-AZ data path",
+        "pickWhen": "The hop stays inside one location, so that transfer is free."
+      },
+      {
+        "label": "Cross-AZ data path",
+        "pickWhen": "The hop crosses locations in the Region, and that transfer is billed."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-49",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon CloudFront",
+      "Amazon S3"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+    "questionIds": [],
+    "difference": "CloudFront can serve a cached copy to later viewers. A direct read from the bucket goes to S3 for every request.",
+    "sides": [
+      {
+        "label": "CloudFront for repeated gets",
+        "pickWhen": "The same objects are fetched by many viewers, so an edge copy should absorb the repeats."
+      },
+      {
+        "label": "Direct bucket gets",
+        "pickWhen": "Each object is fetched once, so viewers can read the origin straight."
+      }
+    ]
+  },
+  {
+    "id": "pair-m3-50",
+    "exam": "saa-c03",
+    "taskId": "4.4",
+    "services": [
+      "Amazon VPC",
+      "Amazon EC2"
+    ],
+    "docsUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-share-billing.html",
+    "questionIds": [],
+    "difference": "Public IPv4 addresses are billed. An instance with only private addresses reaches the internet through NAT, which has its own charges, and does not hold a public address of its own.",
+    "sides": [
+      {
+        "label": "Public IPv4 on the instance",
+        "pickWhen": "Callers outside the VPC must reach the machine on a number of its own."
+      },
+      {
+        "label": "Private addressing only",
+        "pickWhen": "The machine should stay off the internet and reach outbound through NAT."
+      }
+    ]
   }
 ]
