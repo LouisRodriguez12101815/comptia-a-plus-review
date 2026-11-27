@@ -31,6 +31,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
   const counts = trackCounts(track);
+  const emptyTrack = !!track.focus && counts.topics === 0 && counts.cards === 0 && counts.questions === 0;
   // Practice Games opens on this exam; say how many memory drills wait there.
   const drillCount = track.focus ? drillDecks.filter((deck) => deck.exam.toLowerCase() === track.focus).length : 0;
   const { own, shared } = splitTopics(track);
@@ -49,8 +50,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
       { label: journey("curriculum"), href: "/aws-saa#curriculum" },
     ] : []),
     ...(track.id === "core2" ? [{ label: t("core2ReviewTools"), href: "/core2/review-tools" }] : []),
-    { label: t("workspaceTopics"), href: `${track.href}#${track.id === "networking" ? "objectives" : "topics"}` },
-    { label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` },
+    ...(counts.topics > 0 ? [{ label: t("workspaceTopics"), href: `${track.href}#${track.id === "networking" ? "objectives" : "topics"}` }] : []),
+    ...(tools.some((tool) => tool.id === "visuals" && tool.state === "ready") ? [{ label: tTrack("tools.visuals.label"), href: `${track.href}/visuals` }] : []),
     ...(counts.cards > 0 ? [{ label: tTrack("tools.flashcards.label"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ label: tTrack("tools.quiz.label"), href: "/quiz" }] : []),
     ...(track.id === "aws-clf" ? [{ label: t("workspaceMixedPractice"), href: "/test?exam=clf-c02&practice=mixed20" }] : []),
@@ -129,7 +130,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </div>
       </header>
 
-      {track.focus && counts.topics === 0 && counts.cards === 0 && counts.questions === 0 && <div className="rounded-2xl border border-amber-400/40 bg-amber-400/5 p-5"><p className="font-semibold text-amber-100">{paths("inDevelopment")}</p><p className="mt-2 text-sm leading-6 text-slate-300">{paths("trackUnavailable")}</p><Link href="/practice-games" className="mt-2 inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{paths("sharedPractice")}</Link></div>}
+      {emptyTrack && <div className="rounded-2xl border border-amber-400/40 bg-amber-400/5 p-5"><p className="font-semibold text-amber-100">{paths("inDevelopment")}</p><p className="mt-2 text-sm leading-6 text-slate-300">{paths("trackUnavailable")}</p><Link href="/practice-games" className="mt-2 inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{paths("sharedPractice")}</Link></div>}
 
       {track.id === "networking" ? (
         <>
@@ -282,7 +283,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </section>
       ) : null}
 
-      {track.focus ? (
+      {track.focus && !emptyTrack ? (
         <>
           {track.id !== "networking" ? <><ProgressDashboard examFocus={track.focus} />{track.id === "aws-saa" ? <SaaStudyLoop /> : null}<LearnerSync /></> : null}
 

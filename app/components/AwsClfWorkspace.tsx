@@ -81,7 +81,7 @@ export async function AwsClfWorkspace() {
       </section>
 
       <section aria-label={t("progress")} className="space-y-5">
-        <ProgressDashboard />
+        <ProgressDashboard examFocus="clf-c02" />
         <LearnerSync />
       </section>
     </div>
