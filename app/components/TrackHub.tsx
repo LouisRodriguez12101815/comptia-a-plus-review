@@ -27,6 +27,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   const tChapter = await getTranslations("networkChapters");
   const journey = await getTranslations("navigationJourney");
   const mistakes = await getTranslations("saaMistakes");
+  const paths = await getTranslations("projectPaths");
   const track = getTrack(trackId);
   const tools = toolStatuses(track);
   const counts = trackCounts(track);
@@ -65,8 +66,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
   ] : [];
 
   const sequence = track.focus ? [
-    { step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#${track.id === "aws-saa" ? "chapter-path" : "topics"}` },
-    { step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` },
+    ...(counts.topics > 0 ? [{ step: "01", label: t("sequenceLearn"), detail: t("sequenceLearnDetail"), href: `${track.href}#${track.id === "aws-saa" ? "chapter-path" : "topics"}` }] : []),
+    ...(tools.some((tool) => tool.id === "visuals" && tool.state === "ready") ? [{ step: "02", label: t("sequenceVisualize"), detail: t("sequenceVisualizeDetail"), href: `${track.href}/visuals` }] : []),
     ...(counts.cards > 0 ? [{ step: "03", label: t("sequenceRecall"), detail: t("sequenceRecallDetail"), href: "/flashcards" }] : []),
     ...(counts.questions > 0 ? [{ step: "04", label: t("sequenceApply"), detail: t("sequenceApplyDetail"), href: track.id === "aws-clf" ? "/test?exam=clf-c02&practice=mixed20" : `/test?exam=${track.focus}` }] : []),
     ...(track.id === "aws-saa" ? [{ step: "05", label: t("sequenceReview"), detail: journey("sharedReviewDetail"), href: "/weak-areas" }] : []),
@@ -128,6 +129,8 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </div>
       </header>
 
+      {track.focus && counts.topics === 0 && counts.cards === 0 && counts.questions === 0 && <div className="rounded-2xl border border-amber-400/40 bg-amber-400/5 p-5"><p className="font-semibold text-amber-100">{paths("inDevelopment")}</p><p className="mt-2 text-sm leading-6 text-slate-300">{paths("trackUnavailable")}</p><Link href="/practice-games" className="mt-2 inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{paths("sharedPractice")}</Link></div>}
+
       {track.id === "networking" ? (
         <>
           <LearnerSync compact />
@@ -136,7 +139,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </>
       ) : null}
 
-      {track.focus ? (
+      {sequence.length > 0 ? (
         <>
         <section aria-label="Study sequence" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {sequence.map((item) => (

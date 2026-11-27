@@ -34,6 +34,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
           <Link href="/certifications" className="inline-flex min-h-11 items-center rounded-full border border-teal-400 px-4 py-2 font-semibold text-teal-200 hover:bg-teal-400/10">{journey("example")}</Link>
           <a href="#build" className="inline-flex min-h-11 items-center rounded-full bg-indigo-400 px-4 py-2 font-semibold text-slate-950 hover:bg-indigo-300">{paths("buildLink")}</a>
           <a href="#checks" className="inline-flex min-h-11 items-center rounded-full border border-indigo-300 px-4 py-2 font-semibold text-indigo-100">{paths("checksLink")}</a>
+          <Link href="/assessment-workflow" className="inline-flex min-h-11 items-center rounded-full border border-slate-500 px-4 py-2 font-semibold text-slate-100">{paths("assessmentGuide")}</Link>
           <a href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-200 hover:border-indigo-300 hover:text-white">{t("repository")}</a>
         </div>
       </header>
@@ -77,7 +78,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
       <MethodologyWorkflow />
 
       <details className="rounded-2xl border border-slate-700 p-5">
-        <summary className="cursor-pointer font-semibold text-white">{t("areasHeading")}</summary>
+        <summary className="cursor-pointer font-semibold text-white">{paths("workflowDetails")}</summary>
         <div className="mt-4 divide-y divide-slate-800 sm:grid sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
           {workflowAreas.map((key) => <article key={key} className="p-4"><h3 className="font-mono text-sm font-semibold uppercase text-indigo-300">{t(`${key}Title`)}</h3><p className="mt-2 text-sm leading-6 text-slate-300">{t(`${key}Body`)}</p></article>)}
         </div>

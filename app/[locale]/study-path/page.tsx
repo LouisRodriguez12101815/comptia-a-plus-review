@@ -48,8 +48,8 @@ export default async function StudyPathPage({ params }: PageProps<"/[locale]/stu
                     <li key={id} className="py-1">
                       <Link href={`/notes/${encodeURIComponent(id)}`} className="inline-flex min-h-11 items-center break-words text-sm text-slate-100 hover:text-teal-200">{title.get(id) ?? id}</Link>
                       <div className="flex flex-wrap gap-x-5">
-                        <Link href={`/quiz?topic=${encodeURIComponent(id)}`} className={linkClass}>{t("quiz", { count: qCount.get(id) ?? 0 })}</Link>
-                        <Link href={`/flashcards?topic=${encodeURIComponent(id)}`} className={linkClass}>{t("cards", { count: cCount.get(id) ?? 0 })}</Link>
+                        {(qCount.get(id) ?? 0) > 0 && <Link href={`/quiz?topic=${encodeURIComponent(id)}`} className={linkClass}>{t("quiz", { count: qCount.get(id) ?? 0 })}</Link>}
+                        {(cCount.get(id) ?? 0) > 0 && <Link href={`/flashcards?topic=${encodeURIComponent(id)}`} className={linkClass}>{t("cards", { count: cCount.get(id) ?? 0 })}</Link>}
                       </div>
                     </li>
                   ))}

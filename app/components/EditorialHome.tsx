@@ -42,7 +42,7 @@ export function EditorialHome() {
         <strong className={styles.brand}>GapLift.</strong>
         <div className={styles.topLinks}>
           <Link href="/methodology">{t("limitsLink")}</Link>
-          <Link href="/certifications">{t("rows.application.title")}</Link>
+          <Link href="/certifications">{t("primaryAction")}</Link>
           <a href={repository} className={styles.repository}>{t("repository")} <span aria-hidden="true">↗</span></a>
           <LocaleSwitcher className={styles.localeSelect} />
           <button type="button" aria-pressed={dark} onClick={() => { try { sessionStorage.setItem("gaplift-home-theme", dark ? "light" : "dark"); window.dispatchEvent(new Event(themeEvent)); } catch { setFallbackDark(!dark); } }}>
