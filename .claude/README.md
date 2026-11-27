@@ -30,7 +30,7 @@ Read [WORKFLOW.md](WORKFLOW.md) first: it covers authorization, sources of truth
 | [network-diagram-designer](skills/network-diagram-designer/SKILL.md) | A networking visual, packet path or VLSM view |
 | [forensic-concept-investigator](skills/forensic-concept-investigator/SKILL.md) | A concept needs clarifying through failure, history and tradeoffs, in chat or as a case-file page |
 | [architecture-sad-designer](skills/architecture-sad-designer/SKILL.md) | The hardest concept of a high-weight domain needs an architecture document with diagrams and a simulator |
-| [learning-challenge-designer](skills/learning-challenge-designer/SKILL.md) | A practice mission with feedback and retries |
+| [learning-challenge-designer](skills/learning-challenge-designer/SKILL.md) | A source-backed practice mission with feedback and retries; see the [fictional workplace pilot](../docs/examples/workplace-emergency-training-pilot.md) for a non-exam example |
 | [rubric-audit](skills/rubric-audit/SKILL.md) | Grading how completely the notes and study material cover the official exam objectives, before an exam or after adding notes |
 | [comptia-site-pm](skills/comptia-site-pm/SKILL.md) | Deciding what to build next or reviewing a pull request |
 | [shared-state-regression-tester](skills/shared-state-regression-tester/SKILL.md) | Multiplayer rooms or shared state misbehave |

@@ -17,12 +17,14 @@ Before applying this workflow, read the [workflow contract](../../WORKFLOW.md) f
 
 ## Specify one complete learning loop
 
-1. Start with one observable learning objective, prerequisites and verified source chapter/topic/lab. Use `content/source.md`, `content/topics.json`, `content/topics-network-plus.json`, and `content/labs.json`; consult `docs/practice-games-sources.md` and `docs/subnet-source-verification.md` for known gaps. Confirm exam/version mappings before assigning objective numbers.
-2. Inspect the current rendered experience and record blockers before proposing mechanics. Specify the learner's entry instructions, observable symptoms, meaningful decision, likely misconception, feedback, recovery, next decision and debrief. Prioritize impossible progression over visual polish.
+1. Identify the audience, observable learning objective, prerequisites, source document and version, and the desired output. For an exam, confirm the exam/version mapping before assigning objective numbers; for workplace material, identify the organization, jurisdiction and policy owner where relevant. If an essential source or local procedure is unavailable, mark it unverified and do not invent one. Use `content/source.md`, `content/topics.json`, `content/topics-network-plus.json`, and `content/labs.json` when relevant to this repository's certification content; consult `docs/practice-games-sources.md` and `docs/subnet-source-verification.md` for applicable gaps.
+2. Inspect the current rendered experience if one exists, and record blockers before proposing mechanics. For a new domain, start with a written scenario and mark any fictional assumptions. Specify the learner's entry instructions, observable situation, meaningful decision, likely misconception, feedback, recovery, next decision and debrief. Prioritize impossible progression over visual polish.
 3. Match mechanics to the concept: component identification/compatibility/symptoms, packet-routing sequences, constraint-based VLSM allocation, or incident diagnosis. A scored action must practice a named objective, not reward an acknowledgment click or reading speed.
 4. Use deliberate selection followed by submission, with keyboard/tap alternatives to dragging. Explain correct and incorrect decisions immediately. Reveal a diagnostic result or consequence before asking for the next decision; avoid repetitive acknowledgment screens.
 5. Provide progressive hints that guide reasoning, explain any score cost before use, and allow recoverable retries. Keep first-attempt accuracy, hint use, retries, completion and earned rewards distinct. Reject repeat-credit farming. Do not infer mastery from points, completion, speed or streaks.
 6. End with concise evidence → decision → consequence → what we learned feedback. Link actual mistakes to the relevant note, lab or flashcard. Provide a new application problem with changed conditions; repeating the original answer does not demonstrate transfer or proficiency.
+
+For safety, health, legal or other high-consequence topics, use authoritative guidance and a reviewed, current organization-specific procedure where applicable. Do not present a hypothetical plan as real policy or as a substitute for emergency instructions. Separate source-backed facts from fictional training assumptions and identify review needed before use.
 
 ## Reuse this repository's architecture
 
@@ -36,7 +38,7 @@ A written scenario or guided lab with a paper alternative can supply the complet
 
 ## Acceptance criteria and validation
 
-Return a bounded specification inline for read-only design, or in `docs/` when documentation writes are authorized: objective/source/exam mapping, prerequisites, stable IDs, misconception-to-feedback mapping, hint progression, scoring rules, recovery path, new transfer problem and debrief review links. Include a phase table showing what is visible/actionable, what validates the decision and what unlocks progression.
+Return a bounded specification inline for read-only design, or in `docs/` when documentation writes are authorized: objective and source mapping (exam mapping only if applicable), prerequisites, stable IDs, misconception-to-feedback mapping, hint progression, scoring rules, recovery path, new transfer problem and debrief review links. Include a phase table showing what is visible/actionable, what validates the decision and what unlocks progression. See the [workplace emergency training pilot](../../../docs/examples/workplace-emergency-training-pilot.md) for a fictional, non-certification example.
 
 Define acceptance checks for incorrect answers, hints, retries, duplicate rewards, progression, persisted progress/reset, targeted review and unaided transfer. Use the relevant existing commands:
 

@@ -14,7 +14,7 @@ Start with content verification when claims or exam mappings are affected. Apply
 | --- | --- |
 | [certification-content-verifier](../../.agents/skills/certification-content-verifier/SKILL.md) | Verify facts, calculations, explanations and exam mappings before authoring questions or revising source-backed answers. |
 | [shared-state-regression-tester](../../.agents/skills/shared-state-regression-tester/SKILL.md) | Trace real room APIs, canonical evidence, reconnects, scoring and recovery when multiplayer is stuck or needs regression coverage. |
-| [learning-challenge-designer](../../.agents/skills/learning-challenge-designer/SKILL.md) | Specify a complete solo learning loop, feedback, hints, retries and a different transfer problem after facts are verified. |
+| [learning-challenge-designer](../../.agents/skills/learning-challenge-designer/SKILL.md) | Specify a source-backed learning loop, feedback, hints, retries and transfer; see the [fictional workplace pilot](../examples/workplace-emergency-training-pilot.md) for a non-exam example. |
 | [network-diagram-designer](../../.agents/skills/network-diagram-designer/SKILL.md) | Specify source-backed, accessible topology, packet-path and VLSM allocation visuals that agree with evidence and validation. |
 
 ### Content and project workflows
