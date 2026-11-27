@@ -9,6 +9,7 @@ const choices = ["follow", "wait", "elsewhere"] as const;
 /** An illustrative exercise; it neither stores progress nor reads learner data. */
 export function WorkplaceDemo() {
   const t = useTranslations("workplaceDemo");
+  const paths = useTranslations("projectPaths");
   const [selected, setSelected] = useState<(typeof choices)[number] | null>(null);
   const [checked, setChecked] = useState(false);
   const [transfer, setTransfer] = useState(false);
@@ -48,6 +49,10 @@ export function WorkplaceDemo() {
         {transfer && <p className="leading-6 text-teal-100">{t("transferAnswer")}</p>}
       </section>}
       <footer className="space-y-3 text-sm leading-6 text-slate-300">
+        <h2 className="text-lg font-semibold text-white">{paths("pilotBuiltTitle")}</h2>
+        <p>{paths("pilotBuiltBody")}</p>
+        <Link className="inline-flex min-h-11 items-center text-teal-300 underline" href="/methodology#build">{paths("pilotMethod")}</Link>
+        <p><a className="text-teal-300 underline" href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/feature/workplace-learning-pilot/docs/examples/workplace-emergency-training-pilot.md">{paths("pilotSource")}</a></p>
         <p>{t("sourceContext")} <a className="text-teal-300 underline" href="https://www.osha.gov/emergency-preparedness/getting-started">{t("sourceLink")}</a></p>
         <p>{t("review")}</p>
         <Link className="inline-flex min-h-11 items-center text-teal-300 underline" href="/">{t("back")}</Link>

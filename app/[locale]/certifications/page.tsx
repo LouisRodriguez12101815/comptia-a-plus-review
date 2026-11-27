@@ -17,12 +17,14 @@ export default async function Certifications({ params }: PageProps<"/[locale]/ce
   const t = await getTranslations("homePage");
   const tTracks = await getTranslations("tracks");
   const toolkit = await getTranslations("toolkitHome");
+  const paths = await getTranslations("projectPaths");
   return (
     <div className="mx-auto max-w-5xl space-y-10">
       <header className="space-y-3">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-teal-300">Tech Certification Lab</p>
         <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">{toolkit("catalogTitle")}</h1>
         <p className="max-w-3xl leading-7 text-slate-300">{toolkit("catalogIntro")}</p>
+        <p className="max-w-3xl text-sm leading-6 text-teal-100">{paths("certBridge")}</p>
         <Link href="/performance" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{toolkit("progressLink")}</Link>
       </header>
       <section aria-labelledby="tracks-heading" className="space-y-4">
@@ -75,25 +77,27 @@ export default async function Certifications({ params }: PageProps<"/[locale]/ce
         </ul>
       </section>
 
-      <section
+      <section aria-labelledby="practice-heading" className="space-y-4">
+      <h2 id="practice-heading" className="text-xl font-semibold text-white">{paths("practiceHeading")}</h2>
+      <div
         aria-labelledby="game-heading"
-        className="flex flex-col gap-4 rounded-2xl border border-amber-400/40 bg-amber-400/5 p-5 sm:flex-row sm:items-center sm:justify-between"
+        className="flex flex-col gap-4 rounded-2xl border border-slate-700 bg-slate-900/40 p-5 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
-          <h2 id="game-heading" className="text-lg font-medium text-white">
+          <h3 id="game-heading" className="text-lg font-medium text-white">
             Outage Ops
-          </h2>
+          </h3>
           <p className="mt-1 max-w-xl text-sm text-slate-300">
             {t("gameDescription")}
           </p>
         </div>
         <Link
           href="/game"
-          className="shrink-0 rounded-full bg-amber-400 px-5 py-2 text-center font-semibold text-slate-950 hover:bg-amber-300"
+          className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-slate-500 px-5 py-2 text-center font-semibold text-slate-100 hover:border-teal-300"
         >
           {t("playGame")}
         </Link>
-      </section>
+      </div></section>
 
       <p className="rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">
         {t("libraryNote")}

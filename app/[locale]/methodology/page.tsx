@@ -19,6 +19,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
   setRequestLocale(locale);
   const t = await getTranslations("methodologyPage");
   const journey = await getTranslations("navigationJourney");
+  const paths = await getTranslations("projectPaths");
   const { insights } = getProjectInsights();
   const totals = insights.exams.reduce((sum, exam) => ({ total: sum.total + exam.total, covered: sum.covered + exam.covered, partial: sum.partial + exam.partial, missing: sum.missing + exam.missing }), { total: 0, covered: 0, partial: 0, missing: 0 });
   const number = new Intl.NumberFormat(locale);
@@ -31,10 +32,33 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-300">{t("intro")}</p>
         <div className="mt-6 flex flex-wrap gap-3 text-sm">
           <Link href="/certifications" className="inline-flex min-h-11 items-center rounded-full border border-teal-400 px-4 py-2 font-semibold text-teal-200 hover:bg-teal-400/10">{journey("example")}</Link>
-          <Link href="/assessment-workflow" className="inline-flex min-h-11 items-center rounded-full bg-indigo-400 px-4 py-2 font-semibold text-slate-950 hover:bg-indigo-300">{t("openAssessmentWorkflow")}</Link>
+          <a href="#build" className="inline-flex min-h-11 items-center rounded-full bg-indigo-400 px-4 py-2 font-semibold text-slate-950 hover:bg-indigo-300">{paths("buildLink")}</a>
+          <a href="#checks" className="inline-flex min-h-11 items-center rounded-full border border-indigo-300 px-4 py-2 font-semibold text-indigo-100">{paths("checksLink")}</a>
           <a href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-slate-200 hover:border-indigo-300 hover:text-white">{t("repository")}</a>
         </div>
       </header>
+
+      <section id="build" className="scroll-mt-6 rounded-3xl border border-teal-400/30 bg-slate-900 p-6 sm:p-8" aria-labelledby="build-heading">
+        <p className="font-mono text-xs uppercase tracking-widest text-teal-300">{paths("buildEyebrow")}</p>
+        <h2 id="build-heading" className="mt-3 text-3xl font-semibold text-white">{paths("buildTitle")}</h2>
+        <p className="mt-3 max-w-3xl leading-7 text-slate-300">{paths("buildIntro")}</p>
+        <ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {(["source", "objectives", "prepare", "review"] as const).map((key, index) => <li key={key} className="rounded-xl border border-slate-700 bg-slate-950/60 p-4 transition duration-300 hover:-translate-y-1 hover:border-teal-300 motion-reduce:transform-none motion-reduce:transition-none"><span className="font-mono text-sm text-teal-300">0{index + 1}</span><p className="mt-3 text-sm leading-6 text-slate-200">{paths(`steps.${key}`)}</p></li>)}
+        </ol>
+        <p className="mt-5 text-sm leading-6 text-slate-400">{paths("buildLimits")}</p>
+        <nav aria-label={paths("resources")} className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <a className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4" href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/feature/workplace-learning-pilot/docs/skills/README.md">{paths("skillsLink")}</a>
+          <Link className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4" href="/workplace-demo">{paths("pilotLink")}</Link>
+        </nav>
+      </section>
+      <section id="checks" className="scroll-mt-6 rounded-3xl border border-indigo-400/30 bg-slate-900 p-6 sm:p-8" aria-labelledby="checks-heading">
+        <p className="font-mono text-xs uppercase tracking-widest text-indigo-300">{paths("checksEyebrow")}</p>
+        <h2 id="checks-heading" className="mt-3 text-3xl font-semibold text-white">{paths("checksTitle")}</h2>
+        <p className="mt-3 max-w-3xl leading-7 text-slate-300">{paths("checksIntro")}</p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">{paths("checksLimits")}</p>
+        <Link href="/assessment-workflow" className="mt-4 inline-flex min-h-11 items-center text-indigo-200 underline underline-offset-4">{paths("assessmentLink")}</Link>
+        {locale !== "en" && <p className="text-sm text-slate-400">{paths("englishNotice")}</p>}
+      </section>
 
       <section aria-labelledby="loops-heading" className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-teal-400/30 bg-teal-400/5 p-5">
@@ -50,26 +74,6 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
       </section>
 
       <MethodologyWorkflow />
-
-      <section aria-labelledby="current-method-heading" className="space-y-4 rounded-2xl border border-teal-400/30 bg-teal-400/5 p-5 sm:p-6">
-        <h2 id="current-method-heading" className="text-2xl font-semibold text-white">{t("currentMethodHeading")}</h2>
-        <p className="text-sm leading-6 text-slate-300">{t("currentMethodBody", { total: number.format(totals.total), covered: number.format(totals.covered), partial: number.format(totals.partial), missing: number.format(totals.missing) })}</p>
-        <p className="text-sm leading-6 text-slate-300">{t("currentMethodRules")}</p>
-        <p className="text-sm leading-6 text-slate-300">{t("currentMethodWeak")}</p>
-        <p className="text-sm leading-6 text-slate-400">{t("currentMethodTools")}</p>
-        <div className="overflow-x-auto rounded-xl border border-slate-700">
-          <table className="w-full border-collapse text-left text-sm">
-            <caption className="p-3 text-left text-slate-300">{t("currentMethodWeights")}</caption>
-            <thead><tr className="border-y border-slate-700 text-slate-300"><th scope="col" className="p-3">{t("weightDomain")}</th><th scope="col" className="p-3">{t("weightValue")}</th></tr></thead>
-            <tbody>{insights.exams.flatMap((exam) => exam.domains.map((domain) => <tr key={`${exam.code}:${domain.id}`} className="border-b border-slate-800 text-slate-200"><th scope="row" className="p-3 font-medium">{exam.name} · {domain.id} {domain.title}</th><td className="p-3">{new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(domain.weight / 100)}</td></tr>))}</tbody>
-          </table>
-        </div>
-        <CoverageSnapshot summary={insights} locale={locale} />
-        <nav aria-label={t("currentMethodLinks")} className="flex flex-wrap gap-3 text-sm">
-          <Link href="/insights" className="inline-flex min-h-11 items-center rounded-full bg-teal-300 px-4 py-2 font-semibold text-slate-950">{t("currentMethodInsights")}</Link>
-          <Link href="/coverage" className="inline-flex min-h-11 items-center rounded-full border border-teal-300 px-4 py-2 font-semibold text-teal-100">{t("currentMethodCoverage")}</Link>
-        </nav>
-      </section>
 
       <section aria-labelledby="areas-heading" className="space-y-4">
         <h2 id="areas-heading" className="text-2xl font-semibold tracking-tight text-white">{t("areasHeading")}</h2>
@@ -105,6 +109,32 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         </ol>
         <p className="mt-5 text-sm text-slate-400">{t("forkTelemetry")}</p>
       </section>
+
+      <details className="rounded-2xl border border-slate-700 p-5">
+        <summary className="cursor-pointer font-semibold text-white">{paths("coverageDetails")}</summary>
+        <div className="mt-4">
+      <section aria-labelledby="current-method-heading" className="space-y-4 rounded-2xl border border-teal-400/30 bg-teal-400/5 p-5 sm:p-6">
+        <h2 id="current-method-heading" className="text-2xl font-semibold text-white">{t("currentMethodHeading")}</h2>
+        <p className="text-sm leading-6 text-slate-300">{t("currentMethodBody", { total: number.format(totals.total), covered: number.format(totals.covered), partial: number.format(totals.partial), missing: number.format(totals.missing) })}</p>
+        <p className="text-sm leading-6 text-slate-300">{t("currentMethodRules")}</p>
+        <p className="text-sm leading-6 text-slate-300">{t("currentMethodWeak")}</p>
+        <p className="text-sm leading-6 text-slate-400">{t("currentMethodTools")}</p>
+        <div className="overflow-x-auto rounded-xl border border-slate-700">
+          <table className="w-full border-collapse text-left text-sm">
+            <caption className="p-3 text-left text-slate-300">{t("currentMethodWeights")}</caption>
+            <thead><tr className="border-y border-slate-700 text-slate-300"><th scope="col" className="p-3">{t("weightDomain")}</th><th scope="col" className="p-3">{t("weightValue")}</th></tr></thead>
+            <tbody>{insights.exams.flatMap((exam) => exam.domains.map((domain) => <tr key={`${exam.code}:${domain.id}`} className="border-b border-slate-800 text-slate-200"><th scope="row" className="p-3 font-medium">{exam.name} · {domain.id} {domain.title}</th><td className="p-3">{new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(domain.weight / 100)}</td></tr>))}</tbody>
+          </table>
+        </div>
+        <CoverageSnapshot summary={insights} locale={locale} />
+        <nav aria-label={t("currentMethodLinks")} className="flex flex-wrap gap-3 text-sm">
+          <Link href="/insights" className="inline-flex min-h-11 items-center rounded-full bg-teal-300 px-4 py-2 font-semibold text-slate-950">{t("currentMethodInsights")}</Link>
+          <Link href="/coverage" className="inline-flex min-h-11 items-center rounded-full border border-teal-300 px-4 py-2 font-semibold text-teal-100">{t("currentMethodCoverage")}</Link>
+        </nav>
+      </section>
+
+        </div>
+      </details>
 
       <section aria-labelledby="validation-heading" className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
         <h2 id="validation-heading" className="text-xl font-semibold text-white">{t("validationHeading")}</h2>

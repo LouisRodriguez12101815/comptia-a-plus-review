@@ -1,22 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/app/components/LocaleSwitcher";
 import styles from "./EditorialHome.module.css";
 
 const repository = "https://github.com/LouisRodriguez12101815/comptia-a-plus-review";
+const themeEvent = "gaplift-home-theme-change";
+function subscribeTheme(callback: () => void) {
+  window.addEventListener(themeEvent, callback);
+  window.addEventListener("storage", callback);
+  return () => { window.removeEventListener(themeEvent, callback); window.removeEventListener("storage", callback); };
+}
+function readTheme() { try { return sessionStorage.getItem("gaplift-home-theme") === "dark"; } catch { return false; } }
+const initialTheme = () => false;
 const rows = [
+  { key: "process", href: "/methodology#build" },
   { key: "application", href: "/certifications" },
-  { key: "process", href: "/methodology" },
-  { key: "pilot", href: "/workplace-demo" },
+  { key: "checks", href: "/methodology#checks" },
 ] as const;
 
 /** Decorative motion uses no learner data and stops on request or in hidden tabs. */
 export function EditorialHome() {
   const t = useTranslations("editorialHome");
-  const [dark, setDark] = useState(false);
+  const savedDark = useSyncExternalStore(subscribeTheme, readTheme, initialTheme);
+  const [fallbackDark, setFallbackDark] = useState<boolean | null>(null);
+  const dark = fallbackDark ?? savedDark;
   const [userPaused, setUserPaused] = useState(false);
   const [hidden, setHidden] = useState(false);
 
@@ -35,7 +45,7 @@ export function EditorialHome() {
           <Link href="/certifications">{t("rows.application.title")}</Link>
           <a href={repository} className={styles.repository}>{t("repository")} <span aria-hidden="true">↗</span></a>
           <LocaleSwitcher className={styles.localeSelect} />
-          <button type="button" aria-pressed={dark} onClick={() => setDark((value) => !value)}>
+          <button type="button" aria-pressed={dark} onClick={() => { try { sessionStorage.setItem("gaplift-home-theme", dark ? "light" : "dark"); window.dispatchEvent(new Event(themeEvent)); } catch { setFallbackDark(!dark); } }}>
             {dark ? t("lightMode") : t("darkMode")}
           </button>
           <button type="button" aria-pressed={userPaused} onClick={() => setUserPaused((value) => !value)}>
@@ -49,6 +59,7 @@ export function EditorialHome() {
           <h1 id="editorial-title">{t("title")}</h1>
           <p className={styles.intro}>{t("intro")}</p>
           <Link className={styles.primary} href="/certifications">{t("primaryAction")} <span aria-hidden="true">→</span></Link>
+          <Link className={styles.secondaryAction} href="/methodology#build">{t("toolkitAction")} <span aria-hidden="true">→</span></Link>
         </section>
         <aside className={styles.margin} aria-label={t("marginLabel")}>
           <svg className={styles.signal} viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
