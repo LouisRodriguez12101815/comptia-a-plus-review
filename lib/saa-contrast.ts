@@ -4,7 +4,7 @@ import type { Question } from "@/lib/types";
 export const SAA_CONTRAST_GROUPS = {
   database: {
     failover: ["q-saa-practice-19", "q-saa-chapter-08"],
-    readScale: ["q-saa-costbatch-013", "q-saa-core-23"],
+    readScale: ["q-saa-g1a-14", "q-saa-costbatch-013"],
   },
   messaging: {
     queue: ["q-saa-practice-25", "q-saa-chapter-17", "q-aws-found-26"],
@@ -25,6 +25,9 @@ for (const group of Object.keys(SAA_CONTRAST_GROUPS) as Group[]) {
     for (const id of ids) byQuestion.set(id, { group, decision });
   }
 }
+
+// Previously offered here. Keep saved attempts and bookmarked review links in the same group.
+byQuestion.set("q-saa-core-23", { group: "database", decision: "readScale" });
 
 type ContrastAttempt = AnsweredAttempt & { mode?: string; topicId?: string };
 export const SAA_CONTRAST_DELAY = 3 * 24 * 60 * 60 * 1000;

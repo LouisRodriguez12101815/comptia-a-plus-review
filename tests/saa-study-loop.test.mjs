@@ -131,11 +131,13 @@ test("authored contrast drills reuse valid SAA questions and prefer a different 
   assert.equal(new Set(ids).size, ids.length);
   for (const id of ids) assert.ok(saa.some((question) => question.id === id), id);
   const seen = new Set(["q-saa-practice-19", "q-saa-costbatch-013"]);
-  assert.equal(saaContrastTarget("q-saa-practice-19", questions, new Set(), seen), "q-saa-core-23");
+  assert.equal(saaContrastTarget("q-saa-practice-19", questions, new Set(), new Set()), "q-saa-g1a-14");
+  assert.equal(saaContrastTarget("q-saa-practice-19", questions, new Set(), seen), "q-saa-g1a-14");
+  assert.equal(saaContrastTarget("q-saa-core-23", questions, new Set(), new Set()), "q-saa-practice-19");
+  assert.equal(saaContrastTarget("q-saa-practice-19", questions, new Set(ids), new Set()), undefined);
   assert.equal(saaContrastTarget("q-saa-practice-25", questions, new Set(), new Set()), "q-saa-chapter-19");
   assert.equal(saaContrastTarget("q-aws-review-saa-c03-4-4", questions, new Set(), new Set()), "q-aws-found-19");
-  assert.equal(saaContrastTarget("q-saa-practice-19", [{ ...saa.find((q) => q.id === "q-saa-core-23"), examCodes: ["clf-c02"] }], new Set(), new Set()), undefined);
-  assert.equal(saaContrastTarget("q-saa-practice-19", questions, new Set(ids), seen), undefined);
+  assert.equal(saaContrastTarget("q-saa-practice-19", [{ ...saa.find((q) => q.id === "q-saa-g1a-14"), examCodes: ["clf-c02"] }], new Set(), new Set()), undefined);
 });
 
 function contrastAttempt(at, id, { correct = false, ...metadata } = {}) {
@@ -150,7 +152,7 @@ test("a saved miss produces a fresh delayed check even after a successful immedi
   const mirror = { ...source, topicId: "exam-test:saa-c03" };
   assert.deepEqual(saaContrastHistory([retry, mirror, source], dueAt - 1, questions).due, []);
   const due = saaContrastHistory([retry, mirror, source], dueAt, questions);
-  assert.deepEqual(due.due, [{ group: "database", id: "q-saa-core-23" }]);
+  assert.deepEqual(due.due, [{ group: "database", id: "q-saa-g1a-14" }]);
   assert.deepEqual(due.counts.first, { correct: 0, answered: 1 });
   assert.deepEqual(due.counts.contrast, { correct: 1, answered: 1 });
 

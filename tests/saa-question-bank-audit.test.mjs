@@ -228,7 +228,7 @@ test("pre-existing SAA questions are unchanged from the audit baseline", () => {
   assert.deepEqual(liveHashStage.excludedFields, [...SAA_TAG_FIELDS]);
   assert.equal(liveHashStage.questions.length, 314);
   const liveHashes = new Map(liveHashStage.questions.map((row) => [row.id, row.sha256]));
-  assert.deepEqual(audit.changeStages.map((stage) => stage.id), ["explanation-rewrite", "distractor-realism", "answer-length-cue", "answer-length-cue-2", "answer-cue-2b", "answer-cue-2b2", "answer-cue-followup"]);
+  assert.deepEqual(audit.changeStages.map((stage) => stage.id), ["explanation-rewrite", "distractor-realism", "answer-length-cue", "answer-length-cue-2", "answer-cue-2b", "answer-cue-2b2", "answer-cue-followup", "rds-failover-task-review"]);
   for (const stage of audit.changeStages) assert.deepEqual(stage.excludedFields, [...SAA_TAG_FIELDS]);
   const changeStage = audit.changeStages.find((stage) => stage.id === "explanation-rewrite");
   const changes = new Map(changeStage.items.map((row) => [row.id, row]));
