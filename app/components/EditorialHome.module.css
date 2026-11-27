@@ -8,8 +8,7 @@
   --button-ink: #fff;
   color: var(--ink);
   background: var(--page);
-  border: 1px solid var(--rule);
-  border-radius: 1rem;
+  min-height: 100vh;
   overflow: hidden;
 }
 .home[data-theme="dark"] {
@@ -23,16 +22,16 @@
 }
 .home a { color: inherit; }
 .home :is(a, button):focus-visible { outline: 3px solid #2f8e9f; outline-offset: 3px; }
-.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--rule); padding: 1.1rem 4%; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--rule); padding: .8rem max(4%, calc((100% - 76rem)/2)); }
 .brand { font-size: 1.5rem; letter-spacing: -.07em; }
 .topLinks { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: .6rem 1rem; font-size: .78rem; }
 .repository { min-height: 44px; display: inline-flex; align-items: center; gap: .3rem; text-decoration: underline; text-underline-offset: 3px; }
-.topLinks button { min-height: 44px; border: 1px solid var(--rule); border-radius: .35rem; padding: .55rem .75rem; background: transparent; color: var(--ink); cursor: pointer; }
+.topLinks button, .localeSelect { min-height: 44px; border: 1px solid var(--rule); border-radius: .35rem; padding: .55rem .75rem; background: var(--page); color: var(--ink); cursor: pointer; }
 .topLinks button:hover { background: var(--panel); }
-.spread { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); min-height: 32rem; }
+.spread { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); min-height: 29rem; max-width: 96rem; margin: auto; }
 .lead { padding: clamp(3rem, 5vw, 4.5rem) 6% 3.5rem 7%; min-width: 0; }
 .kicker, .marginLabel, .marginFoot { color: var(--sub); font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.lead h1 { max-width: 56rem; margin: 1.4rem 0; font: 400 clamp(3.2rem, 6vw, 5.9rem)/1.04 Georgia, serif; letter-spacing: -.064em; }
+.lead h1 { max-width: 45rem; margin: 1.4rem 0; font: 400 clamp(2.75rem, 4.6vw, 4.75rem)/1.07 Georgia, serif; letter-spacing: -.055em; }
 .intro { max-width: 36rem; font-size: clamp(1rem, 1.5vw, 1.15rem); line-height: 1.6; }
 .primary { display: inline-flex; align-items: center; gap: .5rem; min-height: 48px; margin-top: 1.5rem; padding: .8rem 1.1rem; border-radius: .35rem; background: var(--button); color: var(--button-ink) !important; text-decoration: none; font-size: .85rem; font-weight: 700; }
 .primary:hover { filter: brightness(1.12); }
@@ -53,7 +52,7 @@
 .node { fill: #739356; stroke: var(--page); stroke-width: 2; }
 .glow { fill: #b3d577; opacity: .25; transform-box: fill-box; transform-origin: center; animation: breathe 3s ease-in-out infinite; }
 .traveler { fill: #739356; stroke: var(--page); stroke-width: 2; offset-path: path('M45 285 C105 215 170 240 225 160 S315 125 365 55'); offset-rotate: 0deg; animation: travel 7s ease-in-out infinite; }
-.ledger { display: grid; grid-template-columns: minmax(8rem, 12rem) 1fr; gap: 2rem; border-top: 1px solid var(--rule); padding: 2rem 4% 2.8rem; }
+.ledger { display: grid; grid-template-columns: minmax(8rem, 12rem) 1fr; gap: 2rem; border-top: 1px solid var(--rule); max-width: 96rem; margin: auto; padding: 2rem 4% 2.8rem; }
 .ledger h2 { margin: 0; font-size: 1.45rem; line-height: 1.2; letter-spacing: -.04em; }
 .row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) 1.5rem; gap: 1rem; align-items: center; min-height: 4.5rem; padding: .8rem 0; border-bottom: 1px solid var(--rule); text-decoration: none; transition: background .25s ease, padding-left .25s ease; }
 .row strong { font-size: .95rem; }
@@ -91,7 +90,7 @@
 @media (max-width: 550px) {
   .top { align-items: flex-start; flex-direction: column; }
   .topLinks { justify-content: flex-start; }
-  .lead h1 { font-size: clamp(2.85rem, 11vw, 4.1rem); }
+  .lead h1 { font-size: clamp(2.35rem, 9vw, 3.3rem); }
   .row { grid-template-columns: 1fr 1.5rem; gap: .25rem; }
   .row span:not(.arrow) { grid-column: 1; }
   .arrow { grid-column: 2; grid-row: 1 / 3; }

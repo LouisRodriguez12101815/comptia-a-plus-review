@@ -4,9 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { LearnerPersistence } from "@/app/components/LearnerPersistence";
-import { SiteFooter } from "@/app/components/SiteFooter";
-import { SiteHeader } from "@/app/components/SiteHeader";
-import { TrackBar } from "@/app/components/TrackBar";
+import { SiteShell } from "@/app/components/SiteShell";
 import { TrackTheme } from "@/app/components/TrackTheme";
 import { WebAnalytics } from "@/app/components/WebAnalytics";
 import { WebSpeedInsights } from "@/app/components/WebSpeedInsights";
@@ -49,10 +47,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body className="min-h-full bg-slate-950 font-sans text-slate-100">
         <NextIntlClientProvider>
           <TrackTheme>
-            <SiteHeader />
-            <TrackBar />
-            <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">{children}</main>
-            <SiteFooter />
+            <SiteShell>{children}</SiteShell>
             <LearnerPersistence />
             <WebAnalytics />
             <WebSpeedInsights />

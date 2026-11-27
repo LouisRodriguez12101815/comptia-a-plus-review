@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/app/components/LocaleSwitcher";
 import styles from "./EditorialHome.module.css";
 
 const repository = "https://github.com/LouisRodriguez12101815/comptia-a-plus-review";
@@ -30,7 +31,10 @@ export function EditorialHome() {
       <header className={styles.top}>
         <strong className={styles.brand}>GapLift.</strong>
         <div className={styles.topLinks}>
+          <Link href="/methodology">{t("limitsLink")}</Link>
+          <Link href="/certifications">{t("rows.application.title")}</Link>
           <a href={repository} className={styles.repository}>{t("repository")} <span aria-hidden="true">↗</span></a>
+          <LocaleSwitcher className={styles.localeSelect} />
           <button type="button" aria-pressed={dark} onClick={() => setDark((value) => !value)}>
             {dark ? t("lightMode") : t("darkMode")}
           </button>
@@ -73,11 +77,8 @@ export function EditorialHome() {
         </div>
       </section>
       <footer className={styles.support}>
-        <span>{t("supporting")}</span>{" "}
-        <Link href="/workplace-demo">{t("workplaceLink")}</Link>
-        <span aria-hidden="true"> · </span>
-        <Link href="/game">Outage Ops</Link>
-        <span aria-hidden="true"> · </span>
+        <span>GapLift</span><span aria-hidden="true"> · </span>
+        <a href={repository}>{t("repository")}</a><span aria-hidden="true"> · </span>
         <Link href="/methodology">{t("limitsLink")}</Link>
       </footer>
     </div>
