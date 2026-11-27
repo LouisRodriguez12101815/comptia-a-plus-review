@@ -15,6 +15,15 @@ export const SAA_CONTRAST_GROUPS = {
     privateS3: ["q-aws-review-saa-c03-4-4", "q-aws-review-saa-c03-1-2", "q-saa-guide-06"],
     publicEgress: ["q-aws-found-19", "q-saa-bank-016"],
   },
+  storage: {
+    object: ["q-saa-g1a-13"],
+    block: ["q-saa-core-11"],
+    sharedFiles: ["q-saa-core-10"],
+  },
+  edge: {
+    cache: ["q-saa-arch-38", "q-saa-guide-25"],
+    route: ["q-saa-practice-41", "q-saa-arch-24"],
+  },
 } as const;
 
 type Group = keyof typeof SAA_CONTRAST_GROUPS;

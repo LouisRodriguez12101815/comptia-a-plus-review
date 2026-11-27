@@ -211,3 +211,18 @@ test("the saved progress parser preserves both contrast review modes", () => {
   assert.deepEqual(problems, []);
   assert.deepEqual(progress.quizAttempts.map(({ mode }) => mode), ["contrast", "delayed"]);
 });
+
+test("storage and edge retries change the decision and delayed review uses an unseen scenario", () => {
+  const empty = new Set();
+  assert.equal(saaContrastTarget("q-saa-g1a-13", questions, empty, empty), "q-saa-core-11");
+  assert.equal(saaContrastTarget("q-saa-core-10", questions, empty, empty), "q-saa-g1a-13");
+  assert.equal(saaContrastTarget("q-saa-arch-38", questions, empty, empty), "q-saa-practice-41");
+
+  const start = 1_000;
+  const attempts = [
+    contrastAttempt(start, "q-saa-arch-38"),
+    contrastAttempt(start + 100, "q-saa-practice-41", { correct: true, mode: "contrast" }),
+  ];
+  const due = saaContrastHistory(attempts, start + SAA_CONTRAST_DELAY, questions).due;
+  assert.deepEqual(due, [{ group: "edge", id: "q-saa-arch-24" }]);
+});

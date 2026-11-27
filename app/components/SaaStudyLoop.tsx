@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
 import { questions } from "@/lib/content";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
-import { saaContrastHistory, saaContrastHref } from "@/lib/saa-contrast";
+import { SAA_CONTRAST_GROUPS, saaContrastHistory, saaContrastHref } from "@/lib/saa-contrast";
 import { nextSaaQuestionIds, saaDomainSummary, saaNextSession } from "@/lib/saa-study-loop";
 import { mostCommonMissReason, reasonTools, SAA_CLUSTERS, saaReviewMisses } from "@/lib/saa-test-skills";
 
@@ -132,6 +132,18 @@ export function SaaStudyLoop() {
           <Link href="/test?exam=saa-c03&length=mini" className="inline-flex min-h-11 items-center rounded-full bg-teal-500 px-4 text-sm font-medium text-slate-950">{skills("miniLink")}</Link>
           <Link href="/quiz?exam=saa-c03&mode=twin" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 text-sm text-teal-100">{skills("twinLink")}</Link>
         </div>
+        <ul className="mt-3 flex flex-wrap gap-x-4" aria-label={contrastT("reviewHeading")}>
+          {(["storage", "edge"] as const).map((group) => {
+            const ids = Object.values(SAA_CONTRAST_GROUPS[group]).flat();
+            return (
+              <li key={group}>
+                <Link href={`/quiz?exam=saa-c03&questions=${ids.join(",")}`} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">
+                  {contrastT("practice", { topic: contrastT(`${group}.title`) })}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
         <ul className="mt-4 grid gap-2 sm:grid-cols-2">
           {SAA_CLUSTERS.map((cluster) => (
             <li key={cluster.id}>
