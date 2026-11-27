@@ -52,7 +52,7 @@ export function WorkplaceDemo() {
         <h2 className="text-lg font-semibold text-white">{paths("pilotBuiltTitle")}</h2>
         <p>{paths("pilotBuiltBody")}</p>
         <Link className="inline-flex min-h-11 items-center text-teal-300 underline" href="/methodology#build">{paths("pilotMethod")}</Link>
-        <p><a className="text-teal-300 underline" href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/feature/workplace-learning-pilot/docs/examples/workplace-emergency-training-pilot.md">{paths("pilotSource")}</a></p>
+        <p><a className="text-teal-300 underline" href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/47a4b95ad3293742afee3263c6b77f9cb18800ba/docs/examples/workplace-emergency-training-pilot.md">{paths("pilotSource")}</a></p>
         <p>{t("sourceContext")} <a className="text-teal-300 underline" href="https://www.osha.gov/emergency-preparedness/getting-started">{t("sourceLink")}</a></p>
         <p>{t("review")}</p>
         <Link className="inline-flex min-h-11 items-center text-teal-300 underline" href="/">{t("back")}</Link>

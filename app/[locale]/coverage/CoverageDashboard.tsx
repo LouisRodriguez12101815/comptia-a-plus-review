@@ -78,6 +78,7 @@ export function CoverageDashboard({ objectives, rows, topicTitles }: {
                 percent: stats.weighted,
                 muted: (chunks) => <span className="text-sm font-normal text-slate-300">{chunks}</span>,
               })}</p>
+              {stats.total > 0 && <p className="mt-1 text-xs text-slate-300">{t("estimateCaveat")}</p>}
               <p className="mt-2 text-sm text-slate-300">{t("summaryCounts", { covered: stats.covered, partial: stats.partial, missing: stats.missing })}</p>
               <p className="mt-1 text-xs text-slate-400">{t("summaryTotal", { total: stats.total })}</p>
               {stats.total === 0 ? <p className="mt-2 text-sm text-slate-300">{t("emptyMatrixDetails")} <Link href="/insights" className="text-teal-300 underline underline-offset-4">{t("insightsLink")}</Link></p> : <Link href={`/test?exam=${item.code}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("takeTest")}</Link>}

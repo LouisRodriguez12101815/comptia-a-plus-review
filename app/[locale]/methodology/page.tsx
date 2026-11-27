@@ -47,7 +47,7 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         </ol>
         <p className="mt-5 text-sm leading-6 text-slate-400">{paths("buildLimits")}</p>
         <nav aria-label={paths("resources")} className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-          <a className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4" href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/feature/workplace-learning-pilot/docs/skills/README.md">{paths("skillsLink")}</a>
+          <a className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4" href="https://github.com/LouisRodriguez12101815/comptia-a-plus-review/blob/47a4b95ad3293742afee3263c6b77f9cb18800ba/docs/skills/README.md">{paths("skillsLink")}</a>
           <Link className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4" href="/workplace-demo">{paths("pilotLink")}</Link>
         </nav>
       </section>
@@ -56,7 +56,8 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
         <h2 id="checks-heading" className="mt-3 text-3xl font-semibold text-white">{paths("checksTitle")}</h2>
         <p className="mt-3 max-w-3xl leading-7 text-slate-300">{paths("checksIntro")}</p>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">{paths("checksLimits")}</p>
-        <Link href="/assessment-workflow" className="mt-4 inline-flex min-h-11 items-center text-indigo-200 underline underline-offset-4">{paths("assessmentLink")}</Link>
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-300">{paths("guideOverview")}</p>
+        <Link href="/assessment-workflow" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-indigo-400 px-5 py-2 font-semibold text-slate-950 hover:bg-indigo-300">{paths("assessmentLink")} →</Link>
         {locale !== "en" && <p className="text-sm text-slate-400">{paths("englishNotice")}</p>}
       </section>
 
@@ -75,17 +76,12 @@ export default async function MethodologyPage({ params }: PageProps<"/[locale]/m
 
       <MethodologyWorkflow />
 
-      <section aria-labelledby="areas-heading" className="space-y-4">
-        <h2 id="areas-heading" className="text-2xl font-semibold tracking-tight text-white">{t("areasHeading")}</h2>
-        <div className="divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900/40 sm:grid sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
-          {workflowAreas.map((key) => (
-            <article key={key} className="p-5">
-              <h3 className="font-mono text-sm font-semibold uppercase tracking-wide text-indigo-300">{t(`${key}Title`)}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-300">{t(`${key}Body`)}</p>
-            </article>
-          ))}
+      <details className="rounded-2xl border border-slate-700 p-5">
+        <summary className="cursor-pointer font-semibold text-white">{t("areasHeading")}</summary>
+        <div className="mt-4 divide-y divide-slate-800 sm:grid sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-3">
+          {workflowAreas.map((key) => <article key={key} className="p-4"><h3 className="font-mono text-sm font-semibold uppercase text-indigo-300">{t(`${key}Title`)}</h3><p className="mt-2 text-sm leading-6 text-slate-300">{t(`${key}Body`)}</p></article>)}
         </div>
-      </section>
+      </details>
 
       <section aria-labelledby="mapping-heading" className="grid gap-4 lg:grid-cols-2">
         <article className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">

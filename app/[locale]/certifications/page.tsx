@@ -25,7 +25,7 @@ export default async function Certifications({ params }: PageProps<"/[locale]/ce
         <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">{toolkit("catalogTitle")}</h1>
         <p className="max-w-3xl leading-7 text-slate-300">{toolkit("catalogIntro")}</p>
         <p className="max-w-3xl text-sm leading-6 text-teal-100">{paths("certBridge")}</p>
-        <Link href="/performance" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{toolkit("progressLink")}</Link>
+        <Link href="/performance" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{paths("studyRecord")}</Link>
       </header>
       <section aria-labelledby="tracks-heading" className="space-y-4">
         <h2 id="tracks-heading" className="text-lg font-medium text-white">
@@ -55,6 +55,7 @@ export default async function Certifications({ params }: PageProps<"/[locale]/ce
                   <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
                     {track.focus ? (
                       <>
+                        {counts.topics === 0 && counts.cards === 0 && counts.questions === 0 && <StatusChip state="soon">{paths("inDevelopment")}</StatusChip>}
                         <StatusChip state="ready">{t("chaptersCount", { count: counts.topics })}</StatusChip>
                         <span className="font-mono">{t("cardsCount", { count: counts.cards })}</span>
                         <span aria-hidden="true">·</span>

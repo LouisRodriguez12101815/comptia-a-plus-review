@@ -49,6 +49,7 @@ export default async function QuizPage({
           {concept ? (concept.rule ?? t("conceptIntro", { objective: concept.objective })) : domain ? t("domainIntro", { weight: domain.weight, exam: domainExam === "saa-c03" ? "SAA-C03" : "N10-009" }) : t("intro")}
         </p>
       </div>
+      {locale !== "en" && <p className="text-sm text-slate-300">{t("topicLanguageNotice")}</p>}
       {chapter && <ChapterStrip topicId={chapter.id} current="quiz" />}
       {chapter && <EnsureTopicFocus codes={chapter.examCodes} preferred={focusForTopic(chapter)} />}
       {domain && domainExam ? <EnsureTopicFocus codes={[domainExam]} preferred={domainExam} /> : null}
