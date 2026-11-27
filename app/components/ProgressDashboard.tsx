@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { getFlashcards, getQuestions, getTopics } from "@/lib/content";
+import { getFlashcards, getQuestions, getTopic, getTopics } from "@/lib/content";
+import { attemptMatchesFocus } from "@/lib/attempt-focus";
 import { progressExamFocus } from "@/lib/tracks";
 import type { StudyFocus } from "@/lib/types";
 import {
@@ -32,10 +33,7 @@ export function ProgressDashboard({ examFocus = null }: { examFocus?: StudyFocus
   const focusedTopics = getTopics(focus);
   const cardIds = new Set(cards.map((card) => card.id));
   const known = Object.keys(progress.knownCards).filter((id) => cardIds.has(id)).length;
-  const last = progress.quizAttempts.find((attempt) => {
-    if (focus === "all") return true;
-    return getQuestions(attempt.topicId, focus).length > 0;
-  });
+  const last = progress.quizAttempts.find((attempt) => attemptMatchesFocus(attempt, focus, getTopic(attempt.topicId)?.examCodes));
 
   return (
     <>

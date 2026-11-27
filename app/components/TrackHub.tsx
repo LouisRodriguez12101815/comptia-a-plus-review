@@ -17,6 +17,7 @@ import objectives from "@/content/objectives.json";
 import { labs, topics as allTopics } from "@/lib/content";
 import { drillDecks } from "@/lib/practice/drills";
 import { getTrack, networkingChapters, splitTopics, toolStatuses, trackCounts, type TrackId } from "@/lib/tracks";
+import { focusedHref } from "@/lib/focused-href";
 
 const tileBase =
   "flex h-full flex-col gap-3 rounded-2xl border p-5 transition";
@@ -86,7 +87,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </summary>
         <nav className="mt-3 grid gap-2" aria-label="Study workspace">
           {workspaceLinks.map((item) => (
-            <Link key={item.label} href={item.href} className="rounded-xl border border-transparent px-3 py-2 text-sm text-slate-300">
+            <Link key={item.label} href={focusedHref(item.href, track.focus)} className="rounded-xl border border-transparent px-3 py-2 text-sm text-slate-300">
               {item.label}
             </Link>
           ))}
@@ -97,7 +98,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
           <p className="track-accent-text px-3 pb-2 text-xs font-semibold uppercase tracking-[0.18em]">{track.code}</p>
           <nav className="grid gap-1" aria-label="Study workspace">
             {workspaceLinks.map((item) => (
-              <Link key={item.label} href={item.href} className="rounded-xl border border-transparent px-3 py-2 text-sm text-slate-300">
+              <Link key={item.label} href={focusedHref(item.href, track.focus)} className="rounded-xl border border-transparent px-3 py-2 text-sm text-slate-300">
                 {item.label}
               </Link>
             ))}
@@ -144,7 +145,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         <>
         <section aria-label="Study sequence" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {sequence.map((item) => (
-            <Link key={item.step} href={item.href} className="study-sequence-step rounded-2xl p-4 transition hover:-translate-y-0.5">
+            <Link key={item.step} href={focusedHref(item.href, track.focus)} className="study-sequence-step rounded-2xl p-4 transition hover:-translate-y-0.5">
               <span className="track-accent-text font-mono text-xs">{item.step}</span>
               <span className="mt-2 block font-semibold text-white">{item.label}</span>
               <span className="mt-1 block text-xs leading-5 text-slate-400">{item.detail}</span>
@@ -185,7 +186,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
         </>
       ) : null}
 
-      <section id={track.id === "networking" ? "study" : undefined} aria-labelledby="tools-heading" className="scroll-mt-24 space-y-4">
+      {!emptyTrack && <section id={track.id === "networking" ? "study" : undefined} aria-labelledby="tools-heading" className="scroll-mt-24 space-y-4">
         <h2 id="tools-heading" className="text-lg font-medium text-white">
           {t("studyTools")}
         </h2>
@@ -228,7 +229,7 @@ export async function TrackHub({ trackId }: { trackId: TrackId }) {
             );
           })}
         </ul>
-      </section>
+      </section>}
 
       {track.id === "networking" ? (
         <section id={track.id === "networking" ? "visuals" : undefined} aria-labelledby="chapters-heading" className="scroll-mt-24 space-y-4">

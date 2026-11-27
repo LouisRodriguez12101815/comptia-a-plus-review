@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
@@ -60,13 +60,13 @@ export function FlashcardDeck({
   initialMode,
 }: {
   initialTopic: string;
-  initialExam?: string;
+  initialExam?: StudyFocus;
   initialTask?: string;
   initialMode?: string;
 }) {
   const t = useTranslations("flashcardDeck");
   const [focus, setFocus] = useStudyFocus();
-  const [topicFocus, setTopicFocus] = useState<StudyFocus | null>(initialTopic === "n10-ch9" ? "n10-009" : null);
+  const [topicFocus, setTopicFocus] = useState<StudyFocus | null>(initialExam ?? (initialTopic === "n10-ch9" ? "n10-009" : null));
   const activeFocus = topicFocus ?? focus;
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
   const [topicId, setTopicId] = useState(initialTopic);
@@ -85,10 +85,6 @@ export function FlashcardDeck({
   const [missedOnly, setMissedOnly] = useState(false);
   const [lookback, setLookback] = useState<number | null>(null);
   const [retryIds, setRetryIds] = useState<string[] | null>(null);
-
-  useEffect(() => {
-    if (initialExam === "saa-c03" || initialExam === "clf-c02") setFocus(initialExam);
-  }, [initialExam, setFocus]);
 
   const taskFilter = activeFocus === "saa-c03" && taskId !== "all" ? taskId : null;
   const deck = useMemo(() => {

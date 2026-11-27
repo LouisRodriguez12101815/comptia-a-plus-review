@@ -68,8 +68,8 @@ export async function AwsClfWorkspace() {
           <h2 className="mt-2 text-xl font-semibold text-white">{t("workflowTitle")}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">{t("workflowBody")}</p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link href="/notes" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-cyan-300">{t("notes")}</Link>
-            <Link href="/flashcards" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-cyan-300">{t("flashcards")}</Link>
+            <Link href="/notes?exam=clf-c02" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-cyan-300">{t("notes")}</Link>
+            <Link href="/flashcards?exam=clf-c02" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-cyan-300">{t("flashcards")}</Link>
             <Link href="/coverage" className="inline-flex min-h-11 items-center rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-100 hover:border-cyan-300">{t("coverage")}</Link>
           </div>
         </div>

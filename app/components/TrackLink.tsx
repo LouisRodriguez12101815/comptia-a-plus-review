@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import type { ComponentProps } from "react";
 import { setStudyFocus } from "@/lib/progress";
 import type { StudyFocus } from "@/lib/types";
+import { focusedHref } from "@/lib/focused-href";
 
 /**
  * A link that stores the track's exam focus before navigating, so the existing
@@ -17,6 +18,7 @@ export function TrackLink({
   return (
     <Link
       {...props}
+      href={typeof props.href === "string" ? focusedHref(props.href, focus) : props.href}
       onClick={(event) => {
         if (focus) setStudyFocus(focus);
         onClick?.(event);

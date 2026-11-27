@@ -6,19 +6,23 @@ import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { NotesSearch } from "@/app/components/NotesSearch";
 import { useStudyFocus } from "@/app/components/useStudyFocus";
 import { getTopics, getTopicsByConcept } from "@/lib/content";
+import { useState } from "react";
+import type { StudyFocus } from "@/lib/types";
 
-export function NotesCatalog() {
+export function NotesCatalog({ initialFocus }: { initialFocus?: StudyFocus }) {
   const t = useTranslations("notesCatalog");
   const tExams = useTranslations("exams");
   const tConcepts = useTranslations("concepts");
-  const [focus, setFocus] = useStudyFocus();
+  const [savedFocus, setFocus] = useStudyFocus();
+  const [selectedFocus, setSelectedFocus] = useState(initialFocus);
+  const focus = selectedFocus ?? savedFocus;
   const focusedTopics = getTopics(focus);
   const groups = getTopicsByConcept(focus);
 
   return (
     <div className="space-y-8">
       <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-        <ExamFocusPicker focus={focus} onChange={setFocus} />
+        <ExamFocusPicker focus={focus} onChange={(next) => { setSelectedFocus(next); setFocus(next); }} />
       </section>
       <NotesSearch focus={focus} />
       <section className="space-y-3">
