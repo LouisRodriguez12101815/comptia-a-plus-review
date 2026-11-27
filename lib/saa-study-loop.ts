@@ -148,6 +148,19 @@ export function saaDomainSummary(
     .sort((a, b) => a.percent - b.percent || a.id.localeCompare(b.id));
 }
 
+/** A transparent suggestion based on recorded answers, not a readiness prediction. */
+export function saaNextSession(rows: DomainSummary[]):
+  | { kind: "empty" }
+  | { kind: "limited"; domain: DomainSummary }
+  | { kind: "review" | "practice"; domain: DomainSummary } {
+  if (!rows.length) return { kind: "empty" };
+  const ordered = [...rows].sort((a, b) => a.percent - b.percent || a.id.localeCompare(b.id));
+  const supported = ordered.filter((row) => row.answered >= 5);
+  if (!supported.length) return { kind: "limited", domain: ordered[0] };
+  const domain = supported[0];
+  return { kind: domain.weak ? "review" : "practice", domain };
+}
+
 /** Lowest domain percent. With no scored answers, Domain 1. */
 export function weakestSaaDomain(
   attempts: AnsweredAttempt[],

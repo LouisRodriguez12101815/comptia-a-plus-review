@@ -1,5 +1,7 @@
 "use client";
 
+import { SaaContrastFeedback } from "@/app/components/SaaContrastFeedback";
+import { saaContrastTarget, saaMockDebrief } from "@/lib/saa-contrast";
 import { ExplanationText } from "@/app/components/ExplanationText";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -119,6 +121,7 @@ function LuckyGuesses({ picks, heading, intro, ruleLabel, notesLabel }: { picks:
 
 export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS, drillPair, labsByTopic = {}, practiceMode = false, initialDomain, initialLength }: { initialExam?: ExamCode; initialFocus?: string[]; initialDrill?: string[]; drillPair?: string; labsByTopic?: Record<string, LabLink[]>; practiceMode?: false | "mixed" | "domain"; initialDomain?: string; initialLength?: string }) {
   const t = useTranslations("examTest");
+  const contrastT = useTranslations("saaContrast");
   const skills = useTranslations("saaTestSkills");
   const [exam, setExam] = useState<ExamCode>(practiceMode ? (initialExam === "saa-c03" ? "saa-c03" : "clf-c02") : initialExam ?? "220-1201");
   const [lengthId, setLengthId] = useState(practiceMode === "mixed" ? "mixed20" : practiceMode === "domain" ? "domain10" : initialLength === "mini" && initialExam === "saa-c03" ? "mini" : initialFocus.length > 0 ? "quick" : initialExam === "saa-c03" ? "count20" : "full");
@@ -126,6 +129,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
   const [runInfo, setRunInfo] = useState<{ kind: RunKind; objectiveIds: string[] }>({ kind: "standard", objectiveIds: [] });
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const sessionRef = useRef(0);
+  const [seenAtStart, setSeenAtStart] = useState<ReadonlySet<string>>(new Set());
   const [phase, setPhase] = useState<Phase>("setup");
   const [picks, setPicks] = useState<TestPick[]>([]);
   const [scoredPicks, setScoredPicks] = useState<TestPick[]>([]);
@@ -436,6 +440,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
       : kind === "targeted"
         ? draftFocused(pool, requested, Math.random, { history, objectiveIds, share: validFocus.length > 0 ? 1 : 0.6, priority, objectiveFor })
         : draftFocused(pool, RETEST_QUESTIONS, Math.random, { history, objectiveIds, share: 1, priority, objectiveFor });
+    if (exam === "saa-c03") setSeenAtStart(new Set(history));
     setDueIds(priority.filter((id) => draft.some((p) => p.questionId === id)));
     confidenceRef.current = {};
     setConfidence({});
@@ -752,6 +757,22 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
     return map;
   }, new Map<string, TestPick[]>())];
   const luckyPicks = scored.filter((p) => isLuckyGuess(confidence[p.questionId], isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer)));
+  const contrastReview = exam === "saa-c03" ? {
+    excluded: new Set(scored.map((p) => p.questionId)),
+    seen: seenAtStart,
+  } : undefined;
+  const debrief = exam === "saa-c03" && !immediatePractice ? saaMockDebrief(scored.map((p) => ({
+    id: p.questionId,
+    objectiveId: p.objectiveId,
+    answered: responses[p.questionId]?.answer !== undefined,
+    correct: isCorrect(questionsById[p.questionId], responses[p.questionId]?.answer),
+    confidence: confidence[p.questionId],
+  })), seenAtStart) : null;
+  const topTask = debrief?.priorities[0];
+  const nextNote = topTask && missedByObjective.find(([id]) => id === topTask[0])?.[1].find((p) => responses[p.questionId]?.answer !== undefined);
+  const nextContrast = debrief && contrastReview && missedPicks.find((p) =>
+    responses[p.questionId]?.answer !== undefined
+      && saaContrastTarget(p.questionId, questions, contrastReview.excluded, contrastReview.seen));
   const missedObjectiveIds = missedByObjective.map(([id]) => id);
   const retestObjectiveIds = [...new Set([...missedObjectiveIds, ...luckyPicks.map((p) => p.objectiveId)])];
   const conceptTitles = conceptTitleByQuestion();
@@ -834,6 +855,7 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
                             )}
                             <FixPick question={q} picked={responses[p.questionId]?.answer} pickedLine={(answer) => t("fixPicked", { answer })} noAnswer={t("noAnswer")} answerLabel={t("lookAlikeAnswer")} pickedLabel={t("lookAlikePicked")} />
                             <p className="mt-1 text-cyan-100"><span className="font-medium text-white">{t("fixRule")}</span> <ExplanationText text={ruleText(q.explanation)} /></p>
+                            {contrastReview && responses[p.questionId]?.answer !== undefined && <SaaContrastFeedback id={p.questionId} review={contrastReview} />}
                             <div className="mt-1 flex flex-wrap gap-x-4">
                               {topic && <Link href={`/notes/${encodeURIComponent(topic.id)}`} className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("fixNotes", { title: topic.title })}</Link>}
                               {labs.slice(0, 2).map((lab) => <a key={lab.file} href={`/visuals/${lab.file}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4 hover:text-teal-200">{t("fixLab", { title: lab.title })}</a>)}
@@ -880,6 +902,27 @@ export function ExamTest({ initialExam, initialFocus = [], initialDrill = NO_IDS
           <div><dt className="text-xs text-slate-400">{t("timedOut")}</dt><dd className="mt-1 font-mono text-lg text-slate-100">{result.timedOut}</dd></div></>}
         </dl>
       </section>
+
+      {debrief && (
+        <section className={card} aria-labelledby="saa-debrief-heading">
+          <h2 id="saa-debrief-heading" className="text-lg font-semibold text-white">{contrastT("debriefHeading")}</h2>
+          <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatMini label={contrastT("fresh")} value={`${debrief.fresh}/${scored.length}`} />
+            <StatMini label={contrastT("confidentMisses")} value={String(debrief.confidentMisses)} />
+            <StatMini label={contrastT("uncertainCorrect")} value={String(debrief.uncertainCorrect)} />
+            <StatMini label={contrastT("unanswered")} value={String(debrief.unanswered)} />
+          </dl>
+          {topTask && nextNote && (
+            <p className="mt-3 text-sm text-slate-200">
+              {contrastT("topTask", { id: topTask[0], count: topTask[1] })}{" "}
+              <Link href={`/notes/${encodeURIComponent(questionsById[nextNote.questionId].topicId)}?exam=saa-c03`} className="inline-flex min-h-11 items-center text-teal-200 underline underline-offset-4">{contrastT("notes")}</Link>
+            </p>
+          )}
+          {nextContrast ? <SaaContrastFeedback id={nextContrast.questionId} review={contrastReview} /> : (
+            <Link href="/practice-games/drills/aws-saa-confusion-pairs" className="inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{contrastT("pairs")}</Link>
+          )}
+        </section>
+      )}
 
       <section className={card} aria-labelledby="domains-heading">
         <h2 id="domains-heading" className="text-lg font-semibold text-white">{t("byDomain")}</h2>

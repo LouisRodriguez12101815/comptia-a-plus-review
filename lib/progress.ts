@@ -187,7 +187,7 @@ function repairedChoiceMap(value: unknown, allowSets: boolean): { value?: Record
 
 const CONFIDENCE_LEVELS = new Set(["sure", "unsure", "guess"]);
 const MISS_REASONS = new Set(["qualifier", "confused", "unknown", "time"]);
-const ATTEMPT_MODES = new Set(["quiz", "mock", "mini", "topic", "twin"]);
+const ATTEMPT_MODES = new Set(["quiz", "mock", "mini", "topic", "twin", "contrast", "delayed"]);
 
 function optionalStringList(value: unknown): { value?: string[]; bad: boolean } {
   if (value === undefined) return { bad: false };

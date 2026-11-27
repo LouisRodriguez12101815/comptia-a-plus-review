@@ -91,7 +91,7 @@ test("miss reasons point at a tool and the most common one wins", () => {
   const tools = reasonTools("1.1");
   assert.deepEqual(tools.map((tool) => tool.reason), ["qualifier", "confused", "unknown", "time"]);
   assert.match(tools.find((tool) => tool.reason === "qualifier").href, /keyword/);
-  assert.match(tools.find((tool) => tool.reason === "confused").href, /aws-saa-confusion/);
+  assert.equal(tools.find((tool) => tool.reason === "confused").href, "/practice-games/drills/aws-saa-confusion-pairs");
   assert.match(tools.find((tool) => tool.reason === "unknown").href, /task=1\.1/);
   assert.match(tools.find((tool) => tool.reason === "time").href, /session=speed/);
 });

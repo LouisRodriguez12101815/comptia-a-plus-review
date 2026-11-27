@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { SaaContrastFeedback } from "@/app/components/SaaContrastFeedback";
 import { ExplanationText } from "@/app/components/ExplanationText";
 import { ExamFocusPicker } from "@/app/components/ExamFocusPicker";
 import { reportContent } from "@/app/components/ReportIssue";
@@ -263,6 +264,10 @@ export function QuizRunner({ initialTopic, initialFocus, questionIds, scoped = f
   }
 
   if (done) {
+    const contrastReview = {
+      excluded: new Set(quiz.map((question) => question.id)),
+      seen: new Set(saaRotationHistory(getProgressSnapshot())),
+    };
     const missed = quiz.filter(
       (question) => !isCorrectPick(question, answers[question.id]) || isLuckyGuess(confidence[question.id], isCorrectPick(question, answers[question.id])),
     );
@@ -293,7 +298,8 @@ export function QuizRunner({ initialTopic, initialFocus, questionIds, scoped = f
                   {t("correctAnswer", { answer: answerLabel(question, question.answer) })}
                 </p>
                 <p className="mt-2 text-sm text-slate-400"><ExplanationText text={question.explanation} /></p>
-                {isLuckyGuess(confidence[question.id], true) && <p className="mt-2 text-sm text-violet-200">{skills("luckyBadge")}</p>}
+                {question.examCodes?.includes("saa-c03") && !isCorrectPick(question, answers[question.id]) && <SaaContrastFeedback id={question.id} review={contrastReview} />}
+                {isLuckyGuess(confidence[question.id], isCorrectPick(question, answers[question.id])) && <p className="mt-2 text-sm text-violet-200">{skills("luckyBadge")}</p>}
                 {!isCorrectPick(question, answers[question.id]) && (question.examCodes?.includes("saa-c03") || attemptMode === "twin") && (
                   <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={skills("missReasonLabel")}>
                     {(["qualifier", "confused", "unknown", "time"] as const).map((reason) => (
@@ -419,6 +425,7 @@ export function QuizRunner({ initialTopic, initialFocus, questionIds, scoped = f
           <p className="text-slate-300">
             <ExplanationText text={current.explanation} />
           </p>
+          {!correct && current.examCodes?.includes("saa-c03") && <SaaContrastFeedback id={current.id} />}
           {correct && isLuckyGuess(confidence[current.id], true) && <p>{skills("luckyBadge")}</p>}
           {!correct && (current.examCodes?.includes("saa-c03") || attemptMode === "twin") && (
             <div className="flex flex-wrap gap-2" role="group" aria-label={skills("missReasonLabel")}>

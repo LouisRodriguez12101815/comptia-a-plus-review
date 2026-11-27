@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
-import { useTranslations } from "next-intl";
+import { useNow, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import objectives from "@/content/objectives.json";
 import { questions } from "@/lib/content";
 import { getProgressSnapshot, getServerProgressSnapshot, subscribeProgress } from "@/lib/progress";
-import { nextSaaQuestionIds, saaDomainSummary } from "@/lib/saa-study-loop";
+import { saaContrastHistory, saaContrastHref } from "@/lib/saa-contrast";
+import { nextSaaQuestionIds, saaDomainSummary, saaNextSession } from "@/lib/saa-study-loop";
 import { mostCommonMissReason, reasonTools, SAA_CLUSTERS, saaReviewMisses } from "@/lib/saa-test-skills";
 
 function PatternCard({ id, title, diagram, when, docs, questionIds }: { id?: string; title: string; diagram: string; when: string; docs: string; questionIds: string[] }) {
@@ -31,6 +32,7 @@ const domains = objectives.exams.find((exam) => exam.code === "saa-c03")?.domain
 
 export function SaaStudyLoop() {
   const t = useTranslations("saaStudyLoop");
+  const contrastT = useTranslations("saaContrast");
   const skills = useTranslations("saaTestSkills");
   const mistakes = useTranslations("saaMistakes");
   const progress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getServerProgressSnapshot);
@@ -50,6 +52,12 @@ export function SaaStudyLoop() {
     () => mostCommonMissReason([...progress.quizAttempts, ...progress.mockAttempts]),
     [progress],
   );
+  const now = useNow({ updateInterval: 60_000 }).getTime();
+  const contrast = useMemo(
+    () => saaContrastHistory([...progress.quizAttempts, ...progress.mockAttempts], now, questions),
+    [now, progress],
+  );
+  const nextSession = saaNextSession(domainRows);
   const tools = reasonTools();
   const byId = useMemo(() => new Map(questions.map((question) => [question.id, question])), []);
 
@@ -59,6 +67,39 @@ export function SaaStudyLoop() {
         <h2 id="saa-study-loop-heading" className="text-lg font-medium text-white">{t("heading")}</h2>
         <p className="mt-1 text-sm text-slate-400">{t("targetNote")}</p>
       </div>
+
+      <section aria-labelledby="next-session-heading" className="rounded-2xl border border-teal-700/60 bg-slate-900/80 p-5">
+        <h3 id="next-session-heading" className="text-lg font-medium text-white">{t("session.heading")}</h3>
+        {nextSession.kind === "empty" ? (
+          <p className="mt-2 text-sm text-slate-300">{t("session.empty")}</p>
+        ) : (
+          <>
+            <p className="mt-2 font-medium text-teal-100">{nextSession.domain.id} · {nextSession.domain.title}</p>
+            <p className="mt-1 text-sm text-slate-300">{t(`session.${nextSession.kind}`, { correct: nextSession.domain.correct, answered: nextSession.domain.answered })}</p>
+            <Link href={`/quiz?exam=saa-c03&domain=${nextSession.domain.id}`} className="mt-3 inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{t("session.practiceLink")}</Link>
+          </>
+        )}
+        <p className="mt-2 text-xs text-slate-400">{t("session.caveat")}</p>
+        <Link href="/practice-games/drills/aws-saa-confusion-pairs" className="mt-2 inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{t("session.contrasts")}</Link>
+      </section>
+
+      {(contrast.due.length > 0 || Object.values(contrast.counts).some((row) => row.answered > 0)) && (
+        <section aria-labelledby="contrast-review-heading" className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <h3 id="contrast-review-heading" className="font-medium text-white">{contrastT("reviewHeading")}</h3>
+          <p className="mt-1 text-sm text-slate-300">{contrastT("reviewIntro")}</p>
+          <dl className="mt-3 grid gap-3 sm:grid-cols-3">
+            {(["first", "contrast", "delayed"] as const).map((mode) => {
+              const { correct, answered } = contrast.counts[mode];
+              return <div key={mode}><dt className="text-sm text-slate-300">{contrastT(`modes.${mode}`)}</dt><dd className="text-white">{answered ? contrastT("record", { correct, answered }) : contrastT("noRecord")}</dd></div>;
+            })}
+          </dl>
+          {contrast.due.length > 0 && (
+            <ul className="mt-3">
+              {contrast.due.map(({ group, id }) => <li key={group}><Link href={saaContrastHref(id, "delayed")} className="inline-flex min-h-11 items-center text-sm text-teal-200 underline underline-offset-4">{contrastT("dueLink", { topic: contrastT(`${group}.title`) })}</Link></li>)}
+            </ul>
+          )}
+        </section>
+      )}
 
       {domainRows.length === 0 ? (
         <p className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-300">{t("empty")}</p>

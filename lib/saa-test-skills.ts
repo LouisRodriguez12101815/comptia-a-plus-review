@@ -12,10 +12,10 @@ export const SAA_SLOW_SECONDS = 180;
 
 export type ConfidenceLevel = "sure" | "unsure" | "guess";
 export type MissReason = "qualifier" | "confused" | "unknown" | "time";
-export type AttemptMode = "quiz" | "mock" | "mini" | "topic" | "twin";
+export type AttemptMode = "quiz" | "mock" | "mini" | "topic" | "twin" | "contrast" | "delayed";
 
 export const MISS_REASONS: MissReason[] = ["qualifier", "confused", "unknown", "time"];
-export const ATTEMPT_MODES: AttemptMode[] = ["quiz", "mock", "mini", "topic", "twin"];
+export const ATTEMPT_MODES: AttemptMode[] = ["quiz", "mock", "mini", "topic", "twin", "contrast", "delayed"];
 export const CSV_COLUMNS = [
   "learner_id", "exam", "domain", "task", "question_id", "correct", "seconds",
   "confidence", "miss_reason", "sitting_id", "mode", "date",
@@ -61,7 +61,7 @@ export function reasonTools(taskId?: string): ReasonTool[] {
   const task = taskId && /^\d\.\d$/.test(taskId) ? taskId : "";
   return [
     { reason: "qualifier", href: "/aws-saa/games/keyword" },
-    { reason: "confused", href: "/practice-games/drills/aws-saa-confusion" },
+    { reason: "confused", href: "/practice-games/drills/aws-saa-confusion-pairs" },
     { reason: "unknown", href: task ? `/flashcards?exam=saa-c03&task=${task}&mode=flip` : "/flashcards?exam=saa-c03" },
     { reason: "time", href: "/practice-games/drills/aws-saa-resilient-cues?session=speed" },
   ];

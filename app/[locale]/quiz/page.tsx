@@ -11,6 +11,7 @@ import { QuizRunner } from "@/app/components/QuizRunner";
 import { ChapterStrip } from "@/app/components/ChapterStrip";
 import { SAA_CLUSTERS, questionsInCluster } from "@/lib/saa-test-skills";
 import { resolveExamParam } from "@/lib/exam-route";
+import { saaContrastGroup } from "@/lib/saa-contrast";
 import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/quiz">) {
@@ -26,11 +27,11 @@ export default async function QuizPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("quizPage");
-  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam, cluster: clusterParam, mode: modeParam } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string | string[]; exam?: string; cluster?: string; mode?: string };
+  const { topic, domain: domainParam, concept: conceptParam, questions: questionIdsParam, exam: examParam, cluster: clusterParam, mode: modeParam, review } = (await searchParams) as { topic?: string; domain?: string; concept?: string; questions?: string | string[]; exam?: string; cluster?: string; mode?: string; review?: string | string[] };
   const examResolution = resolveExamParam(examParam);
   if (examResolution.kind === "invalid") return <div className="space-y-4"><h1 className="text-3xl font-semibold text-white">{t("unavailableTitle")}</h1><p className="text-slate-300">{t("unavailableBody")}</p><Link href="/certifications" className="inline-flex min-h-11 items-center text-teal-300 underline underline-offset-4">{t("availableTracks")}</Link></div>;
   const initialFocus = examResolution.kind === "valid" ? examResolution.focus : undefined;
-  const quizKey = JSON.stringify([topic, domainParam, conceptParam, questionIdsParam, examParam, clusterParam, modeParam]);
+  const quizKey = JSON.stringify([topic, domainParam, conceptParam, questionIdsParam, examParam, clusterParam, modeParam, review]);
   const concept = getConcept(conceptParam);
   const domainExam: ExamCode | undefined = examParam === "saa-c03" ? "saa-c03" : examParam === "n10-009" || examParam === undefined ? "n10-009" : undefined;
   const domain = domainExam ? getDomainQuiz(domainParam, domainExam) : undefined;
@@ -43,13 +44,16 @@ export default async function QuizPage({
       : questionIdsParam
         ? controlledQuestionIds(questionIdsFromParam(questionIdsParam), allQuestions, allTopics, isStudyFocus(examParam) ? examParam : "all")
         : undefined;
-  const attemptMode = twinMode ? "twin" : cluster ? "topic" : "quiz";
+  const contrastMode = initialFocus === "saa-c03" && questionIds?.length === 1 && saaContrastGroup(questionIds[0])
+    && (review === "contrast" || review === "delayed") ? review : undefined;
+  const attemptMode = twinMode ? "twin" : cluster ? "topic" : contrastMode ?? "quiz";
+  const reviewT = attemptMode === "contrast" || attemptMode === "delayed" ? await getTranslations("saaContrast") : undefined;
   const chapter = topic && !domain && !concept ? getTopic(topic) : undefined;
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-semibold text-white">
-          {concept ? t("conceptTitle", { title: concept.title }) : domain ? t("domainTitle", { id: domain.id, title: domain.title }) : t("title")}
+          {reviewT && (attemptMode === "contrast" || attemptMode === "delayed") ? reviewT(`quiz.${attemptMode}`) : concept ? t("conceptTitle", { title: concept.title }) : domain ? t("domainTitle", { id: domain.id, title: domain.title }) : t("title")}
         </h1>
         <p className="mt-2 text-slate-400">
           {concept ? (concept.rule ?? t("conceptIntro", { objective: concept.objective })) : domain ? t("domainIntro", { weight: domain.weight, exam: domainExam === "saa-c03" ? "SAA-C03" : "N10-009" }) : t("intro")}
